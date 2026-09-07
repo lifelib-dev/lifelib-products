@@ -26,9 +26,18 @@ those in `product-spec.md`. Cells names, model-point columns and CSV headers are
   renewed by *tacite reconduction*, repriced at each renewal [S1] [S2] [S3] [S6] [S8] [S9] — so
   the annual grid is the contract's own grid, not an approximation of a finer one. The opposite
   holds in `products/assurance_emprunteur/`, where a monthly loan schedule forces a monthly grid.
-- **Projection horizon.** `proj_len = cover_end_age − issue_age`, so policy year `t` covers
-  attained age `issue_age + t − 1` and the last covered year is the one at attained age
-  `cover_end_age − 1`. For the worked configuration, `proj_len = 75 − 58 = 17`.
+- **Time index [library-wide].** `t` is **0-based**: `t = 0` is the first projected year,
+  period `t` runs from time `t` to time `t + 1`, and the attained age is `x(t) = issue_age + t`.
+  `proj_len` is the **number** of projected years — the exclusive end of the frame — so the
+  projection runs `t = 0 … proj_len − 1` and `result_cf()` has `proj_len` rows. The
+  contractual **policy year** is the derived 1-based label `policy_year(t) = t + 1`; it is
+  never indexed by, and only the two policy-year-keyed input files read it. Where these notes
+  say "policy year k" they mean the contractual label, and the formula behind it uses
+  `t = k − 1`.
+- **Projection horizon.** `proj_len = cover_end_age − issue_age`, so period `t` covers
+  attained age `issue_age + t` and the last covered year is the one at attained age
+  `cover_end_age − 1`. For the worked configuration, `proj_len = 75 − 58 = 17`, i.e.
+  `t = 0 … 16`.
 - **Timing conventions [std].** Cotisations at the **start** of each policy year (annual in
   advance, the contracts' base mode [S1] [S2] [S6] [S7] [S8] [S9]); maintenance expense and
   renewal commission at the start of the year; death and PTIA claims at the **end** of the
@@ -38,11 +47,12 @@ those in `product-spec.md`. Cells names, model-point columns and CSV headers are
   birth month [S1] [S2] [S6] [S7]. In this annual model the age steps at the **policy
   anniversary**; the real millésime age steps on 1 January, so an implementation on real dates
   carries a fractional offset of at most one year **[std]**.
-- **Termination.** All states terminate at `t = proj_len`: cover ceases at the age limit,
-  nothing is payable, there is no maturity value and no conversion [S3] [S5] [S11] [S15] [S16].
-  `pols_if(proj_len + 1)` is never a weight on a cash flow, but it is **not** unused: it is the
-  survivor term of the closure identity below, and it is what the lapse rate in the final policy
-  year — zero, by the convention set out under *Lapse* — decides.
+- **Termination.** All states terminate at the end of `t = proj_len − 1`: cover ceases at the
+  age limit, nothing is payable, there is no maturity value and no conversion
+  [S3] [S5] [S11] [S15] [S16]. `pols_if(proj_len)` is never a weight on a cash flow, but it is
+  **not** unused: it is the survivor term of the closure identity below, and it is what the
+  lapse rate in the final projected year — zero, by the convention set out under *Lapse* —
+  decides.
 - **No cash value anywhere.** Art. L. 132-23 forbids both *rachat* and *réduction* on a
   temporaire décès [R3]. The model has **no account value, no surrender cells, no paid-up
   state**, and `claims_lapse(t)` is structurally zero at every `t`.
@@ -87,20 +97,21 @@ art. L. 111-7 forbids sex-based premium and benefit differences for contracts wr
 
 | Variable | Description | Updated |
 |---|---|---|
-| `proj_len` | Number of projection steps = `cover_end_age − issue_age` | once per model point |
-| `age(t)` | Attained age in policy year t = `issue_age + t − 1` | annual |
-| `pols_if(t)` | In-force probability at the start of policy year t; `pols_if(1) = 1` | annual recursion |
+| `proj_len` | Number of projected years = `cover_end_age − issue_age`; the frame is `t = 0 … proj_len − 1` | once per model point |
+| `policy_year(t)` | Contractual 1-based policy-year label = `t + 1` | derived |
+| `age(t)` | Attained age in period t = `issue_age + t` | annual |
+| `pols_if(t)` | In-force probability at the start of period t; `pols_if(0) = 1` | annual recursion |
 | `prem_rate(t)` | Tariff rate at `age(t)`, read from `premium_rate_table.csv` | lookup |
 | `prem_freq_load(t)` | Fractionation multiplier for `prem_freq`, from `freq_loading_table.csv` | lookup |
-| `prem_pp(t)` | Cotisation per in-force policy for year t | annual |
-| `benefit_pp(t)` | Capital payable on a year-t death or PTIA claim | annual (schedule) |
+| `prem_pp(t)` | Cotisation per in-force policy for period t | annual |
+| `benefit_pp(t)` | Capital payable on a period-t death or PTIA claim | annual (schedule) |
 | `mort_rate(t)` | Annual **dependent** rate of the death decrement at `age(t)` | lookup |
 | `ptia_rate(t)` | Annual **dependent** rate of the PTIA decrement; **0** once `age(t) ≥ ptia_end_age` | lookup |
-| `lapse_rate(t)` | Annual lapse rate, applied after the insured decrements; **0** at `t = proj_len` | lookup |
-| `suicide_factor(t)` | Death-benefit exclusion factor; < 1 in year 1 only, never applied to PTIA | annual |
-| `pols_death(t)` | Expected deaths in year t = `pols_if(t) × mort_rate(t)` | annual |
-| `pols_ptia(t)` | Expected PTIA claims in year t = `pols_if(t) × ptia_rate(t)` | annual |
-| `pols_lapse(t)` | Expected lapses in year t, on survivors of both decrements | annual |
+| `lapse_rate(t)` | Annual lapse rate, applied after the insured decrements; **0** at `t = proj_len − 1` | lookup |
+| `suicide_factor(t)` | Death-benefit exclusion factor; < 1 at `t = 0` only, never applied to PTIA | annual |
+| `pols_death(t)` | Expected deaths in period t = `pols_if(t) × mort_rate(t)` | annual |
+| `pols_ptia(t)` | Expected PTIA claims in period t = `pols_if(t) × ptia_rate(t)` | annual |
+| `pols_lapse(t)` | Expected lapses in period t, on survivors of both decrements | annual |
 | `premiums(t)` | `prem_pp(t) × pols_if(t)` | annual |
 | `claims_death(t)` | `benefit_pp(t) × pols_death(t) × suicide_factor(t)` | annual |
 | `claims_ptia(t)` | `benefit_pp(t) × pols_ptia(t)` | annual |
@@ -243,17 +254,21 @@ contracts do tell us — that voluntary exit is easy and cheap, because there is
 [R3] and notice periods run from "at any time" to one month before the échéance
 [S1] [S2] [S3] [S8] [S9]:
 
-| Policy year | 1 | 2 | 3 | 4+ |
+| Policy year (contractual, `= t + 1`) | 1 | 2 | 3 | 4+ |
 |---|---|---|---|---|
 | `lapse_rate(t)` **[std]** (3) | 12 % | 10 % | 8 % | 6 % |
 
-**In the final policy year the lapse rate is zero: `w(n) = 0` [std].** Lapses fall at the *end*
-of the policy year (processing order, step 7), and the end of policy year `n` is the moment the
-cover expires — a lapse and an expiry are then the same event paying the same nothing, so the
-whole surviving cohort is booked as an expiry, `l(n+1)`. **No cash flow moves either way**, but
-the convention is load-bearing for the closure identity: it decides the split between
-`Σ pols_lapse` and `l(n+1)`, and it is what the worked example's 0,64637711 / 0,27886852
-reproduces. Taking the table rate literally in year 17 instead — `w(17) = 6 %` — gives
+The table ships as `lapse_table.csv` keyed by that contractual **policy year**, so the model
+reads it through `policy_year(t) = t + 1`: period `t = 0` takes the 12 %, and periods from
+`t = 3` take the last row.
+
+**In the final projected year the lapse rate is zero: `w(n − 1) = 0` [std].** Lapses fall at
+the *end* of the year (processing order, step 7), and the end of period `n − 1` is the moment
+the cover expires — a lapse and an expiry are then the same event paying the same nothing, so
+the whole surviving cohort is booked as an expiry, `l(n)`. **No cash flow moves either way**,
+but the convention is load-bearing for the closure identity: it decides the split between
+`Σ pols_lapse` and `l(n)`, and it is what the worked example's 0,64637711 / 0,27886852
+reproduces. Taking the table rate literally in the last year instead — `w(16) = 6 %` — gives
 0,66310922 lapses and 0,26213641 survivors, the same total and a different split.
 
 3. **No observed range exists** — not one of the eight retrieved carriers, and neither
@@ -266,13 +281,13 @@ reproduces. Taking the table rate literally in year 17 instead — `w(17) = 6 %`
 **Suicide-exclusion factor.** Art. L. 132-7 makes the death cover void for suicide in the first
 year [R1]. The model applies
 
-    suicide_factor(1) = 0.98,   suicide_factor(t) = 1.000 for t ≥ 2   **[std]**
+    suicide_factor(0) = 0.98,   suicide_factor(t) = 1.000 for t ≥ 1   **[std]**
 
-to **death claims only**. No retrieved source gives a suicide share of deaths at any age — INSEE
-cause-of-death data was not fetched for this research — so 0.98 is a placeholder standing for
-"about 2 % of first-year deaths are excluded suicides". Setting it to 1.000 is a defensible
-variant; what is **not** defensible is applying it to PTIA, or applying it beyond year 1, both
-of which are pitfalls below.
+— the first year is `t = 0`, contractual policy year 1 — to **death claims only**. No retrieved
+source gives a suicide share of deaths at any age — INSEE cause-of-death data was not fetched
+for this research — so 0.98 is a placeholder standing for "about 2 % of first-year deaths are
+excluded suicides". Setting it to 1.000 is a defensible variant; what is **not** defensible is
+applying it to PTIA, or applying it beyond the first year, both of which are pitfalls below.
 
 **Expenses and commission (all levels [std]; the structures are cited where they exist).**
 
@@ -280,7 +295,7 @@ of which are pitfalls below.
 |---|---|---|
 | Acquisition expense `acq_expense` | 250 € per policy at issue | **[std]** (4) |
 | Initial commission rate `comm_rate_init` | 40 % of the first-year cotisation | **[std]** (4) |
-| Renewal commission rate `comm_rate_renew` | 5 % of the cotisation from year 2 | **[std]** (4) |
+| Renewal commission rate `comm_rate_renew` | 5 % of the cotisation from policy year 2, i.e. `t ≥ 1` | **[std]** (4) |
 | Maintenance expense `maint_expense` | 25 € per policy p.a., inflating at `expense_infl` | **[std]** (4) |
 | Expense inflation `expense_infl` | 2 % p.a. flat | **[std]** (4) |
 | Claim expense `claim_expense` | 150 € per death or PTIA claim | **[std]** (4) |
@@ -309,24 +324,25 @@ of which are pitfalls below.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy year, `t = 1 … n`, `n = proj_len = cover_end_age − issue_age` |
-| `x(t)` | attained age in year t = `issue_age + t − 1` |
+| `t` | the **0-based** time index, `t = 0 … n − 1`, `n = proj_len = cover_end_age − issue_age` |
+| `policy_year(t)` | the contractual 1-based policy year label, `t + 1` |
+| `x(t)` | attained age in period t = `issue_age + t` |
 | `SA` | `sum_assured` |
 | `r(x)` | tariff rate at attained age x, from `premium_rate_table.csv` |
 | `f` | `rating_factor`; `φ` = `prem_freq_load` |
 | `F` | `prem_freq_fee`, the fixed annual *frais d'échéance* — a euro amount, not a rate, and nil on the annual mode [S1] |
-| `P_tar(t)` | `prem_tariff_pp(t)`, the tariff cotisation for year t **before** `F` |
-| `P(t)` | `prem_pp(t)`, the cotisation actually charged per in-force policy for year t, `= P_tar(t) + F` |
+| `P_tar(t)` | `prem_tariff_pp(t)`, the tariff cotisation for period t **before** `F` |
+| `P(t)` | `prem_pp(t)`, the cotisation actually charged per in-force policy for period t, `= P_tar(t) + F` |
 | `P_lev` | the level cotisation of the `constante` form, also before `F` |
-| `B(t)` | `benefit_pp(t)`, the capital payable on a year-t claim |
+| `B(t)` | `benefit_pp(t)`, the capital payable on a period-t claim |
 | `q_d(t)` | `mort_rate(t)`, dependent annual rate of the death decrement |
 | `q_p(t)` | `ptia_rate(t)`, dependent annual rate of the PTIA decrement |
-| `w(t)` | `lapse_rate(t)`, applied after both decrements **[std order]**; `w(n) = 0` in the final policy year **[std]** |
+| `w(t)` | `lapse_rate(t)`, applied after both decrements **[std order]**; `w(n − 1) = 0` in the final projected year **[std]** |
 | `σ(t)` | `suicide_factor(t)` |
-| `l(t)` | `pols_if(t)`, in force at the start of year t; `l(1) = 1` |
-| `p_τ(t)` | tariff survivorship, decrements only, no lapse: `p_τ(1) = 1`, `p_τ(t+1) = p_τ(t)(1 − q_d(t) − q_p(t))` |
+| `l(t)` | `pols_if(t)`, in force at the start of period t (at time t); `l(0) = 1` |
+| `p_τ(t)` | tariff survivorship, decrements only, no lapse: `p_τ(0) = 1`, `p_τ(t+1) = p_τ(t)(1 − q_d(t) − q_p(t))` |
 | `v` | `1 / (1 + tech_rate)` |
-| `E0`, `e(t)` | acquisition expense; maintenance expense = `25 × 1.02^(t−1)` |
+| `E0`, `e(t)` | acquisition expense; maintenance expense = `25 × 1.02^t` |
 | `c0`, `c_r` | initial commission rate (0.40); renewal commission rate (0.05) |
 | `ec` | claim expense (150) |
 
@@ -344,7 +360,7 @@ is used directly; otherwise `P_lev` is derived by actuarial equivalence with the
 over the whole cover period, on **tariff survivorship** (insured decrements only, no lapse) and
 the technical rate:
 
-    P_lev = [ Σ_{t=1..n} v^(t−1) · p_τ(t) · SA · r(x(t)) · f · φ ] / [ Σ_{t=1..n} v^(t−1) · p_τ(t) ]
+    P_lev = [ Σ_{t=0..n−1} v^t · p_τ(t) · SA · r(x(t)) · f · φ ] / [ Σ_{t=0..n−1} v^t · p_τ(t) ]
 
 i.e. a survivorship-and-discount-weighted average of the same grid rates; `P_tar(t) = P_lev` for
 all `t`.
@@ -361,7 +377,7 @@ load, or loading the already-loaded cotisation with it, overstates premium incom
 base, while the `constante` equivalence above is struck on `P_tar` alone — `F` is the same amount
 under either form, so it neither belongs in the equivalence nor changes it. The worked example
 runs on the **annual** mode, where `F = 0` and `P(t) = P_tar(t)`; the three fractionated model
-points are where the two differ, e.g. 933,20 € against 915,20 € in year 1 of model point 4.
+points are where the two differ, e.g. 933,20 € against 915,20 € at `t = 0` on model point 4.
 
 ### Decrements and the in-force recursion
 
@@ -371,7 +387,7 @@ independent single-decrement rates. Therefore they are **additive**:
     pols_death(t) = l(t) × q_d(t)
     pols_ptia(t)  = l(t) × q_p(t)
     pols_lapse(t) = l(t) × (1 − q_d(t) − q_p(t)) × w(t)
-    l(t+1)        = l(t) × (1 − q_d(t) − q_p(t)) × (1 − w(t)),    l(1) = 1
+    l(t+1)        = l(t) × (1 − q_d(t) − q_p(t)) × (1 − w(t)),    l(0) = 1
 
 with `q_d(t) + q_p(t) < 1` required at every `t`, and the PTIA switch-off a hard gate on the
 attained age rather than a taper: `q_p(t) = ptia_ratio × q_d(t)` if `x(t) < ptia_end_age`, else
@@ -380,19 +396,21 @@ payment ends the contract" means arithmetically [S1] [S2] [S3] [S6]: a life that
 the PTIA decrement is gone from `l` and can never generate a death claim. **Closure identity**,
 which a test should assert:
 
-    Σ_{t=1..n} [ pols_death(t) + pols_ptia(t) + pols_lapse(t) ] + l(n+1) = 1
+    Σ_{t=0..n−1} [ pols_death(t) + pols_ptia(t) + pols_lapse(t) ] + l(n) = 1
 
 ### Benefit amounts and claims
 
-`B(t) = SA × benefit_factor(benefit_schedule_id, t)`, with `benefit_factor ≡ 1.0` for
+`B(t) = SA × benefit_factor(benefit_schedule_id, policy_year(t))` — `benefit_schedule.csv` is
+keyed by the contractual policy year, so the lookup maps through `t + 1` — with
+`benefit_factor ≡ 1.0` for
 `benefit_schedule_id = constant`, the only schedule shipped [S1] [S2] [S3] [S6] [S7] [S8] [S9]:
 
     claims_death(t) = B(t) × pols_death(t) × σ(t)
     claims_ptia(t)  = B(t) × pols_ptia(t)
     claims_lapse(t) = 0                                   [R3]
 
-`σ` never touches `claims_ptia`: art. L. 132-7 voids the **death** cover for suicide in year one
-[R1], and PTIA is not death. With `accident_multiplier > 1` an additional capital
+`σ` never touches `claims_ptia`: art. L. 132-7 voids the **death** cover for suicide in the
+first year, `t = 0` [R1], and PTIA is not death. With `accident_multiplier > 1` an additional capital
 `(accident_multiplier − 1) × B(t) × acc_share` is payable on the accidental share of claims
 [S1] [S2] [S6] [S7] [S9] [S12]; `acc_share` has **no source in the corpus** and the base run sets
 it to 0 **[std]**.
@@ -400,9 +418,9 @@ it to 0 **[std]**.
 ### Expenses, commission and net cash flow
 
     premiums(t)    = P(t) × l(t)               with P(t) = P_tar(t) + F
-    commissions(t) = c0 × P(1) × l(1)          for t = 1
-                   = c_r × P(t) × l(t)          for t ≥ 2
-    expenses(t)    = E0 · 1{t = 1} + e(t) × l(t) + ec × (pols_death(t) + pols_ptia(t))
+    commissions(t) = c0 × P(0) × l(0)          for t = 0
+                   = c_r × P(t) × l(t)          for t ≥ 1
+    expenses(t)    = E0 · 1{t = 0} + e(t) × l(t) + ec × (pols_death(t) + pols_ptia(t))
                      + commissions(t)
     net_cf(t)      = premiums(t) − claims_death(t) − claims_ptia(t) − expenses(t)
     liability_cf(t) = −net_cf(t)
@@ -412,27 +430,28 @@ it to 0 **[std]**.
 
 ### Annual processing order
 
-For `t = 1 … n`, in this order:
+For `t = 0 … n − 1`, in this order:
 
-1. Set `x(t) = issue_age + t − 1`. If `x(t) ≥ cover_end_age`, stop — the projection is over.
+1. Set `x(t) = issue_age + t`. If `x(t) ≥ cover_end_age`, stop — the projection is over.
 2. Look up `r(x(t))`, compute `P_tar(t)` per the premium form and add the fee once,
    `P(t) = P_tar(t) + F`. Take the cotisation in advance: `premiums(t) = P(t) × l(t)`.
 3. Charge start-of-year expenses on the in-force: `e(t) × l(t)`, plus `E0` and the initial
-   commission at `t = 1`, plus the renewal commission for `t ≥ 2`.
-4. Compute `B(t)` from the benefit schedule.
+   commission at `t = 0`, plus the renewal commission for `t ≥ 1`.
+4. Compute `B(t)` from the benefit schedule, read at `policy_year(t) = t + 1`.
 5. Look up `q_d(t)`; set `q_p(t) = 0` if `x(t) ≥ ptia_end_age`, else `ptia_ratio × q_d(t)`.
 6. **End of year — claims:** `claims_death(t)` (with `σ(t)`) and `claims_ptia(t)`, plus the
    claim expense on both. Claimants have already paid the year's cotisation in step 2; this is
    the model's reading of "premium payment ceases at death and at PTIA" [S3] [S7] on an
    annual-in-advance grid **[std]**.
 7. **End of year — lapses:** apply `w(t)` to the survivors of both decrements. A lapse pays
-   nothing [R3]. At `t = n`, `w(n) = 0` **[std]**: the end of the last policy year is also the
-   moment the cover expires, so the survivors leave as an expiry rather than as a lapse. The two
-   events pay the same nothing, and no cash flow moves — but they land on different sides of the
-   closure identity.
+   nothing [R3]. At `t = n − 1`, `w(n − 1) = 0` **[std]**: the end of the last projected year is
+   also the moment the cover expires, so the survivors leave as an expiry rather than as a
+   lapse. The two events pay the same nothing, and no cash flow moves — but they land on
+   different sides of the closure identity.
 8. Update `l(t+1) = l(t) × (1 − q_d(t) − q_p(t)) × (1 − w(t))`.
 
-At `t = n` the projection ends with no maturity payment and no tail state.
+After `t = n − 1` the projection ends with no maturity payment and no tail state; the only
+value defined beyond the frame is the expiring cohort `l(n)`.
 
 ### Known modeling pitfalls
 
@@ -441,49 +460,50 @@ one is a test.
 
 1. **Assuming a level cotisation.** The French default is `revisable`, not `constante`
    [S1] [S2] [S3] [S6] [S7] [S9] [S10]. Assert that `prem_pp(t)` varies with `t` on the
-   revisable form, and specifically that `prem_pp(3) / prem_pp(2) = 1.56 / 1.13 = 1.380531`
+   revisable form, and specifically that `prem_pp(2) / prem_pp(1) = 1.56 / 1.13 = 1.380531`
    in the worked configuration.
 2. **Paying the capital twice.** PTIA is an acceleration, not an addition [S1] [S2] [S3] [S6].
    Assert `Σ(pols_death + pols_ptia) ≤ 1` and
-   `Σ(claims_death + claims_ptia) = SA × Σ(pols_death + pols_ptia) − (1 − σ(1)) × SA ×
-   pols_death(1)` exactly. A life removed by the PTIA decrement must not appear in `l(t+1)`.
+   `Σ(claims_death + claims_ptia) = SA × Σ(pols_death + pols_ptia) − (1 − σ(0)) × SA ×
+   pols_death(0)` exactly. A life removed by the PTIA decrement must not appear in `l(t+1)`.
 3. **Forgetting that PTIA cover stops first.** `ptia_end_age < cover_end_age` in five of the
    eight retrieved carriers [S2] [S3] [S6] [S7] [S8]. Assert `claims_ptia(t) = 0` for every
-   `t` with `x(t) ≥ ptia_end_age` — in the worked configuration, exactly zero for `t = 8 … 17`.
+   `t` with `x(t) ≥ ptia_end_age` — in the worked configuration, exactly zero for `t = 7 … 16`.
 4. **Mixing the competing-risk conventions.** These notes use **additive dependent rates**
    (`q_d + q_p`). An implementation using independent rates,
-   `1 − (1 − q_d)(1 − q_p)`, gets 0.00479680 against 0.00480000 in year 1 — a 3.2 × 10⁻⁶
-   difference in the rate and 0.48 € in year-1 expected claims per 150 000 € of capital.
+   `1 − (1 − q_d)(1 − q_p)`, gets 0.00479680 against 0.00480000 at `t = 0` — a 3.2 × 10⁻⁶
+   difference in the rate and 0.48 € of first-year expected claims per 150 000 € of capital.
    Immaterial here, material at older ages and higher rates. Declare the convention and test it.
 5. **Inventing a surrender value.** There is none, by statute [R3] [S7] [S9]. Assert
    `claims_lapse(t) == 0.0` at every `t`, and that no `av_pp_at` / cash-value cells exist.
 6. **Getting the age basis wrong.** *Différence de millésime*, not age nearest birthday
-   [S1] [S2] [S6] [S7]. A one-year shift moves `prem_pp(1)` from 1 575,00 € (age 58) to
+   [S1] [S2] [S6] [S7]. A one-year shift moves `prem_pp(0)` from 1 575,00 € (age 58) to
    1 695,00 € (age 59) — a 7,6 % error in year one that compounds through the whole projection.
 7. **Smoothing the tariff away.** The grid steps +38 % from age 59 to 60 against a trend of
    about +8 % [S3]. Assert `prem_rate` is a table lookup and that `r(60)/r(59) = 1.380531`
    survives; a fitted curve will not reproduce it.
-8. **Misapplying the suicide factor.** `σ` applies to `claims_death` in year 1 only, and never
-   to `claims_ptia` [R1]. Assert `claims_death(1) = 0.98 × B(1) × pols_death(1)`,
-   `claims_death(2) = B(2) × pols_death(2)` with no factor, and
-   `claims_ptia(1) = B(1) × pols_ptia(1)` with no factor. Also assert the model does **not**
+8. **Misapplying the suicide factor.** `σ` applies to `claims_death` at `t = 0` only, and never
+   to `claims_ptia` [R1]. Assert `claims_death(0) = 0.98 × B(0) × pols_death(0)`,
+   `claims_death(1) = B(1) × pols_death(1)` with no factor, and
+   `claims_ptia(0) = B(0) × pols_ptia(0)` with no factor. Also assert the model does **not**
    carry the art. R. 132-5 immediate-cover ceiling of 120 000 €, which belongs to
    principal-residence loan cover only [R1] [R2].
 9. **Double-counting the premium-cessation rule.** Cotisations are in advance and claims are at
    year end, so a claimant has already paid the year's cotisation. Do **not** additionally
    multiply `premiums(t)` by `(1 − q_d − q_p)` — that applies the rule twice and understates
-   year-t premium income by about 0,5 % at the anchor age.
-10. **Running past the age limit.** `proj_len = cover_end_age − issue_age`. There is no
-    benefit, no cotisation and no maturity value at `t = proj_len + 1`, and `l(proj_len + 1)`
-    is never used in a cash flow [S3] [S5] [S11] — but it is used in the closure identity, and
-    it is only well defined once `w(n) = 0` is stated. Assert both: `lapse_rate(n) = 0` while
-    `lapse_rate_base(n)` is still the table's 6 %, and that the four closure terms sum to 1.
+   period-t premium income by about 0,5 % at the anchor age.
+10. **Running past the age limit.** `proj_len = cover_end_age − issue_age` is the **number** of
+    projected years, so the last row is `t = proj_len − 1`. There is no benefit, no cotisation
+    and no maturity value at `t = proj_len`, and `l(proj_len)` is never used in a cash flow
+    [S3] [S5] [S11] — but it is used in the closure identity, and it is only well defined once
+    `w(n − 1) = 0` is stated. Assert both: `lapse_rate(n − 1) = 0` while
+    `lapse_rate_base(n − 1)` is still the table's 6 %, and that the four closure terms sum to 1.
 11. **Expecting the two premium forms to collect the same total.** The `constante` equivalence
     is struck on **tariff survivorship** (no lapse). Once lapses truncate the expensive late
     years, the projected premium total under `constante` **exceeds** the revisable one —
     36 367,46 € against 31 999,13 € in the worked configuration. That is correct, not a bug;
     a test that asserts equality of projected premium totals is testing the wrong identity.
-    The identity that *does* hold is `Σ v^(t−1) p_τ(t) P(t)` equal across the two forms.
+    The identity that *does* hold is `Σ v^t p_τ(t) P(t)` equal across the two forms.
 12. **Applying `rating_factor` to the benefit.** A *surprime* scales the cotisation only, never
     the capital [S1] [S2] [S3] [S6]. Assert `claims_death` is invariant to `rating_factor`.
 13. **Double-charging the fractionation loading.** `prem_freq_load` (`φ`) is a multiplier
@@ -491,7 +511,7 @@ one is a test.
     euros [S1]. Applying both as percentage loads, or applying the loading and then also billing
     the fee as a percentage, overstates premium income. The fee is charged **once a year** and it
     **is** part of what the policyholder pays, so it enters `premiums(t)` and the commission base
-    but stays out of the `constante` equivalence. Assert `P(1) = 915,20 + 18,00 = 933,20 €` on
+    but stays out of the `constante` equivalence. Assert `P(0) = 915,20 + 18,00 = 933,20 €` on
     model point 4 (monthly, 200 000 € at attained age 45) and `P(t) − P_tar(t) = 18,00 €` at
     every `t`.
 14. **Treating the accidental option as a benefit multiplier.** It pays an *additional* capital
@@ -515,8 +535,9 @@ evidence for any of them.
 
       M_shock(t) = 1 + β × max(0, P(t)/P(t−1) − 1 − g0)
 
-  with `g0 = 0.10` and `β = 1.5` **[std]**. Base run `β = 0`, so `M_shock ≡ 1`. Switched on in
-  the worked configuration it would bite at `t = 3` (ratio 1.380531) and nowhere else.
+  with `g0 = 0.10` and `β = 1.5` **[std]**. Base run `β = 0`, so `M_shock ≡ 1`. `M_shock(0) = 1`
+  by definition — the first period has no previous cotisation. Switched on in the worked
+  configuration it would bite at `t = 2` (ratio 1.380531) and nowhere else.
 - **Selective lapsation [std] (optional module, off in the base run).** Lapsers are healthier on
   average, so persisters' mortality is loaded:
 
@@ -541,43 +562,46 @@ evidence for any of them.
 `sum_assured = 150 000 €`, `cover_end_age = 75`, `ptia_end_age = 65`,
 `premium_rate_id = maif_2019`, `rating_factor = 1.00`, `prem_freq = annual`
 (`prem_freq_load = 1.000`), `waiting_period_y = 0`, `accident_multiplier = 1.00`. Hence
-`proj_len = 75 − 58 = 17` and the table below is the **entire** projection.
+`proj_len = 75 − 58 = 17`, the frame is `t = 0 … 16` and the table below is the **entire**
+projection.
 
 **Assumptions, each tagged.** Tariff rates `r(x)` for ages 58–74 read from the published grid
 [S3] — 1,05 / 1,13 / 1,56 / 1,68 / 1,81 / 1,97 / 2,14 / 2,33 / 2,55 / 2,78 / 2,88 / 3,14 /
-3,43 / 3,74 / 4,09 / 4,46 / 4,86 %. Mortality `q_d(t) = 0.00400 × 1.09^(t−1)` **[std]**. PTIA
-`q_p(t) = 0.20 × q_d(t)` for `t ≤ 7` (attained ages 58–64) and **0** from `t = 8` (attained age
-65 = `ptia_end_age`) **[std]**. Lapse 12 % / 10 % / 8 % / 6 % from year 4 **[std]**, with
-`w(17) = 0` because the last policy year ends at expiry (processing order, step 7) — the
-assumption that fixes the lapse/survivor split in the closure check below, though it moves no
-cash flow. Suicide factor `σ(1) = 0.98`, `σ(t ≥ 2) = 1.000`,
-applied to death claims only **[std]** [R1]. Expenses **[std]**: `E0 = 250 €` at issue,
-`e(t) = 25 × 1.02^(t−1)` per in-force policy, initial commission 40 % of `P(1)`, renewal
-commission 5 % of `P(t)` from `t = 2`, claim expense 150 € per death or PTIA claim. No accident
-option, no indexation, no tariff drift, no behavior modules.
+3,43 / 3,74 / 4,09 / 4,46 / 4,86 %. Mortality `q_d(t) = 0.00400 × 1.09^t` **[std]**. PTIA
+`q_p(t) = 0.20 × q_d(t)` for `t ≤ 6` (attained ages 58–64) and **0** from `t = 7` (attained age
+65 = `ptia_end_age`) **[std]**. Lapse 12 % / 10 % / 8 % / 6 % from the fourth year **[std]**,
+read from the policy-year-keyed table at `policy_year(t) = t + 1`, with `w(16) = 0` because the
+last projected year ends at expiry (processing order, step 7) — the assumption that fixes the
+lapse/survivor split in the closure check below, though it moves no cash flow. Suicide factor
+`σ(0) = 0.98`, `σ(t ≥ 1) = 1.000`, applied to death claims only **[std]** [R1]. Expenses
+**[std]**: `E0 = 250 €` at issue, `e(t) = 25 × 1.02^t` per in-force policy, initial commission
+40 % of `P(0)`, renewal commission 5 % of `P(t)` from `t = 1`, claim expense 150 € per death or
+PTIA claim. No accident option, no indexation, no tariff drift, no behavior modules.
 
 `expenses` below is the total of acquisition, maintenance, claim expense and commission.
-All amounts in euros; `pols_if` to six decimals; cash flows to the cent.
+All amounts in euros; `pols_if` to six decimals; cash flows to the cent. The index column is
+the model's **0-based** `t`, so the first projected year is `t = 0` and these rows are
+`result_cf()` row for row.
 
 | t | age | r(x) | pols_if | premiums | claims_death | claims_ptia | expenses | net_cf |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 58 | 1,05 % | 1.000000 | 1,575.00 | 588.00 | 120.00 | 905.72 | −38.72 |
-| 2 | 59 | 1,13 % | 0.875776 | 1,484.44 | 572.76 | 114.55 | 97.24 | 699.89 |
-| 3 | 60 | 1,56 % | 0.784075 | 1,834.73 | 558.94 | 111.79 | 112.80 | 1,051.21 |
-| 4 | 61 | 1,68 % | 0.717235 | 1,807.43 | 557.30 | 111.46 | 110.07 | 1,028.60 |
-| 5 | 62 | 1,81 % | 0.670010 | 1,819.08 | 567.46 | 113.49 | 109.77 | 1,028.35 |
-| 6 | 63 | 1,97 % | 0.625542 | 1,848.48 | 577.48 | 115.50 | 110.38 | 1,045.11 |
-| 7 | 64 | 2,14 % | 0.583667 | 1,873.57 | 587.32 | 117.46 | 110.82 | 1,057.97 |
-| 8 | 65 | 2,33 % | 0.544230 | 1,902.08 | 596.92 | 0.00 | 111.33 | 1,193.83 |
-| 9 | 66 | 2,55 % | 0.507836 | 1,942.47 | 607.14 | 0.00 | 112.61 | 1,222.73 |
-| 10 | 67 | 2,78 % | 0.473561 | 1,974.75 | 617.11 | 0.00 | 113.50 | 1,244.13 |
-| 11 | 68 | 2,88 % | 0.441280 | 1,906.33 | 626.80 | 0.00 | 109.39 | 1,170.14 |
-| 12 | 69 | 3,14 % | 0.410875 | 1,935.22 | 636.14 | 0.00 | 110.17 | 1,188.91 |
-| 13 | 70 | 3,43 % | 0.382236 | 1,966.60 | 645.06 | 0.00 | 111.09 | 1,210.45 |
-| 14 | 71 | 3,74 % | 0.355260 | 1,993.01 | 653.49 | 0.00 | 111.79 | 1,227.72 |
-| 15 | 72 | 4,09 % | 0.329849 | 2,023.62 | 661.36 | 0.00 | 112.72 | 1,249.54 |
-| 16 | 73 | 4,46 % | 0.305913 | 2,046.56 | 668.57 | 0.00 | 113.29 | 1,264.70 |
-| 17 | 74 | 4,86 % | 0.283369 | 2,065.76 | 675.04 | 0.00 | 113.69 | 1,277.03 |
+| 0 | 58 | 1,05 % | 1.000000 | 1,575.00 | 588.00 | 120.00 | 905.72 | −38.72 |
+| 1 | 59 | 1,13 % | 0.875776 | 1,484.44 | 572.76 | 114.55 | 97.24 | 699.89 |
+| 2 | 60 | 1,56 % | 0.784075 | 1,834.73 | 558.94 | 111.79 | 112.80 | 1,051.21 |
+| 3 | 61 | 1,68 % | 0.717235 | 1,807.43 | 557.30 | 111.46 | 110.07 | 1,028.60 |
+| 4 | 62 | 1,81 % | 0.670010 | 1,819.08 | 567.46 | 113.49 | 109.77 | 1,028.35 |
+| 5 | 63 | 1,97 % | 0.625542 | 1,848.48 | 577.48 | 115.50 | 110.38 | 1,045.11 |
+| 6 | 64 | 2,14 % | 0.583667 | 1,873.57 | 587.32 | 117.46 | 110.82 | 1,057.97 |
+| 7 | 65 | 2,33 % | 0.544230 | 1,902.08 | 596.92 | 0.00 | 111.33 | 1,193.83 |
+| 8 | 66 | 2,55 % | 0.507836 | 1,942.47 | 607.14 | 0.00 | 112.61 | 1,222.73 |
+| 9 | 67 | 2,78 % | 0.473561 | 1,974.75 | 617.11 | 0.00 | 113.50 | 1,244.13 |
+| 10 | 68 | 2,88 % | 0.441280 | 1,906.33 | 626.80 | 0.00 | 109.39 | 1,170.14 |
+| 11 | 69 | 3,14 % | 0.410875 | 1,935.22 | 636.14 | 0.00 | 110.17 | 1,188.91 |
+| 12 | 70 | 3,43 % | 0.382236 | 1,966.60 | 645.06 | 0.00 | 111.09 | 1,210.45 |
+| 13 | 71 | 3,74 % | 0.355260 | 1,993.01 | 653.49 | 0.00 | 111.79 | 1,227.72 |
+| 14 | 72 | 4,09 % | 0.329849 | 2,023.62 | 661.36 | 0.00 | 112.72 | 1,249.54 |
+| 15 | 73 | 4,46 % | 0.305913 | 2,046.56 | 668.57 | 0.00 | 113.29 | 1,264.70 |
+| 16 | 74 | 4,86 % | 0.283369 | 2,065.76 | 675.04 | 0.00 | 113.69 | 1,277.03 |
 | **Total** | | | | **31,999.13** | **10,396.90** | **804.25** | **2,676.38** | **18,121.59** |
 
 `claims_lapse(t) = 0.00` at every `t` and is omitted from the table for space; it is a required
@@ -600,43 +624,43 @@ seventeen years, not only the five displayed:
 
 | t | age | prem_pp | premiums | claims_death | claims_ptia | expenses | net_cf |
 |---|---|---|---|---|---|---|---|
-| 1 | 58 | 3,914.39 | 3,914.39 | 588.00 | 120.00 | 1,841.48 | 1,364.91 |
-| 2 | 59 | 3,914.39 | 3,428.13 | 572.76 | 114.55 | 194.43 | 2,546.39 |
-| 3 | 60 | 3,914.39 | 3,069.17 | 558.94 | 111.79 | 174.52 | 2,223.93 |
-| 8 | 65 | 3,914.39 | 2,130.33 | 596.92 | 0.00 | 122.74 | 1,410.66 |
-| 17 | 74 | 3,914.39 | 1,109.22 | 675.04 | 0.00 | 65.86 | 368.32 |
+| 0 | 58 | 3,914.39 | 3,914.39 | 588.00 | 120.00 | 1,841.48 | 1,364.91 |
+| 1 | 59 | 3,914.39 | 3,428.13 | 572.76 | 114.55 | 194.43 | 2,546.39 |
+| 2 | 60 | 3,914.39 | 3,069.17 | 558.94 | 111.79 | 174.52 | 2,223.93 |
+| 7 | 65 | 3,914.39 | 2,130.33 | 596.92 | 0.00 | 122.74 | 1,410.66 |
+| 16 | 74 | 3,914.39 | 1,109.22 | 675.04 | 0.00 | 65.86 | 368.32 |
 | **Total** | | | **36,367.46** | **10,396.90** | **804.25** | **3,713.59** | **21,452.72** |
 
 The two forms are the whole point of this product. The revisable premium runs from 1 575,00 €
 to 7 290,00 € — a factor of **4,6286**, exactly `r(74)/r(58) = 4,86/1,05` and independent of
-the capital — while the level premium is flat at 3 914,39 €, above the tariff until year 8 and
-below it thereafter. The revisable form has almost no new-business strain (year 1 `net_cf` is
-−38,72 €); the level form is strongly positive in year 1 (+1 364,91 €) and would carry a real
+the capital — while the level premium is flat at 3 914,39 €, above the tariff until `t = 7`
+and below it thereafter. The revisable form has almost no new-business strain (`net_cf(0)` is
+−38,72 €); the level form is strongly positive at `t = 0` (+1 364,91 €) and would carry a real
 *provision mathématique* against the later years [R11] [R13].
 
 **Checks.**
 
 *The cotisation rule, from the source's own example.* The carrier publishes "150 000 € ×
 (0,60 : 100) = 900 € pour un an" at attained age 49 [S3]. The same rule at attained age 58
-gives `P(1) = 150 000 × 1,05/100 = 1 575,00 €`, and the year-17 rate reproduces
+gives `P(0) = 150 000 × 1,05/100 = 1 575,00 €`, and the last year's rate reproduces
 `150 000 × 4,86/100 = 7 290,00 €`. The ratio 7 290,00 / 1 575,00 = 4,6286 equals
 4,86 / 1,05 = 4,6286 — the premium multiple over the contract depends only on the grid, not on
 the capital, which is a one-line test of the whole premium engine.
 
-*Year 3 rebuilt from scratch, a different way.* `l(3)` from two decrement steps:
-`l(2) = (1 − 0,00400 − 0,00080)(1 − 0,12) = 0,99520 × 0,88 = 0,875776`;
-`q_d(2) = 0,00400 × 1,09 = 0,004360`, `q_p(2) = 0,000872`, so
-`l(3) = 0,875776 × (1 − 0,005232) × 0,90 = 0,875776 × 0,8952912 = 0,78407455`, matching the
-table's 0.784075. Then `q_d(3) = 0,00400 × 1,09² = 0,0047524` and `q_p(3) = 0,00095048`, giving
-`claims_death(3) = 150 000 × 0,78407455 × 0,0047524 = 558,94` and
-`claims_ptia(3) = 150 000 × 0,78407455 × 0,00095048 = 111,79`. Expenses:
+*`t = 2` rebuilt from scratch, a different way.* `l(2)` from two decrement steps:
+`l(1) = (1 − 0,00400 − 0,00080)(1 − 0,12) = 0,99520 × 0,88 = 0,875776`;
+`q_d(1) = 0,00400 × 1,09 = 0,004360`, `q_p(1) = 0,000872`, so
+`l(2) = 0,875776 × (1 − 0,005232) × 0,90 = 0,875776 × 0,8952912 = 0,78407455`, matching the
+table's 0.784075. Then `q_d(2) = 0,00400 × 1,09² = 0,0047524` and `q_p(2) = 0,00095048`, giving
+`claims_death(2) = 150 000 × 0,78407455 × 0,0047524 = 558,94` and
+`claims_ptia(2) = 150 000 × 0,78407455 × 0,00095048 = 111,79`. Expenses:
 `25 × 1,02² × 0,78407455 = 20,3938` maintenance, `0,05 × 2 340,00 × 0,78407455 = 91,7367`
 renewal commission, `150 × 0,78407455 × 0,00570288 = 0,6707` claim expense — total 112,80. And
-`1 834,73 − 558,94 − 111,79 − 112,80 = 1 051,21`, the table's `net_cf(3)`.
+`1 834,73 − 558,94 − 111,79 − 112,80 = 1 051,21`, the table's `net_cf(2)`.
 
 *The decrements close, and nothing is paid twice.* Summing the three exits over the 17 years:
-deaths 0,06939268, PTIA claims 0,00536169, lapses 0,64637711, plus `l(18) = 0,27886852` —
-total **1,00000000** exactly. The last two figures are the ones `w(17) = 0` decides: at the
+deaths 0,06939268, PTIA claims 0,00536169, lapses 0,64637711, plus `l(17) = 0,27886852` —
+total **1,00000000** exactly. The last two figures are the ones `w(16) = 0` decides: at the
 table's 6 % they would read 0,66310922 and 0,26213641, still summing to one. Multiplying total claim events by the capital,
 `150 000 × (0,06939268 + 0,00536169) = 11 213,155 €`, against claims actually paid of
 `10 396,90 + 804,25 = 11 201,155 €`. The difference is **12,00 €**, which is precisely the
@@ -645,7 +669,7 @@ factor is the *only* thing standing between expected claim events and expected c
 which is what "PTIA is an acceleration, not an addition" means arithmetically.
 
 *The level premium is a weighted average of the grid.* Independently of the equivalence
-formula, `P_lev / SA` should be the `v^(t−1) p_τ(t)`-weighted mean of the seventeen grid rates.
+formula, `P_lev / SA` should be the `v^t p_τ(t)`-weighted mean of the seventeen grid rates.
 That mean is **2,60959276 %**, and `150 000 × 0,0260959276 = 3 914,3891 €` — the same figure,
 reached without ever forming the premium stream. The weights sum to `15,449728`, the annuity-due
 factor, and `P_lev × 15,449728 = 60 476,25 €` equals the present value of the revisable stream
@@ -695,7 +719,8 @@ declared grid. The valuation layers consume them and are cited, not reproduced.
   reviewable-premium contract — could **not** be determined: the Delegated Regulation's boundary
   rules were not retrievable [REG-R2] and the point is **[unverified]**. The model's posture:
   project to the age limit and publish the full stream; a boundary-truncated view is obtained by
-  truncating `result_cf()` at `t = 1`. Do not bake the truncation into the projection.
+  truncating `result_cf()` after the first row, `t = 0`. Do not bake the truncation into the
+  projection.
 - **IFRS 17 and professional standards.** Fulfilment cash flows plus a contractual service
   margin, effective from 1 January 2023 with no French carve-out [REG-R45]; the same
   expected-cash-flow engine feeds it, and grouping, CSM and risk adjustment are out of scope.
@@ -733,7 +758,7 @@ In rough order of leverage for a French protection block:
    it interacts with `ptia_end_age`, since the whole of that exposure sits in the first seven
    years.
 5. **Contract boundary.** If the boundary is one year rather than the full cover period, the
-   entire projection beyond `t = 1` leaves the technical provision. Nothing in this library
+   entire projection beyond `t = 0` leaves the technical provision. Nothing in this library
    resolves it [REG-R2].
 6. **Tariff drift.** The base run freezes the rate card at its retrieved vintage, but the same
    carrier's current page implies about 0,189 % at age 35 against the grid's 0,17 % [S3] [S4],

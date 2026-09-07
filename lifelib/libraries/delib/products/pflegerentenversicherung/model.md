@@ -51,10 +51,19 @@ them and the four annual rates beside it. `model.Projection.doc` holds the full 
 The grid is **monthly** and `t` is **0-based**: `t = 0` is the month of issue and
 `age(t) = age_at_entry + t // 12`, so the attained age steps at the policy anniversary. The frame
 **starts** at `duration_mth_init()` — `0` for new business, the elapsed duration for an in-force
-point — and `proj_len()` is the **last** projected index, `12 × (110 − 45) − 1 = 779` on the anchor
-cell: 780 rows, attained ages 45 to 109, in about seven seconds. It depends on the entry age and
-the terminal age alone, so an in-force point publishes a **shorter** frame ending at the same
-index; reading it as a row count, or as a horizon `duration_mth_init` shifts, is a listed pitfall.
+point — and runs to `proj_len() - 1`, where `proj_len()` is the **number of projected months**, the
+frame's **exclusive end** counted from `t = 0`: `12 × (110 − 45) = 780` on the anchor cell, so
+`range(0, 780)` — 780 rows, `t = 0 … 779`, attained ages 45 to 109, in about seven seconds. It
+depends on the entry age and the terminal age alone, so an in-force point opening at
+`duration_mth_init() = d0` publishes a **shorter** frame of `proj_len() - d0` rows ending at the
+same last index; reading `proj_len()` as the last index, or as a horizon `duration_mth_init`
+shifts, is a listed pitfall.
+
+The input CSVs carry **no column keyed by `t`**. `lapse_table.csv` and `surrender_table.csv` are
+keyed by `policy_year`, the 1-based contractual *Versicherungsjahr* that the model reaches through
+`policy_year(t) = t // 12 + 1`; `mort_table.csv` and `incidence_table.csv` are keyed by attained
+age; and `model_point_table.csv`'s `duration_mth_init` is an elapsed count of complete months,
+0-based by nature. None of them moved with this change.
 
 ## Nine states, and only two of them absorbing
 
@@ -296,6 +305,7 @@ three ledgers' own recursions, the second is assembled by **direct summation** w
 them, so it catches a wrong seeding of an in-force point, a life counted in two grades at once, an
 entrant into care who never leaves the active ledger and a *Karenz* cohort that graduates twice.
 Because `mort_rate` is forced to 1,0 at the limiting age it also closes at the far end:
+read one month past the last projected row, at `t = proj_len() = 780`,
 `pols_dead_cum(780) = 0.493968` and `pols_lapse_cum(780) = 0.506032` sum to 1,000000000000.
 
 ## Modules that are off in the base run
@@ -448,7 +458,9 @@ example to the cent and the policy counts to six decimals, the full-precision to
 sum-of-rounded-cells the notes also print, the equivalence premium of 64,198409 € reached two
 independent ways from `A`, `U`, `G` and `C`, month 0 rebuilt term by term, the first month's
 decrements from the annual rates through the forces, the first annuity payment grade by grade, the
-closure identity, the male twin's ten printed rows and totals, the four-cell variant table, the six
+closure identity, the shape of the frame — `proj_len() == 780` on the anchor cell, index
+`range(0, proj_len())`, last index `proj_len() - 1`, 780 rows — the male twin's ten printed rows and
+totals, the four-cell variant table, the six
 `check_*` identities with their residuals, and **one test per numbered modeling pitfall** —
 seventeen of them. The whole-model-point-table sweep is **not** here:
 `tests/test_model_conventions_de.py` owns the library's single sweep.

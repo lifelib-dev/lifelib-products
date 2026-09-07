@@ -53,26 +53,29 @@ the library's retired-names register.
   that is worth naming: § 168 VVG makes the *Versicherungsperiode* follow the *Zahlweise*, so a
   monthly-paying contract is terminable monthly and its exits are **not** concentrated at
   anniversaries [R8] [REG-R28]. The annual grid books them at anniversaries and says so.
-- **The frame is 1-based, and `t` counts policy years from issue.** Policy year `t` runs from the
-  policy anniversary at duration `t − 1` to the anniversary at duration `t`, and covers attained age
-  `x(t) = issue_age + t − 1`. A new-business model point opens at `t = 1`; **an in-force model point
-  opens at `t = duration_y + 1`**, so that everything keyed to duration — the § 161 three-year
-  window, the lapse table, the *Zillmerung* run-off — reads off `t` directly and needs no second
-  clock. That is why `duration_y` is a model-point column rather than a re-based issue age.
-- **`proj_len()` is the last projected period index**, equal to `policy_term`, the
-  *Versicherungsdauer* in whole years — not a row count. `result_cf()` is indexed by `t` from
-  `duration_y + 1` to `proj_len()` inclusive, contiguously, so the frame has
-  `policy_term − duration_y` rows. This is frlib's ruling, which delib adopts and asserts in
-  `tests/test_model_conventions_de.py`.
-- **Cover ends at attained age `issue_age + policy_term`**, and the last covered policy year is the
-  one at attained age `issue_age + policy_term − 1`. `cover_end_age` is **derived**, not carried, so
+- **The frame is 0-based, and `t` counts policy years from issue.** Period `t` runs from the
+  policy anniversary at duration `t` to the anniversary at duration `t + 1`, and covers attained age
+  `x(t) = issue_age + t`. **The first period is `t = 0`** and **the contractual policy year is
+  `t + 1`** — the label the three schedule CSVs are keyed on. A new-business model point opens at
+  `t = 0`; **an in-force model point opens at `t = duration_y`**, `duration_y` being completed
+  policy years and therefore already a 0-based elapsed count, so that everything keyed to duration —
+  the § 161 three-year window, the lapse table, the *Zillmerung* run-off — reads off `t` directly
+  and needs no second clock. That is why `duration_y` is a model-point column rather than a re-based
+  issue age.
+- **`proj_len()` is the number of policy years**, equal to `policy_term`, the
+  *Versicherungsdauer* in whole years, and it is the frame's **exclusive end**. `result_cf()` is
+  indexed by `t` from `duration_y` to `proj_len() − 1` inclusive, contiguously, so the frame is
+  `range(duration_y, proj_len())` and has `policy_term − duration_y` rows. This is lifelib's own
+  convention, which delib adopts and asserts in `tests/test_model_conventions_de.py`.
+- **Cover ends at attained age `issue_age + policy_term`**, and the last covered period is `t = n − 1`,
+  at attained age `issue_age + policy_term − 1`. `cover_end_age` is **derived**, not carried, so
   the two cannot disagree.
-- **Timing conventions [std].** *Zahlbeitrag* at the **start** of the policy year (annual in
+- **Timing conventions [std].** *Zahlbeitrag* at the **start** of period `t` (annual in
   advance); acquisition cost and initial commission at issue, i.e. in the first projected period of
-  a new-business point and **never** on an in-force point, where they are sunk; maintenance,
-  collection and renewal commission at the start of the year on the opening in-force; **death claims
-  and the claim expense at the end** of the policy year of claim; lapses at the end of the year,
-  **after** the death decrement; expiry at the end of policy year `n`.
+  a new-business point (`t = 0`) and **never** on an in-force point, where they are sunk;
+  maintenance, collection and renewal commission at the start of the period on the opening in-force;
+  **death claims and the claim expense at the end** of the period of claim; lapses at the end of the
+  period, **after** the death decrement; expiry at the end of the last period `t = n − 1`.
 - **Age basis.** *Alter am Jahrestag* — the attained age at the policy anniversary, which is also
   the projection step. Germany has no counterpart to the French *différence de millésime*, where the
   rating age steps on 1 January irrespective of birth month; on a real-date implementation the offset
@@ -180,7 +183,7 @@ anchor cell.**
 | 5 | 33 F N, 400 000 € `annuitaet_fallend_3pct`, 30/30 y, `vierteljaehrlich` | *Darlehensabsicherung* schedule; the 3 % loading |
 | 6 | 45 M N, 200 000 € `konstant`, 20/**12** y, `halbjaehrlich` | *Abgekürzte Beitragszahlungsdauer*; the largest *Deckungskapital*; the 2 % loading |
 | 7 | 50 M N, 100 000 € `konstant`, 10/**1** y, `einmal`, `jaehrlich` | The second premium form; the equivalence at its boundary |
-| 8 | 30 F N, 150 000 € `konstant`, 30/30 y, `duration_y = 12` | **In force.** The frame opens at `t = 13`; past the § 161 window and the elevated lapse durations |
+| 8 | 30 F N, 150 000 € `konstant`, 30/30 y, `duration_y = 12` | **In force.** The frame opens at `t = 12`; past the § 161 window and the elevated lapse durations |
 | 9 | 32 M N, 200 000 € `konstant`, 28/28 y, `nvg_zwei_erhoehungen` | *Nachversicherungsgarantie*; the § 161 clock restarting per increment |
 | 10 | 38 M N + 36 F N, 300 000 € `konstant`, 22/22 y, `monatlich`, `lives = 2` | *Verbundene Leben*; the first-death rate |
 | 11 | 42 M R, 250 000 € `konstant`, 18/18 y, `rating_factor = 1.75` | *Risikozuschlag* on an impaired smoker |
@@ -194,23 +197,23 @@ anchor cell.**
 
 | Variable | Description | Updated |
 |---|---|---|
-| `proj_len` | `policy_term`; the last projected period index | once per model point |
-| `age(t)` | Attained age of the first life in policy year `t` = `issue_age + t − 1` | annual |
-| `age2(t)` | Attained age of the second life = `issue_age2 + t − 1`; unused where `lives = 1` | annual |
-| `pols_if(t)` | In-force count at the **start** of policy year `t`; `pols_if(duration_y + 1) = pols_if_init() = 1` | annual recursion |
-| `benefit_pp(t)` | *Versicherungssumme* in force in policy year `t` = `sum_assured × benefit_factor(t) × sum_uplift(t)` | schedule lookup |
-| `benefit_paid_pp(t)` | The benefit actually payable on a year-`t` death, after the § 161 switch | annual |
+| `proj_len` | `policy_term`; the number of policy years, the frame's exclusive end | once per model point |
+| `age(t)` | Attained age of the first life in period `t` = `issue_age + t` | annual |
+| `age2(t)` | Attained age of the second life = `issue_age2 + t`; unused where `lives = 1` | annual |
+| `pols_if(t)` | In-force count at the **start** of period `t`; `pols_if(duration_y) = pols_if_init() = 1` | annual recursion |
+| `benefit_pp(t)` | *Versicherungssumme* in force in period `t` = `sum_assured × benefit_factor(t) × sum_uplift(t)` | schedule lookup |
+| `benefit_paid_pp(t)` | The benefit actually payable on a period-`t` death, after the § 161 switch | annual |
 | `mort_rate(t)` | **Second-order** annual death rate actually projected: policy's own sex, smoker, rated, first-death where `lives = 2` | lookup |
 | `mort_rate_tar(t)` | **First-order** tariff rate: unisex 50/50 blend, `× (1 + m) × rating_factor` | lookup |
-| `lapse_rate(t)` | Annual lapse rate applied after the death decrement; **0** at `t = proj_len()` | lookup |
+| `lapse_rate(t)` | Annual lapse rate applied after the death decrement; **0** at `t = proj_len() − 1` | lookup |
 | `suicide_factor(t)` | § 161 benefit switch, `< 1` inside three years of issue and of each increment | annual |
-| `prem_gross_pp(t)` | *Bruttobeitrag* billed per in-force policy, loaded for frequency; **0** for `t > prem_term` | annual |
+| `prem_gross_pp(t)` | *Bruttobeitrag* billed per in-force policy, loaded for frequency; **0** for `t ≥ prem_term` | annual |
 | `prem_rebate_pp(t)` | *Beitragsverrechnung* per in-force policy | annual |
 | `prem_paid_pp(t)` | *Zahlbeitrag* per in-force policy = `prem_gross_pp − prem_rebate_pp` | annual |
 | `res_pp_at(t, timing)` | First-order **net** *Deckungskapital* per policy — a **pricing diagnostic**, not a balance-sheet provision | prospective |
 | `res_zill_pp_at(t, timing)` | The same reserve less the unamortised Zillmer balance; **negative for much of the term** | prospective |
-| `pols_death(t)` | Expected deaths in policy year `t` = `pols_if(t) × mort_rate(t)` | annual |
-| `pols_lapse(t)` | Expected lapses in policy year `t`, on survivors of the death decrement | annual |
+| `pols_death(t)` | Expected deaths in period `t` = `pols_if(t) × mort_rate(t)` | annual |
+| `pols_lapse(t)` | Expected lapses in period `t`, on survivors of the death decrement | annual |
 | `pols_maturity(t)` | Expiring survivors; **0** except at `t = proj_len()` | annual |
 | `premiums(t)` | `prem_paid_pp(t) × pols_if(t)` — the billed stream, the one inside `net_cf` | annual |
 | `prem_gross(t)` | `prem_gross_pp(t) × pols_if(t)` — the **guaranteed** stream, published beside it | annual |
@@ -327,15 +330,16 @@ bonus, so the financial friction that suppresses savings-contract lapse is absen
 terminable at the end of each *Versicherungsperiode***, monthly for a monthly payer [R8], so exit is
 frictionless in time as well as in money; and **the need that motivated the purchase amortises**.
 
-| Policy year | 1 | 2–3 | 4+ | `proj_len()` |
+| Policy year (`t + 1`) | 1 | 2–3 | 4+ | `n` |
 |---|---|---|---|---|
+| `t` | 0 | 1–2 | 3+ | `n − 1` |
 | `lapse_rate(t)` **[std]** | 6 % | 4 % | 3 % | **0** |
 
-**In the final policy year the lapse rate is zero.** Lapses fall at the end of the policy year, and
-the end of policy year `n` is the moment cover expires — a lapse and an expiry are then the same
-event paying the same nothing, so the whole surviving cohort is booked as `pols_maturity(n)`. **No
-cash flow moves either way**, but the convention decides the split between `Σ pols_lapse` and
-`pols_maturity(n)` and is load-bearing for the closure identity. The argued plausible range in the
+**In the final period the lapse rate is zero.** Lapses fall at the end of the period, and
+the end of period `t = n − 1` is the moment cover expires — a lapse and an expiry are then the same
+event paying the same nothing, so the whole surviving cohort is booked as `pols_maturity(n − 1)`.
+**No cash flow moves either way**, but the convention decides the split between `Σ pols_lapse` and
+`pols_maturity(n − 1)` and is load-bearing for the closure identity. The argued plausible range in the
 early durations is **2 % to 8 %**, and **no German figure supports any of it**. Note the shape
 argument the shipped table does *not* follow: because the need amortises, term-life lapse arguably
 should **rise** in later durations rather than flatten, the opposite of a savings product's shape.
@@ -345,7 +349,7 @@ rather than a silent choice.
 **Suicide share.** § 161 makes the insurer *leistungsfrei* for an intentional self-inflicted death
 inside three years, substituting a *Rückkaufswert* that is nil here [R1] [R2]. The model applies
 
-    suicide_factor(t) = 1 − suicide_share   for the first three policy years of a cover tranche
+    suicide_factor(t) = 1 − suicide_share   for the first three periods of a cover tranche
                       = 1                   thereafter,           suicide_share = 0.03  **[std]**
 
 to **death claims only**. No German cause-of-death share was retrieved, and none is asserted; 0,03
@@ -403,12 +407,12 @@ rather than buried.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy year, `t = t0 … n`, with `t0 = duration_y + 1` and `n = proj_len() = policy_term` |
-| `x(t)`, `x₂(t)` | attained ages, `issue_age + t − 1` and `issue_age2 + t − 1` |
+| `t` | period index, **0-based**: `t = t0 … n − 1`, with `t0 = duration_y` and `n = proj_len() = policy_term`. The contractual policy year is `t + 1` |
+| `x(t)`, `x₂(t)` | attained ages, `issue_age + t` and `issue_age2 + t` |
 | `k` | `prem_term`, the *Beitragszahlungsdauer* in years |
 | `S0` | `sum_assured` |
-| `f(t)` | `benefit_factor(t)` from `benefit_schedule.csv` |
-| `u(t)` | `sum_uplift(t)` from `nvg_schedule.csv`; `u ≡ 1` for `nvg_schedule_id = keine` |
+| `f(t)` | `benefit_factor(t)` from `benefit_schedule.csv`, read at `policy_year = t + 1` |
+| `u(t)` | `sum_uplift(t)` from `nvg_schedule.csv`, read at `policy_year = t + 1`; `u ≡ 1` for `nvg_schedule_id = keine`; `u(−1) = 0` |
 | `B(t)` | `benefit_pp(t) = S0 · f(t) · u(t)` |
 | `q̃(x)` | `mort_rate_at_age(table_id, sex, smoker, x)`, the shipped second-order table rate |
 | `ω` | `sex_mix_male` = 0.50, the tariff's unisex mix **[std]** |
@@ -416,10 +420,10 @@ rather than buried.
 | `rf` | `rating_factor` |
 | `q₂(t)` | `mort_rate(t)`, the projected second-order rate |
 | `q₁(t)` | `mort_rate_tar(t)`, the first-order tariff rate |
-| `w(t)` | `lapse_rate(t)`; `w(n) = 0` **[std]** |
+| `w(t)` | `lapse_rate(t)`, read at `policy_year = t + 1`; `w(n − 1) = 0` **[std]** |
 | `σ(t)` | `suicide_factor(t)`, the § 161 benefit switch |
-| `l(t)` | `pols_if(t)`, in force at the **start** of policy year `t`; `l(t0) = pols_if_init() = 1` |
-| `p₁(t)` | tariff survivorship, mortality only: `p₁(1) = 1`, `p₁(t+1) = p₁(t)·(1 − q₁(t))` |
+| `l(t)` | `pols_if(t)`, in force at the **start** of period `t`; `l(t0) = pols_if_init() = 1` |
+| `p₁(t)` | tariff survivorship, mortality only: `p₁(0) = 1`, `p₁(t+1) = p₁(t)·(1 − q₁(t))` |
 | `i`, `v` | `rechnungszins` = 1,00 %; `v = 1/(1 + i)` |
 | `G`, `Gn` | `prem_gross_pp` before frequency loading; `prem_net_level_pp`, the actuarial *Nettoprämie* |
 | `φ` | `prem_freq_load`, the *Ratenzahlungszuschlag* multiplier |
@@ -452,9 +456,9 @@ Struck once, at issue, on first-order bases and tariff survivorship — never on
 lapse or best-estimate mortality, and therefore acyclic with respect to everything behavioural.
 Write
 
-    A  = Σ_{t=1..n} v^t · p₁(t) · q₁(t) · B(t)          APV of death benefits, paid at year end
-    ä  = Σ_{t=1..k} v^(t−1) · p₁(t)                     premium annuity-due over the paying term
-    Γ  = Σ_{t=1..n} v^(t−1) · p₁(t) · B(t)              sum-exposure annuity, for the γ loading
+    A  = Σ_{t=0..n−1} v^(t+1) · p₁(t) · q₁(t) · B(t)    APV of death benefits, paid at year end
+    ä  = Σ_{t=0..k−1} v^t · p₁(t)                       premium annuity-due over the paying term
+    Γ  = Σ_{t=0..n−1} v^t · p₁(t) · B(t)                sum-exposure annuity, for the γ loading
 
 The equivalence, with the α loading a per-mille of the *Beitragssumme* `k·G` incurred at issue,
 
@@ -471,7 +475,7 @@ actuarial *Nettoprämie* is `Gn = A / ä`, and it is what the reserve recursion 
 
 ### The *Zahlbeitrag*, by the MindZV allocation
 
-The tariff's own mortality margin in policy year `t`, per in-force policy, is the difference between
+The tariff's own mortality margin in period `t`, per in-force policy, is the difference between
 the first-order rate and the tariff's best estimate:
 
     margin_pp(t) = ( q₁(t) − q₁(t)/(1 + m) ) · B(t) = (m/(1+m)) · q₁(t) · B(t)
@@ -487,7 +491,7 @@ and is **0** where `surplus_form = keine`. Then, at every `t ≤ k`,
     prem_rebate_pp(t) = v_d · G · φ
     prem_paid_pp(t)   = (1 − v_d) · G · φ
 
-and all three are **0** for `t > k`. Substituting the equivalence into `v_d` gives the identity that
+and all three are **0** for `t ≥ k`. Substituting the equivalence into `v_d` gives the identity that
 explains the whole German term-life spread in one line:
 
     v_d = decl_scale · surplus_share · (m/(1+m)) · [ 1 − β − ( γ·Γ + z·k·G ) / ( G·ä ) ]
@@ -501,33 +505,33 @@ contractual mechanics).
 
 ### The § 161 benefit switch, and increments
 
-The base cover's three-year window runs from issue, so it bites at `t ≤ 3`. A
-*Nachversicherungsgarantie* increment granted at the start of policy year `t_j` carries **its own**
+The base cover's three-year window runs from issue, so it bites at `t < 3`, i.e. policy years 1 to
+3. A *Nachversicherungsgarantie* increment granted at the start of period `t_j` carries **its own**
 three-year window, `t_j ≤ t < t_j + 3` [R1] [S1] [S3] [S4] — **market practice, not a modelling choice** (research gap 9, closed): "Wenn unsere Leistungspflicht durch eine Änderung des Vertrages erweitert wird ..., beginnt die Dreijahresfrist bezüglich des geänderten ... Teils neu". With
-`Δu(t) = u(t) − u(t − 1)` and `u(0) = 0`, the effective benefit is
+`Δu(t) = u(t) − u(t − 1)` and `u(−1) = 0`, the effective benefit is
 
     benefit_paid_pp(t) = S0 · f(t) · Σ_{j : t_j ≤ t} Δu(t_j) · σ_j(t)
-    σ_j(t) = 1 − suicide_share   if  t < t_j + 3,  else 1        (the base tranche has t_j = 1)
+    σ_j(t) = 1 − suicide_share   if  t < t_j + 3,  else 1        (the base tranche has t_j = 0)
 
 so `suicide_factor(t) = benefit_paid_pp(t) / benefit_pp(t)` is a **weighted average** across
-tranches, strictly between `1 − suicide_share` and `1` in a year when one tranche is inside its
+tranches, strictly between `1 − suicide_share` and `1` in a period when one tranche is inside its
 window and another is not. On an in-force model point with `duration_y ≥ 3` and no increments,
 `σ ≡ 1` at every projected `t`. The switch **never** touches lapses or the expiry, both of which pay
 nothing in any event.
 
 ### Decrements and the in-force recursion
 
-Two decrements, applied in the stated order at the end of the policy year:
+Two decrements, applied in the stated order at the end of the period:
 
     pols_death(t)    = l(t) · q₂(t)
-    pols_lapse(t)    = l(t) · (1 − q₂(t)) · w(t)                    with w(n) = 0
-    pols_maturity(t) = 0  for t < n;   l(n)·(1 − q₂(n))  at t = n
+    pols_lapse(t)    = l(t) · (1 − q₂(t)) · w(t)                    with w(n−1) = 0
+    pols_maturity(t) = 0  for t < n−1;   l(n−1)·(1 − q₂(n−1))  at t = n−1
     l(t+1)           = l(t) − pols_death(t) − pols_lapse(t) − pols_maturity(t),    l(t0) = 1
 
-so `l(n+1) = 0` exactly: **every exit lands inside the frame**, which is what lets `result_cf()` end
-at `proj_len()` with nothing left over. **Closure identity**, which a test asserts:
+so `l(n) = 0` exactly: **every exit lands inside the frame**, which is what lets `result_cf()` end
+at `proj_len() − 1` with nothing left over. **Closure identity**, which a test asserts:
 
-    Σ_{t=t0..n} [ pols_death(t) + pols_lapse(t) + pols_maturity(t) ] = pols_if_init() = 1
+    Σ_{t=t0..n−1} [ pols_death(t) + pols_lapse(t) + pols_maturity(t) ] = pols_if_init() = 1
 
 ### Benefits, expenses and net cash flow
 
@@ -538,11 +542,11 @@ at `proj_len()` with nothing left over. **Closure identity**, which a test asser
 
     acq_pp   = z·k·G                                                  incurred once, at issue
     comm_pp  = c₀·k·G                                                 of which commission
-    maint(t) = γ · B(t) · (1 + π)^(t−1)      +  a · prem_paid_pp(t)
+    maint(t) = γ · B(t) · (1 + π)^t          +  a · prem_paid_pp(t)
 
-    expenses(t)    = (acq_pp − comm_pp)·1{t = 1 and duration_y = 0}
+    expenses(t)    = (acq_pp − comm_pp)·1{t = 0 and duration_y = 0}
                      + maint(t)·l(t) + ec·pols_death(t)
-    commissions(t) = comm_pp·1{t = 1 and duration_y = 0} + c_r·prem_paid_pp(t)·l(t)·1{t ≥ 2}
+    commissions(t) = comm_pp·1{t = 0 and duration_y = 0} + c_r·prem_paid_pp(t)·l(t)·1{t ≥ 1}
 
     premiums(t)    = prem_paid_pp(t)·l(t)
     prem_gross(t)  = prem_gross_pp(t)·l(t)
@@ -551,11 +555,11 @@ at `proj_len()` with nothing left over. **Closure identity**, which a test asser
     net_cf(t)      = premiums(t) − claims(t) − expenses(t) − commissions(t)
     liability_cf(t) = −net_cf(t)
 
-**Acquisition cost is a year-one outgo, not an annualised loading.** The tariff amortises it through
-the equivalence; the cash flow incurs it at issue, which is the economic reason an early lapse hurts
-on a product with no surrender value to forfeit (mechanic 10). On an **in-force** model point it is
-sunk and is not incurred at all — which is why the switch tests `duration_y = 0` and not merely
-`t = 1`.
+**Acquisition cost is a first-period outgo, not an annualised loading.** The tariff amortises it
+through the equivalence; the cash flow incurs it at issue, which is the economic reason an early
+lapse hurts on a product with no surrender value to forfeit (mechanic 10). On an **in-force** model
+point it is sunk and is not incurred at all — which is why the switch tests `duration_y = 0` and not
+merely `t = 0`.
 
 ### The first-order *Deckungskapital* — a pricing diagnostic
 
@@ -563,21 +567,21 @@ Published because mechanic 11's central claim is checkable and a naive implement
 labelled a pricing quantity because it is one: it is **not** a *Deckungsrückstellung*, it is not
 *gezillmert*, it enters no cash flow, and nothing in this library discounts a published cash flow.
 
-    res_pp_at(t,"BEF_PREM") = Σ_{u≥t} v^(u−t+1)·(p₁(u)/p₁(t))·q₁(u)·B(u)
-                              − Gn · Σ_{u=t..k} v^(u−t)·(p₁(u)/p₁(t))
+    res_pp_at(t,"BEF_PREM") = Σ_{u=t..n−1} v^(u−t+1)·(p₁(u)/p₁(t))·q₁(u)·B(u)
+                              − Gn · Σ_{u=t..k−1} v^(u−t)·(p₁(u)/p₁(t))
 
-with `res_pp_at(1,"BEF_PREM") = 0` by the equivalence, `res_pp_at(n+1,"BEF_PREM") = 0` by exhaustion,
-and a strictly positive interior. `res_pp_at(t,"AFT_PREM") = res_pp_at(t,"BEF_PREM") + Gn·1{t ≤ k}`.
+with `res_pp_at(0,"BEF_PREM") = 0` by the equivalence, `res_pp_at(n,"BEF_PREM") = 0` by exhaustion,
+and a strictly positive interior. `res_pp_at(t,"AFT_PREM") = res_pp_at(t,"BEF_PREM") + Gn·1{t < k}`.
 The Thiele recursion the check asserts is
 
-    ( res_pp_at(t,"BEF_PREM") + Gn·1{t ≤ k} ) · (1 + i)
+    ( res_pp_at(t,"BEF_PREM") + Gn·1{t < k} ) · (1 + i)
         = q₁(t)·B(t) + (1 − q₁(t))·res_pp_at(t+1,"BEF_PREM")
 
 The *gezillmert* companion subtracts the unamortised Zillmer balance,
 
-    res_zill_pp_at(t, timing) = res_pp_at(t, timing) − z·k·G · [ Σ_{u=t..k} v^(u−t)(p₁(u)/p₁(t)) ] / ä
+    res_zill_pp_at(t, timing) = res_pp_at(t, timing) − z·k·G · [ Σ_{u=t..k−1} v^(u−t)(p₁(u)/p₁(t)) ] / ä
 
-which is **`−z·k·G` at `t = 1`** — negative from the first day, exactly as mechanic 10 describes, and
+which is **`−z·k·G` at `t = 0`** — negative from the first day, exactly as mechanic 10 describes, and
 back to zero at expiry. Whether a negative individual reserve must be floored at zero for
 balance-sheet purposes — the *Nullstellung* question — was **not established** [R21] [REG-R54]
 (research gap 11), and because the model publishes no balance-sheet reserve, the question does not
@@ -585,7 +589,7 @@ reach its cash flows.
 
 ### What `result_cf()` publishes
 
-Indexed by `t`, contiguous from `duration_y + 1` to `proj_len()`, in this order:
+Indexed by the 0-based `t`, contiguous from `duration_y` to `proj_len() − 1`, in this order:
 
     pols_if, prem_gross, premiums, prem_rebate,
     claims_death, claims_lapse, claims_maturity,
@@ -613,7 +617,7 @@ Five, each with a per-`t` residual companion `check_*_resid(t)`, each returning 
 | `check_net_cf()` | On `result_cf()` row `t`: `net_cf = premiums − claims_death − claims_lapse − claims_maturity − expenses − commissions`, every term read from the published frame | delib's first ruling: the headline number is reconciled in code, not only in prose — and by a different route from `net_cf`'s own, which subtracts the kind-less `claims(t)` subtotal, so the check crosses both the cells-to-frame boundary and the `claims(t, kind)` dispatch |
 | `check_pols_roll_fwd()` | `pols_if(t+1) = pols_if(t) − pols_death(t) − pols_lapse(t) − pols_maturity(t)`, and the three exits sum to `pols_if_init()` | The decrement roll-forward and its closure |
 | `check_prem_split()` | `prem_gross_pp(t) = prem_paid_pp(t) + prem_rebate_pp(t)`, with `0 ≤ prem_rebate_pp(t) < prem_gross_pp(t)` where a premium is due and all three zero where none is | The product's signature identity, at every `t` and every *Zahlweise* |
-| `check_res_roll_fwd()` | The Thiele recursion above, plus `res_pp_at(1) = 0` and `res_pp_at(n+1) = 0` | The reserve mechanic 11 says a naive implementation gets wrong |
+| `check_res_roll_fwd()` | The Thiele recursion above, plus `res_pp_at(0) = 0` and `res_pp_at(n) = 0` | The reserve mechanic 11 says a naive implementation gets wrong |
 | `check_no_cash_value()` | `claims(t,"LAPSE") = 0` and `claims(t,"MATURITY") = 0` at every `t` | A statutory fact [R2] [R3] [R8], checked on every model point rather than asserted in prose |
 
 Two further identities are **scalar rather than per-period** and are therefore asserted in
@@ -627,33 +631,33 @@ putting it in the test module and saying so.
 
 ## Annual processing order
 
-For `t = t0 … n`, in exactly this order:
+For `t = t0 … n − 1`, in exactly this order:
 
-1. Set `x(t) = issue_age + t − 1` (and `x₂(t)` where `lives = 2`). If `t > n`, stop.
-2. Read the schedules: `f(t)` from `benefit_schedule.csv`, `u(t)` from `nvg_schedule.csv`; form
-   `B(t) = S0·f(t)·u(t)`.
+1. Set `x(t) = issue_age + t` (and `x₂(t)` where `lives = 2`). If `t ≥ n`, stop.
+2. Read the schedules at `policy_year = t + 1`: `f(t)` from `benefit_schedule.csv`, `u(t)` from
+   `nvg_schedule.csv`; form `B(t) = S0·f(t)·u(t)`.
 3. Read the table rates for each life at its own attained age; combine to a first-death rate where
    `lives = 2`, **before** any loading; form `q₂(t)` on the policy's own sex and `q₁(t)` on the
    tariff's unisex blend.
-4. **Start of year — premium in advance.** For `t ≤ k`, set `prem_gross_pp(t) = G·φ`,
+4. **Start of period — premium in advance.** For `t < k`, set `prem_gross_pp(t) = G·φ`,
    `prem_rebate_pp(t) = v_d·G·φ`, `prem_paid_pp(t)` as their difference; else all three zero. Take
    `premiums(t) = prem_paid_pp(t)·l(t)`.
-5. **Start of year — expenses on the opening in-force.** Collection `a·prem_paid_pp(t)·l(t)` and
-   sum-related admin `γ·B(t)·(1+π)^(t−1)·l(t)`; at `t = 1` **and only where `duration_y = 0`**, the
-   acquisition cost and the initial commission; for `t ≥ 2`, the renewal commission.
+5. **Start of period — expenses on the opening in-force.** Collection `a·prem_paid_pp(t)·l(t)` and
+   sum-related admin `γ·B(t)·(1+π)^t·l(t)`; at `t = 0` **and only where `duration_y = 0`**, the
+   acquisition cost and the initial commission; for `t ≥ 1`, the renewal commission.
 6. Apply the § 161 switch tranche by tranche to get `benefit_paid_pp(t)`.
-7. **End of year — death.** `pols_death(t) = l(t)·q₂(t)`;
+7. **End of period — death.** `pols_death(t) = l(t)·q₂(t)`;
    `claims(t,"DEATH") = benefit_paid_pp(t)·pols_death(t)`; claim expense on the deaths. Claimants
-   have already paid the year's premium at step 4 — that is what "premium payment ceases at death"
+   have already paid the period's premium at step 4 — that is what "premium payment ceases at death"
    means on an annual-in-advance grid **[std]**, and applying a second `(1 − q₂)` factor to
    `premiums(t)` charges the rule twice (pitfall 11).
-8. **End of year — lapse.** For `t < n`, `pols_lapse(t) = l(t)·(1 − q₂(t))·w(t)`;
-   `claims(t,"LAPSE") = 0`. At `t = n`, `w(n) = 0` **[std]**.
-9. **End of year — expiry.** At `t = n` only, `pols_maturity(n) = l(n)·(1 − q₂(n))`;
-   `claims(n,"MATURITY") = 0`.
+8. **End of period — lapse.** For `t < n − 1`, `pols_lapse(t) = l(t)·(1 − q₂(t))·w(t)`;
+   `claims(t,"LAPSE") = 0`. At `t = n − 1`, `w(n − 1) = 0` **[std]**.
+9. **End of period — expiry.** At `t = n − 1` only,
+   `pols_maturity(n − 1) = l(n − 1)·(1 − q₂(n − 1))`; `claims(n − 1,"MATURITY") = 0`.
 10. Roll forward `l(t+1)` and form `net_cf(t)`.
 
-At `t = n` the projection ends with no maturity payment, no tail state and `l(n+1) = 0`.
+At `t = n − 1` the projection ends with no maturity payment, no tail state and `l(n) = 0`.
 
 ---
 
@@ -665,7 +669,7 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
 1. **Confusing the three "netto"s.** *Nettoprämie* (actuarial), *Nettobeitrag*/*Zahlbeitrag*
    (consumer) and *Nettotarif* (distribution) are unrelated [mechanic 4]. Assert the order the
    built model actually produces on the anchor —
-   `prem_paid_pp(1)/φ < prem_net_level_pp() < prem_gross_pp(1)/φ`, i.e. 733,01 € < 1 084,80 € <
+   `prem_paid_pp(0)/φ < prem_net_level_pp() < prem_gross_pp(0)/φ`, i.e. 733,01 € < 1 084,80 € <
    1 275,41 € — and that no cells is named `prem_net_pp` or `nettobeitrag`. **The billed
    *Zahlbeitrag* sits *below* the actuarial *Nettoprämie***, because `Gn = A/ä` is struck on the
    loaded first-order rate and 90 % of that loading is handed straight back as
@@ -689,9 +693,9 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
    nominal in all of them, which is why the model's zero is defensible — as an approximation of a
    small number, not as an identity [R2] [R3] [R8] [S1] [S3] [S4].
 5. **Concluding there is no *Deckungskapital*.** A level premium against a rising death rate builds
-   one (mechanic 11). Assert `res_pp_at(1,"BEF_PREM") == 0` and `res_pp_at(n+1,"BEF_PREM") == 0` to
+   one (mechanic 11). Assert `res_pp_at(0,"BEF_PREM") == 0` and `res_pp_at(n,"BEF_PREM") == 0` to
    1e-9, that `res_pp_at(t,"BEF_PREM") > 0` at some interior `t` on the anchor, that
-   `res_zill_pp_at(1,"BEF_PREM") == −z·k·G` to 1e-9 (the two are formed by different summations
+   `res_zill_pp_at(0,"BEF_PREM") == −z·k·G` to 1e-9 (the two are formed by different summations
    and agree to about 4e-12 on the anchor, not to the last bit), and that `check_res_roll_fwd()`
    is `True`.
 6. **Letting `sex` into the price.** Unlawful in Germany for contracts concluded from 21 December
@@ -707,8 +711,8 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
    male, 3.375 for a female on the shipped proxy, the blend being `0.75 × q̃(M)` — rather than 2.25
    for both.
 8. **Applying the § 161 switch beyond three years, or to the wrong things.** Assert
-   `suicide_factor(t) == 1 − suicide_share` exactly for `t ∈ {1,2,3}` and `== 1` for `t ≥ 4` on model
-   point 1; that it is `1` at every projected `t` on the in-force point 8 (`t0 = 13`); and that it
+   `suicide_factor(t) == 1 − suicide_share` exactly for `t ∈ {0,1,2}` and `== 1` for `t ≥ 3` on model
+   point 1; that it is `1` at every projected `t` on the in-force point 8 (`t0 = 12`); and that it
    touches neither `claims_lapse` nor `claims_maturity`, both of which are zero anyway.
 9. **Forgetting that the clock restarts for a *Nachversicherungsgarantie* increment.** All three
    retrieved wordings restart it "bezüglich des geänderten oder wiederhergestellten Teils" [S1] [S3]
@@ -718,17 +722,17 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
    window and the increment inside it.
 10. **Mishandling the *Ratenzahlungszuschlag*.** `φ` multiplies the billed amount, so both premium
     streams and the rebate carry it. Assert `check_prem_split()` on every model point, and that
-    `prem_gross_pp(1)` on model point 4 (monthly) is exactly `1.05 ×` the same cell recomputed at
+    `prem_gross_pp(0)` on model point 4 (monthly) is exactly `1.05 ×` the same cell recomputed at
     `jaehrlich` — a single loading, not one applied to each stream separately.
 11. **Double-counting premium cessation at death.** Premiums are in advance and claims at year end,
     so a claimant has already paid. Assert `premiums(t) == prem_paid_pp(t) * pols_if(t)` exactly,
     with no `(1 − q₂)` factor anywhere.
 12. **Running the premium past the *Beitragszahlungsdauer*.** On model point 6 (`k = 12`,
-    `n = 20`) assert `prem_gross_pp(t) == premiums(t) == prem_rebate_pp(t) == 0` for `t = 13…20`,
+    `n = 20`) assert `prem_gross_pp(t) == premiums(t) == prem_rebate_pp(t) == 0` for `t = 12…19`,
     while `claims_death(t) > 0` there and `res_pp_at(t,"BEF_PREM")` is falling.
 13. **Hard-coding a constant sum insured.** Two of the three German shapes fall (mechanic 3). Assert
     `benefit_pp(t)` is flat on point 1; falls linearly to `S0/n` on point 4; and on point 5 falls
-    **slowly then fast**, `benefit_pp(2) − benefit_pp(1) < benefit_pp(n) − benefit_pp(n−1)` in
+    **slowly then fast**, `benefit_pp(1) − benefit_pp(0) < benefit_pp(n−1) − benefit_pp(n−2)` in
     absolute size — the property a linear schedule gets backwards.
 14. **Combining two lives after loading instead of before.** On model point 10 assert
     `Q̃ == q̃_A + q̃_B − q̃_A·q̃_B` exactly and `Q̃ < q̃_A + q̃_B` strictly, and that `q₁` is
@@ -737,13 +741,13 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
     the mortality margin; the cost result emerges in `net_cf` and stays there. Assert that
     `prem_rebate` is invariant to `maint_prem_pct` and `comm_rate_renew`, while `net_cf` is not.
 16. **Taking the whole-market *Stornoquote* as the term-life lapse rate.** Structurally wrong
-    [R18] (research gap 13). Assert `lapse_rate(1) == 0.06`, `lapse_rate(2) == lapse_rate(3) ==
-    0.04`, `lapse_rate(4) == 0.03`, and that `lapse_rate(n) == 0` while the table's own row for
-    year `n` still reads 0.03.
+    [R18] (research gap 13). Assert `lapse_rate(0) == 0.06`, `lapse_rate(1) == lapse_rate(2) ==
+    0.04`, `lapse_rate(3) == 0.03`, and that `lapse_rate(n−1) == 0` while the table's own row for
+    policy year `n` still reads 0.03.
 17. **Letting `rating_factor` scale the benefit.** A *Risikozuschlag* is a mortality loading, not a
     benefit uplift (mechanic 9). On model point 11 assert `benefit_pp(t)` is invariant to
     `rating_factor` while `prem_gross_pp` and `claims_death` both scale with it, and that the ratio
-    `prem_paid_pp(1)/prem_gross_pp(1)` moves by less than one percentage point when `rating_factor`
+    `prem_paid_pp(0)/prem_gross_pp(0)` moves by less than one percentage point when `rating_factor`
     goes from 1.00 to 1.75 — the invariance that follows from loading both bases.
 18. **Treating the *Über-Kreuz-Versicherung* as a different product.** It is a contracting structure
     with identical cover and identical cash flows; only the *Erbschaftsteuer* outcome changes [R15]
@@ -757,7 +761,7 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
 All dynamic formulas are **[std]** reference constructions; **there is no German calibration
 evidence for any of them** (research gap 13).
 
-- **Base lapse [std].** The duration table above, 6 % / 4 % / 3 %, with `w(n) = 0`. Its whole
+- **Base lapse [std].** The duration table above, 6 % / 4 % / 3 %, with `w(n − 1) = 0`. Its whole
   argument is structural: nothing is forfeited by lapsing, exit is frictionless in time as well as in
   money because the *Versicherungsperiode* follows the *Zahlweise* [R8], and the need amortises.
 - **Premium-shock lapse [std] (optional module, off in the base run).** The product's distinctive
@@ -797,12 +801,12 @@ evidence for any of them** (research gap 13).
 `nvg_schedule_id = keine` (`sum_uplift = 1.0` at every `t`),
 `surplus_form = beitragsverrechnung`, `lives = 1`, `issue_age2 = 0`, `smoker2 = -`,
 `rating_factor = 1.00`, `mort_table_id = dav2008t_proxy`, `duration_y = 0`,
-`issue_date = 2026-01-01`. Hence `t0 = 1`, `proj_len() = 25`, cover to attained age 60, and the
-table below is the **entire** projection.
+`issue_date = 2026-01-01`. Hence `t0 = 0`, `proj_len() = 25` so the frame is `t = 0 … 24`, cover to
+attained age 60, and the table below is the **entire** projection.
 
 **Assumptions, each tagged.** *Mortality*: the shipped [std] proxy
 `mort_rate(M, N, x) = 0.00040 × 1.095^(x − 30)` at attained ages 35 to 59, so
-`mort_rate(1) = 0.00040 × 1.095^5` and `mort_rate(25) = 0.00040 × 1.095^29` **[std]**;
+`mort_rate(0) = 0.00040 × 1.095^5` and `mort_rate(24) = 0.00040 × 1.095^29` **[std]**;
 `mort_be_factor = 1.00` **[std]**. *Tariff mortality*: the unisex 50/50 blend
 `0.00030 × 1.095^(x − 30)` **[std]** loaded by `1 + m` with `sicherheitszuschlag_m = 1.25`
 **[std]**, and `sex_mix_male = 0.50` **[std]** [R13] [REG-R34]. *Interest*:
@@ -817,11 +821,11 @@ whole acquisition cost **[S1] [S3]**, level **[std]**; `comm_rate_init = 0.020` 
 allocation from the *Risikoergebnis* **[R9] [REG-R18]** with the choice of the minimum **[std]**;
 `decl_scale = 1.00` **[std]**; `v_max = 0.95` **[std]**; so `v_d` is derived, not assumed.
 *Modelled expenses*: `maint_prem_pct = 0.03` of each *Zahlbeitrag* **[std]**;
-`comm_rate_renew = 0.010` of each *Zahlbeitrag* from `t = 2` **[std]**;
+`comm_rate_renew = 0.010` of each *Zahlbeitrag* from `t = 1` **[std]**;
 `expense_infl = 0.02` on the sum-related admin only **[std]**; `claim_expense = 250 €` per death
-claim **[std]**. *Behaviour*: lapse 6 % in year 1, 4 % in years 2 and 3, 3 % from year 4, with
-`lapse_rate(25) = 0` because the last policy year ends at expiry **[std]**;
-`suicide_share = 0.03` applied to death claims in policy years 1 to 3 only **[std]** [R1]
+claim **[std]**. *Behaviour*: lapse 6 % in policy year 1, 4 % in policy years 2 and 3, 3 % from
+policy year 4, with `lapse_rate(24) = 0` because the last period ends at expiry **[std]**;
+`suicide_share = 0.03` applied to death claims at `t ∈ {0,1,2}`, policy years 1 to 3, only **[std]** [R1]
 [REG-R26]. *Modules*: premium-shock lapse `λ_s = 0` and selective lapse `λ = 0`, both **off**
 **[std]**. No *Nachversicherungsgarantie*, no *Dynamik*, no rider, no premium tax [R16], no
 discounting of any published cash flow.
@@ -833,31 +837,31 @@ precision and then rounded, which can differ in the last cent from adding the di
 
 | t | age | pols_if | prem_gross | premiums | prem_rebate | claims_death | expenses | commissions | net_cf |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 35 | 1.000000 | 1,275.41 | 733.01 | 542.40 | 183.24 | 271.57 | 637.71 | −359.51 |
-| 2 | 36 | 0.939408 | 1,198.13 | 688.60 | 509.54 | 188.49 | 107.06 | 6.89 | 386.16 |
-| 3 | 37 | 0.901210 | 1,149.41 | 660.60 | 488.82 | 198.01 | 104.37 | 6.61 | 351.61 |
-| 4 | 38 | 0.864508 | 1,102.60 | 633.69 | 468.91 | 214.42 | 101.76 | 6.34 | 311.18 |
-| 5 | 39 | 0.837880 | 1,068.64 | 614.18 | 454.47 | 227.56 | 100.24 | 6.14 | 280.24 |
-| 6 | 40 | 0.812008 | 1,035.64 | 595.21 | 440.43 | 241.48 | 98.74 | 5.95 | 249.03 |
-| 7 | 41 | 0.786867 | 1,003.58 | 576.78 | 426.80 | 256.23 | 97.27 | 5.77 | 217.51 |
-| 8 | 42 | 0.762432 | 972.41 | 558.87 | 413.54 | 271.86 | 95.81 | 5.59 | 185.60 |
-| 9 | 43 | 0.738680 | 942.12 | 541.46 | 400.66 | 288.42 | 94.38 | 5.41 | 153.25 |
-| 10 | 44 | 0.715587 | 912.67 | 524.53 | 388.13 | 305.94 | 92.96 | 5.25 | 120.39 |
-| 11 | 45 | 0.693130 | 884.03 | 508.07 | 375.95 | 324.49 | 91.56 | 5.08 | 86.94 |
-| 12 | 46 | 0.671287 | 856.17 | 492.06 | 364.11 | 344.12 | 90.17 | 4.92 | 52.85 |
-| 13 | 47 | 0.650036 | 829.06 | 476.48 | 352.58 | 364.89 | 88.79 | 4.76 | 18.04 |
-| 14 | 48 | 0.629355 | 802.69 | 461.32 | 341.36 | 386.84 | 87.43 | 4.61 | −17.56 |
-| 15 | 49 | 0.609224 | 777.01 | 446.57 | 330.44 | 410.04 | 86.09 | 4.47 | −54.02 |
-| 16 | 50 | 0.589621 | 752.01 | 432.20 | 319.81 | 434.55 | 84.75 | 4.32 | −91.42 |
-| 17 | 51 | 0.570527 | 727.66 | 418.20 | 309.45 | 460.42 | 83.42 | 4.18 | −129.82 |
-| 18 | 52 | 0.551923 | 703.93 | 404.57 | 299.36 | 487.72 | 82.10 | 4.05 | −169.30 |
-| 19 | 53 | 0.533788 | 680.80 | 391.27 | 289.53 | 516.51 | 80.78 | 3.91 | −209.93 |
-| 20 | 54 | 0.516105 | 658.25 | 378.31 | 279.94 | 546.84 | 79.47 | 3.78 | −251.78 |
-| 21 | 55 | 0.498853 | 636.24 | 365.67 | 270.58 | 578.77 | 78.17 | 3.66 | −294.93 |
-| 22 | 56 | 0.482016 | 614.77 | 353.32 | 261.45 | 612.36 | 76.86 | 3.53 | −339.44 |
-| 23 | 57 | 0.465576 | 593.80 | 341.27 | 252.53 | 647.67 | 75.56 | 3.41 | −385.37 |
-| 24 | 58 | 0.449515 | 573.32 | 329.50 | 243.82 | 684.73 | 74.25 | 3.29 | −432.78 |
-| 25 | 59 | 0.433815 | 553.29 | 317.99 | 235.30 | 723.59 | 72.94 | 3.18 | −481.72 |
+| 0 | 35 | 1.000000 | 1,275.41 | 733.01 | 542.40 | 183.24 | 271.57 | 637.71 | −359.51 |
+| 1 | 36 | 0.939408 | 1,198.13 | 688.60 | 509.54 | 188.49 | 107.06 | 6.89 | 386.16 |
+| 2 | 37 | 0.901210 | 1,149.41 | 660.60 | 488.82 | 198.01 | 104.37 | 6.61 | 351.61 |
+| 3 | 38 | 0.864508 | 1,102.60 | 633.69 | 468.91 | 214.42 | 101.76 | 6.34 | 311.18 |
+| 4 | 39 | 0.837880 | 1,068.64 | 614.18 | 454.47 | 227.56 | 100.24 | 6.14 | 280.24 |
+| 5 | 40 | 0.812008 | 1,035.64 | 595.21 | 440.43 | 241.48 | 98.74 | 5.95 | 249.03 |
+| 6 | 41 | 0.786867 | 1,003.58 | 576.78 | 426.80 | 256.23 | 97.27 | 5.77 | 217.51 |
+| 7 | 42 | 0.762432 | 972.41 | 558.87 | 413.54 | 271.86 | 95.81 | 5.59 | 185.60 |
+| 8 | 43 | 0.738680 | 942.12 | 541.46 | 400.66 | 288.42 | 94.38 | 5.41 | 153.25 |
+| 9 | 44 | 0.715587 | 912.67 | 524.53 | 388.13 | 305.94 | 92.96 | 5.25 | 120.39 |
+| 10 | 45 | 0.693130 | 884.03 | 508.07 | 375.95 | 324.49 | 91.56 | 5.08 | 86.94 |
+| 11 | 46 | 0.671287 | 856.17 | 492.06 | 364.11 | 344.12 | 90.17 | 4.92 | 52.85 |
+| 12 | 47 | 0.650036 | 829.06 | 476.48 | 352.58 | 364.89 | 88.79 | 4.76 | 18.04 |
+| 13 | 48 | 0.629355 | 802.69 | 461.32 | 341.36 | 386.84 | 87.43 | 4.61 | −17.56 |
+| 14 | 49 | 0.609224 | 777.01 | 446.57 | 330.44 | 410.04 | 86.09 | 4.47 | −54.02 |
+| 15 | 50 | 0.589621 | 752.01 | 432.20 | 319.81 | 434.55 | 84.75 | 4.32 | −91.42 |
+| 16 | 51 | 0.570527 | 727.66 | 418.20 | 309.45 | 460.42 | 83.42 | 4.18 | −129.82 |
+| 17 | 52 | 0.551923 | 703.93 | 404.57 | 299.36 | 487.72 | 82.10 | 4.05 | −169.30 |
+| 18 | 53 | 0.533788 | 680.80 | 391.27 | 289.53 | 516.51 | 80.78 | 3.91 | −209.93 |
+| 19 | 54 | 0.516105 | 658.25 | 378.31 | 279.94 | 546.84 | 79.47 | 3.78 | −251.78 |
+| 20 | 55 | 0.498853 | 636.24 | 365.67 | 270.58 | 578.77 | 78.17 | 3.66 | −294.93 |
+| 21 | 56 | 0.482016 | 614.77 | 353.32 | 261.45 | 612.36 | 76.86 | 3.53 | −339.44 |
+| 22 | 57 | 0.465576 | 593.80 | 341.27 | 252.53 | 647.67 | 75.56 | 3.41 | −385.37 |
+| 23 | 58 | 0.449515 | 573.32 | 329.50 | 243.82 | 684.73 | 74.25 | 3.29 | −432.78 |
+| 24 | 59 | 0.433815 | 553.29 | 317.99 | 235.30 | 723.59 | 72.94 | 3.18 | −481.72 |
 | **Total** | | | **21,303.65** | **12,243.75** | **9,059.91** | **9,899.20** | **2,396.51** | **752.81** | **−804.77** |
 
 `claims_lapse(t)` and `claims_maturity(t)` are 0.00 at every `t` and are omitted for width; both are
@@ -890,16 +894,16 @@ The *Beitragsverrechnungssatz* then follows from the *Zahlbeitrag* section's one
 `1 − 0,05 − 2 744,506896/27 596,717080 = 0,85054952`, so
 `v_d = 0,90 × (1,25/2,25) × 0,85054952 = 0,50 × 0,85054952 = 0,42527476`, the model's
 `beitragsverrechnung_rate()` to eight decimals, and
-`prem_paid_pp(1) = 0,57472524 × 1 275,411882 = 733,011403 €`. Two things follow. The surplus share
+`prem_paid_pp(0) = 0,57472524 × 1 275,411882 = 733,011403 €`. Two things follow. The surplus share
 and the margin fraction multiply to exactly one half, so on this calibration the *Zahlbeitrag* is
 "the *Bruttobeitrag* less half its risk element". And the derivation runs on `m`, `β`, `γ`, `z` and
 `k` and never touches the mortality **level** — which is why moving the level moves both premiums
 together and leaves the ratio nearly still.
 
-***2. Year 1, rebuilt from the table rate up.*** At attained age 35,
-`q₂(1) = 0,00040 × 1,095⁵ = 0,00040 × 1,57423874 = 0,00062969550`. Policy year 1 is inside the § 161
+***2. The first period `t = 0`, rebuilt from the table rate up.*** At attained age 35,
+`q₂(0) = 0,00040 × 1,095⁵ = 0,00040 × 1,57423874 = 0,00062969550`. Policy year 1 is inside the § 161
 window, so a claim pays `0,97 × 300 000 = 291 000 €`, giving
-`claims_death(1) = 291 000 × 1,000000 × 0,00062969550 = 183,241389` (table: 183.24). The expense
+`claims_death(0) = 291 000 × 1,000000 × 0,00062969550 = 183,241389` (table: 183.24). The expense
 line is four numbers and only one of them is large:
 
     acquisition net of commission  (0,025 − 0,020) × 25 × 1 275,411882 = 159,426485
@@ -907,32 +911,32 @@ line is four numbers and only one of them is large:
     collection                     0,03 × 733,011403                   =  21,990342
     claim expense                  250 × 0,00062969550                 =   0,157424   = 271,574251
 
-with `commissions(1) = 0,020 × 25 × 1 275,411882 = 637,705941 €` on its own line, and
-`733,011403 − 183,241389 − 271,574251 − 637,705941 = −359,510179 €`. **The year-one strain is the
+with `commissions(0) = 0,020 × 25 × 1 275,411882 = 637,705941 €` on its own line, and
+`733,011403 − 183,241389 − 271,574251 − 637,705941 = −359,510179 €`. **The first-period strain is the
 initial commission**: alone it is 87 % of the year's billed premium, which is why an early lapse
 hurts on a contract that pays nothing on lapse.
 
-***3. Year 3, rebuilt through two decrement steps***, reading nothing from the recursion:
-`l(2) = 1 × (1 − 0,00062969550) × (1 − 0,06) = 0,93940809`; `q₂(2) = 0,00040 × 1,095⁶ =
-0,00068951657`; `l(3) = 0,93940809 × (1 − 0,00068951657) × (1 − 0,04) = 0,90120993`, matching the
-table. With `q₂(3) = 0,00040 × 1,095⁷ = 0,00075502064` and the switch still on,
-`claims_death(3) = 291 000 × 0,90120993 × 0,00075502064 = 198,005742` (table: 198.01). Using the
+***3. The third period `t = 2`, rebuilt through two decrement steps***, reading nothing from the
+recursion: `l(1) = 1 × (1 − 0,00062969550) × (1 − 0,06) = 0,93940809`; `q₂(1) = 0,00040 × 1,095⁶ =
+0,00068951657`; `l(2) = 0,93940809 × (1 − 0,00068951657) × (1 − 0,04) = 0,90120993`, matching the
+table. With `q₂(2) = 0,00040 × 1,095⁷ = 0,00075502064` and the switch still on,
+`claims_death(2) = 291 000 × 0,90120993 × 0,00075502064 = 198,005742` (table: 198.01). Using the
 contractual 300 000 € here gives 204,13 € — a 3 % overstatement that runs for three years and then
 disappears, the kind of error a totals-only test misses.
 
 ***Closure 1 — the decrements account for the whole policy.*** Over the twenty-five years: deaths
 **0,03305608**, lapses **0,53554078**, expiries **0,43140314**, total **1,00000000** =
-`pols_if_init()`, and `pols_if(26) = 0` exactly, which is what lets `result_cf()` stop at
-`proj_len()`. The split between the last two is what `w(25) = 0` decides — at the table's own 3 %
+`pols_if_init()`, and `pols_if(25) = 0` exactly, which is what lets `result_cf()` stop at
+`proj_len() − 1 = 24`. The split between the last two is what `w(24) = 0` decides — at the table's own 3 %
 they would read 0,54848 and 0,41846 — and **no cash flow moves either way**.
 
 ***Closure 2 — the § 161 wedge is the only thing between claim events and claim amounts.*** Expected
 claim events at the contractual sum are `300 000 × 0,03305608 = 9 916,822736 €` against claims paid
 of `9 899,201951 €`. The difference is **17,620785 €**, which is exactly
 `0,03 × 300 000 × (0,00062969550 + 0,00064773744 + 0,00068043210) = 9 000 × 0,00195786504 =
-17,620785 €`, the deaths of policy years 1 to 3. So the *Selbsttötung* switch is the **only** thing
-standing between events and amounts on this cell — no lapse pays, no expiry pays, the schedule is
-flat. An implementation applying the switch to every year, or to a lapse, or over the wrong window
+17,620785 €`, the deaths at `t = 0, 1, 2` — policy years 1 to 3. So the *Selbsttötung* switch is the
+**only** thing standing between events and amounts on this cell — no lapse pays, no expiry pays, the
+schedule is flat. An implementation applying the switch to every period, or to a lapse, or over the wrong window
 breaks this while leaving every total plausible.
 
 ***Closure 3 — the cash flow statement, which is `check_net_cf()`.*** At full precision,
@@ -942,8 +946,8 @@ difference between the two premium columns and must not be subtracted again. Tha
 delib requires `check_net_cf()` of every model.
 
 ***And the reserve mechanic 11 says a naive implementation gets wrong.***
-`res_pp_at(1,"BEF_PREM") = −3,6e-12`, `res_pp_at(26,"BEF_PREM") = 0` exactly, and the interior peaks
-at **7 553,29 €** at `t = 16` — **2,52 % of the sum insured**. The Thiele step at the peak:
+`res_pp_at(0,"BEF_PREM") = −3,6e-12`, `res_pp_at(25,"BEF_PREM") = 0` exactly, and the interior peaks
+at **7 553,29 €** at `t = 15` — **2,52 % of the sum insured**. The Thiele step at the peak:
 `(7 553,290695 + 1 084,800958) × 1,01 = 8 724,472569` against
 `0,00414558817 × 300 000 + (1 − 0,00414558817) × 7 511,937517 = 8 724,472569`. The *gezillmerte*
 companion opens at `−797,132426 € = −z·k·G`: negative from the first day.
@@ -964,12 +968,12 @@ model point 1, with the **Total** row covering all twenty-five years:
 
 | t | age | pols_if | prem_gross | premiums | prem_rebate | claims_death | expenses | commissions | net_cf |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 35 | 1.000000 | 1,275.41 | 1,275.41 | 0.00 | 183.24 | 287.85 | 637.71 | 166.62 |
-| 2 | 36 | 0.939408 | 1,198.13 | 1,198.13 | 0.00 | 188.49 | 122.34 | 11.98 | 875.32 |
-| 3 | 37 | 0.901210 | 1,149.41 | 1,149.41 | 0.00 | 198.01 | 119.04 | 11.49 | 820.88 |
-| 13 | 47 | 0.650036 | 829.06 | 829.06 | 0.00 | 364.89 | 99.37 | 8.29 | 356.51 |
-| 24 | 58 | 0.449515 | 573.32 | 573.32 | 0.00 | 684.73 | 81.57 | 5.73 | −198.71 |
-| 25 | 59 | 0.433815 | 553.29 | 553.29 | 0.00 | 723.59 | 80.00 | 5.53 | −255.84 |
+| 0 | 35 | 1.000000 | 1,275.41 | 1,275.41 | 0.00 | 183.24 | 287.85 | 637.71 | 166.62 |
+| 1 | 36 | 0.939408 | 1,198.13 | 1,198.13 | 0.00 | 188.49 | 122.34 | 11.98 | 875.32 |
+| 2 | 37 | 0.901210 | 1,149.41 | 1,149.41 | 0.00 | 198.01 | 119.04 | 11.49 | 820.88 |
+| 12 | 47 | 0.650036 | 829.06 | 829.06 | 0.00 | 364.89 | 99.37 | 8.29 | 356.51 |
+| 23 | 58 | 0.449515 | 573.32 | 573.32 | 0.00 | 684.73 | 81.57 | 5.73 | −198.71 |
+| 24 | 59 | 0.433815 | 553.29 | 553.29 | 0.00 | 723.59 | 80.00 | 5.53 | −255.84 |
 | **Total** | | | **21,303.65** | **21,303.65** | **0.00** | **9,899.20** | **2,668.30** | **837.99** | **7,898.16** |
 
 `pols_if`, `claims_death` and `prem_gross` are **identical to the last bit** at every `t`. What moves
@@ -991,25 +995,25 @@ The same engine at `k = 1`: 50 M N, 100 000 € `konstant`, ten years' cover, a 
 
 | t | age | pols_if | prem_gross | premiums | prem_rebate | claims_death | expenses | commissions | net_cf |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 50 | 1.000000 | 6,676.93 | 3,728.98 | 2,947.95 | 238.29 | 175.87 | 133.54 | 3,181.28 |
-| 2 | 51 | 0.937691 | 0.00 | 0.00 | 0.00 | 244.67 | 29.32 | 0.00 | −274.00 |
-| 3 | 52 | 0.897762 | 0.00 | 0.00 | 0.00 | 256.51 | 28.68 | 0.00 | −285.19 |
-| 4 | 53 | 0.859312 | 0.00 | 0.00 | 0.00 | 277.16 | 28.05 | 0.00 | −305.21 |
-| 5 | 54 | 0.830845 | 0.00 | 0.00 | 0.00 | 293.44 | 27.71 | 0.00 | −321.15 |
-| 6 | 55 | 0.803073 | 0.00 | 0.00 | 0.00 | 310.58 | 27.38 | 0.00 | −337.95 |
-| 7 | 56 | 0.775968 | 0.00 | 0.00 | 0.00 | 328.60 | 27.04 | 0.00 | −355.64 |
-| 8 | 57 | 0.749502 | 0.00 | 0.00 | 0.00 | 347.55 | 26.70 | 0.00 | −374.24 |
-| 9 | 58 | 0.723645 | 0.00 | 0.00 | 0.00 | 367.44 | 26.35 | 0.00 | −393.79 |
-| 10 | 59 | 0.698372 | 0.00 | 0.00 | 0.00 | 388.29 | 26.01 | 0.00 | −414.30 |
+| 0 | 50 | 1.000000 | 6,676.93 | 3,728.98 | 2,947.95 | 238.29 | 175.87 | 133.54 | 3,181.28 |
+| 1 | 51 | 0.937691 | 0.00 | 0.00 | 0.00 | 244.67 | 29.32 | 0.00 | −274.00 |
+| 2 | 52 | 0.897762 | 0.00 | 0.00 | 0.00 | 256.51 | 28.68 | 0.00 | −285.19 |
+| 3 | 53 | 0.859312 | 0.00 | 0.00 | 0.00 | 277.16 | 28.05 | 0.00 | −305.21 |
+| 4 | 54 | 0.830845 | 0.00 | 0.00 | 0.00 | 293.44 | 27.71 | 0.00 | −321.15 |
+| 5 | 55 | 0.803073 | 0.00 | 0.00 | 0.00 | 310.58 | 27.38 | 0.00 | −337.95 |
+| 6 | 56 | 0.775968 | 0.00 | 0.00 | 0.00 | 328.60 | 27.04 | 0.00 | −355.64 |
+| 7 | 57 | 0.749502 | 0.00 | 0.00 | 0.00 | 347.55 | 26.70 | 0.00 | −374.24 |
+| 8 | 58 | 0.723645 | 0.00 | 0.00 | 0.00 | 367.44 | 26.35 | 0.00 | −393.79 |
+| 9 | 59 | 0.698372 | 0.00 | 0.00 | 0.00 | 388.29 | 26.01 | 0.00 | −414.30 |
 | **Total** | | | **6,676.93** | **3,728.98** | **2,947.95** | **3,052.53** | **423.11** | **133.54** | **119.80** |
 
 Only `net_cf` drifts against its rounded cells, by one cent (119,80 € against 119,81 €). Three things
 this form shows that the level form does not. **The shape inverts** — one large inflow then nine
 years of pure outgo, against a level-premium cell that is thin and positive early and thin and
 negative late. **The renewal commission and the collection cost stop with the premium**, so
-`commissions(t) = 0` from `t = 2` while `claims_death(t)` runs to expiry — the arrangement
-`check_prem_split()` also guards on model point 6, where an *abgekürzte Beitragszahlungsdauer* stops
-the premium at `t = 12` against twenty years of cover. **And `v_d` is higher, 0,44151243 against
+`commissions(t) = 0` from `t = 1` while `claims_death(t)` runs to expiry — the arrangement
+`check_prem_split()` also guards on model point 6, where an *abgekürzte Beitragszahlungsdauer* pays
+its last premium at `t = 11` against twenty years of cover. **And `v_d` is higher, 0,44151243 against
 0,42527476**, because with one premium instead of twenty-five the Zillmer charge is 25 ‰ of a much
 smaller *Beitragssumme*, so the risk share of the gross premium is larger.
 
@@ -1022,7 +1026,7 @@ here because it exercises the premium engine at `k = 1`, **not** as evidence of 
 Six corrections, each made because the built model disagreed with a sentence written before it
 existed, and in each case the model was right. Nothing in the model was changed to fit a sentence.
 
-1. **Pitfall 1's ordering was inverted.** It asked for `prem_net_level_pp() < prem_paid_pp(1)/φ`; the
+1. **Pitfall 1's ordering was inverted.** It asked for `prem_net_level_pp() < prem_paid_pp(0)/φ`; the
    model gives 1 084,80 € against 733,01 €, the other way round, because `Gn` is struck on the
    **loaded** first-order rate and 90 % of that loading comes back as *Beitragsverrechnung*.
 2. **`mort_rate_tar / mort_rate` is 1,6875 for a male and 3,375 for a female**, not 1,5 and 3,0: the

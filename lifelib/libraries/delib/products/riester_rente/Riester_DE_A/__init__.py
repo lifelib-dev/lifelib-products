@@ -63,11 +63,12 @@ run time rather than stored inside the model. The model folder itself holds no d
 ``_data/``, no IOSpec, no embedded values — so a diff of the model shows logic changes
 only, and the model and its inputs must travel together.
 
-**Projection basis.** Annual steps, 1-based, which is the contract's own grid in every
+**Projection basis.** Annual steps, 0-based, which is the contract's own grid in every
 respect that matters: the Zulage is an annual entitlement determined on a calendar year,
-the *Überschuss* is declared annually, and the *Beitragsgarantie* is tested once. Policy
-year ``t`` runs ``1 ... proj_len()``, with ``proj_len() = omega_age - age(1) + 1`` and
-``t = 1`` opening at the 1 January 2027 valuation date. The one genuinely sub-annual
+the *Überschuss* is declared annually, and the *Beitragsgarantie* is tested once. The
+period index ``t`` runs ``0 ... proj_len() - 1``, with ``proj_len() = omega_age - age(0)
++ 1`` the number of projected periods and ``t = 0`` opening at the 1 January 2027
+valuation date; the contractual policy year is ``t + 1``. The one genuinely sub-annual
 element, the monthly *Leibrente*, is compressed to one annual payment at the start of the
 payout year; the *level* of the annuity is still right, because the conversion factor
 carries the Woolhouse ``-11/24`` correction. ``products/sofortrente/`` runs monthly for

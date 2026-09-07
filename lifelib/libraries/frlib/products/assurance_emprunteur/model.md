@@ -63,13 +63,39 @@ why `ipt_share_at_cap` — the fraction of the capped ITT cohort that consolidat
 first-order assumption: it converts a bounded three-year claim into an annuity, and the
 liability is roughly linear in it. Nothing public quantifies it.
 
+### The time index, and the two clocks
+
+`t` is the **0-based policy month**, the library-wide convention: `t = 0` is the
+contract's first month, `result_cf()` runs `t = 0 … proj_len() − 1` — 240 rows on the
+anchor cell, indexed 0 to 239 — and `proj_len() = loan_term_months` is the *number* of
+months projected, the exclusive end of the frame, exactly lifelib's
+`for t in range(proj_len())`. Month `t` runs from time `t` to time `t + 1`: the premium
+falls at its beginning and the instalment, the transitions and every benefit at its end.
+The contractual policy year is the 1-based label `policy_year(t) = duration(t) + 1` with
+`duration(t) = t // 12`, and it is derived, never indexed by: it is what the *résiliation*
+table and the expense inflation are read on.
+
+Two quantities keep an index of their own, and neither is the month index:
+
+* **`crd(k)` is a time point.** `k = 0` is adhesion, so `crd(0) = capital_initial` and
+  `crd(T) = 0` at the last instalment. Month `t` opens on `crd(t)` and closes on
+  `crd(t + 1)`. That index was already 0-based and does not move.
+* **`z` is the claim duration**, 1 to `itt_max_months()` = 36, counted from the start of
+  claim *payment*. `t` and `z` are different clocks and the model never mixes them: rates
+  out of ITT take `z`, rates out of healthy take `t`.
+
+The technical notes carry the state probabilities at a time point too — `l_h(k)`,
+`l_itt(k, z)`, `l_ipt(k)`, with `l_h(0) = 1` — so `pols_healthy(t)` is the notes' `l_h(t)`
+opening month `t` and `pols_healthy_close(t)` is `l_h(t + 1)` closing it.
+
 ### The loan spine is computed, not read
 
 Nothing is read from an *échéancier*. `echeance()` is the level instalment from
-`capital_initial`, `loan_rate_annual` and `loan_term_months`, and `crd(t)` is the
-*capital restant dû* immediately **after** the month-`t` instalment. `crd` is the only
-thing linking the loan to the insurance: the Décès and PTIA capital is `crd(t) × quotité`
-and the ITT/IPT benefit is `echeance() × quotité`.
+`capital_initial`, `loan_rate_annual` and `loan_term_months`, and `crd(k)` is the
+*capital restant dû* at time `k`, immediately **after** the `k`-th instalment. `crd` is the
+only thing linking the loan to the insurance: the Décès and PTIA capital of month `t` is
+`crd(t + 1) × quotité`, the balance at the end of that month, and the ITT/IPT benefit is
+`echeance() × quotité`.
 
 `check_crd()` asserts three things at once — `crd(0) = capital_initial`, `crd(T) = 0` at
 the final instalment, and `crd(k) = crd(k−1)(1 + i) − ech` at every `k`. That is the
@@ -79,10 +105,12 @@ loan quotes a *taux nominal annuel* whose monthly rate is **nominal ÷ 12**, not
 annual rate is not converted with `1 − (1 − r)^(1/12)`, and its docstring says so, because
 that rule is for decrements and a loan is not a decrement.
 
-The convention matters as much as the arithmetic. `crd(t−1)` and `crd(t)` differ by the
-month's capital repayment — EUR 609.20 at `t = 1` on the anchor cell — and whichever is
-chosen must be used everywhere. The model uses `crd(t)`, the instalment falling on the day
-of death being deemed due [S9].
+The convention matters as much as the arithmetic. The balance opening month `t` and the one
+closing it — `crd(t)` and `crd(t + 1)` — differ by the month's capital repayment,
+EUR 609.20 over the first month on the anchor cell, and whichever is chosen must be used
+everywhere. The model writes the benefit on the **closing** balance `crd(t + 1)`, the
+instalment falling on the day of death being deemed due [S9]. Indexing `crd` on the month
+rather than on the time point is how that choice gets made by accident.
 
 ### The in-claim population is two-dimensional, and the cap assesses it
 
@@ -107,15 +135,15 @@ EUR 1 932.71 for the whole of ITT.
 
 `cover_deces(t)`, `cover_ptia(t)` and `cover_itt(t)` are three separate indicators because
 the three cover-end ages differ — 85, 70 and 70 on the anchor cell (Décès 85 and PTIA 70
-[S9] [S11]; ITT/IPT 70 [S9], where MAIF stops at 67 [S11]), against a loan that runs to
-month 240. **Collapsing Décès and PTIA into one decrement** is tempting,
-since they pay the identical `crd(t) × quotité`, and it is wrong: a collapsed decrement
+[S9] [S11]; ITT/IPT 70 [S9], where MAIF stops at 67 [S11]), against a loan of 240 months.
+**Collapsing Décès and PTIA into one decrement** is tempting,
+since they pay the identical `crd(t + 1) × quotité`, and it is wrong: a collapsed decrement
 either pays PTIA after 70 or stops paying death before 85.
 
 At the first month where `cover_itt` is 0, any claim in payment is **moved** into healthy
 at the beginning of the month and before any transition. `pols_itt_transfer(t)` and
-`pols_ipt_transfer(t)` are that movement — 0.009266 and 0.013982 of a policy at `t = 217`
-on the anchor cell. The mass is moved, not deleted: those lives are alive, still death
+`pols_ipt_transfer(t)` are that movement — 0.009266 and 0.013982 of a policy at `t = 216`
+on the anchor cell, the month the insured turns 70. The mass is moved, not deleted: those lives are alive, still death
 covered and still paying, and deleting them would break `check_states()` and destroy cover
 they still hold.
 
@@ -129,8 +157,8 @@ by exactly that; the mirror error is letting `claims(t, "ITT")` run past the age
 return zero from the cover-end month — and it is published anyway because the
 mis-implementation it names is invisible from anywhere else in the output.
 
-Model point 8 is the extreme case: ITT/IPT cover off from month 85 on a loan that runs to
-month 264, so 180 months of the loan carry death cover only. The published French
+Model point 8 is the extreme case: ITT/IPT cover off from `t = 84` on a loan of 264
+months, so 180 months of the loan carry death cover only. The published French
 claim-decline causes list "maximum cover age exceeded" among the commonest [R12], which is
 this interaction seen from the claims register.
 
@@ -151,8 +179,9 @@ claim silently cancels a claim in payment, and nothing else in the output would 
 A claim incepting at the end of month `t` seeds cohort `z = 1` and is first paid at the end
 of month `t + 1`. So the ITT benefit is paid on `pols_itt_stay(t)` — the cohorts already in
 payment at the start of the month that survived it — and the month's own inceptions are
-excluded. On the anchor cell `claims(1, "ITT")` is exactly zero and `claims(2, "ITT")` is
-EUR 0.93, which is `ech × s_itt(1) × n_itt(1)`.
+excluded. On the anchor cell `claims(0, "ITT")` is exactly zero and `claims(1, "ITT")` is
+EUR 0.93, which is `ech × s_itt(1) × n_itt(0)` — `s_itt` on the claim clock `z`, where the
+first month in payment is `z = 1`.
 
 A life in ITT throughout month `t` is paid for that month whether it then stays,
 consolidates at the cap, or returns to healthy; and `claims(t, "IPT")` covers the IPT
@@ -160,7 +189,7 @@ survivors **plus the month's ITT → IPT transitions**, so the move creates neit
 month nor a doubled one. `check_benefit_split()` asserts it:
 
 ```
-ben_itt + ben_ipt = ech x Q x IR x (l_itt(t) - n_itt(t) + l_ipt(t) + cap_return(t))
+ben_itt + ben_ipt = ech x Q x IR x (l_itt(t+1) - n_itt(t) + l_ipt(t+1) + cap_return(t))
 ```
 
 **The `cap_return` term is the one an implementation forgets.** Those lives were in ITT
@@ -181,7 +210,7 @@ All three are model point columns, not variants of the model.
 |---|---|---|
 | `premium_basis` | `capital_initial` [S9] [S11] [S13] / `capital_restant_du` [S2] [S7] [S8] [S10] | a level rate on the original capital, or a rate on the outstanding balance re-read at each anniversary with the attained age |
 | `indemnity_basis` | `forfaitaire` [S1] [S3] [S6] [S11] / `indemnitaire` [S10] | whether the *échéance* is paid outright or capped at the actual income loss through `income_loss_ratio` |
-| `ipt_benefit_basis` | `echeance` [S5] [S9] [S11] / `crd` [S1] [S2] [S7] | whether IPT is a state paying monthly, or a single payment of `crd(t) × quotité` after which the life leaves the model |
+| `ipt_benefit_basis` | `echeance` [S5] [S9] [S11] / `crd` [S1] [S2] [S7] | whether IPT is a state paying monthly, or a single payment of `crd(t + 1) × quotité` after which the life leaves the model |
 
 **The "decreasing" premium does not decrease.** On the anchor cell's life the CRD basis
 rises from EUR 125.33 in policy year 1 to a peak of EUR 164.03 in year 10 before falling to
@@ -297,6 +326,23 @@ read once per model rather than once per model point; a test counts the reads.
 | `lapse_table.csv` | Annual *résiliation* by policy year: 4 / 12 / 12 / 10 / 10 / 7 % | **[std]**; the published French series are counts of substitution *requests*, not lapse rates [R12] |
 | `crd_rate_table.csv` | The CRD-basis annual premium rate at pivot ages 30–70, 0.14 % to 2.90 % | **[std]** tariff, calibrated to the anchor cell's level scale to 0.11 % |
 
+**No input column is the model's `t`, so the move to the 0-based time index left every CSV
+untouched.** The time-like columns, and why each stands:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` | a contractual **1-based label**, 1 … 6, read as `policy_year(t) = t // 12 + 1` with years past the table taking its last row. Values unchanged |
+| `itt_termination_table.csv` | `claim_duration_year` | on the **claim clock** `z`, not on `t`: read as `claim_dur_year(z) = (z − 1) // 12 + 1`, 1-based because claim payment starts at `z = 1`. Values unchanged |
+| `model_point_table.csv` | `loan_term_months` | a **count** of months and the value of `proj_len()`, the exclusive end of the frame. Unchanged: 240 months are still 240 months, now indexed 0 … 239 |
+| `model_point_table.csv` | `claim_duration_months` | an **elapsed count** on the claim clock (`z0` = 18 on model point 9, which therefore opens in cohort `z = 19`). 0-based by nature, unchanged |
+| `model_point_table.csv` | `itt_max_days` | a contractual duration in days, 1 095. Not a time index |
+
+The remaining keys — `age` in `mort_table.csv`, `itt_inception_table.csv` and
+`crd_rate_table.csv`, `franchise_days` in `franchise_table.csv`, `point_id` — are
+attributes, not time. There is no column holding a point on the frame's time axis, because
+every model point projects from adhesion: the in-claim cells carry their claim duration as
+an attribute rather than starting the frame late.
+
 Mortality, ITT inception and the CRD premium scale are interpolated **linearly** between
 pivot ages and **held flat** outside them. The flat extrapolation is deliberate and is what
 produces the CRD premium of EUR 31.65 in policy year 20, where the attained age of 71 is
@@ -329,11 +375,12 @@ needed care:
 |---|---|---|
 | `ben_deces`, `ben_ptia` | `claims(t, "DEATH")`, `claims(t, "PTIA")` | `claims` is the library's one benefit-outgo cells and `kind` names the column it produces, so the kinds are English. The French terms stay in the prose, where they are the name of the thing |
 | `q_h` / `q_s(z)` / `q_ipt` | `mort_rate` / `itt_mort_rate` / `mort_rate_ipt` | three mortality rates on two clocks. `mort_rate` is the **healthy-life** rate, because that is what it means in every model in this library; reading a claimant rate out of it is the mistake the naming prevents |
-| `l_h(t)` vs `l_h(t−1)` | `pols_healthy_close(t)` vs `pols_healthy(t)` | the library indexes states at the **start** of the month so every cash flow on a `result_cf()` row is weighted by a state count on the same row. The notes' own end-of-month quantities are published too, so the worked-example table reads off directly |
+| `l_h(t+1)` vs `l_h(t)` | `pols_healthy_close(t)` vs `pols_healthy(t)` | the library indexes states at the **start** of the month so every cash flow on a `result_cf()` row is weighted by a state count on the same row. The notes' own end-of-month quantities — the states at time `t + 1` — are published too, so the worked-example table reads off directly |
 | `ι` and `i_rate` | `itt_inception_rate_mth(t)` and `pols_itt_inception(t)` | the cells is the pure basis rate; the guarantee indicator `I(t)` is applied where the decrement is taken, exactly as the notes write it |
 
-`t` is the policy month and `z` the claim duration. They are different clocks and the model
-never mixes them: rates out of ITT take `z`, rates out of healthy take `t`.
+`t` is the 0-based policy month and `z` the 1-based claim duration. They are different
+clocks and the model never mixes them: rates out of ITT take `z`, rates out of healthy
+take `t`.
 
 ## Standardizations used
 
@@ -362,13 +409,17 @@ where the market's benefit shape is not agreed — a linear ramp at two insurers
 ## Tests
 
 `tests/test_assurance_emprunteur_fr.py` asserts the notes' fifteen-month worked example to
-the cent and its state probabilities to six decimals, the column sums, the derived monthly
-rates, the loan spine both ways, the ITT cohort survival table through the 1 095-day cap,
-the present values over the full 240 months, and one test per modelling pitfall the notes
-name — the CRD read from a table, the wrong rate conversion, Décès and PTIA collapsed, the
-premium falling with the cover, the duration dimension collapsed or the cap dropped, the
-ITT → IPT movers paid twice or not at all, premiums charged to lives in claim, *quotité*
-applied twice, and the "decreasing" premium that rises.
+the cent and its state probabilities to six decimals — keyed `t = 0 … 14`, since the
+frame is 0-based, with the CRD column read as `crd(t + 1)` — the column sums, the derived
+monthly rates, the loan spine both ways, the ITT cohort survival table through the
+1 095-day cap, the present values over the full 240 months, and one test per modelling
+pitfall the notes name — the CRD read from a table, the wrong rate conversion, Décès and
+PTIA collapsed, the premium falling with the cover, the duration dimension collapsed or
+the cap dropped, the ITT → IPT movers paid twice or not at all, premiums charged to lives
+in claim, *quotité* applied twice, and the "decreasing" premium that rises.
+`test_result_cf_shape` pins the frame itself at `list(range(240))`, and
+`tests/test_model_conventions_fr.py` asserts library-wide that the index is contiguous,
+starts at or after 0 and ends at `proj_len() - 1`.
 
 ```bash
 python -m pytest tests -q

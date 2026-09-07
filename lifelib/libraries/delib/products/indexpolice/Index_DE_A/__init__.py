@@ -28,7 +28,7 @@ return is capped above at ``C`` and **not floored below**; the twelve are **summ
 compounded**; and the sum alone is floored at zero. The asymmetry is the whole product:
 truncating every right tail while leaving every left tail intact means a year in which
 the index *rose* can credit **nothing**. The shipped index path reproduces the research
-file's two constructed *Indexjahre* at ``t = 9`` and ``t = 10`` for exactly that reason —
+file's two constructed *Indexjahre* at ``t = 8`` and ``t = 9`` (policy years 9 and 10) —
 Example A credits 8.90 % of the base, and Example B credits zero on a year whose
 compounded index return was +6.4402 %.
 
@@ -69,10 +69,12 @@ and its inputs must travel together.
 approximation of a finer one: the *Indexjahr* is twelve months, the surplus is declared
 once a year, the *Wahlrecht* is exercised once a year and the credit is struck once a
 year. The twelve monthly index observations live **inside** the annual step, read from a
-wide external table with one row per year and twelve return columns. Policy year ``t``
-counts from issue, 1-based: a new-business point starts at ``t = 1`` and an in-force
-point at ``t = dur_init + 1``, and ``proj_len() = ann_start_age - entry_age`` is the last
-projected policy year in both cases. Premiums fall at the start of the year, decrements
+wide external table with one row per year and twelve return columns. The period index
+``t`` counts policy years from issue and is **0-based**: a new-business point starts at
+``t = 0`` and an in-force point at ``t = dur_init``, the contractual label is ``policy
+year = t + 1``, and ``proj_len() = ann_start_age - entry_age`` is the **number** of
+projected policy years in both cases, so the frame ends at ``proj_len() - 1``. Premiums
+fall at the start of the year, decrements
 and benefits at the end, and the *Indexjahr* credit at the end to the **survivors only**.
 
 **What is sourced and what is not, stated without softening.** The *mechanics* are firm
@@ -95,7 +97,7 @@ both payoff designs, all three index paths, all four election paths, both *Kapit
 elections, both *Stornoabzug* settings, two in-force points, four *Rechnungszins* cohorts
 and four *Garantieniveaus*. Model point 1 is the anchor cell of the worked example in the
 technical notes; model point 8 is an in-force cell whose first projected *Indexjahr* is
-``t = 9``, so it reproduces the research file's Examples A and B on a 50,000.00 EUR base.
+``t = 8``, so it reproduces the research file's Examples A and B on a 50,000.00 EUR base.
 
 **Verification.** ``tests/test_indexpolice_de.py`` asserts the notes' twenty-seven-year
 worked example to the cent and ``pols_if`` to six decimals, and one test per listed

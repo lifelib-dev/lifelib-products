@@ -90,6 +90,10 @@ def mort_table():
 def lapse_table():
     """The base annual surrender rates by chassis and policy year, from *lapse_table.csv*.
 
+    The ``policy_year`` key is the **contractual 1-based label**, not the model's 0-based
+    ``t``: ``Projection.surr_rate_base(t)`` reads row ``policy_year(t) = t + 1`` and takes
+    the table's last row beyond it.
+
     Flat on the bond chassis and duration-declining on the endowment.  Both are **[std]**
     drafting constructions - no public UK with-profits lapse experience was retrieved -
     and the dynamic multipliers layered on them in ``Projection.surr_rate`` matter more

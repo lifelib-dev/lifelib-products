@@ -22,14 +22,17 @@ provisions reach them only through the R. 134-5 surrender and R. 134-6 maturity
 formulas.
 
 **The provision mathématique is re-struck, never accumulated.** ``pm(t)`` is ``mg(t)``
-discounted at the *current* ``i_pm(t)``, so it lands on the guarantee exactly at the
-*échéance* whatever the path of rates: ``pm(n) = mg(n)`` identically. That is what makes
+discounted at the *current* rate — ``i_pm(t + 1)``, the rate of the period's own year-end
+striking — so it lands on the guarantee exactly at the
+*échéance* whatever the path of rates: in the last projected period the two are
+identically equal. That is what makes
 the Chassis A guarantee pre-funded by construction, and it is why an in-force model point
 carries no accumulated PM — the model re-derives it, and
 ``Projection.check_pm_restruck`` asserts the shipped extract agrees.
 
 **The Chassis B surrender value is not guaranteed.** Before the *échéance* a 2°
-engagement pays ``parts × part value`` and nothing else. On the notes' year-6 shock that
+engagement pays ``parts × part value`` and nothing else. On the notes' policy-year-6
+shock — period ``t`` = 5 — that
 is 9,899.22 against a guarantee of 11,760.00 — 84.18% of net *versements*. A model that
 floors it is modelling a contract that does not exist, and that is this product's central
 error.
@@ -61,8 +64,14 @@ the model and its inputs must travel together.
 
 **Projection basis.** Annual steps, because the governing discretion cycle — the
 striking of the *compte de participation aux résultats* and the allocation of its
-balance — is annual under R. 134-4. ``t`` counts policy years from issue and starts at
-``t = 0``, the issue point, where the initial *versement* creates the rights. Charges in
+balance — is annual under R. 134-4. ``t`` counts policy years from issue and is
+**0-based**: period ``t`` is the policy year running from time ``t`` to time ``t + 1``,
+so ``t = 0`` is the first policy year and the contractual **policy year is ``t + 1``**.
+The frame is ``range(proj_start(), proj_len())`` — ``proj_len()`` is the number of years
+projected, the last row is ``proj_len() - 1``, and that row ends at the *échéance*. The
+initial *versement* is not a row of its own: it creates the rights and strikes both
+provisions as the **opening state** of the first projected period, reached as
+``own_assets_at(t, "BOY")`` and its siblings. Charges in
 number of parts and scheduled *versements* fall at the start of the year; the asset
 return accrues over it; the performance levy, the re-striking of both provisions, the
 insurer's asset affectations and any free *versement* fall at the end, in that order;

@@ -43,8 +43,13 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Annual steps, the notes' base grid. ``t`` counts completed policy
-years since issue, 0-based: premiums fall at ``t = 0 .. m - 1``, the fund accumulates
+**Projection basis.** Annual steps, the notes' base grid. The time index ``t`` is
+**0-based**: ``t = 0`` is the first projected policy year, the year of issue, and period
+``t`` runs from time ``t`` to time ``t + 1``. ``proj_len()`` is the number of projected
+years and the exclusive end of the frame, so ``result_cf()``
+covers ``t = 0 .. proj_len() - 1`` in ``proj_len()`` rows; the attained 保険年齢 is
+``x + t``; and the contractual policy year is the 1-based label ``t + 1``, derived and
+never indexed by. Premiums fall at ``t = 0 .. m - 1``, the fund accumulates
 over ``t = 0 .. n`` where ``n = m + d``, and the annuity is paid at
 ``t = n .. n + k - 1``. Premiums, annuity instalments, maintenance expense and
 commission fall at the start of the year; death benefits and surrender payments at the

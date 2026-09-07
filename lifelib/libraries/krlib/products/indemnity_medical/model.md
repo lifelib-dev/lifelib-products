@@ -115,9 +115,23 @@ year every per-policy amount is constant and every row is the year's first row s
 **A cells that takes `y` never takes `t` and vice versa**, which is the whole of the
 convention. `claims_ge_in_pp(y)` is a policy-year amount per surviving policy;
 `claims(t, "GE_IN")` is the month's cash flow weighted by `pols_if(t)`. Mixing them is the
-easiest way to project a year's claim twelve times. `proj_len()` is the **last** projected
-policy month, `119` on every shipped model point, so `result_cf()` has 120 rows — the
-library-wide meaning of `proj_len`, and not a row count.
+easiest way to project a year's claim twelve times.
+
+`t` is **0-based**: the first projected month is `t = 0`, the frame is
+`range(proj_len())`, and `proj_len()` is the **number** of projected policy months — the
+exclusive end of the frame, the library-wide meaning of `proj_len` — `120` on every
+shipped model point, so `result_cf()` has 120 rows indexed `t = 0 … 119`. The policy year
+`y` is the contractual 1-based label `t // 12 + 1`, derived from `t` and never used to
+index the frame; `result_prem()` is indexed by that label, `1 … 10`.
+
+**CSV time keys.** No input file is keyed by the model's `t`. `lapse_table.csv` is keyed
+`policy_year` `1 … 10`, a contractual 1-based label read through `policy_year(t)`, so its
+values are unchanged; `mort_table.csv` is keyed `(sex, age)` and read at `age(t)`;
+`utilisation_table.csv` is keyed `(sex, age_start)` and read at `util_band(y)`;
+`severity_table.csv` `(stream, point)`, `claim_shape_table.csv` `bucket`,
+`oop_ceiling_table.csv` `decile` and `model_point_table.csv` `point_id` carry no time
+axis at all, and `model_point_table.csv` holds no duration or in-force column. Nothing in
+the inputs moved with the frame.
 
 ## The horizon is two 재가입 cycles, and it is stated rather than contractual
 
@@ -658,7 +672,8 @@ the docstrings and their required phrases, the age basis declared in the `Projec
 docstring (**만나이** here, and the model says so because the contract prices on 보험나이 and
 the two differ for half of all issue dates [S1 제21조] [REG-R25]), the `result_cf()` contract
 — indexed by `t`, first column `pols_if`, a `net_cf` column, all names `lower_snake_case`, no
-NaN, 120 rows — that every `check_*()` returns `True` on **every** shipped model point, and
+NaN, and the 0-based frame `range(proj_len())`: 120 rows, `t = 0 … 119`, last index
+`proj_len() - 1` — that every `check_*()` returns `True` on **every** shipped model point, and
 the read → write → re-read round trip. The ten `check_*()` cells each take no argument and
 return a real `bool`, with the signed residual under `check_*_resid`.
 

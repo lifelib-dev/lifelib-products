@@ -18,25 +18,25 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 print("model point {}: {} - {}, adhesion age {}, attained {}, in force {} years, "
       "pols_if_init {:g}".format(
-          point_id, proj.policy_id(), proj.sex(), proj.issue_age(), proj.age(1),
+          point_id, proj.policy_id(), proj.sex(), proj.issue_age(), proj.age(0),
           proj.duration_init(), proj.pols_if_init()))
-print("scenario {}: r_fin {:.2%} in year 1 to {:.2%} in year 12; "
+print("scenario {}: r_fin {:.2%} at t = 0 to {:.2%} at t = 11; "
       "reference rate {:.2%}".format(
-          proj.scenario_id(), proj.r_fin(1), proj.r_fin(12), proj.ref_rate(1)))
+          proj.scenario_id(), proj.r_fin(0), proj.r_fin(11), proj.ref_rate(0)))
 print("target taux servi {:.2%}   TMG {:.2%}   frais de gestion {:.3%}   "
       "frais sur versement {:.2%}   prelevements sociaux {:.1%}".format(
           proj.ts_target(), proj.tmg_rate(), proj.fee_rate(),
           proj.prem_charge_rate(), proj.soc_levy_rate()))
 print("carried in: epargne acquise {:,.2f}   PPB {:,.2f} in {} vintages falling due "
-      "in years {} to {}".format(
-          proj.av_pp(1), proj.ppb_pp(1), proj.ppb_vintages_init(),
-          proj.ppb_vintage_first() + 8, 8))
-print("versements {:,.2f} p.a.   rachats partiels {:,.2f} p.a. from year {}   "
+      "at t = {} to {}".format(
+          proj.av_pp(0), proj.ppb_pp(0), proj.ppb_vintages_init(),
+          proj.ppb_vintage_first() + 8, 7))
+print("versements {:,.2f} p.a.   rachats partiels {:,.2f} p.a. from t = {}   "
       "guarantee form {}".format(
-          proj.prem_gross_pp(1), proj.wd_prog_pp(), proj.wd_start_year(),
+          proj.prem_gross_pp(0), proj.wd_prog_pp(), proj.wd_start_year(),
           proj.guarantee_form()))
-print("projection runs 1 to {} (no maturity: the euro support has no term)".format(
-    proj.proj_len()))
+print("projection runs t = 0 to {} (no maturity: the euro support has no term)".format(
+    proj.proj_len() - 1))
 print()
 print("Crediting machinery (per policy):")
 pb = proj.result_pb()

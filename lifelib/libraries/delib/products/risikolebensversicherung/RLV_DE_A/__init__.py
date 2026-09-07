@@ -70,16 +70,18 @@ rather than stored inside the model. The model folder itself holds no data, so t
 and its inputs must travel together.
 
 **Projection basis.** Annual steps, matching the contract's level annual *Bruttobeitrag*
-and its annual *Überschussdeklaration*. Policy year ``t`` is 1-based and counts policy
-years from issue, so ``age(t) = issue_age + t - 1``; a new-business point opens at
-``t = 1`` and an in-force point at ``t = duration_y + 1``, which is what lets the § 161
-three-year window, the lapse table and the acquisition-cost switch all read off one clock.
-``proj_len()`` is the **last projected period index** and equals ``policy_term``.
+and its annual *Überschussdeklaration*. The time index ``t`` is **0-based** and counts
+policy years from issue, so ``age(t) = issue_age + t`` and the contractual policy year is
+``t + 1``; a new-business point opens at ``t = 0`` and an in-force point at
+``t = duration_y``, which is what lets the § 161 three-year window, the lapse table and
+the acquisition-cost switch all read off one clock. ``proj_len()`` is the **number of
+policy years**, equal to ``policy_term``, and is the frame's exclusive end, so the frame
+is ``t = duration_y … proj_len() - 1``.
 *Zahlbeitrag*, collection cost, sum-related admin and renewal commission fall at the start
-of the policy year on the opening in-force; acquisition cost and initial commission at
+of the period on the opening in-force; acquisition cost and initial commission at
 issue and never on an in-force point, where they are sunk; death claims and the claim
-expense at the end of the year; lapses at the end, after the death decrement; the expiry
-at the end of policy year ``n``, paying nothing.
+expense at the end of the period; lapses at the end, after the death decrement; the expiry
+at the end of the last period ``t = n - 1``, paying nothing.
 
 **What is sourced and what is not.** The contractual mechanics are sourced, if only ever
 through inherited corroboration: the guaranteed *Bruttobeitrag* and the non-guaranteed
@@ -97,7 +99,7 @@ with company data, and the charge parameters with a real tariff's, before drawin
 conclusion from the output.
 
 **Model points.** Fourteen, covering both premium forms, all four *Zahlweisen*, all three
-*Versicherungssumme* shapes, an in-force point opening at ``t = 13``, a
+*Versicherungssumme* shapes, an in-force point opening at ``t = 12``, a
 *Nachversicherungsgarantie* with two increments, *verbundene Leben*, a *Risikozuschlag* on
 an impaired smoker, the § 153-excluded non-participating tariff, an *abgekürzte
 Beitragszahlungsdauer*, and two boundary cells at the ends of the issue-age and term

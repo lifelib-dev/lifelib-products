@@ -16,11 +16,11 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 mp = proj.model_point()
 print("model point {}: {} - {}{} concluded {}, duration {} at valuation".format(
-    point_id, mp["policy_id"], proj.model_point()["sex"], proj.age(1),
-    mp["conclusion_year"], proj.duration(1)))
+    point_id, mp["policy_id"], proj.model_point()["sex"], proj.age(0),
+    mp["conclusion_year"], proj.duration(0)))
 print("Aufschubphase to Rentenbeginn at age {} (t = {}), projection to age {} "
       "(t = {})".format(
-          mp["ret_age"], proj.ret_t(), proj.omega_age(), proj.proj_len()))
+          mp["ret_age"], proj.ret_t(), proj.omega_age(), proj.proj_len() - 1))
 print("premium form = {} {}   Beitrag {:,.2f} EUR p.a. x freq load {:.3f}   "
       "Dynamik {:.1%}".format(
           mp["prem_form"], mp["prem_mode"], mp["prem_base_pp"],
@@ -33,20 +33,20 @@ print("Rentenfaktor: guaranteed {:.2f}, current {:.2f}, option factor {:.3f} "
       "-> applied {:.4f}".format(
           mp["rentenfaktor_gtd"], proj.rentenfaktor_curr(),
           proj.rf_option_factor(), proj.rentenfaktor_applied()))
-if proj.ret_t() >= 1:
+if proj.ret_t() >= 0:
     print("fund at Rentenbeginn {:,.2f} EUR -> annuity {:,.2f} EUR p.a. per "
           "annuitant".format(proj.fund_at_conv(), proj.ann_pp(proj.ret_t())))
 else:
     print("opens in payment: annuity {:,.2f} EUR p.a. per annuitant".format(
-        proj.ann_pp(1)))
+        proj.ann_pp(0)))
 print()
 
 df = proj.result_cf()
 head = df.head(8).round(2)
 print(head.to_string())
 print("...")
-if proj.ret_t() >= 1:
-    lo = max(1, proj.ret_t() - 1)
+if proj.ret_t() >= 0:
+    lo = max(0, proj.ret_t() - 1)
     print(df.loc[lo:lo + 3].round(2).to_string())
     print("...")
 print()

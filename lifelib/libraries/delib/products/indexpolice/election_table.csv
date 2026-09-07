@@ -1,4 +1,5 @@
 elect_id,t,w,provenance
+always_index,0,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
 always_index,1,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
 always_index,2,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
 always_index,3,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
@@ -38,7 +39,7 @@ always_index,36,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year;
 always_index,37,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
 always_index,38,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
 always_index,39,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
-always_index,40,1.0000,[std] Wahlrecht path -- full Indexbeteiligung every year; the base run
+always_safe,0,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
 always_safe,1,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
 always_safe,2,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
 always_safe,3,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
@@ -78,7 +79,7 @@ always_safe,36,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the
 always_safe,37,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
 always_safe,38,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
 always_safe,39,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
-always_safe,40,0.0000,[std] Wahlrecht path -- sichere Verzinsung every year; the klassische Rentenversicherung comparator
+half_half,0,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
 half_half,1,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
 half_half,2,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
 half_half,3,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
@@ -118,7 +119,7 @@ half_half,36,0.5000,"[std] Wahlrecht path -- the surplus split half and half, wh
 half_half,37,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
 half_half,38,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
 half_half,39,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
-half_half,40,0.5000,"[std] Wahlrecht path -- the surplus split half and half, where a tariff permits a partial election"
+switch_at_15,0,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,1,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,2,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,3,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
@@ -133,7 +134,7 @@ switch_at_15,11,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, saf
 switch_at_15,12,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,13,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,14,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
-switch_at_15,15,1.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
+switch_at_15,15,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,16,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,17,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,18,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
@@ -158,4 +159,3 @@ switch_at_15,36,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, saf
 switch_at_15,37,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,38,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
 switch_at_15,39,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"
-switch_at_15,40,0.0000,"[std] Wahlrecht path -- index arm to policy year 15, safe arm thereafter"

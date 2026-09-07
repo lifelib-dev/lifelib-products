@@ -16,18 +16,19 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 print("model point {}: {} - {} {}{} {} face {:,.0f} premium {:,.2f}".format(
     point_id, proj.model_point()["policy_id"], proj.product(), proj.sex(),
-    proj.age_at_entry(), proj.risk_class(), proj.sum_assured(), proj.premium_pp(1)))
+    proj.age_at_entry(), proj.risk_class(), proj.sum_assured(), proj.premium_pp(0)))
 print("premium period {} ({} yrs)   dividend option {}   "
-      "maturity at attained age 100 (policy year {})".format(
+      "maturity at attained age 100 (t = {}, policy year {})".format(
           proj.premium_period(), proj.policy_term(), proj.dividend_option(),
-          proj.proj_len()))
+          proj.proj_len() - 1, proj.proj_len()))
 print("i_g = {:.2%}   i_d = {:.2%}   i_L = {:.2%}   "
-      "projection starts at policy year {}   MEC flag {}".format(
+      "projection starts at t = {}   MEC flag {}".format(
           proj.int_rate_guar, proj.int_rate_div, proj.int_rate_loan,
           proj.proj_start(), proj.mec_flag()))
+print("t is 0-based: t = 0 is the first policy year, policy year = t + 1")
 print("net_cf: INCOME POSITIVE (library convention);   "
       "liability_cf = -net_cf: OUTGO POSITIVE (the technical notes' NetCF_t)")
-print("pols_if(t) is the START-of-year count, the weight on that row's cash flows")
+print("pols_if(t) is the START-of-period count, the weight on that row's cash flows")
 print()
 print(proj.result_cf().head(12).round(2).to_string())
 

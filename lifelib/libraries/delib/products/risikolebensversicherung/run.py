@@ -3,6 +3,9 @@
     python products/risikolebensversicherung/run.py            # anchor cell (point_id = 1)
     python products/risikolebensversicherung/run.py 8          # another model point
 
+The frame is 0-based: ``t = 0`` is the first policy year, so a new-business point runs
+``t = 0 .. proj_len() - 1`` and the in-force point 8 opens at ``t = duration_y = 12``.
+
 Output is ASCII-only so it prints on a Windows console under any code page.
 """
 import sys
@@ -29,14 +32,14 @@ print("premium form = {}   Zahlweise = {} ({} instalments, load {:.3f})   "
 print("rating factor = {:.2f}   NVG schedule = {}   duration = {} y   "
       "frame t = {} .. {}".format(
           proj.rating_factor(), proj.nvg_schedule_id(), proj.duration_y(),
-          proj.proj_start(), proj.proj_len()))
+          proj.proj_start(), proj.proj_len() - 1))
 print()
 print("Bruttobeitrag  G  = {:,.4f} EUR   Nettopraemie Gn = {:,.4f} EUR".format(
     proj.prem_gross_level_pp(), proj.prem_net_level_pp()))
 print("Beitragsverrechnungssatz v_d = {:.8f}   Zahlbeitrag = {:,.4f} EUR   "
       "Zahl/Brutto = {:.6f}".format(
-          proj.beitragsverrechnung_rate(), proj.prem_paid_pp(1),
-          proj.prem_paid_pp(1) / proj.prem_gross_pp(1)))
+          proj.beitragsverrechnung_rate(), proj.prem_paid_pp(0),
+          proj.prem_paid_pp(0) / proj.prem_gross_pp(0)))
 print()
 df = proj.result_cf()
 print(df.head(12).round(2).to_string())
@@ -51,9 +54,9 @@ print("                      claims {:,.2f}  expenses {:,.2f}  "
           + df["claims_maturity"].sum(),
           df["expenses"].sum(), df["commissions"].sum(), df["net_cf"].sum()))
 print("decrements: deaths {:.8f}  lapses {:.8f}  expiries {:.8f}".format(
-    sum(proj.pols_death(t) for t in range(proj.proj_start(), proj.proj_len() + 1)),
-    sum(proj.pols_lapse(t) for t in range(proj.proj_start(), proj.proj_len() + 1)),
-    proj.pols_maturity(proj.proj_len())))
+    sum(proj.pols_death(t) for t in range(proj.proj_start(), proj.proj_len())),
+    sum(proj.pols_lapse(t) for t in range(proj.proj_start(), proj.proj_len())),
+    proj.pols_maturity(proj.proj_len() - 1)))
 print("checks: net_cf {}  pols roll fwd {}  prem split {}  "
       "reserve roll fwd {}  no cash value {}".format(
           proj.check_net_cf(), proj.check_pols_roll_fwd(),

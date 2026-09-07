@@ -22,7 +22,8 @@ The **loan** is deterministic and the model computes it. Nothing is read from an
 :func:`~.ADE_FR_S.Projection.check_crd` asserts the amortisation closes both ways — the
 annuity form against the roll-forward ``crd(k) = crd(k-1) (1 + i) - ech``, and
 ``crd(T) = 0`` at the final instalment. ``crd`` is the only thing linking the loan to the
-insurance: the death and PTIA benefits are ``crd(t) x quotite``.
+insurance: the death and PTIA benefits of month ``t`` are ``crd(t + 1) x quotite``, the
+balance at the end of that month.
 
 The **state space is four-state** — healthy, ITT (*incapacité temporaire totale*), IPT
 (*invalidité permanente et totale*) and dead — which is the ``income_protection`` /
@@ -34,7 +35,7 @@ it passes to IPT and the rest returns to healthy. Collapsing the duration dimens
 letting cohort 36 advance to cohort 37, are the notes' two most costly pitfalls.
 
 The **guarantees end at different ages.** Décès runs to 85, PTIA and ITT/IPT to 70 in the
-base cell, and the loan to month 240 — so a cover can stop while the loan, and the
+base cell, and the loan over 240 months — so a cover can stop while the loan, and the
 premium, run on. At the first month where the ITT/IPT cover has ceased, any claim in
 payment is **moved** into healthy rather than deleted: those lives are alive, still death
 covered, and still paying. The premium is *nivelé* and does not fall.
@@ -64,13 +65,16 @@ rather than stored inside the model. The model folder itself holds no data, so t
 and its inputs must travel together.
 
 **Projection basis.** Monthly steps, matching the monthly *échéance* that the incapacity
-benefit replaces. Policy month ``t`` runs 1, 2, ..., ``proj_len()``, where
-``proj_len() = loan_term_months``. Premiums fall at the beginning of the month and are
-paid by lives in healthy only — premiums are waived in claim. The instalment, the
-transitions and all benefit fall at the end of the month, so ``crd(t)`` is the balance
-*after* the month-``t`` instalment and a claim incepting at end of month ``t`` is first
-paid at end of month ``t + 1``. All cover and any claim in payment terminate at the
-loan's contractual expiry with no value.
+benefit replaces. Policy month ``t`` is **0-based**: ``t = 0`` is the first projected
+month and the frame is ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len() = loan_term_months`` is the number of months projected. The contractual
+policy year is the 1-based label ``t // 12 + 1``. Premiums fall at the beginning of the
+month and are paid by lives in healthy only — premiums are waived in claim. The
+instalment, the transitions and all benefit fall at the end of the month, so month ``t``
+opens on the loan balance ``crd(t)`` and closes on ``crd(t + 1)`` — ``crd`` keeps its own
+0-based time-point index, ``crd(0) = capital_initial`` at adhesion — and a claim
+incepting at end of month ``t`` is first paid at end of month ``t + 1``. All cover and
+any claim in payment terminate at the loan's contractual expiry with no value.
 
 **Model points come in three kinds.** ``status = healthy`` cells start the whole
 population in healthy; ``status = itt`` cells start it in an ITT cohort at a stated claim

@@ -147,7 +147,11 @@ def lapse_table():
 def surr_scale_table():
     """The surrender-value scales, read from *surr_scale_table.csv*.
 
-    Keyed by scale name and policy month, in EUR per 5000 EUR of guaranteed capital.
+    Keyed by scale name and **elapsed months from issue** - 0 at issue, 60 at five years -
+    in EUR per 5000 EUR of guaranteed capital.  That key is a duration, not the
+    projection's 0-based month index: it does not move with the frame, and
+    ``Projection.surr_scale_pp`` reads it at ``duration_mth(t) + 1``, the months elapsed by
+    the end of month ``t``, when a surrender resolves.
     Each scale is transcribed from one insurer's *tableau d'exemples normalises* - the
     standardised comparison table every French funeral insurer has published since
     1 July 2025 - so premium, revalorisation rate and surrender scale within a scale come
@@ -156,7 +160,7 @@ def surr_scale_table():
     premium for the same capital and age spans roughly 2:1 across the retrieved set.
 
     The published anchors are quinquennial; ``Projection.surr_scale_pp`` interpolates
-    linearly in policy months between them **[std]** and holds the scale flat beyond the
+    linearly in elapsed months between them **[std]** and holds the scale flat beyond the
     last one.  The month-0 anchor is 0 on every periodic-premium scale and a linear
     back-extrapolation of the first two published anchors on the single-premium scale
     **[std]**, since a *prime unique* contract surrendered at once returns a provision

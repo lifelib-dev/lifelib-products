@@ -11,14 +11,15 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 11           # or switch the default
 
-``t`` counts **policy years**, 1-based: ``t = 1`` is the policy year that opens at the
-1 January 2027 valuation date and ``t = proj_len() = omega_age - age(1) + 1`` the last.
-The frame is contiguous and uniform on every model point, including a point that commutes
-at *Rentenbeginn* and therefore carries zeros to the end — a uniform frame is what lets
-two model points be read side by side, and truncating a commuted point is a listed
-pitfall.
+``t`` counts **policy years**, 0-based: ``t = 0`` is the policy year that opens at the
+1 January 2027 valuation date and ``t = proj_len() - 1`` the last, with
+``proj_len() = omega_age - age(0) + 1`` the **number** of projected periods.  The policy
+year in contractual language is ``t + 1``.  The frame is contiguous and uniform on every
+model point, including a point that commutes at *Rentenbeginn* and therefore carries zeros
+to the end — a uniform frame is what lets two model points be read side by side, and
+truncating a commuted point is a listed pitfall.
 
-**Two phases in one projection.** ``t_conv() = rentenbeginn_age - age(1) + 1`` is the
+**Two phases in one projection.** ``t_conv() = rentenbeginn_age - age(0)`` is the
 conversion year. ``is_accum(t)`` holds for ``t < t_conv()`` and ``is_payout(t)`` for
 ``t >= t_conv()``. The accumulation recursions stop at ``t_conv()``; the lifelong annuity
 runs from ``t_conv()`` to ``proj_len()``. A model that stops at *Rentenbeginn* has not
@@ -71,14 +72,14 @@ symbols instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 (none)                     model_point()                   The selected model point row
-n = omega - x(1) + 1       proj_len()                      Last projected period index
+n = omega - x(0) + 1       proj_len()                      Number of projected periods
 T                          t_conv()                        The conversion year
 x(t)                       age(t)                          Attained age in year t
-d(t)                       duration(t)                     Completed contract years + t
+d(t)                       duration(t)                     Contract years done by end of t
 tau(t)                     calendar_year(t)                Calendar year of period t
 (phase)                    is_accum(t), is_payout(t)       Accumulation / payout flag
 l(t)                       pols_if(t)                      In force at the START of year t
-l(1)                       pols_if_init()                  Opening policy count
+l(0)                       pols_if_init()                  Opening policy count
 l(t)(1-q), l(t+1)          pols_if_at(t, timing)           BEF_DECR / AFT_DECR
 q(t)                       mort_rate(t)                    Death rate applied in year t
 (table)                    mort_rate_at_age(x)             Accumulation table rate at x
@@ -283,7 +284,7 @@ def sex():
 def issue_age():
     """The attained age at which the contract was concluded, age last birthday.
 
-    With :func:`duration_init` it fixes ``age(1) = issue_age() + duration_init()``, the
+    With :func:`duration_init` it fixes ``age(0) = issue_age() + duration_init()``, the
     attained age at the valuation date.  It does not otherwise enter the projection: no
     rate in this model is struck at issue.
     """
@@ -294,7 +295,7 @@ def duration_init():
     """Completed contract years at the valuation date; 0 for a point projected from issue.
 
     It drives three things and each of them matters.  ``duration(t) = duration_init() +
-    t`` selects the *Stornoabzug* band and the acquisition-charge window, so an in-force
+    t + 1`` selects the *Stornoabzug* band and the acquisition-charge window, so an in-force
     point picks up the charge only for the contract years it has left; the expense
     inflation factor runs on contract duration rather than projection year; and the
     acquisition expense and initial commission fall only where ``duration_init() == 0``,
@@ -304,7 +305,7 @@ def duration_init():
 
 
 def pols_if_init():
-    """The number of policies the model point represents at the start of year 1.
+    """The number of policies the model point represents at the start of period ``t = 0``.
 
     ``result_cf()``'s first ``pols_if`` value equals this exactly, because no decrement has
     been applied when the first period opens.
@@ -407,7 +408,7 @@ def income_id():
 def income_init():
     """Contribution-liable earnings in the calendar year **before** the projection starts.
 
-    The reference income for ``t = 1``, because the § 86 base is the *previous* year's
+    The reference income for ``t = 0``, because the § 86 base is the *previous* year's
     earnings.  Zero for a *mittelbar zulageberechtigt* spouse, whose *Mindesteigenbeitrag*
     is then the 60 € *Sockelbeitrag* floor.
     """
@@ -420,7 +421,7 @@ def zulage_id():
 
 
 def zulage_init_pp():
-    """The Zulage credited in projection year 1, earned in the contribution year before it.
+    """The Zulage credited in period ``t = 0``, earned in the contribution year before it.
 
     This column exists **only** because the ZfA pays in arrear, so an in-force point opens
     owing one Zulage.  On model point 6 it carries the once-in-a-lifetime 200 €
@@ -450,7 +451,11 @@ def prem_freq_load():
 
 
 def bfs_year():
-    """The projection year from which contributions stop (*Beitragsfreistellung*); 0 = never.
+    """The period index ``t`` from which contributions stop (*Beitragsfreistellung*).
+
+    A **0-based point on the projection's own time axis**, so it is compared directly with
+    ``t``; the sentinel for a contract that never goes paid-up is ``-1``, because ``0`` is
+    now the first projected period and would mean "paid-up from the outset".
 
     A **state change, not a termination**: ``pols_if`` is continuous across it, the account
     keeps rolling, the guarantee accumulator freezes once the last Zulage has landed, and
@@ -461,17 +466,17 @@ def bfs_year():
 
 
 def dk_pp_init():
-    """D(1): the *Deckungskapital* per policy at the valuation date, in euros."""
+    """D(0): the *Deckungskapital* per policy at the valuation date, in euros."""
     return float(model_point()["dk_pp_init"])
 
 
 def surplus_pp_init():
-    """U(1): the *Überschussguthaben* per policy at the valuation date, in euros."""
+    """U(0): the *Überschussguthaben* per policy at the valuation date, in euros."""
     return float(model_point()["surplus_pp_init"])
 
 
 def guar_pp_init():
-    """G(1): the *Beitragsgarantie* accumulator per policy at the valuation date.
+    """G(0): the *Beitragsgarantie* accumulator per policy at the valuation date.
 
     The *Altersvorsorgebeiträge* credited before the projection opens — the saver's own
     contributions and the Zulagen actually credited, not the entitlements earned.  On the
@@ -521,55 +526,57 @@ def scenario_id():
 
 
 def proj_len():
-    """n: the **last projected period index**, ``omega_age - age(1) + 1``.
+    """n: the **number of projected periods**, ``omega_age - age(0) + 1``.
 
-    The library's reading of ``proj_len()``, asserted in the conventions suite:
-    ``result_cf().index[-1] == proj_len()``, not a row count.  The projection runs to the
-    end of the mortality table so that the lifelong annuity is projected to exhaustion and
-    the decrement closure identity is exact.
+    The frame is ``range(proj_len())``, 0-based, so the last projected index is
+    ``proj_len() - 1`` and ``result_cf()`` has exactly ``proj_len()`` rows.  The projection
+    runs to the end of the mortality table so that the lifelong annuity is projected to
+    exhaustion and the decrement closure identity is exact: at ``t = proj_len() - 1`` the
+    attained age is ``omega_age`` and ``mort_rate`` is 1.
     """
-    return omega_age - age(1) + 1                                    # noqa: F821
+    return omega_age - age(0) + 1                                    # noqa: F821
 
 
 def t_conv():
-    """T: the conversion year, ``rentenbeginn_age - age(1) + 1``.
+    """T: the conversion year, ``rentenbeginn_age - age(0)``.
 
     The boundary between the two phases and the single moment at which the
     *Beitragsgarantie* is tested.  ``is_accum(t)`` holds strictly before it; the conversion
     year itself is the first payout year, because the first annuity instalment falls at
     *Rentenbeginn* and the account is extinguished there.
     """
-    return rentenbeginn_age() - age(1) + 1
+    return rentenbeginn_age() - age(0)
 
 
 def age(t):
     """x(t): attained age last birthday in period t.
 
-    ``issue_age() + duration_init() + t - 1``, so ``age(1)`` is the attained age at the
+    ``issue_age() + duration_init() + t``, so ``age(0)`` is the attained age at the
     valuation date.  Every rate in the model is indexed by this and never by sex.
     """
-    return issue_age() + duration_init() + t - 1
+    return issue_age() + duration_init() + t
 
 
 def duration(t):
-    """d(t): completed contract years at the end of period t, ``duration_init() + t``.
+    """d(t): completed contract years at the end of period t, ``duration_init() + t + 1``.
 
-    The **contract** clock rather than the projection clock.  It selects the surrender and
-    transfer bands, gates the five-year acquisition charge, and drives the expense
-    inflation factor, so an in-force point inherits the charge window its contract has
-    actually used up.
+    The **contract** clock rather than the projection clock, and **1-based**, because it is
+    a contractual band label: ``duration(t) = k`` is contract year ``k``, which is the key
+    of *lapse_table.csv*.  It selects the surrender and transfer bands, gates the five-year
+    acquisition charge, and drives the expense inflation factor, so an in-force point
+    inherits the charge window its contract has actually used up.
     """
-    return duration_init() + t
+    return duration_init() + t + 1
 
 
 def calendar_year(t):
-    """tau(t): the calendar year of period t, ``2026 + t``.
+    """tau(t): the calendar year of period t, ``2027 + t``.
 
     The projection opens at the **1 January 2027** valuation date on every model point, so
     the calendar axis is common across the table.  It enters only the generational annuity
     basis, where ``annuity_mort_rate(x, tau)`` needs both arguments.
     """
-    return valuation_year + t - 1                                    # noqa: F821
+    return valuation_year + t                                        # noqa: F821
 
 
 def is_accum(t):
@@ -680,15 +687,15 @@ def transfer_rate(t):
 def pols_if(t):
     """l(t): policies in force at the **START** of period t.
 
-    ``pols_if_init()`` in year 1, then the decrements of the previous year.  This is the
+    ``pols_if_init()`` at ``t = 0``, then the decrements of the previous year.  This is the
     weight on every cash flow of the same :func:`result_cf` row; end-of-period state is
-    reached through :func:`pols_if_at`.  ``pols_if(proj_len() + 1)`` is defined and is
-    zero, because ``mort_rate`` is 1 at ``omega_age``; it is read by
-    :func:`check_pols_roll_fwd` and by nothing else.
+    reached through :func:`pols_if_at`.  ``pols_if(proj_len())`` — one index beyond the
+    frame — is defined and is zero, because ``mort_rate`` is 1 at ``omega_age``; it is read
+    by :func:`check_pols_roll_fwd` and by nothing else.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
@@ -709,7 +716,7 @@ def pols_if_at(t, timing):
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "AFT_DECR":
-        if t < 1 or t > proj_len():
+        if t < 0 or t >= proj_len():
             return 0.0
         if t == t_conv() and is_kleinbetrag():
             return 0.0
@@ -727,7 +734,7 @@ def pols_death(t):
     estate.  Zero in the conversion year of a commuted contract, where the whole population
     leaves through the *Abfindung* instead.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if t == t_conv() and is_kleinbetrag():
         return 0.0
@@ -740,7 +747,7 @@ def pols_lapse(t):
     A *Kündigung*: *schädliche Verwendung*, paying :func:`cv_pp` gross of the
     *Rückzahlungsbetrag* the provider withholds and remits.  Zero from ``t_conv()``.
     """
-    if not is_accum(t) or t < 1:
+    if not is_accum(t) or t < 0:
         return 0.0
     return pols_if(t) * (1.0 - mort_rate(t)) * lapse_rate(t)
 
@@ -752,7 +759,7 @@ def pols_transfer(t):
     capital to another certified contract at full value less a flat charge, with no
     *Stornoabzug* and no subsidy consequence.  Collapsing the two is a listed pitfall.
     """
-    if not is_accum(t) or t < 1:
+    if not is_accum(t) or t < 0:
         return 0.0
     return (pols_if(t) * (1.0 - mort_rate(t)) * (1.0 - lapse_rate(t))
             * transfer_rate(t))
@@ -775,7 +782,7 @@ def pols_annuity_pay(t):
     ``pols_if(t)`` afterwards.  Zero before *Rentenbeginn* and zero on a commuted contract,
     which pays no annuity at all.
     """
-    if not is_payout(t) or t > proj_len() or is_kleinbetrag():
+    if not is_payout(t) or t >= proj_len() or is_kleinbetrag():
         return 0.0
     if t - t_conv() < rentengarantie_years():
         return pols_conv()
@@ -788,7 +795,7 @@ def pols_annuity_pay(t):
 def income_ref(t):
     """Y(t): the contribution-liable earnings the § 86 minimum of period t is struck on.
 
-    The **previous calendar year's** earnings — ``income_init()`` at ``t = 1``, otherwise
+    The **previous calendar year's** earnings — ``income_init()`` at ``t = 0``, otherwise
     ``income(t - 1)`` from *income_schedule.csv*.  This is the first of the model's two
     lags and it is a **calendar** lag; the second, the ZfA payment lag in
     :func:`zulage_pp`, is a **projection** lag.  They are different lags and collapsing
@@ -796,7 +803,7 @@ def income_ref(t):
     """
     if not is_accum(t):
         return 0.0
-    if t == 1:
+    if t == 0:
         return income_init()
     return float(data.income_schedule().at[(income_id(), t - 1), "income"])  # noqa: F821
 
@@ -849,7 +856,7 @@ def eigenbeitrag_pp(t):
     """
     if not is_accum(t):
         return 0.0
-    if bfs_year() > 0 and t >= bfs_year():
+    if bfs_year() >= 0 and t >= bfs_year():
         return 0.0
     if contrib_form() == "fixed":
         return contrib_fixed_pp()
@@ -882,7 +889,7 @@ def zulage_granted_pp(t):
 def zulage_pp(t):
     """Z(t): the Zulage actually **credited** to the contract in period t.
 
-    ``zulage_init_pp()`` in year 1 and ``zulage_granted_pp(t - 1)`` thereafter, because the
+    ``zulage_init_pp()`` at ``t = 0`` and ``zulage_granted_pp(t - 1)`` thereafter, because the
     ZfA determines the entitlement of a contribution year and pays the provider in the
     following one.  This is the **second** of the model's two lags and it is a *projection*
     lag, not the calendar lag of :func:`income_ref`.
@@ -891,9 +898,9 @@ def zulage_pp(t):
     Zulage they earned lands in the conversion year, where it must be credited, guaranteed
     and converted before the *Beitragsgarantie* is tested.  It is zero only after that.
     """
-    if t < 1 or t > t_conv():
+    if t < 0 or t > t_conv():
         return 0.0
-    if t == 1:
+    if t == 0:
         return zulage_init_pp()
     return zulage_granted_pp(t - zulage_lag)             # noqa: F821
 
@@ -908,10 +915,10 @@ def zulage_cum_pp(t):
     saver's marginal rate and cannot be computed from contract data at all, so no cells
     attempts it.
     """
-    if t < 1:
+    if t < 0:
         return 0.0
-    if t == 1:
-        return zulage_pp(1)
+    if t == 0:
+        return zulage_pp(0)
     return zulage_cum_pp(t - 1) + zulage_pp(t)
 
 
@@ -929,7 +936,7 @@ def contrib_total_pp(t):
     """
     return (eigenbeitrag_paid_pp(t) + zulage_pp(t)
             + (contrib_extra_pp() if (is_accum(t) and not
-                                      (bfs_year() > 0 and t >= bfs_year()))
+                                      (bfs_year() >= 0 and t >= bfs_year()))
                else 0.0))
 
 
@@ -963,7 +970,7 @@ def admin_charge_pp(t):
         return 0.0
     base = (eigenbeitrag_pp(t) + zulage_pp(t)
             + (contrib_extra_pp() if (is_accum(t) and not
-                                      (bfs_year() > 0 and t >= bfs_year()))
+                                      (bfs_year() >= 0 and t >= bfs_year()))
                else 0.0))
     return (admin_charge_prem_rate * base + admin_charge_fixed       # noqa: F821
             + eigenbeitrag_pp(t) * (prem_freq_load() - 1.0))
@@ -1047,9 +1054,9 @@ def dk_pp(t):
     guarantees.  Extinguished from ``t_conv() + 1``, where the capital has become an
     annuity.
     """
-    if t < 1 or t > t_conv():
+    if t < 0 or t > t_conv():
         return 0.0
-    if t == 1:
+    if t == 0:
         return dk_pp_init()
     return (dk_pp(t - 1) + prem_to_av_pp(t - 1)) * (1.0 + rechnungszins())
 
@@ -1060,9 +1067,9 @@ def surplus_acct_pp(t):
     *Verzinsliche Ansammlung*: the declared surplus accrues in a second account beside the
     *Deckungskapital* and bears the declared rate.  Extinguished from ``t_conv() + 1``.
     """
-    if t < 1 or t > t_conv():
+    if t < 0 or t > t_conv():
         return 0.0
-    if t == 1:
+    if t == 0:
         return surplus_pp_init()
     return surplus_acct_pp(t - 1) + int_surplus_pp(t - 1)
 
@@ -1137,7 +1144,7 @@ def guar_carve_out_pp(t):
     if not is_accum(t):
         return 0.0
     extra = (contrib_extra_pp()
-             if not (bfs_year() > 0 and t >= bfs_year()) else 0.0)
+             if not (bfs_year() >= 0 and t >= bfs_year()) else 0.0)
     total = eigenbeitrag_pp(t) + zulage_pp(t) + extra + rider_prem_pp()
     return min(rider_prem_pp(), guar_carve_out_cap * total)          # noqa: F821
 
@@ -1152,14 +1159,14 @@ def guar_pp(t):
     *Altersvorsorgebeiträge* paid in and does not distinguish the pools.  And it never
     counts interest: the guarantee is nominal.
     """
-    if t < 1:
+    if t < 0:
         return 0.0
-    if t == 1:
+    if t == 0:
         return guar_pp_init()
     if t - 1 > t_conv():
         return guar_pp(t - 1)
     extra = (contrib_extra_pp() if (is_accum(t - 1) and not
-                                    (bfs_year() > 0 and t - 1 >= bfs_year()))
+                                    (bfs_year() >= 0 and t - 1 >= bfs_year()))
              else 0.0)
     return (guar_pp(t - 1) + eigenbeitrag_pp(t - 1) + zulage_pp(t - 1)
             + extra - guar_carve_out_pp(t - 1))
@@ -1186,10 +1193,10 @@ def pool_gefoerdert_pp(t):
     not apportion investment return between the two pools, which a real
     *Leistungsmitteilung* must do, and says so rather than pretending otherwise.
     """
-    if t < 1:
+    if t < 0:
         return 0.0
     add = eigenbeitrag_pp(t) + zulage_pp(t)
-    return add if t == 1 else pool_gefoerdert_pp(t - 1) + add
+    return add if t == 0 else pool_gefoerdert_pp(t - 1) + add
 
 
 def pool_ungefoerdert_pp(t):
@@ -1201,11 +1208,11 @@ def pool_ungefoerdert_pp(t):
     two tax regimes at once and the provider must track the pools for the life of the
     contract.  Model point 8 is the cell that exercises it.
     """
-    if t < 1:
+    if t < 0:
         return 0.0
     add = (contrib_extra_pp() if (is_accum(t) and not
-                                  (bfs_year() > 0 and t >= bfs_year())) else 0.0)
-    return add if t == 1 else pool_ungefoerdert_pp(t - 1) + add
+                                  (bfs_year() >= 0 and t >= bfs_year())) else 0.0)
+    return add if t == 0 else pool_ungefoerdert_pp(t - 1) + add
 
 
 # === conversion at Rentenbeginn
@@ -1405,7 +1412,7 @@ def annuity_pp(t):
     much, and a model point with no guarantee period pays the *same* annuity to a smaller
     count.  Zero before *Rentenbeginn* and zero on a commuted contract.
     """
-    if not is_payout(t) or t > proj_len() or is_kleinbetrag():
+    if not is_payout(t) or t >= proj_len() or is_kleinbetrag():
         return 0.0
     return 12.0 * annuity_month_pp()
 
@@ -1531,7 +1538,7 @@ def premiums(t):
     rider's premium and belongs to the rider's own liability rather than to this one.
     """
     extra = (contrib_extra_pp() if (is_accum(t) and not
-                                    (bfs_year() > 0 and t >= bfs_year())) else 0.0)
+                                    (bfs_year() >= 0 and t >= bfs_year())) else 0.0)
     return (eigenbeitrag_paid_pp(t) + extra) * pols_if(t)
 
 
@@ -1572,9 +1579,9 @@ def expenses(t):
     and the *Leistungsmitteilung* — which is a real and product-specific cost.
     """
     total = 0.0
-    if t == 1 and duration_init() == 0:
+    if t == 0 and duration_init() == 0:
         total += (expense_acq + expense_acq_rate                     # noqa: F821
-                  * beitragssumme()) * pols_if(1)
+                  * beitragssumme()) * pols_if(0)
     if is_accum(t):
         total += (expense_maint                                      # noqa: F821
                   * (1.0 + expense_infl) ** (duration(t) - 1)        # noqa: F821
@@ -1596,8 +1603,8 @@ def commissions(t):
     insurer carries.  Zero from *Rentenbeginn*.  It is a **separate** column from
     :func:`expenses` and :func:`net_cf` subtracts each exactly once.
     """
-    if t == 1 and duration_init() == 0:
-        return comm_rate_init * beitragssumme() * pols_if(1)         # noqa: F821
+    if t == 0 and duration_init() == 0:
+        return comm_rate_init * beitragssumme() * pols_if(0)         # noqa: F821
     if not is_accum(t):
         return 0.0
     return comm_rate_renew * (eigenbeitrag_pp(t) + zulage_pp(t)) * pols_if(t)  # noqa: F821
@@ -1674,7 +1681,7 @@ def check_net_cf():
     """
     return all(abs(check_net_cf_resid(t)) <= roll_fwd_tol            # noqa: F821
                * max(1.0, guar_pp(t_conv() + 1))
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_av_roll_fwd_resid(t):
@@ -1704,7 +1711,7 @@ def check_av_roll_fwd():
     """True when the account rolls forward exactly in every projected period."""
     return all(abs(check_av_roll_fwd_resid(t)) <= roll_fwd_tol       # noqa: F821
                * max(1.0, guar_pp(t_conv() + 1))
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_guar_roll_fwd_resid(t):
@@ -1721,7 +1728,7 @@ def check_guar_roll_fwd_resid(t):
     if t > t_conv():
         return guar_pp(t + 1) - guar_pp(t)
     extra = (contrib_extra_pp() if (is_accum(t) and not
-                                    (bfs_year() > 0 and t >= bfs_year())) else 0.0)
+                                    (bfs_year() >= 0 and t >= bfs_year())) else 0.0)
     return (guar_pp(t + 1) - guar_pp(t) - eigenbeitrag_pp(t)
             - zulage_pp(t) - extra + guar_carve_out_pp(t))
 
@@ -1736,11 +1743,11 @@ def check_guar_roll_fwd():
     """
     ok = all(abs(check_guar_roll_fwd_resid(t)) <= roll_fwd_tol       # noqa: F821
              * max(1.0, guar_pp(t_conv() + 1))
-             for t in range(1, proj_len() + 1))
+             for t in range(proj_len()))
     cap = all(guar_carve_out_pp(t) <= guar_carve_out_cap             # noqa: F821
               * (eigenbeitrag_pp(t) + zulage_pp(t) + contrib_extra_pp()
                  + rider_prem_pp()) + roll_fwd_tol                   # noqa: F821
-              for t in range(1, t_conv()))
+              for t in range(t_conv()))
     return bool(ok and cap)
 
 
@@ -1765,7 +1772,8 @@ def check_pols_roll_fwd():
 
     Two conditions.  The per-period recursion above, and the **closure identity**: the
     deaths, surrenders, transfers and any commuted cohort summed over the whole projection,
-    plus ``pols_if(proj_len() + 1)``, equal ``pols_if_init()``.  The second is built by
+    plus ``pols_if(proj_len())`` — the one index beyond the frame — equal ``pols_if_init()``.
+    The second is built by
     direct summation over the exit cells with no reference to the recursion that produced
     ``pols_if``, so it catches a wrong starting cohort and an exit counted in two places,
     which the telescoping first condition cannot.  ``mort_rate`` is 1 at ``omega_age``, so
@@ -1774,12 +1782,12 @@ def check_pols_roll_fwd():
     n = proj_len()
     step = all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
                * max(pols_if_init(), 1.0)
-               for t in range(1, n + 1))
+               for t in range(n))
     exits = sum(pols_death(s) + pols_lapse(s) + pols_transfer(s)
-                for s in range(1, n + 1))
+                for s in range(n))
     if is_kleinbetrag():
         exits += pols_conv()
-    closure = abs(exits + pols_if(n + 1) - pols_if_init()) <= (
+    closure = abs(exits + pols_if(n) - pols_if_init()) <= (
         roll_fwd_tol * max(pols_if_init(), 1.0))                     # noqa: F821
     return bool(step and closure)
 
@@ -1817,21 +1825,21 @@ def check_conversion():
     """True when the conversion at *Rentenbeginn* closes on all three identities."""
     return all(check_conversion_resid(t) <= roll_fwd_tol             # noqa: F821
                * max(1.0, guar_pp(t_conv() + 1))
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_zulage_lag_resid(t):
     """The Zulage-lag residual in period t; zero everywhere.
 
     ``zulage_pp(t)`` less what the ZfA lag says it must be: ``zulage_init_pp()`` at
-    ``t = 1``, ``zulage_granted_pp(t - 1)`` for ``2 <= t <= t_conv()``, and zero after the
+    ``t = 0``, ``zulage_granted_pp(t - 1)`` for ``1 <= t <= t_conv()``, and zero after the
     conversion year.  It is the mechanical form of the first listed pitfall — collapsing
     the calendar lag on income and the payment lag on cash into one offset — and of the
     second, dropping the final contribution year's Zulage, which the ``t = t_conv()`` case
     pins down.
     """
-    if t == 1:
-        return zulage_pp(1) - zulage_init_pp()
+    if t == 0:
+        return zulage_pp(0) - zulage_init_pp()
     if t <= t_conv():
         return zulage_pp(t) - zulage_granted_pp(t - 1)
     return zulage_pp(t)
@@ -1841,14 +1849,14 @@ def check_zulage_lag():
     """True when the Zulage is credited one projection year after it is earned, everywhere."""
     return all(abs(check_zulage_lag_resid(t)) <= roll_fwd_tol        # noqa: F821
                * max(1.0, guar_pp(t_conv() + 1))
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 # === result tables
 
 
 def result_cf():
-    """Result table of cash flows, indexed by period t, ``1 ... proj_len()``.
+    """Result table of cash flows, indexed by period t, ``0 ... proj_len() - 1``.
 
     ``pols_if`` is the **start**-of-period count, which is the weight applied to every cash
     flow on the same row, and its first value is ``pols_if_init()`` exactly.
@@ -1861,11 +1869,11 @@ def result_cf():
     ``claims`` subtotal column, because a statement must not publish a subtotal beside its
     own parts.  ``liability_cf`` is ``net_cf`` outgo-positive.
 
-    The frame is uniform across model points and runs to ``proj_len()`` on every one of
-    them, including a contract commuted at *Rentenbeginn*, which then carries zeros to the
-    end rather than being truncated.
+    The frame is uniform across model points and carries ``proj_len()`` rows on every one
+    of them, including a contract commuted at *Rentenbeginn*, which then carries zeros to
+    the end rather than being truncated.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1896,7 +1904,7 @@ def result_acct():
     statement and not asserted by the conventions suite; it is the frame the technical
     notes' worked example reads its per-policy columns from.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

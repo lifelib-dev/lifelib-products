@@ -763,7 +763,9 @@ def pols_if(t):
     """l(t): the number of policies in force at time t, the **start** of policy month t.
 
     ``pols_if_init()`` at ``t = 0``, then the notes' recursion
-    ``l(t) = l(t-1)(1 - q_m(t-1))(1 - w_m(t-1))``, deaths before surrenders **[std]**.
+    ``l(t+1) = l(t)(1 - q_m(t))(1 - w_m(t))``, deaths before surrenders **[std]**, read
+    back one month: the count opening month ``t`` is the count closing month ``t - 1``,
+    ``pols_if_at(t - 1, "AFT_DECR")``.
     Zero outside the frame, so ``pols_if(proj_len())`` is the count after the last
     projected month: nothing, because :func:`pols_maturity` takes the survivors.
     """

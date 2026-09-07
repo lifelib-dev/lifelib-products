@@ -27,13 +27,13 @@ print("garantie plancher = {} ({} basis, levy {}, ceases at age {}, cap {:,.0f})
 print("scenario {}  withdrawals {}  arbitrage {}  lapse dynamics {}".format(
     proj.uc_return_scenario(), proj.wd_pattern(), proj.arb_pattern(),
     proj.lapse_dynamic()))
-print("projecting {} months; tariff at issue age {:.4%} p.a. of the capital sous "
-      "risque".format(proj.proj_len(), proj.plancher_rate(1)))
+print("projecting {} months, t = 0 .. {}; tariff at issue age {:.4%} p.a. of the capital "
+      "sous risque".format(proj.proj_len(), proj.proj_len() - 1, proj.plancher_rate(0)))
 print()
-print("Account value (per policy):")
+print("Account value (per policy), first three months:")
 print(proj.result_av().head(3).round(4).to_string())
 print()
-print("Cash flows:")
+print("Cash flows, first three months:")
 print(proj.result_cf().head(3).round(2).to_string())
 
 model.close()

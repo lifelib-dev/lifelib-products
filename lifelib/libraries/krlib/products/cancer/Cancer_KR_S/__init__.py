@@ -77,9 +77,11 @@ its inputs must travel together.
 **Projection basis.** Monthly steps, and monthly by construction rather than by
 approximation: 월납 is the dominant retail mode and the mode named in the 감독규정's own
 기준연령 요건 [REG-R9], the 90-day 면책기간 lands on the grid boundary ``t = 3`` and the
-one-year 감액기간 on ``t = 12``. ``t`` is the policy month, ``t = 0, 1, ..., proj_len()``,
-and ``proj_len() = 12 x (100 - issue_age)`` is the **last** projected index -- 720 on the
-anchor cell, the 100세 계약해당일, at which the contract expires and nothing is paid.
+one-year 감액기간 on ``t = 12``. ``t`` is the policy month, 0-based:
+``t = 0, 1, ..., proj_len() - 1``, and ``proj_len() = 12 x (100 - issue_age) + 1`` is the
+**number** of projected months, the frame's exclusive end -- 721 on the anchor cell, so the
+last projected month is ``t = 720``, the 100세 계약해당일, at which the contract expires and
+nothing is paid. Policy year is the contractual label ``t // 12 + 1``.
 Premium and maintenance expense fall at the start of month ``t``; diagnoses and every benefit
 at the end; decrements at the end, the transition out of the healthy state first, then
 mortality, then lapse. Acquisition expense and initial commission fall at ``t = 0``. The age

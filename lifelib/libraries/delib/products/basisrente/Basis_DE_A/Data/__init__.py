@@ -75,7 +75,8 @@ exists anywhere in the delib corpus.
 .. rubric:: What the other six files are
 
 ``surplus_table.csv`` is the insurer's discretionary path in the *Aufschubphase* and the
-*Rentenphase*: ``decl_rate`` is the declared *laufende Verzinsung*, which in German
+*Rentenphase*, keyed on the projection index ``t`` itself, **0-based** like the frame:
+``decl_rate`` is the declared *laufende Verzinsung*, which in German
 practice is the **total** credited rate including the *Rechnungszins* and not a spread
 over it, and ``ann_bonus_rate`` is the *Überschussrente* uplift. It is a scenario, not a
 forecast, and the base path is set above the 1,00 % *Höchstrechnungszins* so the
@@ -158,7 +159,8 @@ def mort_table():
 def surplus_table():
     """The declared surplus path by scenario and projection year.
 
-    Read from *surplus_table.csv*, indexed by ``scenario_id`` and ``t``: ``decl_rate`` is
+    Read from *surplus_table.csv*, indexed by ``scenario_id`` and the **0-based**
+    projection year ``t``, whose first row is ``t = 0``: ``decl_rate`` is
     the declared *laufende Verzinsung* in the *Aufschubphase* — the **total** credited
     rate including the *Rechnungszins*, not a spread over it — and ``ann_bonus_rate`` the
     *Überschussrente* uplift in the *Rentenphase*.

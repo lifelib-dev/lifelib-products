@@ -54,18 +54,27 @@ survives account-value exhaustion and pays for life, not a no-lapse guarantee on
   the annual lifetime withdrawal. A monthly grid is needed only for excluded variants: monthly-sum
   crediting [S4] [R1], one carrier's monthly charge deduction [S1] [S2], daily interim values
   [S10] [S11], mid-year withdrawal crediting [S3] [S10] [S11].
+- **Time index.** `t` is the **0-based period index**: period `t` is contract year `t + 1`, runs
+  from anniversary `t` to anniversary `t + 1`, and `t = 0` is the first contract year of a
+  contract projected from issue. The frame is `t = 0 … proj_len − 1`, one row per contract year
+  and no issue-instant row: the single premium, the bonus and the acquisition expense are
+  beginning-of-period flows of period 0. A contract entered in force after `k` completed contract
+  years opens at `t = k`. State variables are **closing** values, `X(t)` being the value at the
+  end of period `t`; `X⁽⁰⁾(t)` denotes the value **opening** period `t`, which is `X(t−1)` after
+  the first projected period and the initialisation value at it.
 - **Timing.** All transactions occur **at** the anniversary and are processed as the last events
-  of the contract year ending there **[std]**. The contract-year surrender charge percentage,
-  vesting percentage and free withdrawal amount therefore all apply to a withdrawal at anniversary
-  `t`, and the index credit for year `t` is computed on the balance carried from anniversary `t−1`
-  — reproducing the rule that "withdrawals are not credited with index interest in the year
-  they are taken" [S1].
+  of the contract year ending there **[std]** — that is, at the anniversary `t + 1` that closes
+  period `t`. The contract-year surrender charge percentage, vesting percentage and free
+  withdrawal amount therefore all apply to that withdrawal, and the index credit for the period is
+  computed on the balance carried in at anniversary `t` — reproducing the rule that "withdrawals
+  are not credited with index interest in the year they are taken" [S1].
 - **Age basis: age nearest birthday (ANB)** **[std]** — the statutory annuity tables are published
   on that basis (VM-M / Model #821 print the 2012 IAM Period Table for female and male, age
   nearest birthday) [REG-R59], and the AP&P print of the same table at **A-821 Appendices I–IV**
   independently carries the "Age Nearest Birthday" heading for both sexes [REG-R153]. The **[std]**
   stands: it marks the model's choice of a single age basis, not the tables' basis. Attained age at
-  anniversary `t` = `issue_age + t`.
+  anniversary `t` = `issue_age + t`, so period `t` opens at attained age `x + t` — the age its
+  mortality rate is read at — and its transactions fall one year older, at `x + t + 1`.
 - **Model points.** Single-contract, projected on an expected (probability-weighted) basis;
   survivorship and persistency factors multiply per-contract cash flows. No aggregation logic
   specified.
@@ -99,17 +108,17 @@ survives account-value exhaustion and pays for life, not a no-lapse guarantee on
 
 | Variable | Description | Updated |
 |---|---|---|
-| `F(t)`, `A(t)` | Fixed / indexed account balance at anniversary `t` after all processing | annually |
+| `F(t)`, `A(t)` | Fixed / indexed account balance closing period `t`, after all processing | annually |
 | `AV(t)` | Account value = `F(t) + A(t)` | annually |
 | `MGV(t)` | Guaranteed minimum (nonforfeiture) value | annually |
 | `BB(t)` | GLWB benefit base — notional, no cash value [S1] [S9] | annually |
 | `RB(t)` | Rollup base for the guaranteed simple rollup [S2] [S9] | annually / on withdrawal |
 | `LW(t)` | Locked annual lifetime withdrawal amount (0 before exercise) | at exercise; ratchet; excess withdrawals |
 | `phase(t)` | `ACCUM` / `INCOME` / `DEPLETED` / `TERMINATED` | annually |
-| `v(t)`, `sc(t)` | Vested bonus percentage; surrender charge percentage for year `t` [S5] | schedule lookup |
-| `FW(t)` | Free withdrawal amount = `0.10 × AV(t−1)` | annually |
+| `v(t)`, `sc(t)` | Vested bonus percentage; surrender charge percentage for period `t`'s contract year `t + 1` [S5] | schedule lookup |
+| `FW(t)` | Free withdrawal amount = `0.10 × AV⁽⁰⁾(t)` | annually |
 | `Wcum(t)` | Cumulative gross withdrawals | on withdrawal |
-| `l(t)` | In-force probability at end of year `t`; `l(0) = 1` | annual decrements |
+| `l(t)` | In-force probability at anniversary `t`, which opens period `t`; `l(0) = 1` | annual decrements |
 | `rider_in_force(t)` | Boolean; false once the rider terminates [S9] | on events |
 | `depletion_cause(t)` | Flag set when an excess withdrawal, surrender charge or MVA touches the account value | in step 5 |
 
@@ -195,10 +204,12 @@ anchor, not a calibration target.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | contract year index, `t = 1, 2, …`, and the anniversary ending it; `x` = issue age (ANB); attained age at `t` is `x + t` |
+| `t` | period index, `t = 0, 1, …, proj_len − 1`; period `t` is contract year `t + 1` and runs from anniversary `t` to anniversary `t + 1`, where its transactions fall |
+| `X⁽⁰⁾(t)` | the value **opening** period `t` of any state `X`: `X(t−1)`, or the initialisation value at the first projected period |
+| `x` | issue age (ANB); attained age at anniversary `t` is `x + t`, so period `t` opens at `x + t` and closes at `x + t + 1` |
 | `P`, `b`, `v(t)` | single premium; bonus rate (0.07 [S5]); vested percentage in year `t` [S5] |
-| `F(t)`, `A(t)`, `AV(t)` | fixed / indexed / total account value after all processing at `t` |
-| `I(t)`, `R(t)` | index level; `R(t) = I(t)/I(t−1) − 1` (price index, dividends excluded [S6] [R1]) |
+| `F(t)`, `A(t)`, `AV(t)` | fixed / indexed / total account value closing period `t`, after all processing |
+| `I(t)`, `R(t)` | index level at anniversary `t`; `R(t) = I(t+1)/I(t) − 1` over period `t` (price index, dividends excluded [S6] [R1]) |
 | `c`, `c_min`, `f` | declared cap (0.0525 [S2]); guaranteed minimum cap (0.0025 [S4]); floor (0) |
 | `p`, `s`, `d`, `c_m` | participation rate; spread / index margin; trigger rate; monthly cap (variants) |
 | `cr(t)`, `IC(t)`, `FI(t)` | credit rate; index credit amount; fixed account interest |
@@ -207,30 +218,36 @@ anchor, not a calibration target.
 | `BB(t)`, `RB(t)`, `g(t)`, `m` | benefit base; rollup base; rollup rate [S2]; stacking factor (1.50 [S8] [S9]) |
 | `LW(t)`, `π(a, basis)` | annual lifetime withdrawal amount; payout percentage at attained age `a` [S3] |
 | `G(t)`, `E(t)`, `ρ(t)` | gross withdrawal; excess above `LW`; proportional reduction factor |
-| `FW(t)`, `X(t)` | free withdrawal amount `= 0.10 × AV(t−1)`; chargeable amount |
+| `FW(t)`, `X(t)` | free withdrawal amount `= 0.10 × AV⁽⁰⁾(t)`; chargeable amount |
 | `SC(t)`, `CB(t)`, `MVA(t)` | surrender charge; non-vested bonus clawback; MVA (signed) |
 | `MGV(t)`, `i_nf` | guaranteed minimum value; nonforfeiture accumulation rate (0.0100 **[std]**) |
 | `i₀`, `iₜ`, `n` | MVA index at issue, at withdrawal; months remaining in the MVA period |
-| `q(t)`, `w(t)`, `l(t)` | annual mortality rate; surrender rate; in-force probability |
+| `q(t)`, `w(t)`, `l(t)` | annual mortality rate and surrender rate over period `t`; in-force probability at anniversary `t` |
 
 **Dimensional check.** `cr` is dimensionless, so `IC = base × cr` is currency; `Φ = φ × BB` is
 currency — a rate applied to a *notional* amount (the benefit base has no cash value [S1] [S9])
 producing a real deduction from the account value; `LW = π × BB` is currency per year; `ρ` is
 dimensionless. All account-value terms are currency.
 
-### Initialisation (`t = 0`)
+### Initialisation (the state opening period `0`)
 
-    A(0) = alloc_indexed × P × (1 + b)     F(0) = alloc_fixed × P × (1 + b)      [S5]
-    AV(0) = P × (1 + b) = 107,000
-    BB(0) = P = 100,000        RB(0) = P = 100,000                               [S9]
-    MGV(0) = 0.875 × P = 87,500            (bonus excluded)                      [S10] [R2]
-    LW(0) = 0     phase(0) = ACCUM     rider_in_force(0) = true
+The premium arrives at the start of the first contract year rather than at an instant of its
+own, so these are the opening values of period `0`, not a row before it:
 
-### Processing order at anniversary `t` **[std]**
+    A⁽⁰⁾(0) = alloc_indexed × P × (1 + b)   F⁽⁰⁾(0) = alloc_fixed × P × (1 + b)  [S5]
+    AV⁽⁰⁾(0) = P × (1 + b) = 107,000
+    BB⁽⁰⁾(0) = P = 100,000     RB⁽⁰⁾(0) = P = 100,000                            [S9]
+    MGV⁽⁰⁾(0) = 0.875 × P = 87,500         (bonus excluded)                      [S10] [R2]
+    LW⁽⁰⁾(0) = 0   phase⁽⁰⁾(0) = ACCUM   rider_in_force⁽⁰⁾(0) = true   l(0) = 1
+
+A contract entered **in force** after `k` completed contract years opens period `k` on stated
+balances in the same way.
+
+### Processing order in period `t`, at the anniversary `t + 1` closing it **[std]**
 
 Fixed for the reference model, following one specimen's stated sequence — the rider charge is
 deducted **after** index credits are added [S9] — with the benefit-base update after the charge,
-so the charge is always assessed on the *opening* base as `Φ(t) = φ × BB(t−1)`.
+so the charge is always assessed on the *opening* base as `Φ(t) = φ × BB⁽⁰⁾(t)`.
 
 1. Index credit and fixed interest. 2. Rider charge. 3. Benefit base: rollup, stack, step-up.
 4. Lifetime / excess withdrawal. 5. Charges on the excess and proportional reduction of the
@@ -240,18 +257,19 @@ so the charge is always assessed on the *opening* base as `Φ(t) = φ × BB(t−
 **Step 1 — index credit.**
 
     cr(t) = max( f , min( c , R(t) ) )                              [S2] [S4] [S10] [R1]
-    IC(t) = A(t−1) × cr(t)      FI(t) = F(t−1) × i_F
-    AV⁽¹⁾(t) = AV(t−1) + IC(t) + FI(t)
+    IC(t) = A⁽⁰⁾(t) × cr(t)     FI(t) = F⁽⁰⁾(t) × i_F
+    AV⁽¹⁾(t) = AV⁽⁰⁾(t) + IC(t) + FI(t)
 
 Variants, all floored at `f`: `max(f, p × R)` [S4] [S10] [R1]; `max(f, min(c, p × R))` — worked at
 [R1] as `min(80% × 10%, 6%) = 6%`; `max(f, p × R − s)` [S8] [R1]; `d × 1{R ≥ 0}` [R1]; `max(f,
 Σ_{k=1..12} min(R_k, c_m))` [S4] [R1].
 
-*Segment bookkeeping.* One annual segment per indexed account, created at anniversary `t−1` with
-balance `A(t−1)`, maturing at `t`; the credit locks at maturity and cannot be lost to later
-declines [S1]. The credit base is the segment's opening balance less withdrawals from that account
-during the segment — the "Interest Credit Basis" [S6] — which collapses to `A(t−1)` here
-because all transactions occur at anniversaries **[std]**. Reallocation is permitted at each
+*Segment bookkeeping.* One annual segment per indexed account, created at anniversary `t` with
+balance `A⁽⁰⁾(t)` and maturing at anniversary `t + 1`; the credit locks at maturity and cannot be
+lost to later declines [S1]. The credit base is the segment's opening balance less withdrawals
+from that account during the segment — the "Interest Credit Basis" [S6] — which collapses to
+`A⁽⁰⁾(t)` here because all transactions occur at anniversaries **[std]**. Reallocation is
+permitted at each
 anniversary [S1] [S5]; dividends are excluded from `R(t)` [S6] [R1]. **The floor applies to the
 credit, not to the account value** — charges do reduce the account value below its prior balance
 [S7]. On a monthly grid, mid-segment conventions are: no credit in the year of withdrawal [S1];
@@ -261,7 +279,7 @@ earnings-to-date on the free amount and pro rata above [S11].
 
 **Step 2 — rider charge.**
 
-    Φ(t) = φ × BB(t−1)          AV⁽²⁾(t) = AV⁽¹⁾(t) − Φ(t)                        [S9]
+    Φ(t) = φ × BB⁽⁰⁾(t)         AV⁽²⁾(t) = AV⁽¹⁾(t) − Φ(t)                        [S9]
 
 Deducted from the fixed account first, then proportionately across indexed accounts [S9]. `φ` is
 fixed for 15 contract years, then resettable but never above 1.50% [S9]. Variants: charge on the
@@ -273,12 +291,13 @@ minimum value in most states [S3] [S4] — implement as a switch **[std]**.
 
 **Step 3 — benefit base.**
 
-    rollup(t) = g(t) × RB(t−1)                    if t ≤ T_g, else 0        [S2] [S9]
-    stack(t)  = m × max( 0 , IC(t) + FI(t) )      if t ≤ T_g, else 0        [S8] [S9]
-    BB⁽³⁾(t)  = BB(t−1) + rollup(t) + stack(t)
+    rollup(t) = g(t) × RB⁽⁰⁾(t)                   inside T_g, else 0        [S2] [S9]
+    stack(t)  = m × max( 0 , IC(t) + FI(t) )      inside T_g, else 0        [S8] [S9]
+    BB⁽³⁾(t)  = BB⁽⁰⁾(t) + rollup(t) + stack(t)
     BB⁽⁴⁾(t)  = max( BB⁽³⁾(t) , AV⁽²⁾(t) )              annual step-up **[std]**
 
-`T_g` = the earlier of the first lifetime withdrawal and contract year 20 [S1] [S2]. The rollup is
+`T_g` = the earlier of the first lifetime withdrawal and contract year 20 — that is, periods with
+`t + 1 ≤ 20` [S1] [S2]. The rollup is
 a **flat dollar increment**, not simple interest on the grown base — one carrier computes it on
 premium less withdrawals [S2], another on the adjusted *initial* base [S9], and the latter's
 15-year table confirms a constant $3,000 per year on a $100,000 adjusted initial base [S9]. The
@@ -291,8 +310,9 @@ never-decreasing income amount once withdrawals begin [S3]. Testing once at exer
 [S5]/[S9]; testing annually is the superset. **Under the blended baseline the step-up rarely
 binds** — an extra dollar of credit adds $1 to the account value and $1.50 to the base — so it
 binds mainly in the pure-rollup variant (see the worked example). *Rarely, not never:* the
-account-value bonus starts `AV(0) = 107,000` above `BB(0) = 100,000`, so a first contract year with
-a zero index credit gives `AV⁽²⁾(1) = 106,050` against `BB⁽³⁾(1) = 105,000` and the step-up binds.
+account-value bonus opens period 0 at `AV⁽⁰⁾(0) = 107,000` above `BB⁽⁰⁾(0) = 100,000`, so a first
+contract year with a zero index credit gives `AV⁽²⁾(0) = 106,050` against `BB⁽³⁾(0) = 105,000` and
+the step-up binds.
 Test it at every anniversary rather than assuming the stack dominates.
 
 Three growth mechanisms must be expressible; the baseline is (c):
@@ -308,15 +328,16 @@ In design (b) the account value is deliberately starved: one carrier's 250% elec
 defaults to the 150%/100% election once lifetime withdrawals begin [S3]. Model this as an
 account-value interest factor `κ ∈ {0.50, 1.00}` applied to `IC(t)` in step 1, with the
 benefit-base factor `m` [S3] [S4]. In the benefit-base-only bonus designs the bonus is added to
-`BB(0)` and **never touches the account value or the surrender benefit** [S3] [S4] [S8].
+`BB⁽⁰⁾(0)` and **never touches the account value or the surrender benefit** [S3] [S4] [S8].
 
 **Step 4 — lifetime and excess withdrawal.** Exercise is permitted from attained age 50
 [S2] [S3] [S9]:
 
-    LW(t) = π( x + t , basis ) × BB⁽⁴⁾(t)                                    [S3] [S9]
+    LW(t) = π( x + t + 1 , basis ) × BB⁽⁴⁾(t)                                [S3] [S9]
 
-`π` is locked at first exercise **[std]**; joint = single − 0.50% on the younger life [S1] [S3].
-After exercise the ratchet still applies — `LW(t) = max( LW(t−1) , π × BB⁽⁴⁾(t) )` — so income
+`π` is read at the attained age *at the anniversary the withdrawal is taken*, `x + t + 1`, and is
+locked at first exercise **[std]**; joint = single − 0.50% on the younger life [S1] [S3].
+After exercise the ratchet still applies — `LW(t) = max( LW⁽⁰⁾(t) , π × BB⁽⁴⁾(t) )` — so income
 never decreases [S3]. For a gross withdrawal `G(t)`:
 
     guaranteed portion = min( G(t) , LW(t) )      E(t) = max( 0 , G(t) − LW(t) )
@@ -348,7 +369,7 @@ maximum negative MVA [S10]. `MVA = 0` outside the MVA period and on the death be
 
     pre-exercise    ρ(t) = G(t) / AV⁽²⁾(t)                          [S1] [S3] [S5] [S9]
     post-exercise   ρ(t) = E(t) / ( AV⁽²⁾(t) − LW(t) )                       [S9]
-    BB(t) = BB⁽⁴⁾(t) × (1 − ρ)     LW(t) ← LW(t) × (1 − ρ)     RB(t) = RB(t−1) × (1 − ρ)
+    BB(t) = BB⁽⁴⁾(t) × (1 − ρ)     LW(t) ← LW(t) × (1 − ρ)     RB(t) = RB⁽⁰⁾(t) × (1 − ρ)
 
 with `ρ = 0` when `E(t) = 0`, and `ρ = 1` (base to zero, rider terminates [S9]) if the
 post-exercise denominator is non-positive. The post-exercise denominator is the account value
@@ -357,13 +378,13 @@ $100,000, base $200,000, annual benefit amount $10,000, withdrawal $28,000 → d
 excess $18,000, reduction 20%, base → $160,000, benefit amount → $8,000. An RMD above `LW` is not
 an excess withdrawal after exercise; before exercise it reduces the base pro rata [S1] [S9]. The
 alternative rollup-base convention — the dollar subtraction, "Premium minus Withdrawals" [S2]
-— is `RB(t) = max(0, RB(t−1) − G(t))`.
+— is `RB(t) = max(0, RB⁽⁰⁾(t) − G(t))`.
 
 **Step 6 — guaranteed minimum value.**
 
-    MGV(t) = max( 0 , MGV(t−1) × (1 + i_nf) − G(t) )                         [R2] [S10]
+    MGV(t) = max( 0 , MGV⁽⁰⁾(t) × (1 + i_nf) − G(t) )                        [R2] [S10]
 
-with `MGV(0) = 0.875 × P` excluding the bonus [S10]. Model #805 §4A also permits an accumulated
+with `MGV⁽⁰⁾(0) = 0.875 × P` excluding the bonus [S10]. Model #805 §4A also permits an accumulated
 **$50 annual contract charge** and accumulated premium tax to be deducted [R2]; both are set to
 zero **[std]** because no retrieved product declares an actual annual policy fee, making the
 modeled floor slightly conservative. Contractually `i_nf = min(3%, max(0.15%, CMT₅ − 125 bp − Δ))`
@@ -390,26 +411,27 @@ statutory floor.
 annually from its own funds for the rest of the covered life [S1] [S3] [S9] [R1]; there is no account
 value, so **no rider charge is deducted** [S9] and no index credit is computed; the surrender
 value and death benefit are zero; **lapse is impossible**, so every surrender and dynamic-lapse
-formula must be switched off and `l(t) = l(t−1) × (1 − q(t))`; under the joint option the payment
+formula must be switched off and `l(t+1) = l(t) × (1 − q(t))`; under the joint option the payment
 continues to the survivor [S1] [S9]. The attribution test is not cosmetic — an account value run to
 zero by an excess withdrawal loses the guarantee entirely [S1] [S5] [S9]. Implement it as
 `depletion_cause`, set in step 5 whenever `E(t) > 0`, `SC(t) > 0` or `MVA(t) < 0`, and evaluate it
 before the depletion test. One carrier's confinement and terminal illness waivers are themselves
 **excess withdrawals that terminate the income rider** [S1] — a trap if waivers are added.
 
-**Step 8 — decrements and cash flow outputs.** `l(t) = l(t−1) × (1 − q(t)) × (1 − w(t))`, with
-`w(t) = 0` in `DEPLETED`.
+**Step 8 — decrements and cash flow outputs.** `l(t+1) = l(t) × (1 − q(t)) × (1 − w(t))`, with
+`w(t) = 0` in `DEPLETED`. Every flow of period `t` is weighted by `l(t)`, the probability in force
+at the anniversary that **opens** it, because all eight steps precede the decrements.
 
 | Cash flow | Formula | Weight |
 |---|---|---|
-| Premium income (+) | `P` at `t = 0` | 1 |
-| Guaranteed withdrawal (−) | `min(G(t), LW(t))` | `l(t−1)` |
-| Excess withdrawal (−) | `E(t) − SC(t) − CB(t) + MVA(t)` | `l(t−1)` |
-| Surrender (−) | `CSV(t) = max( AV(t) − SC(t) − CB(t) + MVA(t) , MGV(t) )` | `l(t−1) × (1 − q(t)) × w(t)` |
-| Death benefit (−) | `max( AV(t) , MGV(t) )`, full bonus vesting, no charges | `l(t−1) × q(t)` |
-| Post-depletion income (−) | `LW` while `phase = DEPLETED` | `l(t−1)` |
-| Acquisition expense (−) | 6.0% of `P` at `t = 0` **[std]** | 1 |
-| Maintenance expense (−) | `80 × 1.025^(t−1)` **[std]** | `l(t−1)` |
+| Premium income (+) | `P` at the start of `t = 0` | 1 |
+| Guaranteed withdrawal (−) | `min(G(t), LW(t))` | `l(t)` |
+| Excess withdrawal (−) | `E(t) − SC(t) − CB(t) + MVA(t)` | `l(t)` |
+| Surrender (−) | `CSV(t) = max( AV(t) − SC(t) − CB(t) + MVA(t) , MGV(t) )` | `l(t) × (1 − q(t)) × w(t)` |
+| Death benefit (−) | `max( AV(t) , MGV(t) )`, full bonus vesting, no charges | `l(t) × q(t)` |
+| Post-depletion income (−) | `LW` while `phase = DEPLETED` | `l(t)` |
+| Acquisition expense (−) | 6.0% of `P` at the start of `t = 0` **[std]** | 1 |
+| Maintenance expense (−) | `80 × 1.025^t` **[std]** | `l(t)` |
 
 `SC`, `CB` and `Φ(t)` are *internal* transfers within the account value, not separate cash flows —
 they reduce what is ultimately payable. Reporting them as fee income while also projecting the
@@ -426,7 +448,7 @@ evidence is cited, and the tables that would calibrate them are behind paid subs
 **Base surrender table [std]** — shape from [R1]: low early, rising through the surrender charge
 period, spiking at expiry, then falling back but staying above pre-shock levels.
 
-| Contract year | 1–3 | 4–6 | 7–9 | 10 | 11 (shock) | 12+ |
+| Contract year (`t + 1`) | 1–3 | 4–6 | 7–9 | 10 | 11 (shock) | 12+ |
 |---|---|---|---|---|---|---|
 | `w_base` | 2% | 3% | 4% | 5% | see below | 6% |
 
@@ -484,33 +506,35 @@ dominated by the GLWB [S3].
 ## Worked example
 
 Anchor cell: Male 62 ANB, single life, `P = $100,000`, `b = 7%`, GLWB elected at issue, first
-lifetime withdrawal at anniversary 8 (attained age 70). Parameters as specified: `c = 5.25%` [S2],
-`f = 0%` [S1], `φ = 0.95%` [S9], `g = 5.00%` for years 1–10 [S2], `m = 1.50` [S8] [S9], `π(70,
-single) = 5.20%` [S3], `sc(8) = 3%` [S5], `v(8) = 70%` [S5], `i_nf = 1.00%` **[std]**. Opening
-state at anniversary 7 (illustrative balances, broadly consistent with a seven-year deferral at
-these parameters) **[std]**: `AV(7) = 128,000.00` (100% indexed), `BB(7) = 180,000.00`, `RB(7) =
-100,000.00`, `MGV(7) = 93,811.84` (= 87,500 × 1.01⁷), `Wcum(7) = 0`.
+lifetime withdrawal at anniversary 8 (attained age 70) — the anniversary that closes **period
+`t = 7`**, contract year 8, which is the period the table below walks. Parameters as specified:
+`c = 5.25%` [S2], `f = 0%` [S1], `φ = 0.95%` [S9], `g = 5.00%` for years 1–10 [S2],
+`m = 1.50` [S8] [S9], `π(70, single) = 5.20%` [S3], `sc = 3%` and `v = 70%` in contract year 8
+[S5], `i_nf = 1.00%` **[std]**. The state opening period 7, at anniversary 7 (illustrative
+balances, broadly consistent with a seven-year deferral at these parameters) **[std]**:
+`AV⁽⁰⁾(7) = 128,000.00` (100% indexed), `BB⁽⁰⁾(7) = 180,000.00`, `RB⁽⁰⁾(7) = 100,000.00`,
+`MGV⁽⁰⁾(7) = 93,811.84` (= 87,500 × 1.01⁷), `Wcum⁽⁰⁾(7) = 0`.
 
 | # | Item | Formula | Value |
 |---|---|---|---|
-| 1 | Index return, year 8 | `5,450 / 5,000 − 1` | 9.0000% |
-| 2 | Credit rate | `max(0, min(5.25%, 9.00%))` | 5.2500% |
-| 3 | Index credit `IC(8)` | `128,000.00 × 0.0525` | 6,720.00 |
-| 4 | Account value after credit | `128,000.00 + 6,720.00` | 134,720.00 |
-| 5 | Rider charge `Φ(8)` | `0.0095 × 180,000.00` | 1,710.00 |
-| 6 | Account value after charge `AV⁽²⁾` | `134,720.00 − 1,710.00` | 133,010.00 |
-| 7 | Guaranteed rollup | `0.0500 × 100,000.00` | 5,000.00 |
-| 8 | Stacking credit | `1.50 × 6,720.00` | 10,080.00 |
-| 9 | Benefit base before step-up | `180,000.00 + 5,000.00 + 10,080.00` | 195,080.00 |
-| 10 | Step-up test | `max(195,080.00, 133,010.00)` | 195,080.00 (does not bind) |
-| 11 | Lifetime withdrawal `LW(8)` | `0.0520 × 195,080.00` | 10,144.16 |
-| 12 | Free withdrawal amount `FW(8)` | `0.10 × 128,000.00` | 12,800.00 |
-| 13 | Excess `E(8)` | `max(0, 10,144.16 − 10,144.16)` | 0.00 → no SC, MVA or clawback [S9] |
-| 14 | Account value `AV(8)` | `133,010.00 − 10,144.16` | 122,865.84 |
-| 15 | Guaranteed minimum value `MGV(8)` | `93,811.84 × 1.01 − 10,144.16` | 84,605.80 |
-| 16 | Closing benefit base `BB(8)` | unchanged by a guaranteed withdrawal [S9] | 195,080.00 |
+| 1 | Index return over the period, `R(7)` | `5,450 / 5,000 − 1` | 9.0000% |
+| 2 | Credit rate `cr(7)` | `max(0, min(5.25%, 9.00%))` | 5.2500% |
+| 3 | Index credit `IC(7)` | `128,000.00 × 0.0525` | 6,720.00 |
+| 4 | Account value after credit `AV⁽¹⁾(7)` | `128,000.00 + 6,720.00` | 134,720.00 |
+| 5 | Rider charge `Φ(7)` | `0.0095 × 180,000.00` | 1,710.00 |
+| 6 | Account value after charge `AV⁽²⁾(7)` | `134,720.00 − 1,710.00` | 133,010.00 |
+| 7 | Guaranteed rollup `rollup(7)` | `0.0500 × 100,000.00` | 5,000.00 |
+| 8 | Stacking credit `stack(7)` | `1.50 × 6,720.00` | 10,080.00 |
+| 9 | Benefit base before step-up `BB⁽³⁾(7)` | `180,000.00 + 5,000.00 + 10,080.00` | 195,080.00 |
+| 10 | Step-up test `BB⁽⁴⁾(7)` | `max(195,080.00, 133,010.00)` | 195,080.00 (does not bind) |
+| 11 | Lifetime withdrawal `LW(7)` | `0.0520 × 195,080.00` | 10,144.16 |
+| 12 | Free withdrawal amount `FW(7)` | `0.10 × 128,000.00` | 12,800.00 |
+| 13 | Excess `E(7)` | `max(0, 10,144.16 − 10,144.16)` | 0.00 → no SC, MVA or clawback [S9] |
+| 14 | Account value `AV(7)` | `133,010.00 − 10,144.16` | 122,865.84 |
+| 15 | Guaranteed minimum value `MGV(7)` | `93,811.84 × 1.01 − 10,144.16` | 84,605.80 |
+| 16 | Closing benefit base `BB(7)` | unchanged by a guaranteed withdrawal [S9] | 195,080.00 |
 
-**Surrender test at the same anniversary.** A full surrender of `G = AV(8) = 122,865.84` with
+**Surrender test at the same anniversary.** A full surrender of `G = AV(7) = 122,865.84` with
 `12,800.00 − 10,144.16 = 2,655.84` of free amount remaining gives `X = 120,210.00`; `SC = 3% ×
 120,210.00 = 3,606.30` [S5] [S10]; clawback `= 0.30 × (0.07/1.07) × 120,210.00 = 2,359.26` [S10];
 with `i₀ = 3.00%`, `iₜ = 3.50%` and `n = 24` months remaining, `MVA = 120,210.00 × [(1.03/1.035)²
@@ -520,15 +544,16 @@ with `i₀ = 3.00%`, `iₜ = 3.50%` and `n = 24` months remaining, `MVA = 120,21
 `CSV = max(115,741.64, 84,605.80) = 115,741.64`.
 
 **Where the step-up binds.** Under variant (a) — 3% simple rollup on `RB`, no stacking [S9] — the
-same cell carries `BB(7) = 121,000.00`, so `Φ(8) = 1,149.50`, `AV⁽²⁾ = 133,570.50` and `BB⁽³⁾ =
-124,000.00`. The step-up then binds: `BB(8) = 133,570.50` and `LW(8) = 0.0520 × 133,570.50 =
-6,945.67`. General result: the step-up matters when realised index credits outrun the guaranteed
-rollup, and is dominated whenever a stacking factor above 1.0 is present.
+same cell opens period 7 with `BB⁽⁰⁾(7) = 121,000.00`, so `Φ(7) = 1,149.50`,
+`AV⁽²⁾(7) = 133,570.50` and `BB⁽³⁾(7) = 124,000.00`. The step-up then binds:
+`BB(7) = 133,570.50` and `LW(7) = 0.0520 × 133,570.50 = 6,945.67`. General result: the step-up
+matters when realised index credits outrun the guaranteed rollup, and is dominated whenever a
+stacking factor above 1.0 is present.
 
 **Where the liability lands.** Holding index credits at zero from anniversary 8, the account value
 drains by `LW + Φ = 10,144.16 + 0.0095 × 195,080.00 = 11,997.42` a year and is exhausted during
-contract year 19, at attained age about 81. From that point the insurer pays $10,144.16 a year for
-the rest of the contract holder's life, with no account value, no surrender value, no death
+contract year 19 — period `t = 18` — at attained age about 81. From that point the insurer pays
+$10,144.16 a year for the rest of the contract holder's life, with no account value, no surrender value, no death
 benefit and no possibility of lapse [S1] [S3] [S9] [R1]. That stream is the guarantee.
 
 ---

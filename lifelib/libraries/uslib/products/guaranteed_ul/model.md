@@ -48,7 +48,7 @@ The model and both Spaces carry docstrings — `model.doc` describes the product
 projection basis, `model.Projection.doc` holds the full mapping between the technical
 notes' symbols and the cells names, and `model.Data.doc` explains the input arrangement.
 
-## Monthly, 0-based, and `t = 0` is not policy month 1
+## Monthly, 0-based, and `t` is not the contractual policy month
 
 `t` counts **policy months** from the start of the projection, 0-based, the
 library-wide convention (lifelib's `basiclife/BasicTerm_S`, `savings/CashValue_SE`):
@@ -285,9 +285,9 @@ The anchor's account value fails at `t = 3`, the fourth projected month, and its
 guarantee holds for another 77 months. The grace period opens at `t = 80` — the first
 month with `SG − L ≤ 0` — runs the `[std]` two-month discretization of the 61-day
 grace, and the policy lapses at the beginning of `t = 82` with no value.
-`pols_lapse_grace(t)` carries
-those policies out of the in-force roll-forward: it is a contractual termination, not a
-rate-based decrement, so it takes the whole remaining block at once and pays nothing.
+`pols_lapse_grace(t)` carries those policies out of the in-force roll-forward: it is a
+contractual termination, not a rate-based decrement, so it takes the whole remaining
+block at once and pays nothing.
 
 ## The COI-scale precision divergence is shipped, not resolved
 
@@ -318,9 +318,9 @@ display rounding. Two sources:
    rather than 497,774.10 on the shadow. `test_notes_naar_constants_are_dollar_roundings`
    names both.
 2. The notes cascade cent-rounded intermediates from row to row. Their shadow interest
-   column runs a cent or so low in every row, and by `t = 4` (policy month 305) the shadow balance has
-   drifted 5.6 cents from a clean recomputation. That is the worst figure in the table;
-   every base-account figure is within about a cent.
+   column runs a cent or so low in every row, and by `t = 4` (policy month 305) the
+   shadow balance has drifted 5.6 cents from a clean recomputation. That is the worst
+   figure in the table; every base-account figure is within about a cent.
 
 The notes anticipate this: *"Independent recomputation may differ by cents due to
 rounding."* `test_worked_example_gap_is_only_the_notes_rounding` pins the bound at 6

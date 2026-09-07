@@ -19,7 +19,7 @@ df = proj.result_cf()
 print("model point {}: {} - {}{} -> Rentenbeginn at {}, {} policy years "
       "(t = {} .. {})".format(
           point_id, proj.policy_id(), proj.sex(), proj.entry_age(),
-          proj.ann_start_age(), len(df), proj.t_start(), proj.proj_len()))
+          proj.ann_start_age(), len(df), proj.t_start(), proj.proj_len() - 1))
 print("premium form = {}   {:,.2f} EUR a year x {} years {} -> collected "
       "{:,.2f} EUR   Beitragssumme {:,.2f} EUR".format(
           proj.prem_form(), proj.prem_base_pp(proj.t_start()),
@@ -50,7 +50,7 @@ print("credits: guaranteed interest {:,.2f}  safe arm {:,.2f}  index {:,.2f}  "
 n = proj.proj_len()
 print("at Rentenbeginn: account {:,.2f}  guaranteed capital {:,.2f}  "
       "benefit {:,.2f}  monthly Rente {:,.2f}".format(
-          proj.av_pp(n + 1), proj.guar_cap_pp(n + 1), proj.mat_pp(n),
+          proj.av_pp(n), proj.guar_cap_pp(n), proj.mat_pp(n - 1),
           proj.ann_monthly_pp()))
 print("checks: net_cf {}  av roll fwd {}  pols roll fwd {}  surplus alloc {}  "
       "lock-in {}  index credit {}".format(

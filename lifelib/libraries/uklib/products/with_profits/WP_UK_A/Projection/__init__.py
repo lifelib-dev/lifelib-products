@@ -11,10 +11,17 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's scenario A
     >>> Projection.point_id = 2            # scenario B, the down market
 
-``t`` counts **policy years** from issue, 1-based, so an in-force model point at
-duration 5 starts at ``t = proj_start() = 6`` — which is the year the notes' worked
-example projects. State carried into that year (the asset share, the smoothed payout,
-the unit price) is indexed at ``proj_start() - 1``.
+``t`` counts **policy years** from issue and is **0-based**: ``t = 0`` is the first
+policy year, period ``t`` runs from time ``t`` to time ``t + 1``, and the contractual
+policy year is the 1-based label ``policy_year(t) = t + 1``. An in-force model point
+opens the frame at ``t = proj_start() = duration_inforce()``, the elapsed years — so
+the worked example's bond, in force at duration 5, is projected from ``t = 5``, its
+sixth policy year. The state carried into that period (the asset share, the smoothed
+payout, the unit price, the guaranteed benefit) is its **opening** value, read through
+``asset_share_at(t, "BEF_PREM")`` and the ``*_open`` cells rather than through a row
+below the frame. The frame is ``range(proj_start(), proj_len())``: ``proj_len()`` is
+the number of policy years projected from issue, so the last period is
+``proj_len() - 1``.
 
 .. rubric:: Input data
 
@@ -53,14 +60,15 @@ mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 chassis                    chassis()                       UWP_bond or CWP_endowment
-t                          (the cells argument)            Policy year
+t                          (the cells argument)            Policy year index, 0-based
+t + 1                      policy_year(t)                  Contractual policy year label
 x                          age_at_entry()                  Entry age (ANB)
-x + t - 1                  age(t)                          Attained age (ANB)
+x + t                      age(t)                          Attained age (ANB)
 duration_ifo               duration_inforce()              Completed years at valuation
-(none)                     proj_start()                    First projected policy year
+(none)                     proj_start()                    First projected t, = duration_ifo
 n                          policy_term()                   Endowment term
-(none)                     proj_len()                      Last projected policy year
-(none)                     fund_exhaust_year()             Year the bond's units run out
+(none)                     proj_len()                      Policy years from issue, exclusive end
+(none)                     fund_exhaust_year()             Period the bond's units run out
 (none)                     is_forced_encashment()          Whether the run ends there
 P(t)                       premium_pp(t)                   Premium received at BOY
 W(t)                       wd_pp(t)                        Partial withdrawal at BOY
@@ -69,13 +77,16 @@ r(t)                       fund_return()                   Earned fund return
 c_amc                      amc_rate                        Annual management charge
 c_g                        guar_charge_rate(t)             Guarantee/smoothing charge
 CumGC(t)                   guar_charge_cum_pp(t)           Cumulative guarantee charge
-AS(t)                      asset_share(t)                  Asset share at end of year t
-(the steps)                asset_share_at(t, timing)       The asset share inside year t
+AS(t)                      asset_share(t)                  Asset share at the end of period t
+(the steps)                asset_share_at(t, timing)       The asset share inside period t
+AS(t-1)                    asset_share_at(t, "BEF_PREM")   The balance period t opens with
 M(t)                       misc_surplus_pp(t)              Estate distributions; 0 in base
 Q(t)                       unit_price(t)                   With-profits unit price
 U(t)                       units(t)                        Units held
 FV(t), G(t)                guar_benefit_pp(t)              Guaranteed benefit
+FV(t-1), G(t-1)            guar_benefit_open(t)            The guarantee period t opens with
 (pre-MVR value)            policy_value_pp(t)              Guaranteed benefit + final bonus
+(opening value)            policy_value_open(t)            The pre-MVR value at its open
 b(t), b_rev(t)             bonus_rate(t)                   Declared bonus rate
 b_supp                     bonus_supportable(t)            Rate the guarantee-fill implies
 theta, kappa               guar_fill_target, bonus_speed   Bonus-rule parameters
@@ -83,11 +94,12 @@ CB(t)                      cost_of_bonus_pp(t)             Cost of the declared 
 ST(t)                      shareholder_transfer_pp(t)      CB/9, the 90:10 transfer
 MC(t)                      mort_charge_pp(t)               Mortality charge to the AS
 DB_g(t)                    death_guar_pp(t)                Guaranteed death benefit
-q(x+t-1)                   mort_rate(t)                    Mortality rate
+q(x+t)                     mort_rate(t)                    Mortality rate
 w(t)                       surr_rate(t)                    Surrender rate, all multipliers
 (table)                    surr_rate_base(t)               Table surrender rate
 sigma                      smooth_cap                      Year-on-year smoothing cap
 S(t)                       smoothed_payout(t)              Smoothed target payout
+S(t-1)                     smoothed_payout_open(t)         The payout period t opens with
 (cap step)                 smoothed_payout_capped(t)       After the cap, before the corridor
 FB(t), TB(t)               final_bonus_pp(t)               Final or terminal bonus
 MVR(t)                     mvr_pp(t)                       Market value reduction, unapplied
@@ -95,10 +107,10 @@ MVR(t)                     mvr_pp(t)                       Market value reductio
 (guarantee dates)          is_guarantee_date(t)            MVR-free anniversary
 g_db                       death_benefit_factor            Bond death uplift, 1.01
 i_sv, v_sv                 surr_disc_rate                  Endowment surrender discount
-l(t)                       pols_if(t)                      In force at the start of year t
+l(t)                       pols_if(t)                      In force at the start of period t
 (none)                     pols_if_at(t, timing)           BEF_DECR / BEF_SURR / AFT_DECR
-(none)                     pols_death(t)                   Deaths in year t
-(none)                     pols_surr(t)                    Surrenders at the end of year t
+(none)                     pols_death(t)                   Deaths in period t
+(none)                     pols_surr(t)                    Surrenders at the end of period t
 (none)                     pols_maturity(t)                Maturities, or the truncation
 (payouts)                  claim_pp(t, kind)               Payout per claim by kind
 SM(t)                      smoothing_account(t)            Cumulative smoothing cost
@@ -183,18 +195,20 @@ test is a *portfolio* property — a proportion of policies within the range —
 single-policy model cannot express it, so the deterministic corridor is a **[std]**
 reading of it.
 
-Two things the cap cannot say. It is skipped in the first projected year of a
-new-business cell, where ``S(t-1) = 0`` would clamp the payout to nil. And on a
+Two things the cap cannot say. It is skipped in the first projected period of a
+new-business cell, where the opening payout ``S`` is nil and the cap would clamp the
+payout to nil with it. And on a
 **premium-paying** policy it is only loosely meaningful: a firm's ±10% discipline is a
 *like-for-like* comparison between successive maturity cohorts — this year's payout on a
 25-year endowment against last year's — not a comparison of one policy's own payout
 across its own durations. A regular-premium asset share grows far faster than 10% a year
 in early durations because premiums, not investment return, dominate it, so the cap
 binds throughout and the corridor floor is what actually sets the payout. On the
-endowment cell shipped here that persists to about duration 14, after which the asset
+endowment cell shipped here that persists to about ``t = 13``, after which the asset
 share is large enough that the cap stops binding and the payout converges to it: 80% of
-the asset share at duration 1, 100.0% at maturity. The single-premium bond the worked
-example uses has no such problem, which is why the notes can state the cap plainly.
+the asset share in the first policy year, 100.0% at maturity. The single-premium bond
+the worked example uses has no such problem, which is why the notes can state the cap
+plainly.
 
 .. rubric:: Final bonus and MVR are never simultaneous
 
@@ -253,9 +267,10 @@ one. That falls out of :func:`mvr_applied_pp` rather than being coded as a speci
 
 The MVR-free allowance is 5% of the original premium a year, and the withdrawing cell
 takes the whole of it every year. Against a fund whose growth is only the declared
-bonus, that exhausts the fund: the shipped cell cancels its last unit in policy year 34.
-:func:`wd_pp` therefore caps the withdrawal at the unit fund it comes out of, and
-:func:`proj_len` stops the projection the year before exhaustion, where
+bonus, that exhausts the fund: the shipped cell cancels its last unit at ``t = 33``,
+its thirty-fourth policy year. :func:`wd_pp` therefore caps the withdrawal at the unit
+fund it comes out of, and :func:`proj_len` stops the projection the period before
+exhaustion, where
 :func:`is_forced_encashment` marks the ending as a real contractual event and the
 survivors are paid ``FV + FB`` rather than nothing. :func:`check_fund_nonneg` asserts the
 result, because the failure mode here is silent: an uncapped election turns the unit
@@ -325,8 +340,10 @@ def sex():
 def duration_inforce():
     """Completed policy years at the valuation date; 0 on a new-business cell.
 
-    The worked example is an in-force bond at duration 5, so its projection starts in
-    policy year 6 and the state it carries in is indexed at year 5.
+    An elapsed count, so it is 0-based already and is :func:`proj_start` itself.  The
+    worked example is an in-force bond at duration 5, so its projection opens at
+    ``t = 5`` - its sixth policy year - with the carried-in state as that period's
+    opening balances.
     """
     return int(model_point()["duration_inforce"])
 
@@ -458,39 +475,48 @@ def pols_if_init():
 
 
 def proj_start():
-    """The first projected policy year: ``duration_inforce() + 1``."""
-    return duration_inforce() + 1
+    """The first projected period: ``duration_inforce()``, the elapsed policy years.
+
+    ``t`` is 0-based, so a cell in force at duration 5 opens its frame at ``t = 5`` -
+    the sixth policy year - and a new-business cell opens it at ``t = 0``.
+    """
+    return duration_inforce()
 
 
 def fund_exhaust_year():
-    """The first projected year in which the bond's unit fund is exhausted; 0 if never.
+    """The first projected period in which the bond's unit fund is exhausted; 0 if never.
 
     A level withdrawal election runs the unit holding down, and against a fund whose
     growth is only the declared bonus it eventually cancels the last unit.  This locates
-    that year so :func:`proj_len` can stop there.  Zero on the endowment chassis and on
-    any bond cell taking no withdrawals, which is the ordinary case.
+    that period so :func:`proj_len` can stop before it.  Zero on the endowment chassis
+    and on any bond cell taking no withdrawals, which is the ordinary case.
+
+    Zero is safe as the "never" sentinel even though ``t = 0`` is a real period: the
+    withdrawal is capped at the fund it is cancelled out of, so a bond written at
+    ``t = 0`` still holds the units its single premium bought at the end of it.
     """
     if not is_unitised() or wd_rate() <= 0.0:
         return 0
-    for t in range(proj_start(), omega_age - age_at_entry() + 1):    # noqa: F821
+    for t in range(proj_start(), omega_age - age_at_entry()):        # noqa: F821
         if units(t) <= 1e-9:
             return t
     return 0
 
 
 def proj_len():
-    """The last projected policy year.
+    """The number of policy years projected from issue: the frame's exclusive end.
 
-    The endowment's term, or the whole-of-life bond's limiting age - cut short where a
-    withdrawal election has exhausted the unit fund, since a bond with no units is not a
-    bond.
+    The frame is ``range(proj_start(), proj_len())``, so the last projected period is
+    ``proj_len() - 1``.  It is the endowment's term, or the whole-of-life bond's
+    limiting age - cut short where a withdrawal election has exhausted the unit fund,
+    since a bond with no units is not a bond.
     """
     if not is_unitised():
         return policy_term()
     horizon = omega_age - age_at_entry()                             # noqa: F821
     exhaust = fund_exhaust_year()
     if exhaust:
-        return min(horizon, exhaust - 1)
+        return min(horizon, exhaust)
     return horizon
 
 
@@ -503,42 +529,55 @@ def is_forced_encashment():
     modelling truncation, and paying anything there would invent a claim.
     """
     return (is_unitised() and fund_exhaust_year() > 0
-            and proj_len() == fund_exhaust_year() - 1)
+            and proj_len() == fund_exhaust_year())
 
 
 def age(t):
-    """The attained age (ANB) in policy year t: ``x + t - 1``."""
-    return age_at_entry() + t - 1
+    """The attained age (ANB) during period t: ``x + t``."""
+    return age_at_entry() + t
+
+
+def policy_year(t):
+    """The contractual policy year label of period t: ``t + 1``.
+
+    ``t`` is the 0-based period index; the policy year is the 1-based label a contract
+    speaks in, and it is what the guarantee dates and the lapse table are keyed by.
+    Derived here rather than indexed by, so that no schedule is read a row out.
+    """
+    return t + 1
 
 
 def is_guarantee_date(t):
-    """Whether policy year t ends on a contractual guarantee date.
+    """Whether period t ends on a contractual guarantee date.
 
-    An exit there is MVR-free and pays the full guaranteed benefit plus final bonus,
-    which is the option the guarantee-date surrender spike is exercising.
+    Period t ends on the ``policy_year(t)``-th anniversary.  An exit there is MVR-free
+    and pays the full guaranteed benefit plus final bonus, which is the option the
+    guarantee-date surrender spike is exercising.
     """
-    return t in guarantee_years()
+    return policy_year(t) in guarantee_years()
 
 
 def premium_pp(t):
-    """P(t): the premium received at the start of policy year t.
+    """P(t): the premium received at the start of period t.
 
-    The regular premium on the endowment chassis, plus the single premium in policy year
-    1 - which an in-force cell never reaches, so it is not double counted.
+    The regular premium on the endowment chassis, plus the single premium in the first
+    policy year, ``t = 0`` - which an in-force cell never reaches, so it is not double
+    counted.
     """
     p = premium_regular_pp()
-    if t == 1:
+    if t == 0:
         p += premium_single_pp()
     return p
 
 
 def wd_pp(t):
-    """W(t): the partial withdrawal paid at the start of policy year t.
+    """W(t): the partial withdrawal paid at the start of period t.
 
     Taken as a fraction of the **original** premium, which is how the MVR-free allowance
     is expressed, and zero in the base run.  Within the allowance it is MVR-free.
 
-    Capped at the unit fund it is cancelled out of, ``FV(t-1)``.  The cap is a physical
+    Capped at the unit fund it is cancelled out of, the opening ``FV`` of the period.
+    The cap is a physical
     constraint rather than a product rule: a level withdrawal against a fund that is
     being run down eventually exhausts it, and an uncapped election drives the unit
     holding - and with it the guaranteed benefit - negative.  Note what the cap is
@@ -550,32 +589,33 @@ def wd_pp(t):
     w = wd_rate() * premium_single_pp()
     if w <= 0.0:
         return 0.0
-    return min(w, max(0.0, guar_benefit_pp(t - 1)))
+    return min(w, max(0.0, guar_benefit_open(t)))
 
 
 def wd_as_pp(t):
-    """W_AS(t): the asset-share reduction for the year's withdrawal.
+    """W_AS(t): the asset-share reduction for the period's withdrawal.
 
-    Pro rata to the **pre-MVR policy value**, so a withdrawal takes the same proportion
-    of the asset share as it takes of what the policy is worth - not the same cash
-    amount.  Zero where nothing is withdrawn or the policy value is nil.
+    Pro rata to the **pre-MVR policy value** the period opens with, so a withdrawal
+    takes the same proportion of the asset share as it takes of what the policy is worth
+    - not the same cash amount.  Zero where nothing is withdrawn or the policy value is
+    nil.
     """
     w = wd_pp(t)
     if w <= 0.0:
         return 0.0
-    pv = policy_value_pp(t - 1)
+    pv = policy_value_open(t)
     if pv <= 0.0:
         return 0.0
-    return asset_share(t - 1) * w / pv
+    return asset_share_at(t, "BEF_PREM") * w / pv
 
 
 def guar_charge_rate(t):
-    """c_g: the guarantee and smoothing charge on the asset share in year t **[std]**.
+    """c_g: the guarantee and smoothing charge on the asset share in period t **[std]**.
 
     0.10% a year, and it **stops** once cumulative deductions reach the lifetime cap of
-    2% of the asset share.  The cap test is measured on the previous year's asset share
-    rather than the year's own, which is what keeps the charge from depending on the
-    balance it is being deducted from.
+    2% of the asset share.  The cap test is measured on the balance the period opens
+    with rather than on its own closing one, which is what keeps the charge from
+    depending on the balance it is being deducted from.
 
     Note what the cap is a fraction *of*.  The notes set it against the **current** asset
     share, not against a level struck once at first breach, so on a fund that keeps
@@ -584,22 +624,28 @@ def guar_charge_rate(t):
     threshold back above.  That is the rule as written; a cap frozen at first breach
     would be a different rule and a materially different charge.
     """
-    prev_as = asset_share(t - 1)
-    if prev_as > 0.0 and guar_charge_cum_pp(t - 1) >= guar_charge_cap * prev_as:  # noqa: F821
+    prev_as = asset_share_at(t, "BEF_PREM")
+    prev_cum = guar_charge_cum_pp(t - 1) if t > proj_start() else 0.0
+    if prev_as > 0.0 and prev_cum >= guar_charge_cap * prev_as:      # noqa: F821
         return 0.0
     return guar_charge_rate_base                                     # noqa: F821
 
 
 def guar_charge_pp(t):
-    """The guarantee and smoothing charge actually deducted in year t."""
+    """The guarantee and smoothing charge actually deducted in period t."""
     return guar_charge_rate(t) * asset_share_at(t, "AFT_RETURN")
 
 
 def guar_charge_cum_pp(t):
-    """CumGC(t): cumulative guarantee and smoothing deductions to the end of year t."""
+    """CumGC(t): cumulative guarantee and smoothing deductions to the end of period t.
+
+    Nil before the first projected period, so the accumulation opens at zero rather
+    than reading a row below the frame.
+    """
     if t < proj_start():
         return 0.0
-    return guar_charge_cum_pp(t - 1) + guar_charge_pp(t)
+    prev = guar_charge_cum_pp(t - 1) if t > proj_start() else 0.0
+    return prev + guar_charge_pp(t)
 
 
 def misc_surplus_pp(t):
@@ -608,15 +654,21 @@ def misc_surplus_pp(t):
     Miscellaneous surplus and estate distributions are allocated annually where a firm
     operates them; the base model allocates none.
     """
-    return misc_surplus_rate * asset_share(t - 1)                    # noqa: F821
+    return misc_surplus_rate * asset_share_at(t, "BEF_PREM")         # noqa: F821
 
 
 def asset_share_at(t, timing):
-    """The asset share at a point inside policy year t.
+    """The asset share at a point inside period t.
+
+    ``"BEF_PREM"``
+        the balance the period **opens** with: ``AS(t-1)``, or the
+        carried-in :func:`asset_share_init` in the first projected
+        period.  Everything that needs the opening asset share reads it
+        here, so no cells indexes a row below the frame.
 
     ``"BEF_RETURN"``
-        ``AS(t-1) + P(t) - W_AS(t)``, after the start-of-year premium and
-        withdrawal.
+        the opening balance plus the start-of-period premium, less the
+        withdrawal: ``AS(t-1) + P(t) - W_AS(t)``.
 
     ``"AFT_RETURN"``
         after the year's fund return.
@@ -631,13 +683,18 @@ def asset_share_at(t, timing):
 
     ``"AFT_MC"``
         after the mortality charge and any estate distribution; the
-        year-end asset share, and the same number as :func:`asset_share`.
+        closing asset share of the period, and the same number as
+        :func:`asset_share`.
 
     The steps are exposed individually because their order is contractual discipline
     rather than arithmetic convenience.
     """
+    if timing == "BEF_PREM":
+        if t <= proj_start():
+            return asset_share_init()
+        return asset_share(t - 1)
     if timing == "BEF_RETURN":
-        return asset_share(t - 1) + premium_pp(t) - wd_as_pp(t)
+        return asset_share_at(t, "BEF_PREM") + premium_pp(t) - wd_as_pp(t)
     if timing == "AFT_RETURN":
         return asset_share_at(t, "BEF_RETURN") * (1.0 + fund_return())
     if timing == "AFT_CHARGE":
@@ -652,7 +709,7 @@ def asset_share_at(t, timing):
 
 
 def asset_share(t):
-    """AS(t): the asset share at the end of policy year t.
+    """AS(t): the asset share at the end of period t.
 
     A **shadow retrospective accumulation**: nobody owns it and nobody is paid it.  It
     drives claim amounts only through the bonus, smoothing and MVR machinery, and the
@@ -666,50 +723,50 @@ def asset_share(t):
     actually means is that the fund backing the policy is exhausted and the guarantee is
     being met entirely by the estate, which is what :func:`smoothing_account` then
     records.
+
+    Nil before the frame opens: the carried-in balance is the *opening* value of the
+    first projected period, ``asset_share_at(t, "BEF_PREM")``, not a row of its own.
     """
-    if t < proj_start() - 1:
+    if t < proj_start():
         return 0.0
-    if t == proj_start() - 1:
-        return asset_share_init()
     return max(0.0, asset_share_at(t, "AFT_MC"))
 
 
 def unit_price(t):
-    """Q(t): the with-profits unit price at the end of policy year t.
+    """Q(t): the with-profits unit price at the end of period t.
 
     ``Q(t) = Q(t-1)(1 + b(t))``, and it **never decreases** - the non-negative bonus is
     a contractual floor, which is what makes a declaration irreversible.  Constant on
     the endowment chassis, where the guarantee is carried as an amount rather than a
-    price.
+    price.  The first projected period opens at the carried-in price.
     """
-    if t < proj_start() - 1:
+    if t < proj_start():
         return unit_price_init()
-    if t == proj_start() - 1:
-        return unit_price_init()
-    return unit_price(t - 1) * (1.0 + bonus_rate(t))
+    q = unit_price_init() if t == proj_start() else unit_price(t - 1)
+    return q * (1.0 + bonus_rate(t))
 
 
 def units(t):
-    """U(t): the units held at the end of policy year t.
+    """U(t): the units held at the end of period t.
 
-    Bought with the year's premium at the previous price and cancelled to fund the
-    year's withdrawal.  Constant in the base run, where the bond is single premium and
-    nothing is withdrawn.  Nil on the endowment chassis, which carries its guarantee as
-    an amount rather than as units at a price.
+    Bought with the period's premium at the price it opens with and cancelled to fund
+    the period's withdrawal.  Constant in the base run, where the bond is single premium
+    and nothing is withdrawn.  Nil on the endowment chassis, which carries its guarantee
+    as an amount rather than as units at a price.
     """
     if not is_unitised():
         return 0.0
-    if t <= proj_start() - 1:
+    if t < proj_start():
         return units_init()
-    q = unit_price(t - 1)
+    u = units_init() if t == proj_start() else units(t - 1)
+    q = unit_price_init() if t == proj_start() else unit_price(t - 1)
     if q <= 0.0:
-        return units(t - 1)
-    return (units(t - 1) + prem_alloc_rate * premium_pp(t) / q       # noqa: F821
-            - wd_pp(t) / q)
+        return u
+    return u + prem_alloc_rate * premium_pp(t) / q - wd_pp(t) / q    # noqa: F821
 
 
 def guar_benefit_pp(t):
-    """The guaranteed benefit at the end of policy year t.
+    """The guaranteed benefit at the end of period t.
 
     The unit face value ``U(t) Q(t)`` on the bond chassis, and the sum assured plus
     attaching reversionary bonuses ``G(t) = G(t-1)(1 + b(t))`` on the endowment.  Two
@@ -719,17 +776,42 @@ def guar_benefit_pp(t):
     """
     if is_unitised():
         return units(t) * unit_price(t)
-    if t <= proj_start() - 1:
+    if t < proj_start():
         return sum_assured() + attaching_bonus()
-    return guar_benefit_pp(t - 1) * (1.0 + bonus_rate(t))
+    return guar_benefit_open(t) * (1.0 + bonus_rate(t))
+
+
+def guar_benefit_open(t):
+    """The guaranteed benefit period t **opens** with: ``FV(t-1)`` or ``G(t-1)``.
+
+    The carried-in guarantee in the first projected period - the unit face value the
+    model point holds on the bond chassis, the sum assured plus attaching reversionary
+    bonuses on the endowment - and the previous period's closing value after that.  The
+    declaration of period t is measured against it, and the withdrawal is capped at it.
+    """
+    if t > proj_start():
+        return guar_benefit_pp(t - 1)
+    if is_unitised():
+        return units_init() * unit_price_init()
+    return sum_assured() + attaching_bonus()
 
 
 def policy_value_pp(t):
-    """The pre-MVR policy value: the guaranteed benefit plus any final bonus.
+    """The pre-MVR policy value at the end of period t: guarantee plus final bonus.
 
-    What a withdrawal is taken pro rata to, and what an MVR is measured against.
+    What an MVR is measured against.
     """
     return guar_benefit_pp(t) + final_bonus_pp(t)
+
+
+def policy_value_open(t):
+    """The pre-MVR policy value period t **opens** with.
+
+    The same guarantee-plus-final-bonus sum as :func:`policy_value_pp`, on the values
+    the period opens with, and what a start-of-period withdrawal is taken pro rata to.
+    """
+    return guar_benefit_open(t) + max(
+        0.0, smoothed_payout_open(t) - guar_benefit_open(t))
 
 
 def bonus_supportable(t):
@@ -741,28 +823,29 @@ def bonus_supportable(t):
 
         b_supp = [theta AS_proj / GB(t)]^(1/m) - 1
 
-    with ``m`` the remaining endowment term or the bond's bonus-setting horizon.  Future
-    premiums are accumulated to the horizon at the same net return.  Read only when
-    ``bonus_rule_on`` is set.
+    with ``m`` the remaining endowment term - the term less the policy year the period
+    closes, ``policy_term() - policy_year(t)`` - or the bond's bonus-setting horizon.
+    Future premiums are accumulated to the horizon at the same net return.  Read only
+    when ``bonus_rule_on`` is set.
     """
     m = (bonus_horizon if is_unitised()                              # noqa: F821
-         else max(1, policy_term() - t))
+         else max(1, policy_term() - policy_year(t)))
     r_e = fund_return() - amc_rate - guar_charge_rate(t)             # noqa: F821
-    proj = asset_share(t - 1) * (1.0 + r_e) ** m
+    proj = asset_share_at(t, "BEF_PREM") * (1.0 + r_e) ** m
     p = premium_regular_pp()
     if p > 0.0:
         if abs(r_e) < 1e-12:
             proj += p * m
         else:
             proj += p * (1.0 + r_e) * ((1.0 + r_e) ** m - 1.0) / r_e
-    gb = guar_benefit_pp(t - 1)
+    gb = guar_benefit_open(t)
     if gb <= 0.0 or proj <= 0.0:
         return 0.0
     return (guar_fill_target * proj / gb) ** (1.0 / m) - 1.0         # noqa: F821
 
 
 def bonus_rate(t):
-    """b(t): the regular or reversionary bonus rate declared for policy year t.
+    """b(t): the regular or reversionary bonus rate declared for period t.
 
     The model point's snapshot rate, held level, which is what the notes' base
     projection does.  With ``bonus_rule_on`` set, the smoothed setting rule applies
@@ -785,17 +868,19 @@ def bonus_rate(t):
 
 
 def cost_of_bonus_pp(t):
-    """CB(t): the cost of the bonus declared in policy year t **[std]**.
+    """CB(t): the cost of the bonus declared at the end of period t **[std]**.
 
     On the bond chassis it is the face-value uplift the declaration delivers,
-    ``b(t) FV(t-1)``.  On the endowment it is the declared addition to the guarantee
-    discounted to the declaration date at the surrender-basis rate, since the addition
-    is not payable until maturity; the survivorship discount is omitted **[std]**.
+    ``b(t) FV(t-1)`` on the face value the period opened with.  On the endowment it is
+    the declared addition to the guarantee discounted to the declaration date at the
+    surrender-basis rate, over the ``policy_term() - policy_year(t)`` years still to
+    run, since the addition is not payable until maturity; the survivorship discount is
+    omitted **[std]**.
     """
     if is_unitised():
-        return bonus_rate(t) * guar_benefit_pp(t - 1)
-    delta = guar_benefit_pp(t) - guar_benefit_pp(t - 1)
-    years = max(0, policy_term() - t)
+        return bonus_rate(t) * guar_benefit_open(t)
+    delta = guar_benefit_pp(t) - guar_benefit_open(t)
+    years = max(0, policy_term() - policy_year(t))
     return delta / (1.0 + surr_disc_rate) ** years                   # noqa: F821
 
 
@@ -810,7 +895,7 @@ def shareholder_transfer_pp(t):
 
 
 def mort_rate(t):
-    """q(x+t-1): the annual best-estimate mortality rate in policy year t **[std]**.
+    """q(x+t): the annual best-estimate mortality rate in period t **[std]**.
 
     The shipped table rate times ``mort_be_factor``.  Both are placeholders: CMI
     tables issued after March 2013 are subscriber-restricted, so the table is an
@@ -836,7 +921,7 @@ def death_guar_pp(t):
 
 
 def mort_charge_pp(t):
-    """MC(t): the mortality charge deducted from the asset share in policy year t.
+    """MC(t): the mortality charge deducted from the asset share in period t.
 
     ``q x max(0, DB_g(t) - AS_after_ST)``: the mortality rate times the sum at risk,
     measured on the balance **after** the shareholder transfer.  Differences between
@@ -855,11 +940,12 @@ def smoothed_payout_capped(t):
     the corridor.
 
     The cap is **skipped where there is no previous payout** to compare against - the
-    first year of a new-business cell, where ``S(t-1) = 0`` would otherwise clamp the
-    payout to nil and leave the corridor to do all the work.  See the Space docstring on
-    what the cap can and cannot say about a premium-paying policy.
+    first period of a new-business cell, where the opening ``S`` is nil and the cap
+    would otherwise clamp the payout to nil and leave the corridor to do all the work.
+    See the Space docstring on what the cap can and cannot say about a premium-paying
+    policy.
     """
-    prev = smoothed_payout(t - 1)
+    prev = smoothed_payout_open(t)
     if prev <= 0.0:
         return asset_share(t)
     lo = (1.0 - smooth_cap) * prev                                   # noqa: F821
@@ -868,7 +954,7 @@ def smoothed_payout_capped(t):
 
 
 def smoothed_payout(t):
-    """S(t): the smoothed target payout at the end of policy year t.
+    """S(t): the smoothed target payout at the end of period t.
 
     The capped value, then clamped into the target corridor of 80% to 120% of the asset
     share.  The corridor is what stops the cap holding a payout indefinitely away from
@@ -879,12 +965,24 @@ def smoothed_payout(t):
     within the range, which a single-policy model cannot express; the deterministic
     corridor is a **[std]** reading of it.
     """
-    if t <= proj_start() - 1:
+    if t < proj_start():
         return smoothed_payout_init()
     as_t = asset_share(t)
     lo = corridor_lo * as_t                                          # noqa: F821
     hi = corridor_hi * as_t                                          # noqa: F821
     return max(lo, min(hi, smoothed_payout_capped(t)))
+
+
+def smoothed_payout_open(t):
+    """S(t-1): the smoothed payout period t **opens** with.
+
+    The carried-in benchmark in the first projected period - nil on a new-business
+    cell, which is what switches the year-on-year cap off there - and the previous
+    period's closing payout after that.
+    """
+    if t > proj_start():
+        return smoothed_payout(t - 1)
+    return smoothed_payout_init()
 
 
 def final_bonus_pp(t):
@@ -898,7 +996,7 @@ def final_bonus_pp(t):
 
 
 def mvr_pp(t):
-    """MVR(t): the market value reduction **scale** in policy year t.
+    """MVR(t): the market value reduction **scale** at the end of period t.
 
     ``min(max(0, FV - S), max(0, FV - AS))``.  The first argument recovers the shortfall
     of the smoothed payout below the unit face value; the second is the contractual
@@ -925,7 +1023,7 @@ def mvr_pp(t):
 
 
 def mvr_applied_pp(t):
-    """The market value reduction an exit in policy year t actually bears.
+    """The market value reduction an exit at the end of period t actually bears.
 
     Zero on a guarantee date, where the contract promises the full guaranteed benefit
     without reduction, and zero on death.  The death case is handled in
@@ -938,7 +1036,7 @@ def mvr_applied_pp(t):
 
 
 def claim_pp(t, kind):
-    """The payout per claim in policy year t, by kind.
+    """The payout per claim at the end of period t, by kind.
 
     ``"DEATH"``
         ``g_db (FV + FB)`` on the bond chassis - the 101% uplift applies to
@@ -957,12 +1055,13 @@ def claim_pp(t, kind):
     ``"GUARANTEE"``
         ``GB + FB``, what a guarantee-date exit pays.  Computed at every
         ``t`` so the two can be compared, but paid only where
-        :func:`is_guarantee_date` - on those years it equals the surrender
-        payout, because the MVR is not applied.  The endowment chassis has
-        no guarantee dates, so this is informational there.
+        :func:`is_guarantee_date` - on those periods it equals the
+        surrender payout, because the MVR is not applied.  The endowment
+        chassis has no guarantee dates, so this is informational there.
 
     ``"MATURITY"``
-        ``G(n) + TB(n)`` at the end of the endowment term.  On the bond
+        ``G(n) + TB(n)`` at the end of the endowment term, the last
+        projected period ``proj_len() - 1``.  On the bond
         chassis, which is whole of life, this is zero unless the projection
         ends in a **forced encashment** - the withdrawal election has
         cancelled the last unit - in which case the survivors are paid
@@ -980,7 +1079,7 @@ def claim_pp(t, kind):
     if kind == "GUARANTEE":
         return base
     if kind == "MATURITY":
-        if t != proj_len():
+        if t != proj_len() - 1:
             return 0.0
         if is_unitised() and not is_forced_encashment():
             return 0.0
@@ -999,14 +1098,16 @@ def smoothing_cost_pp(t, kind):
 
 
 def surr_rate_base(t):
-    """The table annual surrender rate in policy year t **[std]**.
+    """The table annual surrender rate in period t **[std]**.
 
-    Read from the chassis's own row of the lapse table; policy years beyond the table
-    take its last row.  A drafting construction: no public UK with-profits lapse
-    experience was retrieved.
+    Read from the chassis's own row of the lapse table, whose key is the **contractual
+    policy year** - a 1-based label, so period t reads row ``policy_year(t)``; policy
+    years beyond the table take its last row.  A drafting construction: no public UK
+    with-profits lapse experience was retrieved.
     """
     tbl = data.lapse_table().loc[chassis()]                          # noqa: F821
-    return float(tbl.loc[min(t, int(tbl.index.max())), "lapse_rate"])
+    y = min(policy_year(t), int(tbl.index.max()))
+    return float(tbl.loc[y, "lapse_rate"])
 
 
 def mvr_deterrent(t):
@@ -1019,7 +1120,7 @@ def mvr_deterrent(t):
 
 
 def guarantee_spike(t):
-    """2.5 in a guarantee-date year **when the guarantee is in the money** **[std]**.
+    """2.5 in a guarantee-date period **when the guarantee is in the money** **[std]**.
 
     The gate matters: MVR-free encashment is worth exercising precisely when the
     guaranteed benefit exceeds the asset share and worth nothing otherwise, so applying
@@ -1032,13 +1133,13 @@ def guarantee_spike(t):
 
 
 def guarantee_imminent(t):
-    """0.8 in the year before a guarantee date **[std]**: policyholders wait for it."""
+    """0.8 in the period before a guarantee date **[std]**: policyholders wait for it."""
     return (guarantee_imminent_factor if is_guarantee_date(t + 1)    # noqa: F821
             else 1.0)
 
 
 def surr_rate(t):
-    """w(t): the annual surrender rate applied at the end of policy year t.
+    """w(t): the annual surrender rate applied at the end of period t.
 
     The table rate times all three behavioural multipliers, capped at 1.
     """
@@ -1047,8 +1148,12 @@ def surr_rate(t):
 
 
 def pols_if(t):
-    """l(t-1): the number of policies in force at the **start** of policy year t."""
-    if t < proj_start() or t > proj_len():
+    """l(t): the number of policies in force at the **start** of period t.
+
+    ``pols_if(proj_start()) == pols_if_init()``, and it is the weight on every flow of
+    that same ``result_cf()`` row.  Zero outside the frame.
+    """
+    if t < proj_start() or t >= proj_len():
         return 0.0
     if t == proj_start():
         return pols_if_init()
@@ -1056,37 +1161,38 @@ def pols_if(t):
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     ``"BEF_DECR"``
-        the start of the year, before any decrement; :func:`pols_if`.
+        the start of the period, before any decrement; :func:`pols_if`.
 
     ``"BEF_SURR"``
         after deaths, before surrenders - the processing order is death
         before surrender **[std]**.
 
     ``"AFT_DECR"``
-        the end-of-year count, and zero in the final projected year, where
-        the endowment matures and the bond projection is truncated.
+        the end-of-period count, and zero in the last projected period
+        ``proj_len() - 1``, where the endowment matures and the bond
+        projection is truncated.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_SURR":
         return pols_if(t) * (1.0 - mort_rate(t))
     if timing == "AFT_DECR":
-        if t < proj_start() or t >= proj_len():
+        if t < proj_start() or t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_SURR") * (1.0 - surr_rate(t))
     raise ValueError("invalid timing")
 
 
 def pols_death(t):
-    """Deaths in policy year t, against the start-of-year in force."""
+    """Deaths in period t, against the in force at its start."""
     return pols_if(t) * mort_rate(t)
 
 
 def pols_surr(t):
-    """Surrenders at the end of policy year t, from the survivors of mortality."""
+    """Surrenders at the end of period t, from the survivors of mortality."""
     return pols_if_at(t, "BEF_SURR") * surr_rate(t)
 
 
@@ -1097,23 +1203,26 @@ def pols_maturity(t):
     chassis they are paid where the projection ends in a forced encashment and pay
     nothing where it ends at the limiting age - see :func:`is_forced_encashment`.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if(t) - pols_death(t) - pols_surr(t)
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^(t-1)`` **[std]**."""
-    return (1.0 + inflation_rate) ** (t - 1)                         # noqa: F821
+    """The expense inflation factor in period t: ``(1 + pi)^t`` **[std]**.
+
+    One in the first policy year, ``t = 0``.
+    """
+    return (1.0 + inflation_rate) ** t                               # noqa: F821
 
 
 def premiums(t):
-    """Premium income at the start of policy year t, an inflow."""
+    """Premium income at the start of period t, an inflow."""
     return premium_pp(t) * pols_if(t)
 
 
 def withdrawals(t):
-    """Partial withdrawals paid at the start of policy year t.
+    """Partial withdrawals paid at the start of period t.
 
     An owner election rather than a claim, which is why it has its own name and column.
     """
@@ -1121,7 +1230,7 @@ def withdrawals(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``, ``"SURRENDER"`` and ``"MATURITY"`` weight :func:`claim_pp` by the
     corresponding decrement.  ``"GUARANTEE"`` is not a separate outgo: a guarantee-date
@@ -1139,7 +1248,7 @@ def claims(t, kind=None):
 
 
 def expenses(t):
-    """E(t): the maintenance expense in policy year t **[std]**.
+    """E(t): the maintenance expense in period t **[std]**.
 
     £30 a policy a year inflating at 3%.  Where a fund's actual expenses exceed the
     capped charge taken from asset shares, the excess falls to the estate - a fund-level
@@ -1149,11 +1258,11 @@ def expenses(t):
 
 
 def shareholder_transfers(t):
-    """The 90:10 shareholder transfer paid out of the fund in policy year t.
+    """The 90:10 shareholder transfer paid out of the fund in period t.
 
-    The transfer on the year's declared bonus, weighted by the in force, plus a ninth of
-    the final bonus actually paid on the year's claims - the same 90:10 split applied at
-    the point the non-guaranteed part is handed over.
+    The transfer on the period's declared bonus, weighted by the in force, plus a ninth
+    of the final bonus actually paid on the period's claims - the same 90:10 split
+    applied at the point the non-guaranteed part is handed over.
     """
     on_declaration = shareholder_transfer_pp(t) * pols_if(t)
     exits = pols_death(t) + pols_surr(t) + pols_maturity(t)
@@ -1163,11 +1272,11 @@ def shareholder_transfers(t):
 
 
 def smoothing_cost(t):
-    """The estate's smoothing and guarantee cost on the year's exits.
+    """The estate's smoothing and guarantee cost on the period's exits.
 
     Each exiting policy is paid its smoothed payout while the asset share it earned is
-    released; the difference falls on the estate.  Positive in a year when guarantees or
-    smoothing pay more than the policies earned.
+    released; the difference falls on the estate.  Positive in a period when guarantees
+    or smoothing pay more than the policies earned.
     """
     return (smoothing_cost_pp(t, "DEATH") * pols_death(t)
             + smoothing_cost_pp(t, "SURRENDER") * pols_surr(t)
@@ -1180,14 +1289,18 @@ def smoothing_account(t):
     Intended broadly neutral over time.  The base model tracks the balance without
     recycling it into credited returns; one insurer operates that recycling, feeding it
     back subject to a maximum annual deduction from asset shares [S5].
+
+    The balance opens at zero in the first projected period rather than reading a row
+    below the frame.
     """
     if t < proj_start():
         return 0.0
-    return smoothing_account(t - 1) + smoothing_cost(t)
+    prev = smoothing_account(t - 1) if t > proj_start() else 0.0
+    return prev + smoothing_cost(t)
 
 
 def net_cf(t):
-    """The net cash flow of policy year t, **income positive**.
+    """The net cash flow of period t, **income positive**.
 
     Premiums less claims, withdrawals, expenses and shareholder transfers.  The asset
     share appears nowhere in it: it is a state variable, not a cash flow, and the
@@ -1198,29 +1311,29 @@ def net_cf(t):
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere."""
+    """The in-force roll-forward residual in period t; zero everywhere."""
     return (pols_if(t) - pols_if(t + 1)
             - pols_death(t) - pols_surr(t) - pols_maturity(t))
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected year."""
+    """True when the in-force roll-forward closes in every projected period."""
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_asset_share_roll_fwd_resid(t):
-    """The asset share recursion residual in policy year t; zero everywhere.
+    """The asset share recursion residual in period t; zero everywhere.
 
     ``AS(t) - max(0, {[AS(t-1) + P - W_AS](1 + r)(1 - c_amc - c_g) - ST - MC + M})``,
     rebuilt in one expression rather than through :func:`asset_share_at`, so that a
     mis-ordered step - a shareholder transfer taken before the charges, say, or a
     mortality charge measured on the wrong balance - shows up here.  The outer
     ``max(0, ...)`` is the zero floor :func:`asset_share` applies; the check still
-    validates the ordering in every year the floor is not binding, which is every year of
-    every cell shipped here except the tail of the sustained down scenario.
+    validates the ordering in every period the floor is not binding, which is every
+    period of every cell shipped here except the tail of the sustained down scenario.
     """
-    built = ((asset_share(t - 1) + premium_pp(t) - wd_as_pp(t))
+    built = ((asset_share_at(t, "BEF_PREM") + premium_pp(t) - wd_as_pp(t))
              * (1.0 + fund_return())
              * (1.0 - amc_rate - guar_charge_rate(t))                # noqa: F821
              - shareholder_transfer_pp(t) - mort_charge_pp(t)
@@ -1231,7 +1344,7 @@ def check_asset_share_roll_fwd_resid(t):
 def check_asset_share_roll_fwd():
     """True when the asset share recursion closes in every projected year."""
     return all(abs(check_asset_share_roll_fwd_resid(t)) <= 1e-8
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_fb_mvr_exclusive():
@@ -1243,7 +1356,7 @@ def check_fb_mvr_exclusive():
     exit.
     """
     return all(min(final_bonus_pp(t), mvr_pp(t)) <= 1e-9
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_mvr_bound():
@@ -1253,7 +1366,7 @@ def check_mvr_bound():
     ``max(0, GB - AS)``.  The bound is a conduct rule, not a modelling nicety.
     """
     return all(mvr_pp(t) <= max(0.0, guar_benefit_pp(t) - asset_share(t)) + 1e-9
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_fund_nonneg():
@@ -1267,7 +1380,7 @@ def check_fund_nonneg():
     :func:`proj_len` stops at exhaustion; this asserts that they worked.
     """
     return all(units(t) >= -1e-9 and asset_share(t) >= -1e-9
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_payout_corridor():
@@ -1276,7 +1389,7 @@ def check_payout_corridor():
     Deterministic at model-point level; the regulatory test is a portfolio property that
     a single-policy model cannot express.
     """
-    for t in range(proj_start(), proj_len() + 1):
+    for t in range(proj_start(), proj_len()):
         as_t = asset_share(t)
         if as_t <= 0.0:
             continue
@@ -1287,14 +1400,17 @@ def check_payout_corridor():
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year t.
+    """Result table of cashflows, indexed by the 0-based period t.
 
-    ``pols_if`` is the start-of-year count that weights every flow on the row.  The
+    The frame is ``range(proj_start(), proj_len())``, so the first row is the first
+    projected period and the last is ``proj_len() - 1``.
+
+    ``pols_if`` is the start-of-period count that weights every flow on the row.  The
     asset share is published beside them as ``asset_share`` because it is what the
     payouts are measured against - but it is a state variable, not a cash flow, and it
     is not part of ``net_cf``.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1314,12 +1430,13 @@ def result_cf():
 
 
 def result_payout():
-    """Result table of the payout machinery, indexed by policy year t.
+    """Result table of the payout machinery, indexed by the 0-based period t.
 
     The asset share against the guaranteed benefit and the smoothed payout, and the
-    final bonus and market value reduction the gap between them produces.
+    final bonus and market value reduction the gap between them produces.  Every column
+    is an end-of-period value, on the same frame as :func:`result_cf`.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "asset_share": [asset_share(t) for t in ts],

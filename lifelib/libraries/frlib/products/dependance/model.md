@@ -43,6 +43,40 @@ model = mx.read_model("products/dependance/Dep_FR_S")
 model.Projection[1].result_cf()
 ```
 
+## The time index, and what the input keys are
+
+`t` is the policy month and it is **0-based**, the library-wide convention: `t = 0` is the
+first projected month and it is a full month, not an issue instant — the premium, the
+maintenance and acquisition expense, the *carence* refund, the *capital* and the month's
+decrements all sit on that one row.
+
+`proj_len()` is the **number of projected months**, the exclusive end of the frame:
+`proj_len() = 12 × (terminal_age - age_at_entry())`, 480 on the base cell, the projection
+is `range(proj_len())`, and `result_cf()` and `result_states()` have `proj_len()` rows
+indexed `t = 0 … proj_len() - 1`. The last projected month on the base cell is therefore
+`t = 479`, at attained age 109. This is lifelib's `for t in range(proj_len())`.
+
+Two other clocks run beside `t` and neither is the frame's index:
+
+- `policy_year(t) = t // 12 + 1` is the **contractual, 1-based label** derived from `t`.
+  Policy year 1 is `t = 0…11`, the anniversary is the start of months 12, 24, …, and
+  `duration(t) = t // 12` is the same thing as a 0-based count of completed years.
+- `z` is the months since **first recognition** of a covered state. It is a cohort label
+  running from 1 — cohort 1 is a state recognised at the end of the previous month — and
+  it is stored as element `z - 1` of the `dep_cohorts(t)` vectors. It is independent of
+  `t` and the conversion did not touch it.
+
+**No input CSV is keyed by the model's `t`,** so no input file changed:
+
+| File | Time-like column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 11) | Contractual 1-based label; values unchanged. Read as `lapse_rate_base(t)` through `policy_year(t) = t // 12 + 1`, capped at the last row |
+| `revision_table.csv` | `policy_year` (1 … 6) | The same; values unchanged. Also read at the synthetic month `12 (y - 1)` by `premium_factor(y)` |
+| `reduction_table.csv` | `years_paid` (5 … 30) | An **elapsed count** of completed premium years, not a point on the frame; already 0-based in lifelib's sense and unchanged. Read as `reduction_coeff(n)` with `n = years_premiums_paid(t) = (t + 1) // 12` |
+| `mort_table.csv` | `age` (40 … 110) | An attained age, not a time index; unchanged. Read at `age(t) = age_at_entry() + t // 12` |
+| `model_point_table.csv` | `claim_duration_months`, `years_paid`, `carence_*_months`, `franchise_months` | All **elapsed counts or contractual lengths in months**, not points on the frame; unchanged. None of them offsets the frame — an in-force cell still opens at `t = 0` and restarts its policy-year clock at the valuation date |
+| `prevalence_table.csv`, `severity_share_table.csv`, `cause_mix_table.csv` | none | Keyed by sex, trigger grid and cause |
+
 ## Five ledgers, and why the model needs all of them
 
 The health chain is *autonome* → *dépendance partielle* / *dépendance totale* → *décès*,
@@ -109,8 +143,8 @@ have nothing to do with each other:
   which is what `z` records.
 
 `dep_cohorts(t)` holds all four vectors for one month and is the model's only list-valued
-cells: four two-argument recursions would be `4 × (proj_len() + 1) × max_dur()` separate
-cells, nearly a million on the base cell, where this is `proj_len() + 1` cells with a loop
+cells: four two-argument recursions would be `4 × proj_len() × max_dur()` separate
+cells, nearly a million on the base cell, where this is `proj_len()` cells with a loop
 inside.
 `pols_part_dur(t, z)` and its siblings read elements out of it, so the notes'
 two-dimensional objects are still addressable by name. The fourth vector is a
@@ -403,6 +437,11 @@ that the two must move together or not at all.
 The four `check_*()` cells — the in-force roll-forward, the five-ledger population
 identity, and the two dependent ledgers against their aggregate recursions — are asserted
 on every model point, as is `check_model_point()`, which validates the input.
+
+The frame itself is pinned twice: `test_worked_example_lifetime_totals_and_counts` asserts
+`len(result_cf()) == proj_len() == 480` with `index[-1] == 479`, and
+`tests/test_model_conventions_fr.py` asserts library-wide that the index is contiguous,
+starts at or above zero and ends at `proj_len() - 1`.
 
 ```bash
 python -m pytest tests -q

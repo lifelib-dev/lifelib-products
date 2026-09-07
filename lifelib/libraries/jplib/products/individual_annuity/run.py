@@ -43,12 +43,17 @@ print("mean lapse rate, fund-weighted   = {:.4%}".format(proj.lapse_rate_mean("f
 print()
 
 df = proj.result_cf()
+n = proj.annuitisation_t()
 print("cash flow statement, JPY per policy issued, income positive")
+print("t is 0-based: t = 0 is the year of issue and the frame runs t = 0 .. {} "
+      "({} rows)".format(proj.proj_len() - 1, proj.proj_len()))
+print("first four years, t = 0 .. 3")
 print(df.head(4).round(2).to_string())
 print("...")
-n = proj.annuitisation_t()
+print("around the nenkin shiharai kaishi bi, t = n - 1 .. n + 2 (n = {})".format(n))
 print(df.loc[n - 1:n + 2].round(2).to_string())
 print("...")
+print("last two years, t = {} .. {}".format(proj.proj_len() - 2, proj.proj_len() - 1))
 print(df.tail(2).round(2).to_string())
 print()
 print("undiscounted total net_cf        = JPY {:,.2f}".format(df["net_cf"].sum()))

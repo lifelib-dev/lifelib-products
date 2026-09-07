@@ -35,8 +35,19 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by policy year `t` with one column per
-cash flow line, and `result_pols()` the decrement side beside it.
+`result_cf()` returns a tidy `DataFrame` with one column per cash flow line, and
+`result_pols()` the decrement side beside it.
+
+**The time index.** `t` is **0-based**, the library-wide convention: `t = 0` is the first
+projected year, period `t` runs from time `t` to time `t + 1`, and `age(t) = issue_age + t`.
+`proj_len()` is the **number** of projected years — the exclusive end of the frame — so
+`result_cf()` runs `t = 0 … proj_len() - 1`, has `proj_len()` rows and is built with
+lifelib's `for t in range(proj_len())`. Every model point here is new business at issue, so
+every frame starts at `t = 0`; there is no in-force offset. `pols_if(0) = pols_if_init()`,
+and `pols_if(proj_len())` is the expiring cohort, defined for the closure identity and a
+weight on nothing. The contractual **policy year** is the derived 1-based label
+`policy_year(t) = t + 1`, and only the two policy-year-keyed CSVs read it — see *Inputs are
+external files* below.
 
 The model and both its Spaces carry docstrings — `model.doc` describes the product and
 the projection basis, `model.Projection.doc` holds the full mapping between the
@@ -51,13 +62,13 @@ parameter. The French default premium form is `revisable`: the cotisation is rec
 at **every annual renewal** from the tariff rate at the new attained age
 [S1] [S2] [S3] [S4] [S6] [S7] [S9] [S10]. So `prem_pp(t)` moves every year:
 
-| t | 1 | 2 | 3 | … | 17 |
+| t | 0 | 1 | 2 | … | 16 |
 |---|---|---|---|---|---|
 | attained age | 58 | 59 | 60 | … | 74 |
 | `prem_rate(t)` [S3] | 1,05 % | 1,13 % | 1,56 % | … | 4,86 % |
 | `prem_pp(t)` | 1 575,00 | 1 695,00 | 2 340,00 | … | 7 290,00 |
 
-`prem_pp(3) / prem_pp(2) = 1,56 / 1,13 = 1,380531` — a 38 % step from age 59 to 60
+`prem_pp(2) / prem_pp(1) = 1,56 / 1,13 = 1,380531` — a 38 % step from age 59 to 60
 against a trend of about 8 % a year. That step is in the published grid, and a fitted
 curve smooths it away, so `prem_rate` is a **table lookup and nothing else**. Over the
 whole cover the cotisation multiplies by 4,6286, which is exactly `r(74)/r(58)` and does
@@ -104,7 +115,7 @@ pols_if(t+1) = pols_if(t) × (1 − mort_rate(t) − ptia_rate(t)) × (1 − lap
 
 so a life that leaves through `ptia_rate` is gone from `pols_if` and can never generate a
 death claim. An implementation using independent rates, `1 − (1−q_d)(1−q_p)`, gets
-0.00479680 against 0.00480000 in year 1 — immaterial there, material at older ages, and
+0.00479680 against 0.00480000 at `t = 0` — immaterial there, material at older ages, and
 either way a convention that has to be declared.
 
 `check_decrement_closure()` asserts the consequence at every `t`: claim events plus
@@ -115,13 +126,13 @@ twice fails there rather than hiding inside a plausible-looking total.
 PTIA cover also **stops earlier than death cover**, at `ptia_end_age`, in five of the
 eight retrieved carriers [S2] [S3] [S6] [S7] [S8]. The switch is a hard gate on the
 attained age rather than a taper: `ptia_rate(t)` is exactly zero from the first `t` with
-`age(t) ≥ ptia_end_age()`. On the worked configuration that is `t = 8 … 17`; model
+`age(t) ≥ ptia_end_age()`. On the worked configuration that is `t = 7 … 16`; model
 point 11 enters at exactly `ptia_end_age`, so its PTIA cover never attaches at all.
 `check_ptia_gate()` recomputes the gate independently of `ptia_rate` and asserts both.
 
 The suicide exclusion never touches PTIA. Art. L. 132-7 voids the **death** cover for
 suicide in the first year [R1], and PTIA is not death, so `suicide_factor` multiplies
-`benefit_death_pp` alone and only at `t = 1`. Nor does the model carry the art. R. 132-5
+`benefit_death_pp` alone and only at `t = 0`. Nor does the model carry the art. R. 132-5
 immediate-cover ceiling of 120 000 €: that alinéa is confined to principal-residence loan
 cover [R1] [R2].
 
@@ -144,13 +155,13 @@ The same statutory fact is why the whole of the exit machinery is lapse. The 30-
 **[std]**; there is no surrender charge, no dynamic surrender behaviour and no paid-up
 election to model.
 
-## The last policy year has no lapse
+## The last projected year has no lapse
 
-The notes' processing order puts lapses at the **end** of the policy year, after both
-insured decrements. In the final policy year the end of the year is also the moment the
+The notes' processing order puts lapses at the **end** of the year, after both insured
+decrements. In the final projected year the end of the year is also the moment the
 cover expires, and a lapse and an expiry are then the same event paying the same nothing.
-So `lapse_rate(proj_len())` is zero and the whole surviving population leaves as an
-expiry. The technical notes state the same convention — `w(n) = 0` **[std]**, under
+So `lapse_rate(proj_len() - 1)` is zero and the whole surviving population leaves as an
+expiry. The technical notes state the same convention — `w(n − 1) = 0` **[std]**, under
 *Lapse* and in step 7 of the processing order — and it is what reproduces their own split
 of the closure identity:
 
@@ -158,12 +169,12 @@ of the closure identity:
 |---|---|---|---|---|---|
 | worked configuration | 0,06939268 | 0,00536169 | 0,64637711 | 0,27886852 | **1,00000000** |
 
-`pols_if(proj_len() + 1)` is that survivor figure. It is read by
+`pols_if(proj_len())` is that survivor figure. It is read by
 `check_decrement_closure()` and by nothing else — never a weight on a cash flow — and
-`result_cf()` stops at `t = proj_len()`. There is no `pols_expiry` cells, because the
-notes put `l(n+1)` in the identity directly rather than naming the expiry as a decrement.
-Nothing in the cash flows moves either way: taking the table's 6 % in year 17 instead
-would only reallocate the last two columns, to 0,66310922 and 0,26213641.
+`result_cf()` stops at `t = proj_len() - 1`. There is no `pols_expiry` cells, because the
+notes put `l(n)` in the identity directly rather than naming the expiry as a decrement.
+Nothing in the cash flows moves either way: taking the table's 6 % in the last year
+instead would only reallocate the last two columns, to 0,66310922 and 0,26213641.
 
 ## The *délai d'attente*
 
@@ -246,6 +257,25 @@ formula change. Tests cover both halves of that bargain.
 | `freq_loading_table.csv` | The fractionation multiplier and the fixed annual *frais d'échéance* by payment frequency | **[S1]** — with the 1,30 € association subscription and the 3 % annuity conversion charge, the only disclosed charge figures in the whole corpus |
 | `benefit_schedule.csv` | Benefit factors by schedule id and policy year; one schedule, `constant`, factor 1.0 in every year | [S1] [S2] [S3] [S6] [S7] [S8] [S9] — the capital of a French standalone temporaire décès does not amortize. The table exists so a decreasing shape can be dropped in; no source gives one, so none ships |
 
+### How the time-like input columns are keyed
+
+The model's `t` is 0-based; the shipped inputs are not all keyed by it, and each column was
+decided by meaning rather than by name:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 4) | **Contractual 1-based label — file unchanged.** `lapse_rate_base(t)` reads it at `policy_year(t) = t + 1`, so period `t = 0` takes the 12 % of policy year 1, and the last row is clamped to from `t = 3` on |
+| `benefit_schedule.csv` | `policy_year` (1 … 57) | **Contractual 1-based label — file unchanged.** `benefit_factor(t)` reads it at `policy_year(t) = t + 1`, clamped to the last row |
+| `model_point_table.csv` | `waiting_period_y` | **An elapsed count, in contractual policy years — unchanged.** A `1` is a one-year window, which is period `t = 0` alone: `in_waiting(t)` is `policy_year(t) <= waiting_period_y()` |
+| `model_point_table.csv` | `issue_age`, `cover_end_age`, `ptia_end_age` | Attained ages, not points on the time axis — unchanged |
+| `model_point_table.csv` | `issue_date` | Carried for identification, read by no formula — unchanged |
+| `premium_rate_table.csv`, `mort_table.csv` | `age` | Attained age, read through `age(t) = issue_age + t` — unchanged |
+| `freq_loading_table.csv` | `prem_freq` | Not time-like — unchanged |
+
+No CSV holds the model's `t` under any name, so **no input file's values were shifted** by the
+move to the 0-based index. What moved is the two lookups, which now go through
+`policy_year(t)` instead of passing `t` raw.
+
 ## Modules that are off in the base run
 
 Four constructions are implemented and switched off, so the base run reproduces the
@@ -253,8 +283,8 @@ worked example while the machinery stays visible and testable.
 
 | Module | Switch | Off value | What it does |
 |---|---|---|---|
-| Tariff drift | `tariff_drift` | `0.0` | Multiplies the rate card by `(1 + drift)^(t−1)`, an experience re-rating of the class [S1] [S6] [S7] |
-| Premium-shock lapse | `shock_lapse_beta` | `0.0` | `M_shock = 1 + β·max(0, P(t)/P(t−1) − 1 − g0)` with `g0 = 0.10`. The revisable form hands the policyholder a rising bill, and the grid's own +38 % step at age 60 [S3] is exactly where an affordability response would show; switched on it bites at `t = 3` and nowhere else |
+| Tariff drift | `tariff_drift` | `0.0` | Multiplies the rate card by `(1 + drift)^t`, an experience re-rating of the class [S1] [S6] [S7] |
+| Premium-shock lapse | `shock_lapse_beta` | `0.0` | `M_shock = 1 + β·max(0, P(t)/P(t−1) − 1 − g0)` with `g0 = 0.10`. The revisable form hands the policyholder a rising bill, and the grid's own +38 % step at age 60 [S3] is exactly where an affordability response would show; switched on it bites at `t = 2` and nowhere else |
 | Selective lapsation | `sel_lapse_lambda` | `0.0` | Loads persisters' mortality by `1 + λ·max(0, w_cum − w_ref)` once cumulative lapse passes `w_ref = 30 %`. Larger here than on a UK level-premium term policy, because cumulative lapse reaches 64,6 % over seventeen years |
 | Accidental capital | `acc_share` | `0.0` | An *additional* capital `(accident_multiplier − 1) × acc_share × B(t)` on the **accidental share** of claims [S1] [S2] [S6] [S7] [S9] [S12], not a uniform uplift. No retrieved source gives an accidental share of deaths |
 
@@ -284,7 +314,7 @@ library discounts.
 it because the notes' worked-example table prints both. The commission is a *part* of the
 expense column, not a further line: `net_cf` subtracts `expenses` once and never
 `commissions` as well. The worked example fixes the reading —
-`expenses(1) = 250 + 25 + 0,72 + 630 = 905,72 €`, and the last of those four is the 40 %
+`expenses(0) = 250 + 25 + 0,72 + 630 = 905,72 €`, and the last of those four is the 40 %
 initial commission.
 
 ## Naming
@@ -302,7 +332,12 @@ Five cases needed care:
 | `q_d(t)`, `q_p(t)` | `mort_rate_base` / `mort_rate`, `ptia_rate_base` / `ptia_rate` | The table rate and the rate applied after the selective-lapsation loading are different numbers; and the `constante` equivalence is struck on the *tariff* pair, which is what keeps it acyclic |
 | `B(t)` | `benefit_pp` / `benefit_death_pp` / `benefit_ptia_pp` | `B(t)` is the contractual capital. What a claim actually pays differs inside a *délai d'attente*, where a death pays back cotisations and PTIA pays nothing |
 | `w(t)` vs `w_cum(t)` | `lapse_rate` / `lapse_cum` | `lapse_cum` is a proportion of the original cohort, not a running total of `lapse_rate`, and the loading it feeds moves *claims* |
-| `expenses(t)` | `expenses` / `commissions` / `claim_expenses` | `expenses` is the notes' total and contains the other two; they are named because the worked example rebuilds year 3 from them line by line |
+| `expenses(t)` | `expenses` / `commissions` / `claim_expenses` | `expenses` is the notes' total and contains the other two; they are named because the worked example rebuilds the `t = 2` row from them line by line |
+
+A sixth name exists only because of the time index: **`policy_year(t) = t + 1`** is the
+contractual 1-based label, and it is what the two policy-year-keyed CSVs are read at. Keeping
+it as a named cells rather than an inline `t + 1` is what stops the 0-based `t` from being
+passed raw into a table whose first row is policy year 1.
 
 The model point carries `issue_date` and `benefit_shape`, and neither drives a formula:
 on the *différence de millésime* basis a projection on policy years needs `issue_age` and
@@ -341,10 +376,16 @@ independent ways, the closure identity's four-way split, and one test per listed
 pitfall — the revisable cotisation moving with attained age, PTIA never paid twice, PTIA
 cover stopping first, the additive dependent-rate convention, the absence of any surrender
 value, the *différence de millésime* age basis, the tariff grid's unsmoothed +38 % step,
-the suicide factor applying only to death and only in year 1, the premium-cessation rule
+the suicide factor applying only to death and only in the first year, the premium-cessation rule
 applied once, expiry with no tail state, the two premium forms *not* collecting the same
 total, `rating_factor` never reaching the capital, the fractionation loading and fee not
 being double-charged, and the accidental option having no effect at `acc_share = 0`.
+
+Its golden dictionaries are keyed by the 0-based `t`, so the worked example's seventeen rows
+are `t = 0 … 16`, and it pins the frame directly: `list(df.index) == list(range(17))` with
+`proj_len() == 17`. `tests/test_model_conventions_fr.py` asserts the same library-wide frame
+rule for every model point of every model — index name `t`, `index[0] >= 0`, contiguous, and
+`index[-1] == proj_len() - 1`.
 
 ```bash
 python -m pytest tests -q

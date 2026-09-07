@@ -1,4 +1,5 @@
 scenario_id,t,decl_rate,provenance
+base,0,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,1,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,2,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,3,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
@@ -88,7 +89,7 @@ base,86,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaratio
 base,87,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,88,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
 base,89,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
-base,90,0.023000,[std] laufende Verzinsung 2.30 pct level; no carrier declaration was established (gap 12); includes the Rechnungszins [REG-R53]
+low,0,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
 low,1,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
 low,2,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
 low,3,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
@@ -178,4 +179,3 @@ low,86,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, no
 low,87,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
 low,88,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
 low,89,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"
-low,90,0.005000,"[std] stressed laufende Verzinsung 0.50 pct level; a stress, not a forecast -- the scenario on which the Garantieluecke binds"

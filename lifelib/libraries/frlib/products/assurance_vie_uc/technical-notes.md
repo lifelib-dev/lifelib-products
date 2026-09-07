@@ -38,16 +38,24 @@ and rider result, not the contract's total margin.
 - **Projection frequency.** Monthly. Sourced, not chosen: two of the seven retrieved
   contracts levy the UC management charge monthly [S7] [S13 art. 32.4], and the `garantie
   plancher` premium is levied monthly in arrears in three of them [S1] [S3] [S4].
+- **Time index [std].** `t` is the policy month and is **0-based**: `t = 0` is the issue
+  month, month `t` runs from time `t` to time `t + 1`, and the frame is
+  `t = 0, 1, …, proj_len − 1`, so `result_cf()` has `proj_len` rows. The contractual policy
+  year is the 1-based label `y = t // 12 + 1`; it is derived and never indexed by. The
+  balances **at issue** — time 0, before month 0 opens — are not a row of the frame: they
+  are written with an `init` subscript (`p_init`, `n_init`, `V_init`, `S_init`, `B_init`),
+  and `X_init` is the opening balance of month 0 exactly as `X(t−1)` is the opening balance
+  of month `t` for `t ≥ 1`.
 - **Timing conventions [std].** Within month `t`, in order: liquidation value moves and the
   euro leg accrues; the UC management charge is taken on the units held at the **start** of
   the month; arbitrages and withdrawals settle; the `capital sous risque` is observed; the
   plancher premium is levied; decrements act at end of month. Settlement frictions (J+3
   value dating [S10 ART 12.B], next-working-day arbitrage dating [S7], six-month deferral
   powers [S7]) are ignored.
-- **Age basis.** Age last birthday **[std]**; policy year `y = ceil(t/12)`, attained age
-  `age(t) = issue_age + y − 1`, so the tariff steps at each policy anniversary. The published
-  tariffs are quoted by the insured's attained age at the calculation date [S4 Annexe I] and
-  are read at `age(t)`.
+- **Age basis.** Age last birthday **[std]**; policy year `y = t // 12 + 1`, attained age
+  `age(t) = issue_age + t // 12`, so the tariff steps at each policy anniversary. The
+  published tariffs are quoted by the insured's attained age at the calculation date
+  [S4 Annexe I] and are read at `age(t)`.
 - **Currency and precision.** EUR; full precision carried, unit counts and liquidation values
   reported to four decimals (`au dix millième` [S13 art. 32.2]), money to cents **[std]**.
 - **Model points.** Single-policy, expected (probability-weighted) basis: survivorship
@@ -81,10 +89,10 @@ and rider result, not the contract's total margin.
 | `plancher_end_age` | attained age at which the cover ceases | 75 [S1] [S3] [S4] |
 | `plancher_cap` | cap on the `capital sous risque` | 300,000 [S1] [S3] [S4] |
 | `plancher_levy_source` | enum {`euro_first`, `uc_units`} | `euro_first` [S1] [S3] [S4] |
-| `wd_pattern` | enum {`none`, `one_off`, `programmed`} | `one_off`: 5,000 at t = 6 **[std]** |
-| `arb_pattern` | enum {`none`, `one_off`, `progressive`} | `one_off`: 10,000 euro → UC at t = 3 **[std]** |
+| `wd_pattern` | enum {`none`, `one_off`, `programmed`} | `one_off`: 5,000 at t = 5 **[std]** |
+| `arb_pattern` | enum {`none`, `one_off`, `progressive`} | `one_off`: 10,000 euro → UC at t = 2 **[std]** |
 | `uc_return_scenario` | id of a monthly UC return path in `uc_scenario_table.csv` | `stress_yr1` **[std]** |
-| `proj_len` | projection length in months | 12 in the worked example; 360 in the base run **[std]** |
+| `proj_len` | number of months projected — the exclusive end of the frame `t = 0 … proj_len − 1` | 12 in the worked example; 360 in the base run **[std]** |
 
 ---
 
@@ -96,16 +104,16 @@ and rider result, not the contract's total margin.
 | `units(t)` | Number of UC units held per policy | monthly recursion |
 | `av_uc_pp(t)` | UC account value per policy = `units(t) × unit_price(t)` | derived |
 | `av_euro_pp(t)` | Euro-support account value per policy | monthly recursion |
-| `av_pp_at(t, timing)` | Total account value per policy at `"BEF_FEE"`, `"BEF_WD"`, `"BEF_LEVY"` or `"BEF_DECR"` | derived |
-| `av_at(t, timing)` | `av_pp_at(t, timing) × pols_if_at(t, "AFT_DECR")` — the in-force account value, a **stock** weighted by the end-of-month count `l(t)` | derived |
+| `av_pp_at(t, timing)` | Total account value per policy at `"OPENING"`, `"BEF_FEE"`, `"BEF_WD"`, `"BEF_LEVY"` or `"BEF_DECR"`; `"OPENING"` is the balance the month opens on, `prem_to_av_pp` when `t = 0` | derived |
+| `av_at(t, timing)` | `av_pp_at(t, timing) × pols_if_at(t, "AFT_DECR")` — the in-force account value, a **stock** weighted by the end-of-month count `l(t+1)` | derived |
 | `cum_prem_net(t)` | Floor base: cumulative premiums net of `frais sur versement`, less partial surrenders | on premium / surrender |
 | `plancher_ratchet(t)` | Highest account value observed at a ratchet date, adjusted proportionally for surrenders (`cliquet` only) | at ratchet dates and on surrender |
 | `plancher_amount(t)` | The floor `F(t)` under the elected basis | monthly |
 | `nar(t)` | `Capital sous risque` — the net amount at risk | monthly |
 | `uc_cost_basis(t)` | Cumulative net amounts invested in the UC leg, less the pro-rata cost of amounts taken out — the `prélèvements sociaux` base | on premium / arbitrage / outflow |
-| `pols_if(t)` | In-force probability at the **start** of month t — the notes' `l(t−1)`, and the weight on every flow of month t; `pols_if(1) = 1` | monthly decrements |
-| `pols_if_at(t, timing)` | The same count at `"BEF_DECR"`, `"BEF_LAPSE"` or `"AFT_DECR"`; `"AFT_DECR"` is the notes' `l(t)` | monthly decrements |
-| `age(t)` | Attained age = `issue_age + ceil(t/12) − 1` | monthly |
+| `pols_if(t)` | In-force probability at the **start** of month t — the notes' `l(t)`, and the weight on every flow of month t; `pols_if(0) = 1` | monthly decrements |
+| `pols_if_at(t, timing)` | The same count at `"BEF_DECR"`, `"BEF_LAPSE"` or `"AFT_DECR"`; `"AFT_DECR"` is the end-of-month count, the notes' `l(t+1)` | monthly decrements |
+| `age(t)` | Attained age = `issue_age + t // 12` | monthly |
 
 ---
 
@@ -166,10 +174,10 @@ disclosure conventions, and **no expense basis**.
 | Mortality improvement | None in the base | **[std]** |
 | Base surrender `lapse_rate` | Table below, with a **duration-8 spike** | **[std]** (2) [REG-R40] |
 | Dynamic surrender multiplier | Formulas under Policyholder behavior modeling | **[std]** |
-| Partial-surrender pattern | `one_off` 5,000 € at t = 6 in the worked cell; `programmed` = 5% of the account value a year in the base run | **[std]** |
-| Arbitrage pattern | `one_off` 10,000 € euro → UC at t = 3 in the worked cell | **[std]** |
+| Partial-surrender pattern | `one_off` 5,000 € at t = 5 in the worked cell; `programmed` = 5% of the account value a year in the base run | **[std]** |
+| Arbitrage pattern | `one_off` 10,000 € euro → UC at t = 2 in the worked cell | **[std]** |
 | Base UC return | 4.90% p.a., the five-year average performance of UC supports net of fund charges | [R13] [REG-R48]; use as a projection assumption **[std]** |
-| Worked-example UC return | `stress_yr1`: +1.00% a month for months 1–6, −5.00% a month for months 7–12 | **[std]** (3) |
+| Worked-example UC return | `stress_yr1`: +1.00% a month for months `t = 0`–`5`, −5.00% a month for months `t = 6`–`11` | **[std]** (3) |
 | Acquisition expense | 400 € per policy at issue | **[std]** |
 | Maintenance expense | 40 € per policy p.a., level | **[std]** |
 
@@ -207,11 +215,12 @@ Reference base surrender table **[std]** (annual rates on the whole contract):
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, t = 1, 2, …; `y = ceil(t/12)`; `a = age(t) = issue_age + y − 1` |
+| `t` | policy month, **0-based**: t = 0, 1, …, `proj_len − 1`; `y = t // 12 + 1`; `a = age(t) = issue_age + t // 12` |
+| `X_init` | the value of a state variable **at issue** — time 0, before month 0 opens; the opening balance of month 0, as `X(t−1)` is the opening balance of month `t ≥ 1` |
 | `P`, `e` | single premium (100,000) and `frais sur versement` rate (0.0100) |
 | `α` | `uc_alloc` (0.70); the euro share is `1 − α` |
-| `p(t)` | `unit_price(t)`; `p(0) = 100.00` |
-| `n(t)` | `units(t)`; `n(0) = P(1−e)α / p(0)` |
+| `p(t)` | `unit_price(t)`, end of month t; `p_init = 100.00` |
+| `n(t)` | `units(t)`, end of month t; `n_init = P(1−e)α / p_init` |
 | `c`, `c_m` | UC management charge 0.0088 p.a.; `c_m = c/12 = 0.000733333` **[std 1/12 convention]** |
 | `i_e` | `euro_credit_rate` 0.0250 p.a.; monthly factor `(1+i_e)^(1/12) = 1.002059836` **[std]** |
 | `V(t)` | `av_euro_pp(t)`, the euro-support balance |
@@ -226,8 +235,8 @@ Reference base surrender table **[std]** (annual rates on the whole contract):
 | `B(t)` | `uc_cost_basis(t)` |
 | `τ` | `prélèvements sociaux` rate, 0.172 [S4 Annexe II] |
 | `q_m(t)`, `w_m(t)` | monthly mortality and surrender rates, `1 − (1 − rate_ann)^(1/12)` |
-| `l(t)` | in force at the **end** of month t, `l(0) = 1`; the cells is `pols_if_at(t, "AFT_DECR")` |
-| `l(t−1)` | in force at the **start** of month t, the weight on that month's flows; the cells is `pols_if(t)` |
+| `l(t)` | in force at the **start** of month t, `l(0) = 1`, and the weight on that month's flows; the cells is `pols_if(t)` |
+| `l(t+1)` | in force at the **end** of month t, once its decrements have gone; the cells is `pols_if_at(t, "AFT_DECR")` |
 | `E(t)` | maintenance expense = 40/12 per month **[std]** |
 
 Dimension check: `c_m`, `π(a)/12`, `q_m`, `w_m`, `τ`, `φ` and `e` are dimensionless
@@ -235,23 +244,29 @@ per-period rates; `n(t)` is a pure count; `p(t)` is EUR per unit; `U`, `V`, `S`,
 `K`, `W`, `A`, `B`, `E` are EUR; `π(a)/12 × K(t)` and `q_m(t) × K(t)` are EUR per
 policy-month.
 
-### Issue (t = 0)
+### Issue (time 0, before month `t = 0`)
 
-    prem_to_av_pp(0) = P × (1 − e)
-    n(0) = prem_to_av_pp(0) × α / p(0)
-    V(0) = prem_to_av_pp(0) × (1 − α)
-    S(0) = prem_to_av_pp(0)                 [net-premium floor basis, S4 Annexe I]
-    R(0) = av_pp_at(0) = prem_to_av_pp(0)
-    B(0) = prem_to_av_pp(0) × α
-    l(0) = 1,   F(0) = S(0),   K(0) = 0
+These are the balances the first projected month opens on. They are **not** a row of the
+cash-flow frame: nothing happens at time 0 that is not part of month 0.
 
-`K(0) = 0` exactly, because the net-premium floor equals the account value at issue. That is
-an assertable invariant, not a coincidence — see spec footnote 14.
+    prem_to_av_pp = P × (1 − e)
+    p_init = 100.00
+    n_init = prem_to_av_pp × α / p_init
+    V_init = prem_to_av_pp × (1 − α)
+    S_init = prem_to_av_pp                  [net-premium floor basis, S4 Annexe I]
+    R_init = av_pp_at(0, "OPENING") = prem_to_av_pp
+    B_init = prem_to_av_pp × α
+    l(0) = 1,   F_init = S_init,   K_init = 0
+
+`K_init = 0` exactly, because the net-premium floor equals the account value at issue. That
+is an assertable invariant, not a coincidence — see spec footnote 14.
 
 ### The unit leg
 
 The UC management charge is taken on the units held at the start of the month and cancels
-units [S7] [S13 art. 32.4]:
+units [S7] [S13 art. 32.4]. Throughout this section `n(t−1)`, `p(t−1)` and `V(t−1)` mean the
+**opening** balance of month `t`, which in month `t = 0` is `n_init`, `p_init` and `V_init`;
+the model reads them through `units_open(t)`, `unit_price_open(t)` and `av_euro_open_pp(t)`:
 
     fee_units(t) = n(t−1) × c_m
     mgmt_fee_uc(t) = fee_units(t) × p(t)            ← insurer income, in EUR
@@ -264,8 +279,9 @@ then the month's events settle on the unit count:
 
 With `plancher_levy_source = euro_first` the last term vanishes and **the unit count is a
 deterministic function of the event schedule alone** — market-independent, exactly as art.
-A. 132-5 implies [R2]. With no events at all it collapses to `n(t) = n(0) × (1 − c_m)^t`,
-which is the sequence the insurers publish: at 0.1875% a quarter Bourso Vie prints 100 →
+A. 132-5 implies [R2]. With no events at all it collapses to
+`n(t) = n_init × (1 − c_m)^(t+1)` — `t + 1` monthly levies have fallen by the end of month
+`t` — which is the sequence the insurers publish: at 0.1875% a quarter Bourso Vie prints 100 →
 99.2521 → 98.5098 → 97.7731 → 97.0418 → 96.3161 → 95.5957 → 94.8808 → 94.1711 over eight
 years [S3 art. 21], and at 0.25% a quarter Himalia prints 99.0037 → 98.0174 [S2].
 
@@ -303,6 +319,10 @@ Floor, by `plancher_basis`:
               R(t) = max(R(t), av_pp_at(t, "BEF_LEVY"))                 at a ratchet date
               F(t) = max(S(t), R(t))
 
+A ratchet date falls at the **end** of month `t`, which is `t + 1` months from issue, so an
+`n`-month ratchet fires where `(t + 1) mod n = 0`: the first annual ratchet is the end of
+`t = 11`.
+
 The `indexee` recursion indexes the running floor and then deducts the **nominal**
 withdrawal, which is arithmetically identical to indexing the withdrawal forward from its own
 date and deducting it later — the sources' rule that surrenders are indexed on the same basis
@@ -327,10 +347,10 @@ half-month timing difference is the **[std]** discretization (spec footnote 16).
     av_pp_at(t, "BEF_DECR") = av_pp_at(t, "BEF_LEVY") − plancher_charge(t)
     death benefit per death        = av_pp_at(t, "BEF_DECR") + K(t)
     surrender benefit per lapse    = av_pp_at(t, "BEF_DECR")
-    claims_death(t)  = l(t−1) × q_m(t) × [av_pp_at(t, "BEF_DECR") + K(t)]
-    claims_lapse(t)  = l(t−1) × (1 − q_m(t)) × w_m(t) × av_pp_at(t, "BEF_DECR")
-    withdrawals(t)   = l(t−1) × W(t)
-    l(t) = l(t−1) × (1 − q_m(t)) × (1 − w_m(t))          [deaths before surrenders, **[std]**]
+    claims_death(t)  = l(t) × q_m(t) × [av_pp_at(t, "BEF_DECR") + K(t)]
+    claims_lapse(t)  = l(t) × (1 − q_m(t)) × w_m(t) × av_pp_at(t, "BEF_DECR")
+    withdrawals(t)   = l(t) × W(t)
+    l(t+1) = l(t) × (1 − q_m(t)) × (1 − w_m(t))          [deaths before surrenders, **[std]**]
 
 The whole of the account value is funded by cancelling units and by the euro balance, so the
 insurer's non-unit cost per death is **exactly `K(t)`** — the `capital sous risque`, and
@@ -342,7 +362,7 @@ The UC leg is taxed only at `dénouement` [R8 II, 3°, c)](#frlib-assurance_vie_
 interest is credited [R8 II, 3°, a)](#frlib-assurance_vie_uc-r8) and that flow belongs to `Euro_FR_A`. On an outflow of
 `X` from the UC leg (partial surrender, surrender or death):
 
-    B(t) = B(t−1) + [premium to UC] + A(t)(1 − φ)          on investments
+    B(t) = B(t−1) + A(t)(1 − φ)                           on investments; B(−1) = B_init
     gain(X) = X × (1 − B / U_before)
     social_levy_uc = τ × max(0, gain(X))
     B := B − B × X / U_before                              pro-rata cost removal
@@ -358,43 +378,42 @@ the model puts it outside and flags the treatment [unverified] (spec footnote 21
 
 | Cash flow | Formula | Sign | In-force weight |
 |---|---|---|---|
-| `Frais sur versement` | `P × e` at t = 1 | + | 1 |
-| UC management charge | `mgmt_fee_uc(t)` | + | `l(t−1)` |
-| `Frais d'arbitrage` | `A(t) × φ` | + | `l(t−1)` |
-| Plancher charge | `plancher_charge(t)` | + | `l(t−1)` |
-| Plancher death strain | `K(t)` | − | `l(t−1) × q_m(t)` |
-| Maintenance expense | `E(t)` | − | `l(t−1)` |
-| Acquisition expense | 400 **[std]** at t = 1 | − | 1 |
+| `Frais sur versement` | `P × e` at t = 0 | + | 1 |
+| UC management charge | `mgmt_fee_uc(t)` | + | `l(t)` |
+| `Frais d'arbitrage` | `A(t) × φ` | + | `l(t)` |
+| Plancher charge | `plancher_charge(t)` | + | `l(t)` |
+| Plancher death strain | `K(t)` | − | `l(t) × q_m(t)` |
+| Maintenance expense | `E(t)` | − | `l(t)` |
+| Acquisition expense | 400 **[std]** at t = 0 | − | 1 |
 | Account-value benefits (death, surrender, withdrawal) | funded by unit cancellation and the euro balance — no non-unit flow | 0 | — |
 | Euro-leg margin | out of scope; produced by `Euro_FR_A` | 0 | — |
 | Fund-level recurring costs | inside `unit_price`, accrue to the fund manager | 0 | — |
 | `Prélèvements sociaux` | withheld and remitted — pass-through | 0 | — |
 
-    net_cf(t) = l(t−1) × [ mgmt_fee_uc(t) + A(t)φ + plancher_charge(t)
-                           − E(t) − q_m(t) × K(t) ]
-                + (P·e − 400) × 1{t = 1}
+    net_cf(t) = l(t) × [ mgmt_fee_uc(t) + A(t)φ + plancher_charge(t)
+                         − E(t) − q_m(t) × K(t) ]
+                + (P·e − 400) × 1{t = 0}
 
-The premium charge and the acquisition expense fall in **month 1**, not in a month 0. The
-grid is 1-based and there is no `t = 0` cash-flow row: `t = 0` is the issue *balance* the
-account-value table prints, not a period. Because `l(0) = 1` the year-1 total is the same
-either way, but the month-by-month stream is not — a reader reconciling the first month
-against a `1{t = 0}` reading would find it 1,000.00 of income and 400.00 of outgo short.
-`UC_FR_S` is the source of truth for the placement: `result_cf()` has rows `t = 1 … proj_len`
-and `prem_charge(1) = 1,000.00`, `expenses(1) = 403.33`, `net_cf(1) = 647.99`.
+The premium charge and the acquisition expense fall in the **first projected month**,
+`t = 0`. The issue instant is not a row of its own: the issue balances are what month 0
+opens on, not a period. Because `l(0) = 1` they carry their full per-policy amount.
+`UC_FR_S` is the source of truth for the placement: `result_cf()` has rows
+`t = 0 … proj_len − 1` and `prem_charge(0) = 1,000.00`, `expenses(0) = 403.33`,
+`net_cf(0) = 647.99`.
 
 `net_cf` is income-positive; the outgo-positive presentation survives as
 `liability_cf(t) = −net_cf(t)`.
 
-**The in-force weight, and the column that publishes it.** `l(t−1)` above is the count at
+**The in-force weight, and the column that publishes it.** `l(t)` above is the count at
 the **start** of month t, and it is what `result_cf()` publishes in its own `pols_if` column
-on that same row: `pols_if(t) = l(t−1)`. Divide any flow on row t by that row's `pols_if`
-and the per-policy amount comes back. The end-of-month `l(t)` is reached through
+on that same row: `pols_if(t) = l(t)`. Divide any flow on row t by that row's `pols_if`
+and the per-policy amount comes back. The end-of-month count `l(t+1)` is reached through
 `pols_if_at(t, "AFT_DECR")` — the `CashValue_SE` timing form the library's shared vocabulary
 prescribes — and it is what the account-value *stock* `av_at(t, timing)` is weighted by.
 
 ### Monthly processing order **[std]**
 
-For month `t`, per policy in force at `t−1`:
+For month `t`, per policy in force at its start:
 
 1. Advance `y`, `a`, `E(t)`; read `p(t)` from the scenario.
 2. Accrue the euro leg: `V ← V × (1 + i_e)^(1/12)`.
@@ -411,8 +430,9 @@ For month `t`, per policy in force at `t−1`:
    `plancher_levy_source = uc_units`); set `av_pp_at(t, "BEF_DECR")`.
 8. Decrements at end of month, deaths before surrenders: book `claims_death(t)` at
    `av_pp_at(t, "BEF_DECR") + K(t)` and `claims_lapse(t)` at `av_pp_at(t, "BEF_DECR")`; roll
-   `l(t)`.
-9. Extract the non-unit row and accumulate `net_cf(t)`.
+   `l(t)` forward to `l(t+1)`.
+9. Extract the non-unit row and accumulate `net_cf(t)`. In month `t = 0` that row also
+   carries the `frais sur versement` and the acquisition expense.
 
 ### Known modeling pitfalls
 
@@ -420,7 +440,7 @@ These are the ways an implementation of *this* product looks right and is wrong.
 a test.
 
 - **Charging the plancher on the account value instead of on the net amount at risk.** The
-  charge base is `K(t)`, not `av_pp_at(t, ·)` [S4 Annexe I]. On the worked cell at t = 12 the
+  charge base is `K(t)`, not `av_pp_at(t, ·)` [S4 Annexe I]. On the worked cell at t = 11 the
   correct charge is `16,642.74 × 0.0196/12 = 27.18`; on the account value it would be
   `77,357.26 × 0.0196/12 = 126.35`, a factor of 4.6. Test: with the plancher out of the money
   the charge must be **exactly zero**, and `sum(plancher_charge) == 0` for any path on which
@@ -434,12 +454,12 @@ a test.
   benefit at 300,000 € instead is a different, much cruder contract.
 - **Letting an arbitrage move the floor.** `S(t)` changes on premiums and surrenders only.
   An arbitrage moves value between the legs, pays a fee and leaves the guarantee untouched;
-  in the worked example the 10,000 € switch at t = 3 leaves `plancher_amount = 99,000.00`.
+  in the worked example the 10,000 € switch at t = 2 leaves `plancher_amount = 99,000.00`.
 - **Adjusting the `cliquet` floor by the nominal withdrawal.** A ratchet is a value level, so
   it is reduced **proportionally**; the `simple` floor base is reduced **nominally**. In the
-  worked example the two rules give 94,216.29 and 94,000.00 at t = 12 on the same path.
+  worked example the two rules give 94,216.29 and 94,000.00 at t = 11 on the same path.
 - **Charging the management fee on the closing rather than the opening unit count.** In a
-  month with an arbitrage the two differ by the arbitrage's units: at t = 3 the opening-count
+  month with an arbitrage the two differ by the arbitrage's units: at t = 2 the opening-count
   fee is 52.28 and the closing-count fee would be 59.54. Immaterial monthly, systematic over
   decades, and a common source of a persistent reconciliation break against an admin system.
 - **Using `1 − (1 − c)^(1/12)` instead of `c/12`.** The insurers compound the *periodic*
@@ -449,7 +469,7 @@ a test.
   levy gives 99.4016 [S7] — the two conventions differ in the fourth decimal of the unit
   count, which is exactly the precision the contract guarantees [S13 art. 32.2].
 - **Levying the plancher premium from the wrong place.** With `euro_first` the UC unit count
-  must be **unchanged** by the rider. Test: `units(12)` is 745.036125 under `euro_first` and
+  must be **unchanged** by the rider. Test: `units(11)` is 745.036125 under `euro_first` and
   744.044774 under `uc_units` on the same path — if the two agree, the levy is not being
   applied at all.
 - **Applying `prélèvements sociaux` to the UC leg year by year.** That is the euro rule
@@ -459,7 +479,7 @@ a test.
 - **Booking the social levy, the fund-level costs or the euro credited interest as insurer
   cash flow.** All three are pass-throughs or out of scope. On the worked cell, adding the
   1.60% fund-level cost to `net_cf` would inflate the year's result by 1,136.76 € against a
-  true `net_cf` of 1,262.66 — both survivorship-weighted at `l(t−1)`, which is the only way
+  true `net_cf` of 1,262.66 — both survivorship-weighted at `l(t)`, which is the only way
   the two are comparable. The **unweighted** per-policy sum `Σ av_uc_pp(t) × 1.60%/12` is
   1,152.86 €; putting that figure against a weighted `net_cf` overstates the distortion by
   about 16 €, and is the same weighted/unweighted trap as the 630.20 / 621.33 split.
@@ -487,14 +507,17 @@ frequency or a plancher claims ratio.
   annual `abattement` opens [REG-R40] [S4 Annexe II], and the recommended holding period in
   both retrieved DICs is eight years [S5] [S12].
 - **Performance multiplier [std].** `M_perf(t) = min(2.0, 1 + 2.0 × max(0, g_ref − R_12m(t)))`
-  where `R_12m` is the trailing twelve-month UC return and `g_ref = 4.90%` [R13]. Poor
-  performance raises surrenders; on the deterministic base run `M_perf = 1`.
+  where `R_12m(t)` is the UC return over the twelve **completed** months ending at the start
+  of month `t` — so it is undefined, and the multiplier exactly 1, for `t < 12` — and
+  `g_ref = 4.90%` [R13]. Poor performance raises surrenders; on the deterministic base run
+  `M_perf = 1`.
 - **Plancher moneyness multiplier [std].** `M_pl(t) = 0.5` while `K(t) > 0` and
   `plancher_flag`, else 1.0. A policyholder holding an in-the-money floor has a reason not to
   surrender that a UK bondholder does not — surrendering forfeits the guarantee [S1] [S3]
   [S4] [S11]. This is the one behavioral assumption specific to this product, it is a pure
   standardization, and it should be the first thing a user replaces.
-- **Total surrender.** `lapse_rate(y, t) = min(0.35, base × M_perf × M_pl)` **[std cap]**.
+- **Total surrender.** `lapse_rate(t) = min(0.35, base(y) × M_perf(t) × M_pl(t))`
+  **[std cap]**, where `y = t // 12 + 1` is the contractual policy year.
 - **Partial surrender.** `programmed`: 5% of the account value a year, taken monthly and
   split pro rata **[std]**. Rationale: it is the pattern the eight-year tax design
   encourages, and it keeps the floor base falling in step with the account.
@@ -520,92 +543,94 @@ premium `P` = 100,000 €, `prem_charge_rate` 1.00%, `uc_alloc` 0.70, `unit_pric
 `plancher_rate` = 196 € per 10,000 € of `capital sous risque` at attained age 65 [S4 Annexe
 I], i.e. `π(65) = 0.0196` and `π/12 = 0.001633333`.
 
-Events: an arbitrage of 10,000 € from the euro leg to UC at `t = 3`; a partial surrender of
-5,000 € at `t = 6`, split pro rata.
+Events: an arbitrage of 10,000 € from the euro leg to UC at `t = 2`, the third month; a
+partial surrender of 5,000 € at `t = 5`, the sixth month, split pro rata.
 
-Scenario `stress_yr1` **[std]**: `unit_price` rises 1.00% a month for months 1–6 and falls
-5.00% a month for months 7–12. Decrements: `mort_rate` 1.20% p.a. and `lapse_rate` 2.00% p.a.
+Scenario `stress_yr1` **[std]**: `unit_price` rises 1.00% a month for months `t = 0`–`5` and
+falls 5.00% a month for months `t = 6`–`11`. Decrements: `mort_rate` 1.20% p.a. and `lapse_rate` 2.00% p.a.
 **[std]**, so `q_m = 0.001005543` and `w_m = 0.001682143`. Derived monthly factors:
 `c_m = 0.000733333`, `(1 + i_e)^(1/12) = 1.002059836`.
 
 Per policy in force, EUR; unit prices and counts to four decimals, money to cents. Balances
 are end-of-month, after that month's levy, so each row's `av_euro_pp` is the next row's
-opening euro balance.
+opening euro balance. The `init` row is the position **at issue**, before month `t = 0`
+opens; it is not a row of `result_av()`, whose twelve rows are `t = 0 … 11`.
 
 | t | `unit_price` | `units` | `av_uc_pp` | `av_euro_pp` | `av_pp_at(t,"BEF_DECR")` | `plancher_amount` | `nar` | `mgmt_fee_uc` | `plancher_charge` |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 100.0000 | 693.0000 | 69,300.00 | 29,700.00 | 99,000.00 | 99,000.00 | 0.00 | 0.00 | 0.00 |
-| 1 | 101.0000 | 692.4918 | 69,941.67 | 29,761.18 | 99,702.85 | 99,000.00 | 0.00 | 51.33 | 0.00 |
-| 2 | 102.0100 | 691.9840 | 70,589.29 | 29,822.48 | 100,411.77 | 99,000.00 | 0.00 | 51.80 | 0.00 |
-| 3 | 103.0301 | 788.0502 | 81,192.89 | 19,883.91 | 101,076.80 | 99,000.00 | 0.00 | 52.28 | 0.00 |
-| 4 | 104.0604 | 787.4723 | 81,944.69 | 19,924.87 | 101,869.55 | 99,000.00 | 0.00 | 60.14 | 0.00 |
-| 5 | 105.1010 | 786.8949 | 82,703.44 | 19,965.91 | 102,669.35 | 99,000.00 | 0.00 | 60.69 | 0.00 |
-| 6 | 106.1520 | 748.3227 | 79,435.96 | 19,040.29 | 98,476.25 | 94,000.00 | 0.00 | 61.26 | 0.00 |
-| 7 | 100.8444 | 747.7739 | 75,408.83 | 19,079.51 | 94,488.34 | 94,000.00 | 0.00 | 55.34 | 0.00 |
-| 8 | 95.8022 | 747.2256 | 71,585.85 | 19,113.43 | 90,699.28 | 94,000.00 | 3,295.34 | 52.53 | 5.38 |
-| 9 | 91.0121 | 746.6776 | 67,956.69 | 19,141.54 | 87,098.23 | 94,000.00 | 6,890.52 | 49.87 | 11.25 |
-| 10 | 86.4615 | 746.1300 | 64,511.51 | 19,164.14 | 83,675.65 | 94,000.00 | 10,307.52 | 47.34 | 16.84 |
-| 11 | 82.1384 | 745.5829 | 61,240.99 | 19,181.47 | 80,422.46 | 94,000.00 | 13,555.40 | 44.94 | 22.14 |
-| 12 | 78.0315 | 745.0361 | 58,136.28 | 19,193.80 | 77,330.08 | 94,000.00 | 16,642.74 | 42.66 | 27.18 |
+| *init* | 100.0000 | 693.0000 | 69,300.00 | 29,700.00 | 99,000.00 | 99,000.00 | 0.00 | — | — |
+| 0 | 101.0000 | 692.4918 | 69,941.67 | 29,761.18 | 99,702.85 | 99,000.00 | 0.00 | 51.33 | 0.00 |
+| 1 | 102.0100 | 691.9840 | 70,589.29 | 29,822.48 | 100,411.77 | 99,000.00 | 0.00 | 51.80 | 0.00 |
+| 2 | 103.0301 | 788.0502 | 81,192.89 | 19,883.91 | 101,076.80 | 99,000.00 | 0.00 | 52.28 | 0.00 |
+| 3 | 104.0604 | 787.4723 | 81,944.69 | 19,924.87 | 101,869.55 | 99,000.00 | 0.00 | 60.14 | 0.00 |
+| 4 | 105.1010 | 786.8949 | 82,703.44 | 19,965.91 | 102,669.35 | 99,000.00 | 0.00 | 60.69 | 0.00 |
+| 5 | 106.1520 | 748.3227 | 79,435.96 | 19,040.29 | 98,476.25 | 94,000.00 | 0.00 | 61.26 | 0.00 |
+| 6 | 100.8444 | 747.7739 | 75,408.83 | 19,079.51 | 94,488.34 | 94,000.00 | 0.00 | 55.34 | 0.00 |
+| 7 | 95.8022 | 747.2256 | 71,585.85 | 19,113.43 | 90,699.28 | 94,000.00 | 3,295.34 | 52.53 | 5.38 |
+| 8 | 91.0121 | 746.6776 | 67,956.69 | 19,141.54 | 87,098.23 | 94,000.00 | 6,890.52 | 49.87 | 11.25 |
+| 9 | 86.4615 | 746.1300 | 64,511.51 | 19,164.14 | 83,675.65 | 94,000.00 | 10,307.52 | 47.34 | 16.84 |
+| 10 | 82.1384 | 745.5829 | 61,240.99 | 19,181.47 | 80,422.46 | 94,000.00 | 13,555.40 | 44.94 | 22.14 |
+| 11 | 78.0315 | 745.0361 | 58,136.28 | 19,193.80 | 77,330.08 | 94,000.00 | 16,642.74 | 42.66 | 27.18 |
 | **Yr 1** | — | — | — | — | — | — | — | **630.20** | **82.80** |
 
-Terminal quantities at t = 12: `uc_cost_basis` 75,420.62, `l(12)` 0.968240 — the cells is
-`pols_if_at(12,"AFT_DECR")`, the count once month 12's decrements have gone, and not the
-start-of-month `pols_if(12)` = 0.970848 the twelfth `result_cf` row is weighted at — and
-`av_at(12,"BEF_DECR")` = 77,330.08 × 0.968240 = 74,874.07.
+Terminal quantities at t = 11: `uc_cost_basis` 75,420.62, `l(12)` 0.968240 — the count once
+twelve months of decrements have gone, which is `pols_if_at(11,"AFT_DECR")` and not the
+start-of-month `l(11) = pols_if(11)` = 0.970848 the twelfth `result_cf` row is weighted at —
+and `av_at(11,"BEF_DECR")` = 77,330.08 × 0.968240 = 74,874.07.
 
 **Plancher basis variants**, each run end to end on the same scenario with only
 `plancher_basis` (and, for `cliquet`, `plancher_ratchet_months`) changed:
 
-| Basis | `plancher_amount(12)` | `nar(12)` | `av_pp_at(12,"BEF_LEVY")` | year-1 `plancher_charge` |
+| Basis | `plancher_amount(11)` | `nar(11)` | `av_pp_at(11,"BEF_LEVY")` | year-1 `plancher_charge` |
 |---|---:|---:|---:|---:|
 | `simple` | 94,000.00 | 16,642.74 | 77,357.26 | 82.80 |
 | `indexee`, 3.50% p.a. | 97,378.25 | 20,041.15 | 77,337.10 | 108.39 |
 | `cliquet`, 12-month ratchet | 94,216.29 | 16,860.46 | 77,355.83 | 84.57 |
 | `cliquet`, 1-month ratchet | 98,476.25 | 21,155.09 | 77,321.17 | 126.04 |
 
-`av_uc_pp(12)` is **58,136.28 in all four**, because with `plancher_levy_source = euro_first`
+`av_uc_pp(11)` is **58,136.28 in all four**, because with `plancher_levy_source = euro_first`
 the rider never touches the unit count.
 
-**Insurer-side extraction, year 1** (per policy, survivorship-weighted at `l(t−1)`, which
-is the `pols_if(t)` column of `result_cf()`):
+**Insurer-side extraction, year 1** (per policy, survivorship-weighted at `l(t)`, the
+start-of-month count, which is the `pols_if(t)` column of `result_cf()`):
 
-- `Frais sur versement` at t = 1: **+1,000.00**
+- `Frais sur versement` at t = 0: **+1,000.00**
 - UC management charge: **+621.33**
-- `Frais d'arbitrage` (10,000 × 0.50% at t = 3): **+49.73**
+- `Frais d'arbitrage` (10,000 × 0.50% at t = 2): **+49.73**
 - Plancher charge: **+80.67**
-- Plancher death strain (`Σ l(t−1) q_m K(t)`): **−49.67**
+- Plancher death strain (`Σ l(t) q_m K(t)`): **−49.67**
 - Maintenance expense (40 € p.a.): **−39.41**
-- Acquisition expense at t = 1: **−400.00**
+- Acquisition expense at t = 0: **−400.00**
 - **`net_cf` year 1 = +1,262.66**
 
-The first and last of those fall in **month 1**, not in a month 0: the cash-flow grid is
-1-based, and `l(0) = 1` so the year-1 total is unaffected. Month 1 itself reads
+The first and last of those fall in the **first projected month**, `t = 0`; the issue instant
+is not a row of its own, and `l(0) = 1` weights them in full. That row reads
 `prem_charge` 1,000.00, `mgmt_fee_uc` 51.33, `expenses` 403.33 (400 acquisition plus 40/12
 maintenance), `net_cf` **647.99**.
 
 Expected benefit and withdrawal flows, year 1: `claims_death` **1,158.20**, `claims_lapse`
 **1,852.58**, `withdrawals` **4,933.21**. None of the three is a non-unit cash flow.
 
-**Settlement arithmetic.** *Partial surrender at t = 6*: `av_pp_at(6,"BEF_WD")` =
+**Settlement arithmetic.** *Partial surrender at t = 5*: `av_pp_at(5,"BEF_WD")` =
 83,469.22 + 20,007.04 = 103,476.25; the UC share is 0.80665095, so `W_uc` = 4,033.25 and
 `W_eur` = 966.75; 4,033.25 / 106.1520 = 37.9951 units are cancelled; the UC gain component is
 `4,033.25 × (1 − 79,250.00/83,469.22)` = **203.87**, and the `prélèvements sociaux` withheld
 are `17.2% × 203.87` = **35.07** [S4 Annexe II] [R8 II, 3°, c)](#frlib-assurance_vie_uc-r8); `uc_cost_basis` falls from
 79,250.00 to 75,420.62; `cum_prem_net` falls from 99,000.00 to 94,000.00.
-*Death in month 12*: the benefit is 77,330.08 + 16,642.74 = **93,972.82**, of which 16,642.74
+*Death at t = 11*: the benefit is 77,330.08 + 16,642.74 = **93,972.82**, of which 16,642.74
 is the insurer's strain. The UC gain is 58,136.28 − 75,420.62 = **−17,284.34**, so the UC
 social levy is **zero** — and any excess levied year by year on the euro leg is restituted at
 final liquidation under art. L. 136-7 III bis [R8].
 
 **Checks.**
 
-*Unit count.* With no events, `n(t) = n(0) × (1 − c_m)^t`: `693.0000 × (1 − 0.000733333)^2 =
-691.9840` matches row 2 to four decimals. Across the arbitrage,
-`693 × (1 − c_m)^3 = 691.4765` units survive the month-3 fee and
-`9,950.00 / 103.0301 = 96.5737` are bought, giving `788.0502` — row 3. Across the surrender,
-`786.3178 − 37.9951 = 748.3227` — row 6. From there `748.3227 × (1 − c_m)^6 = 745.0361` — row
-12, reached without the rider touching a single unit.
+*Unit count.* With no events, `n(t) = n_init × (1 − c_m)^(t+1)`:
+`693.0000 × (1 − 0.000733333)^2 = 691.9840` matches row `t = 1` to four decimals. Across the
+arbitrage, `693 × (1 − c_m)^3 = 691.4765` units survive the third month's fee and
+`9,950.00 / 103.0301 = 96.5737` are bought, giving `788.0502` — row `t = 2`. Across the
+surrender, `786.3178 − 37.9951 = 748.3227` — row `t = 5`. From there
+`748.3227 × (1 − c_m)^6 = 745.0361` — row `t = 11`, reached without the rider touching a
+single unit.
 
 *Independent reproduction of published tables.* The same recursion at 0.1875% a quarter gives
 99.2521, 98.5098, 97.7731, 97.0418, 96.3161, 95.5957, 94.8808, 94.1711 — Bourso Vie's printed
@@ -613,21 +638,21 @@ eight-year table, digit for digit [S3 art. 21]; at 0.25% a quarter it gives 99.0
 98.0174 [S2]; and at an annual 0.60% on 99 units it gives 98.41, 97.82, 97.23, 96.65, 96.07,
 95.49, 94.92, 94.35 — MACSF's pre-70 table [S10 ART 12.A].
 
-*Net amount at risk, row 9.* `av_euro_pp` in the table is post-levy, so the observation base
+*Net amount at risk, row `t = 8`.* `av_euro_pp` in the table is post-levy, so the observation base
 is `87,098.23 + 11.25 = 87,109.48`, and `94,000.00 − 87,109.48 = 6,890.52`. The charge is
 `6,890.52 × 0.0196/12 = 11.25` — the same figure that was added back, which is the arrears
 convention closing on itself.
 
 *Decrements.* `l(12) = [(1 − q_m)(1 − w_m)]^12 = (1 − 0.012)(1 − 0.020) = 0.968240` exactly
-— `pols_if_at(12,"AFT_DECR")` — which is the only sensible test that the monthly rates were
-derived geometrically rather than by dividing by twelve.
+— twelve months of decrements, `pols_if_at(11,"AFT_DECR")` — which is the only sensible test
+that the monthly rates were derived geometrically rather than by dividing by twelve.
 
 *Total row.* **Yr 1** is the full-precision column sum rounded once (630.1985 → 630.20;
 82.7961 → 82.80); adding the printed cells gives 630.18 and 82.79. The survivorship-weighted
 totals in the extraction above (621.33 and 80.67) are smaller because they are multiplied by
-`l(t−1) < 1`.
+`l(t) < 1` from the second month on.
 
-*Euro leg.* `29,700.00 × 1.025^(2/12) = 29,822.48` — row 2, before any event.
+*Euro leg.* `29,700.00 × 1.025^(2/12) = 29,822.48` — row `t = 1`, before any event.
 
 ---
 
@@ -686,7 +711,7 @@ In order of influence on this product's result:
    and the plancher cost scales with the *shortfall* of the account value below the floor.
    Those two exposures point in opposite directions and neither is symmetric: a fall cuts the
    management charge roughly proportionally and turns the rider on non-linearly. On the worked
-   cell the rider costs nothing for seven months and 27.18 € in month 12 alone. **The base run
+   cell the rider costs nothing for seven months and 27.18 € at `t = 11` alone. **The base run
    is deterministic and therefore understates the plancher cost**, because `E[max(0, F − AV)]`
    exceeds `max(0, F − E[AV])`. A stochastic or scenario-set run is not an enhancement here;
    it is the only way to price the rider.

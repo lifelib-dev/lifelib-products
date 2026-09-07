@@ -67,8 +67,15 @@ parameter in it:
   construction and not by approximation: the 90-day waiting period is three months of the
   grid, the treatment benefit's unit of payment **is** the calendar month [S5] [S10] [S11],
   and the premium mode is monthly (月払) at every carrier in the composite [S1] [S6] [S11]
-  [S12]. `t` is the **policy month**, `t = 0, 1, …, proj_len − 1`; month `t` is the interval
-  from `t` to `t + 1` months after the contract date (*keiyakubi*, 契約日).
+  [S12].
+- **Time index [library-wide convention].** `t` is the **policy month and is 0-based**:
+  `t = 0` is the **first** projected month, the interval from the contract date
+  (*keiyakubi*, 契約日) to one month after it, and month `t` runs from `t` to `t + 1` months
+  after that date. `proj_len` is the **number of months projected**, so the frame is
+  `t = 0, 1, …, proj_len − 1` and the projection has exactly `proj_len` rows. Attained age
+  is `age(t) = x + floor(t / 12)`, so `age(0) = x`; the **policy year is a contractual,
+  1-based label derived from the index**, `y(t) = floor(t / 12) + 1`, so months
+  `t = 0 … 11` are policy year 1. No period anywhere in these notes is indexed from 1.
 - **The waiting period lands on a grid boundary.** がん責任開始日 is the 91st day counting the
   date cover attaches (*sekinin kaishibi*, 責任開始日) as day 1 [S1] [S5] [S6] [S10] [S13]; two
   carriers instead write three calendar months [S8] [S11]. On a monthly grid these are the
@@ -102,8 +109,9 @@ parameter in it:
   here.
 - **Termination.** Whole-of-life cover: the projection runs to the terminal age of
   第三分野標準生命表2018, **116 for males and 118 for females** [REG-R18] [REG-R20], so `proj_len =
-  12 × (terminal_age − x + 1)` — 924 months for the anchor cell. There is no maturity
-  benefit and no 満期保険金. **There is no benefit-driven termination**: payment of the diagnosis
+  12 × (terminal_age − x + 1)` — 924 months for the anchor cell, the last of them `t = 923`
+  at the terminal age. The `+ 1` is the terminal age's own twelve months, not a slack row.
+  There is no maturity benefit and no 満期保険金. **There is no benefit-driven termination**: payment of the diagnosis
   lump sum neither terminates nor exhausts the contract [S1], and with no day limits the
   inpatient benefit cannot exhaust it either [S1] [S3] [R11]. The decrements are death and
   lapse, and nothing else.
@@ -481,7 +489,9 @@ persistency basis:
 |---|---|---|---|---|---|---|---|
 | `lapse_rate` **[std]** | 9.0% | 7.0% | 6.0% | 5.5% | 5.0% | 4.5% | 3.0% |
 
-`lapse_rate_mth(t) = 1 − (1 − lapse_rate(year(t)))^(1/12)` **[std]**. The first ten years
+`lapse_rate_mth(t) = 1 − (1 − lapse_rate(y(t)))^(1/12)` **[std]**, reading the table at the
+1-based policy year `y(t) = floor(t/12) + 1` — the column header above is that label, not
+the model's index. The first ten years
 average 5.5%, at the sourced 5.6% [REG-R31].
 
 **Lapse applies to the never-diagnosed only [std].** This is a product fact, not a
@@ -498,7 +508,7 @@ is public).** Carried from the `medical` chassis, scaled to this product's premi
 |---|---|---|
 | Acquisition expense | ¥20,000 per policy at `t = 0` | **[std]** |
 | Initial commission | 1.5 × annualized premium at `t = 0` (¥54,000 on the anchor) | **[std]** |
-| Renewal commission | 3.0% of premiums from policy year 2 | **[std]** |
+| Renewal commission | 3.0% of premiums from policy year 2, i.e. from `t = 12` | **[std]** |
 | Maintenance expense | ¥250 per policy per month, inflating 1.0% p.a. at each anniversary | **[std]** |
 | Claim expense, diagnosis | ¥5,000 per diagnosis trigger (invasive or in-situ) | **[std]** |
 | Claim expense, hospitalisation | ¥3,000 per cancer admission | **[std]** |
@@ -512,9 +522,9 @@ is public).** Carried from the `medical` chassis, scaled to this product's premi
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0, 1, …, proj_len − 1` |
-| `x`, `age(t)` | 契約年齢 (満年齢); attained age `x + floor(t/12)` |
-| `y(t)` | policy year, `floor(t/12) + 1` |
+| `t` | policy month, **0-based**: `t = 0, 1, …, proj_len − 1`, `t = 0` the first projected month |
+| `x`, `age(t)` | 契約年齢 (満年齢); attained age `x + floor(t/12)`, so `age(0) = x` |
+| `y(t)` | policy year — a contractual **1-based label**, `floor(t/12) + 1`, not an index |
 | `W` | waiting period in months (3); `cover(t) = 1{t ≥ W}` |
 | `A`, `DB` | 基本給付金額 (10,000); diagnosis lump sum `100 × A` |
 | `D`, `m_s` | がん入院給付金日額 (`= A`); surgery multiple of `A` (20) |

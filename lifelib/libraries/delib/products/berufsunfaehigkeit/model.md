@@ -50,8 +50,22 @@ state ledgers, the premium-paying count and one column per cash flow line, and
 
 The grid is **monthly** and `t` is **0-based**: `t = 0` is the first projected month — the
 month of inception for a new-business point, the valuation month for an in-force one — and
-`proj_len()` is the **last** projected index, `12 × (67 − 30) − 1 = 443` on the anchor cell,
-i.e. 444 rows in about a second.
+`proj_len()` is the **number** of projected months, the **exclusive end** of the frame, so
+the frame is `range(proj_len())`: `t = 0 … proj_len() − 1`, and `result_cf().index[-1] ==
+proj_len() − 1`. On the anchor cell `proj_len() = 12 × (67 − 30) = 444`, i.e. 444 rows
+(`t = 0 … 443`) in about a second. The contractual, 1-based *policy year* is derived, not
+indexed by: `policy_year(t) = duration_mth(t) // 12 + 1`.
+
+**Time-like CSV columns.** No input file is keyed by the projection month `t`, so no CSV
+value moved with this frame change. `lapse_table.csv` is keyed by `policy_year` 1–5 with row
+6 the ultimate — a contractual 1-based label read through `policy_year(t)`, so the file is
+left alone. `claim_duration_table.csv` is keyed by `dur_year` 1–10 with row 11 the ultimate,
+the **claim** year since onset, on the 1-based claim-duration clock `z` and independent of
+`t`; unchanged. `inception_table.csv` and `mortality_table.csv` are keyed by attained `age`,
+reached through `age(t)`; unchanged. In `model_point_table.csv`, `duration_init_months` and
+`claim_duration_init` are **elapsed counts**, already 0-based by nature, and neither is a
+point on the frame's axis — the frame always opens at `t = 0` and carries the elapsed
+duration as an offset inside `duration_mth(t)` — so both are unchanged.
 
 ## Four ledgers, one return arc, and § 174 in arithmetic
 
@@ -437,7 +451,9 @@ conditions and four carrier AVB — see `sources.md`.
 
 ## Tests
 
-`tests/test_berufsunfaehigkeit_de.py` asserts all eighteen printed rows of the notes' worked
+`tests/test_berufsunfaehigkeit_de.py` asserts the frame itself — `list(result_cf().index) ==
+list(range(proj_len()))`, so 444 rows `t = 0 … 443` on the anchor cell, ending at the last
+index `proj_len() − 1` — then all eighteen printed rows of the notes' worked
 example to the cent and the state ledgers to six decimals, the full-precision totals against
 the sum-of-rounded-cells the notes also print, the derived *Bruttobeitrag* of 1 013,0697 € p.a.
 reached two independent ways, month 0 rebuilt term by term with a calculator, the first

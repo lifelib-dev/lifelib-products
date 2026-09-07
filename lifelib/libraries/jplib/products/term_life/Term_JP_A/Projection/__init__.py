@@ -11,8 +11,10 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 3            # or switch the default
 
-``t`` counts **policy years**, 1-based: ``t = 1`` is the first policy year and
-``t = proj_len()`` the last. There is nothing after it — no 満期保険金 (maturity
+``t`` is the **0-based** projection index: ``t = 0`` is the first projected policy year
+and ``t = proj_len() - 1`` the last, so ``proj_len()`` is the **number** of projected
+years and the frame is ``range(proj_len())``. The contractual policy year is the
+1-based label ``t + 1``. There is nothing after the last year — no 満期保険金 (maturity
 benefit), no 解約返戻金 (*kaiyaku-henreikin*, surrender value), no run-off and no tail
 state of any kind [S1][S8][S10][S14].
 
@@ -63,15 +65,16 @@ notes use compact actuarial symbols instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ============================
 (row label)                model_point()                   The selected model point row
-t                          (the index of result_cf)        Policy year, 1-based
+t                          (the index of result_cf)        Projection year, 0-based
+t + 1                      (not a cells)                   Contractual policy year
 x                          age_at_entry()                  契約年齢, 満年齢
-x + t - 1                  age(t)                          Attained age in year t
+x + t                      age(t)                          Attained age in year t
 (none)                     sex()                           Rating factor, M or F
 (none)                     term_type()                     nen (renewable) or sai
 n                          policy_term()                   保険期間, in years
 w_r                        renew_ceiling()                 Attained age renewal stops
 N                          horizon_ceiling()               Years from entry to w_r
-t = 1..N                   proj_len()                      Last projected policy year
+t = 0..N-1                 proj_len()                      Number of projected years
 (none)                     contract_boundary()             ceiling or current_term
 k                          term_index(t)                   Term index, 1 in the first
 x_k                        term_start_age(k)               Attained age at term k start
@@ -131,8 +134,8 @@ decrement, and :func:`mort_table_mean` averages :func:`mort_rate_at_age`, which 
 table unadjusted. Feeding the best-estimate rate into the premium extension would move a
 premium scale by an assumption that has nothing to do with pricing.
 
-``P_m(k)`` and ``P_a(k)`` are indexed by the *term* in the notes and by the policy year
-here. :func:`premium_mth_pp` and :func:`prem_pp` take ``t`` and resolve the term through
+``P_m(k)`` and ``P_a(k)`` are indexed by the *term* in the notes and by the projection
+year here. :func:`premium_mth_pp` and :func:`prem_pp` take ``t`` and resolve the term through
 :func:`term_index`, which is what keeps every cash flow line indexed the same way. The
 premium is nonetheless level within a 保険期間, and :func:`check_prem_level` asserts it.
 
@@ -171,9 +174,9 @@ auto-convert to another product [S4][S7][S12] — and importing one changes the 
 
 :func:`decline_rate` is non-zero **only** in a boundary year, and the exits it produces
 are taken **after** mortality and after ordinary lapse — the notes' processing order,
-steps 3, 4 and 5. It is also the larger decrement where it applies: in year 10 of the
-anchor cell it removes 0.08235591 of the 0.11175249 lives that leave that year, 74% of
-all exits. Folding it into :func:`lapse_rate` makes the boundary invisible and mis-times
+steps 3, 4 and 5. It is also the larger decrement where it applies: in the anchor cell's
+first boundary year (``t = 9``, the tenth policy year) it removes 0.08235591 of the
+0.11175249 lives that leave that year, 74% of all exits. Folding it into :func:`lapse_rate` makes the boundary invisible and mis-times
 most of the cohort's departure.
 
 Two behaviours roll into the one rate, and a production model should separate them: the
@@ -276,9 +279,9 @@ Three of them are model point columns, five are References:
   and states that bias; the shift module must move ``q`` **up**, not down — about 0.7% at
   age 30 and 4.2% at age 40.
 - **Commission at 更新**, ``comm_new_term_rate = 0``. Set it to reproduce a scale paying
-  first-year rates on each renewed term, which would change the sign of the cash flow in
-  years 11, 21, 31 and 41. No document in the source set discloses a commission scale at
-  all, so the zero is a choice and not a fact.
+  first-year rates on each renewed term, which would change the sign of the cash flow at
+  ``t = 10, 20, 30`` and ``40``. No document in the source set discloses a commission
+  scale at all, so the zero is a choice and not a fact.
 
 .. rubric:: Sign convention and the annual-grid bias
 
@@ -459,11 +462,12 @@ def horizon_ceiling():
 
 
 def proj_len():
-    """The last projected policy year: :func:`horizon_ceiling`, or the current term.
+    """The **number** of projected policy years: :func:`horizon_ceiling`, or the current term.
 
-    ``contract_boundary = current_term`` truncates at the end of the 保険期間 in force at
-    the valuation date, which for a policy projected from issue is ``policy_term()``.  On
-    a 歳満了 point the two coincide.
+    The frame is ``range(proj_len())``, so ``t`` runs ``0 .. proj_len() - 1`` and
+    ``len(result_cf()) == proj_len()``.  ``contract_boundary = current_term`` truncates at
+    the end of the 保険期間 in force at the valuation date, which for a policy projected
+    from issue is ``policy_term()``.  On a 歳満了 point the two coincide.
     """
     if contract_boundary() == "current_term":
         return min(horizon_ceiling(), policy_term())
@@ -471,20 +475,25 @@ def proj_len():
 
 
 def age(t):
-    """x + t - 1: the attained age (満年齢) at the start of policy year t."""
-    return age_at_entry() + t - 1
+    """x + t: the attained age (満年齢) at the start of projection year t.
+
+    ``t`` is 0-based, so ``age(0)`` is the 契約年齢 itself and the contractual policy
+    year is ``t + 1``.
+    """
+    return age_at_entry() + t
 
 
 def term_index(t):
     """k: the term index — 1 in the original 保険期間, 2 after the first 更新, and so on.
 
-    ``1 + floor((t - 1) / n)`` on a 年満了 point; always 1 on a 歳満了 one, which never
-    renews [S1].  The premium is a function of ``k`` and not of ``t``, which is the state
-    variable a Japanese term model needs and a UK one does not.
+    ``1 + floor(t / n)`` on a 年満了 point with ``t`` 0-based; always 1 on a 歳満了 one,
+    which never renews [S1].  ``k`` is a contractual, **1-based** label and does not
+    shift with the projection index.  The premium is a function of ``k`` and not of
+    ``t``, which is the state variable a Japanese term model needs and a UK one does not.
     """
     if term_type() != "nen":
         return 1
-    return 1 + (t - 1) // policy_term()
+    return 1 + t // policy_term()
 
 
 def term_start_age(k):
@@ -541,7 +550,7 @@ def mort_table_mean(x, m):
 
 
 def mort_rate_base(t):
-    """The table rate at the attained age of policy year t, before the margin removal.
+    """The table rate at the attained age of projection year t, before the margin removal.
 
     Optionally shifted to ``sqrt(q_x q_(x+1))`` **[std]** when ``mort_age_shift`` is set,
     which is the annual grid's correction for reading a 保険年齢 table [REG-R20] at
@@ -555,7 +564,7 @@ def mort_rate_base(t):
 
 
 def sel_lapse_factor(t):
-    """The selective-lapsation loading on mortality in policy year t **[std]**.
+    """The selective-lapsation loading on mortality in projection year t **[std]**.
 
     ``1 + lambda max(0, 1 - l(t)/l_ref)``.  Lapsers and decliners are healthier than
     stayers, so a block that has shed a large proportion of its lives carries impaired
@@ -571,7 +580,7 @@ def sel_lapse_factor(t):
 
 
 def mort_rate(t):
-    """q(t): the best-estimate death-and-高度障害 decrement in policy year t.
+    """q(t): the best-estimate death-and-高度障害 decrement in projection year t.
 
     ``mort_be_factor`` times the table rate, then the selective-lapsation loading, capped
     at 1.  **One** decrement carrying **one** sum assured: 生保標準生命表2018（死亡保険用）
@@ -592,10 +601,11 @@ def mort_rate(t):
 
 
 def lapse_rate(t):
-    """w(t): the ordinary lapse rate applied at the end of policy year t **[std]**.
+    """w(t): the ordinary lapse rate applied at the end of projection year t **[std]**.
 
-    9 / 7 / 6 / 5.5 / 5 percent, from ``lapse_table.csv``; policy years beyond the table
-    take its last row.  The **level** is anchored to the LIAJ's FY2024 whole-market
+    9 / 7 / 6 / 5.5 / 5 percent, from ``lapse_table.csv``, which is keyed by the
+    **contractual, 1-based** policy year and so is read at ``t + 1``; policy years beyond
+    the table take its last row.  The **level** is anchored to the LIAJ's FY2024 whole-market
     解約・失効率 of 5.6% of opening in-force sum insured [REG-R31] — the simple mean over
     the first ten years is 5.75% and the in-force-weighted mean 5.94%, both a little above
     it, which is the expected direction for an early-duration protection curve against a
@@ -605,7 +615,7 @@ def lapse_rate(t):
     A lapse pays nothing: there is no 解約返戻金 at any duration [S1][S4][S8].
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    return float(tbl.loc[min(t, int(tbl.index.max())), "lapse_rate"])
+    return float(tbl.loc[min(t + 1, int(tbl.index.max())), "lapse_rate"])
 
 
 def decline_rate(t):
@@ -620,8 +630,10 @@ def decline_rate(t):
     carrier publishes a take-up or decline rate, so ``decline_base = 15%`` at every
     boundary.
 
-    Zero on a 歳満了 point, which never renews [S1], and zero in the final projected year,
-    where the cover ends at the ceiling rather than renewing.  The optional elasticity
+    Non-zero where a 保険期間 *ends*, which on the 0-based frame is ``(t + 1) mod n = 0``
+    — ``t = 9, 19, 29, 39`` on the anchor cell.  Zero on a 歳満了 point, which never
+    renews [S1], and zero in the final projected year ``t = proj_len() - 1``, where the
+    cover ends at the ceiling rather than renewing.  The optional elasticity
     ``d = min(d_max, d_0 (P_a(k+1)/P_a(k))^beta)`` responds to the premium jump, which
     itself accelerates — 1.87, then 2.16, 2.28 and 2.66 across the anchor cell's four
     renewals; ``decline_beta = 0`` in the base run gives the flat rate.  ``decline_max =
@@ -630,7 +642,7 @@ def decline_rate(t):
     """
     if term_type() != "nen":
         return 0.0
-    if t % policy_term() != 0 or t >= proj_len():
+    if (t + 1) % policy_term() != 0 or t >= proj_len() - 1:
         return 0.0
     jump = prem_pp(t + 1) / prem_pp(t)
     return min(decline_max, decline_base * jump ** decline_beta)     # noqa: F821
@@ -675,7 +687,7 @@ def prem_rate_m(t):
 
 
 def premium_mth_pp(t):
-    """P_m: the monthly premium per policy in policy year t, in whole yen.
+    """P_m: the monthly premium per policy in projection year t, in whole yen.
 
     ``f + r(sex, x_k, m_k) SA / 5,000,000``, rounded half up to the yen before
     annualization, as published rate cards are quoted [S2][S9][S10].  Level within the
@@ -690,7 +702,7 @@ def premium_mth_pp(t):
 
 
 def prem_pp(t):
-    """P_a: the annualized gross premium per policy in policy year t, ``12 P_m``.
+    """P_a: the annualized gross premium per policy in projection year t, ``12 P_m``.
 
     The annualization is **[std]**: mode discounts and 前納 discounts are insurer-set and
     unpublished [S1][S7][S9][S14], so :func:`premium_mode` does not change the amount.  On
@@ -700,7 +712,7 @@ def prem_pp(t):
 
 
 def pols_if_init():
-    """l(1) = 1: the model point is one policy, projected on an expected basis.
+    """l(0) = 1: the model point is one policy, projected on an expected basis.
 
     Survivorship multiplies the per-policy cash flows; no aggregation logic is specified
     in the technical notes and none is implemented.
@@ -709,28 +721,28 @@ def pols_if_init():
 
 
 def pols_if(t):
-    """l(t): the in-force probability at the **start** of policy year t.
+    """l(t): the in-force probability at the **start** of projection year t.
 
-    ``pols_if_init()`` in year 1, then the notes' roll-forward
+    ``pols_if_init()`` at ``t = 0``, then the notes' roll-forward
     ``l(t+1) = l(t)(1 - q)(1 - w)(1 - d)`` plus any 復活 reinstatements.  This is the
     weight on every cash flow of the same ``result_cf()`` row.
 
     It is **continuous across a renewal boundary**: a 更新 reprices the contract, it does
     not re-issue it [S1][S4], so there is no reset to 1 and no new cohort.  Defined one
-    year beyond ``proj_len()``, where it is the survivors whose cover expires at the
-    ceiling — on the anchor cell ``l(51) = 0.026042``, 2.6% of the cohort still in force
-    after fifty years and four repricings.  That is not a tail state: nothing is paid and
-    nothing runs off, the cover simply ends [S1][S8][S10][S14].
+    year beyond the last projected year, at ``t = proj_len()``, where it is the survivors
+    whose cover expires at the ceiling — on the anchor cell ``l(50) = 0.026042``, 2.6% of
+    the cohort still in force after fifty years and four repricings.  That is not a tail
+    state: nothing is paid and nothing runs off, the cover simply ends [S1][S8][S10][S14].
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR") + pols_reinstate(t - 1)
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside projection year t.
 
     The notes' processing order is death, then ordinary lapse, then the renewal decline —
     steps 3, 4 and 5 — and each timing reads the population the next decrement is taken
@@ -751,9 +763,9 @@ def pols_if_at(t, timing):
         after all three decrements — the end-of-year state, before any 復活
         reinstatement is added back by :func:`pols_if`.
 
-    Zero outside ``1 .. proj_len()``: the cover has not started or has ended.
+    Zero outside ``0 .. proj_len() - 1``: the cover has not started or has ended.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -767,7 +779,7 @@ def pols_if_at(t, timing):
 
 
 def pols_death(t):
-    """D(t) = l(t) q(t): expected death and 高度障害 claims in policy year t.
+    """D(t) = l(t) q(t): expected death and 高度障害 claims in projection year t.
 
     One decrement covering both, because the table includes 高度障害 [REG-R20] and the
     contract pays once and terminates on either event [S1][S8].
@@ -776,7 +788,7 @@ def pols_death(t):
 
 
 def pols_lapse(t):
-    """Ordinary lapses at the end of policy year t, from the survivors of mortality.
+    """Ordinary lapses at the end of projection year t, from the survivors of mortality.
 
     Pays nothing — there is no 解約返戻金 at any duration [S1][S4][S8] — so this moves
     :func:`pols_if` and nothing else.  With the 復活 module on, these lives flow into
@@ -789,8 +801,8 @@ def pols_decline(t):
     """Renewal declines at the end of a boundary year, after ordinary lapse.
 
     Zero in every year that is not a 更新 boundary, and zero on a 歳満了 point.  Where it
-    applies it is the larger exit: 0.08235591 of the 0.11175249 lives leaving in year 10
-    of the anchor cell.  Nothing is paid.
+    applies it is the larger exit: 0.08235591 of the 0.11175249 lives leaving at ``t = 9``
+    on the anchor cell.  Nothing is paid.
     """
     return pols_if_at(t, "BEF_DECLINE") * decline_rate(t)
 
@@ -820,7 +832,7 @@ def pols_lapse_pool(t):
     """
     rho = reinstate_rate_eff()
     return sum(pols_lapse(s) * (1.0 - rho) ** (t - 1 - s)
-               for s in range(max(1, t - reinstate_window), t))      # noqa: F821
+               for s in range(max(0, t - reinstate_window), t))      # noqa: F821
 
 
 def pols_reinstate(t):
@@ -842,7 +854,7 @@ def pols_lapse_expire(t):
     along the way.  They are gone for good: after the window there is no 復活 [S1].
     """
     s = t - reinstate_window                                         # noqa: F821
-    if s < 1:
+    if s < 0:
         return 0.0
     return pols_lapse(s) * (1.0 - reinstate_rate_eff()) ** reinstate_window  # noqa: F821
 
@@ -851,7 +863,7 @@ def wop_waived_frac(t):
     """The fraction of in-force policies with premiums waived at the start of year t.
 
     A two-state incidence chain **[std]**, ``u(t+1) = u(t)(1 - rec) + (1 - u(t)) inc``,
-    starting from ``u(1) = 0``.  The trigger is an **accident** on or after the
+    starting from ``u(0) = 0``.  The trigger is an **accident** on or after the
     責任開始時 producing a 別表4 state within 180 days [S1][S8][S12][S14].  別表4 is a
     materially lower bar than the 別表3 test for 高度障害 — loss of one eye, deafness in
     both ears, loss of one limb at the wrist or ankle [S1] — so this incidence is **not**
@@ -872,19 +884,19 @@ def wop_waived_frac(t):
     waived population be carried as a fraction rather than as its own decrement.  Zero
     unless the module is on.
     """
-    if not wop() or t <= 1:
+    if not wop() or t <= 0:
         return 0.0
     u = wop_waived_frac(t - 1)
     return u * (1.0 - wop_rec_rate) + (1.0 - u) * wop_inc_rate       # noqa: F821
 
 
 def pols_waived(t):
-    """In-force policies whose premiums are waived in policy year t; zero in the base run."""
+    """In-force policies whose premiums are waived in projection year t; zero in the base run."""
     return pols_if_at(t, "BEF_DECR") * wop_waived_frac(t)
 
 
 def pols_payer(t):
-    """In-force policies actually paying premium in policy year t.
+    """In-force policies actually paying premium in projection year t.
 
     ``l(t)`` less the waived fraction.  Equal to :func:`pols_if` unless the
     保険料の払込の免除 module is on.
@@ -926,14 +938,14 @@ def ln_amount():
 
 
 def ln_available(t):
-    """Whether an acceleration can be claimed in policy year t.
+    """Whether an acceleration can be claimed in projection year t.
 
     The rider is barred within one year of a **non-renewable** expiry [S1][S7][S8], which
-    on the annual grid is the final projected policy year — and only that year, since
-    every earlier expiry on a 更新型 point is followed by a renewal.  On a 更新型 cell the
-    bar therefore bites only in the ceiling term.
+    on the annual grid is the final projected year ``t = proj_len() - 1`` — and only that
+    year, since every earlier expiry on a 更新型 point is followed by a renewal.  On a
+    更新型 cell the bar therefore bites only in the ceiling term.
     """
-    return living_needs() and t < proj_len()
+    return living_needs() and t < proj_len() - 1
 
 
 def ln_share(t):
@@ -958,7 +970,7 @@ def ln_share(t):
 
 
 def ln_payout_pp(t):
-    """The リビング・ニーズ特約 payment per accelerated claim in policy year t.
+    """The リビング・ニーズ特約 payment per accelerated claim in projection year t.
 
     ``A - A i_ln / 2 - six months' premiums on A`` [S1][S7][S8][S12]: the amount is
     **discounted**, unlike a UK terminal illness payment, which is the economic reason
@@ -982,7 +994,7 @@ def ln_payout_pp(t):
 
 
 def premiums(t):
-    """Premium income at the start of policy year t, an inflow.
+    """Premium income at the start of projection year t, an inflow.
 
     ``P_a(k(t))`` on the policies actually paying — :func:`pols_payer`, which is
     :func:`pols_if` unless the waiver module is on.  Annual in advance with no allowance
@@ -995,7 +1007,7 @@ def premiums(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in projection year t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
         the sum assured on the year's death and 高度障害 claims,
@@ -1036,8 +1048,8 @@ def claim_expenses(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^(t-1)`` **[std]**, pi = 1%."""
-    return (1.0 + inflation_rate) ** (t - 1)                         # noqa: F821
+    """The expense inflation factor in projection year t: ``(1 + pi)^t`` **[std]**, pi = 1%."""
+    return (1.0 + inflation_rate) ** t                               # noqa: F821
 
 
 def expenses(t):
@@ -1047,12 +1059,12 @@ def expenses(t):
     at the start of the year.  No Japanese public source supplies either level.
 
     **No acquisition expense is charged at a 更新.** A renewal is not new business — no
-    new 保険証券 is issued and no 告知 is taken [S1][S4] — so the year-1 charge is the
+    new 保険証券 is issued and no 告知 is taken [S1][S4] — so the ``t = 0`` charge is the
     only one, however many times the contract renews.  ¥4,000 a year against ¥11,688 of
     premium is a third of the first term's load, which is why the notes rate the
     **[std]** 1.0% inflation rate a poor assumption to leave unexamined.
     """
-    acq = expense_acq * pols_if_at(t, "BEF_DECR") if t == 1 else 0.0  # noqa: F821
+    acq = expense_acq * pols_if_at(t, "BEF_DECR") if t == 0 else 0.0  # noqa: F821
     return acq + (expense_maint * inflation_factor(t)                # noqa: F821
                   * pols_if_at(t, "BEF_DECR"))
 
@@ -1060,13 +1072,13 @@ def expenses(t):
 def comm_init_pp():
     """c0: initial commission per policy issued **[std]**, 50% of the first year's P_a.
 
-    Paid upfront at issue.  With the acquisition expense this is ¥20,844 of year-1 outgo
-    against ¥11,688 of year-1 premium on the anchor cell, which is the deep new business
-    strain the protection shape starts from.  No document in the source set discloses a
-    Japanese commission scale, so both this and ``comm_renewal_rate`` are levels chosen
-    for the reference implementation.
+    Paid upfront at issue.  With the acquisition expense this is ¥20,844 of outgo at
+    ``t = 0`` against ¥11,688 of premium on the same row of the anchor cell, which is the
+    deep new business strain the protection shape starts from.  No document in the source
+    set discloses a Japanese commission scale, so both this and ``comm_renewal_rate`` are
+    levels chosen for the reference implementation.
     """
-    return comm_init_rate * prem_pp(1)                               # noqa: F821
+    return comm_init_rate * prem_pp(0)                               # noqa: F821
 
 
 def comm_new_term(t):
@@ -1075,34 +1087,34 @@ def comm_new_term(t):
     A renewal is not new business [S1][S4], so the base run pays no acquisition
     commission on a renewed term.  That is a choice and not a fact: no document in the set
     discloses a commission scale at all, and a scale paying first-year rates on each
-    renewed term would change the **sign** of the cash flow in years 11, 21, 31 and 41.
-    Set ``comm_new_term_rate`` to switch it on; it then falls in the first year of each
-    term after the first.
+    renewed term would change the **sign** of the cash flow at ``t = 10, 20, 30`` and
+    ``40``.  Set ``comm_new_term_rate`` to switch it on; it then falls in the first year
+    of each term after the first, which on the 0-based frame is ``t = (k - 1) n``.
     """
     if comm_new_term_rate <= 0.0 or term_index(t) <= 1:              # noqa: F821
         return 0.0
-    if t != (term_index(t) - 1) * policy_term() + 1:
+    if t != (term_index(t) - 1) * policy_term():
         return 0.0
     return comm_new_term_rate * prem_pp(t) * pols_if_at(              # noqa: F821
         t, "BEF_DECR")
 
 
 def commissions(t):
-    """Commission outgo in policy year t **[std]**.
+    """Commission outgo in projection year t **[std]**.
 
-    The initial commission in policy year 1, then 5% of premium income from policy year
-    2, plus any commission at a 更新 (off in the base run).  No clawback on early lapse is
+    The initial commission at ``t = 0``, then 5% of premium income from ``t = 1`` on,
+    plus any commission at a 更新 (off in the base run).  No clawback on early lapse is
     modelled: the notes record that no Japanese clawback evidence exists in the source
     set, so a clawback rule would be an invention rather than a standardization of
     something observed.
     """
-    init = comm_init_pp() * pols_if_at(t, "BEF_DECR") if t == 1 else 0.0
-    renew = comm_renewal_rate * premiums(t) if t >= 2 else 0.0       # noqa: F821
+    init = comm_init_pp() * pols_if_at(t, "BEF_DECR") if t == 0 else 0.0
+    renew = comm_renewal_rate * premiums(t) if t >= 1 else 0.0       # noqa: F821
     return init + renew + comm_new_term(t)
 
 
 def net_cf(t):
-    """CF(t): the net cash flow of policy year t, **income positive**.
+    """CF(t): the net cash flow of projection year t, **income positive**.
 
     Premiums less claims, claim expense, maintenance and acquisition expense and
     commission.  The notes' own sign — they write ``+ = inflow`` — which is also the
@@ -1113,15 +1125,15 @@ def net_cf(t):
     :func:`pols_if`.  The shape to expect is a deep first-year strain, thin positive
     margins through the middle of each term, a **negative** year immediately before each
     renewal as the level premium falls behind the rising mortality cost, and a jump back
-    into surplus the year after — on the anchor cell, -¥1,120.47 in year 10 and
-    +¥3,217.97 in year 11.
+    into surplus the year after — on the anchor cell, -¥1,120.47 at ``t = 9`` and
+    +¥3,217.97 at ``t = 10``.
     """
     return (premiums(t) - claims(t) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in projection year t; zero everywhere.
 
     ``l(t) - l(t+1) - D(t) - lapses - declines + reinstatements``, the notes' identity
     with the 復活 module's inflow carried as its own term so that the same residual closes
@@ -1141,11 +1153,11 @@ def check_pols_roll_fwd():
     residual of the year that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol           # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_lapse_pool_resid(t):
-    """The 復活 pool roll-forward residual in policy year t; zero everywhere.
+    """The 復活 pool roll-forward residual in projection year t; zero everywhere.
 
     ``lap(t) - lap(t+1) - reinstatements - window expiries + lapses``.  The pool is a
     stock with one inflow (:func:`pols_lapse`) and two outflows (:func:`pols_reinstate`
@@ -1160,11 +1172,11 @@ def check_lapse_pool_resid(t):
 def check_lapse_pool():
     """True when the 復活 pool ledger closes in every projected policy year."""
     return all(abs(check_lapse_pool_resid(t)) <= roll_fwd_tol        # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pols_payer_resid(t):
-    """The premium-paying population residual in policy year t; zero everywhere.
+    """The premium-paying population residual in projection year t; zero everywhere.
 
     ``l(t) - payers - waived``.  The waiver module carries the waived lives as a fraction
     of the in-force rather than as a separate decrement, which is only legitimate while
@@ -1176,11 +1188,11 @@ def check_pols_payer_resid(t):
 def check_pols_payer():
     """True when payers and waived lives partition the in-force in every projected year."""
     return all(abs(check_pols_payer_resid(t)) <= roll_fwd_tol        # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_prem_level_resid(t):
-    """The premium-level residual in policy year t; zero everywhere.
+    """The premium-level residual in projection year t; zero everywhere.
 
     ``P_a(t) - P_a(t-1)`` inside a 保険期間, and zero by definition in the first year of
     a term.  The premium is level within the term and changes **only** at a 更新
@@ -1188,7 +1200,7 @@ def check_prem_level_resid(t):
     which is what happens if the rate lookup is keyed on attained age rather than on the
     term's entry age.
     """
-    if t <= 1 or term_index(t) != term_index(t - 1):
+    if t <= 0 or term_index(t) != term_index(t - 1):
         return 0.0
     return prem_pp(t) - prem_pp(t - 1)
 
@@ -1196,11 +1208,11 @@ def check_prem_level_resid(t):
 def check_prem_level():
     """True when the premium is level within every 保険期間 of the projection."""
     return all(abs(check_prem_level_resid(t)) <= roll_fwd_tol      # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_net_cf_resid(t):
-    """The published cash flow statement's ledger residual in policy year t; zero.
+    """The published cash flow statement's ledger residual in projection year t; zero.
 
     :func:`net_cf` less the sum of the **columns of** ``result_cf()``, so a reader adding
     up the printed statement gets the printed total.  It is the check that catches a
@@ -1227,18 +1239,18 @@ def check_net_cf():
     smallest error a reader adding up the printed statement could observe.
     """
     return all(abs(check_net_cf_resid(t)) <= cash_tol                # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year t.
+    """Result table of cashflows, indexed by the 0-based projection year ``t = 0 .. proj_len() - 1``.
 
     ``pols_if`` is the start-of-year count, which is the weight applied to every cash
     flow on the same row.  ``net_cf`` carries the notes' own income-positive sign.
     ``claims_lapse`` is a column of zeros by product design — there is no 解約返戻金 —
     and is published rather than dropped; see the Space docstring.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1262,7 +1274,7 @@ def result_pols():
     ``term_index`` and ``prem_pp`` are printed here with ``decline_rate``: a boundary year
     is the row where the decline rate is non-zero and the premium changes on the next row.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

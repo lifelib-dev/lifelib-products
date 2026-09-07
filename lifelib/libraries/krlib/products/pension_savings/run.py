@@ -24,7 +24,10 @@ form = ("jongsin yeongeumhyeong (life annuity) with a {}-year guarantee".format(
 print("model point {}: {} - yeongeum jeochuk boheom "
       "(tax-qualified pension savings), {}{}".format(
           point_id, proj.model_point()["policy_id"], proj.sex(), proj.issue_age()))
-print("age basis boheom nai (insurance age); t counts completed policy years from issue")
+print("age basis boheom nai (insurance age); t counts completed policy years from issue, "
+      "0-based")
+print("frame t = 0 .. {} ({} rows); policy year = t + 1".format(
+    proj.proj_len() - 1, proj.proj_len()))
 print("gibon boheomryo (basic premium) = KRW {:,.0f} p.a. for {} years, "
       "chuga nabip (additional) = KRW {:,.0f}".format(
           proj.prem_pp(), proj.premium_term_y(), proj.addl_prem_pp()))

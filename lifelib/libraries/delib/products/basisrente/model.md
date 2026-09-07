@@ -47,7 +47,16 @@ model.Projection[1].result_cf()
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by projection year `t` with one column per
 cash flow line, and `result_pols()` the decrement, rate and per-policy side beside it, which
-is what a reader needs to follow the worked example's independent checks. The model and both
+is what a reader needs to follow the worked example's independent checks.
+
+**The frame is 0-based.** `t = 0` is the first projected year — the year that opens at the
+valuation date — and `proj_len()` is the **number** of projected years, the frame's exclusive
+end: `result_cf()` runs `t = 0 … proj_len() − 1`, `len(result_cf()) == proj_len()`, and
+`result_cf().index[0] == 0` on every model point, in force or new business. The contractual
+**policy year** is the 1-based label `duration(t) + 1`, and `duration(t) = duration_init + t`
+stays the count of *completed* policy years, 0 in a new-business point's first projected year.
+On the anchor cell `proj_len() = 77` (attained ages 45 to 121), `ret_t() = 22` and the last
+row is `t = 76`. The model and both
 its Spaces carry docstrings — `model.Projection.doc` holds the full mapping between the
 technical notes' symbols and the cells names, and `model.Data.doc` says what each input file
 is and, for the mortality table, what it is **not**.
@@ -83,7 +92,7 @@ zero.
 removes the *premium*, not the *policy*: the contract stays certified, stays protected, keeps
 being credited and still converts at *Rentenbeginn*. So the model carries **two ledgers** and
 `pols_if(t + 1) = pols_if(t) × (1 − mort_rate(t))` with `bf_rate` **absent from the identity**.
-On the anchor the two series come apart completely: by `t = 23` the in-force count has fallen
+On the anchor the two series come apart completely: by `t = 22` the in-force count has fallen
 only to 0,932780 while the premium-paying count has fallen to 0,512516, and the 0,420265
 difference is a cohort still in force, still credited and still converting.
 `check_pols_roll_fwd()` asserts both limbs — that the ledgers sum to `pols_if` and that
@@ -93,7 +102,7 @@ premium-free block **at fund level**, and a premium-free policy keeps paying the
 and the reserve charge γ out of its own reserve while it stops paying β and the *Zillmerung*
 instalment α. They must not be averaged into one per-policy figure — a policy that froze at
 duration 5 and one that froze at duration 15 hold different reserves — and on the anchor
-`av_pp(10)` is 82 934,50 € against 39 549,19 € for the premium-free block's average policy. Only
+`av_pp(9)` is 82 934,50 € against 39 549,19 € for the premium-free block's average policy. Only
 the fund-level total rolls forward on mortality alone,
 `av_at(t + 1, "BEF_PREM") = av_at(t, "AFT_INT") × (1 − mort_rate(t))`, which is
 `check_av_roll_fwd()`. It closes **across a freeze**, because a freeze moves reserve
@@ -134,12 +143,12 @@ charge as both is the notes' fourth pitfall, and it is why `expenses(t)` is inva
 at *Rentenbeginn* — 249 887,21 € of annuity claims against 270 016,08 €.
 
 The *Zillmerung* is **spread over five years and capped at 25 ‰ of the *Beitragssumme***
-[R16] [REG-R16]. `alpha_amort_pp(t)` is equal at `t = 1 … 5`, zero from `t = 6`, and the five
+[R16] [REG-R16]. `alpha_amort_pp(t)` is equal at `t = 0 … 4`, zero from `t = 5`, and the five
 instalments sum to `zill_rate × beitragssumme_pp()` exactly. The window is a window of the
 **contract**, not of the projection, so model point 6 — in force at `duration_init = 17` —
 sees `alpha_amort_pp(t) = 0` at every `t`; on a single-premium contract the five instalments
 still run and the debit outlives the one premium that paid for it. One arithmetic coincidence
-in the worked example is not a coincidence: `commissions(1) = 0.025 × S = 4 094,85 €` is the
+in the worked example is not a coincidence: `commissions(0) = 0.025 × S = 4 094,85 €` is the
 same number as `alpha_total_pp()`, because the initial commission rate and the
 *Höchstzillmersatz* are both 2,5 %. That is the German design — what the insurer pays out at
 inception is sized to what it may write into the reserve — and it is why moving
@@ -222,7 +231,7 @@ tariff prices it: model point 3 converts at `31.50 × 0.930 = 29,295 €`.
 
 A *Rentengarantiezeit* runs `guarantee_period_y` years **from *Rentenbeginn***, not from each
 death, so every continuation ends on the same date and `pols_gtd` is a one-line recursion
-closing at `gtd_end_t()` — `t = 25` on model point 4, with `pols_gtd(26) = 0` however late the
+closing at `gtd_end_t()` — `t = 24` on model point 4, with `pols_gtd(25) = 0` however late the
 death that started it. Each death contributes `elig_surv_prob` of a continuation, and where none
 exists the payments simply cease. They are **never commutable**:
 `claims(t, "SURVIVOR") = ann_pp(t) × pols_gtd(t)` is a stream, and nothing in this model
@@ -240,7 +249,7 @@ table is the notes' fifteenth pitfall.
 `mort_rate(t)` is **1.0 wherever `age(t) ≥ omega_age()`**, whatever `mort_be_factor` says.
 Without that rule the generational trend carries the shipped table's own terminal rate below 1
 in every calendar year after the base year — 0.19920354 at age 120 in 2101 — and would leave a
-residue in force after the end of the table; with it, `pols_if(proj_len() + 1) = 0` exactly, the
+residue in force after the end of the table; with it, `pols_if(proj_len()) = 0` exactly, the
 decrements sum to 1,000000, and there is no tail state and nothing left to pay.
 
 ## Inputs are external files
@@ -285,14 +294,23 @@ and what you gain is that a diff shows logic changes only and an input can be sw
 delib's second ruling, asserted by the conventions suite; a model point is a *configuration*
 rather than an assumption, and that is the only exemption.
 
+**Two of the seven carry a time-like key, and they are keyed differently.** `surplus_table.csv`
+is keyed on `t` itself — the model's projection index — so it is **0-based** like the frame and
+its first row is `t = 0`; `behaviour_table.csv` is keyed on `dur`, the contractual **policy
+year** `duration(t) + 1`, which is 1-based, so its first row stays `dur = 1` and its values were
+not moved. `mort_table.csv` is keyed on attained `age` and `rentenfaktor_table.csv` on the
+conversion `age`; neither is a time index. On `model_point_table.csv`, `duration_init` and
+`zuzahlung_end_dur` are **elapsed policy-year counts** and are already 0-based by nature, so
+neither shifts; `conclusion_year` is a calendar year, and `entry_age` and `ret_age` are ages.
+
 | File | Contents | Provenance |
 |---|---|---|
 | `model_point_table.csv` | Thirteen model points, 25 attributes each. **Point 1 is the worked-example anchor cell** (M45 → 67, concluded 2026, 6 000 € annual + 4 000 € *Zuzahlung*, 2 % *Dynamik*, `gtd_rate` 1,00 %, no riders). Points 2–13 exercise the *Einmalbeitrag*, all four payment frequencies, all three in-force shapes, the survivor's annuity and the *Rentengarantiezeit* separately and together, both age-floor cohorts, four guarantee vintages, and four boundary cases | anchor cell **[std]**, the technical notes' worked example |
 | `mort_table.csv` | First-order `qx` and the improvement `trend` by age 20–121 | **[std]** DAV 2004 R-shaped proxy `min(1, 0.014000 × 1.085^(age − 67))` with a flat `trend = 0.015`. *Not* DAV 2004 R, which is the DAV's property and is cited, never shipped [R17] [REG-R47] [REG-R49]. **The anchor a replacement must preserve is `qx(67) = 0.014000`**, because the worked example converts at 67; it must also stay generational, stay first order, and end at an age where `qx = 1.0` |
-| `surplus_table.csv` | `decl_rate` and `ann_bonus_rate` by scenario and `t` | **[std]** — 2,60 % / 2,40 % / 2,20 % declared, 1,0 % *Überschussrente*. A scenario, not a forecast: **no declared rate specific to a Basisrente was established anywhere in the delib corpus**, and the sibling files' rates are Schicht-3 and endowment figures that must not be relabelled |
+| `surplus_table.csv` | `decl_rate` and `ann_bonus_rate` by scenario and `t`. **Its `t` is the model's own projection index and is 0-based**, running 0…94: the 2,60 % band is `t = 0…9`, the 2,40 % band `t = 10…19`, 2,20 % thereafter | **[std]** — 2,60 % / 2,40 % / 2,20 % declared, 1,0 % *Überschussrente*. A scenario, not a forecast: **no declared rate specific to a Basisrente was established anywhere in the delib corpus**, and the sibling files' rates are Schicht-3 and endowment figures that must not be relabelled |
 | `rentenfaktor_table.csv` | `rf_curr` by scenario and conversion age 60–75 | **[std]** — 31,50 € at 67, graded 3,5 % per year of age; the `low` scenario is 0.88 of it, and exists so model point 13 exercises the other branch of the `max`. **No *Rentenfaktor* level, range or time series exists anywhere in the delib corpus**, for this or any product (gap 4) |
 | `charge_table.csv` | One row per tariff: the four account charges, the *Schlussüberschussanteil*, and the insurer's own expense and commission scale | `zill_rate` 25 ‰ (and 40 ‰ pre-LVRG) is [R16] [REG-R16] [REG-R20]; **everything else on the row is [std]**. Two tariffs ship, differing only in `zill_rate`, so the in-force cohorts carry their own cap |
-| `behaviour_table.csv` | `bf_rate` and `zuz_take_up` by `dur`, the **policy year** `duration(t) + 1` | **[std]**, and **no observed range exists**: no German insurer publishes a *Beitragsfreistellung* rate or a *Zuzahlung* take-up for this product (gap 3). The shape is argued from the product's structure; the levels are invented |
+| `behaviour_table.csv` | `bf_rate` and `zuz_take_up` by `dur`, the **policy year** `duration(t) + 1`. `dur` is a contractual 1-based label and **not** the frame's `t`, so the file starts at `dur = 1` and is unaffected by the 0-based index | **[std]**, and **no observed range exists**: no German insurer publishes a *Beitragsfreistellung* rate or a *Zuzahlung* take-up for this product (gap 3). The shape is argued from the product's structure; the levels are invented |
 | `option_table.csv` | One multiplicative factor per option key | **[std]** — the *Ratenzahlungszuschlag* on the *laufender Beitrag* alone, and the *Rentenfaktor* reductions for a *Rentengarantiezeit* and a survivor's annuity, anchored on a Schicht-3 illustration that is [unverified] and expressly not transferable |
 
 ## The published checks
@@ -370,7 +388,7 @@ verifiable in the frame rather than only in prose. A Solvency II best estimate i
 `net_cf` subtracts each once. The shape to expect on the anchor is a first-year strain that is
 **all commission** — the *Zillmerung* instalment of 818,97 € is an account deduction and costs
 the insurer nothing — then twenty-one years of positive accumulation-phase margin, then a long
-negative payout tail from `t = 23`.
+negative payout tail from `t = 22`.
 
 ## Naming
 
@@ -422,7 +440,7 @@ proprietary or unreachable. Nothing here is a market observation.
 | *Zillmerung* spread, and the *Beitragssumme* it runs on | `zill_spread_y = 5` years of the **contract**; `S` = the escalating premiums to `ret_age`, **excluding** *Zuzahlungen* | **The five years are no longer [std].** The AltZertG's own rule does not reach a Basisrente, but VVG § 165 Abs. 2 with § 169 Abs. 3 does, and two retrieved wordings state it [R10] [R14] [S1] [S12] — with the qualification, from the GDV conditions, that a premium term shorter than five years shortens the spread, which this model does not implement. **Whether *Zuzahlungen* enter `S`** is still not established (gap 8); excluding them is the conservative reading, and `S` is the base of both the 25 ‰ cap and the initial commission |
 | The option factors | *Ratenzahlungszuschlag* 1,000 / 1,020 / 1,030 / 1,050; `guarantee_period` 1,000 / 0,995 / 0,974; `survivor` 1,000 / 0,930 | The frequency ladder is a German market convention carried from the sibling delib corpus, with no tariff sheet behind it. The two *Rentenfaktor* reductions are anchored on a Schicht-3 illustration that is [unverified] and expressly not transferable, and the survivor factor has no anchor at all |
 | Insurer expense scale | Acquisition 250,00 € at inception; maintenance 60,00 € and annuity administration 36,00 € p.a., inflating at 1,5 % | Round-number placeholders; the payout phase is administratively cheaper than the accumulation phase |
-| Commission scale | 2,5 % of `beitragssumme_pp()` at inception, 1,5 % of premiums plus *Zuzahlungen* from `t = 2` | The initial rate is sized to the *Zillmerung* cap, which is the German design — and a carrier's published *Abschluss- und Vertriebskosten* of "*2,50 % der vereinbarten Beiträge*" now sits exactly on it [S13]. [S2]'s 1 575 € specimen stays [unverified]; **no renewal level was established**, and the one retrieved schedule has no renewal line at all |
+| Commission scale | 2,5 % of `beitragssumme_pp()` at inception, 1,5 % of premiums plus *Zuzahlungen* from `t = 1` | The initial rate is sized to the *Zillmerung* cap, which is the German design — and a carrier's published *Abschluss- und Vertriebskosten* of "*2,50 % der vereinbarten Beiträge*" now sits exactly on it [S13]. [S2]'s 1 575 € specimen stays [unverified]; **no renewal level was established**, and the one retrieved schedule has no renewal line at all |
 | *Beitragsfreistellung* rate | 4,0 % (years 1–5), 3,0 % (6–10), 2,0 % (11+) | Shape argued from the product's structure — penalty-free and reversible early, nothing realisable to leave for late. **The levels are invented** (gap 3) |
 | *Zuzahlung* take-up | 0.70 (1–5), 0.85 (6–15), 0.90 (16+) | A utilisation rate, not a contract term. Rising because the contract and the habit bed in |
 | Eligible-survivor probability | `elig_surv_prob = 0.55` | In substance a marriage-survival probability. **One of the most consequential [std] numbers in the whole delib library** |
@@ -454,7 +472,8 @@ recorded rather than acted on, because moving a level moves the worked example a
 ## Tests
 
 `tests/test_basisrente_de.py` asserts the eighteen printed rows of the notes' worked example to
-the cent and `pols_if` to six decimals, the totals over all seventy-seven years at full
+the cent and `pols_if` to six decimals — its golden dictionaries are keyed by the 0-based `t`,
+so the anchor's rows run 0 to 76 — the totals over all seventy-seven years at full
 precision (and that the sum of the rounded cells really does differ, in three of the six money
 columns), the *Einmalbeitrag* variant's ten printed rows and its own totals, the model point 13
 conversion table with both branches of the `max`, the notes' three independent checks rebuilt

@@ -14,7 +14,7 @@ are identical to those in `product-spec.md`. The mechanics anchors are the insur
 own booklets [S1] [S2] [S3] [S4] [S9]; the statutory arithmetic is arts. A132-10 to
 A132-17 of the Code des assurances [R5] [REG-R15] [REG-R16]; the quantitative anchor is
 the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_A`, an **annual** model,
-`t` counted in policy years from the valuation date.
+`t` counted in policy years from the valuation date and **0-based**.
 
 ---
 
@@ -29,6 +29,13 @@ the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_A`, an **annual**
   liability with a separate levy regime [R9], outside the A132-11 machinery
   [R5, art. A132-10](#frlib-assurance_vie_euro-r5); it is the sibling product `assurance_vie_uc`. `Arbitrages` between
   supports are out of scope.
+- **Time index.** `t` is **0-based**: `t = 0` is the first projected year, whatever the
+  model point's completed duration, and year `t` runs from time `t` to time `t + 1`. The
+  frame is `t = 0 … proj_len − 1`, so `proj_len` is the number of projected years and
+  `result_cf()` has `proj_len` rows. The contractual **policy year is `t + 1`**, and every
+  formula below is written on the 0-based index; where the prose names a year of the
+  worked example it names its `t`. The contract's own completed duration is a separate
+  clock, `duration(t) = duration_init + t + 1` at the 31 December of year `t`.
 - **Projection frequency.** Annual **[std]**: the PB is fixed for the closing year and
   credited at 31 December value date [S1] [S2] [S6] [S7] [S9], and the eight-year PPB
   clock counts financial years [R5, art. A132-16](#frlib-assurance_vie_euro-r5). Sub-annual mechanics — BoursoVie's
@@ -77,7 +84,7 @@ the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_A`, an **annual**
 | `prem_gross_pp` | currency p.a., `versements libres programmés` | 2 400.00 |
 | `prem_charge_rate` | rate, `frais sur versement` | 0.0000 |
 | `wd_pp` | currency p.a., `rachats partiels programmés` | 3 000.00 |
-| `wd_start_year` | int, first projection year the programmed surrender runs | 6 |
+| `wd_start_year` | int, first projection year the programmed surrender runs, 0-based like `t` | 5 |
 | `fee_rate` | rate p.a., `frais de gestion sur encours` | 0.0060 |
 | `tmg_rate` | rate p.a., `taux minimum garanti` | 0.0000 |
 | `ts_target` | rate p.a., the insurer's target `taux servi`, net | 0.0230 |
@@ -89,8 +96,9 @@ the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_A`, an **annual**
 Every attribute name, every column of `model_point_table.csv` and every cells name is
 English `lower_snake_case`, per the shared vocabulary; the French names stay in the prose,
 where they are the name of the thing. `model_point()` selects the row, `age(t)` is
-`issue_age + duration_init + t − 1`, and `proj_len()` is 40 years **[std]** — the euro
-support has no term, so the horizon is a modeling choice, not a contract fact.
+`issue_age + duration_init + t`, and `proj_len()` is 40 years **[std]** — the number of
+projected years, so the frame is `t = 0 … 39` — the euro support has no term, so the
+horizon is a modeling choice, not a contract fact.
 
 ---
 
@@ -174,7 +182,7 @@ rationalized from the product's incentive structure.
 | Base surrender `lapse_rate_base` | 4.0% p.a. at policy durations 1–7; **8.0% at duration 8**; 5.0% at durations 9+ | **[std]**; the duration-8 step is the tax threshold [R10] [R11] [REG-R40] |
 | Dynamic surrender | additive in the gap between a market reference rate and `ts_net`: see Policyholder behavior modeling | **[std]** |
 | Market reference rate `ref_rate` | 2.20% p.a. — the 2025 average Livret A rate | [R14]; use as the dynamic reference **[std]** |
-| Partial-surrender utilisation | the programmed amount, taken in full from projection year `wd_start_year` | **[std]** |
+| Partial-surrender utilisation | the programmed amount, taken in full from `t = wd_start_year` | **[std]** |
 | Insurer expenses | EUR 24 per policy p.a. inflating at 1.5% p.a., plus 0.35% p.a. of the average balance | **[std]** (v) |
 | Fund financial rate `r_fin` | scenario path in `fin_rate_table.csv`; base path 3.30% falling to 2.30% over twelve years | **[std]** (vi) |
 | `Avance` take-up | 0 | terms unpublished [S1] [S2] [S3]; exclusion **[std]** |
@@ -207,8 +215,8 @@ lift it for any purpose that needs actual French population mortality.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | policy year index, 1, 2, … from the valuation date |
-| `AV(t)` | `av_pp(t)` | `épargne acquise` per policy at the start of year `t`; `AV(1) = av_pp_init` |
+| `t` | — | policy year index from the valuation date, **0-based**: `t = 0, 1, …, proj_len − 1` |
+| `AV(t)` | `av_pp(t)` | `épargne acquise` per policy at the start of year `t`; `AV(0) = av_pp_init` |
 | `P(t)`, `P_g(t)` | `prem_to_av_pp(t)`, `prem_gross_pp(t)` | `versements` credited net of `frais sur versement`, and before them |
 | `W(t)` | `withdrawals_pp(t)` | `rachats partiels` paid during year `t` |
 | `B(t)` | `pm_avg_pp(t)` | crediting base: `AV(t) + 0.5·P(t) − 0.5·W(t)` **[std]** |
@@ -217,13 +225,13 @@ lift it for any purpose that needs actual French population mortality.
 | `Φ(t)`, `T(t)` | `fin_acct_pp(t)`, `tech_acct_pp(t)` | `compte financier` balance `r(t)·(B(t) + Q(t))`; `compte technique` balance `F(t) − E(t)` |
 | `s(t)` | `insurer_tech_share_pp(t)` | insurer's technical share, `max(0.10·max(T(t),0), 0.045·P_g(t))` |
 | `A(t)`, `A⁺(t)` | `pb_acct_pp(t)`, `pb_min_pp(t)` | `compte de participation aux résultats` balance; the statutory minimum PB |
-| `Q(t)`, `Q_v(t)` | `ppb_pp(t)`, `ppb_vintage_pp(t, v)` | PPB at the start of year `t`; the remaining balance of the vintage carried in year `v` |
+| `Q(t)`, `Q_v(t)` | `ppb_pp(t)`, `ppb_vintage_pp(t, v)` | PPB at the start of year `t`, `Q(0) = ppb_pp_init`; the remaining balance of the vintage carried in year `v`, `v` on the same 0-based clock as `t` |
 | `D(t)`, `R(t)` | `ppb_dotation_pp(t)`, `ppb_release_pp(t)` | PPB dotation and release in year `t` |
 | `X(t)`, `I(t)` | `pb_credited_pp(t)`, `int_credited_pp(t)` | PB credited **gross** of `F(t)`; the net revalorisation added, `X(t) − F(t)` |
 | `g`, `s*` | `tmg_rate`, `ts_target` | `taux minimum garanti` 0.00%; the insurer's target `taux servi` 2.30% |
 | `ŝ(t)`, `σ(t)` | `ts_stat(t)`, `ts_net(t)` | statutory floor rate and credited `taux servi`, both net of the charge |
 | `L(t)`, `G(t)` | `soc_levy_pp(t)`, `guar_floor_pp(t)` | `prélèvements sociaux` `0.172·max(I(t),0)`; the contractual capital floor |
-| `q(t)`, `w(t)`, `l(t)` | `mort_rate(t)`, `lapse_rate(t)`, `pols_if(t)` | annual decrement rates; policies in force at the start of year `t`, `l(1) = pols_if_init` |
+| `q(t)`, `w(t)`, `l(t)` | `mort_rate(t)`, `lapse_rate(t)`, `pols_if(t)` | annual decrement rates; policies in force at the start of year `t`, `l(0) = pols_if_init` |
 
 ### Annual processing order [std]
 
@@ -325,9 +333,10 @@ and a vintage carried in year `v` must be exhausted by the end of year `v + 8`
 `check_ppb_clock()` that `ppb_vintage_pp(t, v) = 0` for every `v ≤ t − 9` — one year past
 the deadline, because `ppb_vintage_pp(t, v)` is a *start*-of-year balance and the vintage
 with `v = t − 8` is still standing at the start of the year that forces it out. The
-opening balance `ppb_pp_init` is
-split into `ppb_vintages_init` equal vintages carried in years `0, −1, …, −7`, falling due
-in projection years `8, 7, …, 1` **[std]**. The PPB is bounded below by zero — a negative
+vintage index `v` runs on the same 0-based clock as `t`, so the opening balance
+`ppb_pp_init` is split into `ppb_vintages_init` equal vintages carried in years
+`−1, −2, …, −8`, falling due at `t = 7, 6, …, 0` **[std]**. The PPB is bounded below by
+zero — a negative
 PPB is not a permitted state, and the exceptional `reprise` of art. A132-16-1 is a
 supervised recovery measure, not a projection lever [REG-R16]. When `ppb_pp(t) = 0` and
 `ts_stat(t) < ts_target`, the model credits `ts_stat(t)`.
@@ -364,7 +373,7 @@ check_cliquet():     pb_cum_pp(t+1) = pb_cum_pp(t) + max(pb_credited_pp(t), 0)
 The floor recursion is the `guarantee_form = "net"` form [S3] [S5] [S6] [S7]; the
 `"gross"` variant drops the `− fee_pp(t)` term [S4] [S8] [S9]. For an in-force cell the
 premium history before the valuation date is not carried in the model point, so the floor
-is seeded at `guar_floor_pp(1) = av_pp_init` **[std]** — deliberately conservative, since
+is seeded at `guar_floor_pp(0) = av_pp_init` **[std]** — deliberately conservative, since
 the true floor on a five-year-old contract sits below its account value by the interest
 already credited. It is tested on the account
 value **before** cumulative social levies, because the published minimum surrender-value
@@ -425,11 +434,11 @@ test.
    `pb_acct_pp(t)` equals `0.85 · fin_acct_pp(t)` exactly.
 4. **Dropping the 4.5%-of-premiums limb.** With a small technical result and a live
    premium stream, `0.045 · prem_gross_pp(t)` exceeds `0.10 · tech_acct_pp(t)` and takes
-   the larger bite. Test: in the worked example year 6,
+   the larger bite. Test: in the worked example at `t = 5`,
    `insurer_tech_share_pp = EUR 108.00`, against EUR 28.43 for the 10% limb.
 5. **Leaving the PPB out of the financial base.** `fin_acct_pp` is struck on
    `pm_avg_pp + ppb_pp` [REG-R15] [REG-R6]; omitting it understates the distributable
-   amount by `0.85 · r_fin · ppb_pp` — EUR 41.81 in worked-example year 6. The mirror
+   amount by `0.85 · r_fin · ppb_pp` — EUR 41.81 at worked-example `t = 5`. The mirror
    error is **accreting the vintages as well**, which distributes the PPB's return twice.
    Test: `ppb_vintage_pp(t, v)` changes only by releases.
 6. **Releasing the PPB LIFO, or letting a vintage age past eight years.** Test:
@@ -450,7 +459,8 @@ test.
    `soc_levy_pp(t) = 0.172 · max(int_credited_pp(t), 0)` every year, and the twelve-year
    total is exactly 17.2% of the twelve-year credited interest.
 9. **Levying it on the account rather than on the year's interest.** 17.2% of
-   EUR 100 000 is EUR 17 200; 17.2% of year 1's EUR 2 827.60 is EUR 486.35.
+   EUR 100 000 is EUR 17 200; 17.2% of the first year's (`t = 0`) EUR 2 827.60 is
+   EUR 486.35.
 10. **Testing the `effet cliquet` as "the account never falls".** Under the `garantie
     nette` the balance falls by the management charge in a zero-PB year, and the tables
     published for exactly that case [S2] [S3] prove it. Ratchet `pb_cum_pp(t)`, not
@@ -516,12 +526,12 @@ model is built to feed.
 Anchor cell, product-spec "Anchor model cell": `av_pp_init = EUR 100 000.00` at duration
 5, male age 60; `prem_gross_pp = EUR 2 400.00` p.a. and `prem_charge_rate = 0`, so
 `prem_to_av_pp = EUR 2 400.00`, spread evenly through the year; `withdrawals_pp =
-EUR 3 000.00` p.a. from projection year 6, likewise spread evenly; `fee_rate = 0.60%`;
+EUR 3 000.00` p.a. from `t = 5`, likewise spread evenly; `fee_rate = 0.60%`;
 `tmg_rate = 0.00%`; `ts_target = 2.30%`; `soc_levy_rate = 17.2%`;
-`ppb_pp_init = EUR 4 000.00` in eight equal vintages of EUR 500.00 falling due in
-projection years 1 to 8; expenses EUR 24.00 p.a. inflating at 1.5% plus 0.35% of
-`pm_avg_pp`; `r_fin` on the base path below. Twelve years are shown of the 40-year
-`proj_len()`. Currency cells are full-precision model values rounded to the cent,
+`ppb_pp_init = EUR 4 000.00` in eight equal vintages of EUR 500.00 falling due at
+`t = 0` to `t = 7`; expenses EUR 24.00 p.a. inflating at 1.5% plus 0.35% of
+`pm_avg_pp`; `r_fin` on the base path below. The first twelve rows are shown of the
+40-row frame `t = 0 … 39`. Currency cells are full-precision model values rounded to the cent,
 so a printed row reproduces the next row's opening balance to within EUR 0.01; assertions
 are to EUR 0.01 and to the displayed precision on rates.
 
@@ -529,37 +539,37 @@ are to EUR 0.01 and to the displayed precision on rates.
 
 | `t` | `r_fin(t)` | `pm_avg_pp(t)` | 0.85 × `fin_acct_pp(t)` | policyholder technical share | `pb_min_pp(t)` | `ts_stat(t)` | PPB release (+) / dotation (−) | `ppb_pp(t+1)` | `ts_net(t)` |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 3.30% | 101 200.00 | 2 950.86 | 121.00 | 3 071.86 | 2.4354% | 362.94 | 3 637.06 | 2.7941% |
-| 2 | 3.25% | 105 941.25 | 3 027.10 | 132.49 | 3 159.59 | 2.3824% | 412.70 | 3 224.36 | 2.7720% |
-| 3 | 3.20% | 110 772.80 | 3 100.72 | 144.21 | 3 244.93 | 2.3294% | 467.48 | 2 756.88 | 2.7514% |
-| 4 | 3.10% | 115 696.36 | 3 121.24 | 156.14 | 3 277.39 | 2.2327% | 500.00 | 2 256.88 | 2.6649% |
-| 5 | 2.95% | 120 649.25 | 3 081.87 | 168.15 | 3 250.02 | 2.0938% | 500.00 | 1 756.88 | 2.5082% |
-| 6 | 2.80% | 124 054.88 | 2 994.32 | 176.28 | 3 170.60 | 1.9558% | 500.00 | 1 256.88 | 2.3589% |
-| 7 | 2.65% | 125 877.84 | 2 863.71 | 180.45 | 3 044.16 | 1.8183% | 606.30 | 650.58 | 2.3000% |
-| 8 | 2.55% | 127 675.06 | 2 781.46 | 184.55 | 2 966.01 | 1.7231% | 650.58 | 0.00 | 2.2327% |
-| 9 | 2.45% | 129 435.30 | 2 695.49 | 188.55 | 2 884.04 | 1.6282% | 0.00 | 0.00 | 1.6282% |
-| 10 | 2.40% | 130 580.26 | 2 663.84 | 191.01 | 2 854.85 | 1.5863% | 0.00 | 0.00 | 1.5863% |
-| 11 | 2.35% | 131 695.35 | 2 630.61 | 193.39 | 2 824.00 | 1.5443% | 0.00 | 0.00 | 1.5443% |
-| 12 | 2.30% | 132 779.35 | 2 595.84 | 195.68 | 2 791.51 | 1.5024% | 0.00 | 0.00 | 1.5024% |
+| 0 | 3.30% | 101 200.00 | 2 950.86 | 121.00 | 3 071.86 | 2.4354% | 362.94 | 3 637.06 | 2.7941% |
+| 1 | 3.25% | 105 941.25 | 3 027.10 | 132.49 | 3 159.59 | 2.3824% | 412.70 | 3 224.36 | 2.7720% |
+| 2 | 3.20% | 110 772.80 | 3 100.72 | 144.21 | 3 244.93 | 2.3294% | 467.48 | 2 756.88 | 2.7514% |
+| 3 | 3.10% | 115 696.36 | 3 121.24 | 156.14 | 3 277.39 | 2.2327% | 500.00 | 2 256.88 | 2.6649% |
+| 4 | 2.95% | 120 649.25 | 3 081.87 | 168.15 | 3 250.02 | 2.0938% | 500.00 | 1 756.88 | 2.5082% |
+| 5 | 2.80% | 124 054.88 | 2 994.32 | 176.28 | 3 170.60 | 1.9558% | 500.00 | 1 256.88 | 2.3589% |
+| 6 | 2.65% | 125 877.84 | 2 863.71 | 180.45 | 3 044.16 | 1.8183% | 606.30 | 650.58 | 2.3000% |
+| 7 | 2.55% | 127 675.06 | 2 781.46 | 184.55 | 2 966.01 | 1.7231% | 650.58 | 0.00 | 2.2327% |
+| 8 | 2.45% | 129 435.30 | 2 695.49 | 188.55 | 2 884.04 | 1.6282% | 0.00 | 0.00 | 1.6282% |
+| 9 | 2.40% | 130 580.26 | 2 663.84 | 191.01 | 2 854.85 | 1.5863% | 0.00 | 0.00 | 1.5863% |
+| 10 | 2.35% | 131 695.35 | 2 630.61 | 193.39 | 2 824.00 | 1.5443% | 0.00 | 0.00 | 1.5443% |
+| 11 | 2.30% | 132 779.35 | 2 595.84 | 195.68 | 2 791.51 | 1.5024% | 0.00 | 0.00 | 1.5024% |
 
 **Table 2 — the `épargne acquise` roll-forward.**
 
 | `t` | `av_pp(t)` | `prem_to_av_pp(t)` | `withdrawals_pp(t)` | `int_credited_pp(t)` | `soc_levy_pp(t)` | `av_pp(t+1)` |
 |---|---|---|---|---|---|---|
-| 1 | 100 000.00 | 2 400.00 | 0.00 | 2 827.60 | 486.35 | 104 741.25 |
-| 2 | 104 741.25 | 2 400.00 | 0.00 | 2 936.65 | 505.10 | 109 572.80 |
-| 3 | 109 572.80 | 2 400.00 | 0.00 | 3 047.77 | 524.22 | 114 496.36 |
-| 4 | 114 496.36 | 2 400.00 | 0.00 | 3 083.21 | 530.31 | 119 449.25 |
-| 5 | 119 449.25 | 2 400.00 | 0.00 | 3 026.13 | 520.49 | 124 354.88 |
-| 6 | 124 354.88 | 2 400.00 | 3 000.00 | 2 926.27 | 503.32 | 126 177.84 |
-| 7 | 126 177.84 | 2 400.00 | 3 000.00 | 2 895.19 | 497.97 | 127 975.06 |
-| 8 | 127 975.06 | 2 400.00 | 3 000.00 | 2 850.54 | 490.29 | 129 735.30 |
-| 9 | 129 735.30 | 2 400.00 | 3 000.00 | 2 107.43 | 362.48 | 130 880.26 |
-| 10 | 130 880.26 | 2 400.00 | 3 000.00 | 2 071.36 | 356.27 | 131 995.35 |
-| 11 | 131 995.35 | 2 400.00 | 3 000.00 | 2 033.83 | 349.82 | 133 079.35 |
-| 12 | 133 079.35 | 2 400.00 | 3 000.00 | 1 994.84 | 343.11 | 134 131.08 |
+| 0 | 100 000.00 | 2 400.00 | 0.00 | 2 827.60 | 486.35 | 104 741.25 |
+| 1 | 104 741.25 | 2 400.00 | 0.00 | 2 936.65 | 505.10 | 109 572.80 |
+| 2 | 109 572.80 | 2 400.00 | 0.00 | 3 047.77 | 524.22 | 114 496.36 |
+| 3 | 114 496.36 | 2 400.00 | 0.00 | 3 083.21 | 530.31 | 119 449.25 |
+| 4 | 119 449.25 | 2 400.00 | 0.00 | 3 026.13 | 520.49 | 124 354.88 |
+| 5 | 124 354.88 | 2 400.00 | 3 000.00 | 2 926.27 | 503.32 | 126 177.84 |
+| 6 | 126 177.84 | 2 400.00 | 3 000.00 | 2 895.19 | 497.97 | 127 975.06 |
+| 7 | 127 975.06 | 2 400.00 | 3 000.00 | 2 850.54 | 490.29 | 129 735.30 |
+| 8 | 129 735.30 | 2 400.00 | 3 000.00 | 2 107.43 | 362.48 | 130 880.26 |
+| 9 | 130 880.26 | 2 400.00 | 3 000.00 | 2 071.36 | 356.27 | 131 995.35 |
+| 10 | 131 995.35 | 2 400.00 | 3 000.00 | 2 033.83 | 349.82 | 133 079.35 |
+| 11 | 133 079.35 | 2 400.00 | 3 000.00 | 1 994.84 | 343.11 | 134 131.08 |
 
-**Year-6 trace**, at full precision, because it is the year in which every lever is
+**The `t = 5` trace**, at full precision, because it is the year in which every lever is
 active at once: `pm_avg_pp = 124 054.884701` (= 124 354.884701 + 1 200 − 1 500);
 `fee_pp = 744.329308`; `expenses_pp = 460.046913` (= 0.0035 × 124 054.884701 + 24 ×
 1.015⁵); `fin_acct_pp = 0.028 × (124 054.884701 + 1 756.875780) = 3 522.729293`, of which
@@ -570,7 +580,7 @@ active at once: `pm_avg_pp = 124 054.884701` (= 124 354.884701 + 1 200 − 1 500
 release wanted is `426.989361`, while the vintage falling due is `500.000000` — the
 forced release wins; `pb_credited_pp = 3 670.602295`; `ts_net = 2.358853%`;
 `int_credited_pp = 2 926.272987`; `soc_levy_pp = 503.318954`;
-`av_pp(7) = 126 177.838734`.
+`av_pp(6) = 126 177.838734`.
 
 **Decrement and cash-flow extract**, `pols_if_init = 1`, `ref_rate = 2.20%`, and
 `mort_rate(t)` read from the shipped **[std]** proxy — 0.0060 at age 60, the placeholder
@@ -579,49 +589,50 @@ at age 65 and 0.012060 at age 68:
 
 | `t` | `lapse_rate(t)` | `pols_if(t)` | `claims_death(t)` | `claims_lapse(t)` | `expenses(t)` | `liability_cf(t)` |
 |---|---|---|---|---|---|---|
-| 1 | 4.0000% | 1.000000 | 628.45 | 4 164.51 | 378.20 | 2 771.16 |
-| 3 | 8.0000% | 0.910080 | 743.00 | 8 276.62 | 375.34 | 7 210.78 |
-| 6 | 5.0000% | 0.738099 | 862.56 | 4 613.46 | 339.56 | 6 258.43 |
-| 9 | 6.2873% | 0.613775 | 968.78 | 4 989.75 | 294.65 | 6 621.44 |
+| 0 | 4.0000% | 1.000000 | 628.45 | 4 164.51 | 378.20 | 2 771.16 |
+| 2 | 8.0000% | 0.910080 | 743.00 | 8 276.62 | 375.34 | 7 210.78 |
+| 5 | 5.0000% | 0.738099 | 862.56 | 4 613.46 | 339.56 | 6 258.43 |
+| 8 | 6.2873% | 0.613775 | 968.78 | 4 989.75 | 294.65 | 6 621.44 |
 
 **Checks.**
 
 *The `taux servi` from a different direction.* `ts_net(t)` decomposes as
 `0.85·fin_acct_pp/pm_avg + (policyholder technical share)/pm_avg − fee_rate +
-(PPB flow)/pm_avg`. Year 6: `2.413706% + 0.142100% − 0.600000% + 0.403047% = 2.358853%`,
-which is the table's 2.3589%. Year 9, with the PPB exhausted:
+(PPB flow)/pm_avg`. At `t = 5`: `2.413706% + 0.142100% − 0.600000% + 0.403047% =
+2.358853%`, which is the table's 2.3589%. At `t = 8`, with the PPB exhausted:
 `2.082500% + 0.145673% − 0.600000% + 0.000000% = 1.628173%`, the table's 1.6282%.
 
 *The twelve-year account identity.* Summing Table 2, credited interest is EUR 31 800.82
 and social levies EUR 5 469.74, and `5 469.74 / 31 800.82 = 0.172000` exactly — the levy
 is 17.2% of credited interest and of nothing else. Then
-`100 000.00 + 28 800.00 − 21 000.00 + 31 800.82 − 5 469.74 = 134 131.08`, the year-12
-closing balance. The same total reached the other way: PB credited gross of the charge is
+`100 000.00 + 28 800.00 − 21 000.00 + 31 800.82 − 5 469.74 = 134 131.08`, the closing
+balance of `t = 11`. The same total reached the other way: PB credited gross of the charge is
 EUR 40 538.97 and `frais de gestion` EUR 8 738.15, and `40 538.97 − 8 738.15 =
 31 800.82`.
 
 *The PPB clock closes.* Releases over the twelve years total EUR 4 256.88, against an
 opening PPB of EUR 4 000.00 plus three dotations (137.06, 87.30, 32.52) of EUR 256.88.
-Every opening vintage is exhausted by its due year: the year-7 release of 606.30 clears
-the last EUR 500.00 vintage and takes EUR 106.30 from the year-0 vintage, leaving
-EUR 393.70 to be forced out in year 8 — which the year-8 discretionary need of EUR 650.58
-more than covers, so the PPB reaches zero exactly at the clock's last date.
+Every opening vintage is exhausted by its due year: the release of 606.30 at `t = 6`
+clears the last EUR 500.00 vintage, the one carried in year −2, and takes EUR 106.30 from
+the year −1 vintage, leaving EUR 393.70 to be forced out at `t = 7` — which the `t = 7`
+discretionary need of EUR 650.58 more than covers, so the PPB reaches zero exactly at the
+clock's last date.
 
 *The guarantee floor.* With no PB at all the account falls at exactly `fee_rate` a year,
 reproducing the published minimum surrender values: `1 000 × (1 − 0.006)ⁿ` gives
 994.0000, 988.0360, 982.1078, 976.2151, 970.3578, 964.5357, 958.7485, 952.9960, matching
 Suravenir's 994.00 … 952.99 truncated to the cent [S3]; `970 × 0.995ⁿ` gives 965.1500,
 960.3243, 955.5226, matching MACSF's 965.15, 960.32, 955.52 [S2]. Here
-`guar_floor_pp(13) = 100 000.00 + 28 800.00 − 21 000.00 − 8 738.15 = 99 061.85` against
-`av_pp(13) + soc_levy_cum_pp(13) = 134 131.08 + 5 469.74 = 139 600.82`: the floor never
+`guar_floor_pp(12) = 100 000.00 + 28 800.00 − 21 000.00 − 8 738.15 = 99 061.85` against
+`av_pp(12) + soc_levy_cum_pp(12) = 134 131.08 + 5 469.74 = 139 600.82`: the floor never
 binds on a path with a positive `taux servi` throughout.
 
-*The aggregate roll-forward.* Year 1: `100 000.00 + 2 400.00 + 2 827.60 − 486.35 −
-628.45 − 4 164.51 = 99 948.29`, and `pols_if(2) × av_pp(2) = 0.954240 × 104 741.25 =
-99 948.29`. `liability_cf(1) = 628.45 + 4 164.51 + 0.00 + 378.20 − 2 400.00 = 2 771.16`,
-so `net_cf(1) = −2 771.16`.
+*The aggregate roll-forward.* At `t = 0`: `100 000.00 + 2 400.00 + 2 827.60 − 486.35 −
+628.45 − 4 164.51 = 99 948.29`, and `pols_if(1) × av_pp(1) = 0.954240 × 104 741.25 =
+99 948.29`. `liability_cf(0) = 628.45 + 4 164.51 + 0.00 + 378.20 − 2 400.00 = 2 771.16`,
+so `net_cf(0) = −2 771.16`.
 
-*What year 9 is telling you.* At `r_fin = 2.45%` and a 0.60% charge, the most the account
+*What `t = 8` is telling you.* At `r_fin = 2.45%` and a 0.60% charge, the most the account
 could grow by — if the insurer distributed the whole financial account and kept only its
 loading margin — is `2.45% − 0.60% = 1.85%`. The model credits 1.6282%, and the
 0.2218-point wedge is exactly `0.15 × 2.45% = 0.3675%` retained from the `compte
@@ -629,9 +640,9 @@ financier` less the 0.1457% of the technical account that flows back to policyho
 [R5, art. A132-11](#frlib-assurance_vie_euro-r5). A 2.30% target is simply not payable on a 2.45% asset return without
 the PPB, and the model steps down rather than pretending otherwise; the two management
 actions that would soften it — realising capital gains into the year's financial account,
-and the `réserve de capitalisation` [REG-R6] — are outside this model. Years 1 to 8 credit
-2.79% down to 2.23%, inside or just below the band covering 50% of encours in 2025
-(2.3%–2.9% [R14]); years 9 onward do not, and that step is a model result, not a market
+and the `réserve de capitalisation` [REG-R6] — are outside this model. `t = 0` to `t = 7`
+credit 2.79% down to 2.23%, inside or just below the band covering 50% of encours in 2025
+(2.3%–2.9% [R14]); `t = 8` onward does not, and that step is a model result, not a market
 forecast.
 
 ---

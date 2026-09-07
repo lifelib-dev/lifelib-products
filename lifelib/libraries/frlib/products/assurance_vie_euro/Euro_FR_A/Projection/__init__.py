@@ -11,11 +11,13 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection[7].result_pb()          # the same cell on the low scenario
 
-``t`` counts **policy years from the valuation date**, 1-based, so ``t = 1`` is the
-first projected year whatever the model point's completed duration. The attained age in
-year ``t`` is ``issue_age + duration_init + t - 1`` and the completed policy duration at
-the 31 December of year ``t`` — which is when the surrender decrement acts, and which
-the lapse table is indexed by — is ``duration_init + t``.
+``t`` counts **policy years from the valuation date**, 0-based, so ``t = 0`` is the
+first projected year whatever the model point's completed duration, and the frame is
+``t = 0 … proj_len() - 1``. Year ``t`` runs from time ``t`` to time ``t + 1``. The
+attained age in year ``t`` is ``issue_age + duration_init + t`` and the completed policy
+duration at the 31 December of year ``t`` — which is when the surrender decrement acts,
+and which the lapse table is indexed by — is ``duration_init + t + 1``. The contractual
+policy year, where the prose needs one, is ``t + 1``.
 
 .. rubric:: Input data
 
@@ -54,13 +56,13 @@ string. The technical notes use compact symbols instead. The mapping is:
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the cells argument)            Policy year from valuation
+t                          (the cells argument)            Projection year, 0-based
 (the row)                  model_point()                   The selected model point
 x                          issue_age()                     Age at `adhésion` (ALB)
-x + d + t - 1              age(t)                          Attained age in year t
+x + d + t                  age(t)                          Attained age in year t
 d                          duration_init()                 Completed years at valuation
-d + t                      duration(t)                     Completed years at 31 Dec
-(none)                     proj_len()                      Last projected policy year
+d + t + 1                  duration(t)                     Completed years at 31 Dec
+(none)                     proj_len()                      Number of projected years
 AV(t)                      av_pp(t)                        `Épargne acquise`, start of t
 (the steps)                av_pp_at(t, timing)             The balance inside year t
 (fund level)               av_at(t, timing)                The same times pols_if(t)
@@ -162,15 +164,15 @@ the other way round.** "90% of the financial account and 85% of the technical re
 the popular form and it is wrong.
 
 **The insurer's technical share has two limbs and the 4.5%-of-premiums limb often
-binds.** In the worked example's year 6 it is EUR 108.00 against EUR 28.43 for the 10%
-limb. Two model points identical but for their premium stream credit different rates,
+binds.** In the worked example's ``t = 5`` it is EUR 108.00 against EUR 28.43 for the
+10% limb. Two model points identical but for their premium stream credit different rates,
 and that is the article working as written: the premiums limb vanishes on a paid-up
 contract and can exceed the whole technical result on a heavily premium-paying one.
 
 **The PPB sits inside the financial base**, because art. A132-14 computes the financial
 result on average technical provisions and the PPB is one of them. Omitting it
-understates the distributable amount by ``0.85 r_fin ppb_pp`` — EUR 41.81 in
-worked-example year 6. The mirror error is *accreting the vintages as well*, which
+understates the distributable amount by ``0.85 r_fin ppb_pp`` — EUR 41.81 at
+worked-example ``t = 5``. The mirror error is *accreting the vintages as well*, which
 distributes the PPB's return twice: :func:`ppb_vintage_pp` changes only by releases.
 
 **``ts_stat`` is net of the charge.** For the euro support the underwriting result is nil
@@ -210,10 +212,10 @@ every vintage; :func:`check_ppb_clock` asserts that nothing survives the year af
 deadline.
 
 The opening balance is split into ``ppb_vintages_init`` equal vintages carried in years
-``0, -1, ... , 1 - ppb_vintages_init``, so eight equal vintages fall due in projection
-years 8, 7, ... , 1 — a steady-state construction, and **[std]**, since no insurer
-publishes its vintage profile. It matters: model point 6 carries the same EUR 4 000 in
-four vintages instead of eight, and nothing is forced out until year 5.
+``-1, -2, ... , -ppb_vintages_init``, so eight equal vintages fall due at ``t = 7, 6,
+... , 0`` — a steady-state construction, and **[std]**, since no insurer publishes its
+vintage profile. It matters: model point 6 carries the same EUR 4 000 in four vintages
+instead of eight, and nothing is forced out until ``t = 4``.
 
 The vintages do **not** accrete. The return on PPB assets enters the `compte financier`
 through :func:`fin_acct_pp`, which is struck on ``pm_avg_pp + ppb_pp``; accreting the
@@ -325,13 +327,13 @@ def duration_init():
     """d: completed policy years at the valuation date; 0 on a new-business cell.
 
     The anchor cell is five years in, so the eighth policy anniversary - the tax
-    threshold that drives the surrender step - falls inside the projection, at ``t = 3``.
+    threshold that drives the surrender step - falls inside the projection, at ``t = 2``.
     """
     return int(model_point()["duration_init"])
 
 
 def pols_if_init():
-    """l(1): policies represented by the model point; 1.0 on a single-policy cell.
+    """l(0): policies represented by the model point; 1.0 on a single-policy cell.
 
     Model point 11 carries 250 instead, which is the only difference between it and the
     anchor cell: every per-policy amount is identical and every cash flow is 250 times
@@ -341,12 +343,12 @@ def pols_if_init():
 
 
 def av_pp_init():
-    """AV(1): the `épargne acquise` per policy at the valuation date."""
+    """AV(0): the `épargne acquise` per policy at the valuation date."""
     return float(model_point()["av_pp_init"])
 
 
 def ppb_pp_init():
-    """Q(1): the PPB attributed to the model point at the valuation date.
+    """Q(0): the PPB attributed to the model point at the valuation date.
 
     4.0% of the account value on the anchor cell, the ACPR's end-2025 ratio for
     individual contracts.  The PPB is **collective** and is not attributed to individual
@@ -362,7 +364,7 @@ def ppb_vintages_init():
     Eight on the anchor cell - a steady-state construction, since a fund that has run the
     art. A132-16 clock for eight years carries roughly one eighth of its PPB in each open
     vintage - and four on model point 6, which is the same money in younger vintages and
-    therefore no forced release before year 5.  **[std]**: no insurer publishes its own
+    therefore no forced release before ``t = 4``.  **[std]**: no insurer publishes its own
     vintage profile, and this is the assumption that decides *when* the clock bites.
     """
     n = int(model_point()["ppb_vintages_init"])
@@ -390,7 +392,11 @@ def wd_prog_pp():
 
 
 def wd_start_year():
-    """The first projection year in which the programmed `rachat partiel` runs."""
+    """The first projection year in which the programmed `rachat partiel` runs.
+
+    A point on the frame's time axis, so it is 0-based like ``t``: 5 on the anchor cell
+    means the sixth projected year, and 98 is the "never" sentinel a paid-up cell carries.
+    """
     return int(model_point()["wd_start_year"])
 
 
@@ -474,30 +480,35 @@ def scenario_id():
 
 
 def proj_len():
-    """The last projected policy year: 40 **[std]**.
+    """The number of projected policy years: 40 **[std]**.
 
-    The euro support has no term, so the horizon is a modelling choice rather than a
-    contract fact.  Forty years carries the anchor cell from attained age 60 to 99 and
-    covers five full turns of the eight-year PPB clock.
+    The **count**, so the frame is ``t = 0 ... proj_len() - 1`` and ``result_cf()`` has
+    ``proj_len()`` rows.  The euro support has no term, so the horizon is a modelling
+    choice rather than a contract fact.  Forty years carries the anchor cell from attained
+    age 60 to 99 and covers five full turns of the eight-year PPB clock.
     """
     return proj_years                                                # noqa: F821
 
 
 def age(t):
-    """The attained age in policy year t: ``issue_age + duration_init + t - 1``."""
-    return issue_age() + duration_init() + t - 1
+    """The attained age in policy year t: ``issue_age + duration_init + t``.
+
+    ``t`` is 0-based, so ``age(0)`` is the attained age at the valuation date.
+    """
+    return issue_age() + duration_init() + t
 
 
 def duration(t):
-    """Completed policy years at the 31 December of year t: ``duration_init + t``.
+    """Completed policy years at the 31 December of year t: ``duration_init + t + 1``.
 
     This is the index the lapse table is read by, and the reason is the tax threshold:
     the eight-year clock that switches on the reduced rate and the annual allowance runs
     from the contract's inception, not from the valuation date, and the surrender
-    decrement acts at the year end.  On the anchor cell, at duration 5 in, duration 8
-    falls in projection year 3.
+    decrement acts at the year end.  The ``+ 1`` is that year end: with ``t`` 0-based,
+    year ``t`` closes at time ``t + 1``.  On the anchor cell, at duration 5 in, duration 8
+    falls at ``t = 2``.
     """
-    return duration_init() + t
+    return duration_init() + t + 1
 
 
 def r_fin(t):
@@ -582,8 +593,11 @@ def fee_pp(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^(t-1)`` **[std]**."""
-    return (1.0 + expense_inflation) ** (t - 1)                      # noqa: F821
+    """The expense inflation factor in policy year t: ``(1 + pi)^t`` **[std]**.
+
+    Unity in the first projected year, which is ``t = 0``.
+    """
+    return (1.0 + expense_inflation) ** t                            # noqa: F821
 
 
 def expenses_pp(t):
@@ -630,7 +644,7 @@ def insurer_tech_share_pp(t):
     ``max(0.10 max(T(t), 0), 0.045 P_g(t))``: **the greater of** 10% of the credit
     balance and 4.5% of annual premiums.  The second limb is the one implementations
     drop, and with a small technical result and a live premium stream it takes the larger
-    bite - EUR 108.00 against EUR 28.43 in the worked example's year 6.  It vanishes on a
+    bite - EUR 108.00 against EUR 28.43 at the worked example's ``t = 5``.  It vanishes on a
     paid-up contract, leaving the insurer only 10% of the technical result, and it can
     exceed the whole technical result on a heavily premium-paying one, which is the
     article working as written.
@@ -703,18 +717,20 @@ def ppb_pp(t):
     the vintage ledger, and :func:`check_ppb_roll_fwd` asserts the two agree - which is
     the point of keeping them separate.
     """
-    if t <= 1:
+    if t <= 0:
         return ppb_pp_init()
     return ppb_pp(t - 1) + ppb_dotation_pp(t - 1) - ppb_release_pp(t - 1)
 
 
 def ppb_vintage_first():
-    """The oldest vintage index the ledger carries: ``1 - ppb_vintages_init()``.
+    """The oldest vintage index the ledger carries: ``-ppb_vintages_init()``.
 
-    Eight equal opening vintages are carried in years 0, -1, ... , -7 and fall due in
-    projection years 8, 7, ... , 1.
+    The vintage index runs on the same 0-based clock as ``t``: a dotation in year ``t``
+    opens vintage ``t``, and the opening balance's vintages sit in the years before the
+    frame.  Eight equal opening vintages are carried in years -1, -2, ... , -8 and fall
+    due at ``t = 7, 6, ... , 0``.
     """
-    return 1 - ppb_vintages_init()
+    return -ppb_vintages_init()
 
 
 def ppb_vintage_pp(t, v):
@@ -730,7 +746,7 @@ def ppb_vintage_pp(t, v):
     """
     if v < ppb_vintage_first() or v >= t:
         return 0.0
-    if t <= 1:
+    if t <= 0:
         return ppb_pp_init() / ppb_vintages_init()
     if v == t - 1:
         return ppb_dotation_pp(t - 1)
@@ -759,7 +775,7 @@ def ppb_ledger_pp(t):
     that :func:`check_ppb_roll_fwd` compares two things rather than restating one.
     """
     return sum(ppb_vintage_pp(t, v)
-               for v in range(ppb_vintage_first(), max(t, 1)))
+               for v in range(ppb_vintage_first(), max(t, 0)))
 
 
 def ppb_dotation_pp(t):
@@ -777,8 +793,8 @@ def ppb_discr_rel_pp(t):
 
     ``min(max(0, target - A+(t)), Q(t))``: what the insurer would choose to spend to
     reach its target.  When the PPB is exhausted this is nil and the model credits
-    ``ts_stat(t)`` - which is exactly what happens from year 9 of the worked example, and
-    the step down is a model result, not a market forecast.
+    ``ts_stat(t)`` - which is exactly what happens from ``t = 8`` of the worked example,
+    and the step down is a model result, not a market forecast.
     """
     return min(max(0.0, pb_target_pp(t) - pb_min_pp(t)), ppb_pp(t))
 
@@ -802,7 +818,7 @@ def ppb_release_pp(t):
     A dotation and a forced release can coexist in one year - this year's excess goes in
     while an eight-year-old vintage comes out - and both happen in the worked example's
     first three rows.  Where the forced release wins, the credited rate goes **above** the
-    target: year 6 of the worked example wants EUR 426.99 and must release EUR 500.00.
+    target: ``t = 5`` of the worked example wants EUR 426.99 and must release EUR 500.00.
     """
     return max(ppb_discr_rel_pp(t), ppb_forced_pp(t))
 
@@ -872,7 +888,7 @@ def soc_levy_pp(t):
     `dénouement`.  Levying it only at surrender is the commonest foreign-model error on
     this product, and levying it on the *account* rather than on the year's interest is
     the next one: 17.2% of EUR 100 000 is EUR 17 200, while 17.2% of the worked example's
-    year-1 interest is EUR 486.35.
+    first year's interest - ``t = 0``, EUR 2 827.60 - is EUR 486.35.
 
     The base is the interest actually inscribed on the contract, i.e. **net** of the
     management charge, which is **[std]**: art. L136-7 fixes the timing but not the base,
@@ -888,7 +904,7 @@ def soc_levy_cum_pp(t):
     the published minimum surrender-value tables are stated **before** social and tax
     levies.
     """
-    if t <= 1:
+    if t <= 0:
         return 0.0
     return soc_levy_cum_pp(t - 1) + soc_levy_pp(t - 1)
 
@@ -900,7 +916,7 @@ def pb_cum_pp(t):
     be called back.  What is ratcheted is **this**, not the account balance - see
     :func:`check_cliquet`.
     """
-    if t <= 1:
+    if t <= 0:
         return 0.0
     return pb_cum_pp(t - 1) + max(pb_credited_pp(t - 1), 0.0)
 
@@ -945,7 +961,7 @@ def av_pp(t):
     recursion, because it is money that genuinely leaves the contract each year; a model
     that defers it to surrender overstates the account and every benefit measured on it.
     """
-    if t <= 1:
+    if t <= 0:
         return av_pp_init()
     return av_pp_at(t - 1, "AFT_INT") - soc_levy_pp(t - 1)
 
@@ -977,7 +993,7 @@ def guar_floor_pp(t):
     conservative, since the true floor on a five-year-old contract sits below its account
     value by the interest already credited.
     """
-    if t <= 1:
+    if t <= 0:
         return av_pp_init()
     prev = (guar_floor_pp(t - 1) + prem_to_av_pp(t - 1)
             - withdrawals_pp(t - 1))
@@ -1047,7 +1063,7 @@ def lapse_rate(t):
 
 def pols_if(t):
     """l(t): the number of policies in force at the **start** of policy year t."""
-    if t <= 1:
+    if t <= 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
@@ -1229,7 +1245,7 @@ def check_av_roll_fwd():
     """
     scale = max(av_pp_init() * pols_if_init(), 1.0)
     return all(abs(check_av_roll_fwd_resid(t)) <= 1e-9 * scale
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_ppb_roll_fwd_resid(t):
@@ -1255,7 +1271,7 @@ def check_ppb_roll_fwd():
     an off-by-one in the FIFO loop - breaks the tie while leaving both numbers plausible.
     The PPB is also asserted non-negative here.
     """
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         if ppb_pp(t) < -1e-9:
             return False
         if abs(ppb_ledger_pp(t) - ppb_pp(t)) > 1e-8:
@@ -1287,7 +1303,7 @@ def check_ppb_clock():
     being spent - a breach that is invisible in the balance and obvious in the ledger.
     """
     return all(abs(check_ppb_clock_resid(t)) <= 1e-8
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1305,7 +1321,7 @@ def check_pols_roll_fwd():
     """
     scale = max(pols_if_init(), 1.0)
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * scale
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pb_allocation_resid(t):
@@ -1338,7 +1354,7 @@ def check_pb_allocation():
     """
     scale = max(av_pp_init(), 1.0)
     return all(abs(check_pb_allocation_resid(t)) <= 1e-9 * scale
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cliquet_resid(t):
@@ -1374,7 +1390,7 @@ def check_cliquet():
     correct statement about the balance.
     """
     return all(abs(check_cliquet_resid(t)) <= 1e-8
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_guar_floor_resid(t):
@@ -1397,11 +1413,11 @@ def check_guar_floor():
     binds, and knowing that it does not bind is the reason to check it.
     """
     return all(check_guar_floor_resid(t) <= 1e-6
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cash flows, indexed by policy year t.
+    """Result table of cash flows, indexed by policy year t, ``t = 0 ... proj_len() - 1``.
 
     ``pols_if`` is the start-of-year count that weights every flow on the row.
     ``int_credited`` and ``soc_levy`` are published beside the flows and are **not** in
@@ -1409,7 +1425,7 @@ def result_cf():
     insurer remits.  ``net_cf`` is income-positive; ``liability_cf`` is the notes'
     outgo-positive orientation, verbatim.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1428,14 +1444,14 @@ def result_cf():
 
 
 def result_pb():
-    """Result table of the crediting machinery, per policy, indexed by policy year t.
+    """The crediting machinery, per policy, indexed by policy year t, 0-based.
 
     The two tables of the notes' worked example side by side: the `compte de
     participation aux résultats` and the statutory floor rate it implies, the PPB
     dotation, release and balance, the `taux servi` actually credited, and the
     `épargne acquise` the whole apparatus moves.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "r_fin": [r_fin(t) for t in ts],

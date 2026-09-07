@@ -82,9 +82,13 @@ arithmetic:
   *Valuation and reserve pointers*.
 - **Projection frequency.** Monthly grid, because the product is: 월납 is the only premium
   mode retrieved and the whole published FSS premium series is monthly [S3] [S4] [R7]
-  [R8]. `t` is the **policy month**, `t = 0, 1, …, proj_len()`, and month `t` is the
-  interval from `t` to `t + 1` months after the 계약일. `proj_len()` is the **last**
-  projected index, so `result_cf()` has `proj_len() + 1` rows — 120 on the anchor cell.
+  [R8]. `t` is the **policy month** and is **0-based**: the first projected month is
+  `t = 0`, the frame is `t = 0, 1, …, proj_len() − 1`, and month `t` is the interval from
+  `t` to `t + 1` months after the 계약일. `proj_len()` is the **number** of projected
+  months — the exclusive end of the frame, not the last index — so `result_cf()` has
+  `proj_len()` rows, 120 on the anchor cell. The **policy year** is the contractual
+  1-based label `y = policy_year(t) = ⌊t/12⌋ + 1`, derived from `t` and never used to
+  index the frame.
 - **But every contractual mechanism is annual.** The 「연간」 of this contract is
   「계약일로부터 매1년 단위로 도래하는 계약해당일 전일까지의 기간」 [S1 제5조제2항] — a
   policy year from the contract date, not a calendar year. All four ₩50,000,000 limits,
@@ -98,7 +102,7 @@ arithmetic:
   claims, maintenance expense, claim-handling expense and commission at the **end** of
   month `t`; decrements at the end of month `t` in the order **mortality → lapse →
   suspension → renewal decline**, the renewal decline acting only where
-  `(t + 1) mod 12 = 0`, and the maturity count only at `t = proj_len()`. `pols_if(t)` is
+  `(t + 1) mod 12 = 0`, and the maturity count only at `t = proj_len() − 1`. `pols_if(t)` is
   the **start**-of-month in-force probability and is the weight on every cash flow on the
   same `result_cf()` row. Nothing published fixes the decrement order and at these rates it
   is worth less than a basis point a year.
@@ -121,7 +125,8 @@ arithmetic:
   issue dates**, so the difference is a half-year of age on average, and it is recorded
   here rather than silently absorbed.
 - **Termination and horizon.** `proj_len() = 12 × min(reentry_cycles × reentry_period,
-  max_cover_age − x) − 1`. With `reentry_period = 5`, `reentry_cycles = 2` and
+  max_cover_age − x)`, a month **count**, so the last projected month is
+  `t = proj_len() − 1`. With `reentry_period = 5`, `reentry_cycles = 2` and
   `max_cover_age = 100`, that is **two five-year 보장내용 변경주기 — ten policy years —**
   on every shipped model point; the age ceiling never binds on the shipped issue ages.
   The horizon is **stated**, and the distinction is the whole point.
@@ -556,8 +561,9 @@ boundary is drawn is a first-order calibration question and not a detail.
 
 | Symbol | Meaning | Cells |
 |---|---|---|
-| `t` | policy month, `t = 0 … proj_len()` | — |
-| `y`, `y(t)` | policy year, `floor(t/12) + 1` | `policy_year(t)` |
+| `t` | policy month, 0-based: `t = 0 … proj_len() − 1` | — |
+| `proj_len` | the **number** of projected months, the exclusive end of the frame | `proj_len()` |
+| `y`, `y(t)` | policy year, the contractual 1-based label `floor(t/12) + 1` | `policy_year(t)` |
 | `x`, `age(t)` | 가입나이 (만나이); attained age `x + floor(t/12)` | `issue_age()`, `age(t)` |
 | `b(y)` | lower edge of the five-year utilisation band at `age` in year `y` | `util_band(y)` |
 | `l(t)` | in-force probability at the **start** of month `t` | `pols_if(t)` |
@@ -847,7 +853,7 @@ Six things in those seven lines are load-bearing and each is sourced or flagged.
 
 ### Decrement recursion and processing order
 
-For `t = 0, 1, …, proj_len()`:
+For `t = 0, 1, …, proj_len() − 1`:
 
 1. **Start of month.** `premiums(t) = G(y(t)) · l(t)`.
 2. **Look up the annual basis.** `age(t)`, hence `util_band(y)` and every frequency; hence
@@ -871,7 +877,7 @@ For `t = 0, 1, …, proj_len()`:
    `BEF_RENEWAL` / `AFT_DECR`, with the five decrement counts `pols_death`, `pols_lapse`,
    `pols_suspend`, `pols_renewal_decline` and `pols_maturity` taken at the matching points.
    `d_ren(t)` is non-zero **only** where `(t + 1) mod 12 = 0`; `pols_maturity(t)` is non-zero
-   **only** at `t = proj_len()`, where it absorbs everyone left. Lapse and death both pay
+   **only** at `t = proj_len() − 1`, where it absorbs everyone left. Lapse and death both pay
    **nothing**.
 
 **Five decrements, and the middle three are what make this roll-forward different from a
@@ -1029,7 +1035,7 @@ premium **₩11,982** in the first policy year, split 급여 **₩4,792.80** / �
 scale), 급여 통원 clinic-tier share **0.63**, inside 국민건강보험. Both the 요율 상대도 and
 the 무사고 할인 are switched on; `trend_mult = util_mult = 1.0`; `suspend_rate = 0`.
 
-`proj_len() = 119`, so `result_cf()` has **120 rows**, `t = 0 … 119` — **ten policy years,
+`proj_len() = 120`, so `result_cf()` has **120 rows**, `t = 0 … 119` — **ten policy years,
 two five-year 보장내용 변경주기**, ending in the twelfth month of policy year 10 at attained
 만나이 49. `pols_if_init() = 1.0`.
 

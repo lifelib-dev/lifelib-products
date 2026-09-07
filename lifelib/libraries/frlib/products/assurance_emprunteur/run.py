@@ -20,7 +20,7 @@ print("model point {}: {} - {}{}, loan {:,.0f} EUR at {:.2%} over {} months".for
     proj.capital_initial(), proj.loan_rate_annual(), proj.loan_term_months()))
 print("echeance = {:,.2f}/month   quotite = {:.0%}   premium basis = {}   "
       "premium = {:,.2f}/month".format(
-          proj.echeance(), proj.quotite(), proj.premium_basis(), proj.prem_pp(1)))
+          proj.echeance(), proj.quotite(), proj.premium_basis(), proj.prem_pp(0)))
 print("indemnity = {} (IR {:.2f})   franchise = {} days   ITT cap = {} months   "
       "IPT benefit = {}".format(
           proj.indemnity_basis(), proj.indemnity_ratio(), proj.franchise_days(),
@@ -30,25 +30,29 @@ T = proj.proj_len()
 
 
 def cover_end(indicator):
-    """The first month the guarantee is off, or None if it outlives the loan."""
-    return next((t for t in range(1, T + 1) if not indicator(t)), None)
+    """The first month the guarantee is off, or None if it outlives the loan.
+
+    Months are 0-based, so the frame is range(T) and the answer is an index in it.
+    """
+    return next((t for t in range(T) if not indicator(t)), None)
 
 
 def show(month):
-    return "runs to loan expiry" if month is None else "off from month {}".format(month)
+    return ("runs to loan expiry" if month is None
+            else "off from t = {}".format(month))
 
 
 end_deces = cover_end(proj.cover_deces)
 end_ptia = cover_end(proj.cover_ptia)
 end_itt = cover_end(proj.cover_itt)
 print("cover ends: deces age {} ({}), PTIA age {} ({}), ITT/IPT age {} ({}); "
-      "loan runs to month {}".format(
+      "loan runs {} months, t = 0 .. {}".format(
           proj.deces_end_age(), show(end_deces), proj.ptia_end_age(), show(end_ptia),
-          proj.itt_ipt_end_age(), show(end_itt), T))
+          proj.itt_ipt_end_age(), show(end_itt), T, T - 1))
 if end_itt is not None:
     print("  -> {} months of loan with no ITT/IPT cover, CRD {:,.2f} still owed, "
           "{:.6f} of a policy moved out of claim".format(
-              T - end_itt + 1, proj.crd(end_itt - 1),
+              T - end_itt, proj.crd(end_itt),
               proj.pols_itt_transfer(end_itt) + proj.pols_ipt_transfer(end_itt)))
 print("status = {} (claim duration {} months)   ITT months paid per inception = "
       "{:.6f}".format(proj.status(), proj.claim_duration_months(),

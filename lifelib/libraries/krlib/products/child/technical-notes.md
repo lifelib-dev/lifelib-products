@@ -152,12 +152,17 @@ family buys the indemnity layer as `Medical_KR_S` and the fixed-benefit layer as
   pre-birth period a whole number of grid steps; the 태아 module's 1년만기 신생아 block is
   twelve of them; and the 납입최고 window is operated as a calendar-month one, 「납입기일
   다음날부터 납입기일이 속하는 달의 다음달 마지막 날까지」 [S8]. `t` is the **policy
-  month**, `t = 0, 1, …, proj_len`; month `t` is the interval from `t` to `t + 1` months
-  after the 계약일.
-- **`proj_len()` is the last projected index, not a row count.**
-  `proj_len = 12 × (term_age − issue_age)`, so **1,200** on the anchor cell and **1,201
-  rows** in `result_cf()`. Month `t = proj_len` is the 100세 계약해당일 itself: every cash
-  flow in it is zero, `pols_maturity` records the cover ending, and `claims(t, "MATURITY")`
+  month** and is **0-based**, on the library-wide convention: `t = 0` is the first projected
+  month, month `t` is the interval from `t` to `t + 1` months after the 계약일, the
+  contractual (1-based) policy year containing it is `policy_year(t) = t // 12 + 1`, and
+  the frame is `t = 0, 1, …, proj_len − 1`.
+- **`proj_len()` is the number of projected months — the exclusive end of the frame.**
+  `proj_len = 12 × (term_age − issue_age) + 1`, so **1,201** on the anchor cell and **1,201
+  rows** in `result_cf()`, indexed `t = 0 … 1,200`. Throughout these notes `n = proj_len − 1`
+  is the **terminal 계약해당일 index**, `12 × (term_age − issue_age)` = **1,200** on the
+  anchor cell: the 1,200 months of the 보험기간 are `t = 0 … 1,199` and month `t = n` is the
+  100세 계약해당일 itself, where every cash
+  flow is zero, `pols_maturity` records the cover ending, and `claims(t, "MATURITY")`
   is **0.0000** — there is **no 만기환급금** on the protection part [S1] [S2] and the shipped
   환급률 progression reaches zero at 만기.
 - **Two ages, and which one does what.** The contract's clock is **보험나이** (*boheom nai*,
@@ -252,7 +257,7 @@ Derived scalars on the anchor cell, all read off the shipped model:
 
 | Cells | Value |
 |---|---|
-| `proj_len()` | **1200** |
+| `proj_len()` (the number of months; the frame is `t = 0 … 1200`) | **1201** |
 | `prem_period_mths()` / `prem_end()` | 240 / 239 |
 | `foetal_cover_end()` / `foetal_prem_end()` | **17** / **16** |
 | `pols_if_init()` | 1.0 |
@@ -670,8 +675,9 @@ of it.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | policy month, `t = 0, 1, …, n` |
-| `n` | `proj_len` | `12 × (term_age − issue_age)` = 1,200 |
+| `t` | — | policy month, 0-based: `t = 0, 1, …, proj_len − 1` (= `n`) |
+| — | `proj_len` | the **number** of projected months, `12 × (term_age − issue_age) + 1` = 1,201 |
+| `n` | `proj_len − 1` | the terminal 계약해당일 index, `12 × (term_age − issue_age)` = 1,200 |
 | `m` | `prem_period_mths` | 납입기간 in months = 240; last premium at `m − 1` |
 | `b` | `birth_month` | the policy month of birth = 5; 0 on a non-foetal point |
 | `f` | `foetal_cover_end` | `b + 12` = 17, the end of the 태아 module's cover |

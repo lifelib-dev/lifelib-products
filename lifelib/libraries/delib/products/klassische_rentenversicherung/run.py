@@ -23,14 +23,15 @@ print("model point {}: {} - {}{} issued {}, duration {}, {} EUR {} to age {}".fo
     int(mp["issue_age"]) + n))
 print("premium {:,.2f} EUR p.a. x {} y (freq load {:.3f})   Beitragssumme {:,.2f}   "
       "alpha {:,.2f}".format(
-          proj.prem_pp(int(mp["duration_init"]) + 1), mp["prem_term_y"],
+          proj.prem_pp(int(mp["duration_init"])), mp["prem_term_y"],
           proj.freq_load(), proj.beitragssumme_pp(), proj.alpha_total_pp()))
 print("Rechnungszins {:.2%}   declared {:.2%}   bonus {:.2%}   charge set {}".format(
-    proj.int_rate_guar(), proj.decl_rate(int(mp["duration_init"]) + 1),
-    proj.bonus_rate(int(mp["duration_init"]) + 1), mp["charge_id"]))
-print("Rentenbeginn t = {} (age {}):  capital {:,.2f}  Rentenfaktor max({:.2f}, {:.2f}) "
-      "= {:.2f}  ->  garantierte Rente {:,.2f} EUR/month".format(
-          n, int(mp["issue_age"]) + n, proj.capital_conv_pp(),
+    proj.int_rate_guar(), proj.decl_rate(int(mp["duration_init"])),
+    proj.bonus_rate(int(mp["duration_init"])), mp["charge_id"]))
+print("Rentenbeginn: last accumulation row t = {} (age {}):  capital {:,.2f}  "
+      "Rentenfaktor max({:.2f}, {:.2f}) = {:.2f}  ->  garantierte Rente {:,.2f} "
+      "EUR/month".format(
+          n - 1, int(mp["issue_age"]) + n, proj.capital_conv_pp(),
           proj.annuity_rate_guar(), proj.annuity_rate_curr(),
           proj.annuity_rate_appl(), proj.annuity_guar_mth_pp()))
 print("Rentengarantiezeit {} y   Kapitalwahl {:.0%}   payout system {}   "

@@ -1,6 +1,7 @@
 t,lapse_rate,provenance
+0,0.0500,[std] early-duration attrition; no index-specific Stornoquote exists [R19]
 1,0.0500,[std] early-duration attrition; no index-specific Stornoquote exists [R19]
-2,0.0500,[std] early-duration attrition; no index-specific Stornoquote exists [R19]
+2,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
 3,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
 4,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
 5,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
@@ -9,8 +10,8 @@ t,lapse_rate,provenance
 8,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
 9,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
 10,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
-11,0.0300,"[std] level mid-duration attrition, inside the GDV market band [R19]"
-12,0.0600,[std] the duration-12 step -- EStG s 20 Abs 1 Nr 6 halves the taxable Unterschiedsbetrag after 12 years and age 62 [R14] [REG-R45]
+11,0.0600,[std] the duration-12 step -- EStG s 20 Abs 1 Nr 6 halves the taxable Unterschiedsbetrag after 12 years and age 62 [R14] [REG-R45]
+12,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
 13,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
 14,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
 15,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
@@ -38,4 +39,3 @@ t,lapse_rate,provenance
 37,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
 38,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
 39,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]
-40,0.0200,[std] low late-duration attrition on a ratcheting contract [R19]

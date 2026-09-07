@@ -41,7 +41,7 @@ Cancer_KR_S - am boheom (cancer insurance), KRW, monthly grid, man nai
 model point 1: KR-CA-0001 - M40, bi-gaengsin (non-renewable)
   cover to man nai 100, 20-year pay, mijigeuphyeong (no surrender value while paying),
   sum insured KRW 30,000,000
-  premium = KRW 45,000/month   horizon = 720 months   myeonchaek = 3 m   gamaek = 12 m
+  premium = KRW 45,000/month   frame = 721 months (t = 0 .. 720)   myeonchaek = 3 m   gamaek = 12 m
   tiers: gohaek 100% top-up / ilban 100% / soaek 60% / yusa 20% of the sum insured
   modules: diag=1 hosp=1 surg=1 treat=1   waiver = cancer_diag
   pyojun haeyak gongjeaek (standard surrender charge cap) = KRW 585,000
@@ -160,8 +160,11 @@ it is not a small error: at female 만나이 30 the model's 유사암 incidence,
 **exceeds** the invasive base rate of 0.001005 that it is a ratio of.
 
 The horizon is set by the contract, not by a table's terminal age: `proj_len() = 12 × (100 −
-issue_age)` is the **last** projected index, 720 on the anchor cell, so `result_cf()` has 721
-rows. At `t = proj_len()` the cover ends at the 100세 계약해당일, `pols_maturity` takes the
+issue_age) + 1` is the **number** of projected months — the frame's exclusive end, 721 on the
+anchor cell, so `result_cf()` has 721 rows indexed `t = 0 … 720` and the frame is
+`range(proj_len())`. `t` is 0-based: `t = 0` is the first projected month, the one beginning
+at the 보험계약일, and the policy year is the contractual label `t // 12 + 1`. At
+`t = proj_len() − 1` the cover ends at the 100세 계약해당일, `pols_maturity` takes the
 whole remaining exposure — **0.0103446076** — every cash flow is zero and
 `claims(t, "MATURITY")` is zero, because **nothing is paid at expiry** [S8]. The 만기환급형
 2종 variant returning 5% of 보험가입금액 [S8] is a different product and is out of scope.
@@ -536,6 +539,30 @@ is where the product's two start dates come from, and a `waives_premium` flag th
 일반암 and 고액암 alone [S3 제14조제1항] [S1 제9조제1항]. It is the most heavily sourced file
 in the directory and the only one whose every row is [S#] rather than [std].
 
+### No input file is keyed by the projection index
+
+**Not one of the eight CSVs carries the model's `t`**, so the move to the 0-based frame left
+every input file untouched. The time-like columns and what each of them is:
+
+- `survival_table.csv` and `care_table.csv` — **`dur_year`, values 1 to 6.** Elapsed *select
+  year since diagnosis*, with 6 standing for the ultimate, on a clock that starts at the
+  진단확정일 and not at the 보험계약일. It is a 1-based contractual duration label of the same
+  kind as a policy year, read by `excess_hazard(tier, k)`, `treat_avail(k)` and the care limbs
+  of `claims(t, kind)` with `k = 1 … 6`, and the only place it is derived from the frame at all
+  is `treat_cum_pp(t)`'s `k = min(6, (t − 1) // 12 + 1)` for a life diagnosed at `t = 0`.
+  **Left as written.**
+- `mort_table.csv`, `incidence_table.csv`, `tier_share_table.csv` — **`age`.** Attained 만나이,
+  reached through `age(t) = issue_age() + t // 12`. Not a time index. **Left as written.**
+- `model_point_table.csv` — **`wait_months`, `reduction_months`, `pay_term_y`.** Elapsed
+  counts, already 0-based by nature: `wait_months = 3` means cover attaches once three whole
+  months have elapsed, which on the 0-based frame is `t = 3`, and `reduction_months = 12` means
+  the 감액기간 covers `t < 12`. Neither is a point on the frame's axis that has to move with it.
+  **Left as written.**
+- `tier_table.csv` — **`wait_months`.** The same elapsed count, per tier. **Left as written.**
+- `lapse_table.csv` — **`segment`**, three named segments and no policy-year grid; the
+  policy-year mapping happens in `lapse_rate(t)` through `policy_year(t) = t // 12 + 1`.
+  **Left as written.**
+
 ## Sign convention
 
 `net_cf` is **income positive** — premiums less every benefit line, less `expenses`, less
@@ -651,7 +678,8 @@ tables**, so a reviewer can lay it beside [`technical-notes.md`](technical-notes
 compare by eye rather than by re-running the model. Money is asserted to the ten decimal
 places the notes print, in-force counts and rates to ten, and the ledgers to ten.
 
-- **The derived scalars**: `proj_len() = 720` and `result_cf()` at 721 rows,
+- **The derived scalars**: `proj_len() = 721` and `result_cf()` at 721 rows, indexed
+  `t = 0 … 720`,
   `pay_months() = 240`, `pols_if_init() = 1.0`, `surr_chg_months() = 84`, and
   **`surr_chg_cap_pp() = 585,000`** from the [별표 14] arithmetic in full, including that the
   13-month cap binds and that the [별표 15] 제9호 notional face amount is what enters it.
@@ -695,7 +723,8 @@ prescribed steps landing in one row; `claims_lapse` identically zero; the paymen
 with no death benefit and the account floor binding; `risk_prem_pp` excluding the DEATH and
 LAPSE lines; nothing paid at expiry; the ten `claims_*` splits with no `claims` column;
 rounded lines not re-adding and `commissions(0) = 323,999.9999999999`; `proj_len()` as the
-last index; log-linear against linear interpolation; the [std] incidence rows above 80
+row count rather than the last index; log-linear against linear interpolation; the [std]
+incidence rows above 80
 carrying 22.6% of the diagnosis benefit; 부활 re-running the 90 days; and not reusing
 `Medical_KR_S`'s machinery.
 
@@ -726,7 +755,8 @@ read once per model with no orphan CSV, the `provenance` column on every assumpt
 docstrings and their required phrases, the age basis in the registry metadata — `MONTHLY |
 MAN` for this model — against the `Projection` docstring, the retired-name and
 retired-column registers, the `result_cf()` contract (indexed by `t`, first column `pols_if`,
-a `net_cf` column, all names `lower_snake_case`, no NaN, length equal to `proj_len()`), and
+a `net_cf` column, all names `lower_snake_case`, no NaN, length equal to `proj_len()` and the
+index running `0 … proj_len() − 1`), and
 that every `check_*()` returns `True` on **every** shipped model point.
 
 ```bash

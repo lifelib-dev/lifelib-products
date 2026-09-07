@@ -13,8 +13,9 @@ that makes the model strike the *Beitrag* by equivalence — standard rates
 (``rating_factor = 1.00``), and **every switchable option off**: no *Wartezeit*, no
 *Karenzzeit*, no *Leistungsdynamik*, no *Beitragsrückgewähr*, no *Stornoabzug*, no
 *Überschussbeteiligung* and no behaviour module.  Model point 1 is that cell.
-``pols_if_init() = 1.0`` and ``proj_len() = 12 x (110 - 45) - 1 = 779``, so the frame is
-780 monthly rows covering attained ages 45 to 109, of which the notes print fourteen plus
+``pols_if_init() = 1.0`` and ``proj_len() = 12 x (110 - 45) = 780`` -- the number of
+projected months, the frame's exclusive end -- so the frame is ``range(0, 780)``:
+780 monthly rows, ``t = 0 ... 779``, covering attained ages 45 to 109, of which the notes print fourteen plus
 a Total row over all of them.  The equivalence gives ``premium_mth_pp() = 64.198409`` EUR
 a month, from ``A = 17,789.761930``, ``U = 313.500018``, ``G = 892.884210`` and
 ``C = 69.389246``.
@@ -202,16 +203,16 @@ SEX_RATES = {
 # The notes' switchable-variant table: four cells on the same tables, differing only in
 # the model point.  Totals over the whole frame, summed at full precision then rounded.
 VARIANTS = {
-    1: {"premium": 64.198409, "proj_len": 779, "premiums": 15857.95,
+    1: {"premium": 64.198409, "proj_len": 780, "premiums": 15857.95,
         "claims_annuity": 13200.11, "claims_lapse": 2191.72, "expenses": 1941.10,
         "claim_expenses": 52.67, "net_cf": -1527.65},
-    2: {"premium": 64.198409, "proj_len": 779, "premiums": 15364.38,
+    2: {"premium": 64.198409, "proj_len": 780, "premiums": 15364.38,
         "claims_annuity": 6936.34, "claims_lapse": 2086.29, "expenses": 1871.13,
         "claim_expenses": 28.29, "net_cf": 4442.33},
-    5: {"premium": 55.444644, "proj_len": 719, "premiums": 12289.30,
+    5: {"premium": 55.444644, "proj_len": 720, "premiums": 12289.30,
         "claims_annuity": 10110.36, "claims_lapse": 1482.02, "expenses": 1556.50,
         "claim_expenses": 57.74, "net_cf": -917.32},
-    8: {"premium": 72.038378, "proj_len": 779, "premiums": 17794.54,
+    8: {"premium": 72.038378, "proj_len": 780, "premiums": 17794.54,
         "claims_annuity": 15101.44, "claims_lapse": 2459.37, "expenses": 2093.27,
         "claim_expenses": 52.67, "net_cf": -1912.22},
 }
@@ -291,19 +292,21 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_pflege_anchor
 
 
 def test_the_frame_spans_the_whole_projection(de_pflege_anchor):
-    """780 contiguous monthly rows, 0-based, ending at ``proj_len()`` and not one past it.
+    """780 contiguous monthly rows, 0-based, ending at ``proj_len() - 1`` and not at ``proj_len()``.
 
-    ``proj_len()`` is the **last projected index**, not a row count, and it depends on the
-    entry age and the terminal age alone -- reading it as either is a listed pitfall.
+    ``proj_len()`` is the **number of projected months**, the exclusive end of the frame,
+    and it depends on the entry age and the terminal age alone -- reading it as the last
+    index, or as a horizon ``duration_mth_init`` shifts, is a listed pitfall.
     """
     p = de_pflege_anchor
     df = p.result_cf()
-    assert p.proj_len() == 12 * (110 - 45) - 1 == 779
+    assert p.proj_len() == 12 * (110 - 45) == 780
     assert p.duration_mth_init() == 0
     assert df.index.name == "t"
+    assert list(df.index) == list(range(p.duration_mth_init(), p.proj_len()))
     assert list(df.index) == list(range(0, 780))
-    assert df.index[-1] == p.proj_len()
-    assert len(df) == 780
+    assert df.index[-1] == p.proj_len() - 1 == 779
+    assert len(df) == p.proj_len() - p.duration_mth_init() == 780
     assert df["pols_if"].iloc[0] == p.pols_if_init() == 1.0
     assert p.age(0) == 45 and p.age(779) == 109
     assert p.omega_age() == 110
@@ -438,10 +441,11 @@ def test_the_decrements_close_at_the_limiting_age(de_pflege_anchor):
 
     ``mort_rate`` is forced to 1.0 at ``omega_age() - 1``, so the system is closed rather
     than truncated: the two cumulative counts sum to 1,000000000000 and what survives to
-    ``proj_len() + 1`` is of the order of 1e-23 of a policy.
+    ``proj_len()`` -- one month past the last projected row, which is ``proj_len() - 1`` --
+    is of the order of 1e-23 of a policy.
     """
     p = de_pflege_anchor
-    end = p.proj_len() + 1
+    end = p.proj_len()
     assert p.mort_rate(779) == 1.0
     assert p.inc_force(779) == 0.0
     assert p.pols_dead_cum(end) == pytest.approx(POLS_DEAD_CUM_END, abs=SIX_DP)
@@ -467,7 +471,7 @@ def test_the_sign_pattern_is_the_products_economic_story(de_pflege_anchor):
     assert all(p.net_cf(t) > 0.0 for t in range(1, 251))
     assert p.net_cf(251) > 0.0 and p.net_cf(252) < 0.0
     assert p.age(NET_CF_FIRST_NEGATIVE_T) == 66
-    first_negative = min(t for t in range(1, p.proj_len() + 1) if p.net_cf(t) < 0.0)
+    first_negative = min(t for t in range(1, p.proj_len()) if p.net_cf(t) < 0.0)
     assert first_negative == NET_CF_FIRST_NEGATIVE_T
     assert p.net_cf(1) == pytest.approx(59.93, abs=CENT)
     assert p.net_cf(240) == pytest.approx(3.45, abs=CENT)
@@ -572,7 +576,7 @@ def test_the_bahr_grid_is_not_simply_a_cheaper_contract(pflegerentenversicherung
     assert [bahr.waiver_flag(g) for g in range(1, 6)] == [True] * 5
     assert [de_pflege_anchor.waiver_flag(g) for g in range(1, 6)] == [
         False, True, True, True, True]
-    assert bahr.proj_len() == 719 < de_pflege_anchor.proj_len()
+    assert bahr.proj_len() == 720 < de_pflege_anchor.proj_len()
     assert bahr.result_cf()["claim_expenses"].sum() > (
         de_pflege_anchor.result_cf()["claim_expenses"].sum())
     assert bahr.result_cf()["claim_expenses"].sum() == pytest.approx(57.74, abs=CENT)
@@ -604,14 +608,14 @@ def test_pitfall_01_the_annuity_is_a_grade_by_grade_sum(de_pflege_anchor):
     # Exact at t = 1, because the stock there is the entry mix.
     assert entry_mean * p.rente_mth() * p.pols_care(1) == pytest.approx(
         p.claims(1, "ANNUITY"), rel=1e-12)
-    exposure = sum(p.pols_care(t) for t in range(0, n + 1))
+    exposure = sum(p.pols_care(t) for t in range(n))
     assert exposure == pytest.approx(TOTALS["pols_care"], abs=SIX_DP)
     naive = entry_mean * p.rente_mth() * exposure
     assert naive == pytest.approx(NAIVE_ANNUITY_TOTAL, abs=CENT)
     actual = p.result_cf()["claims_annuity"].sum()
     assert naive / actual == pytest.approx(0.70, abs=0.005)
     stock_mean = sum(
-        p.benefit_pct(g) * sum(p.pols_pg(t, g) for t in range(0, n + 1))
+        p.benefit_pct(g) * sum(p.pols_pg(t, g) for t in range(n))
         for g in range(1, 6)) / exposure
     assert stock_mean == pytest.approx(STOCK_WEIGHTED_MEAN_PCT, abs=5e-7)
     assert stock_mean * p.rente_mth() * exposure == pytest.approx(actual, rel=1e-9)
@@ -659,7 +663,7 @@ def test_pitfall_03_the_paying_state_has_three_exits(de_pflege_anchor):
     """
     p = de_pflege_anchor
     n = p.proj_len()
-    assert sum(p.pols_reactiv(t) for t in range(0, n + 1)) == pytest.approx(
+    assert sum(p.pols_reactiv(t) for t in range(n)) == pytest.approx(
         REACTIVATION_TOTAL, abs=5e-7)
     for t in (120, 360, 480):
         for g in range(1, 6):
@@ -692,7 +696,7 @@ def test_pitfall_03b_suppressing_recovery_raises_the_liability():
             model.Data.clear_all()
             model.Projection.clear_all()
             p = model.Projection[1]
-            assert sum(p.pols_reactiv(t) for t in range(0, p.proj_len() + 1)) == 0.0
+            assert sum(p.pols_reactiv(t) for t in range(p.proj_len())) == 0.0
             raised = p.result_cf()["claims_annuity"].sum()
             assert raised == pytest.approx(NO_RECOVERY_ANNUITY_TOTAL, abs=CENT)
             assert raised > base
@@ -767,16 +771,16 @@ def test_pitfall_06_the_premium_revives_and_it_is_a_flow(de_pflege_anchor):
     """
     p = de_pflege_anchor
     n = p.proj_len()
-    revival = sum(p.pols_pg(t, 2) * p.p_pg_better(t, 2) for t in range(0, n + 1))
+    revival = sum(p.pols_pg(t, 2) * p.p_pg_better(t, 2) for t in range(n))
     assert revival == pytest.approx(HERABSTUFUNG_OUT_OF_PG2, abs=5e-7)
     assert revival > 0.0
-    assert all(p.pols_prem(t) >= p.pols_act(t) - 1e-15 for t in range(0, n + 1))
+    assert all(p.pols_prem(t) >= p.pols_act(t) - 1e-15 for t in range(n))
     for t in (1, 120, 360, 600):
         assert p.pols_pg(t, 1) > 0.0
         assert p.pols_prem(t) > p.pols_act(t)
         assert p.pols_prem(t) == pytest.approx(
             p.pols_act(t) + p.pols_pg(t, 1), rel=1e-12)
-    assert all(p.pols_prem(t + 1) <= p.pols_prem(t) + 1e-15 for t in range(0, n))
+    assert all(p.pols_prem(t + 1) <= p.pols_prem(t) + 1e-15 for t in range(n - 1))
     assert p.check_waiver() is True
 
 
@@ -793,7 +797,7 @@ def test_pitfall_07_one_survival_is_allocated_not_several_added(de_pflege_anchor
     n = p.proj_len()
     worst_act = 0.0
     worst_pg = 0.0
-    for t in range(0, n + 1):
+    for t in range(n):
         total = p.p_act_stay(t) + p.p_act_death(t) + p.p_act_care(t)
         worst_act = max(worst_act, abs(total - 1.0))
         for g in range(1, 6):
@@ -855,8 +859,8 @@ def test_pitfall_09_the_karenzzeit_is_a_deferral_clock_per_onset(
     p = pflegerentenversicherung.Projection[7]
     n = p.proj_len()
     assert p.karenz_months() == 6 and p.wartezeit_months() == 36
-    entries = sum(p.pols_entry(t, g) for t in range(0, n + 1) for g in range(1, 6))
-    grads = sum(p.pols_grad(t, g) for t in range(0, n + 1) for g in range(1, 6))
+    entries = sum(p.pols_entry(t, g) for t in range(n) for g in range(1, 6))
+    grads = sum(p.pols_grad(t, g) for t in range(n) for g in range(1, 6))
     assert entries == pytest.approx(KARENZ_ENTRIES, abs=5e-7)
     assert grads == pytest.approx(KARENZ_GRADUATIONS, abs=5e-7)
     assert grads < entries
@@ -922,7 +926,7 @@ def test_pitfall_10_the_leistungsdynamik_costs_more_than_a_short_spell_suggests(
     # rather than bit for bit; the largest difference anywhere in the frame is 1e-17.
     n = base.proj_len()
     worst = max(abs(base.esc_pg(t, g) - base.pols_pg(t, g))
-                for t in range(0, n + 1) for g in range(1, 6))
+                for t in range(n) for g in range(1, 6))
     assert worst < 1e-15
     assert base.check_esc_ledger() is True
 
@@ -970,7 +974,7 @@ def test_pitfall_12_nothing_in_care_lapses(pflegerentenversicherung, de_pflege_a
     """
     p = de_pflege_anchor
     n = p.proj_len()
-    assert all(p.pols_lapse(t) <= p.pols_act(t) for t in range(0, n + 1))
+    assert all(p.pols_lapse(t) <= p.pols_act(t) for t in range(n))
     in_claim = pflegerentenversicherung.Projection[12]
     assert in_claim.status_init() == "pg3"
     assert in_claim.duration_mth_init() == 336
@@ -1056,7 +1060,7 @@ def test_pitfall_14_the_premium_is_struck_on_the_first_order_basis(de_pflege_anc
     p = de_pflege_anchor
     assert p.check_prem_equiv() is True
     assert p.check_prem_equiv_resid(0) != 0.0            # individual months are large
-    total = sum(p.check_prem_equiv_resid(t) for t in range(0, p.proj_len() + 1))
+    total = sum(p.check_prem_equiv_resid(t) for t in range(p.proj_len()))
     assert total == pytest.approx(0.0, abs=1e-9)
     # Margins, and their directions.  For an active life prudence means *lower*
     # mortality -- a life that survives is a life that can claim -- so the margin is
@@ -1189,9 +1193,9 @@ def test_pitfall_17_entrants_are_not_the_stock(de_pflege_anchor):
     assert sum(p.inc_share(g) for g in range(1, 6)) == pytest.approx(1.0, abs=1e-12)
     for g, share in ENTRY_SHARE.items():
         assert p.inc_share(g) == pytest.approx(share, rel=1e-12)
-    exposure = sum(p.pols_care(t) for t in range(0, n + 1))
+    exposure = sum(p.pols_care(t) for t in range(n))
     for g in range(1, 6):
-        share = sum(p.pols_pg(t, g) for t in range(0, n + 1)) / exposure
+        share = sum(p.pols_pg(t, g) for t in range(n)) / exposure
         assert share == pytest.approx(STOCK_SHARE[g], abs=5e-7)
     assert STOCK_SHARE[4] > ENTRY_SHARE[4]
     assert STOCK_SHARE[5] > ENTRY_SHARE[5]
@@ -1227,7 +1231,7 @@ def test_check_net_cf_is_delib_ruling_one(de_pflege_anchor):
     """
     p = de_pflege_anchor
     n = p.proj_len()
-    worst = max(abs(p.check_net_cf_resid(t)) for t in range(0, n + 1))
+    worst = max(abs(p.check_net_cf_resid(t)) for t in range(n))
     assert worst < 1e-12
     df = p.result_cf()
     rebuilt = (df["premiums"] - df["claims_annuity"] - df["claims_lapse"]

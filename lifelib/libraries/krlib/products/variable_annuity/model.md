@@ -107,7 +107,13 @@ model.Projection[1].result_charges()   # the fee stack, one column per line
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
 `result_cf()` returns a `DataFrame` indexed by projection month `t`, one column per cash
-flow line. Three companion frames carry what a cash flow statement leaves out:
+flow line. **The time index is 0-based**, lifelib's convention: `t = 0` is the month
+containing the 계약일 and the first 기본보험료, `pols_if(0) == pols_if_init()`, and
+`proj_len()` is the **number** of projected months, so the frame is `range(proj_len())`,
+the last row is `proj_len() - 1` and `len(result_cf()) == proj_len()`. Policy year is a
+contractual 1-based label derived from `t` and never indexed by: `policy_year(t)` =
+`t // 12 + 1`, and `yrs_completed(t)` = `(t + 1) // 12` is the completed-years index of the
+해약공제 scale. Three companion frames carry what a cash flow statement leaves out:
 `result_pols()` the in-force movements and the annuity obligation count, `result_av()` the
 계약자적립액 recursion beside the two guarantee bases and the surrender value, and
 `result_charges()` the fee stack line by line — the frame this product exists to make
@@ -158,10 +164,12 @@ float64 rounding alone.
 
 ## The horizon is the mortality table, not the contract
 
-A 종신연금형 has no maturity date, so `proj_len()` is set by `omega_age = 120` **[std]** —
-959 on the anchor cell, 0 … 959, attained 보험나이 119 in the last row; 599 on model point
-10, which is issued at 70. `pols_maturity(t)` is non-zero only in that last row and pays
-**nothing**: `claim_pp(t, "MATURITY")` is structurally `0.0`. The cells exists so the
+A 종신연금형 has no maturity date, so `proj_len()` is set by `omega_age = 120` **[std]**.
+It is the **number** of projected months — the frame's exclusive end — so the anchor cell
+runs `t = 0 … 959` in `proj_len()` = 960 rows, attained 보험나이 119 in the last row, and
+model point 10, issued at 70, runs 600 rows ending at `t` = 599. `pols_maturity(t)` fires
+in the last row, `t = proj_len() - 1`, and pays **nothing**: `claim_pp(t, "MATURITY")` is
+structurally `0.0`. The cells exists so the
 truncation is visible in `result_pols()` and closes `check_pols_roll_fwd()`, rather than
 being absorbed into the last row's decrements where nobody would see it. `pols_if(959)` is
 9.17e−08, so the tail is thin — but it is 719 months long, and the statement is
@@ -475,6 +483,30 @@ basis for a return assumption and neither is used as one.
   [S1]. The `min_guar` basis is a **[std]** diagnostic on which the declared rate is nil, so
   that `Max[공시이율, 최저보증이율]` resolves to the floor and model point 10 exercises the
   ladder — `credit_rate` 0.0100, 0.0075, 0.0050 at 0, 5 and 10 completed years.
+
+### No input column is the frame's `t`
+
+Under the 0-based convention a CSV column that carries the model's time index would be
+keyed 0-based. **None of the eight files has one**, so no input values moved when the
+index convention was settled:
+
+- **`lapse_table.csv` `dur_from`** — a contractual **policy year**, 1-based (1 … 8), read
+  by `lapse_rate(t)` as a band test against `policy_year(t)` = `t // 12 + 1`. Left alone;
+  the reader does the mapping.
+- **`crediting_table.csv` `dur_from`** — **completed years since 연금개시**, an elapsed
+  count and already 0-based (0 / 5 / 10), read by `decl_rate(k)` and `min_guar_rate(k)` on
+  the payout clock `k`, not on `t`. Left alone.
+- **`charge_table.csv` `line`** — the rows `comm_yr1` … `comm_yr5` are **policy-year
+  labels** inside the line name, read by `comm_rate(y)` with `y = policy_year(t)`. Left
+  alone.
+- **`model_point_table.csv` `wd_start_year`** — a contractual **policy year** from which
+  the 중도인출 module runs (11 on model point 9; 0 = off), read by `wd_pp(t)` as
+  `t < 12 * wd_start_year()`, i.e. the first withdrawal falls at the start of the twelfth
+  policy year. Left alone: it is a 1-based label the reader maps, not a point on the
+  frame's axis.
+- **`mort_table.csv` `age`** and **`risk_prem_table.csv` `age_from`** — attained
+  **보험나이**, not time. Read with `age(t)` = `age_at_entry() + t // 12`. Left alone.
+- **`fund_table.csv`** and **`return_scenario.csv`** have no time dimension at all.
 
 ## Sign convention
 

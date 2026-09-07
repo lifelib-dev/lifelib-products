@@ -37,8 +37,9 @@ detail.
 **The renewal decline.** At each renewal boundary a proportion of survivors leave
 rather than accept the repriced contract. It is a different event from a mid-term
 lapse, it applies only in boundary years and only after mortality and ordinary lapse,
-and it dominates both: in year 10 of the anchor cell it is 0.08235591 of 0.11175249
-total exits. A model that folds it into the lapse rate cannot see the boundary at all.
+and it dominates both: in the anchor cell's first boundary year (``t = 9``) it is
+0.08235591 of 0.11175249 total exits. A model that folds it into the lapse rate cannot
+see the boundary at all.
 
 **Spaces.** The model contains two:
 
@@ -63,8 +64,10 @@ the model and its inputs must travel together.
 **Projection basis.** Annual steps, the notes' base grid — nothing in the composite has
 intra-year contractual structure, and the one intra-year mechanic that matters, the
 猶予期間 (*yūyo kikan*, grace period of about one month), sits inside a decrement the
-annual grid represents as a rate [S1][S8]. Policy year ``t`` runs 1, 2, ...,
-``proj_len()``. Premiums and maintenance expense fall at the start of the year;
+annual grid represents as a rate [S1][S8]. The projection index ``t`` is **0-based**: it
+runs 0, 1, ..., ``proj_len() - 1``, so ``proj_len()`` is the number of projected years
+and the contractual policy year is ``t + 1``. Premiums and maintenance expense fall at
+the start of the year;
 acquisition expense and initial commission at issue; death and 高度障害 claims and
 their claim expense at the end of the year; ordinary lapse at the end of the year after
 deaths; the renewal decline at the end of a boundary year after lapse.
@@ -101,8 +104,8 @@ riders, and the extremes of the issue-age and sum-assured envelopes. Model point
 the anchor cell of the worked example in the technical notes.
 
 **Verification.** ``tests/test_term_life_jp.py`` asserts the notes' worked example to
-the yen and the in-force column to six decimals: ``CF(1) = -18,612.32``,
-``l(11) = 0.466683``, the renewal ladder ¥974 → ¥1,823 → ¥3,933 → ¥8,976 → ¥23,881,
+the yen and the in-force column to six decimals: ``CF(0) = -18,612.32``,
+``l(10) = 0.466683``, the renewal ladder ¥974 → ¥1,823 → ¥3,933 → ¥8,976 → ¥23,881,
 and undiscounted totals of ¥470,348.54 of premium and +¥50,400.25 of net cash flow over
 the fifty years.
 

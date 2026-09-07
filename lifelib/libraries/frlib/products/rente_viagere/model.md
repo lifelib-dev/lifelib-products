@@ -38,6 +38,26 @@ model = mx.read_model("products/rente_viagere/Rente_FR_S")
 model.Projection[1].result_cf()
 ```
 
+## The month index is 0-based
+
+`t` counts months from the effective date and the frame is `range(proj_len())`: `t = 0` is
+the first projected month — the first whole civil month of service, at the end of which the
+first *arrérage* falls due — and the last index is `proj_len() - 1`. `proj_len()` is
+therefore the **number** of months projected and `result_cf()` has exactly that many rows:
+708 on the worked anchor, `12 × (120 − 61)`, indexed `t = 0 … 707`. Month `t` runs from
+time `t` to time `t + 1`, and `duration(t) = duration_mth(t) // 12 = t // 12`,
+`policy_year(t) = t // 12 + 1`, `age(t, life) = x(0) + t // 12`.
+
+One cells keeps a different clock, deliberately. `lives_if(t, life)` is a **time-point**
+quantity — the probability that a life is alive at *time* `t`, with `t = 0` at the
+effective date — so month `t` opens at `lives_if(t)` and closes at `lives_if(t + 1)`, and
+`payment_surv_mth(t)` selects between them: `t + 1` in arrears, `t` in advance. That is
+what makes the *réversion* gate `1 − l_a(t)` and the *arrérage* of the month of death fall
+where it does, and it is why nothing in this model is ever indexed before time 0.
+`tariff_lives` is the same kind of object on the pricing clock. `result_pols()` publishes
+the **closing** survival, `lives_if(t + 1, life)`, in its `lives_if_1` and `lives_if_2`
+columns, because its rows are months and not time points.
+
 ## Mortality is the model
 
 After conversion the contract has **no premiums, no surrender value at any duration, no
@@ -71,7 +91,7 @@ Where France parts:
 |---|---|---|
 | Mortality basis | ONS **period** table plus a separate improvement scale and a rated-age multiplier | **generational** table keyed on `(sex, birth_year, age)`; no improvement scale, no rating |
 | Tariff vs best estimate | one basis; income is a quote | **two** bases — a unisex tariff on the prudent table [R3], a sex-dependent best estimate, and the gap is profit-shared [R17] [REG-R16] |
-| Second life | dependant's stream at δ with an **overlap** rule against the guarantee | *réversion* at δ of the *rente atteinte*, gated on `1 - l_a(t-1)`, never overlapping the guarantee because the options are exclusive |
+| Second life | dependant's stream at δ with an **overlap** rule against the guarantee | *réversion* at δ of the *rente atteinte*, gated on `1 - l_a(t)` — the annuitant's survival to the start of month t — never overlapping the guarantee because the options are exclusive |
 | Escalation | four bases including a path-dependent RPI ratchet | **revalorisation** — a discretionary calendar-year uplift, floored at zero, pro-rated in the first partial year — plus the four *paliers* schemes, which are steps and not escalation |
 | Death benefit | value protection, a refund measured against instalments already paid | ***prorata d'arrérages*** only: the month of death is paid in full; the design is *capital aliéné*, with no death capital |
 | Charges | priced into the annuity rate | ***frais d'arrérages*** retained out of **every** payment, so a genuine cash flow |
@@ -94,7 +114,7 @@ absent here, for two different reasons:
 | `is_joint` | **spelled differently** | The FR model reads `reversion_pct() > 0` inline wherever the twins call `is_joint()`. A *réversion* is elected at liquidation *with* its rate δ, so "no second life" and δ = 0 are one state and a separate boolean would be a second spelling of the same fact |
 | `mort_rate_base` | **spelled differently** | In the twins it is the table lookup before the rating multiplier. Here the lookup is `mort_rate_at_age(table_sex, gen, x)` — three arguments, because the table is generational — and `mort_rate(t, life)` is that lookup and nothing else. There is no intermediate quantity left to name |
 | `rating_factor` | **feature absent** | No retrieved French source rates an annuity for health, postcode or condition. Art. A. 132-18 confines the tariff to a homologated table or an actuary-certified experience table [R3], and every medical selection any retrieved document describes sits on the *dépendance* rider [S5] [S6], not on the annuity. The UK enhanced/impaired market has no French counterpart in the sources |
-| `lives_if_last` | **feature absent** | The twins' last-survivor probability `l_a + l_d − l_a l_d` exists because a benefit turns on the last death. The French obligation is `max(γ, l_a) + 1{δ>0}(1 − l_a(t−1)) l_r` — the reversionary is served *only* if the annuitant died first — which is not a last-survivor probability, so `pols_if()` composes it inline rather than borrowing a name that would mean something else |
+| `lives_if_last` | **feature absent** | The twins' last-survivor probability `l_a + l_d − l_a l_d` exists because a benefit turns on the last death. The French obligation is `max(γ(t), l_a(t+1)) + 1{δ>0}(1 − l_a(t)) l_r(t+1)` — the reversionary is served *only* if the annuitant died first — which is not a last-survivor probability, so `pols_if()` composes it inline rather than borrowing a name that would mean something else |
 | `lives_death_last` | **feature absent** | It is the last-death density that triggers UK value protection. A *capital aliéné* annuity has no death capital at all [R8]; the *prorata d'arrérages* is triggered by `d_a` and `d_r` separately |
 
 ## The table is generational, so there is no improvement scale
@@ -151,15 +171,15 @@ is not a discount rate: the best estimate discounts at the risk-free term struct
 
 ## Two mortality bases: table and scenario
 
-The notes' worked example is a **scenario** — "the annuitant dies in month 26; the
-reversionary survives throughout" — while the rest of the notes projects on an expected
+The notes' worked example is a **scenario** — "the annuitant dies in month 25, the 26th
+month of service; the reversionary survives throughout" — while the rest of the notes projects on an expected
 basis. Both readings ship, as a model point column, which is the same device `PA_UK_S` and
 `SPIA_US_S` use:
 
 | `mort_basis` | `lives_if` | Model points |
 |---|---|---|
 | `table` | the monthly recursion off the shipped generational table | 2, 4, 5, 7, 8, 9, 10, 11 |
-| `scenario` **[std]** | the step function `1{t < death_mth(life)}`, blank meaning the life survives | 1, 3, 6 |
+| `scenario` **[std]** | the step function `1{t <= death_mth(life)}` on the survival-to-time-t clock, a blank or negative `death_mth` meaning the life survives | 1, 3, 6 |
 
 Point 2 is the worked configuration on the `table` basis and is the run to read for a
 realistic cash flow shape; point 1 is the same contract as a scenario and reproduces the
@@ -176,7 +196,7 @@ degenerates to the full ν for a 1 January effective date — model point 5 is t
 the worked configuration, M0 = 4:
 
 ```
-k(t) = 0 for t <= 9,  1 for 10 <= t <= 21,  2 for 22 <= t <= 33, ...
+k(t) = 0 for t <= 8,  1 for 9 <= t <= 20,  2 for 21 <= t <= 32, ...
 R(t) = 1,  1.011250,  1.026419,  1.041815, ...
 ```
 
@@ -227,10 +247,11 @@ technical notes carries the same 0.9820 and the same 0.54-against-29.63 derivati
 model and the notes agree; the coefficient moves with the table, which is why substituting
 a licensed basis moves it too.
 
-The *réversion* gate is `(1 − l_a(t − 1))` and **not** `(1 − l_a(t))`: the survivor's first
+The *réversion* gate is `(1 − l_a(t))`, the annuitant's survival to the **start** of month
+t, and **not** `(1 − l_a(t + 1))`, its survival to the end: the survivor's first
 instalment falls in the month *after* the month of death, immediately after the *prorata
-d'arrérages* has settled it. Using `l_a(t)` pays the reversion and the *prorata* in the same
-month, so the month of death is paid `1 + δ` times. [S6] states the reversion start as the
+d'arrérages* has settled it. Gating on the end of the month pays the reversion and the
+*prorata* in the same month, so the month of death is paid `1 + δ` times. [S6] states the reversion start as the
 1st day of the "month **or quarter**" following death, so a one-month gate at every
 frequency is a **[std]** reading of its monthly limb; it is exact at m = 12 and opens a
 quarterly reversion up to a quarter early. No shipped model point combines a *réversion*
@@ -246,9 +267,9 @@ and nothing compounds. The four published schemes are `inc1` 100→200%, `inc2`
 ## The month of death is paid in full
 
 ```
-h(t)             = (t - 1) mod (12/m)
+h(t)             = t mod (12/m)
 prorata_pp(t)    = ((h(t) + 1)/(12/m)) x A(t)/m
-prorata_factor(t)= d_a(t)(1 - gamma(t)) + delta (1 - l_a(t-1)) d_r(t)
+prorata_factor(t)= d_a(t)(1 - gamma(t)) + delta (1 - l_a(t)) d_r(t)
 ```
 
 At m = 12 that is exactly **one full instalment** — instalments "cessent d'être dus à
@@ -306,9 +327,22 @@ magnitude larger than a period one.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Eleven model points. **Point 1 is the worked configuration as a scenario** (€200,000, effective 1 April 2026, M65 born 1961 with a *réversion* at 60% to F61 born 1965, monthly *terme échu*, ρ = 3.30%, f = 3%, annuitant dies month 26); point 2 is the same on the expected basis; 3 and 4 are the *annuités garanties* variant at 15 years on either basis; 5 is a 1 January effective date with a `dec2` *palier* and no *frais d'arrérages*; 6 is quarterly, to exercise the *prorata* fraction; 7 and 8 carry `inc2` and `dec1` *paliers*; 9 is a `mix`-basis annuitant with a 100% *réversion* to an older reversionary; 10 is the *millésime* twin of point 2 with an `inc1` *palier*; 11 is the unobserved *terme à échoir* variant at a 1.00% *taux technique* | anchor **[std]**, technical notes' worked example |
+| `model_point_table.csv` | Eleven model points. **Point 1 is the worked configuration as a scenario** (€200,000, effective 1 April 2026, M65 born 1961 with a *réversion* at 60% to F61 born 1965, monthly *terme échu*, ρ = 3.30%, f = 3%, annuitant dies month 25, the 26th month of service); point 2 is the same on the expected basis; 3 and 4 are the *annuités garanties* variant at 15 years on either basis; 5 is a 1 January effective date with a `dec2` *palier* and no *frais d'arrérages*; 6 is quarterly, to exercise the *prorata* fraction; 7 and 8 carry `inc2` and `dec1` *paliers*; 9 is a `mix`-basis annuitant with a 100% *réversion* to an older reversionary; 10 is the *millésime* twin of point 2 with an `inc1` *palier*; 11 is the unobserved *terme à échoir* variant at a 1.00% *taux technique* | anchor **[std]**, technical notes' worked example |
 | `mort_table.csv` | Annual mortality by sex, *millésime* 1940–1980 and age 50–120, capped at 1 at the limiting age, with a `provenance` column | **[std]** proxy with the *shape* of a French generation table — a rate keyed on `(sex, birth_year, age)` and on nothing else. **Not** TGH05/TGF05 [R1] [R12], which this library does not redistribute. Makeham–Gompertz in age with a 1.0% per *millésime* improvement, solved so that `annuity_factor("F")` at (1961, 65) is 29.630420 and `annuity_factor("M")` is 26.214580 — the factors that reproduce ρ = 3.30% and the male-table 3.73% of spec footnotes 6 and 7 at `rate_loading` |
 | `reversion_coeff_table.csv` | The 11 age-difference bands × 3 published *taux de réversion*, with a `provenance` column | [S6 Art. 5.4.3], the only option-cost table any retrieved French source publishes; its adoption as a euro-annuity coefficient is **[std]** (spec footnote 15) |
+
+**Time-like columns.** No input file is keyed on `t`. In `model_point_table.csv`,
+`death_mth_1` and `death_mth_2` are points on the frame's own time axis — the month a life
+dies on the `scenario` basis — so they moved with it: the worked example's `26` became
+**25**, and the explicit "this life is named in the scenario and does not die" sentinel `0`
+became **−1**, month 0 now being a real month that cannot double as a sentinel (a blank
+cell means the same thing and is read as −1). Nothing else in the file is an index into the
+frame and nothing else changed: `effective_year` and `effective_month` are a calendar
+anchor, `guarantee_years` and `palier_step_years` are contractual term *lengths*, and
+`annuitant_age`, `reversion_age` and the two *millésimes* are ages and calendar years.
+`mort_table.csv` is keyed on `(sex, birth_year, age)` — an attained age, not a duration —
+and `reversion_coeff_table.csv` on a *millésime* difference, so neither carries a time
+index at all and both are untouched.
 
 **Substituting a licensed basis** means replacing `mort_table.csv` with a same-schema file
 keyed on exactly the same `(sex, birth_year, age)`. **No formula changes**, and in
@@ -324,7 +358,8 @@ The notes define `CF(t)` as total gross liability **outgo**, which is `liability
 `net_cf` is its negative, the library-wide income-positive convention. Both are published
 as `result_cf()` columns rather than one being made to stand for the other — the same
 arrangement `PA_UK_S`, `SPIA_US_S` and the other frlib models use. There is no premium
-income in the projection at all: the *capital constitutif* is a pricing input at `t = 0`.
+income in the projection at all: the *capital constitutif* is a pricing input at the
+effective date, before the first projected month.
 
 One column runs the other way. `arrerage_charges` is money the insurer **retains** out of
 each *quittance*, so it is published positive and **subtracted**:
@@ -376,14 +411,16 @@ flows at all.
 
 `tests/test_rente_viagere_fr.py` asserts every row of the notes' worked example to the cent
 — the €418.00 instalment and its €12.54 charge, the 1.125% pro-rated first uplift reaching
-the month-10 instalment at €422.70, the second uplift at €429.04 from month 22, the whole
-instalment settled as a *prorata* on the month-26 death, the *réversion* opening at €257.43
-in month 27, `cum_annuity_pp(26, "ALL") = €10,979.65` with €329.39 retained, and
-`liability_cf` of €412.56 and €252.28 — plus one test per known modelling pitfall: the
+the month-9 instalment at €422.70, the second uplift at €429.04 from month 21, the whole
+instalment settled as a *prorata* on the month-25 death, the *réversion* opening at €257.43
+in month 26, `cum_annuity_pp(25, "ALL") = €10,979.65` with €329.39 retained, and
+`liability_cf` of €412.56 and €252.28 — on the 0-based month index the notes' table now
+carries, with `result_cf()` asserted to run `t = 0 … proj_len() - 1`. Then one test per
+known modelling pitfall: the
 absence of any improvement scale, the *millésime* rather than the projection year as the
 table key, the separation of the tariff and best-estimate tables, the 31 December
 revalorisation date, the first-year pro-rata, the *arrérage* of the month of death, the
-`l_a(t − 1)` reversion gate, the *prorata* gate and the `max` inside `payment_factor`, the
+`l_a(t)` reversion gate, the *prorata* gate and the `max` inside `payment_factor`, the
 definitive reversion coefficient, the absence of any surrender machinery, the *frais sur
 encours* never touching an instalment, the *frais d'arrérages* being charged per
 *quittance*, the *taux technique* reaching no cash flow, and the *palier* never touching the

@@ -140,10 +140,14 @@ def exit_table():
     """The two accumulation-phase exit decrements, from *exit_table.csv*.
 
     Indexed by (``compartment``, ``duration``), with an ``early_release_rate`` and a
-    ``transfer_out_rate`` column.  **Neither is a lapse rate** and the file deliberately
-    does not use the word: the plan carries no surrender right, and these are a
-    *déblocage anticipé* on one of the seven statutory cases and a transfer of acquired
-    rights to another PER.
+    ``transfer_out_rate`` column.  The ``duration`` key is the plan's own *ancienneté*
+    year and is **1-based**: its first row is the plan's first year, so
+    ``Projection.early_release_rate`` keys it with ``plan_year(t)`` — the 1-based label —
+    and not with the 0-based ``duration(t)``.
+
+    **Neither is a lapse rate** and the file deliberately does not use the word: the plan
+    carries no surrender right, and these are a *déblocage anticipé* on one of the seven
+    statutory cases and a transfer of acquired rights to another PER.
 
     Both are **[std]**.  The one citable anchor is an aggregate — early releases and
     transfers together were €1 651 m against €63.0 bn of accumulation-phase provisions in

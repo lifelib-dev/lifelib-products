@@ -35,9 +35,9 @@ print("first-year premium = KRW {:,.2f}/month, split geubyeo {:,.2f} / "
           proj.premium_mth_pp(), proj.prem_ge_base(1), proj.prem_np_base(1)))
 print("retention: geubyeo {:.0%} inpatient, bigeubyeo {:.0%} inpatient;   "
       "projection = {} months, {} policy years to age {}".format(
-          proj.retain_rate_ge(), proj.retain_rate_np(), proj.proj_len() + 1,
-          proj.policy_year(proj.proj_len()),
-          proj.age(proj.proj_len())))
+          proj.retain_rate_ge(), proj.retain_rate_np(), proj.proj_len(),
+          proj.policy_year(proj.proj_len() - 1),
+          proj.age(proj.proj_len() - 1)))
 print("modules: bigeubyeo rider = {}   3-dae bigeubyeo = {}   yoyul sangdaedo = {}   "
       "musago halin = {}".format(
           proj.np_rider(), proj.three_np(), proj.reld_on(), proj.noclaim_on()))

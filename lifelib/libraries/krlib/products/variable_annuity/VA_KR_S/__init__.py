@@ -46,10 +46,12 @@ model is not portable without its parent's CSVs.
 
 **Projection basis.** Monthly steps on **보험나이** (*boheom nai*, insurance age). ``t``
 counts projection months from ``t = 0``, the month containing the 계약일 and the first
-premium, to ``t = proj_len()``, the last month before attained age ``omega_age`` = 120
-**[std]**. Ages increment on the policy anniversary, so ``age(t) = age_at_entry() +
-t // 12``. Annuitisation falls at ``t_ann() = (annuity_age() - age_at_entry()) * 12``,
-the 연금개시나이 계약해당일; the 특별계정 exists for ``t < t_ann()`` and is empty after it.
+premium, to ``t = proj_len() - 1``, the last month before attained age ``omega_age`` =
+120 **[std]**; ``proj_len()`` is the **number** of projected months, so the frame is
+``range(proj_len())`` and the policy year containing month ``t`` is ``t // 12 + 1``.
+Ages increment on the policy anniversary, so ``age(t) = age_at_entry() + t // 12``.
+Annuitisation falls at ``t_ann() = (annuity_age() - age_at_entry()) * 12``, the
+연금개시나이 계약해당일; the 특별계정 exists for ``t < t_ann()`` and is empty after it.
 
 Within a month, in the order the 약관 sets out [S7 제2조] [S7 제36조]: the premium is
 paid and the 계약체결비용, the 납입 중 계약관리비용 and the 기타비용 are taken out of it

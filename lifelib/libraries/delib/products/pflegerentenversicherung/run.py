@@ -36,10 +36,10 @@ print("EPV benefits {:,.6f}   EPV premium units {:,.6f}   EPV admin {:,.6f}   "
       "EPV claim expense {:,.6f}".format(
           proj.epv_benefits(), proj.epv_prem_units(), proj.epv_admin(),
           proj.epv_claim_expense()))
-print("frame: t = {} to proj_len = {} ({} monthly rows), attained ages {} to {}".format(
-    proj.duration_mth_init(), proj.proj_len(),
-    proj.proj_len() - proj.duration_mth_init() + 1,
-    proj.age(proj.duration_mth_init()), proj.age(proj.proj_len())))
+print("frame: t = {} to {} (proj_len = {}, {} monthly rows), attained ages {} to {}".format(
+    proj.duration_mth_init(), proj.proj_len() - 1, proj.proj_len(),
+    proj.proj_len() - proj.duration_mth_init(),
+    proj.age(proj.duration_mth_init()), proj.age(proj.proj_len() - 1)))
 print()
 
 df = proj.result_cf()
@@ -54,9 +54,9 @@ print("                       expenses {:,.2f}  claim_expenses {:,.2f}  "
           df["expenses"].sum(), df["claim_expenses"].sum(), df["net_cf"].sum()))
 print("decrements: deaths {:.6f}  surrenders {:.6f}  still in force at t = {}: "
       "{:.6f}".format(
-          proj.pols_dead_cum(proj.proj_len() + 1),
-          proj.pols_lapse_cum(proj.proj_len() + 1),
-          proj.proj_len() + 1, proj.pols_if(proj.proj_len() + 1)))
+          proj.pols_dead_cum(proj.proj_len()),
+          proj.pols_lapse_cum(proj.proj_len()),
+          proj.proj_len(), proj.pols_if(proj.proj_len())))
 print("checks: net_cf {}  pols roll fwd {}  states {}  waiver {}  esc ledger {}  "
       "prem equiv {}".format(
           proj.check_net_cf(), proj.check_pols_roll_fwd(), proj.check_states(),

@@ -48,8 +48,9 @@ the 계약일 and not at the claim date**, so a contract issued at 계약나이 
 waiting period at any point in its hundred-year life.
 
 The horizon is the other structural fact. At 계약나이 0 to a 100세 만기 the projection
-runs **1,200 monthly periods**, the longest in ``krlib``, and the premium is paid over
-the first 240 of them — so eighty of the hundred years are paid-up, and what happens in
+runs **1,200 monthly periods** — ``t = 0`` to ``t = 1,199``, plus the terminal 계약해당일
+row at ``t = 1,200`` — the longest in ``krlib``, and the premium is paid over
+the first 240 of them, so eighty of the hundred years are paid-up, and what happens in
 them decides the contract.
 
 **Spaces.** The model contains two:
@@ -76,8 +77,11 @@ model and its inputs must travel together.
 nai*, insurance age), which is what ``age(t)`` returns; the decrement tables are read at
 **만나이** (*man nai*, age last birthday) through ``age_man(t)``, and on a 태아 contract
 the offset between the two is the exact pre-birth period rather than an average. ``t``
-is the policy month; month ``t`` runs from ``t`` to ``t + 1`` months after the 계약일,
-and ``t = proj_len()`` is the 계약해당일 on which the contract expires. Office premium
+is the policy month and is **0-based**: ``t = 0`` is the first projected month, month
+``t`` runs from ``t`` to ``t + 1`` months after the 계약일, the policy year containing it
+is ``t // 12 + 1``, and ``proj_len()`` is the **number** of projected months, so the frame
+is ``t = 0 … proj_len() - 1`` and its last index is the 계약해당일 on which the contract
+expires. Office premium
 falls at the start of the month; benefits, the 계약자적립액 on death, the 해약환급금 on
 lapse, the premium refund on a pre-birth void and the claim-handling expense at the end.
 Within the month the order is **void, then the waiver, then mortality, then lapse**.

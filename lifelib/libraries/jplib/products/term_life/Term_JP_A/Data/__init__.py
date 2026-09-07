@@ -138,9 +138,12 @@ def mort_table():
 def lapse_table():
     """The ordinary lapse rates by policy year, read from *lapse_table.csv*.
 
-    **[std]** throughout: Japan's only published industry-wide persistency figure is the
-    LIAJ's whole-market 解約・失効率 [REG-R31], which is a level and not a duration
-    curve.  Policy years beyond the last row take that row.
+    The key column ``policy_year`` is the **contractual, 1-based** label — its first row
+    is policy year 1 — so :func:`~.Term_JP_A.Projection.lapse_rate` reads it at ``t + 1``
+    on the model's 0-based projection index.  **[std]** throughout: Japan's only published
+    industry-wide persistency figure is the LIAJ's whole-market 解約・失効率 [REG-R31],
+    which is a level and not a duration curve.  Policy years beyond the last row take that
+    row.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821

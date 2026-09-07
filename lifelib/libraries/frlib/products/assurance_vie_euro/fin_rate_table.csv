@@ -1,15 +1,16 @@
 scenario_id,t,r_fin,ref_rate,provenance
-base,1,0.0330,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,2,0.0325,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,3,0.0320,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,4,0.0310,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,5,0.0295,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,6,0.0280,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,7,0.0265,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,8,0.0255,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,9,0.0245,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,10,0.0240,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,11,0.0235,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,0,0.0330,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,1,0.0325,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,2,0.0320,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,3,0.0310,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,4,0.0295,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,5,0.0280,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,6,0.0265,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,7,0.0255,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,8,0.0245,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,9,0.0240,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,10,0.0235,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
+base,11,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,12,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,13,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,14,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
@@ -38,18 +39,18 @@ base,36,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 
 base,37,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,38,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,39,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-base,40,0.0230,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
-low,1,0.0300,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,2,0.0285,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,3,0.0270,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,4,0.0255,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,5,0.0240,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,6,0.0225,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,7,0.0210,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,8,0.0195,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,9,0.0180,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,10,0.0165,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,11,0.0150,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,0,0.0300,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,1,0.0285,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,2,0.0270,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,3,0.0255,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,4,0.0240,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,5,0.0225,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,6,0.0210,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,7,0.0195,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,8,0.0180,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,9,0.0165,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,10,0.0150,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+low,11,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
 low,12,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
 low,13,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
 low,14,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
@@ -78,7 +79,7 @@ low,36,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
 low,37,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
 low,38,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
 low,39,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
-low,40,0.0140,0.0220,[std] a sustained reinvestment-drag path; not a forecast
+high,0,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
 high,1,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
 high,2,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
 high,3,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
@@ -118,4 +119,3 @@ high,36,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of
 high,37,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
 high,38,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
 high,39,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"
-high,40,0.0400,0.0220,"[std] a level 4.0% path, above the 2025 upper quartile of 3.3% [R14]"

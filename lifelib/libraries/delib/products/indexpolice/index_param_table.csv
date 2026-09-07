@@ -1,4 +1,5 @@
 index_id,t,cap,quote,provenance
+eqidx_vol17,0,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
 eqidx_vol17,1,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
 eqidx_vol17,2,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
 eqidx_vol17,3,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
@@ -38,7 +39,7 @@ eqidx_vol17,36,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 
 eqidx_vol17,37,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
 eqidx_vol17,38,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
 eqidx_vol17,39,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
-eqidx_vol17,40,0.0300,0.6000,"[std] Cap 3.00 pct monthly, midpoint of an argued 1.5-5.0 pct band; Quote 60 pct on a broad price index -- no carrier level established [S5] [R21]"
+houseidx_vol5,0,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
 houseidx_vol5,1,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
 houseidx_vol5,2,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
 houseidx_vol5,3,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
@@ -78,7 +79,7 @@ houseidx_vol5,36,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-vol
 houseidx_vol5,37,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
 houseidx_vol5,38,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
 houseidx_vol5,39,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
-houseidx_vol5,40,0.0600,1.0000,"[std] Cap 6.00 pct, Quote 100 pct -- a 5 pct-volatility house index is cheap to buy options on [R21]"
+zero_path,0,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
 zero_path,1,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
 zero_path,2,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
 zero_path,3,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
@@ -118,4 +119,3 @@ zero_path,36,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instr
 zero_path,37,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
 zero_path,38,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
 zero_path,39,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns
-zero_path,40,0.0300,0.6000,[std] carried unchanged from eqidx_vol17 so the instrument differs only in its returns

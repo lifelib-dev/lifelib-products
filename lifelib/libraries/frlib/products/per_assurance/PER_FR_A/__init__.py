@@ -52,12 +52,15 @@ it is the one thing a reader of this model will want to change first.
 
 **Projection basis.** Annual steps, because the governing cycles are annual: euro-fund
 crediting at 31 December and the annual statement. ``t`` counts **plan years** from the
-valuation date, 1-based, and ``proj_len()`` is the declared horizon,
-``retirement_age - age(0)``. Within a year the *versement* arrives and the balance is
-rebalanced to the glide-path target at the start; investment return accrues over the
-year; the management charge is taken on the post-crediting balance; the decrements
-death, early release and transfer out fall at the end, in that order; and at
-``t = proj_len()`` the survivors settle.
+valuation date and is **0-based**: ``t = 0`` is the first projected plan year, the frame
+is ``t = 0 … proj_len() - 1``, and ``proj_len()`` is the *number* of projected years,
+the declared horizon ``retirement_age - age(0)``. The plan's own 1-based year, which the
+*ancienneté* schedules are written in, is ``plan_year(t) = duration(t) + 1``. Within a
+year the *versement* arrives and the balance is rebalanced to the glide-path target at
+the start; investment return accrues over the year; the management charge is taken on the
+post-crediting balance; the decrements death, early release and transfer out fall at the
+end, in that order; and in the last projected year, ``t = proj_len() - 1``, the survivors
+settle.
 
 **What is sourced and what is not.** The mechanics are sourced: the *blocage* and the
 seven early-release cases, the 1%/five-year transfer indemnity, the 0% maximum technical

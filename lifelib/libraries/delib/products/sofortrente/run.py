@@ -29,8 +29,9 @@ print("tariff:  i = {:.4f} (cap {:.4f} for {}), alpha = {:.3f}, beta = {:.3f}, "
       "surplus = {}".format(
           proj.tariff_int_rate(), proj.max_tariff_int_rate(), proj.entry_year(),
           proj.expense_load_alpha, proj.expense_load_beta, proj.surplus_form()))
-print("frame:   t = {} ... {} ({} monthly rows)".format(
-    proj.t_start(), proj.proj_len(), proj.proj_len() - proj.t_start() + 1))
+print("frame:   t = {} ... {} ({} monthly rows, proj_len = {} exclusive)".format(
+    proj.t_start(), proj.proj_len() - 1, proj.proj_len() - proj.t_start(),
+    proj.proj_len()))
 print()
 print("net_single_prem  {:,.4f} EUR".format(proj.net_single_prem()))
 print("annuity_factor   {:.6f}   (a12 = {:.6f})".format(

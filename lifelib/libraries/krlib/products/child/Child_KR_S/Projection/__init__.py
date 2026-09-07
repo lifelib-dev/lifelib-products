@@ -11,12 +11,14 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 4            # or switch the default
 
-``t`` counts **policy months**, 0-based. Month ``t`` runs from ``t`` to ``t + 1`` months
-after the 계약일; ``t = proj_len()`` is the 계약해당일 at 보험나이 ``term_age`` on which
-the contract expires, so ``result_cf()`` carries ``proj_len() + 1`` rows and its last row
-holds the surviving in-force count, the residual 계약자적립액 and nothing else. On the
-anchor cell ``proj_len()`` is **1,200** — the longest projection in ``krlib``, and the
-whole point of the product.
+``t`` counts **policy months**, 0-based: ``t = 0`` is the first projected month and month
+``t`` runs from ``t`` to ``t + 1`` months after the 계약일. ``proj_len()`` is the **number
+of projected months** — the exclusive end of the frame — so the projection runs over
+``t = 0 … proj_len() - 1`` and ``result_cf()`` carries ``proj_len()`` rows. The last index
+``t = proj_len() - 1`` is the 계약해당일 at 보험나이 ``term_age`` on which the contract
+expires: a terminal row that holds the surviving in-force count, the residual 계약자적립액
+and nothing else. On the anchor cell ``proj_len()`` is **1,201** — the longest projection
+in ``krlib``, and the whole point of the product.
 
 .. rubric:: The age basis, and the two ages a foetal contract carries
 
@@ -53,7 +55,8 @@ The technical notes use compact actuarial symbols; the cells use lifelib names.
 Notes symbol          Cells                         Meaning
 ====================  ============================  ==================================
 —                     ``model_point``               the selected model point as a Series
-n                     ``proj_len``                  last projected policy month
+—                     ``proj_len``                  the number of projected policy months
+n = proj_len - 1      —                             the terminal 계약해당일 month index
 b                     ``birth_month``               the policy month of birth
 m                     ``prem_period_mths``          the 납입기간 in months
 x                     ``issue_age``                 보험나이 at the 계약일
@@ -547,16 +550,23 @@ def pols_if_init():
 # --- the timeline ---
 
 def proj_len():
-    """n: the last projected policy month, ``12 x (term_age() - issue_age())``.
+    """The **number** of projected policy months, ``12 x (term_age() - issue_age()) + 1``.
 
-    **1,200 on the anchor cell**, the longest projection in ``krlib``: a 태아 contract at
-    계약나이 0 running to the 100세 계약해당일.  On a 태아 contract the terminal date is
+    The **exclusive end** of the frame: the projection runs over ``t = 0`` to
+    ``proj_len() - 1`` and ``result_cf()`` carries ``proj_len()`` rows.  **1,201 on the
+    anchor cell**, the longest projection in ``krlib``: a 태아 contract at 계약나이 0
+    running to the 100세 계약해당일.  The ``+ 1`` is that 계약해당일 itself: the 1,200
+    months of the 보험기간 are ``t = 0 … 1,199``, and the last index ``n = proj_len() - 1
+    = 1,200`` is the terminal row on which the contract expires — the surviving in-force
+    count and the residual 계약자적립액, and no cash flow of its own.
+
+    On a 태아 contract the terminal date is
     fixed by the **계약일** and not by the birth, so the insured's 만나이 at expiry is 100
     less the pre-birth period — 99 years and 7 months on the anchor cell.  That asymmetry
     runs the whole length of the projection and is a direct consequence of [S8 제60조]
     setting the 계약나이 to 0 before the child exists.
     """
-    return 12 * (term_age() - issue_age())
+    return 12 * (term_age() - issue_age()) + 1
 
 
 def age(t):
@@ -611,14 +621,17 @@ def duration_years(t):
 
 
 def runoff(t):
-    """The fraction of the 보험기간 run off at policy month t, ``t / proj_len()``.
+    """The fraction of the 보험기간 run off at policy month t, ``t / (proj_len() - 1)``.
+
+    The denominator is the terminal 계약해당일 index ``n = proj_len() - 1``, so this is 0 at
+    the 계약일 and exactly 1 on the last row of the frame.
 
     The key into the ``taper`` half of the 환급률 progression.  Indexing the terminal
     collapse on the fraction of the term rather than on a duration is what lets one shipped
     grid serve a 30세만기, a 100세만기 and a 110세만기 contract without re-basing the
     published figures.
     """
-    return t / proj_len()
+    return t / (proj_len() - 1)
 
 
 # --- the basis: scalar parameters ---
@@ -919,7 +932,7 @@ def pols_pay(t):
     """
     if t <= 0:
         return pols_if_init() if t == 0 else 0.0
-    if t > proj_len():
+    if t >= proj_len():
         return 0.0
     s = t - 1
     base = pols_pay(s) * (1.0 - void_rate_mth(s)) - pols_waiver_entry(s)
@@ -939,7 +952,7 @@ def pols_waived(t):
     the renewed contract on the 표준형 [S2]; the composite's renewals are inside a
     비갱신 core, so nothing here reverses.
     """
-    if t <= 0 or t > proj_len():
+    if t <= 0 or t >= proj_len():
         return 0.0
     s = t - 1
     base = pols_waived(s) * (1.0 - void_rate_mth(s)) + pols_waiver_entry(s)
@@ -959,7 +972,7 @@ def pols_waiver_entry(t):
     age at which the 7대질병 begin to occur and which is still sixty months inside the
     납입기간.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return pols_pay(t) * (1.0 - void_rate_mth(t)) * waiver_rate_mth(t)
 
@@ -973,7 +986,7 @@ def pols_if(t):
     the probability that the contract is still valid; from birth it is the probability that
     the insured is alive and the contract in force.
     """
-    if t < 0 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     return pols_pay(t) + pols_waived(t)
 
@@ -1011,7 +1024,7 @@ def pols_void(t):
     [S8 제56조] [S9], so the whole premium collected comes back and the contract is treated
     as never having existed.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return pols_if(t) * void_rate_mth(t)
 
@@ -1025,7 +1038,7 @@ def pols_death(t):
     it [REG-R25] — so what this decrement produces is not a death benefit but the
     계약자적립액 and the 미경과보험료; see :func:`claims`.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return (pols_if(t) - pols_void(t)) * mort_rate_mth(t)
 
@@ -1038,20 +1051,21 @@ def pols_lapse(t):
     window running 「납입기일 다음날부터 납입기일이 속하는 달의 다음달 마지막 날까지」 [S8],
     which is why the monthly grid is the right one for it.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     base = pols_pay(t) * (1.0 - void_rate_mth(t)) - pols_waiver_entry(t)
     return base * (1.0 - mort_rate_mth(t)) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
-    """Policies reaching the 100세 계약해당일: the whole surviving block, at ``proj_len()``.
+    """Policies reaching the 100세 계약해당일: the whole surviving block, at the last row.
 
-    They are paid whatever 계약자적립액 remains and nothing else — there is **no
+    Non-zero only at ``t = proj_len() - 1``, the terminal 계약해당일 index.  They are paid
+    whatever 계약자적립액 remains and nothing else — there is **no
     만기환급금** on the protection part [S1] [S2], and on the published grid the residual
     is 16.0% of premiums paid at 95 years and effectively nil at 만기 [S2].
     """
-    return pols_if(t) if t == proj_len() else 0.0
+    return pols_if(t) if t == proj_len() - 1 else 0.0
 
 
 # --- benefit amounts, per policy in force ---
@@ -1061,7 +1075,7 @@ def cover_open(t, cover):
 
     Three gates, in this order.  **Birth**: every cover on the child's own life is closed
     while :func:`born` is false [S8 제54조] [R2].  **Expiry**: nothing is on risk at
-    ``t = proj_len()``, the 계약해당일 on which the contract ends.  **The 면책기간**: the
+    ``t = proj_len() - 1``, the 계약해당일 on which the contract ends.  **The 면책기간**: the
     두 cancer limbs are closed for :func:`waiting_mths` months from the 계약일, which on the
     anchor cell and on every contract issued below 보험나이 15 is no months at all
     [S3] [S11] [R5].
@@ -1070,7 +1084,7 @@ def cover_open(t, cover):
     보장개시일 on the 누수사고 limb of the liability rider, which resets at every renewal
     [S5] [S3], carried in :func:`benefit_pp`.
     """
-    if not born(t) or t >= proj_len():
+    if not born(t) or t >= proj_len() - 1:
         return 0.0
     if cover in ("cancer", "minor_cancer") and t < waiting_mths():
         return 0.0
@@ -1182,7 +1196,7 @@ def benefit_pp(t, kind):
         if birth_month() < t < foetal_cover_end():
             return neonatal_cost_pp("block") / 12.0
         return 0.0
-    if not born(t) or t >= proj_len():
+    if not born(t) or t >= proj_len() - 1:
         return 0.0
     if kind == "DISABILITY":
         return (sum_assured("disability") * basis_param("disab_severity")
@@ -1238,7 +1252,7 @@ def claim_count_pp(t):
     화상 and 배상책임 — but not hospital days, which are metered rather than counted.  It
     is the exposure the claim handling expense is charged on.
     """
-    if not born(t) or t >= proj_len():
+    if not born(t) or t >= proj_len() - 1:
         return 0.0
     n = inc_rate_mth(t, "disability") + inc_rate_mth(t, "disease_disab")
     for cause in ("cancer", "minor_cancer", "cerebral", "cardiac"):
@@ -1693,7 +1707,7 @@ def expenses(t):
     **[std]**.  The claim handling expense is **not** here: it is :func:`claim_expenses`,
     published in its own column.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     acq = max(0.0, acq_cost_pp() - comm_init_pp()) * pols_if(t) if t == 0 else 0.0
     maint = expense_maint_pp * inflation_factor(t) * pols_if(t)      # noqa: F821
@@ -1708,7 +1722,7 @@ def commissions(t):
     projection that keeps charging it there is charging commission on a premium nobody pays,
     and on this product that would be eighty years of it.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     init = comm_init_pp() * pols_if(t) if t == 0 else 0.0
     renew = (comm_renewal_rate * premiums(t)                         # noqa: F821
@@ -1763,7 +1777,7 @@ def epv_outgo_pp():
     """
     return sum(pv_factor(t) * (claims(t) + claim_expenses(t) + expenses(t)
                                + commissions(t))
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def epv_prem_unit_pp():
@@ -1821,7 +1835,7 @@ def check_pols_roll_fwd():
     residual of the month that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_waiver_split_resid(t):
@@ -1837,7 +1851,7 @@ def check_waiver_split_resid(t):
 def check_waiver_split():
     """True when the paying and waived compartments sum to the in-force block, every month."""
     return all(abs(check_waiver_split_resid(t)) <= roll_fwd_tol      # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_exit_total_resid():
@@ -1849,7 +1863,7 @@ def check_exit_total_resid():
     closes locally at every t and still loses mass at the ends.
     """
     total = sum(pols_void(t) + pols_death(t) + pols_lapse(t) + pols_maturity(t)
-                for t in range(0, proj_len() + 1))
+                for t in range(0, proj_len()))
     return total - pols_if_init()
 
 
@@ -1906,7 +1920,7 @@ def check_once_only_resid(t):
 def check_once_only():
     """True when every 최초 1회한 ledger is a valid, non-increasing probability."""
     return all(check_once_only_resid(t) <= roll_fwd_tol              # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_neonatal_term_resid(t):
@@ -1924,7 +1938,7 @@ def check_neonatal_term_resid(t):
 def check_neonatal_term():
     """True when the 태아 module pays inside its own terms and nowhere else."""
     return all(abs(check_neonatal_term_resid(t)) <= val_tol          # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_cv_floor_resid(t):
@@ -1951,7 +1965,7 @@ def check_cv_floor_resid(t):
 def check_cv_floor():
     """True when the surrender value obeys its form's floor in every projected month."""
     return all(check_cv_floor_resid(t) <= val_tol                    # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_av_bounds_resid(t):
@@ -1973,7 +1987,7 @@ def check_av_bounds_resid(t):
 def check_av_bounds():
     """True when the 계약자적립액 stays inside the bounds its own derivation allows."""
     return all(check_av_bounds_resid(t) <= val_tol                   # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_surr_chg_cap_resid(t):
@@ -1991,7 +2005,7 @@ def check_surr_chg_cap_resid(t):
 def check_surr_chg_cap():
     """True when the surrender charge stays inside the 표준해약공제액 at every duration."""
     return all(check_surr_chg_cap_resid(t) <= val_tol                # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_acq_cost_cap_resid():
@@ -2021,7 +2035,7 @@ def check_refund_grid_resid(t):
     interpolation that is smooth and wrong.
     """
     nodes = (12, 36, 60, 120, 180, 240, 360, 480, 600, 720)
-    if t not in nodes or t > proj_len():
+    if t not in nodes or t >= proj_len():
         return 0.0
     if refund_taper(runoff(t)) < 1.0:
         return 0.0
@@ -2031,7 +2045,7 @@ def check_refund_grid_resid(t):
 def check_refund_grid():
     """True when the 환급률 progression reproduces every published node it reaches."""
     return all(abs(check_refund_grid_resid(t)) <= val_tol            # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_equiv_premium_resid():
@@ -2073,7 +2087,7 @@ def check_net_cf():
     """True when the net cash flow equals the sum of its published columns, every month."""
     tol = val_tol * max(sum_assured("disability"), 1.0)              # noqa: F821
     return all(abs(check_net_cf_resid(t)) <= tol
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 # --- results ---
@@ -2091,7 +2105,7 @@ def result_cf():
     progression, published rather than dropped because the residual 적립부분 is a real
     quantity on a contract whose term ends earlier.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2124,7 +2138,7 @@ def result_pols():
     ``age`` is 보험나이 and ``age_man`` 만나이, printed side by side so that the offset a
     foetal contract carries for its whole life can be read off the table.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2153,7 +2167,7 @@ def result_val():
     ratio the supervisor regulates; on the anchor cell it reproduces the published grid at
     every node.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "cum_prem_pp": [cum_prem_pp(t) for t in ts],

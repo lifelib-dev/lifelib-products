@@ -135,9 +135,15 @@ def mort_anchor_table():
 def lapse_table():
     """The [std] 解約・失効 rates by phase segment, read from *lapse_table.csv*.
 
-    Three segments: ``premium_paying`` carries a duration curve keyed by the first policy
-    year it applies from, ``defer_gap`` the single rate applying through the 据置期間, and
+    Three segments: ``premium_paying`` carries a duration curve keyed by the first year it
+    applies from, ``defer_gap`` the single rate applying through the 据置期間, and
     ``pre_annuitisation`` the zero that must apply from ``t = n - 1``.
+
+    The ``from_year`` key is the model's own **0-based** ``t``, not a 1-based policy-year
+    label: its values on ``premium_paying`` are 0, 1, 2, 3 and 10, and
+    ``Projection.lapse_rate_base`` reads them as a step function of ``t``.  The single
+    ``defer_gap`` and ``pre_annuitisation`` rows are keyed 0 because the segment, not the
+    duration, selects them.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file,                              # noqa: F821
@@ -151,6 +157,11 @@ def pricing_table():
     best-estimate mortality factors, the 基本年金額 rounding step and the loan, dividend and
     dynamic-lapse parameters.  Every row carries its source tag or its **[std]** rationale
     in the ``provenance`` column.
+
+    Two rows are time quantities on the model's 0-based clock: ``loan_draw_year`` = 20 is a
+    value of ``t`` — the row the 契約者貸付 is drawn on, the twenty-first policy year — and
+    ``surr_charge_years`` = 10 is an elapsed count of years, the length of the 解約控除
+    run-off, not a point on the frame.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / pricing_table_file, index_col="item")          # noqa: F821

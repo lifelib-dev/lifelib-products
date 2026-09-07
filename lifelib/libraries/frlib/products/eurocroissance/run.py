@@ -17,18 +17,21 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 t0 = proj.proj_start()
 n = proj.proj_len()
+last = n - 1                      # the frame is t = t0 .. proj_len() - 1
 chassis = ("A (1 deg: euros and parts)" if proj.is_euro_leg()
            else "B (2 deg: parts only)")
 print("model point {}: {} - chassis {}, {}{}, term {} years, in force {}".format(
     point_id, proj.model_point()["policy_id"], chassis, proj.sex(),
     proj.issue_age(), n, proj.duration_inforce()))
+print("projection: t = {} .. {} ({} annual periods; policy year = t + 1)".format(
+    t0, last, last - t0 + 1))
 print("guarantee {:.0%} of net versements = {:,.2f} at t = {}   scenario {}".format(
-    proj.guarantee_rate(), proj.mg(n), n, proj.scenario()))
+    proj.guarantee_rate(), proj.mg(last), last, proj.scenario()))
 print("charges: entry {:.2%}  parts {:.2%} p.a.  performance {:.0%}  exit {:.2%}"
       .format(proj.entry_charge_rate(), proj.parts_charge_rate(),
               proj.perf_charge_rate(), proj.exit_charge_rate()))
-print("part value {:.4f} at inception, floor {:.4f}   i_pm {:.2%} at t = {} "
-      "to {:.2%} at t = {}".format(
+print("part value {:.4f} at inception, floor {:.4f}   i_pm {:.2%} at time {} "
+      "to {:.2%} at time {}".format(
           proj.part_value_init(), proj.min_part_value(), proj.i_pm(t0), t0,
           proj.i_pm(n), n))
 print("decrements {}   partial rachat factor {:.2f}   lock-up {} years".format(
@@ -44,13 +47,14 @@ print()
 print("Cash flows:")
 print(proj.result_cf().round(2).to_string())
 print()
+shock = min(t0 + 5, last)         # the notes' policy-year-6 shock row
 print("Exit values at t = {}: surrender {:,.2f}  death {:,.2f}  "
       "maturity at t = {} {:,.2f}".format(
-          min(t0 + 6, n), proj.surrender_value(min(t0 + 6, n)),
-          proj.death_payout(min(t0 + 6, n)), n, proj.maturity_value(n)))
+          shock, proj.surrender_value(shock),
+          proj.death_payout(shock), last, proj.maturity_value(last)))
 print("Insurer own funds, peak: contribution {:,.2f}   PGT {:,.2f}".format(
-    max(proj.insurer_contribution(t) for t in range(t0, n + 1)),
-    max(proj.pgt(t) for t in range(t0, n + 1))))
+    max(proj.insurer_contribution(t) for t in range(t0, n)),
+    max(proj.pgt(t) for t in range(t0, n))))
 print()
 print("Checks: assets {}  parts {}  guarantee {}  policies {}".format(
     proj.check_assets_roll_fwd(), proj.check_parts_roll_fwd(),

@@ -48,21 +48,25 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Annual steps. ``t`` counts **contract years**, and each ``t`` is
-also the anniversary that ends contract year ``t``, because the notes make the
-anniversary the single event date: every mechanic in the composite is annual — annual
+**Projection basis.** Annual steps. ``t`` is the **0-based period index**: period ``t``
+is contract year ``t + 1``, running from anniversary ``t`` to anniversary ``t + 1``, and
+``t = 0`` is the first contract year of a model point projected from issue. The frame is
+``t = entry_year() … proj_len() - 1``. Every mechanic in the composite is annual — annual
 point-to-point crediting [S2][S4][S10], the rider charge at the end of each contract
-year [S9], the annual benefit base update [S9] and the annual lifetime withdrawal. Note
-the contrast with :mod:`.MYGA_US_S`, whose ``t`` counts **months**: that
-chassis credits daily and needs a grid fine enough to resolve a 30-day window, whereas
-here a monthly grid would buy nothing but the excluded variants (monthly-sum crediting,
-one carrier's monthly charge deduction, daily interim values, mid-year withdrawal
-crediting). **The product assignment table records this product as monthly; its own
-technical notes state annual, and the notes govern.**
+year [S9], the annual benefit base update [S9] and the annual lifetime withdrawal — and
+because the notes make the anniversary the single event date, every flow of period ``t``
+falls at its closing anniversary. Note the contrast with :mod:`.MYGA_US_S`, whose ``t``
+counts **months**: that chassis credits daily and needs a grid fine enough to resolve a
+30-day window, whereas here a monthly grid would buy nothing but the excluded variants
+(monthly-sum crediting, one carrier's monthly charge deduction, daily interim values,
+mid-year withdrawal crediting). **The product assignment table records this product as
+monthly; its own technical notes state annual, and the notes govern.**
 
-``age(t)`` is the attained age **at anniversary** ``t``, ``age_at_entry() + t``, exactly
-as the notes define it — the age that reads the lifetime-withdrawal percentage table.
-Mortality over contract year ``t`` is therefore read one year lower, at ``age(t - 1)``.
+``age(t) = age_at_entry() + t`` is the attained age at anniversary ``t``, the age
+*entering* period ``t``, so mortality over the period reads ``age(t)`` itself. The
+transactions at the closing anniversary are one year older: ``exercise_age(t)`` is the
+age that reads the lifetime-withdrawal percentage table and clears the minimum exercise
+age.
 
 The anniversary's processing order is the notes' own, and every quantity that changes
 inside it is exposed through a ``timing`` argument rather than being buried:
@@ -77,17 +81,18 @@ inside it is exposed through a ``timing`` argument rather than being buried:
 7. phase transition including the depletion test --- ``phase(t)``
 8. decrements --- ``pols_if_at(t, "AFT_DECR")``
 
-``pols_if(t)`` is the in-force count at the **start** of contract year ``t``, the
-library-wide convention set by :mod:`.Term_US_A` and ``savings.CashValue_SE``, and it is
-the weight carried by every cash flow reported on the same row of ``result_cf()``. The
-technical notes define ``l(t)`` the other way round, as the probability at the *end* of
-the year; that quantity is kept as ``pols_if_at(t, "AFT_DECR")``, which is also
-``pols_if(t + 1)``. Neither reading is discarded and the two never share a name.
+``pols_if(t)`` is the in-force count at the **start** of period ``t``, the library-wide
+convention set by :mod:`.Term_US_A` and ``savings.CashValue_SE``, and it is the weight
+carried by every cash flow reported on the same row of ``result_cf()``. Because period
+``t`` opens at anniversary ``t``, it is also the technical notes' own ``l(t)``, the
+probability in force at the end of contract year ``t``; the count leaving the period is
+``pols_if_at(t, "AFT_DECR")``, the notes' ``l(t + 1)``, which is also ``pols_if(t + 1)``.
 
-Steps 1--3 are skipped in ``DEPLETED`` and steps 1--7 in ``TERMINATED``. ``t = 0`` is
-the issue instant for a new-issue model point and carries the premium, the acquisition
-expense and the initial branch of every recursion. A model point may instead be entered
-**in force** at anniversary ``entry_year()`` on stated balances, which is what the
+Steps 1--3 are skipped in ``DEPLETED`` and steps 1--7 in ``TERMINATED``. **There is no
+issue-instant row:** the premium, the premium bonus and the acquisition expense are
+beginning-of-period flows of period ``0`` on a new-issue model point, alongside that
+first contract year's own activity. A model point may instead be entered **in force**
+after ``entry_year()`` completed contract years on stated balances, which is what the
 worked example does and why ``result_cf()`` is indexed from ``entry_year()`` rather than
 always from zero.
 
@@ -191,7 +196,7 @@ new issue with a zero index credit; the depletion arithmetic — $11,997.42 a ye
 exhausted during contract year 19 at attained age 81 — and the survival of the income
 stream after it; the verbatim [S9] excess-withdrawal reduction and the verbatim [S10]
 clawback; the in-force and account-value roll-forwards, both through the no-argument
-``check_pols_roll_fwd()`` and ``check_av_roll_fwd()`` and through the per-anniversary
+``check_pols_roll_fwd()`` and ``check_av_roll_fwd()`` and through the per-period
 ``check_*_resid(t)`` residuals they are built on; that the ``pols_if`` column of
 ``result_cf()`` is the weight carried by the cash flows on its own row; the payment cap
 on the terminating exhaustion branch; and one test per pitfall the notes state as a model

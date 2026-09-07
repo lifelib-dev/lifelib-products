@@ -68,12 +68,14 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps. ``t`` is the policy year, **1-based, counted from
-issue**, so ``age(t) = issue_age() + t - 1`` and ``duration(t) = t - 1`` is what every
-duration-keyed schedule is indexed on. The frame runs ``t = t_start() ... proj_len()``
-contiguously, with ``t_start() = duration_init() + 1`` and ``proj_len() = policy_term()``
-— the **last projected period index**, the year in which the *Ablauf* falls. There is no
-``t = proj_len() + 1`` row. *Beiträge* fall at the start of the year in advance; the
+**Projection basis.** Annual steps. ``t`` is the policy year, **0-based, counted from
+issue**: ``t = 0`` is the first policy year, ``age(t) = issue_age() + t`` and
+``duration(t) = t`` is what every duration-keyed schedule is indexed on, while the
+contractual, 1-based label is ``policy_year(t) = t + 1``. The frame runs
+``t = t_start() ... proj_len() - 1`` contiguously, with ``t_start() = duration_init()`` and
+``proj_len() = policy_term()`` — the **number of policy years counted from ``t = 0``**, so
+the frame's exclusive end, with the *Ablauf* at the end of year ``proj_len() - 1``. There is
+no ``t = proj_len()`` row. *Beiträge* fall at the start of the year in advance; the
 guaranteed *Deckungskapital* rolls forward over the year at the *Rechnungszins*; the
 surplus is declared and credited at the year end on the closing reserve; death, maturity
 and surrender fall at the end of the year, surrender after both the mortality decrement
@@ -97,7 +99,7 @@ from the output.
 
 **Model points.** Fourteen, covering both premium forms, all four payment frequencies with
 the *echte* and *unechte* readings of a sub-annual one, all three *Überschussverwendung*
-systems, an in-force 2012 cohort on a 1,75 % guarantee opening at ``t = 15``, a successful
+systems, an in-force 2012 cohort on a 1,75 % guarantee opening at ``t = 14``, a successful
 and a failing *Beitragsfreistellung*, a non-*gezillmert* tariff, and a short unequal-sums
 contract at a *Risikozuschlag* on the ``nil`` surplus scenario. Model point 1 is the
 anchor cell of the worked example in the technical notes.

@@ -102,11 +102,14 @@ treatment of the 연금수령한도 평가액; and the decision not to round the
   of each year; any policy-loan advance at the start of the draw year; death benefits and
   surrender payments at the **end** of the policy year, **deaths before lapses**.
 - **Time index.** `t` counts completed policy years since issue, **0-based**, matching
-  `product-spec.md`: premiums fall at `t = 0 … m − 1`, the fund accumulates over
-  `t = 0 … n` where `n = m + d`, and the annuity is paid from `t = n`. `pols_if(t)` is the
-  in-force count at the **start** of year `t` and is the weight on that same `result_cf()`
-  row. **`proj_len()` is the last projected index, not a count**: at the anchor cell it is
-  80 and `result_cf()` has 81 rows, `t = 0 … 80`.
+  `product-spec.md`: the first projected policy year is `t = 0`, premiums fall at
+  `t = 0 … m − 1`, the fund accumulates over `t = 0 … n` where `n = m + d`, and the annuity
+  is paid from `t = n`. The **contractual policy year is the 1-based label `t + 1`**, so
+  「제1보험년도」 is `t = 0`. `pols_if(t)` is the in-force count at the **start** of year `t`
+  and is the weight on that same `result_cf()` row. **`proj_len()` is the number of
+  projected years — the exclusive end of the frame, not the last index**: the frame is
+  `t = 0 … proj_len() − 1`, and at the anchor cell `proj_len()` is 81 and `result_cf()` has
+  81 rows, `t = 0 … 80`.
 - **Age basis: 보험나이.** Every age in the contract is 보험나이 (*boheom nai*, insurance
   age): the exact age at the 계약일 with a remainder under six months discarded and six
   months or more rounded up, incrementing on each 계약해당일 [S6 제20조]
@@ -130,12 +133,12 @@ treatment of the 연금수령한도 평가액; and the decision not to round the
   cell.** Nine points ship. No aggregation logic is specified here.
 - **Termination and horizon.** The contract does not mature: **there is no 만기보험금 and
   no maturity date**, because the deferral phase ends by conversion rather than by payment.
-  On the 확정기간연금형 form the horizon is `n + k − 1`, the last instalment, and there are
-  no tail states. On the 종신연금형 form there is no natural end, so the horizon is the
-  terminal age of the annuitant table less the issue age — `proj_len = ω − x` = 120 − 40 =
-  80 at the anchor cell, ω = 120 being a **[std, new here]** choice, since no Korean
-  industry table publishes a terminal age any more than it publishes its rates
-  [REG-R33] [REG-R34].
+  On the 확정기간연금형 form the last projected year is `n + k − 1`, the last instalment, so
+  `proj_len = n + k` and there are no tail states. On the 종신연금형 form there is no
+  natural end, so the last projected year is the terminal age of the annuitant table less
+  the issue age, `t = ω − x` — `proj_len = ω − x + 1` = 120 − 40 + 1 = 81 at the anchor
+  cell, ω = 120 being a **[std, new here]** choice, since no Korean industry table
+  publishes a terminal age any more than it publishes its rates [REG-R33] [REG-R34].
 - **Contract boundary.** The 기본보험료 is level and guaranteed for the whole 납입기간 with
   no review right [S1] [S2] [S4] [S6] [S7], so all `m` premiums sit inside any defensible
   boundary and the model projects them. The harder question on this chassis is the other
@@ -191,7 +194,7 @@ composite is one contract and the variations are model point values, not code br
 `Y ≠ x + m + d`, because two spellings of one date is how a projection silently annuitises
 in the wrong year — and `n`, `prem_end_t` and `proj_len` are derived from it. At the anchor
 cell `prem_end_t() = 20`, `annuitisation_t() = 25`, `annuity_age_eff() = 65` and
-`proj_len() = 80`.
+`proj_len() = 81`, so the last projected year is `t = 80`.
 
 The anchor premium is not a modelling invention. It is the annualisation of a published
 illustration at an identical model point — 남자 40세, 기본보험료 월 500,000원, 20년납,
@@ -420,7 +423,7 @@ comparison table could not be opened [S19], and the behavioural tables in the 20
 whitepaper sit in attachments that did not convert [R13]. The reference vector is therefore
 **[std]** and is argued from the contract:
 
-| Policy year `t` | 0 | 1 | 2 | 3–4 | 5–9 | 10 – (m−1) | m … n−1 | ≥ n |
+| Policy year index `t` (0-based) | 0 | 1 | 2 | 3–4 | 5–9 | 10 – (m−1) | m … n−1 | ≥ n |
 |---|---|---|---|---|---|---|---|---|
 | `lapse_rate(t)`, `pension` **[std]** | 4.0% | 3.5% | 3.0% | 2.5% | 2.0% | 1.5% | 1.0% | 0% |
 | `lapse_rate(t)`, `savings` **[std]** | 8.0% | 7.0% | 6.0% | 5.0% | 4.0% | 3.0% | 2.0% | 0% |
@@ -479,7 +482,7 @@ tax effect, and no public frequency exists for any of them.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy year, 0-based; attained 보험나이 in year `t` is `x + t` |
+| `t` | policy year index, 0-based: `t = 0, 1, …, proj_len − 1`; the contractual policy year is `t + 1`; attained 보험나이 in year `t` is `x + t` |
 | `x`, `m`, `d`, `h` | 가입나이; 납입기간; the 납입완료 → 연금개시 gap; 납입유예 length |
 | `n` | `= m + h + d`, the policy year of the 연금개시일 |
 | `k`, `g` | 확정기간연금형 term; 보증지급기간 of the 종신연금형 |
@@ -910,7 +913,8 @@ after; `u(t)` = **0.990316187680581**; `θ` = 0.5%; `f` = 12 both ways; `E0` = �
 `e(t)` = ₩30,000 in deferral and ₩20,000 in payment, `π` = 2%, `ec` = ₩30,000, commission
 nil; mortality 1.15 × the [std] `annuitant_issue` male table, `q(0)` = 0.0008065180 (table
 0.00070132) and `q(25)` = 0.0028596130 (table 0.00248662); lapse 4.0 / 3.5 / 3.0 / 2.5 /
-2.0 / 1.5 / 1.0 / 0%; ω = 120, so `proj_len()` = **80** and `result_cf()` has **81 rows**.
+2.0 / 1.5 / 1.0 / 0%; ω = 120, so `proj_len()` = **81** and `result_cf()` has **81 rows**,
+`t` = 0 … 80.
 
 The premium net of both charges is therefore
 
@@ -1216,15 +1220,15 @@ is a mechanics demonstration and not a pricing result.
 
 | # | sex | x | m | d | n | Y | `P` | form | vintage | `proj_len` | `F` | `ä` | `B` | Σ `net_cf` |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | M | 40 | 20 | 5 | 25 | 65 | 6,000,000 | 종신 g=10 | issue | 80 | 160,294,805.59 | 23.58192 | 6,763,374.59 | −68,516,344.57 |
-| 2 | F | 40 | 20 | 5 | 25 | 65 | 6,000,000 | 종신 g=10 | issue | 80 | 160,294,805.59 | 25.26673 | 6,312,383.96 | −73,799,636.48 |
-| 3 | M | 45 | 20 | 0 | 20 | 65 | 3,600,000 | 종신 g=20 | issue | 75 | 86,587,174.54 | 24.08957 | 3,576,412.79 | −34,649,402.87 |
-| 4 | F | 25 | 20 | 15 | 35 | 60 | 1,200,000 | 확정 k=20 | issue | 54 | 39,568,543.38 | 16.30428 | 2,414,746.68 | −16,598,163.32 |
-| 5 | M | 30 | 10 | 20 | 30 | 60 | 12,000,000 | 확정 k=10 | issue | 39 | 194,438,355.78 | 9.01595 | 21,458,209.25 | −45,678,507.48 |
-| 6 | F | 50 | 5 | 0 | 5 | 55 | 6,000,000 | 확정 k=15 | issue | 19 | **30,030,000.00** | 13.94004 | 2,143,455.00 | −2,440,820.60 |
-| 7 | M | 40 | 20 | 5 | 25 | 65 | 6,000,000 | 종신 g=10 | commencement | 80 | 160,294,805.59 | 24.30417 | 6,562,384.22 | −70,853,187.86 |
-| 8 | M | 40 | 20 | 5 | 25 | 65 | 6,000,000 + 6,000,000 | 종신 g=10 | issue | 80 | 326,721,162.46 | 23.58192 | 13,785,459.86 | −141,563,203.47 |
-| 9 | M | 40 | 20 | 5 | 27 | 65 | 6,000,000 | 종신 g=10 | ratchet | 80 | 162,892,867.42 | 22.70113 | 4,266,770.29 | −37,607,123.25 |
+| 1 | M | 40 | 20 | 5 | 25 | 65 | 6,000,000 | 종신 g=10 | issue | 81 | 160,294,805.59 | 23.58192 | 6,763,374.59 | −68,516,344.57 |
+| 2 | F | 40 | 20 | 5 | 25 | 65 | 6,000,000 | 종신 g=10 | issue | 81 | 160,294,805.59 | 25.26673 | 6,312,383.96 | −73,799,636.48 |
+| 3 | M | 45 | 20 | 0 | 20 | 65 | 3,600,000 | 종신 g=20 | issue | 76 | 86,587,174.54 | 24.08957 | 3,576,412.79 | −34,649,402.87 |
+| 4 | F | 25 | 20 | 15 | 35 | 60 | 1,200,000 | 확정 k=20 | issue | 55 | 39,568,543.38 | 16.30428 | 2,414,746.68 | −16,598,163.32 |
+| 5 | M | 30 | 10 | 20 | 30 | 60 | 12,000,000 | 확정 k=10 | issue | 40 | 194,438,355.78 | 9.01595 | 21,458,209.25 | −45,678,507.48 |
+| 6 | F | 50 | 5 | 0 | 5 | 55 | 6,000,000 | 확정 k=15 | issue | 20 | **30,030,000.00** | 13.94004 | 2,143,455.00 | −2,440,820.60 |
+| 7 | M | 40 | 20 | 5 | 25 | 65 | 6,000,000 | 종신 g=10 | commencement | 81 | 160,294,805.59 | 24.30417 | 6,562,384.22 | −70,853,187.86 |
+| 8 | M | 40 | 20 | 5 | 25 | 65 | 6,000,000 + 6,000,000 | 종신 g=10 | issue | 81 | 326,721,162.46 | 23.58192 | 13,785,459.86 | −141,563,203.47 |
+| 9 | M | 40 | 20 | 5 | 27 | 65 | 6,000,000 | 종신 g=10 | ratchet | 81 | 162,892,867.42 | 22.70113 | 4,266,770.29 | −37,607,123.25 |
 
 Four of them are worth a sentence. **Point 2** is the anchor cell's twin with the sex
 switched: the same fund buys a factor of 25.26673 instead of 23.58192 and an annuity
@@ -1445,8 +1449,9 @@ each is checkable against the shipped model.
     ₩6,000,000 — and 주6 then subtracts the discounted acquisition loading. Using the gross
     premium gives ₩2,160,000 before 주6 against ₩2,007,720, a 7.6% overstatement of a cap
     that is meant to bind.
-17. **Reading `proj_len()` as a count.** It is the **last index**: 80 at the anchor cell,
-    with 81 rows in `result_cf()`. Off-by-one here silently drops the terminal row, which on
+17. **Reading `proj_len()` as the last index.** It is a **count** — the exclusive end of the
+    frame: 81 at the anchor cell, with 81 rows in `result_cf()` running `t` = 0 … 80, so the
+    last index is `proj_len() − 1`. Off-by-one here silently drops the terminal row, which on
     the life form is where the last survivors die.
 18. **Assuming the 100.1% floor protects a death claim.** It is a **survival** guarantee
     applied once, at `t = n`, to a policy in force; a death in deferral is paid the fund,

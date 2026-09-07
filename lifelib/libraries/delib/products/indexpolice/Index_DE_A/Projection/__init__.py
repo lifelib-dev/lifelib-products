@@ -11,17 +11,18 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 8            # or switch the default
 
-``t`` counts **policy years from issue**, 1-based: policy year ``t`` runs from the
-``(t-1)``-th anniversary to the ``t``-th and covers attained age ``entry_age + t - 1``.
-A **new-business** point starts at ``t = 1``; an **in-force** point starts at
-``t = dur_init + 1``, because ``t`` is the policy's own duration and not an offset from
-the valuation date. ``proj_len() = ann_start_age - entry_age`` is the **last projected
-policy year** in either case — the library's reading of ``proj_len()``, so
-``result_cf().index[-1] == proj_len()`` and the frame of an in-force point at
+``t`` counts **policy years from issue**, 0-based: period ``t`` runs from the ``t``-th
+anniversary to the ``(t+1)``-th and covers attained age ``entry_age + t``.  The
+contractual label is ``policy year = t + 1``, and it is derived, never indexed by.  A
+**new-business** point starts at ``t = 0``; an **in-force** point starts at
+``t = dur_init``, because ``t`` is the policy's own elapsed duration and not an offset
+from the valuation date. ``proj_len() = ann_start_age - entry_age`` is the **number of
+projected policy years** counted from ``t = 0`` — the exclusive end of the frame, so
+``result_cf().index[-1] == proj_len() - 1`` and the frame of an in-force point at
 ``dur_init = 8`` has 19 rows while still reporting ``proj_len() = 27``.
 
-At the end of policy year ``proj_len()`` the accumulation contract ends: the capital
-falls due at *Rentenbeginn* as ``claims(n, "MATURITY")``, and whether it is taken as a
+At the end of period ``proj_len() - 1`` the accumulation contract ends: the capital falls
+due at *Rentenbeginn* as ``claims(n - 1, "MATURITY")``, and whether it is taken as a
 *Kapitalabfindung* or converted at the *Rentenfaktor* changes what is **reported**, not
 the cash flow. The *Rentenphase* itself is ``products/sofortrente/``.
 
@@ -67,9 +68,10 @@ instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ===========================
 (none)                     model_point()                   The selected model point row
-n = ann_start - entry      proj_len()                      Last projected policy year
-t0 = dur_init + 1          t_start()                       First projected policy year
-x(t)                       age(t)                          Attained age in year t
+n = ann_start - entry      proj_len()                      Number of projected policy
+                                                           years; last index is n - 1
+t0 = dur_init              t_start()                       First projected index
+x(t)                       age(t)                          Attained age in period t
 l(t)                       pols_if(t)                      In force at the start of t
 l(t)(1-q), l(t+1)          pols_if_at(t, timing)           BEF_DECR / AFT_DEATH /
                                                            AFT_LAPSE
@@ -115,7 +117,7 @@ D(t)                       db_pp(t)                        Death benefit
 V(t)                       cv_pp(t)                        Surrender value
 (169 Abs. 3)               min_surr_pp(t)                  Minimum surrender value
 (Stornoabzug)              surr_charge_pp(t)               Surrender charge
-M(n)                       mat_pp(t)                       Benefit at Rentenbeginn
+M(n-1)                     mat_pp(t)                       Benefit at Rentenbeginn
 claims_death, ...          claims(t, kind)                 Benefit outgo by kind
 (released)                 av_released(t)                  Account taken out by the exits
 E(t)                       expenses(t)                     Insurer expense outgo
@@ -138,8 +140,8 @@ limitation of the reference implementation, not an oversight.
 
 **Step 2 of the annual processing order:** the participating base is struck on the
 **opening** balance, ``index_base_pp(t) = av_pp(t)``, *before* the year's premium. That
-is why a new-business point credits nothing in policy year 1 however well the index does,
-and it is a **[std]** reading — whether the base is the whole *Deckungskapital*, an
+is why a new-business point credits nothing in its first year ``t = 0`` however well the
+index does, and it is a **[std]** reading — whether the base is the whole *Deckungskapital*, an
 index-participating sub-account or the accumulated *Überschussguthaben* alone was not
 established, and a different reading rescales every credit in the model.
 
@@ -155,7 +157,7 @@ The asymmetry that follows is the product's own rule, and a model that pays two 
 the same instant the same amount has lost it: death and surrender are struck on
 ``av_pp_at(t, "AFT_GUAR")``, the account **before** the year's credits, because a
 mid-year exit forfeits the running *Indexjahr* **[std]**; the maturity is struck on
-``av_pp(n + 1)``, **including** them, because that contract ran the *Indexjahr* to its
+``av_pp(n)``, **including** them, because that contract ran the *Indexjahr* to its
 end, and it is then floored at the *Beitragsgarantie* plus the whole locked-in ledger.
 
 .. rubric:: What is deliberately not here
@@ -219,8 +221,9 @@ def entry_age():
 def dur_init():
     """Completed policy years at the valuation date; 0 for new business.
 
-    The frame starts at ``t_start() = dur_init() + 1``, because ``t`` is the policy's own
-    duration.  An in-force point brings its state with it — ``av_pp_init``,
+    The frame starts at ``t_start() = dur_init()``, because ``t`` is the policy's own
+    elapsed duration and both are 0-based counts of completed years.  An in-force point
+    brings its state with it — ``av_pp_init``,
     ``guar_locked_init``, ``prem_paid_init`` — rather than having it re-derived, which is
     what makes the in-force cells independent evidence about the recursion rather than a
     replay of it.
@@ -372,37 +375,39 @@ def surr_charge_on():
 # --- the frame ---------------------------------------------------------------
 
 def t_start():
-    """``t0``: the first projected policy year, ``dur_init() + 1``.
+    """``t0``: the first projected index, ``dur_init()`` — the elapsed policy years.
 
-    New business starts at 1; an in-force point starts partway through its own term.  The
-    frame's *start* is a product fact and is not fixed per model, which is why the
-    conventions suite asserts contiguity and the last index rather than the first.
+    New business starts at 0; an in-force point starts partway through its own term, at
+    the count of policy years it has already completed.  The frame's *start* is a product
+    fact and is not fixed per model, which is why the conventions suite asserts contiguity
+    and the last index rather than the first.
     """
-    return dur_init() + 1
+    return dur_init()
 
 
 def proj_len():
-    """``n``: the **last projected policy year**, ``ann_start_age() - entry_age()``.
+    """``n``: the **number of projected policy years**, ``ann_start_age() - entry_age()``.
 
-    The library's reading of ``proj_len()``, inherited from frlib and asserted in the
-    conventions suite: ``result_cf().index[-1] == proj_len()``, whether the frame is
-    0-based or 1-based and wherever it starts.  It is **not** a row count — an in-force
-    point at ``dur_init = 8`` publishes 19 rows and still reports 27.
+    Counted from ``t = 0`` and therefore the **exclusive end** of the frame, the library's
+    reading and lifelib's own: ``result_cf()`` covers ``t = t_start() ... proj_len() - 1``,
+    so ``result_cf().index[-1] == proj_len() - 1``.  It is **not** the row count of an
+    in-force point — one at ``dur_init = 8`` publishes 19 rows and still reports 27.
 
-    Policy year ``n`` ends at *Rentenbeginn*, when the capital falls due.  There is no
-    policy year ``n + 1``: ``pols_if(n + 1)`` is zero because the whole surviving cohort
-    has matured, while ``av_pp(n + 1)`` and ``guar_cap_pp(n + 1)`` are defined, being the
-    per-policy amounts the maturity benefit is struck on.
+    Period ``n - 1`` is the last policy year and ends at *Rentenbeginn*, at time ``n``,
+    when the capital falls due.  There is no period ``n``: ``pols_if(n)`` is zero because
+    the whole surviving cohort has matured, while ``av_pp(n)`` and ``guar_cap_pp(n)`` are
+    defined, being the time-``n`` per-policy amounts the maturity benefit is struck on.
     """
     return ann_start_age() - entry_age()
 
 
 def age(t):
-    """``x(t)``: the attained age in policy year t, ``entry_age() + t - 1``.
+    """``x(t)``: the attained age in period t, ``entry_age() + t``.
 
-    Age last birthday, the basis the delib registry fixes for the whole library.
+    Age last birthday, the basis the delib registry fixes for the whole library.  ``t`` is
+    0-based, so this is the age at the start of contractual policy year ``t + 1``.
     """
-    return entry_age() + t - 1
+    return entry_age() + t
 
 
 # --- the premium and its charges ---------------------------------------------
@@ -438,22 +443,23 @@ def freq_load():
 
 
 def prem_base_pp(t):
-    """``P_b(t)``: the annual-mode premium due in policy year t, per policy.
+    """``P_b(t)``: the annual-mode premium due in period t, per policy.
 
-    The level form pays ``prem_gross_pp`` in every policy year up to ``prem_term_y()``,
-    which may be shorter than the projection — model point 13 stops paying at year 12 and
-    runs to year 22.  The single form pays the whole premium in the first projected year
-    and nothing afterwards.
+    The level form pays ``prem_gross_pp`` in the first ``prem_term_y()`` policy years,
+    i.e. at ``t < prem_term_y()``, which may be shorter than the projection — model point
+    13 stops paying after policy year 12 (``t = 11``) and runs to policy year 22.  The
+    single form pays the whole premium in the first projected period and nothing
+    afterwards.
     """
-    if t < t_start() or t > proj_len():
+    if t < t_start() or t >= proj_len():
         return 0.0
     if prem_form() == "single":
         return float(model_point()["prem_gross_pp"]) if t == t_start() else 0.0
-    return float(model_point()["prem_gross_pp"]) if t <= prem_term_y() else 0.0
+    return float(model_point()["prem_gross_pp"]) if t < prem_term_y() else 0.0
 
 
 def prem_gross_pp(t):
-    """``P(t)``: the premium actually collected in policy year t, ``P_b(t) x phi``.
+    """``P(t)``: the premium actually collected in period t, ``P_b(t) x phi``.
 
     Annual in advance, at the start of the policy year.  This is the amount that reaches
     :func:`premiums` and out of which the contractual charges are taken; the amount that
@@ -463,25 +469,26 @@ def prem_gross_pp(t):
 
 
 def prem_charge_acq_pp(t):
-    """``alpha(t)``: the acquisition charge deducted from the premium in policy year t.
+    """``alpha(t)``: the acquisition charge deducted from the premium in period t.
 
     ``min(acq_cost_rate, zill_cap_rate) x BS`` spread evenly over the first
-    ``min(zill_years, prem_term_y())`` premium-paying years — 2.5 % of the *Beitragssumme*
-    at the DeckRV *Höchstzillmersatz* of 25 per mille, over five years, so 324.00 EUR a
-    year on the anchor's 64,800.00 EUR.  On a single premium it is taken in full in the
-    first projected year, there being only one premium to take it from.
+    ``min(zill_years, prem_term_y())`` premium-paying years, i.e. over ``t < spread`` —
+    2.5 % of the *Beitragssumme* at the DeckRV *Höchstzillmersatz* of 25 per mille, over
+    five years, so 324.00 EUR a year on the anchor's 64,800.00 EUR.  On a single premium
+    it is taken in full in the first projected period, there being only one premium to
+    take it from.
 
     This is a **charge**, a deduction from the policyholder's account.  The insurer's own
     acquisition **expense** is :func:`exp_acq_pp`, falls in one lump at inception, and is
     the *Zillmer* strain the five-year recovery works off.
     """
-    if t < t_start() or t > proj_len():
+    if t < t_start() or t >= proj_len():
         return 0.0
     charge = min(acq_cost_rate, zill_cap_rate) * prem_sum()          # noqa: F821
     if prem_form() == "single":
         return charge if t == t_start() else 0.0
     spread = min(zill_years, prem_term_y())                          # noqa: F821
-    return charge / spread if t <= spread else 0.0
+    return charge / spread if t < spread else 0.0
 
 
 def prem_charge_acq_min_pp(t):
@@ -497,13 +504,13 @@ def prem_charge_acq_min_pp(t):
     A single premium is taken once, so there is no second premium over which to spread
     anything and the two profiles coincide there by construction rather than by parameter.
     """
-    if t < t_start() or t > proj_len():
+    if t < t_start() or t >= proj_len():
         return 0.0
     charge = min(acq_cost_rate, zill_cap_rate) * prem_sum()          # noqa: F821
     if prem_form() == "single":
         return charge if t == t_start() else 0.0
     spread = min(5, prem_term_y())
-    return charge / spread if t <= spread else 0.0
+    return charge / spread if t < spread else 0.0
 
 
 def prem_charge_adm_pp(t):
@@ -536,10 +543,10 @@ def prem_to_av(t):
 
 
 def prem_paid_pp(t):
-    """``Pi(t)``: cumulative annual-mode premiums paid to the **start** of policy year t.
+    """``Pi(t)``: cumulative annual-mode premiums paid to time t, the start of period t.
 
-    Starts at ``prem_paid_init()`` and adds ``P_b(t)`` each year, so ``Pi(n + 1)`` is the
-    whole *Beitragssumme* for a policy that pays throughout.  Non-decreasing by
+    Starts at ``prem_paid_init()`` and adds ``P_b(t)`` each year, so ``Pi(n)`` — the value
+    at *Rentenbeginn* — is the whole *Beitragssumme* for a policy that pays throughout.  Non-decreasing by
     construction, which is half of why :func:`guar_cap_pp` is monotone.
     """
     if t <= t_start():
@@ -548,11 +555,11 @@ def prem_paid_pp(t):
 
 
 def premiums(t):
-    """Premium income in policy year t, an inflow: ``P(t) x l(t)``.
+    """Premium income in period t, an inflow: ``P(t) x l(t)``.
 
     Annual in advance on the opening in-force.  Not further multiplied by ``(1 - q_d)``:
-    decrements fall at the **end** of the year, so a life that dies in year t has paid
-    year t's premium, and applying the cessation rule here as well would understate income.
+    decrements fall at the **end** of the year, so a life that dies in period t has paid
+    period t's premium, and applying the cessation rule here as well would understate income.
     """
     return prem_gross_pp(t) * pols_if(t)
 
@@ -560,7 +567,7 @@ def premiums(t):
 # --- the surplus, the election and the option budget -------------------------
 
 def surplus_rate(t):
-    """``b(t)``: the declared *Überschussanteilsatz* for policy year t.
+    """``b(t)``: the declared *Überschussanteilsatz* for period t.
 
     2.50 % a year of ``G(t)``, level over the projection **[std]**.  **This rate is the
     option budget.**  The insurer earns a return on the *Sicherungsvermögen*, the MindZV
@@ -595,9 +602,9 @@ def index_base_pp(t):
     """``G(t)``: the participating capital of *Indexjahr* t — the **opening** balance.
 
     ``av_pp(t)``, struck **before** the year's premium and before the year's charges.
-    Two consequences, both intended: a new-business point credits nothing in policy year 1
-    however well the index does, because the base is zero; and a premium paid during a
-    year participates only from the following one.
+    Two consequences, both intended: a new-business point credits nothing in its first
+    period ``t = 0`` however well the index does, because the base is zero; and a premium
+    paid during a year participates only from the following one.
 
     Whether the base is the whole *Deckungskapital*, a defined index-participating
     sub-account or the accumulated *Überschussguthaben* alone **was not established** for
@@ -751,10 +758,10 @@ def index_credit_pp(t):
     the *Höchststandsicherung*, and it is what makes a year-by-year floor add up to a
     path-independent guarantee.
 
-    Zero in policy year 1 of a new-business point even when ``index_credit_rate(1)`` is
-    positive, because ``G(1) = 0``.
+    Zero in the first period of a new-business point even when ``index_credit_rate(0)`` is
+    positive, because ``G(0) = 0``.
     """
-    if t < t_start() or t > proj_len():
+    if t < t_start() or t >= proj_len():
         return 0.0
     return index_credit_rate(t) * elect_index(t) * index_base_pp(t)
 
@@ -786,20 +793,21 @@ def index_budget_ratio():
     Returns 0.0 where nothing was elected to the index arm, there being no budget to
     compare against.
     """
-    budget = sum(opt_budget_pp(t) for t in range(t_start(), proj_len() + 1))
+    budget = sum(opt_budget_pp(t) for t in range(t_start(), proj_len()))
     if budget <= 0.0:
         return 0.0
-    credits = sum(index_credit_pp(t) for t in range(t_start(), proj_len() + 1))
+    credits = sum(index_credit_pp(t) for t in range(t_start(), proj_len()))
     return credits / budget
 
 
 # --- the account -------------------------------------------------------------
 
 def av_pp(t):
-    """``A(t)``: the *Deckungskapital* per policy at the **start** of policy year t.
+    """``A(t)``: the *Deckungskapital* per policy at time t, the **start** of period t.
 
     ``av_pp_init()`` at ``t_start()``, then ``av_pp_at(t - 1, "AFT_CREDIT")``.  Defined at
-    ``t = proj_len() + 1``, where it is the balance the maturity benefit is struck on.
+    ``t = proj_len()``, *Rentenbeginn*, where it is the balance the maturity benefit is
+    struck on.
 
     **Not monotone, and it must not be asserted to be.**  What ratchets is the ledger of
     credits, not the balance: with the reserve charge at or above the guaranteed rate the
@@ -807,7 +815,7 @@ def av_pp(t):
     cohort once its premiums stop.  Testing the lock-in as "the account never falls" is a
     numbered pitfall.
     """
-    if t < t_start() or t > proj_len() + 1:
+    if t < t_start() or t > proj_len():
         return 0.0
     if t == t_start():
         return av_pp_init()
@@ -815,7 +823,7 @@ def av_pp(t):
 
 
 def av_pp_at(t, timing):
-    """The *Deckungskapital* per policy at a point inside policy year t.
+    """The *Deckungskapital* per policy at a point inside period t.
 
     ``"BEF_PREM"``
         ``A(t)``, the opening balance — and the base ``G(t)`` the *Indexjahr*
@@ -853,7 +861,7 @@ def av_pp_at(t, timing):
 
 
 def av_charge_pp(t):
-    """``F(t)``: the reserve charge, ``gamma`` on the post-premium balance.
+    """``F(t)``: the reserve charge of period t, ``gamma`` on the post-premium balance.
 
     0.25 % a year of ``av_pp_at(t, "AFT_PREM")`` **[std]** — *Verwaltungskosten* taken
     from the account rather than from the premium.  A **charge**, not an expense: it
@@ -868,7 +876,7 @@ def av_charge(t):
 
 
 def guar_int_pp(t):
-    """``I(t)``: the guaranteed interest of policy year t, ``i_g`` on the post-charge balance.
+    """``I(t)``: the guaranteed interest of period t, ``i_g`` on the post-charge balance.
 
     The *Rechnungszins* of the policy's own cohort.  This is the **only** interest an
     Indexpolice credits in the index arm: the declared surplus is not added on top of it,
@@ -899,9 +907,9 @@ def av_at(t, timing):
 
 
 def av(t):
-    """The *Deckungskapital* at fund level at the start of policy year t: ``A(t) x l(t)``.
+    """The *Deckungskapital* at fund level at time t, the start of period t: ``A(t) x l(t)``.
 
-    Zero at ``t = proj_len() + 1``, the whole surviving cohort having matured — which is
+    Zero at ``t = proj_len()``, the whole surviving cohort having matured — which is
     why :func:`check_av_roll_fwd` closes in the final year only if the maturity is
     accounted for in :func:`av_released`.
 
@@ -912,7 +920,7 @@ def av(t):
 
 
 def av_released(t):
-    """The account the year's exits carry **out of the fund** in policy year t.
+    """The account the year's exits carry **out of the fund** in period t.
 
     ``av_pp_at(t, "AFT_GUAR") x (pols_death(t) + pols_lapse(t)) + av_pp(t + 1) x
     pols_maturity(t)``: deaths and surrenders take the balance before the year's credits,
@@ -943,7 +951,7 @@ def av_min_pp(t):
     the model point table.  That understates the floor for a policy whose first five years
     are behind it, and it is a stated simplification rather than a claim.
     """
-    if t < t_start() or t > proj_len() + 1:
+    if t < t_start() or t > proj_len():
         return 0.0
     if t == t_start():
         return av_pp_init()
@@ -951,7 +959,7 @@ def av_min_pp(t):
 
 
 def av_min_pp_at(t, timing):
-    """The shadow account at a point inside policy year t; timings as :func:`av_pp_at`.
+    """The shadow account at a point inside period t; timings as :func:`av_pp_at`.
 
     Identical in structure, so that a reader comparing the two accounts is comparing one
     number — the acquisition charge — and not two recursions.
@@ -993,12 +1001,12 @@ def credit_cum_pp(t):
 
 
 def guar_floor_pp(t):
-    """The *Beitragsgarantie* accrued to the start of policy year t.
+    """The *Beitragsgarantie* accrued to time t, the start of period t.
 
     ``guar_level() x prem_paid_pp(t)`` — a fraction of the premiums **actually paid so
     far**, so it grows with the premium stream and is complete only once the last premium
     is in.  On the anchor it reaches ``0.90 x 64,800.00 = 58,320.00 EUR`` at
-    ``t = proj_len() + 1``.
+    ``t = proj_len()``.
     """
     return guar_level() * prem_paid_pp(t)
 
@@ -1023,7 +1031,7 @@ def guar_cap_pp(t):
 # --- decrements --------------------------------------------------------------
 
 def mort_rate(t):
-    """``q_d(t)``: the annual death rate at the attained age of policy year t.
+    """``q_d(t)``: the annual death rate at the attained age of period t.
 
     A **[std]** Gompertz proxy anchored at ``qx(M, 40) = 0.001200``; DAV 2008 T and DAV
     2004 R are proprietary and are cited by name rather than shipped.  Mortality here is a
@@ -1034,10 +1042,11 @@ def mort_rate(t):
 
 
 def lapse_rate_base(t):
-    """The table surrender rate for policy year t, **before** the terminal-year override.
+    """The table surrender rate for period t, **before** the terminal-year override.
 
-    5 % in years 1-2, 3 % in years 3-11, **6 % in year 12**, 2 % from year 13 **[std]**.
-    The year-12 step is the § 20 Abs. 1 Nr. 6 EStG threshold, at which only half the
+    5 % in policy years 1-2 (``t = 0, 1``), 3 % in policy years 3-11, **6 % in policy year
+    12** (``t = 11``), 2 % from policy year 13 **[std]**; the table is keyed on the 0-based
+    ``t`` directly.  The year-12 step is the § 20 Abs. 1 Nr. 6 EStG threshold, at which only half the
     *Unterschiedsbetrag* becomes taxable and at the personal rate rather than by final
     withholding — the strongest single driver of German surrender behaviour, and the reason
     a rate flat in duration is a numbered pitfall.  The mean over the anchor's 27 years is
@@ -1047,46 +1056,46 @@ def lapse_rate_base(t):
 
 
 def lapse_rate(t):
-    """``w_l(t)``: the surrender rate actually applied in policy year t.
+    """``w_l(t)``: the surrender rate actually applied in period t.
 
-    :func:`lapse_rate_base` except in the final policy year, where it is **0** **[std]**:
-    the end of policy year ``n`` *is* *Rentenbeginn*, so a surrender and a maturity would
-    be the same event at the same instant, and the whole surviving cohort is booked as a
-    maturity.
+    :func:`lapse_rate_base` except in the final period ``t = proj_len() - 1``, where it is
+    **0** **[std]**: the end of that period *is* *Rentenbeginn*, so a surrender and a
+    maturity would be the same event at the same instant, and the whole surviving cohort
+    is booked as a maturity.
 
     Unlike a term product, where the two paid the same nothing, **here they pay different
     amounts** — a surrender carries the *Stornoabzug* and forfeits the running *Indexjahr*,
     a maturity carries neither and takes the *Beitragsgarantie* floor — so this convention
     moves real money and is a modelling decision rather than bookkeeping.
     """
-    if t == proj_len():
+    if t == proj_len() - 1:
         return 0.0
     return lapse_rate_base(t)
 
 
 def pols_if(t):
-    """``l(t)``: policies in force at the **start** of policy year t.
+    """``l(t)``: policies in force at time t, the **start** of period t.
 
     ``pols_if_init()`` at ``t_start()``, then ``pols_if_at(t - 1, "AFT_LAPSE")``.  This is
     the weight on every cash flow of the same ``result_cf()`` row, which is what makes it a
     start-of-period count: no decrement has been applied when a period opens, so the frame
     opens at ``pols_if_init()`` exactly.
 
-    ``pols_if(proj_len() + 1)`` is **zero**, not the surviving cohort: at the end of the
-    last policy year the survivors mature and leave through :func:`pols_maturity`.  Zero
-    outside ``t_start() .. proj_len() + 1``.
+    ``pols_if(proj_len())`` is **zero**, not the surviving cohort: at the end of the last
+    period the survivors mature and leave through :func:`pols_maturity`.  Zero outside
+    ``t_start() .. proj_len()``.
     """
-    if t < t_start() or t > proj_len() + 1:
+    if t < t_start() or t > proj_len():
         return 0.0
     if t == t_start():
         return pols_if_init()
-    if t == proj_len() + 1:
+    if t == proj_len():
         return 0.0
     return pols_if_at(t - 1, "AFT_LAPSE")
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     ``"BEF_DECR"``
         ``l(t)``, the start of the year, before any decrement — the same
@@ -1100,7 +1109,7 @@ def pols_if_at(t, timing):
 
     ``"AFT_LAPSE"``
         after both, and so the population the *Indexjahr* credit is given to.
-        In the final policy year the surrender rate is zero, so this is the
+        In the final period the surrender rate is zero, so this is the
         maturing cohort.
     """
     if timing == "BEF_DECR":
@@ -1113,26 +1122,26 @@ def pols_if_at(t, timing):
 
 
 def pols_death(t):
-    """``l(t) q_d(t)``: expected deaths in policy year t, claimed at the end of the year."""
+    """``l(t) q_d(t)``: expected deaths in period t, claimed at the end of the period."""
     return pols_if(t) * mort_rate(t)
 
 
 def pols_lapse(t):
-    """Expected surrenders in policy year t, taken from the survivors of death.
+    """Expected surrenders in period t, taken from the survivors of death.
 
-    Zero in the final policy year, where the survivors leave as maturities instead.
+    Zero in the final period, where the survivors leave as maturities instead.
     """
     return pols_if_at(t, "AFT_DEATH") * lapse_rate(t)
 
 
 def pols_maturity(t):
-    """The cohort reaching *Rentenbeginn*: the survivors of both decrements at ``t = n``.
+    """The cohort reaching *Rentenbeginn*: the survivors of both decrements at ``t = n - 1``.
 
-    Zero in every other policy year.  The name is the library's — a count whose cover ends
+    Zero in every other period.  The name is the library's — a count whose cover ends
     at the scheduled end of the contract, whether or not anything is paid for it — and here
     something very much is paid for it.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "AFT_LAPSE")
 
@@ -1140,7 +1149,7 @@ def pols_maturity(t):
 # --- benefits ----------------------------------------------------------------
 
 def db_pp(t):
-    """``D(t)``: the death benefit per policy in policy year t.
+    """``D(t)``: the death benefit per policy in period t.
 
     ``max(av_pp_at(t, "AFT_GUAR"), death_min_rate() x BS)`` — the account **before** the
     year's index and safe-arm credits, floored at the *Mindesttodesfallschutz* fraction of
@@ -1157,7 +1166,7 @@ def db_pp(t):
 
 
 def min_surr_pp(t):
-    """The § 169 Abs. 3 VVG *Mindestrückkaufswert* per policy in policy year t.
+    """The § 169 Abs. 3 VVG *Mindestrückkaufswert* per policy in period t.
 
     ``av_min_pp_at(t, "AFT_GUAR")``: the account with acquisition costs spread evenly over
     the first five contract years, so that an early surrender value cannot be extinguished
@@ -1172,7 +1181,7 @@ def min_surr_pp(t):
 
 
 def surr_charge_pp(t):
-    """The *Stornoabzug* deducted from the surrender value in policy year t.
+    """The *Stornoabzug* deducted from the surrender value in period t.
 
     2 % of the floored base **[std]**, applied only where the model point carries
     ``surr_charge_on = 1``.  A *Stornoabzug* is effective only if it is agreed, appropriate
@@ -1185,7 +1194,7 @@ def surr_charge_pp(t):
 
 
 def cv_pp(t):
-    """``V(t)``: the surrender value per policy in policy year t.
+    """``V(t)``: the surrender value per policy in period t.
 
     ``max(av_pp_at(t, "AFT_GUAR"), min_surr_pp(t)) - surr_charge_pp(t)``.  A
     **general-account reserve**, not a unit value: locked-in index credits are inside it,
@@ -1201,24 +1210,25 @@ def cv_pp(t):
 
 
 def mat_pp(t):
-    """``M(n)``: the benefit per policy at *Rentenbeginn*; zero in every other year.
+    """``M(n - 1)``: the benefit per policy at *Rentenbeginn*; zero in every other period.
 
-    ``max(av_pp(n + 1), guar_cap_pp(n + 1))`` — the account **including** the final
+    ``max(av_pp(n), guar_cap_pp(n))`` — the time-``n`` account **including** the final
     *Indexjahr*'s credits, floored at the *Beitragsgarantie* plus the whole locked-in
-    ledger.  This is the one date at which the guarantee is owed, and the only benefit in
-    the model that sees it.
+    ledger.  It is a flow of the last period ``t = n - 1``, whose end is time ``n``.  This
+    is the one date at which the guarantee is owed, and the only benefit in the model that
+    sees it.
 
     On the anchor the floor does not bind; on model point 9, whose 100 % guarantee is
     written against a flat index path, it does — and a model with no floor and a model with
     a floor that never binds look identical on every other point.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
-    return max(av_pp(proj_len() + 1), guar_cap_pp(proj_len() + 1))
+    return max(av_pp(proj_len()), guar_cap_pp(proj_len()))
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
         ``D(t) x pols_death(t)``, the account before the year's credits with
@@ -1226,13 +1236,13 @@ def claims(t, kind=None):
 
     ``"LAPSE"``
         ``V(t) x pols_lapse(t)``, the § 169 Abs. 3-floored reserve less the
-        *Stornoabzug*.  Zero in the final policy year by construction.
+        *Stornoabzug*.  Zero in the final period by construction.
 
     ``"MATURITY"``
-        ``M(n) x pols_maturity(n)``, the capital falling due at
+        ``M(n - 1) x pols_maturity(n - 1)``, the capital falling due at
         *Rentenbeginn*, and zero everywhere else.
 
-    All three fall at the **end** of the policy year.  Two exits at the same instant take
+    All three fall at the **end** of the period.  Two exits at the same instant take
     different amounts — the maturity includes the year's *Indexjahr* and the other two do
     not — and that is the product's own rule.
     """
@@ -1260,7 +1270,7 @@ def rentenfaktor():
 def ann_monthly_pp():
     """The monthly *Leibrente* the terminal capital buys, per policy; **reported, not paid**.
 
-    ``M(n) / 10,000 x rentenfaktor()`` where the *Kapitalwahlrecht* is not exercised, and
+    ``M(n - 1) / 10,000 x rentenfaktor()`` where the *Kapitalwahlrecht* is not exercised, and
     0.00 where it is.  It is not a cash flow of this model: the *Rentenphase* is a separate
     contract state and a separate model.
 
@@ -1273,7 +1283,7 @@ def ann_monthly_pp():
     """
     if ann_option() != "annuity":
         return 0.0
-    return mat_pp(proj_len()) / 10000.0 * rentenfaktor()
+    return mat_pp(proj_len() - 1) / 10000.0 * rentenfaktor()
 
 
 # --- expenses and the cash flow statement ------------------------------------
@@ -1295,15 +1305,15 @@ def exp_acq_pp(t):
 def exp_maint_pp(t):
     """Maintenance expense per policy: 36.00 EUR a year inflating at 1.5 % **[std]**.
 
-    *Stückkosten*, ``exp_fixed_pp x (1 + exp_infl)^(t - 1)``, inflated from **issue** and
-    not from the valuation date, so an in-force point carries the inflation its duration
-    has already accumulated.
+    *Stückkosten*, ``exp_fixed_pp x (1 + exp_infl)^t``, inflated from **issue** and not
+    from the valuation date — ``t`` is the elapsed policy years, so an in-force point
+    carries the inflation its duration has already accumulated.
     """
-    return exp_fixed_pp * (1.0 + exp_infl) ** (t - 1)                # noqa: F821
+    return exp_fixed_pp * (1.0 + exp_infl) ** t                      # noqa: F821
 
 
 def expenses(t):
-    """Total insurer expense outgo in policy year t, at the start of the year.
+    """Total insurer expense outgo in period t, at the start of the period.
 
     ``(exp_acq_pp(t) + exp_maint_pp(t)) x l(t)``.  No claim expense is modelled: no source
     gives one and it would be immaterial beside a benefit that is the account value.
@@ -1317,7 +1327,7 @@ def expenses(t):
 
 
 def net_cf(t):
-    """The net liability cash flow of policy year t, **income positive**.
+    """The net liability cash flow of period t, **income positive**.
 
     Premiums less death, surrender and *Rentenbeginn* benefits less expenses — the
     library's sign convention, applied to every model in it.
@@ -1347,7 +1357,7 @@ def liability_cf(t):
 # --- the published identities ------------------------------------------------
 
 def check_net_cf_resid(t):
-    """The cash flow statement's reconciliation residual in policy year t; zero everywhere.
+    """The cash flow statement's reconciliation residual in period t; zero everywhere.
 
     ``net_cf(t) - [ premiums(t) - claims(t) - expenses(t) ]``, with ``claims(t)`` the
     kind-less total.  :func:`net_cf` names the three kinds one by one while this identity
@@ -1368,7 +1378,7 @@ def check_net_cf_resid(t):
 
 
 def check_net_cf():
-    """True when the cash flow statement reconciles in every projected policy year.
+    """True when the cash flow statement reconciles in every projected period.
 
     The library-wide form: no argument, one bool over all ``t``;
     :func:`check_net_cf_resid` gives the signed residual of the year that failed.
@@ -1376,11 +1386,11 @@ def check_net_cf():
     return bool(all(abs(check_net_cf_resid(t)) <= roll_fwd_tol       # noqa: F821
                     * max(abs(premiums(t)), abs(claims(t)),
                           abs(expenses(t)), 1.0)
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_av_roll_fwd_resid(t):
-    """The account roll-forward residual at fund level in policy year t; zero everywhere.
+    """The account roll-forward residual at fund level in period t; zero everywhere.
 
     ``av(t + 1) - [ av(t) + prem_to_av(t) - av_charge(t) + guar_int(t) + surplus_credit(t)
     + index_credit(t) - av_released(t) ]``.
@@ -1393,7 +1403,7 @@ def check_av_roll_fwd_resid(t):
     *Indexjahr* credit to ``pols_if(t)`` instead of to ``pols_if_at(t, "AFT_LAPSE")`` and
     the residual is exactly the credit the leavers should not have had.
 
-    It closes in the final policy year too, where ``av(n + 1)`` is zero and the whole
+    It closes in the final period too, where ``av(n)`` is zero and the whole
     balance leaves through the maturity term of :func:`av_released`.
     """
     return av(t + 1) - (av(t) + prem_to_av(t) - av_charge(t) + guar_int(t)
@@ -1401,18 +1411,18 @@ def check_av_roll_fwd_resid(t):
 
 
 def check_av_roll_fwd():
-    """True when the account roll-forward closes in every projected policy year.
+    """True when the account roll-forward closes in every projected period.
 
     Tolerance is relative to the balance, the account running to five figures while the
     residual should be zero to machine precision.
     """
     return bool(all(abs(check_av_roll_fwd_resid(t)) <= roll_fwd_tol  # noqa: F821
                     * max(abs(av(t)), 1.0)
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in period t; zero everywhere.
 
     ``pols_if(t) - pols_if(t + 1) - pols_death(t) - pols_lapse(t) - pols_maturity(t)``.
     The recursion applies the two rates in sequence while the three exits are formed
@@ -1421,7 +1431,7 @@ def check_pols_roll_fwd_resid(t):
     with ``w_l(t - 1)`` or ``q_d(t + 1)``, or applying the surrender rate to the opening
     in-force instead of to the survivors of death.
 
-    In the final policy year ``pols_if(n + 1)`` is zero, ``pols_lapse`` is zero and the
+    In the final period ``pols_if(n)`` is zero, ``pols_lapse`` is zero and the
     survivors leave through ``pols_maturity``, so the identity closes there as well — and
     that is the year in which an implementation that lets the cohort simply vanish, or that
     double-counts it as both a lapse and a maturity, fails.
@@ -1440,7 +1450,7 @@ def check_pols_roll_fwd():
     reference to the recursion that produced ``pols_if`` — and it is what catches a life
     that leaves twice or never leaves at all.
     """
-    ts = range(t_start(), proj_len() + 1)
+    ts = range(t_start(), proj_len())
     closure = sum(pols_death(t) + pols_lapse(t) + pols_maturity(t)
                   for t in ts) - pols_if_init()
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
@@ -1449,7 +1459,7 @@ def check_pols_roll_fwd():
 
 
 def check_surplus_alloc_resid(t):
-    """The surplus-allocation residual in policy year t; zero everywhere.
+    """The surplus-allocation residual in period t; zero everywhere.
 
     ``opt_budget_pp(t) + surplus_credit_pp(t) - surplus_rate(t) x index_base_pp(t)``.
 
@@ -1464,14 +1474,14 @@ def check_surplus_alloc_resid(t):
 
 
 def check_surplus_alloc():
-    """True when the declared surplus is allocated exactly once in every policy year."""
+    """True when the declared surplus is allocated exactly once in every period."""
     return bool(all(abs(check_surplus_alloc_resid(t)) <= roll_fwd_tol  # noqa: F821
                     * max(abs(index_base_pp(t)), 1.0)
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_lock_in_resid(t):
-    """The *Höchststandsicherung* violation in policy year t; zero when the ratchet holds.
+    """The *Höchststandsicherung* violation in period t; zero when the ratchet holds.
 
     The sum of three one-sided terms, each zero unless it is breached: the fall in
     ``guar_cap_pp`` from ``t`` to ``t + 1``, a negative *Indexgutschrift*, and a negative
@@ -1493,11 +1503,11 @@ def check_lock_in():
     """True when the guaranteed capital is monotone and no credit is negative."""
     return bool(all(abs(check_lock_in_resid(t)) <= roll_fwd_tol      # noqa: F821
                     * max(abs(guar_cap_pp(t)), 1.0)
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_index_credit_resid(t):
-    """The payoff-bound violation in policy year t; zero when the *Indexrendite* is in range.
+    """The payoff-bound violation in period t; zero when the *Indexrendite* is in range.
 
     ``0 <= rho(t) <= 12 C(t)`` in the Cap design — the year cannot credit less than nothing
     and cannot credit more than twelve capped months — and ``0 <= rho(t) <= q(t) max(Y(t),
@@ -1522,19 +1532,19 @@ def check_index_credit_resid(t):
 def check_index_credit():
     """True when the *Indexrendite* is inside its contractual bounds in every year."""
     return bool(all(abs(check_index_credit_resid(t)) <= roll_fwd_tol  # noqa: F821
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 # --- the result table --------------------------------------------------------
 
 def result_cf():
-    """Result table of cash flows and account movements, indexed by policy year t.
+    """Result table of cash flows and account movements, indexed by the 0-based period t.
 
-    The frame runs ``t = t_start() ... proj_len()``, contiguous, and stops: policy year
-    ``proj_len()`` ends at *Rentenbeginn*, where the capital falls due as
-    ``claims_maturity``.
+    The frame runs ``t = t_start() ... proj_len() - 1``, contiguous, and stops: period
+    ``proj_len() - 1`` is the last policy year and ends at *Rentenbeginn*, where the
+    capital falls due as ``claims_maturity``.
 
-    ``pols_if`` is the start-of-year count and the weight on every cash flow of the same
+    ``pols_if`` is the start-of-period count and the weight on every cash flow of the same
     row, so the first row's value is ``pols_if_init()`` exactly.  ``premiums``,
     ``claims_death``, ``claims_lapse``, ``claims_maturity`` and ``expenses`` are the cash
     flow statement and sum to ``net_cf``.
@@ -1550,7 +1560,7 @@ def result_cf():
     ``liability_cf`` is ``net_cf`` outgo-positive, published so the sign convention is
     verifiable in the frame.
     """
-    ts = list(range(t_start(), proj_len() + 1))
+    ts = list(range(t_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

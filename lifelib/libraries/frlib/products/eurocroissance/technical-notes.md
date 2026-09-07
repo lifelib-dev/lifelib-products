@@ -38,6 +38,19 @@ directly rather than against that document.
   diversification provision to be re-struck at an **intermediate value at least monthly** in
   every month in which the participation account is not struck [R3 A. 134-5](#frlib-eurocroissance-r3); the annual grid
   compresses that to one striking a year, a simplification recorded under pitfalls.
+- **Time index.** `t` is **0-based**: period `t` is the policy year running from time `t`
+  to time `t + 1`, so `t = 0` is the first policy year and the contractual **policy year
+  is `t + 1`**. The frame is `t = 0 … proj_len − 1`, where `proj_len = n` is the *number*
+  of policy years projected and the last row is the year that ends at the *échéance*. An
+  in-force cell opens at `t = duration_ifo`, the completed policy years at the valuation
+  date, which is an elapsed count and already 0-based. **The issue instant is not a row:**
+  the initial *versement* creates the rights and strikes both provisions as the *opening
+  state* of the first projected period, written `A_open(t)`, `pd_open(t)`, `N_open(t)`,
+  `mg_open(t)` below and reached in the model as `own_assets_at(t, "BOY")` and its
+  siblings; its cash flows are beginning-of-period flows of that first period. A few
+  quantities are indexed by a **time point** `k` instead — `x + k`, `TEC(n − k)`,
+  `i_pm(k)`, the discount factor — with `k = 0` at issue and `k = n` at the *échéance*, so
+  period `t` opens at `k = t` and is struck at `k = t + 1`.
 - **The provisions are state variables, not cash flows.** Policy cash flows are premiums,
   claims, charges and expenses; `pm`, `pd`, `parts` and `part_value` drive claim amounts
   through the surrender, maturity and death formulas [R2 R. 134-5, R. 134-6](#frlib-eurocroissance-r2).
@@ -53,7 +66,8 @@ directly rather than against that document.
   claims at EOY after the striking.
 - **Age basis.** *Âge atteint* (age last birthday) **[std]** — art. A. 335-1 applies the
   homologated tables with the annexed *décalages d'âge* rather than fixing a model age basis
-  [REG-R23].
+  [REG-R23]. `x + k` is the age at time `k`, so period `t` opens at `x + t` and its
+  decrement, applied at EOY, is read at `x + t + 1`.
 - **Currency and rounding.** EUR; single-policy model points projected on an expected
   (probability-weighted) basis, `pols_if` multiplying per-policy amounts. Intermediate values
   at full precision; currency to the cent, parts and part values to four decimals **[std]**.
@@ -68,10 +82,10 @@ directly rather than against that document.
 | `engagement_modality` | enum {`euro_and_parts`, `parts_only`} | `euro_and_parts` / `parts_only` |
 | `issue_age` | int (âge atteint) | 57 |
 | `sex` | enum {M, F} | M |
-| `policy_term` | int, years to the *échéance* `n` | 10 |
-| `duration_ifo` | int, completed policy years at valuation | 0 |
-| `premium_gross` | currency, initial *versement* | 10,000.00 |
-| `premium_top_up` / `premium_top_up_t` | currency, free additional *versement*, and the policy year at whose end it is paid | 2,000.00 / 3 |
+| `policy_term` | int, years to the *échéance* `n`; also the number of periods projected | 10 |
+| `duration_ifo` | int, completed policy years at valuation — an elapsed count, already 0-based, and the first projected period of an in-force cell | 0 |
+| `premium_gross` | currency, initial *versement*; the opening state of the first projected period | 10,000.00 |
+| `premium_top_up` / `premium_top_up_t` | currency, free additional *versement*, and the **contractual policy year** at whose end it is paid (1-based, so policy year `k` is period `k − 1`; 0 means none) | 2,000.00 / 3 |
 | `guarantee_rate` | %, `g` — share of net premiums guaranteed at `n` | 100 % |
 | `entry_charge_rate` | %, base R. 134-3 1° | 2.00 % |
 | `parts_charge_rate` | % p.a., base R. 134-3 4° | 0.80 % |
@@ -88,6 +102,10 @@ directly rather than against that document.
 
 ## State variables
 
+Every state variable below is the **closing** value of period `t`; its opening value is
+written `X_open(t)`, which is `X(t−1)` in every period but the first and, in the first,
+the state the initial *versement* or the in-force extract creates.
+
 | Variable | Description | Updated |
 |---|---|---|
 | `mg` | Guaranteed amount payable at the *échéance* = `g ×` cumulative net premiums, run down for exits [R13] | on each *versement* and exit |
@@ -99,7 +117,7 @@ directly rather than against that document.
 | `insurer_contribution` | Outstanding L. 134-3 asset contribution completing the representation (Chassis A) | EOY |
 | `pgt` | *Provision pour garantie à terme*, insurer's own funds (Chassis B) [R3 A. 134-2](#frlib-eurocroissance-r3) | EOY |
 | `pcdd` | *Provision collective de diversification différée*, fund-level [R8 R. 343-3 10°](#frlib-eurocroissance-r8) [R9] | EOY, fund extension |
-| `pols_if` | In-force probability at the **start** of year `t`; `pols_if(0) = 1`. The end-of-year count `l(t)` is `pols_if_at(t, "AFT_DECR")` | EOY decrements |
+| `pols_if` | In-force probability at the **start** of period `t`; `pols_if(0) = 1`. The end-of-period count `l(t)` is `pols_if_at(t, "AFT_DECR")` | EOY decrements |
 | `cum_prem_net` | Cumulative net *versements*, the base of the death floor [S1] [S2] | on each *versement* |
 
 ---
@@ -116,12 +134,12 @@ class (c) is the modeler's view of experience.
 |---|---|---|
 | Guarantee level `g` / maturity `n` | 100 % of net *versements* / 10 years | [S1] [S2]; 80 % and 8–30 [S8]; 80 %–100 % and 8–40 [S7] |
 | Guarantee run-down for exits | `mg` reduced pro rata to surrenders and deaths | [R13] |
-| PM definition (Chassis A) | `pm(t) = mg(t) × (1 + i_pm(t))^-(n-t)` | [R2 R. 134-2](#frlib-eurocroissance-r2) |
-| PM discount rate `i_pm` | ≤ **90 % of the last TEC*n***, linear interpolation between bracketing maturities, longest TEC beyond the curve, **floor 0 %**, method choice irreversible per account. As retrieved, A. 134-1 fixes *n* as the holder's **guarantee maturity** (per-engagement method 1°) or the account's 1°-engagement **duration** (method 2°); this model applies method 1° and re-reads *n* as the **remaining** term `n − t` at each valuation date | haircut, interpolation and floor [R3 A. 134-1](#frlib-eurocroissance-r3); the `n − t` re-reading **[std]**, note below |
-| Reference TEC10 | 2.50 % to year 5, 1.00 % from year 6 → `i_pm` 2.25 %, then 0.90 % | **[std]**, product-spec (5) |
+| PM definition (Chassis A) | `pm(t) = mg(t) × (1 + i_pm(t+1))^-(n-t-1)` — struck at the period's year end, time `t + 1` | [R2 R. 134-2](#frlib-eurocroissance-r2) |
+| PM discount rate `i_pm` | ≤ **90 % of the last TEC*n***, linear interpolation between bracketing maturities, longest TEC beyond the curve, **floor 0 %**, method choice irreversible per account. As retrieved, A. 134-1 fixes *n* as the holder's **guarantee maturity** (per-engagement method 1°) or the account's 1°-engagement **duration** (method 2°); this model applies method 1° and re-reads *n* as the **remaining** term `n − k` at each valuation time `k` | haircut, interpolation and floor [R3 A. 134-1](#frlib-eurocroissance-r3); the `n − k` re-reading **[std]**, note below |
+| Reference TEC10 | 2.50 % at valuation times `k` = 0–5, 1.00 % from `k` = 6 → `i_pm` 2.25 %, then 0.90 % | **[std]**, product-spec (5) |
 | Minimum part value | €5.00 — the part value may not be reduced below it to absorb a debit balance | requirement [R2 R. 134-1, R. 134-4](#frlib-eurocroissance-r2); level **[std]**, product-spec (2) |
 | Surrender value | Chassis A `pm + parts × part_value`; Chassis B `parts × part_value`; **no guarantee before maturity on Chassis B** | [R2 R. 134-5](#frlib-eurocroissance-r2) |
-| Maturity amount | Chassis A `pm + parts × part_value`; Chassis B `max(parts × part_value, mg)` | [R2 R. 134-6](#frlib-eurocroissance-r2) |
+| Maturity amount | at the *échéance*, the close of period `n − 1`: Chassis A `pm + parts × part_value`; Chassis B `max(parts × part_value, mg)` | [R2 R. 134-6](#frlib-eurocroissance-r2) |
 | Death benefit | The current provision value; the maturity guarantee does **not** apply. Any death floor is a complementary guarantee provisioned **outside** the account | [R2 — no death article in Chapter IV, R. 134-7](#frlib-eurocroissance-r2) [R13] [S1] [S2] |
 | Surrender indemnity | 0 %; statutory cap 5 % of the present value of the mutual engagements, and the contract **may** provide for none once ten years have elapsed | cap and the ten-year **permission** [R10]; level **[std]**, product-spec (3) |
 | Permitted charge bases | The six of R. 134-3 only; base 3° unavailable in a 1° account | [R2 R. 134-3](#frlib-eurocroissance-r2) |
@@ -129,14 +147,15 @@ class (c) is the modeler's view of experience.
 | PCDD release horizon / apport d'actifs | 15 years / ≤ 10 % of the PD at the affectation date, endowing the PCDD, re-allocated by year 16 | [R9 A. 132-16](#frlib-eurocroissance-r9); [R7 R. 134-12](#frlib-eurocroissance-r7) |
 | Assets at realisation value | R. 343-11 / R. 343-12 | [R2 R. 134-8](#frlib-eurocroissance-r2) |
 
-**The `n − t` re-reading of A. 134-1 — [std].** The article as retrieved gives the index
+**The `n − k` re-reading of A. 134-1 — [std].** The article as retrieved gives the index
 maturity as the holder's guarantee maturity (method 1°) or the auxiliary account's
 1°-engagement duration (method 2°), and says nothing about how that maturity is re-read at
 valuation dates after inception [R3 A. 134-1](#frlib-eurocroissance-r3). Two readings are
 available: hold *n* fixed at the original term for the life of the engagement, or take the
-**remaining** term `n − t`, which is the horizon the guarantee is actually discounted over.
+**remaining** term `n − k` at each valuation time `k`, which is the horizon the guarantee is
+actually discounted over.
 These notes and `EC_FR_A` take the second — the first would discount a one-year promise at a
-ten-year constant-maturity rate on the *échéance* row, and A. 134-1's own method 2° keys the
+ten-year constant-maturity rate at the *échéance*, and A. 134-1's own method 2° keys the
 index to a **duration**, which shortens as the engagements run off. The reading is
 **[std]**; it is not stated in the article. `product-spec.md` states A. 134-1 as retrieved,
 and **these notes are the source of truth for the value `i_pm` takes in the model.** The
@@ -149,7 +168,7 @@ model point 10 runs the `sloped` scenario.
 | Input | Value | Basis |
 |---|---|---|
 | Entry charge (base 1°) | 2.00 % of each *versement* | [R13]; 4.50 % max [S8]; **[std]**, product-spec (7) |
-| Parts levy (base 4°) | 0.80 % p.a. of parts, at BOY on the opening part value | [R13]; routing **[std]**, product-spec (8) |
+| Parts levy (base 4°) | 0.80 % p.a. of parts, at BOY on the opening part value `u_open(t)` | [R13]; routing **[std]**, product-spec (8) |
 | Performance levy (base 5°) | 10 % of positive financial-management performance; 0 % of negative | [R13]; **[std]**, product-spec (9) |
 | Exit charge (base 6°) / conversion charge (base 2°) | 0.00 % / 0.50 % of amounts converted (Chassis A) | **[std]**, product-spec (9); [S8] |
 | Credit-balance allocation | Raise the **part value**; no new parts awarded | **[std]**, product-spec (10) |
@@ -189,22 +208,25 @@ on the auxiliary account and its cost requires stochastic market-consistent valu
 
 | Symbol | Meaning |
 |---|---|
-| `t`, `x`, `n`, `g` | policy year index (0…`n`); `issue_age`; guarantee maturity in years; guarantee level |
-| `P(t)`, `P_net(t)` | gross and net *versement* at time `t`; `P_net = P × (1 − f_e)` |
+| `t`, `k`, `x`, `n`, `g` | 0-based **period** index (`0…n−1`); **time point** in years since issue (`0…n`); `issue_age`; guarantee maturity in years, and the number of periods; guarantee level |
+| `P(t)`, `P_net(t)` | gross and net scheduled *versement* at the **start of period** `t`; `P_net = P × (1 − f_e)` |
+| `P_0`, `P_net,0` | the initial *versement* and its net amount, paid at inception: the **opening state** of the first projected period, not a step in its roll forward |
+| `X_open(t)` | the opening value of a state variable: `X(t−1)` in every period but the first, and in the first the state `P_net,0` — or the in-force extract — creates |
 | `f_e`, `f_p`, `f_perf`, `f_x` | entry 2.00 %, parts levy 0.80 % p.a., performance levy 10 %, exit 0.00 % |
-| `mg(t)` | guaranteed amount payable at `n` |
-| `i_pm(t)` | PM discount rate = 90 % × TEC(`n−t`), floored at 0 %. The haircut, the interpolation and the floor are [R3 A. 134-1](#frlib-eurocroissance-r3); reading the index maturity as the **remaining** term is **[std]**, see (a) above |
-| `A(t)` | `own_assets(t)`, account assets attributable to the policy, excluding any outstanding insurer contribution |
+| `mg(t)` | guaranteed amount payable at `n`, at the close of period `t` |
+| `i_pm(k)` | PM discount rate **at time `k`** = 90 % × TEC(`n−k`), floored at 0 %. The haircut, the interpolation and the floor are [R3 A. 134-1](#frlib-eurocroissance-r3); reading the index maturity as the **remaining** term is **[std]**, see (a) above. Period `t` is struck at `i_pm(t+1)` and splits a start-of-period *versement* at `i_pm(t)` |
+| `A(t)` | `own_assets(t)`, account assets attributable to the policy at the close of period `t`, excluding any outstanding insurer contribution |
 | `pm(t)`, `pd(t)` | *provision mathématique*, *provision de diversification* |
 | `N(t)`, `u(t)`, `u_min` | `parts(t)`; `part_value(t)` = `pd(t) / N(t)`; minimum part value €5.00 **[std]** |
-| `r(t)` | gross asset return in year `t`, net of asset management fees |
-| `L(t)`, `F(t)` | parts levy (BOY) and performance levy (EOY) in year `t` |
+| `r(t)` | gross asset return in period `t`, net of asset management fees |
+| `L(t)`, `F(t)` | parts levy (BOY) and performance levy (EOY) of period `t` |
 | `C(t)`, `G(t)`, `D(t)` | `insurer_contribution(t)` (L. 134-3); `pgt(t)` (Chassis B); `pcdd(t)` (fund-level) |
-| `q(x+t)`, `w(t)`, `l(t)` | `mort_rate`, `lapse_rate`, and the **end**-of-year in-force count — `pols_if_at(t, "AFT_DECR")` in the model; `l(0) = 1`. The model's `pols_if(t)` is the **start**-of-year count `l(t−1)`, the weight on year `t`'s flows |
+| `q(x+t+1)`, `w(t)`, `l(t)` | `mort_rate(t)`, read at the age attained at the **end** of period `t`; `lapse_rate(t)`; and the **end**-of-period in-force count — `pols_if_at(t, "AFT_DECR")` in the model, nil in the last projected period. The model's `pols_if(t)` is the **start**-of-period count — `pols_if(0) = 1` and `pols_if(t) = l(t−1)` thereafter — the weight on period `t`'s flows |
 
 ### The guaranteed amount
 
-`mg(0) = g × P_net(0)` and `mg(t) = mg(t−1) + g × P_net(t) − exits(t)`, where `exits(t)` runs
+`mg_open(0) = g × P_net,0` and `mg(t) = mg_open(t) + g × P_net(t) − exits(t)`, where
+`exits(t)` runs
 the guarantee down pro rata to surrenders and deaths [R13]. In a single-policy expected-value
 projection with no partial surrender, `mg(t)` is constant between *versements*.
 
@@ -213,29 +235,36 @@ projection with no partial surrender, `mg(t)` is constant between *versements*.
 `pm` is **re-struck** every year, never accumulated [R2 R. 134-2](#frlib-eurocroissance-r2):
 
 ```
-pm(t) = mg(t) × (1 + i_pm(t))^-(n-t)        (Chassis A)
+pm(t) = mg(t) × (1 + i_pm(t+1))^-(n-t-1)    (Chassis A)
 pm(t) = 0                                    (Chassis B)
 ```
 
-A *versement* `P_net(t)` paid at the end of year `t`, immediately after the striking, splits
+Period `t` closes at time `t + 1`, which is `n − t − 1` years short of the *échéance*, so
+that is the horizon the striking discounts over.
+
+A free *versement* paid at the end of period `t`, immediately after the striking, splits
 as follows and buys parts at the part value just struck:
 
 ```
-pm_added = g × P_net(t) × (1 + i_pm(t))^-(n-t)   pd_added = P_net(t) − pm_added
+pm_added = g × P_net × (1 + i_pm(t+1))^-(n-t-1)   pd_added = P_net − pm_added
 parts_added = pd_added / u(t)
 ```
 
-At `t = n` the discount factor is 1, so `pm(n) = mg(n)` identically: the *provision
+A scheduled *versement* paid at the **start** of period `t` splits the same way one year
+earlier, at `i_pm(t)` over `n − t`, and buys parts at the opening value `u_open(t)`.
+
+In the last projected period, `t = n − 1`, the discount factor is 1, so
+`pm(n−1) = mg(n−1)` identically: the *provision
 mathématique* accumulated at the regulated rate reaches the guarantee exactly at the
 *échéance*, which is what makes the Chassis A guarantee pre-funded by construction.
 
 ### Account assets, charges and the annual rebalancing
 
 ```
-L(t)   = f_p × pd(t−1)          (BOY, base 4°)   A_a(t) = A(t−1) − L(t)
+L(t)   = f_p × pd_open(t)       (BOY, base 4°)   A_a(t) = A_open(t) − L(t)
 I(t)   = A_a(t) × r(t)                           F(t)   = f_perf × max( I(t), 0 )  (EOY, base 5°)
 A(t)   = A_a(t) + I(t) − F(t)   (before any versement)
-N(t)   = N(t−1) × (1 − f_p)
+N(t)   = N_open(t) × (1 − f_p)
 ```
 
 The two provisions are then re-struck, the diversification provision taking the residual and
@@ -244,7 +273,7 @@ stopping at its contractual floor [R2 R. 134-4](#frlib-eurocroissance-r2):
 ```
 pd(t) = max( A(t) − pm(t), N(t) × u_min )   u(t) = pd(t) / N(t)
 C(t)  = max( pm(t) + pd(t) − A(t), 0 )
-G(t)  = max( mg(t) × (1 + i_pm(t))^-(n-t) − pd(t) − D(t), 0 )   (Chassis B) [R3 A. 134-2]
+G(t)  = max( mg(t) × (1 + i_pm(t+1))^-(n-t-1) − pd(t) − D(t), 0 )   (Chassis B) [R3 A. 134-2]
 ```
 
 `C(t)` is the outstanding contribution the insurer must make to complete the representation
@@ -261,10 +290,12 @@ mortality [R3 A. 134-2](#frlib-eurocroissance-r3). `G(t)` above, and `pgt()` in 
 discount the guaranteed amount to `t` and apply **no survival factor**, so the present value
 is the amount for a guarantee certain to be reached. The simplification is prudent — it
 overstates the provision — and it is invisible on the worked example, where `mort_rate = 0`;
-it is live on every decrement-bearing cell. On shipped model point 6 at `t` = 7 the reported
+it is live on every decrement-bearing cell. On shipped model point 6 at the end of policy
+year 7 — period `t` = 6 — the reported
 `pgt` is **2,739.35**, against **2,477.36** with the five-year survival factor **0.972660**
 that the shipped **[std]** table gives. A fund-level implementation of A. 134-2 should carry
-`PV(t) = Σ_i mg_i(t) × (1 + i_pm(t))^-(n_i − t) × (n_i − t)p_(x_i+t)` over the account's 2°
+`PV(t) = Σ_i mg_i(t) × (1 + i_pm(t+1))^-(n_i − t − 1) × (n_i − t − 1)p_(x_i+t+1)` over the
+account's 2°
 engagements; in this single-policy model the mortality decrement reaches the projection
 through `pols_if` in `result_cf()` instead of through the provision.
 
@@ -272,7 +303,7 @@ through `pols_if` in `result_cf()` instead of through the provision.
 
 ```
 surrender_value(t) = ( pm(t) + N(t) × u(t) ) × (1 − f_x)   A ;  ( N(t) × u(t) ) × (1 − f_x)   B
-maturity_value(n)  = pm(n) + N(n) × u(n)                   A ;  max( N(n) × u(n), mg(n) )     B
+maturity_value(n−1)= pm + N × u at t = n−1                 A ;  max( N × u, mg ) at t = n−1   B
 death_value(t)     = pm(t) + N(t) × u(t)                   A ;  N(t) × u(t)                   B
 death_payout(t)    = max( death_value(t), cum_prem_net(t) )      if death_floor_flag [S1] [S2]
 rider_claim(t)     = death_payout(t) − death_value(t)            outside the account [R2 R. 134-7]
@@ -287,8 +318,8 @@ simplification.
 ### Fund-level items (extension, held at zero in the base run)
 
 ```
-D_open(t)     = D(t−1) + apport(t)                                (PCDD at start of year)
-target_use(t) = ( euro_fund_rate(t) + 0.30 % ) × ( pm(t−1) + pd(t−1) ) − Δpm_rate(t)
+D_open(t)     = D(t−1) + apport(t)                                (PCDD at start of period)
+target_use(t) = ( euro_fund_rate(t) + 0.30 % ) × ( pm_open(t) + pd_open(t) ) − Δpm_rate(t)
 D_target(t)   = D_open(t) + balance(t) − target_use(t)
 D(t)          = max( min( D_open(t), D_target(t) ), 0 )
 dotation(t)   = D(t) − D_open(t)
@@ -316,8 +347,13 @@ The order is not free: R. 134-4 and R. 134-12 III both say that asset affectatio
 re-affectations completing the account's representation are made **on the dates the
 participation account is struck, after its balance has been allocated** [R2] [R7].
 
-1. **BOY** — parts levy `L(t) = f_p × pd(t−1)`; `N(t) = N(t−1) × (1 − f_p)`; assets reduced
-   by `L(t)` (base R. 134-3 4°).
+The nine steps below are the steps of **period `t`**. In the first projected period the
+opening quantities `A_open`, `pd_open`, `N_open`, `mg_open` are the state the initial
+*versement* creates — this is where the issue instant sits — and in every later period
+they are the previous period's close.
+
+1. **BOY** — parts levy `L(t) = f_p × pd_open(t)`; `N(t) = N_open(t) × (1 − f_p)`; assets
+   reduced by `L(t)` (base R. 134-3 4°).
 2. **BOY** — scheduled *versements* received net of the entry charge (base 1°) and split per
    the *versement* rule; partial surrenders paid (base 6°) and `mg` run down pro rata.
 3. Asset return `r(t)` accrues on the balance after steps 1–2.
@@ -325,13 +361,15 @@ participation account is struck, after its balance has been allocated** [R2] [R7
 5. **EOY** — strike the participation account and allocate its balance: raise `u` (the
    reference route), award new parts, revalue the guarantees subject to the two A. 134-3
    tests, or endow the PCDD [R2 R. 134-4](#frlib-eurocroissance-r2).
-6. **EOY** — re-strike `pm(t)` from `mg(t)` and the current `i_pm(t)`; `pd(t)` = residual,
+6. **EOY** — re-strike `pm(t)` from `mg(t)` and the current `i_pm(t+1)`; `pd(t)` = residual,
    floored at `N(t) × u_min`; `u(t) = pd(t) / N(t)`.
 7. **EOY** — asset affectations: `C(t)` (Chassis A) or `G(t)` (Chassis B), **after** step 5.
-8. **EOY** — free *versements* paid at year end (the worked example's year-3 top-up) split at
-   the just-struck `i_pm(t)` and `u(t)`.
-9. **EOY** — claims: deaths at `q`, surrenders at `w`, maturity at `t = n`;
-   `l(t) = l(t−1) × (1 − q(x+t)) × (1 − w(t))`, survivors maturing at `n`.
+8. **EOY** — free *versements* paid at year end (the worked example's top-up at the end of
+   policy year 3, `t` = 2) split at the just-struck `i_pm(t+1)` and `u(t)`.
+9. **EOY** — claims: deaths at `q`, surrenders at `w`, maturity in the last projected
+   period `t = n − 1`;
+   `l(t) = pols_if(t) × (1 − q(x+t+1)) × (1 − w(t))` with `pols_if(0) = 1` and
+   `pols_if(t) = l(t−1)` thereafter, survivors maturing at `t = n − 1`, where `l(n−1) = 0`.
 
 ### Known modeling pitfalls
 
@@ -343,34 +381,37 @@ wrong. Each should become a test.
    else** [R2 R. 134-5](#frlib-eurocroissance-r2); a model that floors the surrender value at `g ×` premiums, or at the
    discounted guarantee, is modelling a contract that does not exist. Test: on the worked
    example's year-6 shock, Chassis B must surrender for **9,899.22**, i.e. **84.18 %** of net
-   *versements*, not 11,760.00.
+   *versements*, not 11,760.00. (Policy year 6 is period `t` = 5.)
 2. **Letting the PGT reach a policyholder.** The PGT is the insurer's own-funds provision,
    outside the participation account [R3 A. 134-2](#frlib-eurocroissance-r3) [R13]. A model that adds `pgt` to a
    benefit, or lets it feed the profit-sharing computation, is wrong. Test: `pgt` appears in
    no benefit column and in no participation balance.
 3. **Accumulating the PM instead of re-striking it.** `pm(t)` is `mg(t)` discounted at the
-   *current* `i_pm(t)` [R2 R. 134-2](#frlib-eurocroissance-r2). Rolling `pm(t−1)` forward at last year's rate silently
-   removes the **rate effect** — +587.44 of the +824.18 year-6 move in the worked example.
+   *current* `i_pm(t+1)` [R2 R. 134-2](#frlib-eurocroissance-r2). Rolling `pm(t−1)` forward at last year's rate silently
+   removes the **rate effect** — +587.44 of the +824.18 policy-year-6 move (`t` = 5) in the
+   worked example.
 4. **Levying an encours charge on the PD in a 1° account.** R. 134-3 3° permits that levy only
    where the auxiliary account holds **no 1° engagements**, and no base permits a levy on the
    PM [R2]. Test: with `engagement_modality = euro_and_parts`, the recurring charge base must
-   be the number of parts and the year-1 levy must be **15.64**, not 78.40.
+   be the number of parts and the policy-year-1 levy — `L(0)` — must be **15.64**, not 78.40.
 5. **Forgetting that the entry charge cuts the guarantee.** The guarantee is a percentage of
-   premiums **net of the R. 134-3 1° charge** [R2 R. 134-2](#frlib-eurocroissance-r2) [R13]. Test: `mg` after the year-3
-   top-up is **11,760.00**, not 12,000.00.
+   premiums **net of the R. 134-3 1° charge** [R2 R. 134-2](#frlib-eurocroissance-r2) [R13]. Test: `mg` after the top-up
+   at the end of policy year 3, `mg(2)`, is **11,760.00**, not 12,000.00.
 6. **Omitting the minimum part value.** A debit balance may reduce the part value only
    **within the limit of its minimum** [R2 R. 134-4](#frlib-eurocroissance-r2). Without the floor, Chassis A's `pd` goes
-   negative in year 6 (`A(6) − pm(6) = −1,095.35`). Test: `part_value ≥ 5.0000` in every year
-   on both chassis.
+   negative in policy year 6 (`A(5) − pm(5) = −1,095.35`). Test: `part_value ≥ 5.0000` in
+   every period on both chassis.
 7. **Paying the maturity guarantee to a death claim.** Chapter IV has no death valuation
    article; the death benefit is the current provision value [R2] [R13], and a death floor is
    a complementary guarantee provisioned **outside** the account [R2 R. 134-7](#frlib-eurocroissance-r2). Test: the
-   year-6 Chassis B death payout with the rider is 11,760.00, of which **1,860.78** is a rider
+   policy-year-6 Chassis B death payout (`t` = 5) with the rider is 11,760.00, of which
+   **1,860.78** is a rider
    claim reported outside the auxiliary-account columns.
 8. **Applying the maturity `max(·, mg)` before the maturity, or at all on Chassis A.** The
-   `max` exists only at `t = n` and only on Chassis B [R2 R. 134-6](#frlib-eurocroissance-r2). On Chassis A the maturity
-   amount is `pm(n) + parts × part value`, **more** than `mg` whenever the parts retain any
-   value — 12,765.89 against a guarantee of 11,760.00 here.
+   `max` exists only in the last projected period, `t = n − 1`, and only on Chassis B
+   [R2 R. 134-6](#frlib-eurocroissance-r2). On Chassis A the maturity
+   amount is `pm + parts × part value` there, **more** than `mg` whenever the parts retain
+   any value — 12,765.89 against a guarantee of 11,760.00 here.
 9. **Crediting the insurer's contribution to the savers.** `C(t)` completes the representation
    and is releasable when representation permits [R1 L. 134-3](#frlib-eurocroissance-r1); the reference treatment gives
    it no return to the savers **[std]**. A model that rolls the topped-up balance forward as
@@ -383,8 +424,8 @@ wrong. Each should become a test.
 11. **Ignoring the A. 134-3 and A. 134-4 gates.** Revaluing the guarantees out of the
     participation account requires **both** A. 134-3 tests to pass; converting parts into PM
     requires the A. 134-4 15 %-of-PM headroom and a five-year cooling period [R3]. Test: at
-    `t = 5` both A. 134-3 tests pass; at `t = 6` the second fails (`pd − N × u_min = 0.00`
-    against `10 % × pm = 1,134.60`).
+    `t = 4` — the close of policy year 5 — both A. 134-3 tests pass; at `t = 5` the second
+    fails (`pd − N × u_min = 0.00` against `10 % × pm = 1,134.60`).
 12. **Using the wrong discount article, or a same-day part value.** The PM rate is A. 134-1's
     90 %-of-TEC ceiling with a zero floor [R3] — read here at the remaining maturity, which
     is **[std]** and not the article — not the A. 132-1 maximum technical rate
@@ -392,27 +433,36 @@ wrong. Each should become a test.
     is a **forward** value [R3 A. 134-5](#frlib-eurocroissance-r3), so a monthly variant must not price a surrender on a
     part value struck before the request.
 
-### Cash flow outputs (per policy year `t`, probability-weighted by `pols_if`)
+### Cash flow outputs (per period `t`, probability-weighted by `pols_if`)
 
-`pols_if(t)` below is the **start**-of-year in-force count — the notes' `l(t−1)` — and is the
-exposure every flow on that same `result_cf()` row is weighted by. The end-of-year count `l(t)`
+`pols_if(t)` below is the **start**-of-period in-force count — the notes' `l(t−1)`, and
+`pols_if_init` in the first projected period — and is the
+exposure every flow on that same `result_cf()` row is weighted by. The end-of-period count
+`l(t)`
 is `pols_if_at(t, "AFT_DECR")` in the model; it weights the maintenance expense and nothing else.
 
 | Output | Formula |
 |---|---|
-| `premiums` | `P(t) × pols_if(t)` |
+| `premiums` | `P(t) × pols_if(t)`, with the initial *versement* `P_0` in the first projected period |
 | `claims_death` | `mort_rate(t) × pols_if(t) × death_payout(t)` |
 | `claims_lapse` | `lapse_rate(t) × pols_if(t) × (1 − mort_rate(t)) × surrender_value(t)` |
-| `claims_maturity` | `pols_if(n) × (1 − mort_rate(n)) × maturity_value(n)` at `t = n` |
+| `claims_maturity` | `pols_if × (1 − mort_rate) × maturity_value` in the last projected period, `t = n − 1` |
 | `withdrawals` | partial *rachats* — an owner election, not a claim |
-| `expenses` | `pols_if(t) × (`acquisition 5 % of *versements*, plus an acquisition commission of 2 % of the initial *versement* at issue`) + l(t) × `maintenance 0.20 % p.a. of `pm + pd` — all three levels [R13], as in the assumption table above |
+| `expenses` | `pols_if(t) × (`acquisition 5 % of *versements*, plus an acquisition commission of 2 % of the initial *versement* at issue`) + `maintenance 0.20 % p.a. of `pm + pd` **at each striking**: `l(t) × (pm(t) + pd(t))` at the period's year end, plus, in the first projected period only, `pols_if(t) × (pm_open(t) + pd_open(t))` at the striking the frame opens on — all three levels [R13], as in the assumption table above |
 | `charges_taken` | `L(t) + F(t) + f_e × P(t) + f_x ×` benefits — insurer income, reported separately |
 | `insurer_contribution` / `pgt` | own-funds items, reported separately, **never** in a claim column |
 
 `liability_cf` prints outgo-positive; `net_cf(t) = −liability_cf(t)` is income-positive, and
-`result_cf()` is indexed by `t` with `pols_if` first. Because `pols_if` is the start-of-year
+`result_cf()` is indexed by `t` with `pols_if` first. Because `pols_if` is the
+start-of-period
 count, `result_cf()["pols_if"].iloc[0]` equals `pols_if_init()` on every model point, and
 dividing any flow on a row by that row's `pols_if` recovers the per-policy amount.
+
+The first row carries the initial *versement*, the entry charge on it, the acquisition
+commission and the maintenance charged at the opening striking, **as well as** the first
+policy year's own levy, return and striking. That is the merge of the issue instant into
+the first period: no row is lost from any total, and the frame has `n − duration_ifo` rows
+rather than `n − duration_ifo + 1`.
 
 ---
 
@@ -424,8 +474,9 @@ the incentive structure the code creates.
 
 - **Base full surrender** 2.5 % p.a. [R13 observes 2 %–3 %](#frlib-eurocroissance-r13); **partial surrender** 6 % of
   average encours in years 1–2 then 3 % [R13 observes 6 % then 2 %–4 %](#frlib-eurocroissance-r13).
-- **Guarantee-imminent suppression (Chassis B).** `w(t) = w_base(t) × 0.5` in the two years
-  before the *échéance* whenever the guarantee is in the money, `N(t) × u(t) < mg(t)`
+- **Guarantee-imminent suppression (Chassis B).** `w(t) = w_base(t) × 0.5` in the two
+  policy years before the *échéance* — the periods with `n − t − 1 ≤ 2` years still to run
+  at their close — whenever the guarantee is in the money, `N(t) × u(t) < mg(t)`
   **[std]**. A saver who surrenders in that state gives up the entire guarantee [R2 R. 134-5](#frlib-eurocroissance-r2)
   — the strongest exit deterrent in the product.
 - **Maturity.** 100 % of survivors take the maturity amount in the base run **[std]**, as the
@@ -434,8 +485,10 @@ the incentive structure the code creates.
   SRI ≤ 2 support unless the holder decides otherwise [R2 R. 134-6](#frlib-eurocroissance-r2) [R3 A. 134-6](#frlib-eurocroissance-r3), so a "roll
   into a low-risk support" variant is the natural extension.
 - **Duration-8 tax spike.** The assurance-vie annual abattement (€4 600 / €9 200) becomes
-  available at eight years [REG-R40], so `w(8) = w_base(8) × 1.5` **[std]** where `n > 8`.
-- **Lock-up.** Where `lock_up_years > 0`, `w(t) = 0` for `t ≤ lock_up_years`, except for the
+  available at eight years [REG-R40], so the rate of **policy year 8** — period `t` = 7 —
+  is `w_base × 1.5` **[std]** where `n > 8`.
+- **Lock-up.** Where `lock_up_years > 0`, `w(t) = 0` for `t < lock_up_years` — policy years
+  1 to `lock_up_years` — except for the
   L. 132-23 hardship exits, which are not separately modeled **[std]** [R1] [R2 R. 134-5](#frlib-eurocroissance-r2). The
   thirty-day *renonciation* right [REG-R29] belongs in a monthly variant.
 - **No surrender-penalty deterrent** is modeled, because the reference indemnity is zero
@@ -448,45 +501,51 @@ the incentive structure the code creates.
 ## Worked example
 
 **Configuration.** One model point per chassis, same asset path, two separate auxiliary
-accounts. Gross initial *versement* **€10 000.00** at `t = 0` and a free additional *versement*
-of **€2 000.00** at the end of policy year 3 [R13]; entry charge **2.00 %** [R13], so net
+accounts. Gross initial *versement* **€10 000.00** at inception and a free additional *versement*
+of **€2 000.00** at the end of policy year 3 — period `t` = 2 — [R13]; entry charge **2.00 %** [R13], so net
 *versements* are 9 800.00 and 1 960.00 and cumulative net *versements* are **11 760.00**;
 guarantee level `g` = **100 %** of net *versements* at a maturity `n` = **10 years**
 [S1] [S2]; initial part value **€10.0000** [R13]; minimum part value **€5.0000** **[std]**;
 parts levy **0.80 % p.a.** and performance levy **10 % of positive financial performance**
 [R13]; exit charge and surrender indemnity **0 %** [S2] [S8]; male age 57 [R13].
 `mort_rate = 0` and `lapse_rate = 0` throughout, so `pols_if(t) = 1` and the per-policy
-provision path is the cash-flow path **[std]**. Gross asset return `r(t)` = 4.00 % for
-`t` = 1–5, **−25.00 %** in `t` = 6, 6.00 % for `t` = 7–10; TEC10 = 2.50 % to `t` = 5 and
-**1.00 %** from `t` = 6 at every maturity, so the A. 134-1 discount rate `i_pm` = 90 % × TEC = **2.25 %** then
-**0.90 %** [R3] **[std]**. The year-6 double shock — equities down and rates down together —
+provision path is the cash-flow path **[std]**. Gross asset return `r(t)` = 4.00 % in
+periods `t` = 0–4 (policy years 1–5), **−25.00 %** in `t` = 5 (policy year 6) and 6.00 % in
+`t` = 6–9; TEC10 = 2.50 % at valuation times `k` = 0–5 and
+**1.00 %** from `k` = 6 at every maturity, so the A. 134-1 discount rate `i_pm` = 90 % × TEC = **2.25 %** then
+**0.90 %** [R3] **[std]**. The policy-year-6 double shock — equities down and rates down together —
 is what makes the rebalancing visible.
+
+Each table below has **ten** rows, one per projected policy year, plus an *opening* line
+that is **not** a row of the frame: it is the state the initial *versement* creates, which
+the model reaches as `own_assets_at(0, "BOY")` and its siblings. Row `t` is the **close**
+of policy year `t + 1`.
 
 ### Chassis A (1° engagement: euros and parts)
 
-`L(t) = 0.80 % × pd(t−1)`; `A(t) = (A(t−1) − L(t)) × (1 + r(t)) − 10 % × max((A(t−1) − L(t)) × r(t), 0)`;
-`pm(t) = mg(t) × (1 + i_pm(t))^-(10-t)`; `pd(t) = max(A(t) − pm(t), parts(t) × 5.00)`.
+`L(t) = 0.80 % × pd_open(t)`; `A(t) = (A_open(t) − L(t)) × (1 + r(t)) − 10 % × max((A_open(t) − L(t)) × r(t), 0)`;
+`pm(t) = mg(t) × (1 + i_pm(t+1))^-(9-t)`; `pd(t) = max(A(t) − pm(t), parts(t) × 5.00)`.
 
 | t | r(t) | parts levy | own assets `A` | `pm` | `pd` | parts | part value | insurer contrib. | surrender value |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | — | 0.00 | 9,800.00 | 7,845.00 | 1,955.00 | 195.5001 | 10.0000 | 0.00 | 9,800.00 |
-| 1 | 4.00 % | 15.64 | 10,136.60 | 8,021.51 | 2,115.09 | 193.9361 | 10.9061 | 0.00 | 10,136.60 |
-| 2 | 4.00 % | 16.92 | 10,483.98 | 8,202.00 | 2,281.99 | 192.3846 | 11.8616 | 0.00 | 10,483.98 |
-| 3 | 4.00 % | 18.26 | 12,802.49 | 10,063.85 | 2,738.65 | 212.8127 | 12.8688 | 0.00 | 12,802.49 |
-| 4 | 4.00 % | 21.91 | 13,240.69 | 10,290.29 | 2,950.40 | 211.1102 | 13.9756 | 0.00 | 13,240.69 |
-| 5 | 4.00 % | 23.60 | 13,692.90 | 10,521.82 | 3,171.08 | 209.4213 | 15.1421 | 0.00 | 13,692.90 |
-| 6 | −25.00 % | 25.37 | 10,250.65 | 11,346.00 | 1,038.73 | 207.7460 | **5.0000** | 2,134.08 | 12,384.73 |
-| 7 | 6.00 % | 8.31 | 10,795.42 | 11,448.11 | 1,030.42 | 206.0840 | 5.0000 | 1,683.11 | 12,478.53 |
-| 8 | 6.00 % | 8.24 | 11,369.69 | 11,551.14 | 1,022.18 | 204.4353 | 5.0000 | 1,203.63 | 12,573.32 |
-| 9 | 6.00 % | 8.18 | 11,975.03 | 11,655.10 | 1,014.00 | 202.7998 | 5.0000 | 694.07 | 12,669.10 |
-| 10 | 6.00 % | 8.11 | 12,613.13 | **11,760.00** | 1,005.89 | 201.1774 | 5.0000 | 152.75 | **12,765.89** |
+| *opening* | — | 0.00 | 9,800.00 | 7,845.00 | 1,955.00 | 195.5001 | 10.0000 | 0.00 | 9,800.00 |
+| 0 | 4.00 % | 15.64 | 10,136.60 | 8,021.51 | 2,115.09 | 193.9361 | 10.9061 | 0.00 | 10,136.60 |
+| 1 | 4.00 % | 16.92 | 10,483.98 | 8,202.00 | 2,281.99 | 192.3846 | 11.8616 | 0.00 | 10,483.98 |
+| 2 | 4.00 % | 18.26 | 12,802.49 | 10,063.85 | 2,738.65 | 212.8127 | 12.8688 | 0.00 | 12,802.49 |
+| 3 | 4.00 % | 21.91 | 13,240.69 | 10,290.29 | 2,950.40 | 211.1102 | 13.9756 | 0.00 | 13,240.69 |
+| 4 | 4.00 % | 23.60 | 13,692.90 | 10,521.82 | 3,171.08 | 209.4213 | 15.1421 | 0.00 | 13,692.90 |
+| 5 | −25.00 % | 25.37 | 10,250.65 | 11,346.00 | 1,038.73 | 207.7460 | **5.0000** | 2,134.08 | 12,384.73 |
+| 6 | 6.00 % | 8.31 | 10,795.42 | 11,448.11 | 1,030.42 | 206.0840 | 5.0000 | 1,683.11 | 12,478.53 |
+| 7 | 6.00 % | 8.24 | 11,369.69 | 11,551.14 | 1,022.18 | 204.4353 | 5.0000 | 1,203.63 | 12,573.32 |
+| 8 | 6.00 % | 8.18 | 11,975.03 | 11,655.10 | 1,014.00 | 202.7998 | 5.0000 | 694.07 | 12,669.10 |
+| 9 | 6.00 % | 8.11 | 12,613.13 | **11,760.00** | 1,005.89 | 201.1774 | 5.0000 | 152.75 | **12,765.89** |
 
-The `t` = 3 row is stated **after** the year-end *versement*. Immediately before it,
+The `t` = 2 row is stated **after** the year-end *versement*. Immediately before it,
 `A = 10,842.49`, `pm = 8,386.54`, `pd = 2,455.95`, `parts = 190.8455`, `u = 12.8688`; the
 *versement* then splits as `pm_added = 1 960.00 × 1.0225^-7 = 1,677.31`, `pd_added = 282.69`
 and `parts_added = 282.69 / 12.8688 = 21.9672`, and `mg` rises from 9,800.00 to **11,760.00**.
 Performance levies are 39.14, 40.48, 41.86, 51.12, 52.87, 0.00, 61.45, 64.72, 68.17, 71.80 for
-`t` = 1–10.
+`t` = 0–9.
 
 ### Chassis B (2° engagement: parts only, guarantee at maturity)
 
@@ -494,33 +553,33 @@ Performance levies are 39.14, 40.48, 41.86, 51.12, 52.87, 0.00, 61.45, 64.72, 68
 
 | t | parts levy | `pd` = own assets | parts | part value | `pgt` (own funds) |
 |---|---|---|---|---|---|
-| 0 | 0.00 | 9,800.00 | 980.0000 | 10.0000 | 0.00 |
-| 1 | 78.40 | 10,071.58 | 972.1600 | 10.3600 | 0.00 |
-| 2 | 80.57 | 10,350.68 | 964.3827 | 10.7330 | 0.00 |
-| 3 | 82.81 | 12,597.52 | 1,132.9370 | 11.1193 | 0.00 |
-| 4 | 100.78 | 12,946.62 | 1,123.8735 | 11.5196 | 0.00 |
-| 5 | 103.57 | 13,305.40 | 1,114.8825 | 11.9344 | 0.00 |
-| 6 | 106.44 | **9,899.22** | 1,105.9635 | **8.9508** | **1,446.78** |
-| 7 | 79.19 | 10,350.30 | 1,097.1158 | 9.4341 | 1,097.81 |
-| 8 | 82.80 | 10,821.95 | 1,088.3388 | 9.9435 | 729.20 |
-| 9 | 86.58 | 11,315.08 | 1,079.6321 | 10.4805 | 340.02 |
-| 10 | 90.52 | **11,830.69** | 1,070.9951 | 11.0464 | 0.00 |
+| *opening* | 0.00 | 9,800.00 | 980.0000 | 10.0000 | 0.00 |
+| 0 | 78.40 | 10,071.58 | 972.1600 | 10.3600 | 0.00 |
+| 1 | 80.57 | 10,350.68 | 964.3827 | 10.7330 | 0.00 |
+| 2 | 82.81 | 12,597.52 | 1,132.9370 | 11.1193 | 0.00 |
+| 3 | 100.78 | 12,946.62 | 1,123.8735 | 11.5196 | 0.00 |
+| 4 | 103.57 | 13,305.40 | 1,114.8825 | 11.9344 | 0.00 |
+| 5 | 106.44 | **9,899.22** | 1,105.9635 | **8.9508** | **1,446.78** |
+| 6 | 79.19 | 10,350.30 | 1,097.1158 | 9.4341 | 1,097.81 |
+| 7 | 82.80 | 10,821.95 | 1,088.3388 | 9.9435 | 729.20 |
+| 8 | 86.58 | 11,315.08 | 1,079.6321 | 10.4805 | 340.02 |
+| 9 | 90.52 | **11,830.69** | 1,070.9951 | 11.0464 | 0.00 |
 
-Again the `t` = 3 row is post-*versement*: immediately before it `pd = 10,637.52`,
+Again the `t` = 2 row is post-*versement*: immediately before it `pd = 10,637.52`,
 `parts = 956.6677` and `u = 11.1193`, and the whole net 1 960.00 buys
 `1 960.00 / 11.1193 = 176.2694` parts. Performance levies are 38.89, 39.96, 41.07, 49.99,
-51.37, 0.00, 58.92, 61.61, 64.41, 67.35 for `t` = 1–10.
+51.37, 0.00, 58.92, 61.61, 64.41, 67.35 for `t` = 0–9.
 
 ### Exit values, and what the two chassis pay
 
 | Event | Chassis A | Chassis B |
 |---|---|---|
-| Surrender at `t` = 6 | 12,384.73 (**105.31 %** of net *versements*) | 9,899.22 (**84.18 %**) |
-| Death at `t` = 6, no rider | 12,384.73 | 9,899.22 |
-| Death at `t` = 6 with the *garantie décès plancher* | 12,384.73 (rider claim 0.00) | 11,760.00 (rider claim **1,860.78**, outside the account) |
-| Maturity at `t` = 10 | 12,765.89 = 11,760.00 + 1,005.89 | 11,830.69 = `max(11,830.69, 11,760.00)` |
-| Guarantee binding at maturity? | yes, by construction (`pm(10) = mg`) | no — the account recovered to 0.60 % above `mg` |
-| Insurer's own-funds cost, peak | contribution **2,134.08** at `t` = 6 | PGT **1,446.78** at `t` = 6 |
+| Surrender at `t` = 5 (end of policy year 6) | 12,384.73 (**105.31 %** of net *versements*) | 9,899.22 (**84.18 %**) |
+| Death at `t` = 5, no rider | 12,384.73 | 9,899.22 |
+| Death at `t` = 5 with the *garantie décès plancher* | 12,384.73 (rider claim 0.00) | 11,760.00 (rider claim **1,860.78**, outside the account) |
+| Maturity at `t` = 9 (the *échéance*) | 12,765.89 = 11,760.00 + 1,005.89 | 11,830.69 = `max(11,830.69, 11,760.00)` |
+| Guarantee binding at maturity? | yes, by construction (`pm(9) = mg`) | no — the account recovered to 0.60 % above `mg` |
+| Insurer's own-funds cost, peak | contribution **2,134.08** at `t` = 5 | PGT **1,446.78** at `t` = 5 |
 | Social-levy base at maturity [R11] | 12,765.89 − 12,000.00 = **765.89** | 11,830.69 − 12,000.00 < 0, i.e. **nil** |
 
 The social-levy base is the surrender value at the moment the guarantee is reached less the
@@ -529,31 +588,33 @@ means gross or net of the entry charge was not resolved from the retrieved text,
 uses **gross** premiums (12,000.00) and the alternative net figures are 1,005.89 and 70.69
 respectively — **[unverified]**.
 
-**Checks.** *(i)* The PM unwinds exactly onto the guarantee: `pm(10) = 11,760.00 × 1.009^0 =
-11,760.00 = mg(10)`, and the Chassis A maturity payout is that plus the parts at their floor,
+**Checks.** *(i)* The PM unwinds exactly onto the guarantee: `pm(9) = 11,760.00 × 1.009^0 =
+11,760.00 = mg(9)`, and the Chassis A maturity payout is that plus the parts at their floor,
 `201.1774 × 5.0000 = 1,005.89`, giving 12,765.89 — reproduced independently of the asset
-path. *(ii)* The year-6 PM move decomposes cleanly into its two drivers: at the unchanged
-2.25 % rate `pm(6)` would have been `11,760.00 × 1.0225^-4 = 10,758.56`, a **time effect of
-+236.74** on `pm(5) = 10,521.82`; re-striking at 0.90 % gives `11,760.00 × 1.009^-4 =
+path. *(ii)* The policy-year-6 PM move decomposes cleanly into its two drivers: at the
+unchanged
+2.25 % rate `pm(5)` would have been `11,760.00 × 1.0225^-4 = 10,758.56`, a **time effect of
++236.74** on `pm(4) = 10,521.82`; re-striking at 0.90 % gives `11,760.00 × 1.009^-4 =
 11,346.00`, a **rate effect of +587.44**; the two sum to +824.18, which is exactly
-`11,346.00 − 10,521.82`. *(iii)* The year-6 asset roll is `A(6) = (13,692.90 − 25.37) ×
+`11,346.00 − 10,521.82`. *(iii)* The policy-year-6 asset roll is `A(5) = (13,692.90 − 25.37) ×
 (1 − 0.25) = 10,250.65` with no performance levy, because the financial performance was
-negative; `pd(6)` would have been `10,250.65 − 11,346.00 = −1,095.35` without the floor, so
+negative; `pd(5)` would have been `10,250.65 − 11,346.00 = −1,095.35` without the floor, so
 the floor binds at `207.7460 × 5.0000 = 1,038.73` and the insurer's contribution is
 `11,346.00 + 1,038.73 − 10,250.65 = 2,134.08`. *(iv)* The parts count closes:
 `212.8127 × 0.992^7 = 201.1774` on Chassis A and `1,132.9370 × 0.992^7 = 1,070.9951` on
-Chassis B. *(v)* The A. 134-3 gates behave as expected: at `t` = 5, `pd = 3,171.08 >
+Chassis B. *(v)* The A. 134-3 gates behave as expected: at `t` = 4, `pd = 3,171.08 >
 1.5 × (11,760.00 − 10,521.82) = 1,857.27` and `pd − N × u_min = 2,123.98 > 10 % × pm =
-1,052.18`, so revaluing the guarantees is permitted; at `t` = 6 the second test fails,
-`0.00 ≤ 1,134.60`. *(vi)* The A. 134-4 conversion headroom at `t` = 5 is the `C` solving
+1,052.18`, so revaluing the guarantees is permitted; at `t` = 5 the second test fails,
+`0.00 ≤ 1,134.60`. *(vi)* The A. 134-4 conversion headroom at `t` = 4 is the `C` solving
 `pd − C − N × u_min = 15 % × (pm + C)`, i.e. **474.52**, on which the 0.50 % *frais de
 conversion* [S8] would be 2.37.
 
 **Two sensitivities worth stating in numbers.** At `g` = 80 % — Generali's published level
-[S8] — the same path leaves `pm(6) = 9,076.80` and cuts the year-6 Chassis A contribution
+[S8] — the same path leaves `pm(5) = 9,076.80` and cuts the policy-year-6 Chassis A
+contribution
 from 2,134.08 to **829.17**, a 61 % reduction in the insurer's own-funds cost, which is why
 the guarantee level and not the charge scale is the product's real dial. And on Chassis B, an
-*apport d'actifs* of the statutory maximum **10 % of the PD** at `t` = 6 — 989.92, credited to
+*apport d'actifs* of the statutory maximum **10 % of the PD** at `t` = 5 — 989.92, credited to
 the PCDD, not to the savers' PD [R7 R. 134-12](#frlib-eurocroissance-r7) — would reduce the PGT from 1,446.78 to
 **456.86** without changing any policyholder value by one cent.
 
@@ -598,7 +659,8 @@ not reproduced.
    **80.1 %** of the initial net *versement*; at `g` = 80 % it is 64.0 %. This is the single
    largest dial and the sharpest observed difference across insurers [S1] [S8].
 2. **The level of the TEC.** `i_pm` is 90 % of it [R3 A. 134-1](#frlib-eurocroissance-r3), and a 150 bp fall adds
-   587.44 to `pm(6)` in the worked example — more than twice the time effect. A model with a
+   587.44 to `pm(5)` — the close of policy year 6 — in the worked example, more than twice
+   the time effect. A model with a
    flat TEC assumption is not modelling this product's dominant risk.
 3. **The minimum part value.** Nowhere published for any insurer [R2 R. 134-1](#frlib-eurocroissance-r2); it sets the
    floor of the diversification provision and therefore both the Chassis A maturity payout

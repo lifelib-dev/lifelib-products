@@ -11,10 +11,13 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the RefOBS-VIA worked-example anchor cell
     >>> Projection.point_id = 3            # the prime unique cell
 
-``t`` counts **policy months**, 1-based. The notes index the in-force probability ``l(t)``
-at the **end** of month ``t`` with ``l(0) = 1``; the library indexes :func:`pols_if` at the
-**start**, so ``pols_if(t)`` is the notes' ``l(t-1)`` — which is the column their
-worked-example table prints, and the weight on every cash flow of the same
+``t`` counts **policy months**, 0-based: ``t = 0`` is the first policy month and the frame
+is ``t = 0, 1, ..., proj_len() - 1``, so ``proj_len()`` is the **number** of projected
+months. The policy year is the contractual 1-based label derived from it,
+``policy_year(t) = t // 12 + 1``. The notes carry the in-force probability ``l(k)`` at time
+``k`` months from issue with ``l(0) = 1``, and the library indexes :func:`pols_if` at the
+**start** of the month, so ``pols_if(t)`` is exactly the notes' ``l(t)`` — which is the
+column their worked-example table prints, and the weight on every cash flow of the same
 ``result_cf()`` row.
 
 .. rubric:: Input data
@@ -63,9 +66,9 @@ entry_age                  age_at_entry()                      Entry age, milles
 x(t)                       age(t)                              Attained age in month t
 y                          policy_year(t)                      Policy year of month t
 (none)                     duration(t)                         Completed policy years
-(none)                     duration_mth(t)                     Months elapsed, equal to t
+(none)                     duration_mth(t)                     Months elapsed at BOM, = t
 omega                      omega_age                           Limiting age, 112
-(none)                     proj_len()                          Last projected month
+(none)                     proj_len()                          Number of projected months
 C_0                        capital_0()                         Capital at issue
 C(y)                       capital_pp(t)                       Guaranteed capital in force
 r                          reval_rate()                        Annual revalorisation rate
@@ -78,7 +81,7 @@ P(t)                       prem_due_pp(t)                      Premium due at BO
 (paying period)            in_paying_period(t)                 Premiums are still due
 K(t)                       cum_prem_pp(t)                      Premiums collected to BOM
 n_car                      carence_months()                    Waiting period, months
-(indicator)                in_carence(t)                       t <= carence_months
+(indicator)                in_carence(t)                       t < carence_months
 (refund basis)             refund_pp(t)                        Waiting-period refund
 i_ref                      carence_refund_rate()               Interest on the refund
 DB_ill(t)                  benefit_pp(t, "ILL")                Non-accidental benefit
@@ -103,8 +106,8 @@ w(y)                       lapse_rate(t)                       Annual premium-st
 (table)                    lapse_rate_base(t)                  Table rate before the stress
 beta                       lapse_overrun_beta                  Overrun lapse stress dial
 w_m(y)                     lapse_rate_mth(t)                   Monthly premium-stop rate
-l(t-1)                     pols_if(t)                          Premium-paying in force
-l_r(t-1)                   pols_paid_up(t)                     Paid-up in force
+l(t)                       pols_if(t)                          Premium-paying in force
+l_r(t)                     pols_paid_up(t)                     Paid-up in force
 (none)                     pols_all(t)                         pols_if + pols_paid_up
 (none)                     capital_paid_up(t)                  Aggregate paid-up capital
 (none)                     pols_death(t)                       Deaths, premium-paying
@@ -149,16 +152,17 @@ the *participation aux benefices* moves it every year.
 
 .. rubric:: The delai de carence is two benefits, not one
 
-For the first twelve months a **non-accidental** death refunds the premiums **collected**
-— a step function, constant at 336.03 through months 1 to 12 on the anchor cell, because
-the premium is annual and payable in advance — while an **accidental** death pays the
-**full guaranteed capital from day one**. From month 13 any death pays the capital.
+For the first twelve months — ``t = 0`` to ``t = 11`` — a **non-accidental** death refunds
+the premiums **collected**: a step function, constant at 336.03 through those twelve months
+on the anchor cell, because the premium is annual and payable in advance. An **accidental**
+death pays the **full guaranteed capital from day one**. From ``t = 12`` any death pays the
+capital.
 
 Paying the capital inside the waiting period is the central error available on this
-product: it takes month-1 expected death outgo from 0.380884 to 3.345618 and policy-year
-1 from 4.4274 to 38.8893. Dropping the accident leg is the mirror-image error and
-understates month 1 by 41 %. Accruing the refund base monthly when the premium is annual
-understates policy year 1 by 26 %. All three are asserted in the test module.
+product: it takes the first month's expected death outgo from 0.380884 to 3.345618 and
+policy-year 1 from 4.4274 to 38.8893. Dropping the accident leg is the mirror-image error
+and understates the first month by 41 %. Accruing the refund base monthly when the premium
+is annual understates policy year 1 by 26 %. All three are asserted in the test module.
 
 The accidental multiplier — ``2 x`` the capital at one insurer, capped at 20000 EUR —
 applies **past** the waiting period only. Inside it the accidental benefit is already the
@@ -170,7 +174,7 @@ place, ``benefit_pp(t, "ACC")``, past the *carence* only.
 The guaranteed capital is uprated annually out of the *participation aux benefices*, and
 the uprating starts at the **first anniversary**, not at issue, because PB is allocated to
 contracts in force at least a year. So ``capital_pp(t) == capital_0()`` for
-``t <= 12``, and the year-``y`` capital is ``C_0 x (1 + r)^(y-1)`` — or
+``t < 12``, and the year-``y`` capital is ``C_0 x (1 + r)^(y-1)`` — or
 ``C_0 x (1 + r (y-1))`` where :func:`reval_simple` reads the contractual wording as a
 simple uplift. Nothing is uprated inside the waiting period on the illness leg: that
 benefit is a refund of premiums, not a capital, and :func:`carence_refund_rate` is a
@@ -184,9 +188,9 @@ the wrong cell moves premium income in the wrong direction.
 .. rubric:: Lapse pays money, which is the whole contrast with the UK sibling
 
 *Rachat* pays the *provision mathematique*, so ``claims_lapse`` — the ``"LAPSE"`` kind
-of :func:`claims` — is non-zero from month 1 and worth 1005.89 over the anchor cell's
-horizon. On :mod:`.WOL_UK_S`, where a lapse pays exactly nothing, raising lapse always
-lowers the liability; here removing the lapse decrement *raises* the undiscounted net
+of :func:`claims` — is non-zero from the first month and worth 1005.89 over the anchor
+cell's horizon. On :mod:`.WOL_UK_S`, where a lapse pays exactly nothing, raising lapse
+always lowers the liability; here removing the lapse decrement *raises* the undiscounted net
 stream from 2236.92 to 3165.11, because the premiums a lapser stops paying are worth more
 than the reserve handed back. Two consequences are wired in rather than left as prose:
 
@@ -204,11 +208,11 @@ than the reserve handed back. Two consequences are wired in rather than left as 
 Under *primes viageres* cumulative premiums grow without bound while the capital grows at
 most at the revalorisation rate, so the insured can and often does pay more than the
 capital. :func:`crossover_mth` finds the month, and it finds **two** of them: against the
-capital at issue, month 169 on the anchor cell, and against the revalorised capital, month
-205 — three years apart. Reporting one without saying which is how a published crossover
-moves by years. It is reported rather than acted on: the overrun-aware lapse module that
-raises the rate past the tipping point is a pure stress dial, and ``lapse_overrun_beta``
-is 0 in the base run.
+capital at issue, ``t = 168`` on the anchor cell, and against the revalorised capital,
+``t = 204`` — three years apart. Reporting one without saying which is how a published
+crossover moves by years. It is reported rather than acted on: the overrun-aware lapse
+module that raises the rate past the tipping point is a pure stress dial, and
+``lapse_overrun_beta`` is 0 in the base run.
 
 .. rubric:: Sign convention
 
@@ -488,6 +492,8 @@ def pols_if_init():
 def proj_len():
     """Projection length in months: ``12 x (omega_age - entry_age + 1)``.
 
+    The **number** of projected months, and the exclusive end of the frame: the projection
+    runs over ``t = 0, 1, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``.
     Whole life has no maturity date, so the horizon is a **limiting age** rather than a
     contractual one.  ``omega_age`` is 112, the tabulation limit of TH 00-02 in the annexe
     to art. A. 335-1 CA, and :func:`mort_rate` is forced to 1 there, so the population is
@@ -499,21 +505,29 @@ def proj_len():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``.
+
+    0-based, as in lifelib: 0 through the whole of the first policy year.
+    """
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from outset at the end of month t; equal to t.
+    """Months elapsed from outset at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly models
-    in this library share one vocabulary.
+    ``t`` is 0-based, so the identity is trivial - the cells exists so the monthly models
+    in this library share one vocabulary.  Month ``t`` runs from time ``t`` to time
+    ``t + 1``, so ``duration_mth(t) + 1`` months have elapsed by the end of it.
     """
     return t
 
 
 def policy_year(t):
-    """y = floor((t-1)/12) + 1: the policy year containing month t; 1 for t = 1..12."""
+    """y = t // 12 + 1: the policy year containing month t; 1 for t = 0..11.
+
+    The contractual, **1-based** label, derived from the 0-based index and never
+    confused with it: it is what the premium, lapse and select schedules are keyed by.
+    """
     return duration(t) + 1
 
 
@@ -597,7 +611,7 @@ def lapse_rate_base(t):
     because the surrender value is worth a fraction of the premiums paid for the first two
     decades - so an early lapser loses most of their money and a late one has nearly
     reached a full payout.  There is **no waiting-period completion spike**: nothing
-    changes for the policyholder at month 13 except that the cover becomes worth having.
+    changes for the policyholder at ``t = 12`` except that the cover becomes worth having.
     """
     tbl = data.lapse_table()                                         # noqa: F821
     y = min(policy_year(t), int(tbl.index.max()))
@@ -627,26 +641,26 @@ def lapse_rate_mth(t):
 
 
 def is_premium_mth(t):
-    """Whether an instalment falls due in month t: ``t = 1 (mod 12 / prem_freq)``.
+    """Whether an instalment falls due in month t: ``t = 0 (mod 12 / prem_freq)``.
 
-    Months 1, 13, 25, ... on the annual default; every month at ``prem_freq = 12``.
+    Months 0, 12, 24, ... on the annual default; every month at ``prem_freq = 12``.
     """
     step = 12 // prem_freq()
-    return (t - 1) % step == 0
+    return t % step == 0
 
 
 def in_paying_period(t):
     """Whether month t is inside the premium-paying period of this premium form.
 
-    Month 1 only on a *prime unique*; months 1 to ``12 x prem_term_y`` on a *temporaire*;
-    every month on a *viagere*, unbounded where ``prem_cease_age`` is 0 and otherwise
-    until the anniversary at which the attained age reaches it.
+    Month 0 only on a *prime unique*; months 0 to ``12 x prem_term_y - 1`` on a
+    *temporaire*; every month on a *viagere*, unbounded where ``prem_cease_age`` is 0 and
+    otherwise until the anniversary at which the attained age reaches it.
     """
     form = premium_form()
     if form == "single":
-        return t == 1
+        return t == 0
     if form == "temporary":
-        return t <= 12 * prem_term_y()
+        return t < 12 * prem_term_y()
     return prem_cease_age() == 0 or age(t) < prem_cease_age()
 
 
@@ -683,11 +697,11 @@ def cum_prem_pp(t):
     The premium falls at the beginning of the month and death at the end, so a death in
     month t has had the month-t premium paid on it.  This is the **waiting-period refund
     base**, and with an annual premium in advance it is a **step function** - constant at
-    one year's premium through months 1 to 12 - not a monthly accrual.  Accruing it
-    monthly gives 28.00 rather than 336.03 at month 1 on the anchor cell and understates
-    policy-year-1 death outgo by 26 %.
+    one year's premium through months 0 to 11 - not a monthly accrual.  Accruing it
+    monthly gives 28.00 rather than 336.03 in the first month on the anchor cell and
+    understates policy-year-1 death outgo by 26 %.
     """
-    if t <= 0:
+    if t < 0:
         return 0.0
     return cum_prem_pp(t - 1) + prem_due_pp(t)
 
@@ -698,7 +712,7 @@ def capital_pp(t):
     ``C_0 x (1 + r)^(y-1)``, or ``C_0 x (1 + r (y-1))`` under :func:`reval_simple`.  The
     uprating starts at the **first anniversary**, not at issue, because the
     *participation aux benefices* is allocated to contracts in force at least a year - so
-    ``capital_pp(t) == capital_0()`` for ``t <= 12``, which :func:`check_capital_reval`
+    ``capital_pp(t) == capital_0()`` for ``t < 12``, which :func:`check_capital_reval`
     asserts.  Uprating at issue would make it 5050.00 in the first year on the anchor cell
     and overstate the year-1 accidental leg.
     """
@@ -720,9 +734,16 @@ def surr_scale_anchors():
 
 
 def surr_scale_pp(t):
-    """The published surrender-value scale at month t, in EUR per 5000 EUR of capital.
+    """The published surrender-value scale for a surrender in month t, per 5000 EUR.
 
-    Linearly interpolated in **policy months** between the published quinquennial anchors
+    The CSV's ``month`` column is **elapsed months from issue**, 0 at issue and 60, 120,
+    ... 540 at the published quinquennial anniversaries; it is not the frame's ``t`` and
+    does not move with it.  Surrenders fall at the **end** of month t, by which time
+    ``duration_mth(t) + 1`` months have elapsed, so that is the key this reads: the first
+    projected month, ``t = 0``, is one month into the contract, and the published
+    five-year anchor is reached in month ``t = 59``.
+
+    Linearly interpolated in **elapsed months** between the published quinquennial anchors
     **[std]** and held flat beyond the last one.  The anchors are transcribed from one
     insurer's standardised table and already embed that insurer's own revalorisation,
     which is why :func:`surr_value_pp` is **not** additionally scaled by
@@ -733,39 +754,40 @@ def surr_scale_pp(t):
     tariff basis**: the whole retrieved set contains one technical rate with a table and
     one rate alone.
     """
+    m_elapsed = duration_mth(t) + 1
     anchors = surr_scale_anchors()
-    if t >= anchors[-1][0]:
+    if m_elapsed >= anchors[-1][0]:
         return anchors[-1][1]
     lo = anchors[0]
     hi = anchors[-1]
     for m, v in anchors:
-        if m <= t:
+        if m <= m_elapsed:
             lo = (m, v)
         else:
             hi = (m, v)
             break
-    return lo[1] + (hi[1] - lo[1]) * (t - lo[0]) / (hi[0] - lo[0])
+    return lo[1] + (hi[1] - lo[1]) * (m_elapsed - lo[0]) / (hi[0] - lo[0])
 
 
 def surr_penalty(t):
     """pen(t): the surrender penalty rate applying in month t.
 
-    ``surr_penalty_rate`` inside the first ``surr_penalty_years`` years and zero after -
-    a flat window, not a decaying scale, which is how the one insurer that charges it
-    writes it.
+    ``surr_penalty_rate`` inside the first ``surr_penalty_years`` years - months
+    ``t = 0`` to ``12 x surr_penalty_years - 1`` - and zero after: a flat window, not a
+    decaying scale, which is how the one insurer that charges it writes it.
     """
-    return surr_penalty_rate() if t <= 12 * surr_penalty_years() else 0.0
+    return surr_penalty_rate() if t < 12 * surr_penalty_years() else 0.0
 
 
 def surr_value_pp(t):
     """V(t): the surrender value per policy in month t - the *provision mathematique*.
 
     The scale for this model point, pro-rated to the policy's own capital and net of any
-    penalty.  It is a **real cash flow**, paid on every *rachat* from month 1, which is
-    the whole difference from the UK guaranteed-acceptance sibling where a lapse pays
-    nothing.  It is also what an excluded death is paid: suicide in year 1, war, nuclear
-    and murder by a beneficiary do not extinguish the contract, and an exclusion modelled
-    as a zero benefit understates outgo by exactly this amount per excluded death.
+    penalty.  It is a **real cash flow**, paid on every *rachat* from the first projected
+    month, which is the whole difference from the UK guaranteed-acceptance sibling where a
+    lapse pays nothing.  It is also what an excluded death is paid: suicide in year 1, war,
+    nuclear and murder by a beneficiary do not extinguish the contract, and an exclusion
+    modelled as a zero benefit understates outgo by exactly this amount per excluded death.
     """
     return (surr_scale_pp(t) * capital_0() / surr_scale_capital      # noqa: F821
             * (1.0 - surr_penalty(t)))
@@ -796,26 +818,33 @@ def reduced_capital_pp(t):
 
 
 def in_carence(t):
-    """Whether month t falls inside the *delai de carence*: ``t <= carence_months``."""
-    return t <= carence_months()
+    """Whether month t falls inside the *delai de carence*: ``t < carence_months``.
+
+    Months ``t = 0`` to ``t = carence_months - 1`` on the 0-based frame, so the twelve
+    contractual waiting-period months are ``t = 0 .. 11`` and the cover changes at
+    ``t = 12``.
+    """
+    return t < carence_months()
 
 
 def refund_pp(t):
     """The waiting-period refund per policy in month t, on this cell's basis.
 
     ``K(t)`` gross; net of the assistance premium at one insurer, 12 EUR a year for each
-    year begun; net of instalment charges at another, which strips the documented 2.2 %
-    instalment loading and therefore does nothing on an annual-premium cell.  Then
-    credited with ``carence_refund_rate``, which is zero in every retrieved contract.
+    year begun - which is ``policy_year(t)`` on the 0-based frame; net of instalment
+    charges at another, which strips the documented 2.2 % instalment loading and therefore
+    does nothing on an annual-premium cell.  Then credited with ``carence_refund_rate``,
+    which is zero in every retrieved contract, over the ``duration_mth(t) + 1`` months
+    elapsed by the end of month t, when the death resolves.
     """
     base = cum_prem_pp(t)
     basis = carence_refund_basis()
     if basis == "net_assistance":
-        years = -(-t // 12)
+        years = policy_year(t)
         base = max(0.0, base - assistance_prem_pp * years)           # noqa: F821
     elif basis == "net_instalment" and prem_freq() > 1:
         base = base / (1.0 + instalment_load)                        # noqa: F821
-    return base * (1.0 + carence_refund_rate()) ** (t / 12.0)
+    return base * (1.0 + carence_refund_rate()) ** ((duration_mth(t) + 1) / 12.0)
 
 
 def benefit_pp(t, kind):
@@ -859,34 +888,36 @@ def benefit_pp(t, kind):
 
 
 def pols_if(t):
-    """l(t-1): premium-paying policies in force at the **start** of policy month t.
+    """l(t): premium-paying policies in force at the **start** of policy month t.
 
-    The notes' in-force probability, and the column their worked-example table prints.
+    The notes' in-force probability at time t months from issue, and the column their
+    worked-example table prints; ``pols_if(0) == pols_if_init()``.
     Paid-up policies are **not** counted here: they are a separate strand,
     :func:`pols_paid_up`, because they pay no premium and their benefit is a different
-    amount.  Defined one month past :func:`proj_len` so that the roll-forward checks close
-    in the last projected month.
+    amount.  Defined one month past the frame - at ``t = proj_len()`` - so that the
+    roll-forward checks close in the last projected month, ``proj_len() - 1``.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return (pols_if(t - 1) * (1.0 - mort_rate_mth(t - 1))
             * (1.0 - lapse_rate_mth(t - 1)))
 
 
 def pols_paid_up(t):
-    """l_r(t-1): paid-up (*reduit*) policies in force at the start of policy month t.
+    """l_r(t): paid-up (*reduit*) policies in force at the start of policy month t.
 
-    Zero where ``reduction_share`` is zero.  Paid-up policies pay no premium, carry no
+    Zero where ``reduction_share`` is zero, and zero at ``t = 0``: nothing is paid-up at
+    issue.  Paid-up policies pay no premium, carry no
     premium-stop decrement - there is nothing left to stop paying - and their capital is
     fixed at the date of conversion, so they roll forward on mortality alone and take
     conversions in from the premium-paying strand.  Voluntary surrender by a paid-up
     policyholder is not modeled **[std]**.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return 0.0
     return pols_paid_up(t - 1) * (1.0 - mort_rate_mth(t - 1)) + pols_convert(t - 1)
 
@@ -898,11 +929,12 @@ def capital_paid_up(t):
     per-conversion cohort dimension: the paid-up capital depends on *when* the policy
     converted, but every paid-up policy thereafter rolls forward on the same survival
     factor, so the sum of their capitals satisfies the same recursion as the count.  Death
-    outgo on the strand is then ``capital_paid_up(t) x q_m(t)``.
+    outgo on the strand is then ``capital_paid_up(t) x q_m(t)``.  Zero at ``t = 0``:
+    nothing is paid-up at issue.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return 0.0
     return (capital_paid_up(t - 1) * (1.0 - mort_rate_mth(t - 1))
             + pols_convert(t - 1) * benefit_pp(t - 1, "PAID_UP"))
@@ -928,7 +960,7 @@ def pols_if_at(t, timing):
         **death before premium-stop** **[std]**.
 
     ``"AFT_DECR"``
-        the notes' ``l(t)``, the end-of-month count.
+        the end-of-month count, the notes' ``l(t + 1)``.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -942,7 +974,7 @@ def pols_if_at(t, timing):
 def pols_death(t):
     """Deaths on the premium-paying strand at the end of month t.
 
-    Taken against the start-of-month in-force, which is the notes' ``l(t-1) x q_m(y)``.
+    Taken against the start-of-month in-force, which is the notes' ``l(t) x q_m(y)``.
     """
     return pols_if(t) * mort_rate_mth(t)
 
@@ -985,16 +1017,17 @@ def crossover_mth(basis):
     """The first month in which cumulative premiums exceed the capital, by basis.
 
     ``"ISSUE"``
-        against the capital **at issue**, ``capital_0()``: month 169 on
-        the anchor cell, policy year 15.
+        against the capital **at issue**, ``capital_0()``: ``t = 168``
+        on the anchor cell, policy year 15.
 
     ``"CURRENT"``
-        against the **revalorised** capital in force: month 205, policy
+        against the **revalorised** capital in force: ``t = 204``, policy
         year 18 - three years later, because the capital has been
         growing too.
 
-    Returns 0 where the crossover never happens, which in the shipped table is the *prime
-    unique* cell alone: the single premium is 85 % of the capital and nothing follows it.
+    The month it returns is an index on the 0-based frame, so it is a valid answer at 0
+    and the "never" sentinel is **-1**, not 0.  That case is the *prime unique* cell alone
+    in the shipped table: the single premium is 85 % of the capital and nothing follows it.
     A *temporaire* cell can cross and two of the shipped ones do - a ten-year premium of
     651.26 passes 5000 at the eighth instalment - but it stops there, permanently, while a
     *viagere* cell goes on paying past the crossover for as long as the insured lives,
@@ -1011,11 +1044,11 @@ def crossover_mth(basis):
     """
     if basis not in ("ISSUE", "CURRENT"):
         raise ValueError("invalid basis")
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         target = capital_0() if basis == "ISSUE" else capital_pp(t)
         if cum_prem_pp(t) > target:
             return t
-    return 0
+    return -1
 
 
 def premiums(t):
@@ -1084,7 +1117,8 @@ def inflation_factor(t):
 def expenses(t):
     """Acquisition and maintenance expense in month t **[std]**.
 
-    The acquisition charge falls once, at issue; maintenance is carried on
+    The acquisition charge falls once, at issue - the first projected month, ``t = 0``;
+    maintenance is carried on
     :func:`pols_all`, so a paid-up contract still costs money to administer even though it
     pays no premium.  No French source publishes a currency expense assumption for this
     product.  The anchors are the disclosed **charges**, which bound expenses from above
@@ -1094,7 +1128,7 @@ def expenses(t):
     maintenance expense at about half the ongoing charge.  Claim handling is folded in
     here rather than charged per death, because no retrieved document separates them.
     """
-    acq = expense_acq_pp * pols_if(t) if t == 1 else 0.0             # noqa: F821
+    acq = expense_acq_pp * pols_if(t) if t == 0 else 0.0             # noqa: F821
     return acq + expense_maint_pp / 12.0 * inflation_factor(t) * pols_all(t)  # noqa: F821
 
 
@@ -1141,7 +1175,7 @@ def check_pols_roll_fwd():
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol      # noqa: F821
                * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_surv_annual_resid(t):
@@ -1151,7 +1185,7 @@ def check_surv_annual_resid(t):
     in-force at the start of policy year y+1 is available in closed form from the start of
     year y: ``l x (1 - q(y)) x (1 - w(y))``.  On the anchor cell that is
     ``0.992 x 0.94 = 0.93248`` at the end of policy year 1, which is the figure the notes'
-    worked example prints against t = 13.
+    worked example prints against t = 12.
 
     This is the check that catches a misindexed recursion.  Rolling the in-force forward
     with the *next* month's rates, or with the rates of the policy year the month falls in
@@ -1160,7 +1194,7 @@ def check_surv_annual_resid(t):
     Zero except at policy-year starts, and at the last one where the following year would
     fall outside the projection.
     """
-    if (t - 1) % 12 != 0 or t + 12 > proj_len() + 1:
+    if t % 12 != 0 or t + 12 > proj_len():
         return 0.0
     return (pols_if(t + 12)
             - pols_if(t) * (1.0 - mort_rate(t)) * (1.0 - lapse_rate(t)))
@@ -1170,7 +1204,7 @@ def check_surv_annual():
     """True when the monthly decrements compound back to the annual ones in every year."""
     return all(abs(check_surv_annual_resid(t)) <= roll_fwd_tol        # noqa: F821
                * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_capital_reval_resid(t):
@@ -1184,11 +1218,11 @@ def check_capital_reval_resid(t):
     year's uprating less the rate it should be, which catches a capital that is uprated at
     the wrong frequency, or compounded where the model point asks for a simple uplift.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t <= 12:
+    if t < 12:
         return capital_pp(t) - capital_0()
-    if (t - 1) % 12 != 0:
+    if t % 12 != 0:
         return 0.0
     step = (capital_0() if reval_simple() else capital_pp(t - 12)) * reval_rate()
     return capital_pp(t) - capital_pp(t - 12) - step
@@ -1198,7 +1232,7 @@ def check_capital_reval():
     """True when the capital is flat through year 1 and steps once a year after it."""
     return all(abs(check_capital_reval_resid(t)) <= roll_fwd_tol      # noqa: F821
                * max(capital_0(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_lapse_gate_resid(t):
@@ -1212,8 +1246,8 @@ def check_lapse_gate_resid(t):
     checking.
     """
     y = policy_year(t)
-    first = 12 * (y - 1) + 1
-    last = min(first + 11, proj_len())
+    first = 12 * (y - 1)
+    last = min(first + 11, proj_len() - 1)
     if any(prem_due_pp(s) > 0.0 for s in range(first, last + 1)):
         return 0.0
     return lapse_rate_mth(t)
@@ -1222,7 +1256,7 @@ def check_lapse_gate_resid(t):
 def check_lapse_gate():
     """True when no premium-stop decrement is applied where no premium is due."""
     return all(check_lapse_gate_resid(t) == 0.0
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_truncation_resid(t):
@@ -1235,17 +1269,17 @@ def check_truncation_resid(t):
     negligible the limiting age would be too low and the model would be understating the
     tail rather than merely rounding it.
     """
-    return pols_all(t + 1) if t == proj_len() else 0.0
+    return pols_all(t + 1) if t == proj_len() - 1 else 0.0
 
 
 def check_truncation():
     """True when nothing is left in force at the limiting age."""
-    return (abs(check_truncation_resid(proj_len()))
+    return (abs(check_truncation_resid(proj_len() - 1))
             <= 1e-9 * max(pols_if_init(), 1.0))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month t = 0 ... proj_len() - 1.
 
     ``pols_if`` is the premium-paying count at the start of the month, which is the weight
     on premium income and on death outgo; ``pols_paid_up`` is the *reduit* strand, empty on
@@ -1254,7 +1288,7 @@ def result_cf():
     single ``claims_death`` column is their sum.  ``liability_cf`` is the notes'
     outgo-positive orientation and ``net_cf`` its exact negative.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1272,8 +1306,8 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts, benefits and rates, indexed by policy month t."""
-    ts = list(range(1, proj_len() + 1))
+    """Policy counts, benefits and rates, indexed by policy month t = 0 ... proj_len()-1."""
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

@@ -6,8 +6,13 @@ M30 / 年満了 10年 更新型 / renewal ceiling attained age 80 / JPY 10,000,0
 JPY 974 a month.  They are hard-coded here rather than pickled so that a reviewer can
 compare them against the notes by eye.
 
+``t`` is the model's **0-based** projection index: ``t = 0`` is the first projected policy
+year, the frame is ``range(proj_len())`` and the last index is ``proj_len() - 1``.  The
+contractual policy year is ``t + 1``, so the notes' "year 10" boundary is ``t = 9`` and
+the repriced term opens at ``t = 10``.  Every literal below is on that index.
+
 Tolerances follow the precision the notes display: money to the yen's second decimal,
-in-force to six decimals, and the year-10 exit split to the eight decimals the notes
+in-force to six decimals, and the boundary-year exit split to the eight decimals the notes
 print it at.
 
 Beyond the worked example this module asserts every product fact the notes list under
@@ -29,7 +34,7 @@ and be wrong.  One test per pitfall, named after it:
 
 The structural facts the product turns on are asserted alongside them: the horizon is the
 renewal ceiling rather than the term, the premium is a function of the term index rather
-than of the policy year, and there are no tail states of any kind.
+than of the projection year, and there are no tail states of any kind.
 """
 import modelx as mx
 import pytest
@@ -39,18 +44,19 @@ from jp_registry import LIB, MODELS
 
 YEN = 0.005           # money displayed to 2 d.p.
 INFORCE = 5e-7        # in-force displayed to 6 d.p.
-EXITS = 5e-9          # the year-10 exit split, displayed to 8 d.p.
+EXITS = 5e-9          # the boundary-year exit split, displayed to 8 d.p.
 
 MODEL_DIR = LIB / MODELS["Term_JP_A"][0]
 
-# The notes' worked example, anchor cell (point_id = 1).
+# The notes' worked example, anchor cell (point_id = 1), on the 0-based index: the notes'
+# policy years 1, 2, 3, 10 and 11 are t = 0, 1, 2, 9 and 10.
 # t: (l(t), P_a, premiums, claims, claim expense, maint + acq, commission, CF(t))
 WORKED_EXAMPLE = {
-    1:  (1.000000, 11688,  11688.00, 5440.00, 16.32, 19000.00, 5844.00, -18612.32),
-    2:  (0.909505, 11688,  10630.29, 5020.47, 15.06,  3674.40,  531.51,  +1388.85),
-    3:  (0.845373, 11688,   9880.72, 4734.09, 14.20,  3449.46,  494.04,  +1188.93),
-    10: (0.578436, 11688,   6760.76, 4997.69, 14.99,  2530.51,  338.04,  -1120.47),
-    11: (0.466683, 21876,  10209.17, 4405.49, 13.22,  2062.04,  510.46,  +3217.97),
+    0:  (1.000000, 11688,  11688.00, 5440.00, 16.32, 19000.00, 5844.00, -18612.32),
+    1:  (0.909505, 11688,  10630.29, 5020.47, 15.06,  3674.40,  531.51,  +1388.85),
+    2:  (0.845373, 11688,   9880.72, 4734.09, 14.20,  3449.46,  494.04,  +1188.93),
+    9:  (0.578436, 11688,   6760.76, 4997.69, 14.99,  2530.51,  338.04,  -1120.47),
+    10: (0.466683, 21876,  10209.17, 4405.49, 13.22,  2062.04,  510.46,  +3217.97),
 }
 
 # The notes' table rates for the anchor cell's first term, attained ages 30 .. 40.  Ages
@@ -78,17 +84,19 @@ SOURCED_ANCHORS = {
     ("F", 75): 0.01289, ("F", 80): 0.02414,
 }
 
-# The renewal ladder: (t of the 更新, attained age at the renewed term's start, P_m, P_a,
-# the premium jump the notes print to 2 d.p., l(t+1) after the decline).
+# The renewal ladder: (t of the boundary year — the *last* year of the expiring term, so
+# the repriced premium is first charged at t + 1 — attained age at the renewed term's
+# start, P_m, P_a, the premium jump the notes print to 2 d.p., l(t+1) after the decline).
 RENEWAL_LADDER = [
-    (10, 40,  1823,  21876, 1.87, 0.466683),
-    (20, 50,  3933,  47196, 2.16, 0.234147),
-    (30, 60,  8976, 107712, 2.28, 0.115211),
-    (40, 70, 23881, 286572, 2.66, 0.054121),
+    (9,  40,  1823,  21876, 1.87, 0.466683),
+    (19, 50,  3933,  47196, 2.16, 0.234147),
+    (29, 60,  8976, 107712, 2.28, 0.115211),
+    (39, 70, 23881, 286572, 2.66, 0.054121),
 ]
 
-# The three exits of year 10, in the notes' processing order.
-YEAR_10_EXITS = (0.00049977, 0.02889681, 0.08235591)
+# The three exits of the first boundary year, t = 9 (the notes' policy year 10), in the
+# notes' processing order.
+BOUNDARY_EXITS = (0.00049977, 0.02889681, 0.08235591)
 
 # Undiscounted totals over the fifty years, and the current-term answer.
 TOTAL_PREMIUMS = 470348.54
@@ -132,71 +140,71 @@ def test_worked_example_mortality_vector(jp_term_anchor):
     a [std] proxy anchored on rates quoted from the published table [REG-R18] [R4].
     """
     a = jp_term_anchor
-    for t in range(1, 12):
+    for t in range(11):
         q_tab = WORKED_EXAMPLE_QTAB[a.age(t)]
         assert a.mort_rate_at_age(a.age(t)) == pytest.approx(q_tab, rel=1e-12)
         assert a.mort_rate(t) == pytest.approx(0.80 * q_tab, rel=1e-12)
-    assert a.mort_rate(1) == pytest.approx(0.000544, rel=1e-12)
-    assert a.mort_rate(11) == pytest.approx(0.000944, rel=1e-12)
+    assert a.mort_rate(0) == pytest.approx(0.000544, rel=1e-12)
+    assert a.mort_rate(10) == pytest.approx(0.000944, rel=1e-12)
     # The canonical table anchors ages 31-34 as well, so the first term is anchored
     # everywhere except 36-39.
     for x in (30, 31, 32, 33, 34, 35, 40):
         assert a.mort_rate_at_age(x) == SOURCED_ANCHORS[("M", x)]
 
 
-def test_worked_example_year_one_trace(jp_term_anchor):
-    """The notes' year-one trace, line by line.
+def test_worked_example_first_year_trace(jp_term_anchor):
+    """The notes' first-year trace at t = 0, line by line.
 
-    l(1) = 1; D(1) = 0.000544; claims = 10,000,000 x D(1); claim expense = 30,000 x D(1);
-    expenses = E0 + e(1) = 15,000 + 4,000; commission = c0 = 0.50 x 11,688.  The strain
+    l(0) = 1; D(0) = 0.000544; claims = 10,000,000 x D(0); claim expense = 30,000 x D(0);
+    expenses = E0 + e(0) = 15,000 + 4,000; commission = c0 = 0.50 x 11,688.  The strain
     the protection shape starts from is 20,844 of outgo against 11,688 of premium.
     """
     a = jp_term_anchor
-    assert a.pols_if(1) == 1.0
-    assert a.pols_death(1) == pytest.approx(0.000544, rel=1e-12)
-    assert a.premiums(1) == 11688.00
-    assert a.claims(1, "DEATH") == pytest.approx(10000000.0 * 0.000544, rel=1e-12)
-    assert a.claim_expenses(1) == pytest.approx(30000.0 * 0.000544, rel=1e-12)
-    assert a.expenses(1) == pytest.approx(15000.0 + 4000.0, abs=YEN)
+    assert a.pols_if(0) == 1.0
+    assert a.pols_death(0) == pytest.approx(0.000544, rel=1e-12)
+    assert a.premiums(0) == 11688.00
+    assert a.claims(0, "DEATH") == pytest.approx(10000000.0 * 0.000544, rel=1e-12)
+    assert a.claim_expenses(0) == pytest.approx(30000.0 * 0.000544, rel=1e-12)
+    assert a.expenses(0) == pytest.approx(15000.0 + 4000.0, abs=YEN)
     assert a.comm_init_pp() == pytest.approx(0.50 * 11688.0, abs=YEN)
-    assert a.net_cf(1) == pytest.approx(
+    assert a.net_cf(0) == pytest.approx(
         11688.00 - 5440.00 - 16.32 - 19000.00 - 5844.00, abs=1e-9)
 
 
 def test_worked_example_inforce_updates(jp_term_anchor):
     """The notes' roll-forward steps, including the boundary year's three of them.
 
-    l(2) = 1 x (1 - 0.000544) x (1 - 0.09); l(3) = l(2) x (1 - 0.000552) x (1 - 0.07);
-    and in year 10, mortality then ordinary lapse then the renewal decline, in that order
+    l(1) = 1 x (1 - 0.000544) x (1 - 0.09); l(2) = l(1) x (1 - 0.000552) x (1 - 0.07);
+    and at t = 9, mortality then ordinary lapse then the renewal decline, in that order
     and no other: 0.57793622, then 0.54903941, then 0.46668350.
     """
     a = jp_term_anchor
-    assert a.lapse_rate(1) == 0.09
-    assert a.pols_if(2) == pytest.approx(1.0 * (1 - 0.000544) * (1 - 0.09), rel=1e-14)
-    assert a.lapse_rate(2) == 0.07
-    assert a.pols_if(3) == pytest.approx(
-        a.pols_if(2) * (1 - 0.000552) * (1 - 0.07), rel=1e-14)
+    assert a.lapse_rate(0) == 0.09
+    assert a.pols_if(1) == pytest.approx(1.0 * (1 - 0.000544) * (1 - 0.09), rel=1e-14)
+    assert a.lapse_rate(1) == 0.07
+    assert a.pols_if(2) == pytest.approx(
+        a.pols_if(1) * (1 - 0.000552) * (1 - 0.07), rel=1e-14)
 
-    assert a.lapse_rate(10) == 0.05 and a.decline_rate(10) == 0.15
-    assert a.pols_if_at(10, "BEF_LAPSE") == pytest.approx(0.57793622, abs=EXITS)
-    assert a.pols_if_at(10, "BEF_DECLINE") == pytest.approx(0.54903941, abs=EXITS)
-    assert a.pols_if_at(10, "AFT_DECR") == pytest.approx(0.46668350, abs=EXITS)
-    assert a.pols_if(11) == pytest.approx(0.466683, abs=INFORCE)
+    assert a.lapse_rate(9) == 0.05 and a.decline_rate(9) == 0.15
+    assert a.pols_if_at(9, "BEF_LAPSE") == pytest.approx(0.57793622, abs=EXITS)
+    assert a.pols_if_at(9, "BEF_DECLINE") == pytest.approx(0.54903941, abs=EXITS)
+    assert a.pols_if_at(9, "AFT_DECR") == pytest.approx(0.46668350, abs=EXITS)
+    assert a.pols_if(10) == pytest.approx(0.466683, abs=INFORCE)
 
 
-def test_worked_example_year_eleven_premium_rises_though_the_cohort_shrinks(
+def test_worked_example_the_repriced_year_collects_more_from_fewer_policies(
         jp_term_anchor):
-    """Year 11 collects more premium than year 10 on 19% fewer policies.
+    """t = 10 collects more premium than t = 9 on 19% fewer policies.
 
-    The repricing takes effect at the start of year 11 and not before, so year 10 is
-    still on the old premium; the new one has multiplied by 1.87.  That crossing is the
-    signature of a 更新型 contract and no UK or U.S. term model in this repository has it.
+    The repricing takes effect at t = 10 and not before, so t = 9 is still on the old
+    premium; the new one has multiplied by 1.87.  That crossing is the signature of a
+    更新型 contract and no UK or U.S. term model in this repository has it.
     """
     a = jp_term_anchor
-    assert a.prem_pp(10) == 11688.0 and a.prem_pp(11) == 21876.0
-    assert a.pols_if(11) < 0.81 * a.pols_if(10)
-    assert a.premiums(11) > a.premiums(10)
-    assert a.premiums(11) == pytest.approx(10209.17, abs=YEN)
+    assert a.prem_pp(9) == 11688.0 and a.prem_pp(10) == 21876.0
+    assert a.pols_if(10) < 0.81 * a.pols_if(9)
+    assert a.premiums(10) > a.premiums(9)
+    assert a.premiums(10) == pytest.approx(10209.17, abs=YEN)
 
 
 def test_worked_example_totals(jp_term_anchor):
@@ -217,14 +225,15 @@ def test_the_renewal_ladder(jp_term_anchor):
     is why carriers stop renewing at 80.
     """
     a = jp_term_anchor
-    assert a.premium_mth_pp(1) == 974 and a.prem_pp(1) == 11688
+    assert a.premium_mth_pp(0) == 974 and a.prem_pp(0) == 11688
     for t, entry_age, p_m, p_a, jump, pols_next in RENEWAL_LADDER:
         assert a.term_start_age(a.term_index(t + 1)) == entry_age
         assert a.premium_mth_pp(t + 1) == p_m
         assert a.prem_pp(t + 1) == p_a
         assert round(a.prem_pp(t + 1) / a.prem_pp(t), 2) == jump
         assert a.pols_if(t + 1) == pytest.approx(pols_next, abs=INFORCE)
-    assert a.pols_if(51) == pytest.approx(0.026042, abs=INFORCE)
+    # One row beyond the frame: the survivors whose cover expires at the ceiling.
+    assert a.pols_if(a.proj_len()) == pytest.approx(0.026042, abs=INFORCE)
 
 
 def test_the_shape_is_strain_then_thin_margins_then_a_pre_renewal_dip(jp_term_anchor):
@@ -235,11 +244,11 @@ def test_the_shape_is_strain_then_thin_margins_then_a_pre_renewal_dip(jp_term_an
     rising mortality cost, and a jump back into surplus the year after.
     """
     a = jp_term_anchor
-    assert a.net_cf(1) < -18000.0
-    assert all(a.net_cf(t) > 0.0 for t in (2, 3, 4))
+    assert a.net_cf(0) < -18000.0
+    assert all(a.net_cf(t) > 0.0 for t in (1, 2, 3))
     for t, *_ in RENEWAL_LADDER:
-        assert a.net_cf(t) < 0.0, f"year {t} is a pre-renewal year and should be negative"
-        assert a.net_cf(t + 1) > 0.0, f"year {t + 1} is the first repriced year"
+        assert a.net_cf(t) < 0.0, f"t = {t} is a pre-renewal year and should be negative"
+        assert a.net_cf(t + 1) > 0.0, f"t = {t + 1} is the first repriced year"
 
 
 # ---------------------------------------------------------------------------
@@ -268,7 +277,7 @@ def test_pitfall_kodo_shogai_is_not_a_second_decrement(term_life):
     assert "One decrement, one benefit" in doc
 
     a = term_life.Projection[1]
-    for t in (1, 11, 41):
+    for t in (0, 10, 40):
         assert a.claims(t, "DEATH") == pytest.approx(
             a.sum_assured() * a.pols_death(t), rel=1e-14)
 
@@ -278,7 +287,7 @@ def test_pitfall_kodo_shogai_is_not_a_second_decrement(term_life):
         p = term_life.Projection[point_id]
         cap = p.sum_assured()
         df = p.result_cf()
-        for t in range(1, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             paid = p.claims(t)
             assert paid <= cap * p.pols_death(t) + 1e-9, (
                 f"point {point_id}, t={t}: benefit outgo exceeds one sum assured "
@@ -306,16 +315,16 @@ def test_pitfall_koshin_reprices_it_does_not_reissue(jp_term_anchor):
         assert a.pols_if(t + 1) < 0.5                    # never a reset to 1
         # Maintenance only: no E0 in a renewal year, and inflation runs from issue.
         assert a.expenses(t + 1) == pytest.approx(
-            4000.0 * 1.01 ** t * a.pols_if(t + 1), rel=1e-12)
+            4000.0 * 1.01 ** (t + 1) * a.pols_if(t + 1), rel=1e-12)
         # Renewal commission only: no acquisition commission on a renewed term.
         assert a.commissions(t + 1) == pytest.approx(
             0.05 * a.premiums(t + 1), rel=1e-12)
         assert a.comm_new_term(t + 1) == 0.0
-    assert a.expenses(1) - 4000.0 == pytest.approx(15000.0, abs=YEN)
+    assert a.expenses(0) - 4000.0 == pytest.approx(15000.0, abs=YEN)
 
 
 def test_the_premium_is_level_within_a_term_and_moves_only_at_a_koshin(term_life):
-    """check_prem_level: P_a is a function of the term index, not of the policy year.
+    """check_prem_level: P_a is a function of the term index, not of the projection year.
 
     A residual here means the rate lookup is keyed on attained age rather than on the
     term's own entry age, which makes the premium drift year by year instead of stepping.
@@ -323,13 +332,13 @@ def test_the_premium_is_level_within_a_term_and_moves_only_at_a_koshin(term_life
     for point_id in term_life.Data.model_point_table().index:
         p = term_life.Projection[point_id]
         assert p.check_prem_level() is True
-        for t in range(1, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             assert p.check_prem_level_resid(t) == pytest.approx(0.0, abs=1e-12)
 
     a = term_life.Projection[1]
-    for t in range(2, 11):
-        assert a.prem_pp(t) == a.prem_pp(1)
-    assert a.prem_pp(11) != a.prem_pp(10)
+    for t in range(1, 10):
+        assert a.prem_pp(t) == a.prem_pp(0)
+    assert a.prem_pp(10) != a.prem_pp(9)
 
 
 # ---------------------------------------------------------------------------
@@ -350,19 +359,19 @@ def test_pitfall_truncation_shortens_the_term_not_the_horizon(term_life):
     p = term_life.Projection[4]
     assert p.age_at_entry() == 35 and p.renew_ceiling() == 80
     assert p.proj_len() == 45 == 80 - 35
-    assert p.age(p.proj_len()) + 1 == 80
+    assert p.age(p.proj_len()) == 80        # the age reached at the end of the last year
     assert [p.term_len(k) for k in range(1, 6)] == [10, 10, 10, 10, 5]
     assert p.term_start_age(5) == 75
-    assert p.term_index(41) == 5 and p.term_index(45) == 5
+    assert p.term_index(40) == 5 and p.term_index(44) == 5
     # The final term is priced over its own five years, not over ten: term_len feeds the
     # rate lookup, so the shortened term carries a cheaper mean than a ten-year one would.
     assert p.mort_table_mean(70, 5) < p.mort_table_mean(70, 10)
     anchor = term_life.Data.prem_anchor_table().loc["M"]
-    assert p.prem_rate_m(41) == pytest.approx(
+    assert p.prem_rate_m(40) == pytest.approx(
         float(anchor["rate_per_5m"]) * p.mort_table_mean(75, 5)
         / p.mort_table_mean(50, 10), rel=1e-12)
-    assert p.decline_rate(40) == 0.15                    # the last renewal
-    assert p.decline_rate(45) == 0.0                     # the cover ends; it does not renew
+    assert p.decline_rate(39) == 0.15                    # the last renewal
+    assert p.decline_rate(44) == 0.0                     # the cover ends; it does not renew
 
 
 # ---------------------------------------------------------------------------
@@ -379,14 +388,14 @@ def test_pitfall_sai_manryo_never_renews(term_life):
         p = term_life.Projection[point_id]
         assert p.term_type() == "sai"
         assert p.proj_len() == p.policy_term() == p.horizon_ceiling()
-        assert all(p.term_index(t) == 1 for t in range(1, p.proj_len() + 1))
-        assert all(p.decline_rate(t) == 0.0 for t in range(1, p.proj_len() + 1))
-        assert all(p.pols_decline(t) == 0.0 for t in range(1, p.proj_len() + 1))
-        assert all(p.prem_pp(t) == p.prem_pp(1) for t in range(1, p.proj_len() + 1))
+        assert all(p.term_index(t) == 1 for t in range(p.proj_len()))
+        assert all(p.decline_rate(t) == 0.0 for t in range(p.proj_len()))
+        assert all(p.pols_decline(t) == 0.0 for t in range(p.proj_len()))
+        assert all(p.prem_pp(t) == p.prem_pp(0) for t in range(p.proj_len()))
 
     p3 = term_life.Projection[3]
     assert p3.age_at_entry() == 40 and p3.policy_term() == 25   # expiry age 65
-    assert p3.age(p3.proj_len()) + 1 == 65
+    assert p3.age(p3.proj_len()) == 65
 
 
 # ---------------------------------------------------------------------------
@@ -407,8 +416,8 @@ def test_pitfall_lapse_pays_nothing(term_life):
         df = p.result_cf()
         assert "claims_lapse" in df.columns
         assert (df["claims_lapse"] == 0.0).all()
-        assert all(p.claims(t, "LAPSE") == 0.0 for t in range(1, p.proj_len() + 1))
-        assert any(p.pols_lapse(t) > 0.0 for t in range(1, p.proj_len() + 1))
+        assert all(p.claims(t, "LAPSE") == 0.0 for t in range(p.proj_len()))
+        assert any(p.pols_lapse(t) > 0.0 for t in range(p.proj_len()))
 
 
 def test_pitfall_there_is_no_automatic_premium_loan_on_this_chassis(term_life):
@@ -437,16 +446,16 @@ def test_pitfall_the_policy_fee_is_premium_not_expense(jp_term_anchor):
     """P_a reconstructs as 12 x (248 + 2 x 363) and the fee is never credited to expense.
 
     The flat monthly element sits inside the published premium [S2]; crediting it against
-    maintenance expense counts it twice.  Year 1's expense is exactly E0 + e(1), with no
+    maintenance expense counts it twice.  The t = 0 expense is exactly E0 + e(0), with no
     fee offset in it.
     """
     a = jp_term_anchor
     assert a.policy_fee_m() == 248.0
-    assert a.prem_rate_m(1) == 363.0
-    assert a.premium_mth_pp(1) == 248 + 2 * 363 == 974
-    assert a.prem_pp(1) == 12 * (248 + 2 * 363) == 11688
-    assert a.expenses(1) == pytest.approx(19000.0, abs=1e-9)
-    assert a.expenses(2) == pytest.approx(4000.0 * 1.01 * a.pols_if(2), rel=1e-12)
+    assert a.prem_rate_m(0) == 363.0
+    assert a.premium_mth_pp(0) == 248 + 2 * 363 == 974
+    assert a.prem_pp(0) == 12 * (248 + 2 * 363) == 11688
+    assert a.expenses(0) == pytest.approx(19000.0, abs=1e-9)
+    assert a.expenses(1) == pytest.approx(4000.0 * 1.01 * a.pols_if(1), rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -457,27 +466,30 @@ def test_pitfall_renewal_decline_is_not_lapse(jp_term_anchor):
     """A different event, in a different year, from a different population.
 
     It applies only in boundary years, only after mortality and after ordinary lapse, and
-    it dominates them: 0.08235591 of the 0.11175249 lives leaving in year 10, 74% of that
+    it dominates them: 0.08235591 of the 0.11175249 lives leaving at t = 9, 74% of that
     year's exits.  Folding it into w(t) makes the boundary invisible.
     """
     a = jp_term_anchor
-    deaths, lapses, declines = YEAR_10_EXITS
-    assert a.pols_death(10) == pytest.approx(deaths, abs=EXITS)
-    assert a.pols_lapse(10) == pytest.approx(lapses, abs=EXITS)
-    assert a.pols_decline(10) == pytest.approx(declines, abs=EXITS)
+    deaths, lapses, declines = BOUNDARY_EXITS
+    assert a.pols_death(9) == pytest.approx(deaths, abs=EXITS)
+    assert a.pols_lapse(9) == pytest.approx(lapses, abs=EXITS)
+    assert a.pols_decline(9) == pytest.approx(declines, abs=EXITS)
     total = deaths + lapses + declines
-    assert a.pols_if(10) - a.pols_if(11) == pytest.approx(total, abs=EXITS)
+    assert a.pols_if(9) - a.pols_if(10) == pytest.approx(total, abs=EXITS)
     assert declines / total > 0.73
 
     # Non-boundary years carry no decline at all, and the lapse rate does not absorb it.
+    # A boundary is the *last* year of a term, (t + 1) % 10 == 0, and the final projected
+    # year is not one: the cover ends at the ceiling rather than renewing.
     assert all(a.decline_rate(t) == 0.0
-               for t in range(1, a.proj_len() + 1) if t % 10 or t == a.proj_len())
-    assert a.lapse_rate(10) == a.lapse_rate(9) == 0.05
+               for t in range(a.proj_len())
+               if (t + 1) % 10 or t == a.proj_len() - 1)
+    assert a.lapse_rate(9) == a.lapse_rate(8) == 0.05
     # Taken after lapse, from the survivors of it.
-    assert a.pols_decline(10) == pytest.approx(
-        a.pols_if_at(10, "BEF_DECLINE") * 0.15, rel=1e-14)
-    assert a.pols_lapse(10) == pytest.approx(
-        a.pols_if_at(10, "BEF_LAPSE") * a.lapse_rate(10), rel=1e-14)
+    assert a.pols_decline(9) == pytest.approx(
+        a.pols_if_at(9, "BEF_DECLINE") * 0.15, rel=1e-14)
+    assert a.pols_lapse(9) == pytest.approx(
+        a.pols_if_at(9, "BEF_LAPSE") * a.lapse_rate(9), rel=1e-14)
 
 
 def test_pitfall_a_failed_first_renewal_premium_is_an_expiry_not_a_lapse(jp_term_anchor):
@@ -485,23 +497,23 @@ def test_pitfall_a_failed_first_renewal_premium_is_an_expiry_not_a_lapse(jp_term
 
     Where the first premium of the renewed contract goes unpaid through grace, the renewal
     is treated as never having happened and the contract terminates at the *original*
-    expiry [S1] [S7].  Those lives must not appear in force in year t + 1, and must not be
+    expiry [S1] [S7].  Those lives must not appear in force at t + 1, and must not be
     counted as a mid-term lapse of a term that never began.
     """
     a = jp_term_anchor
-    assert a.pols_if(11) == pytest.approx(
-        a.pols_if_at(10, "BEF_DECLINE") * (1 - 0.15), rel=1e-14)
-    assert a.premiums(11) == pytest.approx(
-        a.prem_pp(11) * a.pols_if(11), rel=1e-14)
-    # The year-11 lapse is taken from the year-11 in-force at the year-11 rate; the
+    assert a.pols_if(10) == pytest.approx(
+        a.pols_if_at(9, "BEF_DECLINE") * (1 - 0.15), rel=1e-14)
+    assert a.premiums(10) == pytest.approx(
+        a.prem_pp(10) * a.pols_if(10), rel=1e-14)
+    # The t = 10 lapse is taken from the t = 10 in-force at the t = 10 rate; the
     # decliners are already gone and are not re-counted there.
-    assert a.pols_lapse(11) == pytest.approx(
-        a.pols_if_at(11, "BEF_LAPSE") * a.lapse_rate(11), rel=1e-14)
-    assert a.pols_lapse(11) < a.pols_decline(10)
+    assert a.pols_lapse(10) == pytest.approx(
+        a.pols_if_at(10, "BEF_LAPSE") * a.lapse_rate(10), rel=1e-14)
+    assert a.pols_lapse(10) < a.pols_decline(9)
     # And no decline is taken in the final projected year: the cover ends at the ceiling
     # rather than renewing, so there is no renewal to decline.
-    assert a.decline_rate(a.proj_len()) == 0.0
-    assert a.pols_decline(a.proj_len()) == 0.0
+    assert a.decline_rate(a.proj_len() - 1) == 0.0
+    assert a.pols_decline(a.proj_len() - 1) == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -558,22 +570,22 @@ def test_pitfall_the_table_is_read_at_man_nenrei_and_the_shift_moves_q_up(
     have the sign wrong.
     """
     a = jp_term_anchor
-    assert a.age_at_entry() == 30 and a.age(1) == 30 and a.age(11) == 40
+    assert a.age_at_entry() == 30 and a.age(0) == 30 and a.age(10) == 40
     assert a.mort_age_shift is False
-    for t in (1, 6, 11):
+    for t in (0, 5, 10):
         assert a.mort_rate_base(t) == a.mort_rate_at_age(a.age(t))
 
     model = _reread("shift")
     try:
-        base = {t: model.Projection[1].mort_rate_base(t) for t in range(1, 51)}
+        base = {t: model.Projection[1].mort_rate_base(t) for t in range(50)}
         model.Projection.mort_age_shift = True
         model.Projection.clear_all()
         p = model.Projection[1]
-        for t in range(1, 50):
+        for t in range(49):
             assert p.mort_rate_base(t) > base[t], f"the shift lowered q at t={t}"
-        assert p.mort_rate_base(1) / base[1] == pytest.approx(1.0073, abs=5e-4)
-        assert p.mort_rate_base(11) / base[11] == pytest.approx(1.0415, abs=5e-4)
-        assert p.mort_rate_base(1) == pytest.approx(
+        assert p.mort_rate_base(0) / base[0] == pytest.approx(1.0073, abs=5e-4)
+        assert p.mort_rate_base(10) / base[10] == pytest.approx(1.0415, abs=5e-4)
+        assert p.mort_rate_base(0) == pytest.approx(
             (0.00068 * 0.00069) ** 0.5, rel=1e-12)
     finally:
         model.close()
@@ -600,7 +612,7 @@ def test_pitfall_naming_the_contract_boundary_is_part_of_the_answer(term_life):
         CURRENT_TERM_NET_CF, abs=YEN)
     assert p1.result_cf()["net_cf"].sum() * p5.result_cf()["net_cf"].sum() < 0.0
     # Truncation changes only where the projection stops: the first ten years agree.
-    for t in range(1, 11):
+    for t in range(10):
         assert p5.net_cf(t) == pytest.approx(p1.net_cf(t), rel=1e-12)
 
 
@@ -620,17 +632,18 @@ def test_the_horizon_is_the_renewal_ceiling_not_the_term(jp_term_anchor):
     assert a.policy_term() == 10
     assert a.renew_ceiling() == 80
     assert a.horizon_ceiling() == 50 == a.proj_len()
-    assert a.age(a.proj_len()) + 1 == 80
-    assert len(a.result_cf()) == 50
-    assert {a.term_index(t) for t in range(1, 51)} == {1, 2, 3, 4, 5}
+    assert a.age(a.proj_len()) == 80        # the age reached at the end of the last year
+    assert len(a.result_cf()) == 50 == a.proj_len()
+    assert {a.term_index(t) for t in range(50)} == {1, 2, 3, 4, 5}
 
 
 def test_there_are_no_tail_states_of_any_kind(term_life):
     """Cover ends at the ceiling with survivors still in force, and nothing is paid.
 
     No 満期保険金, no 解約返戻金, no paid-up value and no run-off [S1] [S8] [S10] [S14].
-    l(51) is 2.5% of the cohort whose cover simply ends; it is not a maturity population
-    and there is no benefit kind that fires on it.
+    l(50) — one row beyond the frame, which ends at t = 49 — is 2.6% of the cohort whose
+    cover simply ends; it is not a maturity population and there is no benefit kind that
+    fires on it.
     """
     names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
     for absent in ("claims_maturity", "pols_maturity", "maturity_benefit", "surr_charge"):
@@ -638,15 +651,15 @@ def test_there_are_no_tail_states_of_any_kind(term_life):
 
     a = term_life.Projection[1]
     n = a.proj_len()
-    assert a.pols_if(n) > 0.0
-    assert a.pols_if(n + 1) == pytest.approx(0.026042, abs=INFORCE)
-    assert a.pols_if(n + 2) == 0.0
-    assert a.pols_if_at(n + 1, "BEF_DECR") == 0.0
-    assert a.claims(n) == pytest.approx(a.claims(n, "DEATH"), rel=1e-12)
+    assert a.pols_if(n - 1) > 0.0                 # the last row of the frame
+    assert a.pols_if(n) == pytest.approx(0.026042, abs=INFORCE)
+    assert a.pols_if(n + 1) == 0.0
+    assert a.pols_if_at(n, "BEF_DECR") == 0.0
+    assert a.claims(n - 1) == pytest.approx(a.claims(n - 1, "DEATH"), rel=1e-12)
     with pytest.raises(FormulaError):
-        a.claims(1, "MATURITY")
+        a.claims(0, "MATURITY")
     with pytest.raises(FormulaError):
-        a.pols_if_at(1, "BEF_NOTHING")
+        a.pols_if_at(0, "BEF_NOTHING")
 
 
 def test_the_premium_scale_uses_published_cells_where_they_exist(term_life):
@@ -657,17 +670,17 @@ def test_the_premium_scale_uses_published_cells_where_they_exist(term_life):
     always used where they exist.
     """
     a = term_life.Projection[1]
-    assert (a.prem_rate_m(1), a.prem_rate_m(11), a.prem_rate_m(21)) == (
+    assert (a.prem_rate_m(0), a.prem_rate_m(10), a.prem_rate_m(20)) == (
         363.0, 787.5, 1842.5)
     anchor = term_life.Data.prem_anchor_table()
     assert int(anchor.loc["M", "issue_age"]) == 50
     assert int(anchor.loc["F", "issue_age"]) == 30
     # The extension: r = r_anchor x qbar(x, m) / qbar(x_a, m_a), on table rates.
-    for t in (31, 41):
+    for t in (30, 40):
         x_k = a.term_start_age(a.term_index(t))
         assert a.prem_rate_m(t) == pytest.approx(
             1842.5 * a.mort_table_mean(x_k, 10) / a.mort_table_mean(50, 10), rel=1e-12)
-    assert a.premium_mth_pp(31) == 8976 and a.premium_mth_pp(41) == 23881
+    assert a.premium_mth_pp(30) == 8976 and a.premium_mth_pp(40) == 23881
     # Back-cast quality, stated in the notes so the size of the approximation is visible:
     # applied where a published cell already exists, the extension gives 958.9 a month at
     # age 30 against the published 974 (-1.5%) and 1,806.4 at age 40 against 1,823 (-0.9%).
@@ -690,7 +703,7 @@ def test_the_premium_scale_is_built_on_table_rates_not_best_estimate_ones(term_l
     a = term_life.Projection[1]
     assert a.mort_table_mean(30, 10) == pytest.approx(
         sum(WORKED_EXAMPLE_QTAB[x] for x in range(30, 40)) / 10.0, rel=1e-12)
-    assert a.mort_rate(1) == pytest.approx(0.80 * a.mort_rate_at_age(30), rel=1e-14)
+    assert a.mort_rate(0) == pytest.approx(0.80 * a.mort_rate_at_age(30), rel=1e-14)
     assert a.mort_table_mean(30, 1) == a.mort_rate_at_age(30)     # not 0.8 x it
 
 
@@ -702,9 +715,9 @@ def test_the_female_cell_is_priced_off_the_only_published_female_anchor(term_lif
     """
     p = term_life.Projection[2]
     assert p.sex() == "F" and p.age_at_entry() == 30
-    assert p.prem_rate_m(1) == 261.0
-    assert p.premium_mth_pp(1) == 248 + 2 * 261 == 770
-    assert p.premium_mth_pp(1) < term_life.Projection[1].premium_mth_pp(1)
+    assert p.prem_rate_m(0) == 261.0
+    assert p.premium_mth_pp(0) == 248 + 2 * 261 == 770
+    assert p.premium_mth_pp(0) < term_life.Projection[1].premium_mth_pp(0)
 
 
 def test_the_shipped_mortality_table_marks_its_own_provenance():
@@ -750,7 +763,7 @@ def test_every_check_closes_on_every_model_point(term_life):
             value = getattr(p, name)()
             assert value is True, f"point {point_id}: {name}() is False"
             resid = getattr(p, name + "_resid")
-            for t in range(1, p.proj_len() + 1):
+            for t in range(p.proj_len()):
                 assert resid(t) == pytest.approx(0.0, abs=1e-8), \
                     f"point {point_id}: {name}_resid({t})"
 
@@ -778,7 +791,7 @@ def test_the_check_tolerances_are_named_references(term_life):
     for point_id in term_life.Data.model_point_table().index:
         p = term_life.Projection[point_id]
         worst = max(worst, max(abs(p.check_net_cf_resid(t))
-                               for t in range(1, p.proj_len() + 1)))
+                               for t in range(p.proj_len())))
     assert worst < cash_tol / 100.0
 
 
@@ -792,8 +805,8 @@ def test_the_four_placeholder_scalars_are_inert_in_the_base_run(term_life):
     perturb all four and the anchor cell must not move by one yen.
     """
     a = term_life.Projection[1]
-    before = a.net_cf(1), a.net_cf(11), sum(a.net_cf(t)
-                                            for t in range(1, a.proj_len() + 1))
+    before = a.net_cf(0), a.net_cf(10), sum(a.net_cf(t)
+                                            for t in range(a.proj_len()))
     saved = {name: term_life.Projection.refs[name]
              for name in ("ln_take_up", "ln_interest_rate",
                           "wop_inc_rate", "reinstate_rate")}
@@ -803,8 +816,8 @@ def test_the_four_placeholder_scalars_are_inert_in_the_base_run(term_life):
         a = term_life.Projection[1]
         assert a.living_needs() is False and a.wop() is False
         assert a.reinstatement() is False
-        after = a.net_cf(1), a.net_cf(11), sum(a.net_cf(t)
-                                               for t in range(1, a.proj_len() + 1))
+        after = a.net_cf(0), a.net_cf(10), sum(a.net_cf(t)
+                                               for t in range(a.proj_len()))
         assert after == pytest.approx(before, abs=1e-9)
     finally:
         for name, value in saved.items():
@@ -819,7 +832,7 @@ def test_the_inforce_rollforward_is_the_notes_identity(term_life):
     """
     for point_id in term_life.Data.model_point_table().index:
         p = term_life.Projection[point_id]
-        for t in range(1, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             out = (p.pols_death(t) + p.pols_lapse(t) + p.pols_decline(t)
                    - p.pols_reinstate(t))
             assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(out, abs=1e-12)
@@ -832,7 +845,7 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(term_life):
     the decline a decrement on the survivors of lapse rather than a competing one.
     """
     a = term_life.Projection[1]
-    for t in (1, 5, 10, 20, 41):
+    for t in (0, 4, 9, 19, 40):
         assert a.pols_if_at(t, "BEF_DECR") == a.pols_if(t)
         assert a.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
             a.pols_if(t) * (1 - a.mort_rate(t)), rel=1e-14)
@@ -840,7 +853,7 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(term_life):
             a.pols_if_at(t, "BEF_LAPSE") * (1 - a.lapse_rate(t)), rel=1e-14)
         assert a.pols_if_at(t, "AFT_DECR") == pytest.approx(
             a.pols_if_at(t, "BEF_DECLINE") * (1 - a.decline_rate(t)), rel=1e-14)
-    for t in (1, 5, 41):
+    for t in (0, 4, 40):
         assert a.pols_if_at(t, "BEF_DECLINE") == a.pols_if_at(t, "AFT_DECR")
 
 
@@ -854,7 +867,7 @@ def test_inforce_is_a_decreasing_probability(term_life):
         p = term_life.Projection[point_id]
         if p.reinstatement():
             continue
-        for t in range(1, p.proj_len() + 2):
+        for t in range(p.proj_len() + 1):
             assert 0.0 <= p.pols_if(t) <= 1.0
             assert p.pols_if(t + 1) <= p.pols_if(t) + 1e-15
 
@@ -882,8 +895,8 @@ def test_living_needs_is_off_on_the_anchor_cell(jp_term_anchor):
     a = jp_term_anchor
     assert a.living_needs() is False
     assert a.ln_amount() == 0.0
-    assert all(a.ln_share(t) == 0.0 for t in range(1, a.proj_len() + 1))
-    assert all(a.claims(t, "LIVING_NEEDS") == 0.0 for t in range(1, a.proj_len() + 1))
+    assert all(a.ln_share(t) == 0.0 for t in range(a.proj_len()))
+    assert all(a.claims(t, "LIVING_NEEDS") == 0.0 for t in range(a.proj_len()))
     assert (a.result_cf()["claims_living_needs"] == 0.0).all()
 
 
@@ -896,8 +909,8 @@ def test_living_needs_splits_the_decrement_and_does_not_add_to_it(term_life):
     """
     p = term_life.Projection[6]
     assert p.living_needs() is True
-    assert p.ln_share(1) == 0.10
-    for t in range(1, p.proj_len() + 1):
+    assert p.ln_share(0) == 0.10
+    for t in range(p.proj_len()):
         assert p.claims(t, "DEATH") == pytest.approx(
             p.sum_assured() * (1 - p.ln_share(t)) * p.pols_death(t), rel=1e-14)
         assert p.claims(t, "LIVING_NEEDS") == pytest.approx(
@@ -911,9 +924,9 @@ def test_living_needs_splits_the_decrement_and_does_not_add_to_it(term_life):
         off = model.Projection[6]
         n = p.proj_len()
         assert all(off.pols_death(t) == pytest.approx(p.pols_death(t), abs=1e-15)
-                   for t in range(1, n + 1))
-        assert sum(p.claims(t) for t in range(1, n + 1)) < sum(
-            off.claims(t) for t in range(1, n + 1))
+                   for t in range(n))
+        assert sum(p.claims(t) for t in range(n)) < sum(
+            off.claims(t) for t in range(n))
     finally:
         model.close()
 
@@ -927,9 +940,9 @@ def test_living_needs_is_discounted_and_net_of_six_months_premium(term_life):
     """
     p = term_life.Projection[6]
     assert p.ln_interest_rate == 0.02
-    assert p.ln_payout_pp(1) == pytest.approx(
-        3000000.0 * 0.99 - 6 * p.premium_mth_pp(1), abs=1e-6)
-    assert p.ln_payout_pp(1) < p.sum_assured()
+    assert p.ln_payout_pp(0) == pytest.approx(
+        3000000.0 * 0.99 - 6 * p.premium_mth_pp(0), abs=1e-6)
+    assert p.ln_payout_pp(0) < p.sum_assured()
 
 
 def test_living_needs_is_barred_within_a_year_of_a_non_renewable_expiry(term_life):
@@ -940,10 +953,10 @@ def test_living_needs_is_barred_within_a_year_of_a_non_renewable_expiry(term_lif
     """
     for point_id in (6, 9):
         p = term_life.Projection[point_id]
-        n = p.proj_len()
-        assert p.ln_available(n) is False and p.ln_share(n) == 0.0
-        assert p.claims(n, "LIVING_NEEDS") == 0.0
-        assert p.ln_available(n - 1) is True and p.ln_share(n - 1) == 0.10
+        last = p.proj_len() - 1                  # the final projected year
+        assert p.ln_available(last) is False and p.ln_share(last) == 0.0
+        assert p.claims(last, "LIVING_NEEDS") == 0.0
+        assert p.ln_available(last - 1) is True and p.ln_share(last - 1) == 0.10
 
 
 def test_waiver_of_premium_is_off_and_works_when_switched_on(term_life):
@@ -955,23 +968,23 @@ def test_waiver_of_premium_is_off_and_works_when_switched_on(term_life):
     """
     a = term_life.Projection[1]
     assert a.wop() is False
-    assert all(a.wop_waived_frac(t) == 0.0 for t in range(1, a.proj_len() + 1))
-    assert all(a.pols_payer(t) == a.pols_if(t) for t in range(1, a.proj_len() + 1))
-    assert all(a.pols_waived(t) == 0.0 for t in range(1, a.proj_len() + 1))
+    assert all(a.wop_waived_frac(t) == 0.0 for t in range(a.proj_len()))
+    assert all(a.pols_payer(t) == a.pols_if(t) for t in range(a.proj_len()))
+    assert all(a.pols_waived(t) == 0.0 for t in range(a.proj_len()))
 
     p = term_life.Projection[7]
     assert p.wop() is True
-    assert p.wop_waived_frac(1) == 0.0                     # the chain starts empty
-    assert p.wop_waived_frac(2) == pytest.approx(0.0008, rel=1e-12)
-    assert p.wop_waived_frac(3) > p.wop_waived_frac(2)     # and accumulates
+    assert p.wop_waived_frac(0) == 0.0                     # the chain starts empty
+    assert p.wop_waived_frac(1) == pytest.approx(0.0008, rel=1e-12)
+    assert p.wop_waived_frac(2) > p.wop_waived_frac(1)     # and accumulates
     assert p.wop_rec_rate == 0.0                           # 別表4 states are permanent
-    assert p.pols_payer(5) < p.pols_if(5)
-    assert p.premiums(5) == pytest.approx(p.prem_pp(5) * p.pols_payer(5), rel=1e-14)
+    assert p.pols_payer(4) < p.pols_if(4)
+    assert p.premiums(4) == pytest.approx(p.prem_pp(4) * p.pols_payer(4), rel=1e-14)
     # Cover continues while the premium is waived: the waived lives stay in force.
     assert p.check_pols_payer() is True
-    assert p.pols_death(5) == pytest.approx(p.pols_if(5) * p.mort_rate(5), rel=1e-14)
+    assert p.pols_death(4) == pytest.approx(p.pols_if(4) * p.mort_rate(4), rel=1e-14)
     # The incidence is not the mortality rate.
-    assert p.wop_inc_rate != pytest.approx(p.mort_rate(2), rel=1e-3)
+    assert p.wop_inc_rate != pytest.approx(p.mort_rate(1), rel=1e-3)
 
 
 def test_reinstatement_is_off_and_works_when_switched_on(term_life):
@@ -984,27 +997,27 @@ def test_reinstatement_is_off_and_works_when_switched_on(term_life):
     a = term_life.Projection[1]
     assert a.reinstatement() is False
     assert a.reinstate_rate_eff() == 0.0
-    assert all(a.pols_reinstate(t) == 0.0 for t in range(1, a.proj_len() + 1))
-    assert a.pols_lapse_pool(4) > 0.0                      # the stock is tracked anyway
+    assert all(a.pols_reinstate(t) == 0.0 for t in range(a.proj_len()))
+    assert a.pols_lapse_pool(3) > 0.0                      # the stock is tracked anyway
     assert a.check_lapse_pool() is True
 
     p = term_life.Projection[8]
     assert p.reinstatement() is True
     assert p.reinstate_rate_eff() == 0.10
     assert p.reinstate_window == 3
-    assert p.pols_lapse_pool(1) == 0.0
-    assert p.pols_reinstate(2) == pytest.approx(0.10 * p.pols_lapse_pool(2), rel=1e-14)
-    assert p.pols_if(3) > p.pols_if_at(2, "AFT_DECR")      # lives come back in
+    assert p.pols_lapse_pool(0) == 0.0
+    assert p.pols_reinstate(1) == pytest.approx(0.10 * p.pols_lapse_pool(1), rel=1e-14)
+    assert p.pols_if(2) > p.pols_if_at(1, "AFT_DECR")      # lives come back in
     # By vintage, not one blanket balance: the pool at t is the last three years' lapses
     # net of the reinstatements taken out of each along the way.
-    for t in range(2, p.proj_len() + 1):
+    for t in range(1, p.proj_len()):
         rebuilt = sum(p.pols_lapse(s) * 0.9 ** (t - 1 - s)
-                      for s in range(max(1, t - 3), t))
+                      for s in range(max(0, t - 3), t))
         assert p.pols_lapse_pool(t) == pytest.approx(rebuilt, abs=1e-14)
     # And the window really closes: the vintage that lapsed three years ago leaves.
-    assert p.pols_lapse_expire(4) == pytest.approx(
-        p.pols_lapse(1) * 0.9 ** 3, rel=1e-12)
-    assert p.pols_lapse_expire(3) == 0.0
+    assert p.pols_lapse_expire(3) == pytest.approx(
+        p.pols_lapse(0) * 0.9 ** 3, rel=1e-12)
+    assert p.pols_lapse_expire(2) == 0.0
     assert p.check_lapse_pool() is True
 
 
@@ -1015,7 +1028,7 @@ def test_declines_never_enter_the_reinstatement_pool(term_life):
     reinstate lives whose contract ended rather than lapsed.
     """
     p = term_life.Projection[8]
-    boundary = 10
+    boundary = 9
     assert p.pols_decline(boundary) > 0.0
     assert p.pols_lapse_pool(boundary + 1) == pytest.approx(
         sum(p.pols_lapse(s) * 0.9 ** (boundary - s)
@@ -1031,19 +1044,19 @@ def test_selective_lapsation_is_off_and_works_when_switched_on(term_life):
     """
     a = term_life.Projection[1]
     assert a.sel_lapse_lambda == 0.0
-    assert all(a.sel_lapse_factor(t) == 1.0 for t in range(1, a.proj_len() + 1))
+    assert all(a.sel_lapse_factor(t) == 1.0 for t in range(a.proj_len()))
 
     model = _reread("sel")
     try:
-        base_late = model.Projection[1].mort_rate(20)
+        base_late = model.Projection[1].mort_rate(19)
         model.Projection.sel_lapse_lambda = 0.25
         model.Projection.clear_all()
         p = model.Projection[1]
-        assert p.sel_lapse_factor(1) == 1.0                # nothing has left yet
-        assert p.sel_lapse_factor(20) > 1.0                # the block has shed lives
-        assert p.mort_rate(20) > base_late
-        assert p.mort_rate(20) == pytest.approx(
-            0.80 * p.mort_rate_base(20) * p.sel_lapse_factor(20), rel=1e-12)
+        assert p.sel_lapse_factor(0) == 1.0                # nothing has left yet
+        assert p.sel_lapse_factor(19) > 1.0                # the block has shed lives
+        assert p.mort_rate(19) > base_late
+        assert p.mort_rate(19) == pytest.approx(
+            0.80 * p.mort_rate_base(19) * p.sel_lapse_factor(19), rel=1e-12)
         assert p.check_pols_roll_fwd() is True
     finally:
         model.close()
@@ -1100,11 +1113,11 @@ def test_commission_at_koshin_is_off_and_changes_the_sign_when_switched_on(term_
 
     That is a choice and not a fact — no document in the source set discloses a commission
     scale at all — and a scale paying first-year rates on each renewed term changes the
-    **sign** of the cash flow in years 11, 21, 31 and 41.
+    **sign** of the cash flow at t = 10, 20, 30 and 40.
     """
     a = term_life.Projection[1]
     assert a.comm_new_term_rate == 0.0
-    assert all(a.comm_new_term(t) == 0.0 for t in range(1, a.proj_len() + 1))
+    assert all(a.comm_new_term(t) == 0.0 for t in range(a.proj_len()))
     assert all(a.net_cf(t + 1) > 0.0 for t, *_ in RENEWAL_LADDER)
 
     model = _reread("comm")
@@ -1115,9 +1128,9 @@ def test_commission_at_koshin_is_off_and_changes_the_sign_when_switched_on(term_
         for t, *_ in RENEWAL_LADDER:
             assert p.comm_new_term(t + 1) == pytest.approx(
                 0.50 * p.prem_pp(t + 1) * p.pols_if(t + 1), rel=1e-12)
-            assert p.net_cf(t + 1) < 0.0, f"year {t + 1} should flip negative"
-        assert p.comm_new_term(1) == 0.0                   # not the first term
-        assert p.comm_new_term(12) == 0.0                  # only the term's first year
+            assert p.net_cf(t + 1) < 0.0, f"t = {t + 1} should flip negative"
+        assert p.comm_new_term(0) == 0.0                   # not the first term
+        assert p.comm_new_term(11) == 0.0                  # only the term's first year
         assert p.check_net_cf() is True
     finally:
         model.close()
@@ -1127,8 +1140,8 @@ def test_the_contract_boundary_switch_only_truncates(term_life):
     """current_term stops the projection; it does not change any year that survives it."""
     p1, p5 = term_life.Projection[1], term_life.Projection[5]
     df1, df5 = p1.result_cf(), p5.result_cf()
-    assert list(df5.index) == list(range(1, 11))
-    assert (df5 - df1.loc[1:10]).abs().max().max() == pytest.approx(0.0, abs=1e-9)
+    assert list(df5.index) == list(range(10))
+    assert (df5 - df1.loc[0:9]).abs().max().max() == pytest.approx(0.0, abs=1e-9)
 
 
 # ---------------------------------------------------------------------------
@@ -1136,15 +1149,21 @@ def test_the_contract_boundary_switch_only_truncates(term_life):
 
 
 def test_result_cf_shape(jp_term_anchor):
-    """The published statement's columns, in order, with pols_if first."""
+    """The published statement's columns, in order, with pols_if first.
+
+    The index is the 0-based frame ``range(proj_len())``: it starts at 0, ends at
+    ``proj_len() - 1``, and has ``proj_len()`` rows.
+    """
     df = jp_term_anchor.result_cf()
-    assert list(df.index) == list(range(1, 51))
+    n = jp_term_anchor.proj_len()
+    assert list(df.index) == list(range(50))
+    assert df.index[0] == 0 and df.index[-1] == n - 1 and len(df) == n
     assert df.index.name == "t"
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_death", "claims_living_needs", "claims_lapse",
         "claim_expenses", "expenses", "commissions", "net_cf",
     ]
-    assert df.loc[1, "net_cf"] == pytest.approx(-18612.32, abs=YEN)
+    assert df.loc[0, "net_cf"] == pytest.approx(-18612.32, abs=YEN)
 
 
 def test_net_cf_carries_the_notes_own_sign(term_life):
@@ -1154,8 +1173,8 @@ def test_net_cf_carries_the_notes_own_sign(term_life):
     notes print the other sign.
     """
     assert "liability_cf" not in term_life.Projection.cells
-    assert term_life.Projection[1].net_cf(2) > 0.0         # a positive-margin year
-    assert term_life.Projection[1].net_cf(1) < 0.0         # the strain year
+    assert term_life.Projection[1].net_cf(1) > 0.0         # a positive-margin year
+    assert term_life.Projection[1].net_cf(0) < 0.0         # the strain year
 
 
 def test_result_pols_makes_a_renewal_boundary_legible(jp_term_anchor):
@@ -1168,7 +1187,7 @@ def test_result_pols_makes_a_renewal_boundary_legible(jp_term_anchor):
     assert df.index.name == "t"
     assert list(df.columns)[0] == "pols_if"
     boundaries = [t for t in df.index if df.loc[t, "decline_rate"] > 0.0]
-    assert boundaries == [10, 20, 30, 40]
+    assert boundaries == [9, 19, 29, 39]
     for t in boundaries:
         assert df.loc[t + 1, "prem_pp"] > df.loc[t, "prem_pp"]
         assert df.loc[t + 1, "term_index"] == df.loc[t, "term_index"] + 1
@@ -1243,11 +1262,11 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         alt_name = "mort_table_doubled.csv"
         doubled.to_csv(model.Data.input_dir() / alt_name)
         try:
-            base = model.Projection[1].claims(1, "DEATH")
+            base = model.Projection[1].claims(0, "DEATH")
             model.Data.mort_table_file = alt_name           # repoint the Reference
             model.Data.clear_all()
             model.Projection.clear_all()
-            assert model.Projection[1].claims(1, "DEATH") == pytest.approx(
+            assert model.Projection[1].claims(0, "DEATH") == pytest.approx(
                 2 * base, rel=1e-12)
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)

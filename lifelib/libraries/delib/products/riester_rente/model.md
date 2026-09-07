@@ -41,8 +41,8 @@ model.Projection[1].result_cf()
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell — a female
 life aged 50 at the 1 January 2027 valuation date, three contract years in force, *Rentenbeginn*
-at 67, one child born in 2010. `result_cf()` returns a `DataFrame` indexed by policy year `t`,
-`1 … 61`, with fifteen columns; `result_acct()` puts the account, the guarantee accumulator and
+at 67, one child born in 2010. `result_cf()` returns a `DataFrame` indexed by the 0-based period
+index `t`, `0 … 60` — `proj_len() = 61` rows — with fifteen columns; `result_acct()` puts the account, the guarantee accumulator and
 the subsidy chain beside it. `model.doc` describes the product and its two phases,
 `model.Projection.doc` maps the notes' symbols to the cells names, and `model.Data.doc` says
 what each input file is and what a replacement must preserve.
@@ -57,7 +57,7 @@ into it: on model point 5 the state pays 1 926,26 € against the saver's 609,80
 projection — 76 % of the contribution — and a statement that netted the two could not say so.
 
 Three cells carry the subsidy and they are three different amounts, 175,00 €, 175,00 € and
-475,00 € on the anchor at `t = 3`: `zulage_entitlement_pp(t)`, the full § 84/85 entitlement of
+475,00 € on the anchor at `t = 2`: `zulage_entitlement_pp(t)`, the full § 84/85 entitlement of
 contribution year `t` [R9]; `zulage_granted_pp(t)`, the same after the § 86 **proportional**
 Kürzung [R10]; and `zulage_pp(t)`, the cash **credited** in `t`, which is
 `zulage_granted_pp(t − 1)` because the ZfA pays in arrear [R11].
@@ -65,13 +65,13 @@ Kürzung [R10]; and `zulage_pp(t)`, the cash **credited** in `t`, which is
 **There are two lags and they are different lags.** `income_ref(t)` looks back one *calendar*
 year, because § 86 strikes the minimum on the previous year's earnings; `zulage_pp(t)` looks
 back one *projection* year, because the ZfA pays in arrear. One offset applied twice
-reproduces neither. The consequence is in the anchor's frame: between `t = 3` and `t = 4`
+reproduces neither. The consequence is in the anchor's frame: between `t = 2` and `t = 3`
 `zulagen` falls from 455,13 € to 164,93 € while `premiums` **rises** from 1 507,08 € to
 1 515,34 €, because the § 86 minimum is 4 % of income *less the entitlement* — a Zulage that
 stops is a contribution the saver must make good.
 
 `zulage_pp(t_conv())` is **not** zero: contributions stop at `t_conv() − 1` and the Zulage they
-earned lands in the conversion year — 134,33 € on the anchor at `t = 18` — where it is
+earned lands in the conversion year — 134,33 € on the anchor at `t = 17` — where it is
 credited, guaranteed and converted before the guarantee is tested. `check_zulage_lag()` pins
 all three cases. The § 10a *Sonderausgabenabzug* and the *Günstigerprüfung* top-up have **no
 cells and no column** [R6]: only the Zulage reaches the policy, the § 10a advantage being a
@@ -104,7 +104,7 @@ own resources: the product's signature output, and a Riester model on which it i
 positive has demonstrated nothing.
 
 `garantieluecke_pp(t)` is published at every `t` and is a **diagnostic**: the anchor opens
-358,94 € under water, peaks at 567,69 € and closes at `t = 7`, the normal state of a charged
+358,94 € under water, peaks at 567,69 € and closes at `t = 6`, the normal state of a charged
 contract. `db_pp`, `cv_pp` and `transfer_value_pp` are deliberately **not** floored at it —
 the guarantee is a promise about *Rentenbeginn*, not about a policy that leaves before it.
 Whether the *Schlussüberschussanteil* and *Bewertungsreserven* share may close a shortfall is
@@ -139,13 +139,13 @@ of 7 827,39 €.
 The AltZertG requires acquisition costs to be spread over **at least five years** [R1] — a
 tighter cap on *Zillmerung* than anything the VVG imposes on a Schicht-3 contract. So
 `acq_charge_pp(t)` is one fifth of `acq_charge_rate × beitragssumme` in contract years 1 to 5
-and zero after: on the anchor, 168,00 € in projection years 1 and 2 and nothing from year 3.
+and zero after: on the anchor, 168,00 € at `t = 0` and `t = 1` and nothing from `t = 2`.
 It never appears in `result_cf()`, being a deduction *before* the account, but 168,00 € of the
-488,90 € rise in the *Sparbeitrag* between `t = 2` and `t = 3` is the charge ending rather
+488,90 € rise in the *Sparbeitrag* between `t = 1` and `t = 2` is the charge ending rather
 than the contribution rising.
 
 The charge runs **whether or not contributions are paid**: on model point 10, *beitragsfrei*
-from `t = 4`, `prem_to_av_pp(4) = 175,00 − 168,00 − 19,00 = −12,00 €` and the
+from `t = 3`, `prem_to_av_pp(3) = 175,00 − 168,00 − 19,00 = −12,00 €` and the
 *Deckungskapital* falls — the cost-spreading rule, not a modelling artefact, and the reason
 `prem_to_av_pp` is documented as possibly negative rather than clamped at zero.
 
@@ -206,7 +206,7 @@ AltZertG requires [R1]. The *Rentengarantiezeit* changes **who is paid**, never 
 `pols_annuity_pay(t)` is `pols_conv()` while `t − t_conv() < rentengarantie_years()` and
 `pols_if(t)` afterwards, and `annuity_pp(t)` does not read `rentengarantie_years()` at all.
 
-| t | 18 | 19 | … | 27 | 28 | 29 |
+| t | 17 | 18 | … | 26 | 27 | 28 |
 |---|---|---|---|---|---|---|
 | `pols_if` | 0.767588 | 0.762677 | … | 0.701403 | 0.690013 | 0.677530 |
 | `pols_annuity_pay` | 0.767588 | 0.767588 | … | 0.767588 | 0.690013 | 0.677530 |
@@ -236,9 +236,9 @@ transfer pays the full account less a flat charge with no *Stornoabzug* and carr
 transfers out against 7,67 % that surrenders. Collapsing the two would apply a percentage charge
 where a flat one belongs and would attribute a repayment of every Zulage and every § 10a relief
 to an exit that has none. `exit_charge_pp(t)` is the residue that makes the account roll forward
-exactly — 1,48 € on the anchor at `t = 1`, because the account an exiting policy releases either
+exactly — 1,48 € on the anchor at `t = 0`, because the account an exiting policy releases either
 leaves as a benefit or stays with the insurer; dropping it leaves exactly that residual in
-`check_av_roll_fwd_resid(1)`, the usual way the identity fails.
+`check_av_roll_fwd_resid(0)`, the usual way the identity fails.
 
 *Beitragsfreistellung* is **not** a decrement. It is the book's dominant exit [R25] and a
 **state change**: `pols_if` is continuous across it, the account keeps rolling, the guarantee
@@ -298,10 +298,26 @@ frequency-loading invariance is tested.
 | `mort_table_accum.csv` | Accumulation death rates by attained age 16–110 | **[std]** proxy for **DAV 2008 T** [REG-R48], `qx = 0.001500 × 1.10^(age − 50)`, with **no** improvement dimension — on a death cover improvement favours the insurer. **The anchor a replacement must preserve is `qx` at age 50 = 0.001500** |
 | `annuity_mort_table.csv` | Annuitant base rates and improvement scale, ages 55–110 | **[std]** **generational** proxy for **DAV 2004 R** [REG-R49]. What a replacement may not drop is that it is two-dimensional. **The anchor is `ann_factor() = 20.87222879`**, which is what puts `rentenfaktor_curr()` below the guaranteed 29,00 |
 | `lapse_table.csv` | `lapse_rate` and `transfer_rate` by contract duration 1–60 | **[std]**, and **no observed range exists** (gap 16). Transfer above surrender at every duration, and that ordering is itself the assertion |
-| `zulage_schedule.csv` | `unmittelbar`, `n_kinder_pre2008`, `n_kinder_post2008`, `bonus` by schedule id and `t` | [R9] [REG-R42]. Exogenous because *Kindergeld* is a household fact the contract does not observe — the most awkward feature of this product for a per-policy model |
-| `income_schedule.csv` | Contribution-liable earnings by schedule id and `t` | **[std]** 2 % nominal growth paths plus a `zero` path for the *mittelbar* eligible spouse. It decides when the 2 100 € ceiling binds |
-| `surplus_scenario.csv` | `decl_rate` by scenario id and `t`: `base` 2,30 %, `low` 0,50 % | **[std]**, the **largest single lever in the model** and the least supported (gap 12). The rate **includes** the *Rechnungszins* [REG-R53] |
+| `zulage_schedule.csv` | `unmittelbar`, `n_kinder_pre2008`, `n_kinder_post2008`, `bonus` by schedule id and `t`, 0–59 | [R9] [REG-R42]. Exogenous because *Kindergeld* is a household fact the contract does not observe — the most awkward feature of this product for a per-policy model |
+| `income_schedule.csv` | Contribution-liable earnings by schedule id and `t`, 0–59 | **[std]** 2 % nominal growth paths plus a `zero` path for the *mittelbar* eligible spouse. It decides when the 2 100 € ceiling binds |
+| `surplus_scenario.csv` | `decl_rate` by scenario id and `t`, 0–89: `base` 2,30 %, `low` 0,50 % | **[std]**, the **largest single lever in the model** and the least supported (gap 12). The rate **includes** the *Rechnungszins* [REG-R53] |
 | `freq_loading.csv` | The *Ratenzuschlag* multiplier by payment frequency | **[std]** 1.0000 / 1.0100 / 1.0200 / 1.0300, a charge and never a credit |
+
+### How the time-like input columns are keyed
+
+The model's own time index is **0-based**, so each time-like column in the inputs had to be
+placed on one side or the other of that line, and this is where it landed.
+
+| File | Column | Decision | Why |
+|---|---|---|---|
+| `zulage_schedule.csv` | `t` | The model's own index; values run **0 … 59** | `zulage_entitlement_pp(t)` reads the row at `t` directly, so the key *is* the frame's `t` |
+| `income_schedule.csv` | `t` | The model's own index; values run **0 … 59** | `income_ref(t)` reads the row at `t − 1`, the previous period, and `income_init` supplies `t = 0`; the key is still the frame's `t`, offset by the calendar lag inside the formula |
+| `surplus_scenario.csv` | `t` | The model's own index; values run **0 … 89** | `decl_rate(t)` reads the row at `t` directly |
+| `lapse_table.csv` | `duration` | **Unchanged, 1 … 60** | It is a contractual **contract-year band**, not the frame's `t`. The projection maps into it with `duration(t) = duration_init() + t + 1`, which is 4 on the anchor's first period exactly as before |
+| `mort_table_accum.csv`, `annuity_mort_table.csv` | `age` | Unchanged | Attained age, not a time index |
+| `freq_loading.csv` | `prem_freq` | Unchanged | Not a time index |
+| `model_point_table.csv` | `duration_init` | **Unchanged** | An elapsed count of completed contract years, 0-based by nature |
+| `model_point_table.csv` | `bfs_year` | Shifted with the frame: point 10 moves from `4` to `3`, and the "never" sentinel from `0` to **`-1`** | It is a point on the frame's own axis, compared as `t >= bfs_year()`. The old sentinel `0` would now collide with the first projected period, so it had to move |
 
 ## The identities the model checks
 
@@ -339,7 +355,7 @@ example reproduces while the machinery stays visible and testable.
 |---|---|---|---|
 | Unsubsidised second contribution pool — enters the account **and** the guarantee while drawing no Zulage [R12] | `contrib_extra_pp` | `0.00` | point 8, 900,00 € |
 | Biometric-rider carve-out — capped at 20 % of total contributions [REG-R43]; never a cash flow here | `rider_prem_pp` | `0.00` | point 9, 400,00 € |
-| *Beitragsfreistellung* — contribution and Zulage stop, the account rolls on, the acquisition charge keeps biting | `bfs_year` | `0` (never) | point 10, year 4 |
+| *Beitragsfreistellung* — contribution and Zulage stop, the account rolls on, the acquisition charge keeps biting | `bfs_year` | `-1` (never) | point 10, `t = 3` |
 | § 86 proportional Kürzung — halves the contribution and, in proportion, the subsidy [R10] | `contrib_ratio` | `1.00` | point 7, 0.50 |
 | *Ratenzuschlag* — raises `premiums` by `E(t)(φ − 1)` and nothing else | `prem_freq` | `annual`, `φ = 1.0000` | points 3, 4, 6, 7, 10, 13 |
 | *Berufseinsteiger-Bonus* — the once-in-a-lifetime addition to the *Grundzulage* [R9] | the `bonus` column of `zulage_schedule.csv`, and `zulage_init_pp` | `0` | point 6, 200,00 € inside a 375,00 € opening credit |
@@ -374,7 +390,7 @@ structure plus a risk margin [REG-R5] [REG-R6]; nothing in this library discount
 frlib's reading, where `expenses` was the total and contained the commission, is not the reading
 here, because the notes' worked example prints both as parts; `int_credited` is a state movement
 and is in neither. The shape to expect is a modest positive `net_cf` every
-accumulation year — 1 505,37 € at `t = 1` — then −11 276,67 € in the conversion year as the
+accumulation year — 1 505,37 € at `t = 0` — then −11 276,67 € in the conversion year as the
 *Teilkapitalauszahlung* leaves in one payment, then a long thin annuity tail, for an
 undiscounted total of −7 827,39 €.
 
@@ -407,7 +423,7 @@ Two model point columns drive nothing and are carried anyway: `sex`, which is re
 because AltZertG § 1 Abs. 1 Satz 1 Nr. 2 requires an "unabhängig vom Geschlecht berechnete"
 benefit and every retrieved wording says so [R23] [S2] [S4] [S6], the 2006 vintage date
 itself being `[unverified]` — its **absence** from every formula is the assertion worth making — and `issue_age`, which enters only through
-`age(1) = issue_age + duration_init`.
+`age(0) = issue_age + duration_init`.
 
 ## Standardizations used
 
@@ -457,7 +473,7 @@ carrier could write something else.
 `tests/test_riester_rente_de.py` asserts every row of the notes' worked-example table to the cent
 and `pols_if` to six decimals, the payout phase's selected rows, the full-precision totals over
 all sixty-one periods against the four-cent difference a sum of rounded cells gives, the notes'
-four independent rebuilds — projection year 1 from the statute up, the conversion year, the
+four independent rebuilds — the first period `t = 0` from the statute up, the conversion year, the
 aggregate account roll-forward with its exit charge, and the four-way decrement closure to
 1.00000000 — and the two variants, model point 11's binding *Garantielücke* and model point 5's
 commuting *Sockelbeitrag* cell.

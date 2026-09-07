@@ -39,6 +39,29 @@ mort_table_file         data.mort_table()               mort_table.csv
 premium_rates_file      data.premium_rates()            premium_rates.csv
 ======================  ==============================  ==========================
 
+.. rubric:: The time index
+
+``t`` is **0-based** and counts policy years from issue, the library-wide convention:
+``t = 0`` is the first policy year, period ``t`` runs from anniversary ``t`` to
+anniversary ``t + 1``, the attained age entering it is ``age(t) = age_at_entry() + t``,
+and the contractual **policy year is the 1-based label ``t + 1``** — derived where a
+contractual schedule has to be read (the ``policy_year`` key of *cv_table.csv*), never
+indexed by. ``proj_len()`` is the **number** of policy years projected, the exclusive
+end of the frame: the projection runs ``t = proj_start() .. proj_len() - 1``, so
+``proj_len() - 1`` is the final policy year, the one ending at attained age 100.
+``proj_start()`` is 0 for new business and ``duration_inforce()`` — the policy years
+already elapsed — for an in-force model point, so ``pols_if(proj_start())`` is
+``pols_if_init()``.
+
+The **value** state variables are closing balances: ``cv_pp(t)``, ``pua_face(t)``,
+``pua_cv(t)``, ``div_accum(t)`` and ``loan_bal(t)`` are as at the anniversary that
+**ends** period t. The value entering period t is therefore the closing balance of
+period ``t - 1``, or, at the first projected period, the model point's opening state
+(``puaf_inforce()``, ``loan_inforce()``, zero accumulation, and a guaranteed cash value
+of zero at issue) — written inline as ``pua_face(t - 1) if t > proj_start() else
+puaf_inforce()`` wherever an opening balance is read, so that nothing is ever indexed
+below the first projected period.
+
 .. rubric:: Naming
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
@@ -51,11 +74,12 @@ The technical notes use compact actuarial symbols instead. The mapping is:
 Notes symbol               Cells                         Meaning
 =========================  ============================  ==========================
 x                          age_at_entry                  Issue age (ANB)
-x + t - 1                  age(t)                        Attained age at BOY of year t
-x + t                      age_anniv(t)                  Attained age at anniversary t
-T = 100 - x                proj_len                      Last policy year
+x + t                      age(t)                        Attained age at BOY of period t
+x + t + 1                  age_anniv(t)                  Attained age at the anniversary
+                                                         ending period t
+T = 100 - x                proj_len                      Policy years projected
 t0                         duration_inforce              Durations already elapsed
-t0 + 1                     proj_start                    First projected policy year
+t0                         proj_start                    First projected period
 m                          policy_term                   Premium-paying period, years
 F                          sum_assured                   Base face amount
 G                          premium_pp(t)                 Gross annual premium
@@ -64,18 +88,18 @@ A_t                        rider_premium_pp(t)           PUA rider premium
 i_g                        int_rate_guar                 Guarantee interest, 4.00%
 i_d                        int_rate_div                  Dividend interest rate, 6.00%
 i_L                        int_rate_loan                 Policy loan rate, 6.00%
-q^g_{x+t-1}                mort_rate_guar(t)             Guarantee mortality
+q^g_{x+t}                  mort_rate_guar(t)             Guarantee mortality
 q^g_y                      mort_rate_guar_at(y)          The same, keyed by age
-q^sc_{x+t-1}               mort_rate_scale(t)            Dividend-scale mortality
-q^e_{x+t-1}                mort_rate(t)                  Best-estimate mortality
+q^sc_{x+t}                 mort_rate_scale(t)            Dividend-scale mortality
+q^e_{x+t}                  mort_rate(t)                  Best-estimate mortality
 w_t                        lapse_rate(t)                 Surrender rate
 w^dyn multiplier           dyn_lapse_factor(t)           Interest-sensitive overlay
-l_{t-1}                    pols_if(t)                    In force at BOY t (weight)
-l_t                        pols_if_at(t, "AFT_DECR")     In force at EOY t
-l_{t-1}(1-q^e)             pols_if_at(t, timing)         In force inside year t
-(none)                     pols_death(t)                 Deaths in year t
+l_t                        pols_if(t)                    In force at BOY t (weight)
+l_{t+1}                    pols_if_at(t, "AFT_DECR")     In force at EOY t
+l_t(1-q^e)                 pols_if_at(t, timing)         In force inside period t
+(none)                     pols_death(t)                 Deaths in period t
 (none)                     pols_lapse(t)                 Surrenders at EOY t
-(none)                     pols_maturity(t)              Maturities at T
+(none)                     pols_maturity(t)              Maturities at T - 1
 CV_t                       cv_pp(t)                      Guaranteed cash value
 F - CV_t                   net_amt_at_risk(t)            Guarantee net amount at risk
 NSP_y                      nsp(y)                        Net single premium, endow 100
@@ -138,15 +162,15 @@ The notes' ``CSV_t`` is the cash surrender value, not a file. It is reached as
 ``kind`` vocabulary with ``CashValue_SE``.
 
 ``age(t)`` and ``age_anniv(t)`` are both needed: the notes index mortality at
-``x + t - 1`` (the age entering policy year t) but price paid-up additions bought at the
-end of that year at ``x + t``. Getting them the wrong way round shifts every dividend
+``x + t`` (the age entering period t) but price paid-up additions bought at the end of
+that period at ``x + t + 1``. Getting them the wrong way round shifts every dividend
 purchase by a year.
 
-``pols_if(t)`` is the **start**-of-year count — the notes' ``l_{t-1}``, not their
-``l_t``. That is the library-wide convention (``Term_US_A.pols_if(1)`` is
+``pols_if(t)`` is the **start**-of-period count — the notes' ``l_t``, not their
+``l_{t+1}``. That is the library-wide convention (``Term_US_A.pols_if(0)`` is
 ``pols_if_init()``, ``CashValue_SE.pols_if(t)`` is ``pols_if_at(t, "BEF_MAT")``), and it
 is the number every cash flow on the same ``result_cf()`` row is weighted by: the notes
-themselves write every term of ``NetCF_t`` over ``l_{t-1}``. The notes' end-of-year
+themselves write every term of ``NetCF_t`` over ``l_t``. The notes' end-of-period
 state variable is not lost — it is ``pols_if_at(t, "AFT_DECR")``, and
 ``pols_if_at(t, "AFT_DECR") == pols_if(t + 1)`` by construction.
 
@@ -155,10 +179,10 @@ sign-convention rubric below.
 
 .. rubric:: Timing and kind arguments
 
-``pols_if_at(t, timing)`` takes ``"BEF_DECR"`` (start of year t, before any decrement —
-the same number as ``pols_if(t)``), ``"BEF_SURR"`` (after deaths, before surrenders),
+``pols_if_at(t, timing)`` takes ``"BEF_DECR"`` (start of period t, before any decrement
+— the same number as ``pols_if(t)``), ``"BEF_SURR"`` (after deaths, before surrenders),
 ``"BEF_MAT"`` (after surrenders, before maturity) and ``"AFT_DECR"`` (after every
-decrement, the notes' ``l_t``) — the notes' end-of-year processing order, deaths then
+decrement, the notes' ``l_{t+1}``) — the notes' end-of-year processing order, deaths then
 dividend then surrenders then maturity. ``"BEF_DECR"`` and ``"BEF_MAT"`` are
 ``CashValue_SE``'s names; ``"BEF_SURR"`` is added because this product settles deaths
 and surrenders in one end-of-year step, and ``"AFT_DECR"`` because ``CashValue_SE`` has
@@ -181,7 +205,7 @@ pins the size of the gap in both directions.
 .. rubric:: The worked example sets the PUA-block dividend aside
 
 The notes' worked-example table computes steps 11-15 from the base-block dividend
-alone, saying so explicitly: "For clarity the PUA-block dividend ``D^PUA_10`` is
+alone, saying so explicitly: "For clarity the PUA-block dividend ``D^PUA_9`` is
 omitted from this table; in the model it adds ... to the amount in step 9." The
 Reference ``pua_div_on`` ships **False** so the base deterministic run reproduces the
 worked example exactly, the same way ``Term_US_A`` ships ``conv_rate_base = 0``. It is
@@ -211,15 +235,17 @@ curve pinned to ``q^g_54 = 0.00320``; *nsp_table.csv* is a separate parametric c
 pinned to ``NSP_55 = 0.42`` and ``NSP_100 = 1``; *np_guar_table.csv* holds
 ``1000 NSP_x / ae_{x:(100-x)}`` with the annuity taken on the mortality table's own
 survivorship, which is what makes ``NP_g = 13.00``; and *cv_table.csv* is a monotone
-shape solved through ``CV_9 = 95.00`` and ``CV_10 = 112.00`` to ``1000.00`` at attained
+shape solved through its policy-year 9 and 10 rows — the worked example's 95.00 and
+112.00 per $1,000, which are ``cv_pp(8)`` and ``cv_pp(9)`` — to ``1000.00`` at attained
 age 100. Reconciling the NSP curve with the mortality table needs a guarantee interest
 rate that falls from 5.99% at age 45 to 0.02% at age 99, and inverting the curve for the
 implied ``q`` at 4% gives a negative rate at every age up to 57 and a rate above 1 from
 age 89 on.
 
 The two *consequences* the pitfall names are nevertheless absent, and are asserted by
-tests: ``NSP_100 = 1`` exactly, so ``pua_cv(T) == pua_face(T)``, and the schedule reaches
-exactly face in the final policy year, so ``cv_pp(T) == sum_assured()``. Neither block
+tests: ``NSP_100 = 1`` exactly, so ``pua_cv(T - 1) == pua_face(T - 1)``, and the schedule
+reaches exactly face in the final policy year, so ``cv_pp(T - 1) == sum_assured()``,
+where ``T = proj_len()`` and ``T - 1`` is the last projected period. Neither block
 leaks at maturity. What is missing is the *means* — one basis — not the endpoints. Swap
 in a licensed 2017 CSO / 4% set and all four files must be replaced together; the worked
 example will then no longer reproduce, which is the honest price of the notes' own
@@ -351,7 +377,11 @@ def is_blended():
 
 
 def proj_len():
-    """T = maturity_age - x: the last policy year, ending at attained age 100.
+    """T = maturity_age - x: the number of policy years projected from issue.
+
+    The **exclusive** end of the frame, counted from t = 0: the projection runs
+    ``t = proj_start() .. proj_len() - 1``, so ``proj_len() - 1`` is the last projected
+    policy year, the one ending at attained age 100.
 
     The contract itself matures at 121, but the guaranteed cash value equals face at
     100 and the paid-up-additions cash value equals paid-up-additions face there, so
@@ -363,12 +393,13 @@ def proj_len():
 
 
 def proj_start():
-    """The first projected policy year, t0 + 1.
+    """t0: the first projected period, the policy years already elapsed at valuation.
 
-    New business starts at 1; an in-force model point starts at the year following the
-    durations it has already run.
+    New business starts at t = 0; an in-force model point starts at the number of
+    durations it has already run, so ``duration_inforce = 9`` opens the frame at
+    ``t = 9``, the tenth policy year.
     """
-    return duration_inforce() + 1
+    return duration_inforce()
 
 
 def policy_term():
@@ -390,17 +421,17 @@ def policy_term():
 
 
 def age(t):
-    """The attained age x + t - 1 entering policy year t.
+    """The attained age x + t entering period t, the policy year t + 1.
 
-    Mortality in year t is indexed here; paid-up additions bought at the end of the
-    year are priced at age_anniv(t).
+    Mortality in period t is indexed here; paid-up additions bought at the end of the
+    period are priced at age_anniv(t).
     """
-    return age_at_entry() + t - 1
+    return age_at_entry() + t
 
 
 def age_anniv(t):
-    """The attained age x + t at the anniversary that ends policy year t."""
-    return age_at_entry() + t
+    """The attained age x + t + 1 at the anniversary that ends period t."""
+    return age_at_entry() + t + 1
 
 
 def mec_flag():
@@ -421,14 +452,15 @@ def premium_rate():
 
 
 def premium_pp(t):
-    """G: the gross annual premium per policy payable at the start of policy year t.
+    """G: the gross annual premium per policy payable at the start of period t.
 
-    Level and guaranteed while premiums are payable, zero after policy_term(). The
+    Level and guaranteed through the policy_term() premium-paying years
+    ``t = 0 .. policy_term() - 1``, zero after. The
     participating design takes G from the model point (**[std illustrative]** — carrier
     rate books are not public); the final-expense variant computes it from the sourced
     rate table as ``(F / 1000) * rate(x, sex, class) + 36`` [S7].
     """
-    if t < 1 or t > policy_term():
+    if t < 0 or t >= policy_term():
         return 0.0
     elif is_par():
         return float(model_point()["annual_premium"])
@@ -437,18 +469,19 @@ def premium_pp(t):
 
 
 def premium_net_pp(t):
-    """G^net_t: the premium actually collected at the start of policy year t.
+    """G^net_t: the premium actually collected at the start of period t.
 
     Under REDUCE_PREM the prior anniversary's dividend offsets the premium,
     ``max(G - D_{t-1}, 0)``, and any excess buys paid-up additions through
-    pua_face_offset(). The dynamic premium-offset overlay (**[std]**, off by default)
-    applies a prem_offset_share fraction of the same offset once the dividend has grown
-    to cover the premium.
+    pua_face_offset(). ``D_{t-1}`` is the dividend credited at the anniversary that
+    opens period t; there is none at the first projected period. The dynamic
+    premium-offset overlay (**[std]**, off by default) applies a prem_offset_share
+    fraction of the same offset once the dividend has grown to cover the premium.
     """
     g = premium_pp(t)
     if g == 0.0:
         return 0.0
-    d = div_credited(t - 1)
+    d = div_credited(t - 1) if t > proj_start() else 0.0
     if dividend_option() == "REDUCE_PREM":
         return max(g - d, 0.0)
     elif prem_offset_on and d >= g:                                  # noqa: F821
@@ -458,47 +491,49 @@ def premium_net_pp(t):
 
 
 def rider_premium_pp(t):
-    """A_t: the paid-up-additions rider premium paid at the start of policy year t.
+    """A_t: the paid-up-additions rider premium paid at the start of period t.
 
     Level while base premiums are payable **[std]**; the notes set it within limits
     fixed at issue and do not schedule it.
     """
-    if not is_par() or t < proj_start() or t > policy_term():
+    if not is_par() or t < proj_start() or t >= policy_term():
         return 0.0
     return float(model_point()["pua_rider_premium"])
 
 
 def prem_cum(t):
-    """Cumulative gross premium paid per policy through the start of policy year t.
+    """Cumulative gross premium paid per policy through the start of period t.
 
     Only the final-expense graded plan uses it, for the 110%-of-premiums-paid death
-    benefit in policy years 1-2 [S6][S7].
+    benefit in policy years 1-2, the periods t = 0 and t = 1 [S6][S7].
     """
-    if t < 1:
-        return 0.0
+    if t <= 0:
+        return premium_pp(t)
     return prem_cum(t - 1) + premium_pp(t)
 
 
 def cv_pp(t):
-    """CV_t: the guaranteed cash value per policy at the anniversary ending year t.
+    """CV_t: the guaranteed cash value per policy at the anniversary ending period t.
 
-    Read from *cv_table.csv* per $1,000 of face. The notes give the Standard
-    Nonforfeiture Law adjusted-premium formula conceptually but prescribe a table input
-    in practice, because contractual cash value tables are policy-form documents that
-    are not public. The shipped schedule is **[std]**, calibrated to the worked
-    example's CV_9 and CV_10 and reaching exactly face at attained age 100.
+    Read from *cv_table.csv* per $1,000 of face, whose ``policy_year`` key is the
+    contractual 1-based label ``t + 1``: the closing value of period t is the schedule's
+    policy year t + 1. The notes give the Standard Nonforfeiture Law adjusted-premium
+    formula conceptually but prescribe a table input in practice, because contractual
+    cash value tables are policy-form documents that are not public. The shipped
+    schedule is **[std]**, calibrated to the worked example's CV_8 and CV_9 — the
+    policy-year 9 and 10 rows — and reaching exactly face at attained age 100.
 
     It is **sex-distinct**, as the notes require of every rate in this product: the male
     pay-to-100 schedule carries the worked example's anchors, and the female schedule is
-    that schedule's funding-progress shape ``f_t = CV^M_t / (F NSP^M_{x+t})`` applied to
-    the female paid-up value ``F NSP^F_{x+t}`` **[std]**. The shape — how far along the
-    way to paid-up status the schedule has come — is a design choice that does not
+    that schedule's funding-progress shape ``f_t = CV^M_t / (F NSP^M_{x+t+1})`` applied
+    to the female paid-up value ``F NSP^F_{x+t+1}`` **[std]**. The shape — how far along
+    the way to paid-up status the schedule has come — is a design choice that does not
     depend on sex; the value it is progressing towards does, through NSP. See the
     guarantee-basis rubric in the Space docstring for what this construction is *not*.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    key = (premium_period(), sex(), age_at_entry(), t)
+    key = (premium_period(), sex(), age_at_entry(), t + 1)
     return sum_assured() / 1000.0 * float(
         data.cv_table().loc[key, "cv_per_1000"])                     # noqa: F821
 
@@ -551,7 +586,7 @@ def mort_rate_guar_at(y):
 
 
 def mort_rate_guar(t):
-    """q^g at the attained age entering policy year t."""
+    """q^g at the attained age entering period t."""
     return mort_rate_guar_at(age(t))
 
 
@@ -581,24 +616,25 @@ def dyn_lapse_factor(t):
 
 
 def lapse_rate(t):
-    """w_t: the surrender rate applied to survivors at the end of policy year t **[std]**.
+    """w_t: the surrender rate applied to survivors at the end of period t **[std]**.
 
-    Participating: 5.0% in year 1 grading linearly to 2.0% at year 10, level 2.0%
-    thereafter. Final expense (simplified issue, so heavier): 12% year 1, 10% year 2,
-    grading linearly to 6% by year 5 and level after. Zero in the final policy year —
-    the notes' "0 within 1 year of maturity" — so that the survivors of year T mature
-    rather than surrender.
+    Participating: 5.0% in the first policy year (t = 0) grading linearly to 2.0% at
+    t = 9 (policy year 10), level 2.0% thereafter. Final expense (simplified issue, so
+    heavier): 12% at t = 0, 10% at t = 1, grading linearly to 6% by t = 4 (policy year
+    5) and level after. Zero in the final projected period t = proj_len() - 1 — the
+    notes' "0 within 1 year of maturity" — so that its survivors mature rather than
+    surrender.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     elif is_par():
-        w = 0.05 - 0.03 * (min(t, 10) - 1) / 9.0
-    elif t == 1:
+        w = 0.05 - 0.03 * min(t, 9) / 9.0
+    elif t == 0:
         w = 0.12
-    elif t == 2:
+    elif t == 1:
         w = 0.10
     else:
-        w = max(0.10 - (0.04 / 3.0) * (t - 2), 0.06)
+        w = max(0.10 - (0.04 / 3.0) * (t - 1), 0.06)
     return w * dyn_lapse_factor(t) if dyn_lapse_on else w            # noqa: F821
 
 
@@ -609,9 +645,13 @@ def div_int(t):
     portion is credited at the loan rate rather than the portfolio dividend rate. With
     the snapshot i_L = i_d = 6.00% the adjustment is zero, which is a coincidence of the
     snapshot and not a model property.
+
+    ``CV_{t-1}`` and ``L_{t-1}`` are the balances entering period t: the closing
+    balances of period t - 1, the guaranteed cash value being zero at issue and the loan
+    the model point's loan_inforce at the first projected period.
     """
-    fund = cv_pp(t - 1) + np_guar()
-    loan = loan_bal(t - 1)
+    fund = (cv_pp(t - 1) if t > 0 else 0.0) + np_guar()
+    loan = loan_bal(t - 1) if t > proj_start() else loan_inforce()
     return ((int_rate_div - int_rate_guar) * (fund - loan)           # noqa: F821
             + (int_rate_loan - int_rate_guar) * loan)                # noqa: F821
 
@@ -627,15 +667,17 @@ def div_exp(t):
 
 
 def div_base(t):
-    """D_t: the base-block dividend credited at the anniversary ending year t.
+    """D_t: the base-block dividend credited at the anniversary ending period t.
 
     ``max(D^int + D^mort + D^exp, 0)``, rounded to div_round_digits. The floor is
     **[std]**: dividends are non-negative distributions of surplus, so adverse
-    experience does not claw back. No dividend is credited before div_first_year, a
-    real cross-carrier design split that the notes keep as a parameter, and none at all
-    on the non-participating final-expense design.
+    experience does not claw back. No dividend is credited before **policy year**
+    div_first_year — that is, for ``t < div_first_year - 1`` — a real cross-carrier
+    design split that the notes keep as a parameter, and none at all on the
+    non-participating final-expense design.
     """
-    if not is_par() or t < div_first_year or t < proj_start() or t > proj_len():  # noqa: F821
+    if (not is_par() or t < div_first_year - 1                        # noqa: F821
+            or t < proj_start() or t >= proj_len()):
         return 0.0
     d = max(div_int(t) + div_mort(t) + div_exp(t), 0.0)
     return d if div_round_digits is None else round(d, div_round_digits)  # noqa: F821
@@ -644,53 +686,58 @@ def div_base(t):
 def div_pua(t):
     """D^PUA_t: the dividend earned by the paid-up-additions block **[std]**.
 
-    ``(i_d - i_g) PUACV_{t-1} + (q^g - q^sc)(PUAF_{t-1} - PUACV_{t-1})``. Paid-up
+    ``(i_d - i_g) PUACV_{t-1} + (q^g - q^sc)(PUAF_{t-1} - PUACV_{t-1})``, on the block
+    entering period t — the closing block of period t - 1, or the model point's
+    puaf_inforce at the first projected period, valued at ``NSP_{x+t}``. Paid-up
     additions are dividend-eligible, and the compounding this creates is the notes'
     first-ranked sensitivity. Switched **off** by ``pua_div_on`` in the shipped base run
     because the worked example's table omits it; see the Space docstring.
     """
-    if (not pua_div_on or not is_par() or t < div_first_year         # noqa: F821
-            or t < proj_start() or t > proj_len()):
+    if (not pua_div_on or not is_par() or t < div_first_year - 1     # noqa: F821
+            or t < proj_start() or t >= proj_len()):
         return 0.0
-    return ((int_rate_div - int_rate_guar) * pua_cv(t - 1)           # noqa: F821
-            + (mort_rate_guar(t) - mort_rate_scale(t))
-            * (pua_face(t - 1) - pua_cv(t - 1)))
+    puaf = pua_face(t - 1) if t > proj_start() else puaf_inforce()
+    puacv = puaf * nsp(age(t))
+    return ((int_rate_div - int_rate_guar) * puacv                   # noqa: F821
+            + (mort_rate_guar(t) - mort_rate_scale(t)) * (puaf - puacv))
 
 
 def div_credited(t):
-    """D_t + D^PUA_t: the whole dividend credited to survivors at the end of year t."""
-    if t < proj_start() or t > proj_len():
+    """D_t + D^PUA_t: the whole dividend credited to survivors at the end of period t."""
+    if t < proj_start() or t >= proj_len():
         return 0.0
     return div_base(t) + div_pua(t)
 
 
 def oyt_face(t):
-    """OYT_t: the one-year-term face the term-blend rider carries at the end of year t.
+    """OYT_t: the one-year-term face the term-blend rider carries at the end of period t.
 
     ``max(TF - F - PUAF_{t-1}, 0)``, capped at what the dividend can fund **[std]**.
     Two readings had to be settled here, and both are standardizations:
 
     The notes write the gap as ``TF - F - PUAF_t``, which is circular — the term cost
     is deducted from the dividend that buys those very additions — so the model uses
-    the prior anniversary's paid-up-additions face.
+    the paid-up-additions face entering the period: the closing balance of period
+    t - 1, or puaf_inforce at the first projected period.
 
     The notes are also silent on what happens when the dividend cannot pay for the
     whole gap. Leaving the formula uncapped would report a term face the model never
     charges for and would inflate the death benefit, so the layer is capped at
-    ``D_t (1 + i_g) / q^sc_{x+t}`` — as much term as the dividend actually buys.
+    ``D_t (1 + i_g) / q^sc_{x+t+1}`` — as much term as the dividend actually buys.
 
     Whether the cap binds is a property of how the blend is funded, not of the design.
     On model point 8, where a $5,000 paid-up-additions rider premium funds the 2x
-    target, it binds only in policy year 1 — where no dividend is payable at all under
-    div_first_year = 2 — and the gap closes at year 8. On model point 14, the same 2x
-    target with no rider premium, it binds in years 1-3 while the dividend is small and
-    again in every year from 30 on as ``q^sc`` outruns it, and the block never crosses
-    over. Crossover, after which the rider is pure paid-up additions, is where the gap
-    itself reaches zero.
+    target, it binds only at t = 0 — the first policy year, where no dividend is payable
+    at all under div_first_year = 2 — and the gap closes at t = 7. On model point 14,
+    the same 2x target with no rider premium, it binds at t = 0, 1, 2 while the dividend
+    is small and again in every period from t = 29 on as ``q^sc`` outruns it, and the
+    block never crosses over. Crossover, after which the rider is pure paid-up
+    additions, is where the gap itself reaches zero.
     """
-    if not is_blended() or t < proj_start() or t > proj_len():
+    if not is_blended() or t < proj_start() or t >= proj_len():
         return 0.0
-    gap = max(term_blend_target() - sum_assured() - pua_face(t - 1), 0.0)
+    puaf = pua_face(t - 1) if t > proj_start() else puaf_inforce()
+    gap = max(term_blend_target() - sum_assured() - puaf, 0.0)
     q = ae_scale * mort_rate_guar_at(age_anniv(t))                   # noqa: F821
     if gap == 0.0 or q <= 0.0:
         return gap
@@ -698,7 +745,7 @@ def oyt_face(t):
 
 
 def oyt_cost(t):
-    """The dividend absorbed by the one-year-term layer, q^sc_{x+t} x OYT_t x v_g **[std]**."""
+    """The dividend absorbed by the one-year-term layer, q^sc_{x+t+1} x OYT_t x v_g **[std]**."""
     if oyt_face(t) == 0.0:
         return 0.0
     return (ae_scale * mort_rate_guar_at(age_anniv(t))               # noqa: F821
@@ -706,55 +753,58 @@ def oyt_cost(t):
 
 
 def div_to_pua(t):
-    """The part of the credited dividend that buys paid-up additions at the end of year t.
+    """The part of the credited dividend that buys paid-up additions at the end of period t.
 
     Under the PUA option, everything left after the term-blend cost. Under CASH it is
     paid out, under ACCUM it goes to div_accum(), and under REDUCE_PREM it offsets the
-    next premium with the excess handled at the start of the following year by
-    pua_face_offset() — except in the final policy year, where there is no year T + 1
-    to offset. The notes are silent on that last dividend; routing it anywhere else
-    would drop it, so the whole of D_T is treated as REDUCE_PREM excess and buys
-    paid-up additions at NSP_100 = 1 **[std]**, which is the same rule the option
-    already applies in every year whose premium the dividend has outgrown.
+    next premium with the excess handled at the start of the following period by
+    pua_face_offset() — except in the final projected period t = proj_len() - 1, where
+    there is no following period to offset. The notes are silent on that last dividend;
+    routing it anywhere else would drop it, so the whole of D_{T-1} is treated as
+    REDUCE_PREM excess and buys paid-up additions at NSP_100 = 1 **[std]**, which is the
+    same rule the option already applies in every year whose premium the dividend has
+    outgrown.
     """
-    if t < proj_start() or t > proj_len():
+    if t < proj_start() or t >= proj_len():
         return 0.0
     elif dividend_option() == "PUA":
         return max(div_credited(t) - oyt_cost(t), 0.0)
-    elif dividend_option() == "REDUCE_PREM" and t == proj_len():
+    elif dividend_option() == "REDUCE_PREM" and t == proj_len() - 1:
         return div_credited(t)
     else:
         return 0.0
 
 
 def div_cash(t):
-    """D^cash_t: the cash dividend paid per surviving policy at the end of year t."""
+    """D^cash_t: the cash dividend paid per surviving policy at the end of period t."""
     return div_credited(t) if dividend_option() == "CASH" else 0.0
 
 
 def div_accum(t):
-    """DA_t: the dividend accumulation balance at the anniversary ending year t.
+    """DA_t: the dividend accumulation balance at the anniversary ending period t.
 
-    ``DA_{t-1}(1 + i_d) + D_t`` under the ACCUM option, zero otherwise. The credit rate
-    reuses the dividend interest rate **[std]**: carriers declare an accumulation rate
-    annually with the scale but publish no separate figure. The balance adds to the
-    death, surrender and maturity proceeds.
+    ``DA_{t-1}(1 + i_d) + D_t`` under the ACCUM option, zero otherwise, with the opening
+    balance zero at the first projected period — the notes' ``DA = 0`` initialization.
+    The credit rate reuses the dividend interest rate **[std]**: carriers declare an
+    accumulation rate annually with the scale but publish no separate figure. The
+    balance adds to the death, surrender and maturity proceeds.
     """
-    if t <= duration_inforce() or t > proj_len() or dividend_option() != "ACCUM":
+    if t < proj_start() or t >= proj_len() or dividend_option() != "ACCUM":
         return 0.0
-    return div_accum(t - 1) * (1 + int_rate_div) + div_credited(t)   # noqa: F821
+    prev = div_accum(t - 1) if t > proj_start() else 0.0
+    return prev * (1 + int_rate_div) + div_credited(t)               # noqa: F821
 
 
 def pua_face_purch(t):
-    """dPUAF_t: paid-up-additions face bought by the dividend, div / NSP_{x+t}."""
+    """dPUAF_t: paid-up-additions face bought by the dividend, div / NSP_{x+t+1}."""
     d = div_to_pua(t)
     return d / nsp(age_anniv(t)) if d else 0.0
 
 
 def pua_face_rider(t):
-    """dPUAF^rider_t: paid-up-additions face bought by the rider payment at the start of year t.
+    """dPUAF^rider_t: paid-up-additions face bought by the rider payment opening period t.
 
-    ``A_t (1 - load) / NSP_{x+t-1}``, a 10% load **[std]** chosen from the observed
+    ``A_t (1 - load) / NSP_{x+t}``, a 10% load **[std]** chosen from the observed
     7.5%-10% range on rider payments. Dividend purchases carry no load; only rider
     payments do.
     """
@@ -763,102 +813,118 @@ def pua_face_rider(t):
 
 
 def pua_face_offset(t):
-    """Paid-up-additions face bought at the start of year t by the REDUCE_PREM excess.
+    """Paid-up-additions face bought at the start of period t by the REDUCE_PREM excess.
 
     Once the prior dividend exceeds the premium it is offsetting, the excess buys
-    paid-up additions **[std]** rather than being paid out. This carries D_{t-1}, so it
-    can never carry D_T; that last dividend is routed through div_to_pua() instead —
-    see its docstring.
+    paid-up additions **[std]** rather than being paid out. This carries D_{t-1} — none
+    at the first projected period — so it can never carry the final D_{T-1}; that last
+    dividend is routed through div_to_pua() instead — see its docstring.
     """
-    if dividend_option() != "REDUCE_PREM" or t < proj_start() or t > proj_len():
+    if dividend_option() != "REDUCE_PREM" or t < proj_start() or t >= proj_len():
         return 0.0
-    excess = max(div_credited(t - 1) - premium_pp(t), 0.0)
+    d = div_credited(t - 1) if t > proj_start() else 0.0
+    excess = max(d - premium_pp(t), 0.0)
     return excess / nsp(age(t)) if excess else 0.0
 
 
 def pua_face(t):
-    """PUAF_t: paid-up-additions face in force at the anniversary ending year t.
+    """PUAF_t: paid-up-additions face in force at the anniversary ending period t.
 
-    ``PUAF_{t-1}`` plus the dividend, rider and premium-offset purchases of year t. The
-    t0 branch carries the model point's puaf_inforce, which is what makes the worked
-    example's stipulated prior balance of 4,100 an input rather than a projection.
+    ``PUAF_{t-1}`` plus the dividend, rider and premium-offset purchases of period t.
+    The opening balance at the first projected period is the model point's
+    puaf_inforce, which is what makes the worked example's stipulated prior balance of
+    4,100 an input rather than a projection.
     """
-    if t <= duration_inforce():
+    if t < proj_start():
         return puaf_inforce()
-    elif t > proj_len():
+    elif t >= proj_len():
         return 0.0
-    return (pua_face(t - 1) + pua_face_purch(t)
+    prev = pua_face(t - 1) if t > proj_start() else puaf_inforce()
+    return (prev + pua_face_purch(t)
             + pua_face_rider(t) + pua_face_offset(t))
 
 
 def pua_cv(t):
-    """PUACV_t: the cash value of the paid-up additions, PUAF_t x NSP_{x+t} **[std]**.
+    """PUACV_t: the cash value of the paid-up additions, PUAF_t x NSP_{x+t+1} **[std]**.
 
     Valuing the whole block at the attained-age net single premium is exact at the
     issue of each layer and again at age 100, and approximate in between.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     return pua_face(t) * nsp(age_anniv(t))
 
 
 def loan_int(t):
-    """Loan interest capitalized on the anniversary ending year t, L_{t-1} x i_L."""
-    return loan_bal(t - 1) * int_rate_loan                           # noqa: F821
+    """Loan interest capitalized on the anniversary ending period t, L_{t-1} x i_L.
+
+    ``L_{t-1}`` is the balance entering the period: loan_inforce() at the first
+    projected period, the previous period's closing balance after.
+    """
+    opening = loan_bal(t - 1) if t > proj_start() else loan_inforce()
+    return opening * int_rate_loan                                   # noqa: F821
 
 
 def loan_bal(t):
-    """L_t: the policy loan balance at the anniversary ending year t **[std]**.
+    """L_t: the policy loan balance at the anniversary ending period t **[std]**.
 
     The notes' variant holds the loan at ``loan_utilization x CV_t``, maintained by
     borrowing and repaying at each anniversary; the base run sets loan_utilization to
     zero. Loans reduce the death, surrender and maturity proceeds.
     """
-    if t <= duration_inforce():
+    if t < proj_start():
         return loan_inforce()
-    elif t > proj_len():
+    elif t >= proj_len():
         return 0.0
     return loan_utilization() * cv_pp(t)
 
 
 def loan_draw(t):
-    """Net new borrowing per policy at the anniversary ending year t; negative repays.
+    """Net new borrowing per policy at the anniversary ending period t; negative repays.
 
     The balance change net of the interest that capitalized into it, so the cash the
     insurer actually advances.
     """
-    return loan_bal(t) - loan_bal(t - 1) - loan_int(t)
+    opening = loan_bal(t - 1) if t > proj_start() else loan_inforce()
+    return loan_bal(t) - opening - loan_int(t)
 
 
 def claim_pp(t, kind):
-    """The benefit amount per policy in policy year t, by kind.
+    """The benefit amount per policy in period t, by kind.
 
     ``"DEATH"``     DB_t = F + PUAF_{t-1} + OYT_t + DA_{t-1} - L_{t-1}. Deaths fall at
-                    the end of the year *before* the dividend is credited, so the
-                    benefit carries the prior anniversary's paid-up additions
-                    **[std]**. The one-year-term layer is zero unless the term-blend
+                    the end of the period *before* the dividend is credited, so the
+                    benefit carries the paid-up additions, accumulation balance and
+                    loan entering it **[std]** — the closing balances of period t - 1,
+                    or the model point's opening state at the first projected period.
+                    The one-year-term layer is zero unless the term-blend
                     rider is active, where ``F + PUAF + OYT`` is the notes' "target face
                     plus excess paid-up additions" written so that it still holds when
                     the dividend funds only part of the gap. On the final-expense
-                    graded plan, natural-cause deaths in policy years 1-2 pay 110% of
-                    cumulative premiums paid and accidental deaths pay the full face
-                    from day one [S6][S7]; the two are blended by fe_accid_share
-                    **[std]**, since the model carries one mortality decrement.
+                    graded plan, natural-cause deaths in policy years 1-2 — the periods
+                    t = 0 and t = 1 — pay 110% of cumulative premiums paid and
+                    accidental deaths pay the full face from day one [S6][S7]; the two
+                    are blended by fe_accid_share **[std]**, since the model carries one
+                    mortality decrement.
     ``"LAPSE"``     CSV_t = CV_t + PUACV_t + DA_t - L_t, the surrender value at the end
-                    of year t, including the dividend just credited.
-    ``"MATURITY"``  MAT = F + PUAF_T + DA_T - L_T, paid at T and zero in every other
-                    year. On the non-participating design this is F - L_T.
+                    of period t, including the dividend just credited.
+    ``"MATURITY"``  MAT = F + PUAF + DA - L at the end of the final projected period
+                    t = proj_len() - 1, and zero in every other period. On the
+                    non-participating design this is F - L.
     """
     if kind == "DEATH":
-        if product() == "WL_FE_GRADED" and t <= fe_graded_years:     # noqa: F821
+        if product() == "WL_FE_GRADED" and t < fe_graded_years:      # noqa: F821
             return ((1 - fe_accid_share) * fe_graded_factor * prem_cum(t)  # noqa: F821
                     + fe_accid_share * sum_assured())                # noqa: F821
-        face = sum_assured() + pua_face(t - 1) + oyt_face(t)
-        return face + div_accum(t - 1) - loan_bal(t - 1)
+        puaf = pua_face(t - 1) if t > proj_start() else puaf_inforce()
+        accum = div_accum(t - 1) if t > proj_start() else 0.0
+        loan = loan_bal(t - 1) if t > proj_start() else loan_inforce()
+        face = sum_assured() + puaf + oyt_face(t)
+        return face + accum - loan
     elif kind == "LAPSE":
         return cv_pp(t) + pua_cv(t) + div_accum(t) - loan_bal(t)
     elif kind == "MATURITY":
-        if t != proj_len():
+        if t != proj_len() - 1:
             return 0.0
         return sum_assured() + pua_face(t) + div_accum(t) - loan_bal(t)
     else:
@@ -866,23 +932,23 @@ def claim_pp(t, kind):
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     ``"BEF_DECR"``
-        l_{t-1}, the start of year t, before any decrement; the same number
-        as pols_if(t), and the weight on that year's cash flows.
+        l_t, the start of period t, before any decrement; the same number
+        as pols_if(t), and the weight on that period's cash flows.
     ``"BEF_SURR"``
         after deaths, before surrenders — the population the dividend is
         credited to and the one surrenders are taken from.
     ``"BEF_MAT"``
-        after surrenders, before maturity; the survivors of the year.
+        after surrenders, before maturity; the survivors of the period.
     ``"AFT_DECR"``
-        l_t, the notes' end-of-year state variable: what is left once the
-        year's deaths, surrenders and — in the final policy year — the
-        maturities have all been taken, so it is zero from T on. Equals
-        pols_if(t + 1). The string is added to CashValue_SE's set because
-        that model has no name for the point past the last decrement, which
-        is where these notes keep their in-force probability.
+        l_{t+1}, the notes' end-of-period state variable: what is left once
+        the period's deaths, surrenders and — in the final projected period —
+        the maturities have all been taken, so it is zero from proj_len() - 1
+        on. Equals pols_if(t + 1). The string is added to CashValue_SE's set
+        because that model has no name for the point past the last decrement,
+        which is where these notes keep their in-force probability.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -891,9 +957,9 @@ def pols_if_at(t, timing):
     elif timing == "BEF_MAT":
         return pols_if_at(t, "BEF_SURR") * (1 - lapse_rate(t))
     elif timing == "AFT_DECR":
-        if t <= duration_inforce():
+        if t < proj_start():
             return pols_if_init()
-        elif t >= proj_len():
+        elif t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_MAT")
     else:
@@ -901,58 +967,58 @@ def pols_if_at(t, timing):
 
 
 def pols_if(t):
-    """The number of policies in force at the **start** of policy year t.
+    """The number of policies in force at the **start** of period t.
 
-    The notes' l_{t-1}: the population that pays the year's premium, carries its
+    The notes' l_t: the population that pays the period's premium, carries its
     expenses and is exposed to its decrements, so it is the weight on every cash flow
-    of the same result_cf() row. Equal to pols_if_init() up to and including t0, and
-    zero from T + 1 on, because everything still in force at T matures there and the
-    contract terminates.
+    of the same result_cf() row. Equal to pols_if_init() up to and including the first
+    projected period t0, and zero from proj_len() on, because everything still in force
+    in the final projected period matures there and the contract terminates.
 
-    The notes' end-of-year l_t is pols_if_at(t, "AFT_DECR"), which is this cells one
-    year on.
+    The notes' end-of-period l_{t+1} is pols_if_at(t, "AFT_DECR"), which is this cells
+    one year on.
     """
-    if t <= duration_inforce():
+    if t <= proj_start():
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
 
 def pols_death(t):
-    """Deaths in policy year t, q^e applied to the policies in force at its start."""
+    """Deaths in period t, q^e applied to the policies in force at its start."""
     return pols_if_at(t, "BEF_DECR") * mort_rate(t)
 
 
 def pols_lapse(t):
-    """Surrenders at the end of policy year t, w_t applied to survivors of the year."""
+    """Surrenders at the end of period t, w_t applied to survivors of the period."""
     return pols_if_at(t, "BEF_SURR") * lapse_rate(t)
 
 
 def pols_maturity(t):
-    """Policies maturing at attained age 100; non-zero only in the final policy year.
+    """Policies maturing at attained age 100; non-zero only at t = proj_len() - 1.
 
     Not a decrement — the modelled contract simply ends — but the in-force
     roll-forward does not close without it.
     """
-    return pols_if_at(t, "BEF_MAT") if t == proj_len() else 0.0
+    return pols_if_at(t, "BEF_MAT") if t == proj_len() - 1 else 0.0
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t."""
-    return (1 + inflation_rate) ** (t - 1)                           # noqa: F821
+    """The expense inflation factor in period t; 1 in the first policy year, t = 0."""
+    return (1 + inflation_rate) ** t                                 # noqa: F821
 
 
 def premiums(t):
-    """Premium income at the start of policy year t (an inflow)."""
+    """Premium income at the start of period t (an inflow)."""
     return premium_net_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
 def rider_premiums(t):
-    """Paid-up-additions rider premium income at the start of policy year t (an inflow)."""
+    """Paid-up-additions rider premium income at the start of period t (an inflow)."""
     return rider_premium_pp(t) * pols_if_at(t, "BEF_DECR")
 
 
 def premium_taxes(t):
-    """Premium tax at the start of policy year t **[std]**, on premium and rider income.
+    """Premium tax at the start of period t **[std]**, on premium and rider income.
 
     The notes' processing order collects it at the beginning of the year alongside the
     expenses; their one-line NetCF formula omits it. The model follows the processing
@@ -962,19 +1028,19 @@ def premium_taxes(t):
 
 
 def expenses(t):
-    """E_t: acquisition and inflating maintenance expense in policy year t **[std]**.
+    """E_t: acquisition and inflating maintenance expense in period t **[std]**.
 
-    90% of the first year's premium plus $250 per policy at issue, then $60 per policy
-    per year inflating at 2%. An in-force model point never sees the acquisition
-    charge, because its projection starts after policy year 1.
+    90% of the first year's premium plus $250 per policy at issue — the t = 0 charge —
+    then $60 per policy per year inflating at 2%. An in-force model point never sees the
+    acquisition charge, because its projection starts after the first policy year.
     """
-    acq = expense_acq_prem_rate * premium_pp(t) + expense_acq if t == 1 else 0.0  # noqa: F821
+    acq = expense_acq_prem_rate * premium_pp(t) + expense_acq if t == 0 else 0.0  # noqa: F821
     return ((acq + expense_maint * inflation_factor(t))              # noqa: F821
             * pols_if_at(t, "BEF_DECR"))
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted."""
+    """Benefit outgo in period t, by kind; the total when kind is omitted."""
     if kind is None:
         return sum(claims(t, k) for k in ("DEATH", "LAPSE", "MATURITY"))
     elif kind == "DEATH":
@@ -988,12 +1054,12 @@ def claims(t, kind=None):
 
 
 def div_cash_paid(t):
-    """Cash dividends paid out at the end of policy year t, to survivors of the year."""
+    """Cash dividends paid out at the end of period t, to the survivors of the period."""
     return div_cash(t) * pols_if_at(t, "BEF_SURR")
 
 
 def loan_draws(t):
-    """Net policy loans advanced at the end of policy year t **[std]**, an outflow.
+    """Net policy loans advanced at the end of period t **[std]**, an outflow.
 
     The notes report gross liability flows plus a separate loan account rather than
     netting the loan into a net-amount-at-risk presentation. Advances go to the
@@ -1004,7 +1070,7 @@ def loan_draws(t):
 
 
 def liability_cf(t):
-    """NetCF_t: the net liability cash flow in policy year t, **outgo positive**.
+    """NetCF_t: the net liability cash flow in period t, **outgo positive**.
 
     The technical notes' formula verbatim, and the one to compare against them: premium
     and rider income enter with a minus sign; expenses, premium tax, death, surrender
@@ -1024,7 +1090,7 @@ def liability_cf(t):
 
 
 def net_cf(t):
-    """The net cash flow in policy year t, **income positive**: -liability_cf(t).
+    """The net cash flow in period t, **income positive**: -liability_cf(t).
 
     Income less outgo, the sign every model in ``products/`` carries, so that a
     ``result_cf()["net_cf"]`` column can be summed or compared across products. A
@@ -1036,14 +1102,16 @@ def net_cf(t):
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year.
+    """Result table of cashflows, indexed by the 0-based period index t.
 
-    ``pols_if`` is the start-of-year count, which is the weight applied to every cash
-    flow on the same row. Both signs of the net flow are published: ``net_cf`` is
-    income-positive, the library-wide convention, and ``liability_cf`` is the technical
-    notes' outgo-positive ``NetCF_t``; the two are negatives of each other.
+    The frame runs ``t = proj_start() .. proj_len() - 1``: ``t = 0`` for new business,
+    ``duration_inforce()`` for an in-force point. ``pols_if`` is the start-of-period
+    count, which is the weight applied to every cash flow on the same row. Both signs of
+    the net flow are published: ``net_cf`` is income-positive, the library-wide
+    convention, and ``liability_cf`` is the technical notes' outgo-positive ``NetCF_t``;
+    the two are negatives of each other.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1064,8 +1132,8 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts and decrement rates, indexed by policy year."""
-    ts = list(range(proj_start(), proj_len() + 1))
+    """Result table of policy counts and decrement rates, indexed by t."""
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1080,13 +1148,14 @@ def result_pols():
 
 
 def result_cv():
-    """Result table of the guaranteed and non-guaranteed values, indexed by policy year.
+    """Result table of the guaranteed and non-guaranteed values, indexed by t.
 
     The account-value analogue for this product: the guaranteed cash value, the
     paid-up-additions block, the accumulation balance and the loan, plus the dividend
-    that drives them and the two benefit amounts they feed.
+    that drives them and the two benefit amounts they feed. Every balance on row t is
+    the **closing** value of period t, at the anniversary that ends it.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "cv_pp": [cv_pp(t) for t in ts],
@@ -1104,49 +1173,51 @@ def result_cv():
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in period t; zero everywhere.
 
     ``pols_if(t) - pols_if(t + 1) - deaths - surrenders - maturities``, the notes'
-    ``l_{t-1} - l_t - ...``. Maturities are non-zero only in the final policy year,
+    ``l_t - l_{t+1} - ...``. Maturities are non-zero only in the final projected period,
     where the survivors neither die nor surrender: their contract ends. Without that
-    term the last year appears to lose lives with no cause.
+    term the last period appears to lose lives with no cause.
     """
     return (pols_if(t) - pols_if(t + 1)
             - pols_death(t) - pols_lapse(t) - pols_maturity(t))
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected policy year.
+    """True when the in-force roll-forward closes in every projected period.
 
     The library-wide form of a roll-forward check: no argument, one bool over all t, so
     one test can call it across every model. check_pols_roll_fwd_resid(t) gives the
-    signed residual of the year that failed. The tolerance scales with pols_if_init(),
+    signed residual of the period that failed. The tolerance scales with pols_if_init(),
     since the residual is an accumulation of rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_pua_roll_fwd_resid(t):
-    """The paid-up-additions roll-forward residual in policy year t; zero everywhere.
+    """The paid-up-additions roll-forward residual in period t; zero everywhere.
 
-    ``PUAF_t - PUAF_{t-1} - dividend purchases - rider purchases - offset purchases``.
-    The analogue of ``CashValue_SE.check_av_roll_fwd`` for a product whose accumulating
-    state is a face amount rather than an account value.
+    ``PUAF_t - PUAF_{t-1} - dividend purchases - rider purchases - offset purchases``,
+    with ``PUAF_{t-1}`` the block entering the period — puaf_inforce() at the first
+    projected period. The analogue of ``CashValue_SE.check_av_roll_fwd`` for a product
+    whose accumulating state is a face amount rather than an account value.
     """
-    return (pua_face(t) - pua_face(t - 1) - pua_face_purch(t)
+    opening = pua_face(t - 1) if t > proj_start() else puaf_inforce()
+    return (pua_face(t) - opening - pua_face_purch(t)
             - pua_face_rider(t) - pua_face_offset(t))
 
 
 def check_pua_roll_fwd():
-    """True when the paid-up-additions roll-forward closes in every projected year.
+    """True when the paid-up-additions roll-forward closes in every projected period.
 
     No argument, one bool over all t, matching check_pols_roll_fwd();
     check_pua_roll_fwd_resid(t) gives the signed residual. The tolerance is relative to
     the block itself, which reaches six figures of face on a compounding projection.
     """
     return all(abs(check_pua_roll_fwd_resid(t)) <= 1e-9 * max(pua_face(t), 1.0)
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 # ---------------------------------------------------------------------------

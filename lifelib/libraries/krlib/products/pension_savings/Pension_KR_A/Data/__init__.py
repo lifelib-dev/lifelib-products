@@ -156,7 +156,8 @@ def lapse_table():
     Read from *lapse_table.csv*.  Two bases: ``pension``, the product's own vector, and
     ``savings``, the steeper comparison vector of a non-qualified savings contract, carried
     so the two can be run side by side.  Three segments in each: ``premium_paying`` carries
-    a duration curve keyed by the first policy year it applies from, ``paid_up`` the single
+    a duration curve keyed by ``from_year``, the first **0-based** policy year index ``t``
+    it applies from — ``from_year = 0`` is the first projected year — ``paid_up`` the single
     rate applying between 납입완료 and 연금개시, and ``in_payment`` the zero that must apply
     once the annuity has started.
     """
@@ -168,8 +169,9 @@ def lapse_table():
 def decl_rate_table():
     """The 공시이율 (declared crediting rate) scenarios, from *decl_rate_table.csv*.
 
-    Indexed by ``scenario`` and ``from_year``, so a scenario is a step function of policy
-    year rather than a scalar.  ``base`` is the composite's level 2.15%; ``floor`` drives
+    Indexed by ``scenario`` and ``from_year`` — the **0-based** policy year index ``t`` the
+    step applies from — so a scenario is a step function of policy year rather than a
+    scalar.  ``base`` is the composite's level 2.15%; ``floor`` drives
     the declared rate below the guarantee at every duration, which is what the second column
     of a published illustration shows; ``hybrid`` is the one retrieved design that pays a
     fixed 3.5% for five years before reverting.
@@ -181,6 +183,9 @@ def decl_rate_table():
 
 def guar_rate_table():
     """The 최저보증이율 ladder, from *guar_rate_table.csv*, keyed by elapsed policy years.
+
+    ``from_year`` is the 0-based policy year index ``t`` the step applies from, so the first
+    band is keyed ``0``.
 
     The floor steps **down** with duration — 1.25% to five years, 1.00% to ten, 0.50%
     after — which is the opposite of intuition and matters: the guarantee is strongest

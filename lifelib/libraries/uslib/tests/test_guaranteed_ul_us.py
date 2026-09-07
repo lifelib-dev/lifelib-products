@@ -143,8 +143,8 @@ def test_worked_example_gap_is_only_the_notes_rounding(anchor):
     """No figure in the notes' table is more than 6 cents from a clean recomputation.
 
     The bound exists so the divergence cannot widen silently.  It is dominated by the
-    shadow balance at t = 4 (policy month 305), where the notes' interest column is one cent low in
-    each of the five rows and the error accumulates.
+    shadow balance at t = 4 (policy month 305), where the notes' interest column is one
+    cent low in each of the five rows and the error accumulates.
     """
     worst = 0.0
     for t, row in WORKED_EXAMPLE.items():

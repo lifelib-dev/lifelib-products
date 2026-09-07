@@ -13,8 +13,9 @@ projecting model point 1::
 
 ``t`` counts **months from Vertragsbeginn**, 0-based: ``t = t_start()`` is the first
 projected month — 0 for a new-business point, ``duration_mth_init()`` for one already in
-force — and ``t = proj_len()`` the last. ``proj_len()`` is the last projected month
-**index**, so ``result_cf()`` is indexed ``t_start() ... proj_len()`` inclusive.
+force — and ``t = proj_len() - 1`` the last. ``proj_len()`` is the **exclusive end** of
+the frame, counted from inception, so ``result_cf()`` is indexed
+``range(t_start(), proj_len())`` and carries ``proj_len() - t_start()`` rows.
 
 .. rubric:: Input data
 
@@ -56,7 +57,7 @@ Notes symbol     Cells                                 Meaning
 ===============  ====================================  ========================================
 (none)           model_point()                         The selected model point row
 t0               t_start()                             First projected month index
-n                proj_len()                            Last projected month index
+n                proj_len()                            Exclusive end of the frame, t < n
 (none)           horizon_mths(life)                    12 (omega_age - entry age)
 (none)           duration_mth(t)                       Months elapsed since inception
 (none)           policy_year(t)                        Completed policy years, t // 12
@@ -485,23 +486,28 @@ def horizon_mths(life=1):
 
 
 def proj_len():
-    """n: the **last** projected month index, so ``result_cf().index[-1] == proj_len()``.
+    """n: the **exclusive end** of the frame, counted in months from *Vertragsbeginn*.
+
+    The frame is ``range(t_start(), proj_len())``, so the last projected month index is
+    ``proj_len() - 1`` and ``result_cf()`` carries ``proj_len() - t_start()`` rows — the
+    library's ``range(proj_len())`` idiom, read from inception rather than from the
+    frame's own start because an in-force point opens partway through.
 
     The maximum of three terms, and all three are needed::
 
-        max( horizon_mths(1) - 1,                      the annuitant's survival horizon
-             guar_end_mth() - 1,                       the Rentengarantiezeit's own end
-             horizon_mths(2) - 1  if surv_pct() > 0 )  the second life's horizon
+        max( horizon_mths(1),                      the annuitant's survival horizon
+             guar_end_mth(),                       the Rentengarantiezeit's own end
+             horizon_mths(2)  if surv_pct() > 0 )  the second life's horizon
 
     Stopping on the annuitant's horizon alone truncates a younger survivor's tail — on
     model point 4 the second life is three years younger and outlives the frame by three
     years — and stopping on the guarantee alone truncates the life annuity.  On the anchor
     cell ``horizon_mths(1) = 12 x (121 - 65) = 672``, the guarantee ends at month 120, and
-    ``proj_len() = 671``: 672 monthly rows.
+    ``proj_len() = 672``: 672 monthly rows, ``t = 0 ... 671``.
     """
-    n = max(horizon_mths(1) - 1, guar_end_mth() - 1)
+    n = max(horizon_mths(1), guar_end_mth())
     if surv_pct() > 0.0:
-        n = max(n, horizon_mths(2) - 1)
+        n = max(n, horizon_mths(2))
     return n
 
 
@@ -773,7 +779,7 @@ def annuity_factor():
     v = 1.0 / (1.0 + tariff_int_rate())
     d = surv_pct()
     total = 0.0
-    for k in range(0, proj_len() + 1):
+    for k in range(0, proj_len()):
         if not is_payment_mth(k):
             continue
         g = certain_floor(k)
@@ -817,7 +823,7 @@ def annuity_pp_derived():
     disc = []
     dens = []
     paid = []
-    for t in range(0, proj_len() + 1):
+    for t in range(0, proj_len()):
         d = tariff_lives(t, 1) - tariff_lives(t + 1, 1)
         if d <= 0.0:
             continue
@@ -857,7 +863,7 @@ def refund_pv():
     sp = single_prem()
     r = annuity_pp_derived()
     total = 0.0
-    for t in range(0, proj_len() + 1):
+    for t in range(0, proj_len()):
         d = tariff_lives(t, 1) - tariff_lives(t + 1, 1)
         if d <= 0.0:
             continue
@@ -1216,7 +1222,7 @@ def check_net_cf():
     """
     tol = roll_fwd_tol * max(single_prem() * pols_if_init(), 1.0)    # noqa: F821
     return bool(all(abs(check_net_cf_resid(t)) <= tol
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_lives_roll_fwd_resid(t):
@@ -1240,7 +1246,9 @@ def check_lives_roll_fwd():
     """True when the survival path rolls forward and the decrements close, for every life.
 
     Two identities, and the second is the one that is more than a telescope of the first:
-    ``sum_t lives_death(t, life) + lives_if(n + 1, life) == lives_if(t_start(), life)``,
+    ``sum_t lives_death(t, life) + lives_if(n, life) == lives_if(t_start(), life)``, the
+    sum taken over ``t = t_start() ... n - 1`` and the tail read at the frame's exclusive
+    end ``n = proj_len()``,
     built by direct summation over the death cells with no reference to the recursion that
     produced them.  Death is the only decrement in this product — there is no lapse, no
     paid-up conversion and no option exercise — so this is the whole closure identity, and
@@ -1248,15 +1256,15 @@ def check_lives_roll_fwd():
     """
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     if not all(abs(check_lives_roll_fwd_resid(t)) <= tol
-               for t in range(t_start(), proj_len() + 1)):
+               for t in range(t_start(), proj_len())):
         return False
     lives = [1]
     if surv_pct() > 0.0:
         lives.append(2)
     for life in lives:
         deaths = sum(lives_death(t, life)
-                     for t in range(t_start(), proj_len() + 1))
-        closure = (deaths + lives_if(proj_len() + 1, life)
+                     for t in range(t_start(), proj_len()))
+        closure = (deaths + lives_if(proj_len(), life)
                    - lives_if(t_start(), life))
         if abs(closure) > tol:
             return False
@@ -1288,9 +1296,9 @@ def check_annuity_roll_fwd():
     """
     tol = roll_fwd_tol * max(single_prem() * pols_if_init(), 1.0)    # noqa: F821
     stepped = all(abs(check_annuity_roll_fwd_resid(t)) <= tol
-                  for t in range(t_start(), proj_len() + 1))
+                  for t in range(t_start(), proj_len()))
     ratchet = all(annuity_pp(t) >= annuity_pp(t - 1) - tol
-                  for t in range(t_start() + 1, proj_len() + 1))
+                  for t in range(t_start() + 1, proj_len()))
     return bool(stepped and ratchet)
 
 
@@ -1322,21 +1330,21 @@ def check_refund_run_off():
     tol = roll_fwd_tol * max(single_prem() * pols_if_init(), 1.0)    # noqa: F821
     if refund_form() == "none":
         return bool(all(refund_pp(t) == 0.0
-                        for t in range(t_start(), proj_len() + 1)))
+                        for t in range(t_start(), proj_len())))
     if not all(abs(check_refund_run_off_resid(t)) <= tol
-               for t in range(t_start(), proj_len() + 1)):
+               for t in range(t_start(), proj_len())):
         return False
     if not all(refund_pp(t) <= refund_pp(t - 1) + tol
-               for t in range(t_start() + 1, proj_len() + 1)):
+               for t in range(t_start() + 1, proj_len())):
         return False
-    if refund_pp(proj_len()) > tol:
+    if refund_pp(proj_len() - 1) > tol:
         return False
     r = annuity_guar_pp(t_start())
     n_req = 0
     while n_req * r < single_prem() - tol:
         n_req = n_req + 1
     t_zero = first_pay_mth() + (n_req - 1) * pay_period_mths()
-    if t_zero > proj_len():
+    if t_zero >= proj_len():
         return True
     if refund_pp(t_zero) > tol:
         return False
@@ -1367,7 +1375,7 @@ def check_payment_factor():
     """True when the instalment splits exactly into its three legs at every month."""
     tol = roll_fwd_tol * max(single_prem() * pols_if_init(), 1.0)    # noqa: F821
     return bool(all(abs(check_payment_factor_resid(t)) <= tol
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_guarantee_certain_resid(t):
@@ -1392,7 +1400,7 @@ def check_guarantee_certain():
     """
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return bool(all(abs(check_guarantee_certain_resid(t)) <= tol
-                    for t in range(t_start(), proj_len() + 1)))
+                    for t in range(t_start(), proj_len())))
 
 
 def check_equivalence_resid():
@@ -1470,11 +1478,11 @@ def result_cf():
     ``claims_refund`` the *Kapitalrückgewähr*.  ``liability_cf`` is the notes'
     outgo-positive orientation and ``net_cf`` its negative.
 
-    The frame runs ``t_start() ... proj_len()`` and stops.  There is no maturity payment
+    The frame runs ``t_start() ... proj_len() - 1`` and stops.  There is no maturity payment
     and no tail state: the annuitant's survival has reached zero and the guarantee has
     expired, so nothing remains to be paid.
     """
-    ts = list(range(t_start(), proj_len() + 1))
+    ts = list(range(t_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1498,7 +1506,7 @@ def result_pols():
     and surplus parts, and the refund's run-off against the cumulative guaranteed
     instalments.
     """
-    ts = list(range(t_start(), proj_len() + 1))
+    ts = list(range(t_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "lives_if_1": [lives_if(t, 1) for t in ts],

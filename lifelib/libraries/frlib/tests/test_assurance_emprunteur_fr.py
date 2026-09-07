@@ -13,6 +13,13 @@ They are hard-coded rather than pickled so that a reviewer can compare them agai
 notes by eye.  Tolerances follow the precision the notes display: money to the cent,
 state probabilities to six decimals.
 
+The time index is the library-wide **0-based** policy month: ``t = 0`` is the contract's
+first month and ``result_cf()`` runs ``t = 0 ... proj_len() - 1``, so the notes' fifteen
+rows are ``t = 0 ... 14``.  Two indices here are not that clock and do not move with it:
+``crd(k)`` is a time point with ``k = 0`` at adhesion, so month ``t`` closes on
+``crd(t + 1)``, and ``z`` is the claim duration, running 1 to 36 from the start of claim
+payment.
+
 Beyond the worked example this module asserts, one test each, the nine modeling
 pitfalls the notes name - each a way an implementation can look right and be wrong.
 Every test is named for the failure it catches.
@@ -50,28 +57,30 @@ MODEL_DIR = LIB / MODELS["ADE_FR_S"][0]
 
 # t: (crd, l_h, l_itt, l_ipt, prem, ben_deces, ben_ptia, ben_itt, ben_ipt)
 #
-# The state columns are the notes' END-of-month quantities, so they are read off
-# pols_healthy_close / pols_itt_close / pols_ipt_close.  The cash flows are indexed the
-# same way in both documents.
+# ``t`` is the 0-based policy month, so the notes' first row is t = 0.  The state columns
+# are the notes' END-of-month quantities - the state at time t + 1 - so they are read off
+# pols_healthy_close / pols_itt_close / pols_ipt_close, and the CRD column is likewise the
+# balance at the end of the month, crd(t + 1) on the loan's own time-point index.  The
+# cash flows are the flows of month t.
 WORKED_EXAMPLE = {
-    1: (199390.80, 0.995344, 0.000901, 0.000000, 140.00, 65.25, 6.51, 0.00, 0.00),
-    2: (198780.09, 0.990768, 0.001737, 0.000001, 139.35, 65.03, 6.46, 0.93, 0.00),
-    3: (198167.84, 0.986267, 0.002513, 0.000004, 138.71, 64.79, 6.41, 1.80, 0.00),
-    4: (197554.07, 0.981837, 0.003232, 0.000008, 138.08, 64.54, 6.36, 2.60, 0.01),
-    5: (196938.76, 0.977474, 0.003898, 0.000013, 137.46, 64.28, 6.32, 3.34, 0.01),
-    6: (196321.91, 0.973174, 0.004516, 0.000019, 136.85, 64.01, 6.27, 4.03, 0.02),
-    7: (195703.52, 0.968933, 0.005088, 0.000026, 136.24, 63.72, 6.22, 4.67, 0.03),
-    8: (195083.58, 0.964750, 0.005617, 0.000034, 135.65, 63.42, 6.17, 5.26, 0.04),
-    9: (194462.09, 0.960620, 0.006107, 0.000043, 135.06, 63.12, 6.13, 5.81, 0.05),
-    10: (193839.05, 0.956540, 0.006561, 0.000053, 134.49, 62.81, 6.08, 6.32, 0.06),
-    11: (193214.46, 0.952509, 0.006980, 0.000063, 133.92, 62.48, 6.04, 6.79, 0.07),
-    12: (192588.30, 0.948524, 0.007367, 0.000074, 133.35, 62.16, 5.99, 7.22, 0.08),
-    13: (191960.57, 0.937659, 0.007789, 0.000085, 132.79, 67.31, 6.49, 7.62, 0.09),
-    14: (191331.28, 0.926937, 0.008184, 0.000099, 131.27, 66.54, 6.40, 8.07, 0.11),
-    15: (190700.41, 0.916356, 0.008553, 0.000114, 129.77, 65.77, 6.30, 8.49, 0.13),
+    0: (199390.80, 0.995344, 0.000901, 0.000000, 140.00, 65.25, 6.51, 0.00, 0.00),
+    1: (198780.09, 0.990768, 0.001737, 0.000001, 139.35, 65.03, 6.46, 0.93, 0.00),
+    2: (198167.84, 0.986267, 0.002513, 0.000004, 138.71, 64.79, 6.41, 1.80, 0.00),
+    3: (197554.07, 0.981837, 0.003232, 0.000008, 138.08, 64.54, 6.36, 2.60, 0.01),
+    4: (196938.76, 0.977474, 0.003898, 0.000013, 137.46, 64.28, 6.32, 3.34, 0.01),
+    5: (196321.91, 0.973174, 0.004516, 0.000019, 136.85, 64.01, 6.27, 4.03, 0.02),
+    6: (195703.52, 0.968933, 0.005088, 0.000026, 136.24, 63.72, 6.22, 4.67, 0.03),
+    7: (195083.58, 0.964750, 0.005617, 0.000034, 135.65, 63.42, 6.17, 5.26, 0.04),
+    8: (194462.09, 0.960620, 0.006107, 0.000043, 135.06, 63.12, 6.13, 5.81, 0.05),
+    9: (193839.05, 0.956540, 0.006561, 0.000053, 134.49, 62.81, 6.08, 6.32, 0.06),
+    10: (193214.46, 0.952509, 0.006980, 0.000063, 133.92, 62.48, 6.04, 6.79, 0.07),
+    11: (192588.30, 0.948524, 0.007367, 0.000074, 133.35, 62.16, 5.99, 7.22, 0.08),
+    12: (191960.57, 0.937659, 0.007789, 0.000085, 132.79, 67.31, 6.49, 7.62, 0.09),
+    13: (191331.28, 0.926937, 0.008184, 0.000099, 131.27, 66.54, 6.40, 8.07, 0.11),
+    14: (190700.41, 0.916356, 0.008553, 0.000114, 129.77, 65.77, 6.30, 8.49, 0.13),
 }
 
-# The notes' column sums over t = 1..15.
+# The notes' column sums over t = 0..14.
 WORKED_EXAMPLE_SUMS = {
     "premiums": 2032.99,
     "DEATH": 965.23,
@@ -127,7 +136,7 @@ def test_worked_example_row(fr_ade_anchor, t):
     """Every cell of the notes' fifteen-month table, to the displayed precision."""
     crd, l_h, l_itt, l_ipt, prem, dec, ptia, itt, ipt = WORKED_EXAMPLE[t]
     p = fr_ade_anchor
-    assert p.crd(t) == pytest.approx(crd, abs=CENT)
+    assert p.crd(t + 1) == pytest.approx(crd, abs=CENT)
     assert p.pols_healthy_close(t) == pytest.approx(l_h, abs=STATE)
     assert p.pols_itt_close(t) == pytest.approx(l_itt, abs=STATE)
     assert p.pols_ipt_close(t) == pytest.approx(l_ipt, abs=STATE)
@@ -141,7 +150,7 @@ def test_worked_example_row(fr_ade_anchor, t):
 def test_worked_example_column_sums(fr_ade_anchor):
     """The notes' totals over the fifteen months, including expenses."""
     p = fr_ade_anchor
-    ts = range(1, 16)
+    ts = range(15)
     assert sum(p.premiums(t) for t in ts) == pytest.approx(
         WORKED_EXAMPLE_SUMS["premiums"], abs=CENT)
     for kind in ("DEATH", "PTIA", "ITT", "IPT"):
@@ -155,23 +164,23 @@ def test_worked_example_derived_constants(fr_ade_anchor):
     """The *échéance*, the premium, and the eight monthly rates the notes tabulate."""
     p = fr_ade_anchor
     assert p.echeance() == pytest.approx(ECHEANCE, abs=5e-8)
-    assert p.prem_pp(1) == pytest.approx(PREM_PP, rel=1e-14)
+    assert p.prem_pp(0) == pytest.approx(PREM_PP, rel=1e-14)
     # Annual rates, read off the [std] pivot tables by linear interpolation at age 52.
-    assert p.mort_rate(1) == pytest.approx(0.00392, rel=1e-12)
-    assert p.ptia_rate(1) == pytest.approx(0.000392, rel=1e-12)
-    assert p.itt_inception_rate(1) == pytest.approx(0.0108, rel=1e-12)
-    assert p.lapse_rate(1) == 0.04 and p.lapse_rate(13) == 0.12
+    assert p.mort_rate(0) == pytest.approx(0.00392, rel=1e-12)
+    assert p.ptia_rate(0) == pytest.approx(0.000392, rel=1e-12)
+    assert p.itt_inception_rate(0) == pytest.approx(0.0108, rel=1e-12)
+    assert p.lapse_rate(0) == 0.04 and p.lapse_rate(12) == 0.12
     # Monthly, all through 1 - (1 - r)^(1/12).
-    assert p.mort_rate_mth(1) == pytest.approx(Q_H_52, abs=RATE)
-    assert p.ptia_rate_mth(1) == pytest.approx(Q_PTIA_52, abs=RATE)
-    assert p.itt_inception_rate_mth(1) == pytest.approx(IOTA_52, abs=RATE)
-    assert p.lapse_rate_mth(1) == pytest.approx(W_YEAR1, abs=RATE)
-    assert p.lapse_rate_mth(13) == pytest.approx(W_YEAR2, abs=RATE)
-    # The mortality step at the first anniversary, which shows in ben_deces at t = 13.
-    assert p.age(12) == 52 and p.age(13) == 53
-    assert p.mort_rate(13) == pytest.approx(0.00428, rel=1e-12)
-    assert p.mort_rate_mth(13) == pytest.approx(Q_H_53, abs=RATE)
-    assert p.itt_inception_rate_mth(13) == pytest.approx(IOTA_53, abs=RATE)
+    assert p.mort_rate_mth(0) == pytest.approx(Q_H_52, abs=RATE)
+    assert p.ptia_rate_mth(0) == pytest.approx(Q_PTIA_52, abs=RATE)
+    assert p.itt_inception_rate_mth(0) == pytest.approx(IOTA_52, abs=RATE)
+    assert p.lapse_rate_mth(0) == pytest.approx(W_YEAR1, abs=RATE)
+    assert p.lapse_rate_mth(12) == pytest.approx(W_YEAR2, abs=RATE)
+    # The mortality step at the first anniversary, which shows in ben_deces at t = 12.
+    assert p.age(11) == 52 and p.age(12) == 53
+    assert p.mort_rate(12) == pytest.approx(0.00428, rel=1e-12)
+    assert p.mort_rate_mth(12) == pytest.approx(Q_H_53, abs=RATE)
+    assert p.itt_inception_rate_mth(12) == pytest.approx(IOTA_53, abs=RATE)
     # Duration-year-1 ITT terminations.
     assert p.itt_recovery_rate_mth(1) == pytest.approx(RHO_1, abs=RATE)
     assert p.itt_to_ipt_rate_mth(1) == pytest.approx(TAU_1, abs=RATE)
@@ -182,33 +191,34 @@ def test_worked_example_derived_constants(fr_ade_anchor):
 def test_the_first_month_decomposes_into_its_four_decrements(fr_ade_anchor):
     """l_h(1) is the product of the four survival factors, and the exits add back to 1.
 
+    The notes' ``l_h(1)`` is the state at time 1, i.e. at the end of month ``t = 0``.
     Pins the **order** out of ``healthy``: death, PTIA, *résiliation*, inception.
     """
     p = fr_ade_anchor
     product = ((1 - Q_H_52) * (1 - Q_PTIA_52) * (1 - W_YEAR1) * (1 - IOTA_52))
-    assert p.pols_healthy_close(1) == pytest.approx(product, abs=STATE)
-    assert p.pols_death_healthy(1) == pytest.approx(0.000327255, abs=RATE)
-    assert p.pols_ptia(1) == pytest.approx(0.000032662, abs=RATE)
-    assert p.pols_lapse(1) == pytest.approx(0.003394831, abs=RATE)
-    assert p.pols_itt_inception(1) == pytest.approx(0.000901090, abs=RATE)
-    exits = (p.pols_death_healthy(1) + p.pols_ptia(1) + p.pols_lapse(1)
-             + p.pols_itt_inception(1))
-    assert p.pols_healthy_close(1) + exits == pytest.approx(1.0, abs=1e-12)
+    assert p.pols_healthy_close(0) == pytest.approx(product, abs=STATE)
+    assert p.pols_death_healthy(0) == pytest.approx(0.000327255, abs=RATE)
+    assert p.pols_ptia(0) == pytest.approx(0.000032662, abs=RATE)
+    assert p.pols_lapse(0) == pytest.approx(0.003394831, abs=RATE)
+    assert p.pols_itt_inception(0) == pytest.approx(0.000901090, abs=RATE)
+    exits = (p.pols_death_healthy(0) + p.pols_ptia(0) + p.pols_lapse(0)
+             + p.pols_itt_inception(0))
+    assert p.pols_healthy_close(0) + exits == pytest.approx(1.0, abs=1e-12)
     # Each exit is smaller than its own rate, because the ones before it went first.
-    assert p.pols_ptia(1) < Q_PTIA_52
-    assert p.pols_itt_inception(1) < IOTA_52
+    assert p.pols_ptia(0) < Q_PTIA_52
+    assert p.pols_itt_inception(0) < IOTA_52
 
 
 def test_the_ordering_is_visible_in_the_ptia_to_death_ratio(fr_ade_anchor):
-    """ben_ptia(1) / ben_deces(1) is 0.0998, not the ptia_ratio of 0.10.
+    """ben_ptia(0) / ben_deces(0) is 0.0998, not the ptia_ratio of 0.10.
 
     The difference is the month of death exposure that precedes PTIA in the order;
     taking the two decrements in parallel would print 0.1000.
     """
     p = fr_ade_anchor
-    assert p.claims(1, "DEATH") == pytest.approx(65.251648, abs=CENT)
-    assert p.claims(1, "PTIA") == pytest.approx(6.512472, abs=CENT)
-    ratio = p.claims(1, "PTIA") / p.claims(1, "DEATH")
+    assert p.claims(0, "DEATH") == pytest.approx(65.251648, abs=CENT)
+    assert p.claims(0, "PTIA") == pytest.approx(6.512472, abs=CENT)
+    ratio = p.claims(0, "PTIA") / p.claims(0, "DEATH")
     assert ratio == pytest.approx(0.0998, abs=5e-5)
     assert ratio < p.ptia_ratio
 
@@ -216,9 +226,9 @@ def test_the_ordering_is_visible_in_the_ptia_to_death_ratio(fr_ade_anchor):
 def test_the_state_identity_closes_over_the_worked_example_window(fr_ade_anchor):
     """0.925024 in force plus 0.074976 of exits is exactly 1 after fifteen months."""
     p = fr_ade_anchor
-    in_force = (p.pols_healthy_close(15) + p.pols_itt_close(15)
-                + p.pols_ipt_close(15))
-    exits = sum(p.pols_exit(t) for t in range(1, 16))
+    in_force = (p.pols_healthy_close(14) + p.pols_itt_close(14)
+                + p.pols_ipt_close(14))
+    exits = sum(p.pols_exit(t) for t in range(15))
     assert in_force == pytest.approx(0.925024, abs=STATE)
     assert exits == pytest.approx(0.074976, abs=STATE)
     assert in_force + exits == pytest.approx(1.0, abs=1e-12)
@@ -231,11 +241,11 @@ def test_the_lapse_step_at_the_first_anniversary(fr_ade_anchor):
     the unchanged mortality and inception decrements.
     """
     p = fr_ade_anchor
-    year1 = 1 - p.pols_healthy_close(2) / p.pols_healthy_close(1)
-    year2 = 1 - p.pols_healthy_close(13) / p.pols_healthy_close(12)
+    year1 = 1 - p.pols_healthy_close(1) / p.pols_healthy_close(0)
+    year2 = 1 - p.pols_healthy_close(12) / p.pols_healthy_close(11)
     assert year1 == pytest.approx(0.004598, abs=5e-7)
     assert year2 == pytest.approx(0.011455, abs=5e-7)
-    assert p.lapse_rate_mth(13) / p.lapse_rate_mth(1) == pytest.approx(3.12, abs=5e-3)
+    assert p.lapse_rate_mth(12) / p.lapse_rate_mth(0) == pytest.approx(3.12, abs=5e-3)
 
 
 # ---------------------------------------------------------------------------
@@ -257,7 +267,9 @@ def test_the_crd_is_computed_and_the_amortisation_closes(fr_ade_anchor):
     assert p.crd(240) == 0.0
     assert 240 * p.echeance() == pytest.approx(266206.85, abs=CENT)
     assert p.loan_interest_total() == pytest.approx(66206.85, abs=CENT)
-    for t in (1, 120, 239, 240):
+    # The residual of month t carries crd(t) to crd(t + 1), so the frame's own months
+    # 0 .. 239 cover all 240 instalments.
+    for t in (0, 119, 238, 239):
         assert p.check_crd_resid(t) == pytest.approx(0.0, abs=1e-6)
 
 
@@ -283,13 +295,16 @@ def test_the_monthly_loan_rate_is_nominal_over_twelve(fr_ade_anchor):
 
 
 def test_the_two_crd_conventions_differ_by_the_month_repayment(fr_ade_anchor):
-    """crd(t-1) and crd(t) differ by EUR 609.20 at t = 1; the model uses crd(t)."""
+    """Month 0 opens on crd(0) and closes on crd(1), EUR 609.20 apart.
+
+    ``crd`` is a time-point cells: the benefit of month t is written on the **closing**
+    balance ``crd(t + 1)``, and whichever convention is chosen must be used everywhere.
+    """
     p = fr_ade_anchor
     assert p.crd(0) - p.crd(1) == pytest.approx(609.20, abs=CENT)
-    # The death benefit is written on crd(t), the balance after the instalment.
-    expected = p.crd(1) * p.quotite() * p.pols_death_healthy(1)
-    assert p.claims(1, "DEATH") == pytest.approx(expected, rel=1e-14)
-    assert p.benefit_deces_pp(1) == pytest.approx(p.crd(1) * p.quotite(), rel=1e-14)
+    expected = p.crd(1) * p.quotite() * p.pols_death_healthy(0)
+    assert p.claims(0, "DEATH") == pytest.approx(expected, rel=1e-14)
+    assert p.benefit_deces_pp(0) == pytest.approx(p.crd(1) * p.quotite(), rel=1e-14)
 
 
 # ---------------------------------------------------------------------------
@@ -347,14 +362,14 @@ def test_the_cap_assesses_the_cohort_instead_of_advancing_it(fr_ade_anchor):
     p = fr_ade_anchor
     assert p.itt_max_days() == 1095
     assert p.itt_max_months() == 36
-    assert len(p.itt_cohorts(50)) == 36
-    assert p.pols_itt_dur(50, 37) == 0.0          # out of range, not an error
-    assert p.pols_itt_dur(50, 0) == 0.0
+    assert len(p.itt_cohorts(49)) == 36
+    assert p.pols_itt_dur(49, 37) == 0.0          # out of range, not an error
+    assert p.pols_itt_dur(49, 0) == 0.0
     assert p.itt_surv(36) * p.ipt_share_at_cap == pytest.approx(0.069327, abs=STATE)
     assert p.itt_surv(36) * (1 - p.ipt_share_at_cap) == pytest.approx(
         0.128750, abs=STATE)
     # The cap is actually reached in the projection, and it splits both ways.
-    t = 60
+    t = 59
     assert p.pols_itt_cap(t) > 0.0
     assert p.pols_cap_to_ipt(t) + p.pols_cap_return(t) == pytest.approx(
         p.pols_itt_cap(t), rel=1e-14)
@@ -377,11 +392,11 @@ def test_the_expected_months_of_itt_payment_per_inception(fr_ade_anchor):
 def test_the_cohort_vector_and_the_two_dimensional_view_agree(fr_ade_anchor):
     """pols_itt(t) is the sum of pols_itt_dur(t, z) over every tracked duration."""
     p = fr_ade_anchor
-    for t in (1, 2, 13, 100, 200):
+    for t in (0, 1, 12, 99, 199):
         by_cohort = sum(p.pols_itt_dur(t, z) for z in range(1, p.itt_max_months() + 1))
         assert p.pols_itt(t) == pytest.approx(by_cohort, rel=1e-12)
-    assert p.pols_itt(1) == 0.0                   # a healthy cell starts with no claims
-    assert p.pols_itt_dur(2, 1) == pytest.approx(p.pols_itt_inception(1), rel=1e-14)
+    assert p.pols_itt(0) == 0.0                   # a healthy cell starts with no claims
+    assert p.pols_itt_dur(1, 1) == pytest.approx(p.pols_itt_inception(0), rel=1e-14)
 
 
 def test_the_cohort_vector_is_rebuilt_not_mutated(fr_ade_anchor):
@@ -391,14 +406,14 @@ def test_the_cohort_vector_is_rebuilt_not_mutated(fr_ade_anchor):
     that shifted by the wrong index would leak population.
     """
     p = fr_ade_anchor
-    a = p.itt_cohorts(30)
-    b = p.itt_cohorts(31)
+    a = p.itt_cohorts(29)
+    b = p.itt_cohorts(30)
     assert a is not b
     snapshot = list(a)
-    p.itt_cohorts(40)                             # force five more steps
-    assert p.itt_cohorts(30) == snapshot          # month 30 was not rewritten
+    p.itt_cohorts(39)                             # force five more steps
+    assert p.itt_cohorts(29) == snapshot          # month 29 was not rewritten
     surv = p.itt_rate_vectors()[3]
-    assert b[0] == pytest.approx(p.pols_itt_inception(30), rel=1e-14)
+    assert b[0] == pytest.approx(p.pols_itt_inception(29), rel=1e-14)
     for z in range(2, p.itt_max_months() + 1):
         assert b[z - 1] == pytest.approx(a[z - 2] * surv[z - 2], rel=1e-14)
 
@@ -408,29 +423,29 @@ def test_a_seeded_claim_starts_at_its_stated_duration(assurance_emprunteur):
     p = assurance_emprunteur.Projection[9]
     assert p.status() == "itt"
     assert p.claim_duration_months() == 18
-    assert p.pols_itt_dur(1, 19) == 1.0
-    assert p.pols_itt_dur(1, 1) == 0.0
-    assert p.pols_healthy(1) == 0.0
+    assert p.pols_itt_dur(0, 19) == 1.0
+    assert p.pols_itt_dur(0, 1) == 0.0
+    assert p.pols_healthy(0) == 0.0
     assert p.claim_dur_year(19) == 2              # duration year 2, recovery down to 0.30
     assert p.itt_recovery_rate(19) == 0.30
     # It is paid from the first month, being already in payment.
-    assert p.claims(1, "ITT") > 0.0
+    assert p.claims(0, "ITT") > 0.0
     # And it reaches the cap eighteen months later, not thirty-six.
-    assert p.pols_itt_cap(18) > 0.0
-    assert p.pols_itt_cap(17) == 0.0
+    assert p.pols_itt_cap(17) > 0.0
+    assert p.pols_itt_cap(16) == 0.0
 
 
 def test_an_ipt_cell_is_an_annuity_with_no_recovery(assurance_emprunteur):
     """Model point 10 starts in IPT: the only exits are death and the age limit."""
     p = assurance_emprunteur.Projection[10]
     assert p.status() == "ipt"
-    assert p.pols_ipt(1) == 1.0
-    assert p.pols_itt(1) == 0.0 and p.pols_healthy(1) == 0.0
-    assert p.claims(1, "IPT") == pytest.approx(p.benefit_itt_pp() * p.pols_ipt_stay(1),
+    assert p.pols_ipt(0) == 1.0
+    assert p.pols_itt(0) == 0.0 and p.pols_healthy(0) == 0.0
+    assert p.claims(0, "IPT") == pytest.approx(p.benefit_itt_pp() * p.pols_ipt_stay(0),
                                                rel=1e-14)
     # No recovery from IPT: the population only ever falls, until the cover ends.
-    assert all(p.pols_ipt(t + 1) < p.pols_ipt(t) for t in (1, 50, 100, 200))
-    assert p.premiums(1) == 0.0                   # premiums are waived in claim
+    assert all(p.pols_ipt(t + 1) < p.pols_ipt(t) for t in (0, 49, 99, 199))
+    assert p.premiums(0) == 0.0                   # premiums are waived in claim
     assert p.check_states() is True
 
 
@@ -445,15 +460,15 @@ def test_deces_and_ptia_are_separate_decrements(fr_ade_anchor):
     """
     p = fr_ade_anchor
     assert p.deces_end_age() == 85 and p.ptia_end_age() == 70
-    assert p.benefit_deces_pp(100) == p.crd(100) * p.quotite()
-    # PTIA switches off at attained age 70, i.e. month 217; death never does on this cell.
-    assert p.age(216) == 69 and p.age(217) == 70
-    assert p.cover_ptia(216) == 1 and p.cover_ptia(217) == 0
-    assert all(p.cover_deces(t) == 1 for t in (1, 216, 217, 240))
-    assert p.pols_ptia(216) > 0.0 and p.pols_ptia(217) == 0.0
-    assert p.claims(217, "PTIA") == 0.0
-    assert p.claims(217, "DEATH") > 0.0
-    assert p.pols_death_healthy(240) > 0.0
+    assert p.benefit_deces_pp(99) == p.crd(100) * p.quotite()
+    # PTIA switches off at attained age 70, i.e. from t = 216; death never does here.
+    assert p.age(215) == 69 and p.age(216) == 70
+    assert p.cover_ptia(215) == 1 and p.cover_ptia(216) == 0
+    assert all(p.cover_deces(t) == 1 for t in (0, 215, 216, 239))
+    assert p.pols_ptia(215) > 0.0 and p.pols_ptia(216) == 0.0
+    assert p.claims(216, "PTIA") == 0.0
+    assert p.claims(216, "DEATH") > 0.0
+    assert p.pols_death_healthy(239) > 0.0
 
 
 def test_the_premium_does_not_fall_when_the_cover_ceases(fr_ade_anchor):
@@ -462,53 +477,53 @@ def test_the_premium_does_not_fall_when_the_cover_ceases(fr_ade_anchor):
     The mirror error is letting the ITT or IPT benefit run past the age limit.
     """
     p = fr_ade_anchor
-    assert p.cover_itt(216) == 1 and p.cover_itt(217) == 0
-    assert p.crd(216) == pytest.approx(25806.51, abs=CENT)
-    assert all(p.prem_pp(t) == PREM_PP for t in (1, 216, 217, 240))
-    assert sum(PREM_PP for _ in range(217, 241)) == 3360.00
-    assert sum(p.premiums(t) for t in range(217, 241)) == pytest.approx(638.67, abs=CENT)
-    assert all(p.premiums(t) > 0.0 for t in (217, 240))
+    assert p.cover_itt(215) == 1 and p.cover_itt(216) == 0
+    assert p.crd(216) == pytest.approx(25806.51, abs=CENT)   # owed as month 216 opens
+    assert all(p.prem_pp(t) == PREM_PP for t in (0, 215, 216, 239))
+    assert sum(PREM_PP for _ in range(216, 240)) == 3360.00
+    assert sum(p.premiums(t) for t in range(216, 240)) == pytest.approx(638.67, abs=CENT)
+    assert all(p.premiums(t) > 0.0 for t in (216, 239))
     assert p.check_cover_end() is True
-    for t in (217, 228, 240):
+    for t in (216, 227, 239):
         assert p.claims(t, "ITT") == 0.0
         assert p.claims(t, "IPT") == 0.0
         assert p.pols_itt(t) == 0.0 and p.pols_ipt(t) == 0.0
 
 
 def test_the_in_claim_mass_is_moved_not_deleted(fr_ade_anchor):
-    """0.009266 in ITT and 0.013982 in IPT move into ``healthy`` at month 217.
+    """0.009266 in ITT and 0.013982 in IPT move into ``healthy`` at t = 216.
 
     Deleting them would break the state identity and destroy cover they still hold.
     """
     p = fr_ade_anchor
-    assert p.pols_itt_close(216) == pytest.approx(0.009266, abs=STATE)
-    assert p.pols_ipt_close(216) == pytest.approx(0.013982, abs=STATE)
-    assert p.pols_itt_transfer(217) == pytest.approx(p.pols_itt_close(216), rel=1e-14)
-    assert p.pols_ipt_transfer(217) == pytest.approx(p.pols_ipt_close(216), rel=1e-14)
+    assert p.pols_itt_close(215) == pytest.approx(0.009266, abs=STATE)
+    assert p.pols_ipt_close(215) == pytest.approx(0.013982, abs=STATE)
+    assert p.pols_itt_transfer(216) == pytest.approx(p.pols_itt_close(215), rel=1e-14)
+    assert p.pols_ipt_transfer(216) == pytest.approx(p.pols_ipt_close(215), rel=1e-14)
     # The mass lands in healthy, so pols_if does not jump at the transfer.
-    assert p.pols_healthy(217) == pytest.approx(
-        p.pols_healthy_close(216) + p.pols_itt_transfer(217) + p.pols_ipt_transfer(217),
+    assert p.pols_healthy(216) == pytest.approx(
+        p.pols_healthy_close(215) + p.pols_itt_transfer(216) + p.pols_ipt_transfer(216),
         rel=1e-14)
-    assert p.pols_if(217) == pytest.approx(
-        p.pols_healthy_close(216) + p.pols_itt_close(216) + p.pols_ipt_close(216),
+    assert p.pols_if(216) == pytest.approx(
+        p.pols_healthy_close(215) + p.pols_itt_close(215) + p.pols_ipt_close(215),
         rel=1e-14)
     assert p.check_states() is True
     assert p.check_pols_roll_fwd() is True
     # And nothing moves in any other month.
-    assert all(p.pols_itt_transfer(t) == 0.0 for t in (1, 100, 216, 218, 240))
+    assert all(p.pols_itt_transfer(t) == 0.0 for t in (0, 99, 215, 217, 239))
 
 
 def test_a_cover_can_end_long_before_the_loan(assurance_emprunteur):
-    """Model point 8 loses ITT/IPT cover at month 85 on a loan that runs to month 264."""
+    """Model point 8 loses ITT/IPT cover at t = 84 on a loan of 264 months."""
     p = assurance_emprunteur.Projection[8]
     assert p.itt_ipt_end_age() == 65 and p.deces_end_age() == 80
     assert p.proj_len() == 264
-    assert p.cover_itt(84) == 1 and p.cover_itt(85) == 0
+    assert p.cover_itt(83) == 1 and p.cover_itt(84) == 0
     assert p.crd(84) > 90000.0                    # most of the loan still outstanding
-    assert p.claims(84, "ITT") > 0.0
-    assert all(p.claims(t, "ITT") == 0.0 for t in (85, 180, 264))
-    assert p.premiums(264) > 0.0                  # still paying, 180 months later
-    assert p.cover_deces(264) == 1                # and still death covered
+    assert p.claims(83, "ITT") > 0.0
+    assert all(p.claims(t, "ITT") == 0.0 for t in (84, 179, 263))
+    assert p.premiums(263) > 0.0                  # still paying, 180 months later
+    assert p.cover_deces(263) == 1                # and still death covered
     assert p.check_cover_end() is True
 
 
@@ -519,14 +534,14 @@ def test_a_cover_can_end_long_before_the_loan(assurance_emprunteur):
 def test_a_new_inception_is_not_paid_in_the_month_it_incepts(fr_ade_anchor):
     """Monthly in arrears: a claim incepting at the end of month t is paid at t + 1."""
     p = fr_ade_anchor
-    assert p.pols_itt(1) == 0.0
-    assert p.claims(1, "ITT") == 0.0
-    assert p.pols_itt_inception(1) > 0.0
-    assert p.claims(2, "ITT") == pytest.approx(
-        p.echeance() * S_ITT_1 * p.pols_itt_inception(1), rel=1e-9)
-    assert p.claims(2, "ITT") == pytest.approx(0.93, abs=CENT)
+    assert p.pols_itt(0) == 0.0
+    assert p.claims(0, "ITT") == 0.0
+    assert p.pols_itt_inception(0) > 0.0
+    assert p.claims(1, "ITT") == pytest.approx(
+        p.echeance() * S_ITT_1 * p.pols_itt_inception(0), rel=1e-9)
+    assert p.claims(1, "ITT") == pytest.approx(0.93, abs=CENT)
     # The benefit excludes the cohort seeded this month, in every month.
-    for t in (5, 60, 200):
+    for t in (4, 59, 199):
         paid_on = p.claims(t, "ITT") / p.benefit_itt_pp()
         assert paid_on == pytest.approx(p.pols_itt_stay(t), rel=1e-12)
         assert paid_on < p.pols_itt(t) + p.pols_itt_inception(t)
@@ -535,30 +550,30 @@ def test_a_new_inception_is_not_paid_in_the_month_it_incepts(fr_ade_anchor):
 def test_the_itt_to_ipt_movers_are_paid_exactly_once(fr_ade_anchor):
     """The paying-mass identity, including the term an implementation forgets.
 
-    ``ben_itt + ben_ipt = ech Q IR (l_itt(t) - n_itt(t) + l_ipt(t) + cap_return(t))``.
+    ``ben_itt + ben_ipt = ech Q IR (l_itt(t+1) - n_itt(t) + l_ipt(t+1) + cap_return(t))``.
     The lives sent back to ``healthy`` at the cap were in ITT throughout the month and
     are paid for it, but end it in neither disabled state.
     """
     p = fr_ade_anchor
     assert p.check_benefit_split() is True
-    for t in (1, 2, 60, 120, 216, 240):
+    for t in (0, 1, 59, 119, 215, 239):
         assert p.check_benefit_split_resid(t) == pytest.approx(0.0, abs=1e-9)
     # The forgotten term is real: it is non-zero once the cap starts to bite.
     scale = p.benefit_itt_pp()
-    worst = max(scale * p.pols_cap_return(t) for t in range(1, 217))
+    worst = max(scale * p.pols_cap_return(t) for t in range(216))
     assert worst > 0.10
     # And an identity without it is wrong by exactly that much in the worst month.
     def naive(t):
         return (p.claims(t, "ITT") + p.claims(t, "IPT")
                 - scale * (p.pols_itt_close(t) - p.pols_itt_inception(t)
                            + p.pols_ipt_close(t)))
-    assert max(abs(naive(t)) for t in range(1, 217)) == pytest.approx(worst, rel=1e-9)
+    assert max(abs(naive(t)) for t in range(216)) == pytest.approx(worst, rel=1e-9)
 
 
 def test_the_ipt_annuity_includes_the_month_of_the_transition(fr_ade_anchor):
     """A life moving at the end of month t is paid as IPT for that month, not skipped."""
     p = fr_ade_anchor
-    t = 60
+    t = 59
     assert p.pols_itt_to_ipt(t) > 0.0
     assert p.claims(t, "IPT") == pytest.approx(
         p.benefit_itt_pp() * (p.pols_ipt_stay(t) + p.pols_itt_to_ipt(t)), rel=1e-14)
@@ -573,8 +588,8 @@ def test_premiums_are_never_carried_on_lives_in_claim(assurance_emprunteur):
     """Premiums are waived in claim, so income comes from ``healthy`` alone."""
     for point_id in assurance_emprunteur.Data.model_point_table().index:
         proj = assurance_emprunteur.Projection[point_id]
-        for t in (1, 13, 60):
-            if t > proj.proj_len():
+        for t in (0, 12, 59):
+            if t >= proj.proj_len():
                 continue
             assert proj.premiums(t) == pytest.approx(
                 proj.prem_pp(t) * proj.pols_healthy(t), rel=1e-14)
@@ -587,18 +602,18 @@ def test_lives_in_claim_never_lapse(fr_ade_anchor):
     Applying it to ITT or IPT would silently cancel claims in payment.
     """
     p = fr_ade_anchor
-    for t in (1, 13, 100, 216):
+    for t in (0, 12, 99, 215):
         assert p.pols_lapse(t) == pytest.approx(
             p.pols_healthy(t) * (1 - p.mort_rate_mth(t))
             * (1 - p.ptia_rate_mth(t) * p.cover_ptia(t)) * p.lapse_rate_mth(t),
             rel=1e-14)
-    assert p.pols_lapse(100) < p.pols_if(100) * p.lapse_rate_mth(100)
+    assert p.pols_lapse(99) < p.pols_if(99) * p.lapse_rate_mth(99)
 
 
 def test_the_monthly_decrements_are_below_their_annual_rates(fr_ade_anchor):
     """Every ``*_rate_mth`` is strictly below its annual rate, and twelve compound back."""
     p = fr_ade_anchor
-    for t in (1, 13, 100):
+    for t in (0, 12, 99):
         assert 0 < p.mort_rate_mth(t) < p.mort_rate(t)
         assert 0 < p.lapse_rate_mth(t) < p.lapse_rate(t)
         assert 0 < p.itt_inception_rate_mth(t) < p.itt_inception_rate(t)
@@ -617,13 +632,13 @@ def test_quotite_scales_each_leg_exactly_once(assurance_emprunteur):
     p3 = assurance_emprunteur.Projection[3]
     assert p3.quotite() == 0.60
     assert p3.crd(50) == pytest.approx(p1.crd(50), rel=1e-14)   # the loan is unscaled
-    for t in (1, 13, 100, 240):
+    for t in (0, 12, 99, 239):
         for kind in ("DEATH", "PTIA", "ITT", "IPT"):
             assert p3.claims(t, kind) == pytest.approx(
                 0.60 * p1.claims(t, kind), rel=1e-12)
         assert p3.premiums(t) == pytest.approx(0.60 * p1.premiums(t), rel=1e-12)
     # The population is identical: the quotité is a money scale, not a decrement.
-    assert p3.pols_healthy(100) == pytest.approx(p1.pols_healthy(100), rel=1e-14)
+    assert p3.pols_healthy(99) == pytest.approx(p1.pols_healthy(99), rel=1e-14)
 
 
 def test_the_decreasing_premium_rises_first(assurance_emprunteur):
@@ -634,17 +649,17 @@ def test_the_decreasing_premium_rises_first(assurance_emprunteur):
     """
     p = assurance_emprunteur.Projection[2]
     assert p.premium_basis() == "capital_restant_du"
-    assert p.prem_pp(1) == pytest.approx(125.33, abs=CENT)
-    assert p.prem_pp(109) == pytest.approx(164.03, abs=CENT)
-    assert p.prem_pp(229) == pytest.approx(31.65, abs=CENT)
-    by_year = [p.prem_pp(12 * (y - 1) + 1) for y in range(1, 21)]
+    assert p.prem_pp(0) == pytest.approx(125.33, abs=CENT)
+    assert p.prem_pp(108) == pytest.approx(164.03, abs=CENT)
+    assert p.prem_pp(228) == pytest.approx(31.65, abs=CENT)
+    by_year = [p.prem_pp(12 * y) for y in range(20)]     # the first month of each year
     assert by_year != sorted(by_year, reverse=True)      # NOT monotonically decreasing
     assert by_year.index(max(by_year)) == 9              # the peak is policy year 10
     # It is re-read on the CRD at the anniversary, and is level within the year.
-    assert p.prem_pp(1) == pytest.approx(p.prem_pp(12), rel=1e-14)
-    assert p.prem_pp(13) != pytest.approx(p.prem_pp(12), rel=1e-6)
+    assert p.prem_pp(0) == pytest.approx(p.prem_pp(11), rel=1e-14)
+    assert p.prem_pp(12) != pytest.approx(p.prem_pp(11), rel=1e-6)
     # The rate is held flat past the last pivot age rather than extrapolated.
-    assert p.age(229) == 71 and p.crd_rate(229) == 0.0290
+    assert p.age(228) == 71 and p.crd_rate(228) == 0.0290
 
 
 def test_the_two_premium_bases_are_pv_equivalent_on_this_cell(assurance_emprunteur):
@@ -666,7 +681,7 @@ def test_indemnitaire_is_the_same_formula_with_a_ratio(assurance_emprunteur):
     assert p4.income_loss_ratio() == 0.55
     assert p4.indemnity_ratio() == 0.55
     assert p1.indemnity_ratio() == 1.0
-    for t in (60, 120, 200):
+    for t in (59, 119, 199):
         for kind in ("ITT", "IPT"):
             assert p4.claims(t, kind) == pytest.approx(
                 0.55 * p1.claims(t, kind), rel=1e-12)
@@ -675,24 +690,24 @@ def test_indemnitaire_is_the_same_formula_with_a_ratio(assurance_emprunteur):
 
 
 def test_the_crd_ipt_basis_pays_a_capital_and_removes_the_life(assurance_emprunteur):
-    """Model point 5 pays ``crd(t) x quotité`` once on consolidation, then the life goes."""
+    """Model point 5 pays ``crd(t+1) x quotité`` once on consolidation, then the life goes."""
     p5 = assurance_emprunteur.Projection[5]
     assert p5.ipt_benefit_basis() == "crd"
-    assert all(p5.pols_ipt(t) == 0.0 for t in (1, 60, 120, 216, 240))
-    assert all(p5.pols_ipt_close(t) == 0.0 for t in (1, 60, 216))
-    t = 60
+    assert all(p5.pols_ipt(t) == 0.0 for t in (0, 59, 119, 215, 239))
+    assert all(p5.pols_ipt_close(t) == 0.0 for t in (0, 59, 215))
+    t = 59
     assert p5.pols_ipt_entry(t) > 0.0
     assert p5.pols_ipt_capital(t) == pytest.approx(p5.pols_ipt_entry(t), rel=1e-14)
     assert p5.claims(t, "IPT") == pytest.approx(
-        p5.crd(t) * p5.quotite() * p5.pols_ipt_entry(t), rel=1e-12)
+        p5.crd(t + 1) * p5.quotite() * p5.pols_ipt_entry(t), rel=1e-12)
     # They leave the model, exactly as a death does, so the identity still closes.
     assert p5.check_states() is True
     assert p5.check_pols_roll_fwd() is True
     assert p5.check_benefit_split() is True
     # The anchor keeps them as an annuity instead.
     p1 = assurance_emprunteur.Projection[1]
-    assert p1.pols_ipt(120) > 0.0
-    assert p1.pols_ipt_capital(120) == 0.0
+    assert p1.pols_ipt(119) > 0.0
+    assert p1.pols_ipt_capital(119) == 0.0
 
 
 def test_the_franchise_enters_only_through_the_inception_rate(assurance_emprunteur):
@@ -724,7 +739,8 @@ def test_the_present_values_over_the_full_240_months(fr_ade_anchor):
     """The notes' Checks: PV of premium, of each benefit, of expenses, and the margin."""
     p = fr_ade_anchor
     assert p.disc_rate == 0.025
-    assert p.disc_factor(12) == pytest.approx(1 / 1.025, rel=1e-12)
+    # Month 11 ends one full year after adhesion.
+    assert p.disc_factor(11) == pytest.approx(1 / 1.025, rel=1e-12)
     assert p.pv_premiums() == pytest.approx(PV_PREMIUMS, abs=CENT)
     for kind, value in PV.items():
         assert p.pv_claims(kind) == pytest.approx(value, abs=CENT)
@@ -741,7 +757,7 @@ def test_nothing_in_result_cf_is_discounted(fr_ade_anchor):
     """The discount companion is not part of the cash flow projection."""
     p = fr_ade_anchor
     df = p.result_cf()
-    assert df.loc[1, "claims_death"] == pytest.approx(65.25, abs=CENT)
+    assert df.loc[0, "claims_death"] == pytest.approx(65.25, abs=CENT)
     assert "disc_factor" not in df.columns
     assert df["premiums"].sum() > p.pv_premiums()      # undiscounted is the upper bound
 
@@ -753,7 +769,7 @@ def test_nothing_in_result_cf_is_discounted(fr_ade_anchor):
 def test_result_cf_shape(fr_ade_anchor):
     df = fr_ade_anchor.result_cf()
     assert df.index.name == "t"
-    assert list(df.index) == list(range(1, 241))
+    assert list(df.index) == list(range(240))     # t = 0 .. proj_len() - 1
     assert list(df.columns) == [
         "pols_if", "pols_healthy", "pols_itt", "pols_ipt", "crd", "premiums",
         "claims_death", "claims_ptia", "claims_itt", "claims_ipt", "claims_lapse",
@@ -770,7 +786,7 @@ def test_net_cf_is_the_negative_of_the_notes_liability_cf(fr_ade_anchor):
                 "claims_lapse", "claims_maturity", "expenses"]].sum(axis=1)
     assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
         0.0, abs=1e-9)
-    assert df.loc[1, "net_cf"] > 0.0                  # premium exceeds outgo early on
+    assert df.loc[0, "net_cf"] > 0.0                  # premium exceeds outgo early on
 
 
 def test_resiliation_and_expiry_pay_nothing(assurance_emprunteur):
@@ -780,20 +796,20 @@ def test_resiliation_and_expiry_pay_nothing(assurance_emprunteur):
         assert (df["claims_lapse"] == 0.0).all()
         assert (df["claims_maturity"] == 0.0).all()
     p = assurance_emprunteur.Projection[1]
-    assert p.pols_lapse(50) > 0.0                     # lapses happen; they just pay nothing
-    assert p.pols_maturity(240) > 0.0
-    assert all(p.pols_maturity(t) == 0.0 for t in (1, 100, 239))
+    assert p.pols_lapse(49) > 0.0                     # lapses happen; they just pay nothing
+    assert p.pols_maturity(239) > 0.0                 # the last month, proj_len() - 1
+    assert all(p.pols_maturity(t) == 0.0 for t in (0, 99, 238))
 
 
 def test_expenses_carry_the_claim_management_load(fr_ade_anchor):
     """EUR 30 a year on every policy in force plus EUR 250 a year on every claim."""
     p = fr_ade_anchor
-    for t in (1, 13, 100):
+    for t in (0, 12, 99):
         expected = (30.0 / 12 * 1.018 ** (p.policy_year(t) - 1) * p.pols_if(t)
                     + 250.0 / 12 * 1.018 ** (p.policy_year(t) - 1)
                     * (p.pols_itt(t) + p.pols_ipt(t)))
         assert p.expenses(t) == pytest.approx(expected, rel=1e-12)
-    assert p.expenses(1) == pytest.approx(30.0 / 12, rel=1e-12)   # nobody in claim yet
+    assert p.expenses(0) == pytest.approx(30.0 / 12, rel=1e-12)   # nobody in claim yet
 
 
 def test_every_model_point_projects_and_every_check_closes(assurance_emprunteur):
@@ -877,7 +893,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
             model.Data.clear_all()
             model.Projection.clear_all()
             proj = model.Projection[1]
-            assert proj.lapse_rate(1) == pytest.approx(0.08, rel=1e-12)
+            assert proj.lapse_rate(0) == pytest.approx(0.08, rel=1e-12)
             # Twice the substitution rate empties the book faster, so less premium.
             assert proj.pv_premiums() < base
             assert proj.check_states() is True
@@ -893,20 +909,20 @@ def test_the_dynamic_substitution_response_is_off_in_the_base_run():
     try:
         proj = p_model.Projection[1]
         assert proj.market_prem_ratio == 1.0
-        assert all(proj.prem_gap(t) == 0.0 for t in (1, 13, 100))
-        assert all(proj.lapse_rate(t) == proj.lapse_rate_base(t) for t in (1, 13, 100))
+        assert all(proj.prem_gap(t) == 0.0 for t in (0, 12, 99))
+        assert all(proj.lapse_rate(t) == proj.lapse_rate_base(t) for t in (0, 12, 99))
         # Price the book 20 % above the market and the decrement responds.
         p_model.Projection.market_prem_ratio = 1 / 1.2
         p_model.Projection.clear_all()
         proj = p_model.Projection[1]
-        assert proj.prem_gap(1) == pytest.approx(0.2, rel=1e-9)
+        assert proj.prem_gap(0) == pytest.approx(0.2, rel=1e-9)
         expected = 0.04 * (1 + 3.0 * 0.88 * 0.2)
-        assert proj.lapse_rate(1) == pytest.approx(expected, rel=1e-9)
-        assert proj.lapse_rate(1) > proj.lapse_rate_base(1)
+        assert proj.lapse_rate(0) == pytest.approx(expected, rel=1e-9)
+        assert proj.lapse_rate(0) > proj.lapse_rate_base(0)
         # And it is capped.
         p_model.Projection.market_prem_ratio = 0.2
         p_model.Projection.clear_all()
-        assert p_model.Projection[1].lapse_rate(13) == pytest.approx(0.35, rel=1e-12)
+        assert p_model.Projection[1].lapse_rate(12) == pytest.approx(0.35, rel=1e-12)
     finally:
         p_model.close()
 
@@ -914,9 +930,9 @@ def test_the_dynamic_substitution_response_is_off_in_the_base_run():
 def test_invalid_enum_values_raise(fr_ade_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        fr_ade_anchor.pols_if_at(1, "BEF_NOTHING")
+        fr_ade_anchor.pols_if_at(0, "BEF_NOTHING")
     with pytest.raises(FormulaError):
-        fr_ade_anchor.claims(1, "SURRENDER")
+        fr_ade_anchor.claims(0, "SURRENDER")
 
 
 def test_model_docstring_describes_the_current_structure(assurance_emprunteur):

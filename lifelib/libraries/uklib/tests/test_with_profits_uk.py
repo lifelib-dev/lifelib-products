@@ -5,9 +5,15 @@ products/with_profits/technical-notes.md ("Worked example"), which projects a
 unitised with-profits bond in force at duration 5 — asset share GBP 30,000, face value
 GBP 27,602.02, smoothed payout GBP 29,500, unit price 1.104081 on 25,000 units, AMC 1%,
 guarantee charge 0.10%, q(60) = 0.5%, death uplift 1.01, smoothing cap 10% — through
-policy year 6 on **two scenarios**: a fund return of +7% and one of -15%.  They are
+one policy year on **two scenarios**: a fund return of +7% and one of -15%.  They are
 hard-coded here rather than pickled so that a reviewer can compare them against the
 notes by eye.
+
+``t`` is 0-based, as everywhere in the library: the cell is in force at duration 5, so
+its frame opens at ``t = proj_start() = 5`` and the year the worked example projects is
+``t = 5``, the sixth policy year.  The state it carries in is that period's *opening*
+value — ``asset_share_at(5, "BEF_PREM")``, ``smoothed_payout_open(5)``,
+``guar_benefit_open(5)`` — not a row of its own.
 
 Tolerances follow the precision the notes display: money to the penny.
 
@@ -35,11 +41,11 @@ PENNY = 0.01          # the notes display money to 2 d.p. and truncate, not roun
 
 MODEL_DIR = LIB / MODELS["WP_UK_A"][0]
 
-T = 6                 # the policy year the worked example projects
+T = 5                 # the period the worked example projects: the sixth policy year
 
 # The notes' two-scenario table, keyed by the fixture that carries the scenario.
-# fund return, AS after return, AS after charges, b(6), Q(6), FV(6),
-# CB, ST, AS after ST, MC, AS(6), S_cap, S(6), FB, MVR, MVR bound
+# fund return, AS after return, AS after charges, b(5), Q(5), FV(5),
+# CB, ST, AS after ST, MC, AS(5), S_cap, S(5), FB, MVR, MVR bound
 WORKED_EXAMPLE = {
     "up": dict(
         fund_return=0.07, aft_return=32100.00, aft_charge=31746.90,
@@ -61,10 +67,11 @@ WORKED_EXAMPLE = {
     ),
 }
 
-# State carried into policy year 6, from the model point.
-AS_5 = 30000.00
-S_5 = 29500.00
-FV_5 = 27602.02
+# State carried into t = T, from the model point: the opening balances of that period,
+# the notes' AS(4) / S(4) / FV(4) at the end of the fifth policy year.
+AS_OPEN = 30000.00
+S_OPEN = 29500.00
+FV_OPEN = 27602.02
 
 CWP_MATURITY = 29018.91      # G(25) = 20,000 x 1.015^25, the notes' endowment check
 
@@ -79,8 +86,8 @@ def test_worked_example_asset_share_steps(with_profits, key):
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
     assert p.fund_return() == pytest.approx(e["fund_return"])
-    assert p.asset_share(T - 1) == pytest.approx(AS_5, abs=PENNY)
-    assert p.asset_share_at(T, "BEF_RETURN") == pytest.approx(AS_5, abs=PENNY)
+    assert p.asset_share_at(T, "BEF_PREM") == pytest.approx(AS_OPEN, abs=PENNY)
+    assert p.asset_share_at(T, "BEF_RETURN") == pytest.approx(AS_OPEN, abs=PENNY)
     assert p.asset_share_at(T, "AFT_RETURN") == pytest.approx(e["aft_return"], abs=PENNY)
     assert p.asset_share_at(T, "AFT_CHARGE") == pytest.approx(e["aft_charge"], abs=PENNY)
     assert p.asset_share_at(T, "AFT_ST") == pytest.approx(e["aft_st"], abs=PENNY)
@@ -90,32 +97,32 @@ def test_worked_example_asset_share_steps(with_profits, key):
 
 @pytest.mark.parametrize("key", sorted(WORKED_EXAMPLE))
 def test_worked_example_bonus_and_unit_price(with_profits, key):
-    """b(6), Q(6) = Q(5)(1 + b) and FV(6) = U Q(6) on 25,000 units."""
+    """b(5), Q(5) = Q(4)(1 + b) and FV(5) = U Q(5) on 25,000 units."""
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
     assert p.bonus_rate(T) == pytest.approx(e["bonus"])
-    assert p.unit_price(T - 1) == pytest.approx(1.104081)
+    assert p.unit_price_init() == pytest.approx(1.104081)
     assert p.unit_price(T) == pytest.approx(e["unit_price"], abs=1e-6)
     assert p.units(T) == pytest.approx(25000.0)
-    assert p.guar_benefit_pp(T - 1) == pytest.approx(FV_5, abs=PENNY)
+    assert p.guar_benefit_open(T) == pytest.approx(FV_OPEN, abs=PENNY)
     assert p.guar_benefit_pp(T) == pytest.approx(e["guar_benefit"], abs=PENNY)
 
 
 @pytest.mark.parametrize("key", sorted(WORKED_EXAMPLE))
 def test_worked_example_bonus_cost_and_shareholder_transfer(with_profits, key):
-    """CB = b FV(5) on the unitised chassis, and ST = CB/9 — the 90:10 split."""
+    """CB = b FV(4) on the unitised chassis, and ST = CB/9 — the 90:10 split."""
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
     assert p.cost_of_bonus_pp(T) == pytest.approx(e["cost_of_bonus"], abs=PENNY)
     assert p.cost_of_bonus_pp(T) == pytest.approx(
-        p.bonus_rate(T) * p.guar_benefit_pp(T - 1), abs=PENNY)
+        p.bonus_rate(T) * p.guar_benefit_open(T), abs=PENNY)
     assert p.shareholder_transfer_pp(T) == pytest.approx(e["transfer"], abs=PENNY)
     assert p.shareholder_transfer_pp(T) == pytest.approx(p.cost_of_bonus_pp(T) / 9.0)
 
 
 @pytest.mark.parametrize("key", sorted(WORKED_EXAMPLE))
 def test_worked_example_mortality_charge(with_profits, key):
-    """MC = q x max(0, 1.01 FV(6) - AS after ST); nil in A, 14.84 in B."""
+    """MC = q x max(0, 1.01 FV(5) - AS after ST); nil in A, 14.84 in B."""
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
     assert p.mort_rate(T) == pytest.approx(0.005, abs=5e-9)
@@ -128,7 +135,7 @@ def test_worked_example_smoothing(with_profits, key):
     """The cap, then the corridor.  In B the cap floor binds at exactly -10%."""
     p = with_profits.Projection[1 if key == "up" else 2]
     e = WORKED_EXAMPLE[key]
-    assert p.smoothed_payout(T - 1) == pytest.approx(S_5, abs=PENNY)
+    assert p.smoothed_payout_open(T) == pytest.approx(S_OPEN, abs=PENNY)
     assert p.smoothed_payout_capped(T) == pytest.approx(e["capped"], abs=PENNY)
     assert p.smoothed_payout(T) == pytest.approx(e["smoothed"], abs=PENNY)
 
@@ -175,8 +182,8 @@ def test_worked_example_the_down_scenario_is_the_one_to_read(uk_wp_down):
     smoothing cap absorbing the rest — and both scenarios land inside the corridor.
     """
     p = uk_wp_down
-    assert p.asset_share(T) / AS_5 == pytest.approx(0.8391, abs=5e-5)
-    assert p.claim_pp(T, "SURRENDER") / S_5 == pytest.approx(0.90, abs=5e-7)
+    assert p.asset_share(T) / AS_OPEN == pytest.approx(0.8391, abs=5e-5)
+    assert p.claim_pp(T, "SURRENDER") / S_OPEN == pytest.approx(0.90, abs=5e-7)
     assert p.claim_pp(T, "SURRENDER") / p.asset_share(T) == pytest.approx(
         1.055, abs=5e-4)
     assert p.mvr_pp(T) < max(0.0, p.guar_benefit_pp(T) - p.asset_share(T))
@@ -190,15 +197,21 @@ def test_worked_example_the_up_scenario_pays_the_asset_share(uk_wp_up):
 
 
 def test_the_endowment_maturity_check_line(with_profits):
-    """G(25) = 20,000 x 1.015^25 = 29,018.91, and the guarantee bites by 115."""
+    """G(24) = 20,000 x 1.015^25 = 29,018.91, and the guarantee bites by 115.
+
+    Twenty-five declarations, one at the end of each of the periods 0 to 24, so the
+    maturity value lands on the last projected period ``proj_len() - 1 = 24``.
+    """
     p = with_profits.Projection[5]
     assert p.chassis() == "CWP_endowment"
-    assert p.proj_len() == 25
-    assert p.guar_benefit_pp(25) == pytest.approx(CWP_MATURITY, abs=PENNY)
-    assert p.claim_pp(25, "MATURITY") == pytest.approx(CWP_MATURITY, abs=PENNY)
+    assert p.proj_start() == 0                    # new business
+    assert p.proj_len() == 25                     # 25 policy years, t = 0 .. 24
+    n = p.proj_len() - 1
+    assert p.guar_benefit_pp(n) == pytest.approx(CWP_MATURITY, abs=PENNY)
+    assert p.claim_pp(n, "MATURITY") == pytest.approx(CWP_MATURITY, abs=PENNY)
     # The asset share falls short of the guarantee, so the estate meets the difference.
-    assert p.asset_share(25) < CWP_MATURITY
-    assert p.smoothing_cost_pp(25, "MATURITY") == pytest.approx(115.07, abs=0.02)
+    assert p.asset_share(n) < CWP_MATURITY
+    assert p.smoothing_cost_pp(n, "MATURITY") == pytest.approx(115.07, abs=0.02)
 
 
 # ---------------------------------------------------------------------------
@@ -261,10 +274,11 @@ def test_the_asset_share_is_floored_at_zero(uk_wp_down):
     by the estate.
     """
     p = uk_wp_down
-    assert p.asset_share(p.proj_len()) == 0.0
+    last = p.proj_len() - 1                         # the last projected period
+    assert p.asset_share(last) == 0.0
     assert p.check_fund_nonneg() is True
-    assert p.smoothed_payout(p.proj_len()) == 0.0
-    assert p.guar_benefit_pp(p.proj_len()) > 0.0    # the guarantee is still there
+    assert p.smoothed_payout(last) == 0.0
+    assert p.guar_benefit_pp(last) > 0.0            # the guarantee is still there
 
 
 # ---------------------------------------------------------------------------
@@ -275,9 +289,11 @@ def test_the_unit_price_never_falls(with_profits):
     """b(t) >= 0 is a contractual floor, so a declaration is irreversible."""
     for point_id in (1, 2, 3, 4):
         p = with_profits.Projection[point_id]
-        for t in range(p.proj_start(), p.proj_len() + 1):
+        for t in range(p.proj_start(), p.proj_len()):
             assert p.bonus_rate(t) >= 0.0
-            assert p.unit_price(t) >= p.unit_price(t - 1)
+            opening = (p.unit_price_init() if t == p.proj_start()
+                       else p.unit_price(t - 1))
+            assert p.unit_price(t) >= opening
 
 
 def test_a_declaration_hardens_the_payout_at_a_cost_of_a_ninth(uk_wp_up):
@@ -289,7 +305,7 @@ def test_a_declaration_hardens_the_payout_at_a_cost_of_a_ninth(uk_wp_up):
     rather than the distribution itself.
     """
     p = uk_wp_up
-    hardened = p.guar_benefit_pp(T) - p.guar_benefit_pp(T - 1)
+    hardened = p.guar_benefit_pp(T) - p.guar_benefit_open(T)
     assert hardened == pytest.approx(p.cost_of_bonus_pp(T), abs=PENNY)
     assert hardened == pytest.approx(552.04, abs=PENNY)
     # The mortality charge is nil in this scenario, so the transfer is the only cost.
@@ -310,22 +326,22 @@ def test_the_bonus_rule_is_off_and_bites_when_switched_on(with_profits):
     """
     p = with_profits.Projection[1]
     assert with_profits.Projection.bonus_rule_on is False
-    assert [p.bonus_rate(t) for t in range(6, 10)] == [0.02] * 4
+    assert [p.bonus_rate(t) for t in range(5, 9)] == [0.02] * 4
 
     with_profits.Projection.bonus_rule_on = True
     with_profits.Projection.clear_all()
     try:
         p = with_profits.Projection[1]
-        assert p.bonus_rate(6) == pytest.approx(0.02)     # the snapshot, held
-        assert p.bonus_rate(7) == pytest.approx(0.03)     # +1%, capped
-        assert p.bonus_rate(8) == pytest.approx(0.04)     # +1%, capped
-        assert p.bonus_supportable(9) > p.bonus_rate(8)
-        assert p.bonus_rate(9) == pytest.approx(
-            0.04 + 0.5 * (p.bonus_supportable(9) - 0.04))  # inside the cap now
+        assert p.bonus_rate(5) == pytest.approx(0.02)     # the snapshot, held
+        assert p.bonus_rate(6) == pytest.approx(0.03)     # +1%, capped
+        assert p.bonus_rate(7) == pytest.approx(0.04)     # +1%, capped
+        assert p.bonus_supportable(8) > p.bonus_rate(7)
+        assert p.bonus_rate(8) == pytest.approx(
+            0.04 + 0.5 * (p.bonus_supportable(8) - 0.04))  # inside the cap now
     finally:
         with_profits.Projection.bonus_rule_on = False
         with_profits.Projection.clear_all()
-    assert with_profits.Projection[1].bonus_rate(7) == pytest.approx(0.02)
+    assert with_profits.Projection[1].bonus_rate(6) == pytest.approx(0.02)
 
 
 def test_the_declared_bonus_is_floored_at_zero_and_stays_there(with_profits):
@@ -334,11 +350,11 @@ def test_the_declared_bonus_is_floored_at_zero_and_stays_there(with_profits):
     with_profits.Projection.clear_all()
     try:
         p = with_profits.Projection[2]
-        assert p.bonus_supportable(7) < -0.10             # deeply unsupportable
-        assert p.bonus_rate(6) == pytest.approx(0.01)
-        assert [p.bonus_rate(t) for t in range(7, 13)] == [0.0] * 6
+        assert p.bonus_supportable(6) < -0.10             # deeply unsupportable
+        assert p.bonus_rate(5) == pytest.approx(0.01)
+        assert [p.bonus_rate(t) for t in range(6, 12)] == [0.0] * 6
         assert all(p.unit_price(t) == pytest.approx(p.unit_price(t - 1))
-                   for t in range(8, 13))
+                   for t in range(7, 12))
     finally:
         with_profits.Projection.bonus_rule_on = False
         with_profits.Projection.clear_all()
@@ -347,14 +363,15 @@ def test_the_declared_bonus_is_floored_at_zero_and_stays_there(with_profits):
 def test_the_endowment_bonus_cost_is_discounted_and_the_bond_one_is_not(with_profits):
     """A reversionary addition is not payable until maturity, so it is discounted."""
     cwp = with_profits.Projection[5]
-    delta = cwp.guar_benefit_pp(1) - cwp.guar_benefit_pp(0)
+    delta = cwp.guar_benefit_pp(0) - cwp.guar_benefit_open(0)
     assert delta == pytest.approx(20000.0 * 0.015, abs=PENNY)
-    assert cwp.cost_of_bonus_pp(1) == pytest.approx(delta / 1.04 ** 24, abs=PENNY)
-    assert cwp.cost_of_bonus_pp(1) < delta
+    # 24 years still to run at the end of the first policy year, t = 0.
+    assert cwp.cost_of_bonus_pp(0) == pytest.approx(delta / 1.04 ** 24, abs=PENNY)
+    assert cwp.cost_of_bonus_pp(0) < delta
 
     uwp = with_profits.Projection[1]
     assert uwp.cost_of_bonus_pp(T) == pytest.approx(
-        uwp.guar_benefit_pp(T) - uwp.guar_benefit_pp(T - 1), abs=PENNY)
+        uwp.guar_benefit_pp(T) - uwp.guar_benefit_open(T), abs=PENNY)
 
 
 # ---------------------------------------------------------------------------
@@ -364,10 +381,10 @@ def test_the_endowment_bonus_cost_is_discounted_and_the_bond_one_is_not(with_pro
 def test_the_cap_is_skipped_when_there_is_no_previous_payout(with_profits):
     """A new-business cell has no prior payout, so the cap would clamp it to nil."""
     p = with_profits.Projection[5]
-    assert p.proj_start() == 1
-    assert p.smoothed_payout(0) == 0.0
-    assert p.smoothed_payout_capped(1) == pytest.approx(p.asset_share(1))
-    assert p.smoothed_payout(1) == pytest.approx(p.asset_share(1))
+    assert p.proj_start() == 0
+    assert p.smoothed_payout_open(0) == 0.0
+    assert p.smoothed_payout_capped(0) == pytest.approx(p.asset_share(0))
+    assert p.smoothed_payout(0) == pytest.approx(p.asset_share(0))
 
 
 def test_the_cap_is_applied_before_the_corridor(tmp_path):
@@ -393,7 +410,8 @@ def test_the_cap_is_applied_before_the_corridor(tmp_path):
             model.Data.clear_all()
             model.Projection.clear_all()
             p = model.Projection[2]
-            assert p.smoothed_payout_capped(T) == pytest.approx(0.90 * S_5, abs=PENNY)
+            assert p.smoothed_payout_capped(T) == pytest.approx(0.90 * S_OPEN,
+                                                                abs=PENNY)
             assert p.smoothed_payout(T) == pytest.approx(1.20 * p.asset_share(T),
                                                          abs=PENNY)
             assert p.smoothed_payout(T) < p.smoothed_payout_capped(T)
@@ -419,7 +437,7 @@ def test_final_bonus_and_mvr_are_never_simultaneous(with_profits):
     for point_id in with_profits.Data.model_point_table().index:
         p = with_profits.Projection[point_id]
         assert p.check_fb_mvr_exclusive() is True
-        for t in range(p.proj_start(), p.proj_len() + 1):
+        for t in range(p.proj_start(), p.proj_len()):
             assert min(p.final_bonus_pp(t), p.mvr_pp(t)) == pytest.approx(0.0, abs=1e-9)
 
 
@@ -432,11 +450,13 @@ def test_the_mvr_stays_inside_its_contractual_bound(with_profits):
 def test_the_mvr_is_not_applied_on_a_guarantee_date(uk_wp_down):
     """The scale is still positive - it is the *application* the contract waives."""
     p = uk_wp_down
+    # The guarantee date is the 10th anniversary, which ends period t = 9.
     assert p.guarantee_years() == (10,)
-    assert p.is_guarantee_date(10) is True
-    assert p.mvr_pp(10) > 0.0
-    assert p.mvr_applied_pp(10) == 0.0
-    assert p.claim_pp(10, "SURRENDER") == pytest.approx(p.claim_pp(10, "GUARANTEE"))
+    assert p.policy_year(9) == 10
+    assert p.is_guarantee_date(9) is True
+    assert p.mvr_pp(9) > 0.0
+    assert p.mvr_applied_pp(9) == 0.0
+    assert p.claim_pp(9, "SURRENDER") == pytest.approx(p.claim_pp(9, "GUARANTEE"))
 
 
 def test_the_mvr_is_not_applied_on_death(uk_wp_down):
@@ -453,20 +473,20 @@ def test_the_mvr_is_unitised_only(with_profits):
 
     The same arithmetic would collapse the surrender payout onto the asset share - the
     right answer for the wrong reason - while reporting a five-figure market value
-    reduction in policy year 1 of a 25-year endowment.
+    reduction in the first policy year, t = 0, of a 25-year endowment.
     """
     p = with_profits.Projection[5]
-    assert p.guar_benefit_pp(1) > p.smoothed_payout(1) + 19000.0
-    assert p.mvr_pp(1) == 0.0
-    assert p.mvr_applied_pp(1) == 0.0
-    assert p.claim_pp(1, "SURRENDER") == pytest.approx(p.smoothed_payout(1))
-    assert all(p.mvr_pp(t) == 0.0 for t in range(1, 26))
+    assert p.guar_benefit_pp(0) > p.smoothed_payout(0) + 19000.0
+    assert p.mvr_pp(0) == 0.0
+    assert p.mvr_applied_pp(0) == 0.0
+    assert p.claim_pp(0, "SURRENDER") == pytest.approx(p.smoothed_payout(0))
+    assert all(p.mvr_pp(t) == 0.0 for t in range(p.proj_len()))
 
 
 def test_the_endowment_surrender_value_is_capped_at_the_prospective_value(with_profits):
     """It targets the smoothed payout, never more than the policy is worth at maturity."""
     p = with_profits.Projection[6]
-    for t in range(p.proj_start(), p.proj_len() + 1):
+    for t in range(p.proj_start(), p.proj_len()):
         prospective = p.guar_benefit_pp(t) + p.final_bonus_pp(t)
         assert p.claim_pp(t, "SURRENDER") <= prospective + 1e-9
         assert p.claim_pp(t, "SURRENDER") == pytest.approx(
@@ -497,31 +517,31 @@ def test_the_guarantee_spike_is_gated_on_the_guarantee_being_in_the_money(
     invent anti-selection on a policy with no incentive to exit.
     """
     for p in (uk_wp_down, uk_wp_up):
-        assert p.is_guarantee_date(10) is True
+        assert p.is_guarantee_date(9) is True          # the 10th anniversary
 
-    assert uk_wp_down.guar_benefit_pp(10) > uk_wp_down.asset_share(10)
-    assert uk_wp_down.guarantee_spike(10) == 2.5
-    assert uk_wp_down.surr_rate(10) == pytest.approx(0.05 * 2.5)
+    assert uk_wp_down.guar_benefit_pp(9) > uk_wp_down.asset_share(9)
+    assert uk_wp_down.guarantee_spike(9) == 2.5
+    assert uk_wp_down.surr_rate(9) == pytest.approx(0.05 * 2.5)
 
-    assert uk_wp_up.guar_benefit_pp(10) < uk_wp_up.asset_share(10)
-    assert uk_wp_up.guarantee_spike(10) == 1.0
-    assert uk_wp_up.surr_rate(10) == pytest.approx(0.05)
+    assert uk_wp_up.guar_benefit_pp(9) < uk_wp_up.asset_share(9)
+    assert uk_wp_up.guarantee_spike(9) == 1.0
+    assert uk_wp_up.surr_rate(9) == pytest.approx(0.05)
 
 
 def test_the_guarantee_imminent_suppression(uk_wp_up):
-    """0.8 in the year before a guarantee date: policyholders wait for the window."""
+    """0.8 in the period before a guarantee date: policyholders wait for the window."""
     p = uk_wp_up
-    assert p.guarantee_imminent(9) == 0.8
-    assert p.surr_rate(9) == pytest.approx(0.05 * 0.8)
-    assert p.guarantee_imminent(8) == 1.0
-    assert p.guarantee_imminent(10) == 1.0
+    assert p.guarantee_imminent(8) == 0.8          # t = 9 is the guarantee date
+    assert p.surr_rate(8) == pytest.approx(0.05 * 0.8)
+    assert p.guarantee_imminent(7) == 1.0
+    assert p.guarantee_imminent(9) == 1.0
 
 
 def test_the_surrender_rate_is_capped_at_one(with_profits):
     """Three multipliers stacked cannot take a rate above certainty."""
     for point_id in with_profits.Data.model_point_table().index:
         p = with_profits.Projection[point_id]
-        for t in range(p.proj_start(), p.proj_len() + 1):
+        for t in range(p.proj_start(), p.proj_len()):
             assert 0.0 <= p.surr_rate(t) <= 1.0
 
 
@@ -551,33 +571,34 @@ def test_the_withdrawal_reduces_the_asset_share_pro_rata_to_the_policy_value(
     p = with_profits.Projection[4]
     assert p.wd_rate() == 0.05
     assert p.wd_pp(T) == pytest.approx(0.05 * 25000.0)
-    pv = p.policy_value_pp(T - 1)
-    assert pv == pytest.approx(S_5, abs=PENNY)          # FV(5) + FB(5)
-    assert p.wd_as_pp(T) == pytest.approx(AS_5 * p.wd_pp(T) / pv, abs=PENNY)
+    pv = p.policy_value_open(T)
+    assert pv == pytest.approx(S_OPEN, abs=PENNY)       # the opening FV + FB
+    assert p.wd_as_pp(T) == pytest.approx(AS_OPEN * p.wd_pp(T) / pv, abs=PENNY)
     assert p.wd_as_pp(T) > p.wd_pp(T)                   # AS above the policy value
 
 
 def test_the_withdrawal_is_capped_at_the_unit_fund(with_profits):
     """A level election against a fund being run down eventually asks for too much."""
     p = with_profits.Projection[4]
-    assert p.wd_pp(20) == pytest.approx(1250.0)         # the election, in full
-    assert p.guar_benefit_pp(33) < 1250.0               # not enough left
-    assert p.wd_pp(34) == pytest.approx(p.guar_benefit_pp(33), abs=PENNY)
-    assert p.units(34) == pytest.approx(0.0, abs=1e-9)
+    assert p.wd_pp(19) == pytest.approx(1250.0)         # the election, in full
+    assert p.guar_benefit_open(33) < 1250.0             # not enough left
+    assert p.wd_pp(33) == pytest.approx(p.guar_benefit_open(33), abs=PENNY)
+    assert p.units(33) == pytest.approx(0.0, abs=1e-9)
     assert p.check_fund_nonneg() is True
 
 
 def test_the_fund_exhausts_the_projection_and_forces_an_encashment(with_profits):
-    """The last unit is cancelled in year 34, so the projection ends in year 33."""
+    """The last unit is cancelled at t = 33, so the projection ends at t = 32."""
     p = with_profits.Projection[4]
-    assert p.fund_exhaust_year() == 34
-    assert p.proj_len() == 33
+    assert p.fund_exhaust_year() == 33
+    assert p.proj_len() == 33                   # 33 policy years, t = 5 .. 32
     assert p.is_forced_encashment() is True
     # A real contractual ending, so the survivors are paid — residual final bonus and all.
-    assert p.pols_maturity(33) > 0.0
-    assert p.claim_pp(33, "MATURITY") == pytest.approx(
-        p.guar_benefit_pp(33) + p.final_bonus_pp(33))
-    assert p.claims(33, "MATURITY") > 0.0
+    last = p.proj_len() - 1
+    assert p.pols_maturity(last) > 0.0
+    assert p.claim_pp(last, "MATURITY") == pytest.approx(
+        p.guar_benefit_pp(last) + p.final_bonus_pp(last))
+    assert p.claims(last, "MATURITY") > 0.0
 
 
 def test_a_limiting_age_ending_pays_nothing(uk_wp_up):
@@ -586,8 +607,10 @@ def test_a_limiting_age_ending_pays_nothing(uk_wp_up):
     assert p.fund_exhaust_year() == 0
     assert p.proj_len() == 120 - 55
     assert p.is_forced_encashment() is False
-    assert p.claim_pp(p.proj_len(), "MATURITY") == 0.0
-    assert p.claims(p.proj_len(), "MATURITY") == 0.0
+    last = p.proj_len() - 1
+    assert p.age(last) == 119                   # the last year before the limiting age
+    assert p.claim_pp(last, "MATURITY") == 0.0
+    assert p.claims(last, "MATURITY") == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -599,23 +622,23 @@ def test_the_guarantee_charge_stops_at_its_lifetime_cap(with_profits):
 
     The cap is measured against the **current** asset share, as the notes specify, not
     against a level struck once at first breach.  On a fund that keeps growing the
-    threshold grows with it, so the charge stops the year the cumulative overtakes it
-    and resumes the year after.  That is the rule as written; a cap frozen at first
+    threshold grows with it, so the charge stops the period the cumulative overtakes it
+    and resumes the period after.  That is the rule as written; a cap frozen at first
     breach would be a different rule and a materially different charge.
     """
     p = with_profits.Projection[3]
     assert with_profits.Projection.guar_charge_rate_base == 0.001
     assert with_profits.Projection.guar_charge_cap == 0.02
-    assert p.guar_charge_rate(39) == pytest.approx(0.001)
-    assert p.guar_charge_cum_pp(38) < 0.02 * p.asset_share(38)
-    assert p.guar_charge_rate(40) == 0.0                    # the first breach
-    assert p.guar_charge_cum_pp(39) >= 0.02 * p.asset_share(39)
-    assert p.guar_charge_pp(40) == 0.0
-    assert p.guar_charge_cum_pp(40) == pytest.approx(p.guar_charge_cum_pp(39))
+    assert p.guar_charge_rate(38) == pytest.approx(0.001)
+    assert p.guar_charge_cum_pp(37) < 0.02 * p.asset_share(37)
+    assert p.guar_charge_rate(39) == 0.0                    # the first breach
+    assert p.guar_charge_cum_pp(38) >= 0.02 * p.asset_share(38)
+    assert p.guar_charge_pp(39) == 0.0
+    assert p.guar_charge_cum_pp(39) == pytest.approx(p.guar_charge_cum_pp(38))
     # The threshold is 2% of the *current* asset share, which keeps growing, so it
     # overtakes the frozen cumulative again and the charge resumes.
-    assert p.guar_charge_rate(41) == pytest.approx(0.001)
-    assert p.guar_charge_cum_pp(40) < 0.02 * p.asset_share(40)
+    assert p.guar_charge_rate(40) == pytest.approx(0.001)
+    assert p.guar_charge_cum_pp(39) < 0.02 * p.asset_share(39)
 
 
 def test_the_shareholder_transfer_is_reported_and_never_netted(uk_wp_up):
@@ -634,8 +657,9 @@ def test_the_shareholder_transfer_is_reported_and_never_netted(uk_wp_up):
 def test_expenses_inflate(uk_wp_up):
     """GBP 30 a policy a year at 3%, on the in-force count."""
     p = uk_wp_up
-    assert p.inflation_factor(T) == pytest.approx(1.03 ** (T - 1))
-    assert p.expenses(T) == pytest.approx(30.0 * 1.03 ** (T - 1) * p.pols_if(T))
+    assert p.inflation_factor(0) == pytest.approx(1.0)   # one in the first policy year
+    assert p.inflation_factor(T) == pytest.approx(1.03 ** T)
+    assert p.expenses(T) == pytest.approx(30.0 * 1.03 ** T * p.pols_if(T))
 
 
 # ---------------------------------------------------------------------------
@@ -697,11 +721,18 @@ def test_claims_total_the_three_paid_kinds(with_profits):
 
 
 def test_result_cf_shape(uk_wp_up):
-    """The cash flow table, indexed by policy year."""
+    """The cash flow table, indexed by the 0-based period t.
+
+    The frame opens at the elapsed policy years and ends at ``proj_len() - 1``, so its
+    length is ``proj_len() - duration_inforce()``.
+    """
     df = uk_wp_up.result_cf()
     assert df.index.name == "t"
+    assert df.index[0] == uk_wp_up.duration_inforce() == 5
+    assert df.index[-1] == uk_wp_up.proj_len() - 1
     assert list(df.index) == list(range(uk_wp_up.proj_start(),
-                                        uk_wp_up.proj_len() + 1))
+                                        uk_wp_up.proj_len()))
+    assert len(df) == uk_wp_up.proj_len() - uk_wp_up.duration_inforce()
     assert list(df.columns) == [
         "pols_if", "asset_share", "premiums", "claims_death", "claims_surrender",
         "claims_maturity", "withdrawals", "expenses", "shareholder_transfers",
@@ -725,11 +756,13 @@ def test_result_payout_shape(uk_wp_down):
 def test_the_smoothing_account_accumulates_without_recycling(uk_wp_down):
     """The estate's running cost, tracked and not fed back into credited returns."""
     p = uk_wp_down
-    assert p.smoothing_account(p.proj_start() - 1) == 0.0
-    for t in range(p.proj_start(), p.proj_start() + 5):
+    t0 = p.proj_start()
+    # The balance opens at zero in the first projected period, not in a row below it.
+    assert p.smoothing_account(t0) == pytest.approx(p.smoothing_cost(t0))
+    for t in range(t0 + 1, t0 + 5):
         assert p.smoothing_account(t) == pytest.approx(
             p.smoothing_account(t - 1) + p.smoothing_cost(t))
-    assert p.smoothing_account(p.proj_start() + 4) > 0.0     # guarantees are biting
+    assert p.smoothing_account(t0 + 4) > 0.0                 # guarantees are biting
 
 
 def test_model_docstring_describes_the_current_structure(with_profits):

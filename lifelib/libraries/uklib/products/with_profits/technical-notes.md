@@ -36,9 +36,16 @@ resources page [R13].
   unit pricing [S4], PruFund daily/quarterly smoothing [S9] [S11]) are compressed to
   annual equivalents in the base model, with the PruFund module noting its native
   daily/quarterly grid.
+- **Time index [std].** `t` is the **0-based** policy year index: `t = 0` is the first
+  policy year, period `t` runs from time `t` to time `t + 1`, and the projection covers
+  `t = 0, 1, …, proj_len − 1`, so `proj_len` is the number of policy years from issue.
+  An in-force cell opens its frame at `t = duration_ifo`, its elapsed policy years, and
+  carries its state in as the **opening** balances of that period. The contractual
+  policy year is the 1-based label `t + 1`; anniversary `k` ends period `k − 1`; and the
+  attained age in period `t` is `x + t`.
 - **Timing conventions [std].** Premiums and partial withdrawals at the start of the
-  policy year (BOY); fund return accrues over the year; proportional charges, bonus
-  declaration, shareholder transfer and mortality charge at end of year (EOY), in the
+  period (BOY); fund return accrues over it; proportional charges, bonus
+  declaration, shareholder transfer and mortality charge at end of period (EOY), in the
   processing order below; claims and decrements at EOY after declaration.
 - **Age basis.** Age nearest birthday **[std]** — no retrieved UK document fixes a
   model age basis; ANB is chosen for symmetry with the library's US convention (its
@@ -69,9 +76,9 @@ resources page [R13].
 | `units` | float (UWP) | 25,000 |
 | `unit_price` | currency (UWP `Q`; £1.0000 at seed) | 1.104081 |
 | `attaching_bonus` | currency (CWP `G − SA`) | — |
-| `asset_share_0` | currency (in-force cells) | 30,000 |
-| `smoothed_payout_0` | currency (`S(0)` benchmark for the y/y cap) | 29,500 |
-| `guarantee_dates` | list of anniversaries (MVR-free) | {10} |
+| `asset_share_init` | currency (in-force cells); the `AS` the first projected period opens with | 30,000 |
+| `smoothed_payout_init` | currency; the opening `S`, benchmark for the y/y cap | 29,500 |
+| `guarantee_dates` | list of anniversaries (MVR-free); anniversary `k` ends period `k − 1` | {10} |
 | `mvr_free_wd_rate` | % of original premium p.a. | 5% |
 | `tax_basis` | enum {life_net, pension_gross} [S1] [REG-R17] | life_net |
 | `gao_flag` / `gao_rate` | bool / annuity per £1 cash | false / — |
@@ -83,19 +90,26 @@ resources page [R13].
 
 | Variable | Description | Updated |
 |---|---|---|
-| `AS(t)` | Asset share at end of year t [S1] [R8] | annual recursion |
-| `Q(t)` | With-profits unit price (UWP); never decreases | EOY declaration |
+| `AS(t)` | Asset share at the end of period t [S1] [R8] | annual recursion |
+| `Q(t)` | With-profits unit price (UWP) at the end of period t; never decreases | EOY declaration |
 | `FV(t)` | Unit face value `U(t)·Q(t)` (UWP) | EOY |
 | `G(t)` | Guaranteed benefit `SA` + attaching reversionary bonuses (CWP) | EOY declaration |
-| `b(t)` | Declared regular bonus rate for year t | EOY, setting rule |
+| `b(t)` | Declared regular bonus rate for period t | EOY, setting rule |
 | `S(t)` | Smoothed target payout (after y/y cap and corridor) | EOY |
-| `FB(t)` | Final (terminal) bonus payable on claim in year t | EOY |
+| `FB(t)` | Final (terminal) bonus payable on a claim in period t | EOY |
 | `MVR(t)` | Market value reduction on non-guaranteed exits | EOY |
-| `CB(t)` | Cost of bonus recognized in year t | EOY |
+| `CB(t)` | Cost of bonus recognized in period t | EOY |
 | `ST(t)` | Shareholder transfer = `CB(t)/9` (90:10) | EOY |
 | `SM(t)` | Smoothing account balance (within estate) | on exits |
 | `CumGC(t)` | Cumulative guarantee-charge deductions (for the 2% lifetime cap [S1]) | annual |
-| `l(t)` | In-force probability at end of year t | EOY decrements |
+| `l(t)` | In-force probability at the **start** of period t (at time t) | BOY, after the previous period's decrements |
+
+Each state variable except `l` is a **closing** balance: `AS(t)`, `Q(t)`, `FV(t)`,
+`G(t)`, `S(t)` are the values at the end of period `t`, so the value a period opens with
+is the previous period's close, and for the first projected period it is the carried-in
+state on the model point. `l` is the count at a time point: `l(t)` is the in force at
+the start of period `t`, `l(0) = 1` at issue, and it is the weight on that period's
+cash flows.
 
 ---
 
@@ -168,16 +182,16 @@ stochastic valuation (see Cash flow components, cost-of-guarantees note).
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy year index (1, 2, …); `x` = age at entry (ANB) |
+| `t` | policy year index, **0-based**: `t = 0, 1, …, proj_len − 1`; policy year = `t + 1`; `x` = age at entry (ANB) |
 | `P(t)` | premium received at BOY t |
 | `W(t)` | partial withdrawals paid at BOY t |
-| `E(t)` | insurer maintenance expense in year t (£30 × 1.03^(t−1) **[std]**) |
-| `r(t)` | earned fund return in year t (net basis per `tax_basis`) |
+| `E(t)` | insurer maintenance expense in period t (£30 × 1.03^t **[std]**) |
+| `r(t)` | earned fund return in period t (net basis per `tax_basis`) |
 | `c_amc`, `c_g` | AMC 1.00% p.a.; guarantee/smoothing charge 0.10% p.a. **[std]** |
-| `q(x+t−1)` | mortality rate for year t (class (c) basis) |
-| `w(t)` | surrender/lapse rate for year t (incl. dynamic multipliers) |
-| `MC(t)` | mortality charge to the asset share in year t [S1] |
-| `b(t)`, `b_rev(t)` | declared regular / reversionary bonus rate for year t |
+| `q(x+t)` | mortality rate for period t (class (c) basis) |
+| `w(t)` | surrender/lapse rate for period t (incl. dynamic multipliers) |
+| `MC(t)` | mortality charge to the asset share in period t [S1] |
+| `b(t)`, `b_rev(t)` | declared regular / reversionary bonus rate for period t |
 | `Q(t)`, `U(t)`, `FV(t)` | unit price, units, face value (UWP); `FV = U·Q` |
 | `G(t)` | guaranteed benefit (CWP): SA + attaching bonuses |
 | `S(t)` | smoothed target payout after cap and corridor |
@@ -186,8 +200,8 @@ stochastic valuation (see Cash flow components, cost-of-guarantees note).
 | `θ, κ, σ` | guarantee-fill target 0.80; bonus-smoothing speed 0.5; y/y cap 10% **[std]** |
 | `g_db` | UWP death benefit factor 1.01 **[std]** |
 | `i_sv` | CWP surrender-basis discount rate 4.0% **[std]**; `v_sv = 1/(1+i_sv)` |
-| `n` | CWP term (25); `h` = UWP bonus-setting horizon (10 years **[std]**) |
-| `l(t)` | in-force probability at end of year t; `l(0) = 1` |
+| `n` | CWP term (25), so maturity falls at the end of period `n − 1`; `h` = UWP bonus-setting horizon (10 years **[std]**) |
+| `l(t)` | in-force probability at the start of period t (at time t); `l(0) = 1` |
 
 ### Annual processing order [std]
 
@@ -197,20 +211,23 @@ stochastic valuation (see Cash flow components, cost-of-guarantees note).
    allowance); asset share reduced pro rata to the pre-MVR policy value [S1].
 3. Fund return `r(t)` accrues on the asset share balance.
 4. **EOY**: proportional charges: multiply by `(1 − c_amc − c_g)`; accumulate
-   `CumGC`; set `c_g = 0` once `CumGC ≥ 2% × AS(t)` [S1 cap; mechanics **[std]**].
+   `CumGC`; set `c_g = 0` for the period once `CumGC(t−1) ≥ 2% × AS(t−1)` — the
+   cumulative and the asset share the period **opens** with, so that the charge does not
+   depend on the balance it is deducted from [S1 cap; mechanics **[std]**].
 5. **EOY**: regular bonus `b(t)` declared per the setting rule below;
    `Q(t) = Q(t−1)(1+b(t))` (UWP) or `G(t) = G(t−1)(1+b_rev(t))` (CWP);
    cost of bonus `CB(t)` computed on pre-declaration values; shareholder transfer
    `ST(t) = CB(t)/9` deducted from the asset share [S5] [R8]; product-spec (2).
-6. **EOY**: mortality charge `MC(t) = q(x+t−1) · max(0, DB_g(t) − AS_pre(t))`
+6. **EOY**: mortality charge `MC(t) = q(x+t) · max(0, DB_g(t) − AS_pre(t))`
    deducted, where `DB_g` is the guaranteed death benefit (`g_db·FV(t)` UWP; `G(t)`
    CWP) and `AS_pre` the balance after step 5 [S1 formula: mortality rate × (death
    benefit − policy value); guaranteed-only DB in the sum at risk **[std]**].
 7. **EOY**: smoothed payout `S(t)` computed (cap, then corridor); `FB`/`TB`/`MVR`
    derived.
-8. **EOY**: claims paid — deaths at `q`, surrenders at `w`, maturity at `t = n`;
-   smoothing account posts `(payout − AS(t))` per exiting unit of probability.
-9. Survivorship: `l(t) = l(t−1) · (1 − q(x+t−1)) · (1 − w(t))` (maturity year:
+8. **EOY**: claims paid — deaths at `q`, surrenders at `w`, maturity at the last
+   projected period `t = n − 1`; smoothing account posts `(payout − AS(t))` per exiting
+   unit of probability.
+9. Survivorship: `l(t+1) = l(t) · (1 − q(x+t)) · (1 − w(t))` (maturity period:
    survivors mature).
 
 ### Asset share recursion (core)
@@ -219,6 +236,11 @@ stochastic valuation (see Cash flow components, cost-of-guarantees note).
 AS(t) = [ AS(t−1) + P(t) − W_AS(t) ] · (1 + r(t)) · (1 − c_amc − c_g)
         − ST(t) − MC(t) + M(t)
 ```
+
+`AS(t−1)` is the balance period `t` **opens** with: the previous period's closing asset
+share, or, in the first projected period of an in-force cell, the `asset_share_init` the
+model point carries. The same reading applies to `Q(t−1)`, `G(t−1)`, `FV(t−1)` and
+`S(t−1)` below — there is no row below the frame.
 
 Component bases (each item as recorded for the retrospective accumulation
 [S1] [S2] [S4] [S5] [S6] [S7] and codified in PRA Surplus Funds 3.3 [R8]):
@@ -249,13 +271,15 @@ normal); keep a substantial proportion of the payout in final-bonus form; full
 discretion to declare zero [S1] [S7]. The reference parametrization:
 
 1. Project the asset share to the horizon at the expected net return
-   `r_e = r_base − c_amc − c_g` **[std]**:
-   `AS_proj = AS(t) · (1+r_e)^(m) + future premiums accumulated to the horizon at r_e`,
-   with `m = n − t` (CWP) or `m = h = 10` (UWP whole-of-life bond).
+   `r_e = r_base − c_amc − c_g` **[std]**, from the balance the period opens with:
+   `AS_proj = AS(t−1) · (1+r_e)^(m) + future premiums accumulated to the horizon at
+   r_e`, with `m = n − (t+1)`, the term less the policy year the declaration closes
+   (CWP), or `m = h = 10` (UWP whole-of-life bond).
 2. Supportable rate: the level bonus rate that grows the guarantee to the
-   guarantee-fill target θ = 80% of the projected asset share:
-   - UWP: `b_supp = [ θ·AS_proj / FV(t) ]^(1/m) − 1`
-   - CWP: `b_supp = [ θ·AS_proj / G(t) ]^(1/m) − 1`
+   guarantee-fill target θ = 80% of the projected asset share, measured on the
+   guarantee the period opens with:
+   - UWP: `b_supp = [ θ·AS_proj / FV(t−1) ]^(1/m) − 1`
+   - CWP: `b_supp = [ θ·AS_proj / G(t−1) ]^(1/m) − 1`
 3. Smoothed declaration with the ±1% discipline [S1] [S7]:
    `b(t) = max( 0, b(t−1) + clamp( κ·(b_supp − b(t−1)), −0.01, +0.01 ) )`, κ = 0.5
    **[std]**.
@@ -280,7 +304,8 @@ single-policy model **[std]**.
 
 - UWP final bonus: `FB(t) = max(0, S(t) − FV(t))`; guarantee-event payout
   `FV(t) + FB(t)`; death payout `g_db · (FV(t) + FB(t))` [S5: no MVR on death].
-- CWP terminal bonus: `TB(t) = max(0, S(t) − G(t))`; maturity payout `G(n) + TB(n)`;
+- CWP terminal bonus: `TB(t) = max(0, S(t) − G(t))`; maturity payout
+  `G(n−1) + TB(n−1)` at the end of the last projected period;
   death payout `G(t) + interim accrual + FB per the same scale` [S1] [S4] [S8].
 - When the guarantee bites (`S(t) < FV(t)` or `S(t) < G(t)`), the excess of the
   guaranteed payout over the asset share is charged to the smoothing/guarantee
@@ -310,10 +335,11 @@ Measurement of `CB` **[std]**:
 
 - UWP regular bonus: `CB_reg(t) = b(t) · FV(t−1)` — the face-value uplift delivered
   by the declaration.
-- CWP reversionary bonus: `CB_reg(t) = ΔG(t) · v_sv^(n−t)` with
+- CWP reversionary bonus: `CB_reg(t) = ΔG(t) · v_sv^(n−(t+1))` with
   `ΔG(t) = G(t) − G(t−1)` — the declared addition discounted to the declaration date
-  (survivorship discount omitted **[std]** simplification).
-- Final/terminal bonus: `CB_fb(t) = (FB or TB paid on claims in year t)`, recognized
+  over the `n − (t+1)` years still to run (survivorship discount omitted **[std]**
+  simplification).
+- Final/terminal bonus: `CB_fb(t) = (FB or TB paid on claims in period t)`, recognized
   at payment.
 
 `ST` is a cash outflow from the fund (distribution to shareholders), reported
@@ -352,17 +378,20 @@ by fixed-interest assets, with interest-rate risk identified as a fund business 
 a valuation-critical option (stochastic interest-rate exposure) — cited, not
 fully specified.
 
-### Cash flow outputs (per policy year t, probability-weighted by `l`)
+### Cash flow outputs (per period t, probability-weighted by `l`)
+
+`l(t)` is the in force at the start of period `t`, so it is the weight on every flow of
+that period — the same row of the result table.
 
 | Output | Formula |
 |---|---|
-| Premium income | `P(t) · l(t−1)` |
-| Death claims | `q(x+t−1) · l(t−1) · DeathPayout(t)` |
-| Surrender claims | `w(t) · l(t−1) · (1 − q) · SurrenderPayout(t)` |
-| Maturity claims | `l(n) · (G(n) + TB(n))` (CWP, year n) |
-| Partial withdrawals | `W(t) · l(t−1)` |
-| Maintenance expenses | `E(t) · l(t−1)` |
-| Shareholder transfers | `ST(t) · l(t−1)` plus `CB_fb/9` on claims |
+| Premium income | `P(t) · l(t)` |
+| Death claims | `q(x+t) · l(t) · DeathPayout(t)` |
+| Surrender claims | `w(t) · l(t) · (1 − q) · SurrenderPayout(t)` |
+| Maturity claims | `l(n−1)·(1−q)·(1−w) · (G(n−1) + TB(n−1))` — the survivors of the last projected period `n − 1` (CWP) |
+| Partial withdrawals | `W(t) · l(t)` |
+| Maintenance expenses | `E(t) · l(t)` |
+| Shareholder transfers | `ST(t) · l(t)` plus `CB_fb/9` on claims |
 
 ---
 
@@ -372,15 +401,18 @@ All dynamic formulas are **[std]** — no public UK with-profits lapse experienc
 retrieved; the shapes are rationalized from the product's incentive structure, and
 dynamic option-exercise modeling is a regulatory expectation for the BEL [R7].
 
-- **Base surrender**: UWP bond 5% p.a. flat; CWP 5%/4%/3%/2%+ (class (c) table).
+- **Base surrender**: UWP bond 5% p.a. flat; CWP 5%/4%/3%/2%+ (class (c) table). The
+  table is keyed by the contractual **policy year**, the 1-based label, so period `t`
+  reads row `t + 1` and periods past the table take its last row.
 - **MVR deterrent**: `w(t) = w_base(t) · 0.6` while `MVR(t) > 0` **[std]** — an
   active MVR penalizes exit, and firms may consider exit volumes in setting MVRs
   within the COBS bound [R1 COBS 20.2.16AR](#uklib-with_profits-r1).
-- **Guarantee-date spike**: `w(t) = w_base(t) · 2.5` in a guarantee-date year
+- **Guarantee-date spike**: `w(t) = w_base(t) · 2.5` in a period that ends on a
+  guarantee date — period `k − 1` for the anniversary `k`
   **[std]** — MVR-free encashment is rationally exercised when `FV(t) > AS(t)`
   (guarantee in the money); apply the multiplier only in that state.
-- **Guarantee-imminent suppression**: `w(t) = w_base(t) · 0.8` in the year before a
-  guarantee date **[std]** (waiting for the MVR-free window).
+- **Guarantee-imminent suppression**: `w(t) = w_base(t) · 0.8` in the period before a
+  guarantee-date period **[std]** (waiting for the MVR-free window).
 - **Withdrawal utilisation**: withdrawing bond cells take the full 5%
   MVR-free/tax-deferred allowance; utilisation 30% of policies **[std]**
   (allowance context [S10] [REG-R15]).
@@ -394,28 +426,31 @@ dynamic option-exercise modeling is a regulatory expectation for the BEL [R7].
 ## Worked example
 
 Anchor UWP bond cell (product-spec (14)): £25,000 single premium; `U = 25,000`
-units at `Q(0) = £1.0000`; five declarations at 2.00% give
-`Q(5) = 1.02^5 = 1.104081`, `FV(5) = £27,602.02`. Worked-example state **[std]**:
-`AS(5) = £30,000.00`, `S(5) = £29,500.00`. Year-6 parameters: `c_amc = 1.00%`,
+units at a seed price of `£1.0000`; five declarations, one at the end of each of the
+periods 0 to 4, give `Q(4) = 1.02^5 = 1.104081`, `FV(4) = £27,602.02`. The cell is in
+force at duration 5, so it is projected from `t = 5` — its sixth policy year — and
+`AS(4)`, `S(4)`, `Q(4)` are the balances that period **opens** with.
+Worked-example state **[std]**: `AS(4) = £30,000.00`, `S(4) = £29,500.00`.
+Parameters for `t = 5`: `c_amc = 1.00%`,
 `c_g = 0.10%`, `q(60) = 0.005` (illustrative of the class (c) proxy **[std]**),
-`g_db = 1.01`, `σ = 10%`. No premium, no withdrawals in year 6. Two return
+`g_db = 1.01`, `σ = 10%`. No premium, no withdrawals in that period. Two return
 scenarios **[std]**: A: `r = +7.0%`; B: `r = −15.0%` (declared bonus cut to 1.00%,
 the maximum normal reduction [S1] [S7]).
 
 | Step | Quantity | Scenario A (r = +7.0%) | Scenario B (r = −15.0%) |
 |---|---|---|---|
-| 0 | `AS(5)` / `FV(5)` | 30,000.00 / 27,602.02 | 30,000.00 / 27,602.02 |
+| 0 | Opening `AS(4)` / `FV(4)` | 30,000.00 / 27,602.02 | 30,000.00 / 27,602.02 |
 | 3 | After fund return: `30,000 · (1+r)` | 32,100.00 | 25,500.00 |
 | 4 | After charges `× (1 − 0.011)` | 31,746.90 | 25,219.50 |
-| 5 | Declared bonus `b(6)` | 2.00% | 1.00% |
-| 5 | `Q(6)`; `FV(6) = 25,000 · Q(6)` | 1.126162; 28,154.06 | 1.115122; 27,878.04 |
-| 5 | Cost of bonus `CB = b(6) · FV(5)` | 552.04 | 276.02 |
+| 5 | Declared bonus `b(5)` | 2.00% | 1.00% |
+| 5 | `Q(5)`; `FV(5) = 25,000 · Q(5)` | 1.126162; 28,154.06 | 1.115122; 27,878.04 |
+| 5 | Cost of bonus `CB = b(5) · FV(4)` | 552.04 | 276.02 |
 | 5 | Shareholder transfer `ST = CB/9` | 61.34 | 30.67 |
 | 5 | Asset share after `ST` | 31,685.56 | 25,188.83 |
-| 6 | `MC = q · max(0, 1.01·FV(6) − AS)` | 0.00 | 0.005 × 2,967.99 = 14.84 |
-| 6 | **`AS(6)`** | **31,685.56** | **25,173.99** |
+| 6 | `MC = q · max(0, 1.01·FV(5) − AS)` | 0.00 | 0.005 × 2,967.99 = 14.84 |
+| 6 | **`AS(5)`** | **31,685.56** | **25,173.99** |
 | 7 | `S_cap`: clamp(AS, 0.9·29,500, 1.1·29,500) | 31,685.56 (within) | 26,550.00 (floor binds) |
-| 7 | `S(6)`: corridor clamp to [0.8, 1.2]·AS | 31,685.56 | 26,550.00 (within corridor) |
+| 7 | `S(5)`: corridor clamp to [0.8, 1.2]·AS | 31,685.56 | 26,550.00 (within corridor) |
 | 7 | Final bonus `FB = max(0, S − FV)` | 3,531.50 | 0.00 |
 | 7 | `MVR = min(max(0, FV−S), max(0, FV−AS))` | 0.00 | min(1,328.04, 2,704.05) = 1,328.04 |
 | 8 | Guarantee-date payout `FV + FB` (no MVR) | 31,685.56 | 27,878.04 (guarantee bites) |
@@ -423,17 +458,23 @@ the maximum normal reduction [S1] [S7]).
 | 8 | Death payout `1.01 · (FV + FB)` | 32,002.42 | 28,156.82 |
 | 8 | Smoothing/guarantee cost on exit (payout − AS): guarantee-date / surrender | 0.00 / 0.00 | 2,704.05 / 1,376.01 |
 
+The Step column is the processing-order step, not the time index: every row of the
+table is period `t = 5`, and the numbers are the row `result_cf()` and
+`result_payout()` publish at `t = 5`.
+
 Checks: scenario B surrender pays exactly the smoothed target (−10.0% y/y, the [S1]
 cap); the MVR (1,328.04) is below the COBS bound `FV − AS = 2,704.05` [R1]; the
 guarantee-date exit pays full face value with the 2,704.05 excess over asset share
 borne by the estate's guarantee/smoothing account [S1] [S4]. On the scenario A
 guarantee-date claim an additional shareholder transfer of `FB/9 = 392.39` accrues at
-payment (90:10 on the final bonus, ST section). Scenario A pays 100.0% of `AS(6)`;
-scenario B's surrender pays 105.5% of `AS(6)` — both within the 80–120% corridor
+payment (90:10 on the final bonus, ST section). Scenario A pays 100.0% of `AS(5)`;
+scenario B's surrender pays 105.5% of `AS(5)` — both within the 80–120% corridor
 [S1] [R1].
 
-CWP maturity illustration (one line): at `n = 25`, `G(25) = 20,000 · 1.015^25 =
-£29,018.91`; with smoothed maturity target `S(25) = £34,000.00` **[std]**,
+CWP maturity illustration (one line): the twenty-five declarations of a 25-year
+endowment close at the end of period `n − 1 = 24`, where
+`G(24) = 20,000 · 1.015^25 = £29,018.91`; with smoothed maturity target
+`S(24) = £34,000.00` **[std]**,
 `TB = 34,000.00 − 29,018.91 = £4,981.09` — 14.7% of the payout in non-guaranteed
 form, consistent with the substantial-final-bonus philosophy [S1]; the associated
 shareholder transfer at payment is `TB/9 = £553.45` **[std]** measurement.

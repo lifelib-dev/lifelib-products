@@ -117,7 +117,12 @@ def mort_table():
 
 
 def lapse_table():
-    """The lapse rates by policy year, read from *lapse_table.csv*."""
+    """The lapse rates by policy year, read from *lapse_table.csv*.
+
+    ``policy_year`` is the **contractual 1-based** label, 1 to 4, not the model's 0-based
+    time index: ``Projection.lapse_rate_base`` reads it through
+    ``Projection.policy_year(t) = t + 1``.
+    """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_file, index_col="policy_year")           # noqa: F821
 
@@ -141,6 +146,10 @@ def benefit_schedule():
     a French standalone temporaire décès does not amortize.  The table exists so that a
     decreasing shape can be dropped in without a formula change; no source in the corpus
     gives one, so none is shipped.
+
+    ``policy_year`` is the **contractual 1-based** label, 1 to 57, not the model's 0-based
+    time index: ``Projection.benefit_factor`` reads it through
+    ``Projection.policy_year(t) = t + 1``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / benefit_schedule_file,                         # noqa: F821

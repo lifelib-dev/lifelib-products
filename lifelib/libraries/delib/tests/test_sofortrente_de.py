@@ -12,7 +12,8 @@ tariff *Rechnungszins* of 1,00 %, the *Höchstrechnungszins* in force for 2025 b
 *Überschussverwendung* **teildynamisch**, so the *Überschussrente* opens at a tenth of the
 *garantierte Rente* and steps up 1 % at each policy anniversary; the guaranteed annuity
 **derived by equivalence** rather than given; and one policy in force from ``t = 0``.
-``proj_len() = 671``, so the notes' table is a slice of a 672-month projection rather than
+``proj_len() = 672``, the frame's exclusive end, so the notes' table is a slice of a
+672-month projection ``t = 0 ... 671`` rather than
 the whole of it, and every row it prints is asserted here with the totals at full
 precision.
 
@@ -88,7 +89,7 @@ DERIVED = {
     "annuity_surp_pp_0": 36.2665824168,
     "annuity_pp_0": 398.9324065852,
     "first_pay_mth": 0, "guar_end_mth": 120,
-    "t_start": 0, "proj_len": 671, "rows": 672,
+    "t_start": 0, "proj_len": 672, "rows": 672,
 }
 
 # t: (pols_if, premiums, annuity_payments, claims_guarantee, claims_refund,
@@ -286,7 +287,8 @@ def test_the_derived_quantities(de_sofort_anchor):
     assert (p.t_start(), p.proj_len(), len(df)) == (
         DERIVED["t_start"], DERIVED["proj_len"], DERIVED["rows"])
     assert list(df.index) == list(range(0, 672)) and df.index.name == "t"
-    assert df.index[-1] == p.proj_len()
+    assert df.index[-1] == p.proj_len() - 1
+    assert len(df) == p.proj_len() - p.t_start()
     assert p.horizon_mths(1) == 12 * (p.omega_age - 65) == 672
     # The notes' first independent check: one division, from the printed factor.  The
     # model builds ä by summing 672 discounted survival-weighted payment months; a reader
@@ -373,12 +375,12 @@ def test_the_decrements_close(de_sofort_anchor):
     """
     p = de_sofort_anchor
     n = p.proj_len()
-    deaths = sum(p.lives_death(t, 1) for t in range(0, n + 1))
+    deaths = sum(p.lives_death(t, 1) for t in range(0, n))
     assert deaths == pytest.approx(1.0, abs=1e-12)
-    assert p.lives_if(n + 1, 1) == 0.0
-    assert deaths + p.lives_if(n + 1, 1) == pytest.approx(p.lives_if(0, 1), abs=1e-12)
+    assert p.lives_if(n, 1) == 0.0
+    assert deaths + p.lives_if(n, 1) == pytest.approx(p.lives_if(0, 1), abs=1e-12)
     assert p.check_lives_roll_fwd() is True
-    zero_at = min(t for t in range(0, n + 2) if p.lives_if(t, 1) == 0.0)
+    zero_at = min(t for t in range(0, n + 1) if p.lives_if(t, 1) == 0.0)
     assert zero_at <= p.horizon_mths(1)
     assert p.mort_rate_at_age(120, "M", "SECOND") == 1.0
 
@@ -638,7 +640,7 @@ def test_pitfall_3_the_certain_floor_is_a_max_and_not_a_sum(sofortrente,
     assert joint.payment_factor(239) == 1.0
     for q in (p, joint):
         assert max(q.payment_factor(t)
-                   for t in range(0, q.proj_len() + 1)) <= 1.0 + q.surv_pct()
+                   for t in range(0, q.proj_len())) <= 1.0 + q.surv_pct()
         assert q.check_guarantee_certain() is True
 
 
@@ -684,7 +686,7 @@ def test_pitfall_5_the_refund_is_solved_not_evaluated(sofortrente):
     v = 1.0 / (1.0 + p.tariff_int_rate())
     per, fp, sp = p.pay_period_mths(), p.first_pay_mth(), p.single_prem()
     pv_at_r_max = 0.0
-    for t in range(0, p.proj_len() + 1):
+    for t in range(0, p.proj_len()):
         d = p.tariff_lives(t, 1) - p.tariff_lives(t + 1, 1)
         if d <= 0.0:
             continue
@@ -802,7 +804,7 @@ def test_pitfall_8_a_period_proxy_would_be_a_different_model(de_sofort_anchor):
     assert p.mort_rate_gen(65, "M", 1960, "SECOND") == pytest.approx(
         p.mort_rate_at_age(65, "M", "SECOND"), rel=1e-15)     # 1960 + 65 == 2025
     v, lives, factor = 1.0 / 1.01, 1.0, 0.0
-    for k in range(0, p.proj_len() + 1):
+    for k in range(0, p.proj_len()):
         if p.is_payment_mth(k):
             factor += v ** (k / 12.0) * max(p.certain_floor(k), lives)
         q = min(p.mort_rate_at_age(p.age(k, 1), "U", "FIRST"), 1.0)
@@ -915,14 +917,14 @@ def test_pitfall_13_the_arrears_offset_and_the_instalment_count(sofortrente,
     assert not arr.is_payment_mth(0) and arr.is_payment_mth(1)
     assert arr.annuity_payments(0) == 0.0 and arr.claims(0, "GUARANTEE") == 0.0
     assert arr.annuity_payments(1) > 0.0
-    counted = [sum(1 for t in range(0, q.proj_len() + 1)
+    counted = [sum(1 for t in range(0, q.proj_len())
                    if q.is_payment_mth(t) and q.certain_floor(t) == 1.0)
                for q in (de_sofort_anchor, arr)]
     assert counted == [120, 120]
     assert arr.guar_end_mth() - arr.first_pay_mth() == 12 * arr.guar_years()
     for point_id in (7, 8, 11):
         q = sofortrente.Projection[point_id]
-        n = sum(1 for t in range(0, q.proj_len() + 1)
+        n = sum(1 for t in range(0, q.proj_len())
                 if q.is_payment_mth(t) and q.certain_floor(t) == 1.0)
         assert n == q.guar_years() * q.payment_freq(), point_id
         assert q.pay_period_mths() == 12 // q.payment_freq()
@@ -955,8 +957,8 @@ def test_pitfall_15_the_total_annuity_ratchets(sofortrente, de_sofort_anchor):
     simply does not rise."""
     p = de_sofort_anchor
     n = p.proj_len()
-    assert all(p.annuity_pp(t) >= p.annuity_pp(t - 1) for t in range(1, n + 1))
-    assert p.annuity_pp(n) > p.annuity_pp(0)
+    assert all(p.annuity_pp(t) >= p.annuity_pp(t - 1) for t in range(1, n))
+    assert p.annuity_pp(n - 1) > p.annuity_pp(0)
     assert p.check_annuity_roll_fwd() is True
     konstant = sofortrente.Projection[10]
     assert konstant.surplus_form() == "konstant"
@@ -1016,8 +1018,8 @@ def test_pitfall_17_no_lapse_no_surrender_no_paid_up_anywhere(sofortrente,
     assert joint.check_lives_roll_fwd() is True
     for life in (1, 2):
         n = joint.proj_len()
-        deaths = sum(joint.lives_death(t, life) for t in range(0, n + 1))
-        assert deaths + joint.lives_if(n + 1, life) == pytest.approx(
+        deaths = sum(joint.lives_death(t, life) for t in range(0, n))
+        assert deaths + joint.lives_if(n, life) == pytest.approx(
             joint.lives_if(0, life), abs=1e-12), life
 
 
@@ -1029,17 +1031,17 @@ def test_pitfall_18_proj_len_takes_the_second_lifes_horizon(sofortrente):
     assert p.surv_pct() == 0.60
     assert p.entry_age(1) == 65 and p.entry_age(2) == 62
     assert p.horizon_mths(1) == 672 and p.horizon_mths(2) == 708
-    assert p.proj_len() == 12 * (p.omega_age - p.entry_age(2)) - 1 == 707
-    assert p.proj_len() > p.horizon_mths(1) - 1
+    assert p.proj_len() == 12 * (p.omega_age - p.entry_age(2)) == 708
+    assert p.proj_len() > p.horizon_mths(1)
     assert len(p.result_cf()) == 708 and p.result_cf().index[-1] == 707
-    assert math.isfinite(p.annuity_payments(p.proj_len()))
-    assert p.annuity_payments(p.proj_len()) >= 0.0
+    assert math.isfinite(p.annuity_payments(p.proj_len() - 1))
+    assert p.annuity_payments(p.proj_len() - 1) >= 0.0
     assert p.lives_if(672, 1) == 0.0 and p.lives_if(672, 2) > 0.0
     assert any(p.annuity_payments(t, "SURVIVOR") > 0.0 for t in range(600, 700))
     long_guar = sofortrente.Projection[12]
     assert long_guar.guar_years() == 30 and long_guar.guar_end_mth() == 360
-    assert long_guar.proj_len() == max(long_guar.horizon_mths(1) - 1,
-                                       long_guar.guar_end_mth() - 1)
+    assert long_guar.proj_len() == max(long_guar.horizon_mths(1),
+                                       long_guar.guar_end_mth())
 
 
 # Structure, documentation and the shipped inputs

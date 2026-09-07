@@ -125,9 +125,12 @@ def lapse_table():
     """The base voluntary surrender rates by policy year, from *lapse_table.csv*.
 
     Three rows: policy years 1 and 2, then a level tail read for every later year.  The
-    surrender surge at 払込満了 is **not** in this table — it is the model point's
-    ``lapse_spike``, held apart so that it can be switched off and its effect read
-    directly.
+    key column is the **contractual** ``policy_year``, a 1-based label and not the
+    model's 0-based time index: ``Projection.lapse_rate_base(t)`` reads row
+    ``policy_year(t) = t + 1``, so the first projected period, ``t = 0``, takes the
+    ``policy_year = 1`` row.  The surrender surge at 払込満了 is **not** in this table — it
+    is the model point's ``lapse_spike``, held apart so that it can be switched off and
+    its effect read directly.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821

@@ -60,7 +60,7 @@ Real output, elided in the middle — the statement is reproduced in full in
 ```text
 Child_KR_S - eorini boheom (children's insurance), monthly grid, boheom nai
 model point 1: CH-KR-0001 - sex M, taea gaip (written in utero), gyeyak nai 0, birth at policy month 5
-term to boheom nai 100 (t = 1200), premium term 20 years (t = 0 .. 239), monthly
+term to boheom nai 100 (t = 0 .. 1200, 1201 months), premium term 20 years (t = 0 .. 239), monthly
 form: pyojunhyeong (standard surrender value)
 premium: KRW 28,000 core + KRW 3,000 taea module to t = 16, so KRW 31,000 to t = 16 and KRW 28,000 after
 napip myeonje (premium waiver) on: child + gyeyakja (M33, man nai)
@@ -112,14 +112,19 @@ there is acquisition plus maintenance, with the claim handling expense in its ow
 compartments and the two ages side by side — and `result_val()` the account and the surrender
 values. `model.Projection.doc` maps the notes' symbols to cells names and states the age
 basis; `model.Data.doc` says what each input file is and, for the mortality table, what it is
-**not**. The anchor projection is **1,201 rows**, `t = 0` to `t = proj_len() = 1200`: the
+**not**. The time index `t` is the policy month and is **0-based** on the library-wide
+convention: `t = 0` is the first projected month, the policy year containing month `t` is
+`t // 12 + 1`, `proj_len()` is the **number** of projected months, and the frame is
+`t = 0 … proj_len() − 1`. The anchor projection is **1,201 rows**, `t = 0` to
+`t = proj_len() − 1 = 1200`: the
 longest in `krlib`, and the product rather than an artefact of it.
 
 ## The horizon, and eighty years that are paid up
 
-`proj_len()` is `12 × (term_age() − issue_age())`, and on a 태아 contract `issue_age()` is
-zero because 「계약일에 있어서의 피보험자의 계약나이는 0세로 합니다」 [S8 제60조]. So the
-projection runs 1,200 months to the 100세 계약해당일 and the premium runs over the first
+`proj_len()` is `12 × (term_age() − issue_age()) + 1`, and on a 태아 contract `issue_age()`
+is zero because 「계약일에 있어서의 피보험자의 계약나이는 0세로 합니다」 [S8 제60조]. So the
+projection runs 1,200 months to the 100세 계약해당일 — `t = 0 … 1199`, with the 계약해당일
+itself published as the terminal row `t = 1200` — and the premium runs over the first
 240 of them. **Eighty of the hundred years are paid-up**, which is the whole shape of the
 liability: `net_cf(t)` is positive for twenty years and negative for eighty, and the
 undiscounted total on the anchor cell is **−₩13,085,435.00** against premiums of
@@ -647,6 +652,22 @@ surrender-value forms; both waiver modules in both positions; the 면책기간 a
 switches; the broad adult-disease definitions; the 2026 저출산 discount; and all three lapse
 bases. Its ten premiums are **[std]** inputs, not computed quantities — see *Discounting*.
 
+### No input file is keyed by the frame's `t`
+
+Recorded here because the 0-based time-index convention turns on it: **not one of the seven
+CSVs is keyed by the projection's time index**, so none of them carries a column that moves
+with the frame.
+
+| File | Time-like column | Decision |
+|---|---|---|
+| `av_table.csv` | `key`, `curve = build` | **unchanged** — an elapsed **duration in years** (0, 1, 3, …, 60, 70, 100), read through `refund_build(duration_years(t))` with `duration_years(t) = t / 12`. It is already 0-based: duration 0 years is `t = 0`, and the values are continuous keys interpolated between, not row indices |
+| `av_table.csv` | `key`, `curve = taper` | **unchanged** — a **runoff fraction** on `[0, 1]`, read through `refund_taper(runoff(t))` with `runoff(t) = t / (proj_len() − 1)`. Dimensionless; 0 at the 계약일 and 1 on the terminal row, both before and after the redefinition of `proj_len()` |
+| `mort_table.csv` | `age` | **unchanged** — an attained **만나이**, read at `age_man(t)` for the insured and `payer_age() + t // 12` for the 계약자. An age key, not a time key |
+| `incidence_table.csv` | `age` | **unchanged** — an attained **만나이** pivot, read at `min(age_man(t), 100)` |
+| `model_point_table.csv` | `birth_month` | **unchanged** — a point on the frame's own time axis (the policy month of birth, 5 on the anchor cell), and the frame's rows do not move, so the values stand |
+| `model_point_table.csv` | `waiting_mths`, `reduction_mths`, `prem_discount_mths`, `prem_period_years`, `issue_age`, `term_age`, `payer_age` | **unchanged** — elapsed counts and ages, 0-based by nature and compared with `t <` rather than indexed by |
+| `lapse_table.csv`, `basis_table.csv`, `neonatal_table.csv` | none | no time-like column at all |
+
 ## Sign convention
 
 `net_cf` is **income positive** — premiums less benefits, claim handling expense, acquisition
@@ -803,7 +824,8 @@ the model, the `provenance` column with a citation tag on every assumption row, 
 and their required phrases, the age basis declared in the `Projection` docstring and matching
 the registry's `BOHEOM` metadata, the retired-name register, the `result_cf()` contract —
 indexed by `t`, first column `pols_if`, a `net_cf` column, all names `lower_snake_case`, no
-NaN, contiguous, ending at `proj_len()` — the read-once property against
+NaN, contiguous, starting at a non-negative index and ending at `proj_len() − 1` — the
+read-once property against
 `kr_registry.INPUT_FILES`, and the read → write → re-read round trip.
 
 **Thirteen `check_*` cells** carry this product's own identities. Each takes no argument and

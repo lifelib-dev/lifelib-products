@@ -5,7 +5,7 @@ The golden values are the worked example in
 **configuration** rather than a scenario: the classic German *kapitalbildende
 Lebensversicherung* -- the *gemischte Versicherung auf den Todes- und Erlebensfall* -- on a
 male aged 37 last birthday at issue, non-smoker, written in 2026 as new business
-(``duration_init = 0``, so the frame opens at ``t = 1`` on one policy). The
+(``duration_init = 0``, so the frame opens at ``t = 0`` on one policy). The
 *Versicherungsdauer* is 25 years and the *Beitragszahlungsdauer* the same 25, so the
 contract is premium-paying to the *Ablauf*, which falls at attained age **62**, the age the
 income-tax half-income rule requires of a contract concluded after 31 December 2011. The
@@ -15,9 +15,14 @@ equals the guaranteed survival sum. The *Beitrag* is annual and ``unterjaehrig_f
 1.00 %, the *Höchstrechnungszins* for new business from 1 January 2025; the contract is
 *gezillmert* at the 25 permille ceiling; the *Überschussverwendung* is ``ansammlung`` and
 the declared-rate path is ``base``, a *laufende Verzinsung* of 2.70 % held level. There is
-no *Risikozuschlag*, no opening *Überschussguthaben* and no *Beitragsfreistellung*. Because
-``proj_len() = policy_term = 25``, the notes' table is the **entire** projection rather than
-a slice of one, so every one of its twenty-five rows is asserted here.
+no *Risikozuschlag*, no opening *Überschussguthaben* and no *Beitragsfreistellung*.
+
+The time index is **0-based**: ``t = 0`` is the first policy year, ``age(t) =
+issue_age() + t``, ``duration(t) = t`` and the contractual policy year is ``t + 1``.
+``proj_len()`` is the number of policy years counted from ``t = 0`` and so the frame's
+**exclusive** end, so on this cell ``proj_len() = policy_term = 25`` and ``result_cf()``
+covers ``t = 0 ... 24``. The notes' table is therefore the **entire** projection rather than
+a slice of one, and every one of its twenty-five rows is asserted here.
 
 The goldens are hard-coded rather than pickled so a reviewer can compare them against the
 notes by eye. Tolerances follow the precision the notes display: money to the cent,
@@ -74,31 +79,31 @@ INPUT_CSVS = {
 # claims_death, claims_maturity, claims_lapse, expenses, commissions, net_cf).
 # `expenses` excludes commission, so the six flow columns sum to net_cf.
 WORKED_EXAMPLE = {
-    1:  (37, 1.000000, 2004.04,  44.12,     0.00,   35.40, 351.10, 1252.53,    320.89),
-    2:  (38, 0.949145, 1902.13,  45.38,     0.00,  122.81,  49.28,   28.53,   1656.12),
-    3:  (39, 0.900810, 1805.26,  46.77,     0.00,  142.32,  45.90,   27.08,   1543.19),
-    4:  (40, 0.868365, 1740.24,  49.92,     0.00,  197.19,  44.99,   26.10,   1422.03),
-    5:  (41, 0.837014, 1677.41,  52.42,     0.00,  249.34,  44.09,   25.16,   1306.41),
-    6:  (42, 0.806716, 1616.69,  55.14,     0.00,  300.18,  43.20,   24.25,   1193.92),
-    7:  (43, 0.777431, 1558.00,  58.10,     0.00,  342.25,  42.33,   23.37,   1091.95),
-    8:  (44, 0.749121, 1501.27,  61.33,     0.00,  382.22,  41.48,   22.52,    993.72),
-    9:  (45, 0.721747, 1446.41,  64.84,     0.00,  240.09,  39.34,   21.70,   1080.45),
-    10: (46, 0.706081, 1415.02,  69.72,     0.00,  264.69,  39.16,   21.23,   1020.22),
-    11: (47, 0.690646, 1384.08,  75.08,     0.00,  295.92,  38.97,   20.76,    953.35),
-    12: (48, 0.675431, 1353.59,  80.96,     0.00,  960.52,  42.02,   20.30,    249.78),
-    13: (49, 0.633469, 1269.50,  83.86,     0.00,  412.41,  37.39,   19.04,    716.79),
-    14: (50, 0.616105, 1234.70,  90.20,     0.00,  438.14,  37.00,   18.52,    650.84),
-    15: (51, 0.599079, 1200.58,  97.15,     0.00,  463.02,  36.61,   18.01,    585.79),
-    16: (52, 0.582376, 1167.11, 104.74,     0.00,  498.12,  36.22,   17.51,    510.52),
-    17: (53, 0.565979, 1134.25, 113.06,     0.00,  521.74,  35.82,   17.01,    446.62),
-    18: (54, 0.549875, 1101.97, 122.15,     0.00,  544.48,  35.41,   16.53,    383.40),
-    19: (55, 0.534048, 1070.25, 132.10,     0.00,  566.34,  35.00,   16.05,    320.77),
-    20: (56, 0.518483, 1039.06, 142.98,     0.00,  587.30,  34.58,   15.59,    258.62),
-    21: (57, 0.503165, 1008.36, 154.87,     0.00,  607.36,  34.16,   15.13,    196.85),
-    22: (58, 0.488079,  978.13, 167.87,     0.00,  626.50,  33.73,   14.67,    135.37),
-    23: (59, 0.473210,  948.33, 182.06,     0.00,  644.70,  33.29,   14.22,     74.05),
-    24: (60, 0.458543,  918.94, 197.56,     0.00,  661.95,  32.84,   13.78,     12.80),
-    25: (61, 0.444064,  889.92, 214.48, 28750.90,    0.00,  83.95,   13.35, -28172.76),
+    0:  (37, 1.000000, 2004.04,  44.12,     0.00,   35.40, 351.10, 1252.53,    320.89),
+    1:  (38, 0.949145, 1902.13,  45.38,     0.00,  122.81,  49.28,   28.53,   1656.12),
+    2:  (39, 0.900810, 1805.26,  46.77,     0.00,  142.32,  45.90,   27.08,   1543.19),
+    3:  (40, 0.868365, 1740.24,  49.92,     0.00,  197.19,  44.99,   26.10,   1422.03),
+    4:  (41, 0.837014, 1677.41,  52.42,     0.00,  249.34,  44.09,   25.16,   1306.41),
+    5:  (42, 0.806716, 1616.69,  55.14,     0.00,  300.18,  43.20,   24.25,   1193.92),
+    6:  (43, 0.777431, 1558.00,  58.10,     0.00,  342.25,  42.33,   23.37,   1091.95),
+    7:  (44, 0.749121, 1501.27,  61.33,     0.00,  382.22,  41.48,   22.52,    993.72),
+    8:  (45, 0.721747, 1446.41,  64.84,     0.00,  240.09,  39.34,   21.70,   1080.45),
+    9:  (46, 0.706081, 1415.02,  69.72,     0.00,  264.69,  39.16,   21.23,   1020.22),
+    10: (47, 0.690646, 1384.08,  75.08,     0.00,  295.92,  38.97,   20.76,    953.35),
+    11: (48, 0.675431, 1353.59,  80.96,     0.00,  960.52,  42.02,   20.30,    249.78),
+    12: (49, 0.633469, 1269.50,  83.86,     0.00,  412.41,  37.39,   19.04,    716.79),
+    13: (50, 0.616105, 1234.70,  90.20,     0.00,  438.14,  37.00,   18.52,    650.84),
+    14: (51, 0.599079, 1200.58,  97.15,     0.00,  463.02,  36.61,   18.01,    585.79),
+    15: (52, 0.582376, 1167.11, 104.74,     0.00,  498.12,  36.22,   17.51,    510.52),
+    16: (53, 0.565979, 1134.25, 113.06,     0.00,  521.74,  35.82,   17.01,    446.62),
+    17: (54, 0.549875, 1101.97, 122.15,     0.00,  544.48,  35.41,   16.53,    383.40),
+    18: (55, 0.534048, 1070.25, 132.10,     0.00,  566.34,  35.00,   16.05,    320.77),
+    19: (56, 0.518483, 1039.06, 142.98,     0.00,  587.30,  34.58,   15.59,    258.62),
+    20: (57, 0.503165, 1008.36, 154.87,     0.00,  607.36,  34.16,   15.13,    196.85),
+    21: (58, 0.488079,  978.13, 167.87,     0.00,  626.50,  33.73,   14.67,    135.37),
+    22: (59, 0.473210,  948.33, 182.06,     0.00,  644.70,  33.29,   14.22,     74.05),
+    23: (60, 0.458543,  918.94, 197.56,     0.00,  661.95,  32.84,   13.78,     12.80),
+    24: (61, 0.444064,  889.92, 214.48, 28750.90,    0.00,  83.95,   13.35, -28172.76),
 }
 
 # The notes' Total row, summed at full precision and then rounded.
@@ -118,16 +123,16 @@ ROUNDED_CELL_TOTALS = {
 # The notes' state table at the ten durations it prints:
 # t -> (res_pp, surplus_base_pp, surplus_credit_pp, av_sur_pp, term_bonus_pp, surr_value_pp).
 STATE = {
-    1:  (-1252.53,   570.75,   9.70,     0.00,    0.00,   708.73),
-    2:  (  570.75,  2410.10,  40.97,     9.70,    2.28,  2590.38),
-    3:  ( 2410.10,  4265.63,  72.52,    50.94,   11.92,  4518.89),
-    5:  ( 6137.47,  8025.74, 136.44,   232.53,   53.54,  8521.62),
-    10: (15747.00, 17720.63, 301.25,  1321.31,  290.92, 18779.50),
-    12: (19712.27, 21722.40, 369.28,  2038.12,  440.65, 23755.21),
-    15: (25800.39, 27869.68, 473.78,  3450.48,  725.75, 31007.41),
-    20: (36372.42, 38561.55, 655.55,  6811.60, 1367.70, 45521.12),
-    24: (45313.89, 47636.03, 809.81, 10540.47, 2038.44, 58136.33),
-    25: (47636.03, 50000.00, 850.00, 11634.87, 2228.98, 61549.01),
+    0:  (-1252.53,   570.75,   9.70,     0.00,    0.00,   708.73),
+    1:  (  570.75,  2410.10,  40.97,     9.70,    2.28,  2590.38),
+    2:  ( 2410.10,  4265.63,  72.52,    50.94,   11.92,  4518.89),
+    4:  ( 6137.47,  8025.74, 136.44,   232.53,   53.54,  8521.62),
+    9:  (15747.00, 17720.63, 301.25,  1321.31,  290.92, 18779.50),
+    11: (19712.27, 21722.40, 369.28,  2038.12,  440.65, 23755.21),
+    14: (25800.39, 27869.68, 473.78,  3450.48,  725.75, 31007.41),
+    19: (36372.42, 38561.55, 655.55,  6811.60, 1367.70, 45521.12),
+    23: (45313.89, 47636.03, 809.81, 10540.47, 2038.44, 58136.33),
+    24: (47636.03, 50000.00, 850.00, 11634.87, 2228.98, 61549.01),
 }
 
 # The derived tariff of the anchor cell, at the precision the notes print it. The
@@ -147,11 +152,11 @@ CLOSURE = {"deaths": 0.04409376, "lapses": 0.51513070, "maturities": 0.44077554}
 # nothing else: t -> (pols_if, premiums, claims_death, claims_maturity, claims_lapse,
 # expenses, commissions, net_cf).
 EINMALBEITRAG = {
-    1:  (1.000000, 43273.05,  45.49,     0.00, 1816.26, 351.10, 1081.83,  39978.37),
-    2:  (0.949145,     0.00,  47.50,     0.00, 1773.33,  49.28,    0.00,  -1870.11),
-    3:  (0.900810,     0.00,  49.67,     0.00, 1211.85,  45.90,    0.00,  -1307.42),
-    24: (0.458543,     0.00, 244.33,     0.00,  831.06,  32.84,    0.00,  -1108.24),
-    25: (0.444064,     0.00, 265.35, 35570.54,    0.00,  83.95,    0.00, -35919.84),
+    0:  (1.000000, 43273.05,  45.49,     0.00, 1816.26, 351.10, 1081.83,  39978.37),
+    1:  (0.949145,     0.00,  47.50,     0.00, 1773.33,  49.28,    0.00,  -1870.11),
+    2:  (0.900810,     0.00,  49.67,     0.00, 1211.85,  45.90,    0.00,  -1307.42),
+    23: (0.458543,     0.00, 244.33,     0.00,  831.06,  32.84,    0.00,  -1108.24),
+    24: (0.444064,     0.00, 265.35, 35570.54,    0.00,  83.95,    0.00, -35919.84),
 }
 EINMALBEITRAG_TOTALS = {
     "pols_if": 16.648981, "premiums": 43273.05, "claims_death": 2983.43,
@@ -160,7 +165,8 @@ EINMALBEITRAG_TOTALS = {
 }
 
 # The notes' Überschussverwendung comparison: point -> (surplus_use, maturity benefit per
-# policy, death benefit per policy at t = 5, premiums collected, net_cf total).
+# policy, death benefit per policy at t = 4 (the fifth policy year), premiums collected,
+# net_cf total).
 SURPLUS_SYSTEMS = {
     1: ("ansammlung",          65227.99, 50460.89, 33365.26, -11048.31),
     8: ("bonus",               63562.77, 50532.10, 33365.26,  -8987.04),
@@ -201,13 +207,15 @@ def variant_model(tmp_path, name, edits):
 def test_worked_example_row(de_klv_anchor, t):
     """Every cell of the notes' twenty-five-row table, to the displayed precision.
 
-    ``proj_len() = policy_term = 25``, so the table is the whole contract. ``pols_if`` is
-    the count at the **start** of the year and the weight on that same row's cash flows.
+    ``proj_len() = policy_term = 25``, so the frame is ``t = 0 ... 24`` and the table is the
+    whole contract. ``pols_if`` is the count at the **start** of the year and the weight on
+    that same row's cash flows.
     """
     age, pols_if, prem, cd, cm, cl, exp, comm, net = WORKED_EXAMPLE[t]
     p = de_klv_anchor
     assert p.age(t) == age
-    assert p.duration(t) == t - 1
+    assert p.duration(t) == t
+    assert p.policy_year(t) == t + 1
     assert p.pols_if(t) == pytest.approx(pols_if, abs=SIX_DP)
     assert p.premiums(t) == pytest.approx(prem, abs=CENT)
     assert p.claims(t, "DEATH") == pytest.approx(cd, abs=CENT)
@@ -226,7 +234,7 @@ def test_the_worked_example_frame_matches_the_cells(de_klv_anchor):
     renamed or mis-signed on the way into it leaves every cells assertion above passing.
     """
     df = de_klv_anchor.result_cf()
-    assert list(df.index) == list(range(1, 26))
+    assert list(df.index) == list(range(25))
     for t, row in WORKED_EXAMPLE.items():
         assert df.loc[t, "pols_if"] == pytest.approx(row[1], abs=SIX_DP)
         assert df.loc[t, "premiums"] == pytest.approx(row[2], abs=CENT)
@@ -282,19 +290,19 @@ def test_the_state_behind_the_cash_flows(de_klv_anchor, t):
 
 
 def test_the_two_rows_that_carry_the_product(de_klv_anchor):
-    """At t = 1 the reserve is exactly -alpha_cost; at t = 25 the closing reserve is SE.
+    """At t = 0 the reserve is exactly -alpha_cost; at t = 24 the closing reserve is SE.
 
     The first is the arithmetic of *Zillmerung* and the reason § 169 Abs. 3 VVG needs a
     floor at all. The second is what an endowment *is*: the last policy year's
     *Deckungskapital* **is** the *Erlebensfallleistung*.
     """
     p = de_klv_anchor
-    assert p.res_pp(1) == pytest.approx(-p.alpha_cost(), rel=1e-12)
-    assert p.res_pp(1) == pytest.approx(-1252.5263, abs=CENT)
-    assert p.res_net_pp(1) == pytest.approx(0.0, abs=1e-9)  # the equivalence, as a reserve
-    assert p.surplus_base_pp(1) == pytest.approx(570.75, abs=CENT)
-    assert p.res_pp_at(25, "AFT_INT") == pytest.approx(50000.00, abs=CENT)
-    assert p.res_pp(26) == pytest.approx(p.sum_assured(), abs=1e-6)
+    assert p.res_pp(0) == pytest.approx(-p.alpha_cost(), rel=1e-12)
+    assert p.res_pp(0) == pytest.approx(-1252.5263, abs=CENT)
+    assert p.res_net_pp(0) == pytest.approx(0.0, abs=1e-9)  # the equivalence, as a reserve
+    assert p.surplus_base_pp(0) == pytest.approx(570.75, abs=CENT)
+    assert p.res_pp_at(24, "AFT_INT") == pytest.approx(50000.00, abs=CENT)
+    assert p.res_pp(25) == pytest.approx(p.sum_assured(), abs=1e-6)
 
 
 def test_the_derived_tariff(de_klv_anchor):
@@ -328,7 +336,7 @@ def test_the_bruttobeitrag_rebuilt_from_the_equivalence(de_klv_anchor):
     assert p.prem_zill_pp() == pytest.approx(1811.1493 + 1252.5263 / 21.680698, abs=5e-4)
     assert p.prem_zill_pp() - p.prem_net_level_pp() == pytest.approx(57.7715, abs=5e-5)
     assert p.check_equivalence() is True
-    assert p.check_equivalence_resid(1) == pytest.approx(0.0, abs=1e-8)
+    assert p.check_equivalence_resid(0) == pytest.approx(0.0, abs=1e-8)
 
 
 def test_the_first_anniversary_reserve_by_fackler(de_klv_anchor):
@@ -346,8 +354,8 @@ def test_the_first_anniversary_reserve_by_fackler(de_klv_anchor):
     assert rolled == pytest.approx(622.5584, abs=5e-5)
     assert q1 * 50000.0 == pytest.approx(52.4072, abs=5e-5)
     assert (rolled - q1 * 50000.0) / (1.0 - q1) == pytest.approx(570.7495, abs=5e-4)
-    assert p.res_pp(2) == pytest.approx(570.7495, abs=5e-4)
-    assert p.res_pp_at(1, "AFT_INT") == pytest.approx(p.res_pp(2), rel=1e-12)
+    assert p.res_pp(1) == pytest.approx(570.7495, abs=5e-4)
+    assert p.res_pp_at(0, "AFT_INT") == pytest.approx(p.res_pp(1), rel=1e-12)
     assert p.check_res_roll_fwd() is True
 
 
@@ -356,18 +364,19 @@ def test_the_year_two_surplus_credit_and_the_ansammlung_it_builds(de_klv_anchor)
 
     2,70 % declared less a 1,00 % guarantee is 1,70 pp, derived by subtraction and never
     added on top. 0,017 x 2 410,101960 = 40,9717 EUR; the balance then compounds at
-    ``ans_rate`` and the terminal share accrues on the same base.
+    ``ans_rate`` and the terminal share accrues on the same base. Policy year 2 is ``t = 1``
+    on the 0-based frame.
     """
     p = de_klv_anchor
-    assert p.decl_rate(2) == 0.0270 and p.rechnungszins() == 0.0100
-    assert p.zins_ueberschuss_rate(2) == pytest.approx(0.0170, abs=1e-15)
-    assert p.surplus_base_pp(2) == pytest.approx(2410.101960, abs=5e-5)
-    assert p.surplus_credit_pp(2) == pytest.approx(0.017 * 2410.101960, abs=5e-5)
-    assert p.surplus_credit_pp(2) == pytest.approx(40.9717, abs=5e-5)
-    assert p.av_sur_pp(3) == pytest.approx(9.702741 * 1.027 + 40.971733, abs=5e-5)
-    assert p.av_sur_pp(3) == pytest.approx(50.9364, abs=5e-4)
-    assert p.term_bonus_pp(3) == pytest.approx(2.282998 + 0.004 * 2410.101960, abs=5e-5)
-    assert p.term_bonus_pp(3) == pytest.approx(11.9234, abs=5e-4)
+    assert p.decl_rate(1) == 0.0270 and p.rechnungszins() == 0.0100
+    assert p.zins_ueberschuss_rate(1) == pytest.approx(0.0170, abs=1e-15)
+    assert p.surplus_base_pp(1) == pytest.approx(2410.101960, abs=5e-5)
+    assert p.surplus_credit_pp(1) == pytest.approx(0.017 * 2410.101960, abs=5e-5)
+    assert p.surplus_credit_pp(1) == pytest.approx(40.9717, abs=5e-5)
+    assert p.av_sur_pp(2) == pytest.approx(9.702741 * 1.027 + 40.971733, abs=5e-5)
+    assert p.av_sur_pp(2) == pytest.approx(50.9364, abs=5e-4)
+    assert p.term_bonus_pp(2) == pytest.approx(2.282998 + 0.004 * 2410.101960, abs=5e-5)
+    assert p.term_bonus_pp(2) == pytest.approx(11.9234, abs=5e-4)
     assert p.check_surplus_roll_fwd() is True
 
 
@@ -375,56 +384,60 @@ def test_the_year_twelve_surrender_payment_from_its_three_parts(de_klv_anchor):
     """The notes' fourth check: the one row where all three rules bite at once.
 
     Count: 0,675431 in force, less the year's mortality, times the 6,0 % spike at the
-    twelve-year tax threshold. Amount: the § 169 value is the **floor** ``res_min_pp(13)``
+    twelve-year tax threshold. Amount: the § 169 value is the **floor** ``res_min_pp(12)``
     = 22 413,4564 EUR, exceeding the Zillmer reserve by 691,06 EUR; the 5 % *Stornoabzug*
     applies to that and nothing else; the *Überschussguthaben* is added **undeducted**.
+    Policy year 12 is ``t = 11`` on the 0-based frame, and the reserves it reads at its end
+    are those at ``t = 12``.
     """
     p = de_klv_anchor
     count = 0.675431 * (1.0 - 0.00226204) * 0.06
     assert count == pytest.approx(0.04043417, abs=5e-8)   # on the printed pols_if
-    assert p.pols_lapse(12) == pytest.approx(0.04043417, abs=5e-9)
-    assert p.mort_rate(12) == pytest.approx(0.00226204, abs=5e-9)
-    assert p.lapse_rate(12) == 0.06 and p.storno_rate(12) == 0.05
-    assert p.res_min_pp(13) == pytest.approx(22413.4564, abs=CENT)
-    assert p.res_zill_pp(13) == pytest.approx(21722.3990, abs=CENT)
-    assert p.res_min_pp(13) - p.res_zill_pp(13) == pytest.approx(691.06, abs=CENT)
-    assert p.res_guar_pp(12) == pytest.approx(22413.4564, abs=CENT)
+    assert p.pols_lapse(11) == pytest.approx(0.04043417, abs=5e-9)
+    assert p.mort_rate(11) == pytest.approx(0.00226204, abs=5e-9)
+    assert p.lapse_rate(11) == 0.06 and p.storno_rate(11) == 0.05
+    assert p.res_min_pp(12) == pytest.approx(22413.4564, abs=CENT)
+    assert p.res_zill_pp(12) == pytest.approx(21722.3990, abs=CENT)
+    assert p.res_min_pp(12) - p.res_zill_pp(12) == pytest.approx(691.06, abs=CENT)
+    assert p.res_guar_pp(11) == pytest.approx(22413.4564, abs=CENT)
     assert 22413.4564 * 0.95 == pytest.approx(21292.7836, abs=CENT)
-    assert p.av_sur_pp_at(12, "AFT_CREDIT") == pytest.approx(2462.4255, abs=CENT)
-    assert p.surr_value_pp(12) == pytest.approx(21292.7836 + 2462.4255, abs=CENT)
-    assert p.surr_value_pp(12) == pytest.approx(23755.2091, abs=CENT)
-    assert p.claims(12, "LAPSE") == pytest.approx(0.04043417 * 23755.2091, abs=CENT)
-    assert p.claims(12, "LAPSE") == pytest.approx(960.5221, abs=CENT)
+    assert p.av_sur_pp_at(11, "AFT_CREDIT") == pytest.approx(2462.4255, abs=CENT)
+    assert p.surr_value_pp(11) == pytest.approx(21292.7836 + 2462.4255, abs=CENT)
+    assert p.surr_value_pp(11) == pytest.approx(23755.2091, abs=CENT)
+    assert p.claims(11, "LAPSE") == pytest.approx(0.04043417 * 23755.2091, abs=CENT)
+    assert p.claims(11, "LAPSE") == pytest.approx(960.5221, abs=CENT)
 
 
 def test_the_cash_flow_statement_closes_row_by_row(de_klv_anchor):
-    """The notes rebuild net_cf(12) from the six flow columns; check_net_cf() does every t."""
+    """The notes rebuild policy year 12's net_cf from the six flow columns; check_net_cf()
+    does every t. Policy year 12 is ``t = 11`` on the 0-based frame."""
     p = de_klv_anchor
     rebuilt = 1353.591433 - 80.960814 - 0.0 - 960.522126 - 42.019865 - 20.303871
     assert rebuilt == pytest.approx(249.784756, abs=5e-6)
-    assert p.net_cf(12) == pytest.approx(249.784756, abs=5e-6)
+    assert p.net_cf(11) == pytest.approx(249.784756, abs=5e-6)
     assert p.check_net_cf() is True
-    assert all(p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9) for t in range(1, 26))
+    assert all(p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9) for t in range(25))
 
 
 def test_the_decrements_close_three_ways(de_klv_anchor):
     """Deaths, surrenders and maturities sum to exactly the original policy.
 
-    There is no fourth term: the *Ablauf* falls at the end of policy year ``n``, so the
-    survivors of that year's mortality all leave as a maturity and nothing is carried past
-    it. ``check_decrement_closure()`` builds the same sum by direct summation over the exit
-    cells, with no reference to the recursion that produced ``pols_if``.
+    There is no fourth term: the *Ablauf* falls at the end of the last policy year
+    ``t = proj_len() - 1``, so the survivors of that year's mortality all leave as a maturity
+    and nothing is carried past it. ``check_decrement_closure()`` builds the same sum by
+    direct summation over the exit cells, with no reference to the recursion that produced
+    ``pols_if``.
     """
     p = de_klv_anchor
     n = p.proj_len()
-    deaths = sum(p.pols_death(t) for t in range(1, n + 1))
-    lapses = sum(p.pols_lapse(t) for t in range(1, n + 1))
-    maturities = sum(p.pols_maturity(t) for t in range(1, n + 1))
+    deaths = sum(p.pols_death(t) for t in range(n))
+    lapses = sum(p.pols_lapse(t) for t in range(n))
+    maturities = sum(p.pols_maturity(t) for t in range(n))
     assert deaths == pytest.approx(CLOSURE["deaths"], abs=5e-9)
     assert lapses == pytest.approx(CLOSURE["lapses"], abs=5e-9)
     assert maturities == pytest.approx(CLOSURE["maturities"], abs=5e-9)
     assert deaths + lapses + maturities == pytest.approx(1.0, abs=1e-12)
-    assert p.pols_if(n + 1) == pytest.approx(maturities, rel=1e-12)
+    assert p.pols_if(n) == pytest.approx(maturities, rel=1e-12)
     assert p.check_decrement_closure() is True and p.check_pols_roll_fwd() is True
 
 
@@ -459,15 +472,15 @@ def test_the_einmalbeitrag_reverses_the_reserve_ordering(kapitallebensversicheru
     assert p.beitragssumme() == pytest.approx(p.prem_gross_pp(), rel=1e-12)
     assert p.prem_gross_pp() == pytest.approx(43273.05, abs=CENT)
     assert p.alpha_cost() == pytest.approx(1081.83, abs=CENT)
-    assert p.res_zill_pp(2) == pytest.approx(39648.80, abs=CENT)
-    assert p.res_min_pp(2) == pytest.approx(38783.34, abs=CENT)
-    assert p.res_zill_pp(2) > p.res_min_pp(2)
-    assert p.res_guar_pp(1) == pytest.approx(p.res_zill_pp(2), rel=1e-12)
+    assert p.res_zill_pp(1) == pytest.approx(39648.80, abs=CENT)
+    assert p.res_min_pp(1) == pytest.approx(38783.34, abs=CENT)
+    assert p.res_zill_pp(1) > p.res_min_pp(1)
+    assert p.res_guar_pp(0) == pytest.approx(p.res_zill_pp(1), rel=1e-12)
     df = p.result_cf()
     for column, total in EINMALBEITRAG_TOTALS.items():
         tol = SIX_DP if column == "pols_if" else CENT
         assert df[column].sum() == pytest.approx(total, abs=tol), column
-    assert p.benefit_maturity_pp(25) == pytest.approx(80699.89, abs=CENT)
+    assert p.benefit_maturity_pp(24) == pytest.approx(80699.89, abs=CENT)
     assert df["claims_lapse"].sum() > 2.4 * TOTALS["claims_lapse"]
 
 
@@ -477,8 +490,8 @@ def test_the_three_ueberschussverwendung_systems(kapitallebensversicherung, poin
     use, maturity, death5, premiums, net = SURPLUS_SYSTEMS[point_id]
     p = kapitallebensversicherung.Projection[point_id]
     assert p.surplus_use() == use
-    assert p.benefit_maturity_pp(25) == pytest.approx(maturity, abs=CENT)
-    assert p.benefit_death_pp(5) == pytest.approx(death5, abs=CENT)
+    assert p.benefit_maturity_pp(24) == pytest.approx(maturity, abs=CENT)
+    assert p.benefit_death_pp(4) == pytest.approx(death5, abs=CENT)
     df = p.result_cf()
     assert df["premiums"].sum() == pytest.approx(premiums, abs=CENT)
     assert df["net_cf"].sum() == pytest.approx(net, abs=CENT)
@@ -497,18 +510,18 @@ def test_the_interest_surplus_is_derived_by_subtraction(kapitallebensversicherun
     surplus is zero rather than negative.
     """
     p = de_klv_anchor
-    for t in range(1, 26):
+    for t in range(25):
         assert p.zins_ueberschuss_rate(t) == pytest.approx(
             max(0.0, p.decl_rate(t) - p.rechnungszins()), abs=1e-15)
-    assert p.zins_ueberschuss_rate(1) == pytest.approx(0.017, abs=1e-15)
-    assert p.zins_ueberschuss_rate(1) != pytest.approx(0.027, abs=1e-6)
+    assert p.zins_ueberschuss_rate(0) == pytest.approx(0.017, abs=1e-15)
+    assert p.zins_ueberschuss_rate(0) != pytest.approx(0.027, abs=1e-6)
     nil = kapitallebensversicherung.Projection[14]
     assert nil.scenario_id() == "nil"
-    assert nil.decl_rate(1) == 0.0 and nil.rechnungszins() == 0.01
-    assert all(nil.zins_ueberschuss_rate(t) == 0.0 for t in range(1, 13))
-    assert all(nil.surplus_credit_pp(t) == 0.0 for t in range(1, 13))
+    assert nil.decl_rate(0) == 0.0 and nil.rechnungszins() == 0.01
+    assert all(nil.zins_ueberschuss_rate(t) == 0.0 for t in range(12))
+    assert all(nil.surplus_credit_pp(t) == 0.0 for t in range(12))
     assert nil.check_res_roll_fwd() is True
-    assert nil.res_pp(13) == pytest.approx(nil.sum_assured(), abs=1e-6)
+    assert nil.res_pp(12) == pytest.approx(nil.sum_assured(), abs=1e-6)
 
 
 # --- Pitfall 2: the base is the reserve, not the sum insured or the premium ---
@@ -516,21 +529,21 @@ def test_the_interest_surplus_is_derived_by_subtraction(kapitallebensversicherun
 def test_the_surplus_base_is_the_reserve_at_the_allocation_date(de_klv_anchor):
     """A percentage of the *Deckungskapital* calculated at the allocation date.
 
-    The same rate on ``sum_assured`` would credit 850,00 EUR in policy year 1 instead of
-    9,70 EUR, and on the *Bruttobeitrag* 34,07 EUR -- two orders of magnitude apart early
-    and converging only at the *Ablauf*, which is why a wrong base survives a late-duration
-    spot check.
+    The same rate on ``sum_assured`` would credit 850,00 EUR in the first policy year
+    (``t = 0``) instead of 9,70 EUR, and on the *Bruttobeitrag* 34,07 EUR -- two orders of
+    magnitude apart early and converging only at the *Ablauf*, which is why a wrong base
+    survives a late-duration spot check.
     """
     p = de_klv_anchor
-    for t in range(1, 26):
+    for t in range(25):
         assert p.surplus_base_pp(t) == pytest.approx(
             max(p.res_pp_at(t, "AFT_INT"), 0.0), rel=1e-12)
         assert p.surplus_credit_pp(t) == pytest.approx(
             p.zins_ueberschuss_rate(t) * p.surplus_base_pp(t), rel=1e-12)
-    assert p.surplus_credit_pp(1) == pytest.approx(9.7027, abs=5e-5)
-    assert p.zins_ueberschuss_rate(1) * p.sum_assured() == pytest.approx(850.0, abs=CENT)
-    assert p.zins_ueberschuss_rate(1) * p.prem_gross_pp() == pytest.approx(34.07, abs=CENT)
-    assert p.surplus_base_pp(25) == pytest.approx(p.sum_assured(), abs=CENT)
+    assert p.surplus_credit_pp(0) == pytest.approx(9.7027, abs=5e-5)
+    assert p.zins_ueberschuss_rate(0) * p.sum_assured() == pytest.approx(850.0, abs=CENT)
+    assert p.zins_ueberschuss_rate(0) * p.prem_gross_pp() == pytest.approx(34.07, abs=CENT)
+    assert p.surplus_base_pp(24) == pytest.approx(p.sum_assured(), abs=CENT)
 
 
 # --- Pitfall 3: the base is floored at zero ----------------------------------
@@ -539,15 +552,15 @@ def test_the_negative_reserve_guard(de_klv_anchor, tmp_path):
     """A positive rate on a negative base would credit a **negative** surplus.
 
     On the shipped 25 permille basis the guard is **inert**: the base is the *closing*
-    reserve and is already +570,75 EUR in policy year 1 against an opening -1 252,53 EUR, so
-    asserting it on the anchor cell alone would be vacuous. The notes say so, and this test
-    therefore exercises the guard directly on the pre-2015 **40 permille** ceiling, where the
-    closing reserve of year 1 really is negative.
+    reserve and is already +570,75 EUR in the first policy year (``t = 0``) against an
+    opening -1 252,53 EUR, so asserting it on the anchor cell alone would be vacuous. The
+    notes say so, and this test therefore exercises the guard directly on the pre-2015
+    **40 permille** ceiling, where the closing reserve of the first year really is negative.
     """
     p = de_klv_anchor
-    assert all(p.surplus_base_pp(t) >= 0.0 for t in range(1, 26))
-    assert [t for t in range(1, 26) if p.res_pp_at(t, "AFT_INT") < 0.0] == []
-    assert p.res_pp(1) < 0.0 < p.res_pp_at(1, "AFT_INT")
+    assert all(p.surplus_base_pp(t) >= 0.0 for t in range(25))
+    assert [t for t in range(25) if p.res_pp_at(t, "AFT_INT") < 0.0] == []
+    assert p.res_pp(0) < 0.0 < p.res_pp_at(0, "AFT_INT")
     model = variant_model(tmp_path, "KLV_DE_A_zill40", [
         ("cost_table.csv", "std_2026,0.0250,", "std_2026,0.0400,"),
         ("model_point_table.csv",
@@ -556,10 +569,10 @@ def test_the_negative_reserve_guard(de_klv_anchor, tmp_path):
     try:
         q = model.Projection[1]
         assert q.zillmer_max() == 0.040 and q.alpha_rate() == 0.040
-        assert q.res_pp_at(1, "AFT_INT") == pytest.approx(-190.22, abs=CENT)
-        assert q.surplus_base_pp(1) == 0.0 and q.surplus_credit_pp(1) == 0.0
-        assert q.zins_ueberschuss_rate(1) > 0.0    # the rate is positive; the base is not
-        assert [t for t in range(1, 26) if q.res_pp_at(t, "AFT_INT") < 0.0] == [1]
+        assert q.res_pp_at(0, "AFT_INT") == pytest.approx(-190.22, abs=CENT)
+        assert q.surplus_base_pp(0) == 0.0 and q.surplus_credit_pp(0) == 0.0
+        assert q.zins_ueberschuss_rate(0) > 0.0    # the rate is positive; the base is not
+        assert [t for t in range(25) if q.res_pp_at(t, "AFT_INT") < 0.0] == [0]
         assert q.check_res_roll_fwd() is True
         assert q.check_zillmer_cap() is True
         assert q.check_surplus_roll_fwd() is True
@@ -581,20 +594,20 @@ def test_the_product_has_three_reserves_and_the_floor_normally_binds(
     """
     p = de_klv_anchor
     binding = 0
-    for t in range(1, 26):
+    for t in range(25):
         assert p.res_guar_pp(t) >= p.res_zill_pp(t + 1) - 1e-9
         assert p.res_guar_pp(t) >= p.res_min_pp(t + 1) - 1e-9
         assert p.res_guar_pp(t) >= 0.0
         if p.res_min_pp(t + 1) > p.res_zill_pp(t + 1) + 1e-6:
             binding += 1
     assert binding >= 20, "the § 169 floor should bind at almost every duration"
-    assert p.res_min_pp(2) > p.res_zill_pp(2)
-    assert p.res_min_pp(1) == pytest.approx(p.res_zill_pp(1), rel=1e-12)    # duration 0
-    assert p.res_min_pp(26) == pytest.approx(p.res_zill_pp(26), rel=1e-12)  # duration m
+    assert p.res_min_pp(1) > p.res_zill_pp(1)
+    assert p.res_min_pp(0) == pytest.approx(p.res_zill_pp(0), rel=1e-12)    # duration 0
+    assert p.res_min_pp(25) == pytest.approx(p.res_zill_pp(25), rel=1e-12)  # duration m
     assert p.check_surr_floor() is True
     flat = kapitallebensversicherung.Projection[13]
     assert flat.zillmer_on() == 0 and flat.alpha_cost() == 0.0
-    for t in (1, 2, 3, 6, 25, 26):
+    for t in (0, 1, 2, 5, 24, 25):
         assert flat.res_zill_pp(t) == pytest.approx(flat.res_net_pp(t), rel=1e-12)
         assert flat.res_min_pp(t) == pytest.approx(flat.res_net_pp(t), rel=1e-12)
     assert flat.prem_gross_pp() == pytest.approx(p.prem_gross_pp(), rel=1e-12)
@@ -617,11 +630,11 @@ def test_the_zillmer_cap_and_the_surrender_floor_are_asserted_separately(
     assert p.alpha_rate() == 0.025 and p.zillmer_max() == 0.025
     assert p.alpha_cost() == pytest.approx(0.025 * p.beitragssumme(), rel=1e-12)
     assert p.check_zillmer_cap() is True
-    assert p.check_zillmer_cap_resid(1) == pytest.approx(0.0, abs=1e-9)
-    for t in range(1, 27):
+    assert p.check_zillmer_cap_resid(0) == pytest.approx(0.0, abs=1e-9)
+    for t in range(26):
         assert p.res_min_pp(t) == pytest.approx(
-            p.res_net_pp(t) - p.alpha_cost() * max(0.0, 1.0 - (t - 1) / 5.0), rel=1e-12)
-    assert p.res_min_pp(6) == pytest.approx(p.res_net_pp(6), rel=1e-12)   # k = 5
+            p.res_net_pp(t) - p.alpha_cost() * max(0.0, 1.0 - t / 5.0), rel=1e-12)
+    assert p.res_min_pp(5) == pytest.approx(p.res_net_pp(5), rel=1e-12)   # k = 5
     assert p.check_surr_floor() is True
     inforce = kapitallebensversicherung.Projection[10]
     assert inforce.issue_year() == 2012 and inforce.alpha_rate() == 0.025
@@ -636,20 +649,20 @@ def test_the_stornoabzug_spares_the_ueberschussguthaben(de_klv_anchor):
 
     So the accumulated *Überschussguthaben* passes through **undeducted**: the surrender
     value less that balance is exactly the deducted guaranteed value. Taking the deduction on
-    the whole payment would cost 123,12 EUR in year 12. ``term_surr_share = 0``, so the
-    accrued terminal share is not paid on surrender at all.
+    the whole payment would cost 123,12 EUR in policy year 12 (``t = 11``).
+    ``term_surr_share = 0``, so the accrued terminal share is not paid on surrender at all.
     """
     p = de_klv_anchor
-    for t in range(1, 26):
+    for t in range(25):
         assert p.surr_value_pp(t) - p.av_sur_pp_at(t, "AFT_CREDIT") == pytest.approx(
             p.res_guar_pp(t) * (1.0 - p.storno_rate(t)), rel=1e-12)
-    assert p.storno_rate(1) == 0.10 and p.storno_rate(12) == 0.05
-    assert p.storno_rate(20) == 0.025
-    whole = (p.res_guar_pp(12) + p.av_sur_pp_at(12, "AFT_CREDIT")) * (1.0 - 0.05)
-    assert p.surr_value_pp(12) - whole == pytest.approx(0.05 * 2462.4255, abs=CENT)
-    assert p.surr_value_pp(12) > whole and p.term_bonus_pp(13) > 0.0
-    assert p.surr_value_pp(12) == pytest.approx(
-        p.res_guar_pp(12) * 0.95 + p.av_sur_pp_at(12, "AFT_CREDIT"), rel=1e-12)
+    assert p.storno_rate(0) == 0.10 and p.storno_rate(11) == 0.05
+    assert p.storno_rate(19) == 0.025
+    whole = (p.res_guar_pp(11) + p.av_sur_pp_at(11, "AFT_CREDIT")) * (1.0 - 0.05)
+    assert p.surr_value_pp(11) - whole == pytest.approx(0.05 * 2462.4255, abs=CENT)
+    assert p.surr_value_pp(11) > whole and p.term_bonus_pp(12) > 0.0
+    assert p.surr_value_pp(11) == pytest.approx(
+        p.res_guar_pp(11) * 0.95 + p.av_sur_pp_at(11, "AFT_CREDIT"), rel=1e-12)
 
 
 # --- Pitfall 7: § 161 VVG substitutes, it does not forfeit --------------------
@@ -659,20 +672,21 @@ def test_a_suicide_inside_three_years_is_paid_the_rueckkaufswert(de_klv_anchor):
 
     A benefit **substitution**, not a forfeiture -- materially unlike art. L. 132-7 of the
     French code, where the cover is of no effect in the first year and there is no surrender
-    value to fall back on. In policy year 1 the substituted amount is only 708,73 EUR against
-    a full benefit of 50 011,99 EUR, so the effect is visible in the numbers.
+    value to fall back on. In the first policy year (``t = 0``) the substituted amount is only
+    708,73 EUR against a full benefit of 50 011,99 EUR, so the effect is visible in the
+    numbers. The window is policy years 1 to 3, which is ``t = 0, 1, 2``.
     """
     p = de_klv_anchor
     assert p.suicide_share == 0.02
-    for t in (1, 2, 3):
+    for t in (0, 1, 2):
         assert p.benefit_death_pp(t) == pytest.approx(
             0.98 * p.benefit_full_pp(t) + 0.02 * p.surr_value_pp(t), rel=1e-12)
-    for t in (4, 5, 12, 25):
+    for t in (3, 4, 11, 24):
         assert p.benefit_death_pp(t) == pytest.approx(p.benefit_full_pp(t), rel=1e-12)
-    assert p.benefit_full_pp(1) == pytest.approx(50011.99, abs=CENT)
-    assert p.surr_value_pp(1) == pytest.approx(708.73, abs=CENT)
-    assert p.benefit_death_pp(1) == pytest.approx(49025.92, abs=CENT)
-    assert 0.9 * p.sum_assured() < p.benefit_death_pp(1) < p.benefit_full_pp(1)
+    assert p.benefit_full_pp(0) == pytest.approx(50011.99, abs=CENT)
+    assert p.surr_value_pp(0) == pytest.approx(708.73, abs=CENT)
+    assert p.benefit_death_pp(0) == pytest.approx(49025.92, abs=CENT)
+    assert 0.9 * p.sum_assured() < p.benefit_death_pp(0) < p.benefit_full_pp(0)
 
 
 # --- Pitfall 8: Beitragsfreistellung is tested, and can fail ------------------
@@ -687,34 +701,38 @@ def test_beitragsfreistellung_succeeds_on_one_point_and_fails_on_another(
     roll-forward still close in the election year. Model point 12 elects at the end of year 3
     on a 6 000 EUR contract, buys only 897,49 EUR against a 2 500 EUR minimum, and the
     projection terminates there with a ``claims_lapse`` payment and nothing after it.
+
+    ``bfz_year`` is the **contractual, 1-based** policy year, so an election at the end of
+    policy year ``k`` falls at the end of period ``k - 1`` and the contract is paid-up from
+    period ``k`` onwards.
     """
     ok = kapitallebensversicherung.Projection[11]
     assert ok.bfz_year() == 10
     assert ok.bfz_si_pp() == pytest.approx(21403.08, abs=CENT)
     assert ok.bfz_si_pp() >= kapitallebensversicherung.Projection.bfz_min_si
-    assert ok.is_paid_up(10) is False and ok.is_paid_up(11) is True
-    assert ok.prem_paid_pp(10) == pytest.approx(2004.0420, abs=CENT)
-    assert all(ok.prem_paid_pp(t) == 0.0 for t in range(11, 26))
+    assert ok.is_paid_up(9) is False and ok.is_paid_up(10) is True
+    assert ok.prem_paid_pp(9) == pytest.approx(2004.0420, abs=CENT)
+    assert all(ok.prem_paid_pp(t) == 0.0 for t in range(10, 25))
     df_ok = ok.result_cf()
-    assert list(df_ok.index) == list(range(1, 26))
-    assert df_ok.loc[25, "claims_maturity"] > 0.0
-    assert ok.benefit_maturity_pp(25) == pytest.approx(31621.11, abs=CENT)
-    assert ok.bfz_si_pp() * ok.pu_single_prem(11) == pytest.approx(
-        ok.res_guar_pp(10), rel=1e-12)
-    assert ok.bfz_uplift_pp(10) == pytest.approx(779.31, abs=CENT)
+    assert list(df_ok.index) == list(range(25))
+    assert df_ok.loc[24, "claims_maturity"] > 0.0
+    assert ok.benefit_maturity_pp(24) == pytest.approx(31621.11, abs=CENT)
+    assert ok.bfz_si_pp() * ok.pu_single_prem(10) == pytest.approx(
+        ok.res_guar_pp(9), rel=1e-12)
+    assert ok.bfz_uplift_pp(9) == pytest.approx(779.31, abs=CENT)
     assert ok.check_res_roll_fwd() is True
 
     failed = kapitallebensversicherung.Projection[12]
     assert failed.bfz_year() == 3 and failed.sum_assured() == 6000.0
     assert failed.bfz_si_pp() == pytest.approx(897.49, abs=CENT)
     assert failed.bfz_si_pp() < kapitallebensversicherung.Projection.bfz_min_si
-    assert failed.is_paid_up(4) is False and failed.lapse_rate(3) == 1.0
+    assert failed.is_paid_up(3) is False and failed.lapse_rate(2) == 1.0
     df_bad = failed.result_cf()
-    assert df_bad.loc[3, "claims_lapse"] == pytest.approx(634.72, abs=CENT)
-    assert df_bad.loc[3, "claims_lapse"] == pytest.approx(
-        failed.pols_lapse(3) * failed.surr_value_pp(3), rel=1e-12)
-    assert (df_bad.loc[4:, "net_cf"] == 0.0).all()
-    assert (df_bad.loc[4:, "pols_if"] == 0.0).all()
+    assert df_bad.loc[2, "claims_lapse"] == pytest.approx(634.72, abs=CENT)
+    assert df_bad.loc[2, "claims_lapse"] == pytest.approx(
+        failed.pols_lapse(2) * failed.surr_value_pp(2), rel=1e-12)
+    assert (df_bad.loc[3:, "net_cf"] == 0.0).all()
+    assert (df_bad.loc[3:, "pols_if"] == 0.0).all()
     assert df_bad["claims_maturity"].sum() == 0.0
     assert failed.check_decrement_closure() is True
 
@@ -731,13 +749,13 @@ def test_a_paid_up_policy_is_not_removed_from_the_in_force(kapitallebensversiche
     """
     ok = kapitallebensversicherung.Projection[11]
     p = de_klv_anchor
-    for t in range(1, 27):
+    for t in range(26):
         assert ok.pols_if(t) == p.pols_if(t), t
-    assert ok.pols_lapse(11) > 0.0        # surrenders continue on a paid-up contract
-    assert ok.pols_maturity(25) == pytest.approx(p.pols_maturity(25), rel=1e-12)
+    assert ok.pols_lapse(10) > 0.0        # surrenders continue on a paid-up contract
+    assert ok.pols_maturity(24) == pytest.approx(p.pols_maturity(24), rel=1e-12)
     assert ok.result_cf()["premiums"].sum() < p.result_cf()["premiums"].sum()
-    assert ok.benefit_maturity_pp(25) < p.benefit_maturity_pp(25)
-    assert ok.benefit_full_pp(12) < p.benefit_full_pp(12)
+    assert ok.benefit_maturity_pp(24) < p.benefit_maturity_pp(24)
+    assert ok.benefit_full_pp(11) < p.benefit_full_pp(11)
     assert ok.check_pols_roll_fwd() is True and ok.check_decrement_closure() is True
 
 
@@ -750,6 +768,10 @@ def test_the_lapse_decrement_is_std_and_not_the_gdv_stornoquote(de_klv_anchor):
     the same year. Every rate in ``lapse_table.csv`` is therefore [std] and the file says so
     on every row; only the *shape* -- suppressed approaching duration 12 and spiking at it,
     on the twelve-year income-tax threshold -- is what the evidence supports.
+
+    The file's key column is the **contractual, 1-based** ``policy_year`` and is left that
+    way; the model reads it through ``policy_year(t) = t + 1``, which is what the pairing
+    below asserts.
     """
     p = de_klv_anchor
     table = pd.read_csv(PRODUCT_DIR / "lapse_table.csv", index_col="policy_year")
@@ -757,12 +779,14 @@ def test_the_lapse_decrement_is_std_and_not_the_gdv_stornoquote(de_klv_anchor):
     assert all(prov.lstrip().startswith("[std]") for prov in table["provenance"])
     assert not any("2.72" in prov or "2,72" in prov for prov in table["provenance"])
     assert all("[R20]" in prov for prov in table["provenance"])
-    for t, rate in ((1, 0.05), (2, 0.05), (3, 0.035), (8, 0.035), (9, 0.02),
-                    (11, 0.02), (12, 0.06), (13, 0.025), (24, 0.025)):
-        assert float(table.loc[t, "lapse_rate"]) == rate, t
-        assert p.lapse_rate(t) == rate, t
-    assert p.lapse_rate(12) > 2.0 * p.lapse_rate(11)
-    assert p.lapse_rate(11) < p.lapse_rate(1) and p.lapse_rate(13) < p.lapse_rate(12)
+    assert list(table.index[:3]) == [1, 2, 3]      # the label is 1-based, not the frame's t
+    for year, rate in ((1, 0.05), (2, 0.05), (3, 0.035), (8, 0.035), (9, 0.02),
+                       (11, 0.02), (12, 0.06), (13, 0.025), (24, 0.025)):
+        assert float(table.loc[year, "lapse_rate"]) == rate, year
+        assert p.policy_year(year - 1) == year
+        assert p.lapse_rate(year - 1) == rate, year
+    assert p.lapse_rate(11) > 2.0 * p.lapse_rate(10)
+    assert p.lapse_rate(10) < p.lapse_rate(0) and p.lapse_rate(12) < p.lapse_rate(11)
 
 
 # --- Pitfall 11: the premium-cessation rule is applied once -------------------
@@ -771,16 +795,16 @@ def test_the_premium_cessation_rule_is_applied_once(de_klv_anchor):
     """*Beiträge* are in advance and decrements at the year end, so a decedent has paid.
 
     Multiplying ``premiums(t)`` by ``(1 - q)`` as well applies the rule twice and understates
-    income by about one year's mortality -- 1,80 EUR in year 1, and more at the older
-    attained ages where the anchor cell spends most of its life.
+    income by about one year's mortality -- 1,80 EUR in the first policy year (``t = 0``),
+    and more at the older attained ages where the anchor cell spends most of its life.
     """
     p = de_klv_anchor
-    for t in (1, 5, 12, 25):
+    for t in (0, 4, 11, 24):
         assert p.premiums(t) == pytest.approx(p.prem_paid_pp(t) * p.pols_if(t), rel=1e-12)
-    twice = p.prem_paid_pp(1) * p.pols_if(1) * (1.0 - p.mort_rate(1))
-    assert p.premiums(1) - twice == pytest.approx(2004.0420 * 0.0009, abs=CENT)
-    assert p.premiums(1) - twice == pytest.approx(1.80, abs=CENT)
-    assert p.prem_charged_pp(25) > 0.0
+    twice = p.prem_paid_pp(0) * p.pols_if(0) * (1.0 - p.mort_rate(0))
+    assert p.premiums(0) - twice == pytest.approx(2004.0420 * 0.0009, abs=CENT)
+    assert p.premiums(0) - twice == pytest.approx(1.80, abs=CENT)
+    assert p.prem_charged_pp(24) > 0.0
 
 
 def test_an_abgekuerzte_beitragszahlungsdauer_stops_the_premium_and_not_the_cover(
@@ -789,14 +813,15 @@ def test_an_abgekuerzte_beitragszahlungsdauer_stops_the_premium_and_not_the_cove
 
     Once the premium stops ``ann_due_prem_fut`` is zero and the reserve rolls forward on
     interest and mortality alone -- which is what ``check_res_roll_fwd()`` is testing when it
-    credits ``prem_zill_pp`` only while ``t <= prem_term``.
+    credits ``prem_zill_pp`` only while ``t < prem_term``: the fifteen premiums fall in
+    ``t = 0 ... 14``.
     """
     p = kapitallebensversicherung.Projection[3]
     assert p.prem_term() == 15 and p.policy_term() == 25 and p.proj_len() == 25
-    assert p.prem_charged_pp(15) > 0.0 and p.prem_charged_pp(16) == 0.0
-    assert p.ann_due_prem_fut(16) == 0.0
-    assert p.scenario_id() == "low" and p.decl_rate(1) == 0.012
-    assert p.zins_ueberschuss_rate(1) == pytest.approx(0.002, abs=1e-15)
+    assert p.prem_charged_pp(14) > 0.0 and p.prem_charged_pp(15) == 0.0
+    assert p.ann_due_prem_fut(15) == 0.0
+    assert p.scenario_id() == "low" and p.decl_rate(0) == 0.012
+    assert p.zins_ueberschuss_rate(0) == pytest.approx(0.002, abs=1e-15)
     assert p.result_cf()["premiums"].sum() == pytest.approx(36089.52, abs=CENT)
     assert p.check_res_roll_fwd() is True and p.check_net_cf() is True
 
@@ -817,7 +842,7 @@ def test_the_risikozuschlag_reaches_the_price_and_not_the_benefit(
     assert rated.rating_factor() == 1.5 and rated.smoker() == "S"
     assert rated.prem_gross_pp() == pytest.approx(2611.4527, abs=5e-4)
     assert rated.pv_death_1st() == pytest.approx(2495.0595, abs=5e-4)
-    assert rated.benefit_full_pp(5) == pytest.approx(rated.sum_death(), rel=1e-12)
+    assert rated.benefit_full_pp(4) == pytest.approx(rated.sum_death(), rel=1e-12)
     model = variant_model(tmp_path, "KLV_DE_A_rate100", [
         ("model_point_table.csv", ",ansammlung,nil,1.5,", ",ansammlung,nil,1.0,")])
     try:
@@ -828,12 +853,12 @@ def test_the_risikozuschlag_reaches_the_price_and_not_the_benefit(
         assert rated.pv_death_1st() == pytest.approx(1.5 * std.pv_death_1st(), rel=1e-12)
         assert rated.pv_maturity_1st() == pytest.approx(std.pv_maturity_1st(), rel=1e-12)
         assert rated.tpx_1st(12) == pytest.approx(std.tpx_1st(12), rel=1e-12)
-        assert rated.mort_rate(1) == pytest.approx(std.mort_rate(1), rel=1e-15)
-        assert rated.pols_death(1) == pytest.approx(std.pols_death(1), rel=1e-15)
-        assert rated.benefit_full_pp(5) == pytest.approx(std.benefit_full_pp(5), rel=1e-12)
-        assert rated.claims(5, "DEATH") == pytest.approx(std.claims(5, "DEATH"), rel=1e-12)
-        assert rated.claims(1, "DEATH") != pytest.approx(std.claims(1, "DEATH"), rel=1e-9)
-        assert rated.benefit_full_pp(1) == pytest.approx(std.benefit_full_pp(1), rel=1e-12)
+        assert rated.mort_rate(0) == pytest.approx(std.mort_rate(0), rel=1e-15)
+        assert rated.pols_death(0) == pytest.approx(std.pols_death(0), rel=1e-15)
+        assert rated.benefit_full_pp(4) == pytest.approx(std.benefit_full_pp(4), rel=1e-12)
+        assert rated.claims(4, "DEATH") == pytest.approx(std.claims(4, "DEATH"), rel=1e-12)
+        assert rated.claims(0, "DEATH") != pytest.approx(std.claims(0, "DEATH"), rel=1e-9)
+        assert rated.benefit_full_pp(0) == pytest.approx(std.benefit_full_pp(0), rel=1e-12)
         assert rated.check_res_roll_fwd() is True and std.check_res_roll_fwd() is True
     finally:
         model.close()
@@ -883,23 +908,23 @@ def test_the_two_mortality_bases_are_not_crossed(kapitallebensversicherung, de_k
     """
     p = de_klv_anchor
     assert kapitallebensversicherung.Projection.mort_be_factor == 0.75
-    for t in (1, 5, 12, 25):
+    for t in (0, 4, 11, 24):
         assert p.mort_rate(t) == pytest.approx(p.mort_rate_base(t) * 0.75, rel=1e-12)
-    assert p.mort_rate_base(1) == pytest.approx(0.001200, abs=5e-13)
-    assert p.mort_rate(1) == pytest.approx(0.000900, abs=5e-13)
-    assert p.mort_rate(1) < p.mort_rate_at_age(37) < p.mort_rate_base(1)
-    reserves = [p.res_pp(t) for t in (1, 5, 12, 25)]
-    premium, deaths = p.prem_gross_pp(), p.pols_death(5)
+    assert p.mort_rate_base(0) == pytest.approx(0.001200, abs=5e-13)
+    assert p.mort_rate(0) == pytest.approx(0.000900, abs=5e-13)
+    assert p.mort_rate(0) < p.mort_rate_at_age(37) < p.mort_rate_base(0)
+    reserves = [p.res_pp(t) for t in (0, 4, 11, 24)]
+    premium, deaths = p.prem_gross_pp(), p.pols_death(4)
     model = mx.read_model(MODEL_DIR, name="KLV_DE_A_be90")
     try:
         model.Projection.mort_be_factor = 0.90
         model.Projection.clear_all()
         q = model.Projection[1]
-        assert q.mort_rate(1) == pytest.approx(0.001200 * 0.90, rel=1e-12)
-        assert [q.res_pp(t) for t in (1, 5, 12, 25)] == reserves
+        assert q.mort_rate(0) == pytest.approx(0.001200 * 0.90, rel=1e-12)
+        assert [q.res_pp(t) for t in (0, 4, 11, 24)] == reserves
         assert q.prem_gross_pp() == premium
         assert q.mort_rate_at_age(37) == p.mort_rate_at_age(37)
-        assert q.pols_death(5) > deaths
+        assert q.pols_death(4) > deaths
         assert q.result_cf()["claims_death"].sum() > TOTALS["claims_death"]
         assert q.check_res_roll_fwd() is True
     finally:
@@ -922,17 +947,17 @@ def test_the_ansammlung_pays_more_at_maturity_and_the_bonus_more_on_death(
     ans = de_klv_anchor
     bonus = kapitallebensversicherung.Projection[8]
     assert ans.surplus_use() == "ansammlung" and bonus.surplus_use() == "bonus"
-    assert ans.ans_rate(1) == 0.027 and ans.rechnungszins() == 0.01
+    assert ans.ans_rate(0) == 0.027 and ans.rechnungszins() == 0.01
     assert bonus.prem_gross_pp() == pytest.approx(ans.prem_gross_pp(), rel=1e-12)
-    for t in (1, 5, 12, 25):
+    for t in (0, 4, 11, 24):
         assert bonus.surplus_credit_pp(t) == pytest.approx(
             ans.surplus_credit_pp(t), rel=1e-12)
-    assert ans.benefit_maturity_pp(25) - bonus.benefit_maturity_pp(25) == pytest.approx(
+    assert ans.benefit_maturity_pp(24) - bonus.benefit_maturity_pp(24) == pytest.approx(
         1665.22, abs=CENT)
-    assert bonus.benefit_death_pp(5) - ans.benefit_death_pp(5) == pytest.approx(
+    assert bonus.benefit_death_pp(4) - ans.benefit_death_pp(4) == pytest.approx(
         71.21, abs=CENT)
-    assert bonus.av_sur_pp(26) == 0.0 and ans.av_sur_pp(26) > 0.0
-    assert bonus.bonus_si_pp(26) > 0.0 and ans.bonus_si_pp(26) == 0.0
+    assert bonus.av_sur_pp(25) == 0.0 and ans.av_sur_pp(25) > 0.0
+    assert bonus.bonus_si_pp(25) > 0.0 and ans.bonus_si_pp(25) == 0.0
     assert bonus.check_surplus_roll_fwd() is True
 
 
@@ -951,17 +976,17 @@ def test_the_zahlbeitrag_is_not_guaranteed_under_beitragsverrechnung(
     bv = kapitallebensversicherung.Projection[9]
     p = de_klv_anchor
     assert bv.surplus_use() == "beitragsverrechnung"
-    assert bv.prem_offset_pp(1) == 0.0        # there is no previous year to carry
-    for t in range(2, 26):
+    assert bv.prem_offset_pp(0) == 0.0        # there is no previous year to carry
+    for t in range(1, 25):
         assert bv.prem_offset_pp(t) == pytest.approx(
             min(bv.prem_charged_pp(t), bv.surplus_credit_pp(t - 1)), rel=1e-12)
         assert bv.prem_paid_pp(t) < bv.prem_charged_pp(t)
         assert bv.prem_charged_pp(t) == pytest.approx(p.prem_charged_pp(t), rel=1e-12)
-    assert bv.prem_offset_pp(5) == pytest.approx(104.3370, abs=5e-4)
-    assert bv.prem_paid_pp(5) == pytest.approx(1899.7051, abs=5e-4)
-    assert bv.commissions(5) == pytest.approx(
-        0.015 * bv.prem_charged_pp(5) * bv.pols_if(5), rel=1e-12)
-    assert bv.commissions(5) > 0.015 * bv.prem_paid_pp(5) * bv.pols_if(5)
+    assert bv.prem_offset_pp(4) == pytest.approx(104.3370, abs=5e-4)
+    assert bv.prem_paid_pp(4) == pytest.approx(1899.7051, abs=5e-4)
+    assert bv.commissions(4) == pytest.approx(
+        0.015 * bv.prem_charged_pp(4) * bv.pols_if(4), rel=1e-12)
+    assert bv.commissions(4) > 0.015 * bv.prem_paid_pp(4) * bv.pols_if(4)
     assert bv.result_cf()["commissions"].sum() == pytest.approx(
         TOTALS["commissions"], abs=CENT)
     model = variant_model(tmp_path, "KLV_DE_A_bv_nil", [
@@ -970,8 +995,8 @@ def test_the_zahlbeitrag_is_not_guaranteed_under_beitragsverrechnung(
     try:
         nil = model.Projection[9]
         assert nil.scenario_id() == "nil"
-        assert all(nil.prem_offset_pp(t) == 0.0 for t in range(1, 26))
-        assert all(nil.prem_paid_pp(t) == nil.prem_charged_pp(t) for t in range(1, 26))
+        assert all(nil.prem_offset_pp(t) == 0.0 for t in range(25))
+        assert all(nil.prem_paid_pp(t) == nil.prem_charged_pp(t) for t in range(25))
         assert nil.result_cf()["premiums"].sum() > bv.result_cf()["premiums"].sum()
         assert nil.check_surplus_roll_fwd() is True
     finally:
@@ -986,7 +1011,7 @@ def test_the_tariff_is_unisex_while_the_decrement_is_not(kapitallebensversicheru
 
     Model points 1 and 7 differ in ``sex`` (and in payment frequency) and both price at
     2 004,0420 EUR before the *Ratenzahlungszuschlag*. What ``sex`` does reach is the
-    **decrement**: 0,000672 against 0,000900 in year 1. Pricing off the policy's own row
+    **decrement**: 0,000672 against 0,000900 in the first policy year. Pricing off the policy's own row
     instead of the fixed unisex blend is silent, and it moved this premium by 9,15 EUR when
     the model was first written that way.
     """
@@ -995,11 +1020,11 @@ def test_the_tariff_is_unisex_while_the_decrement_is_not(kapitallebensversicheru
     assert female.prem_gross_pp() == male.prem_gross_pp()
     assert female.prem_gross_pp() == pytest.approx(2004.0420, abs=5e-4)
     assert female.pv_death_1st() == pytest.approx(male.pv_death_1st(), rel=1e-15)
-    assert female.res_pp(5) == pytest.approx(male.res_pp(5), rel=1e-15)
-    assert female.res_guar_pp(5) == pytest.approx(male.res_guar_pp(5), rel=1e-15)
-    assert female.mort_rate(1) == pytest.approx(0.00067221637875, abs=5e-13)
-    assert male.mort_rate(1) == pytest.approx(0.000900, abs=5e-13)
-    assert female.pols_if(10) > male.pols_if(10)
+    assert female.res_pp(4) == pytest.approx(male.res_pp(4), rel=1e-15)
+    assert female.res_guar_pp(4) == pytest.approx(male.res_guar_pp(4), rel=1e-15)
+    assert female.mort_rate(0) == pytest.approx(0.00067221637875, abs=5e-13)
+    assert male.mort_rate(0) == pytest.approx(0.000900, abs=5e-13)
+    assert female.pols_if(9) > male.pols_if(9)
     assert female.result_cf()["claims_death"].sum() < TOTALS["claims_death"]
     blend = kapitallebensversicherung.Data.mort_table()
     expected = 0.5 * float(blend.loc[("M", 37), "mort_rate_1st"]) + 0.5 * float(
@@ -1012,10 +1037,11 @@ def test_the_tariff_is_unisex_while_the_decrement_is_not(kapitallebensversicheru
 
 def test_nothing_runs_past_the_ablauf_and_the_last_year_has_no_surrender(
         kapitallebensversicherung, de_klv_anchor):
-    """``proj_len() = policy_term`` and there is no ``t = proj_len() + 1`` row.
+    """``proj_len() = policy_term`` is the frame's **exclusive** end: the last row is
+    ``t = proj_len() - 1`` and there is no ``t = proj_len()`` row.
 
-    ``lapse_rate(n) = 0`` [std], so the survivors of the final year's mortality all leave as
-    a maturity -- and unlike a term product the two exits do **not** pay the same thing, a
+    ``lapse_rate`` is 0 in that last year [std], so the survivors of its mortality all leave
+    as a maturity -- and unlike a term product the two exits do **not** pay the same thing, a
     surrender paying the § 169 value and a maturity the sum insured plus the whole
     accumulated surplus: 61 549,01 EUR against 65 227,99 EUR. A real payment decision, not a
     bookkeeping split.
@@ -1023,21 +1049,23 @@ def test_nothing_runs_past_the_ablauf_and_the_last_year_has_no_surrender(
     p = de_klv_anchor
     n = p.proj_len()
     assert n == p.policy_term() == 25
+    last = n - 1
     df = p.result_cf()
-    assert list(df.index) == list(range(1, 26))
-    assert df.index.name == "t" and df.index[-1] == n
-    assert p.lapse_rate(n) == 0.0 and p.lapse_rate(n - 1) == 0.025
-    assert p.pols_lapse(n) == 0.0 and df.loc[n, "claims_lapse"] == 0.0
-    assert p.pols_maturity(n) == pytest.approx(
-        p.pols_if(n) * (1.0 - p.mort_rate(n)), rel=1e-12)
-    assert p.pols_maturity(n) == pytest.approx(p.pols_if_at(n, "AFT_MORT"), rel=1e-12)
-    assert p.pols_if(n + 1) == pytest.approx(p.pols_maturity(n), rel=1e-12)
-    assert p.pols_if(n + 2) == 0.0
-    assert p.surr_value_pp(n) == pytest.approx(61549.01, abs=CENT)
-    assert p.benefit_maturity_pp(n) == pytest.approx(65227.99, abs=CENT)
-    assert p.benefit_maturity_pp(n) > p.surr_value_pp(n)
-    assert p.benefit_maturity_pp(n - 1) == 0.0
-    assert p.check_decrement_closure_resid(n) == pytest.approx(0.0, abs=1e-12)
+    assert list(df.index) == list(range(25))
+    assert df.index.name == "t" and df.index[-1] == last
+    assert p.lapse_rate(last) == 0.0 and p.lapse_rate(last - 1) == 0.025
+    assert p.pols_lapse(last) == 0.0 and df.loc[last, "claims_lapse"] == 0.0
+    assert p.pols_maturity(last) == pytest.approx(
+        p.pols_if(last) * (1.0 - p.mort_rate(last)), rel=1e-12)
+    assert p.pols_maturity(last) == pytest.approx(
+        p.pols_if_at(last, "AFT_MORT"), rel=1e-12)
+    assert p.pols_if(n) == pytest.approx(p.pols_maturity(last), rel=1e-12)
+    assert p.pols_if(n + 1) == 0.0
+    assert p.surr_value_pp(last) == pytest.approx(61549.01, abs=CENT)
+    assert p.benefit_maturity_pp(last) == pytest.approx(65227.99, abs=CENT)
+    assert p.benefit_maturity_pp(last) > p.surr_value_pp(last)
+    assert p.benefit_maturity_pp(last - 1) == 0.0
+    assert p.check_decrement_closure_resid(last) == pytest.approx(0.0, abs=1e-12)
     names = set(kapitallebensversicherung.Projection.cells) | set(
         kapitallebensversicherung.Projection.refs)
     for absent in ("pols_expiry", "renewal_rate", "conv_rate", "claims_surr",
@@ -1068,7 +1096,7 @@ def test_every_check_closes_on_the_anchor_cell(kapitallebensversicherung, de_klv
         value = getattr(p, name)()
         assert isinstance(value, bool) and value is True, name
         assert cells[name + "_resid"].parameters == ("t",), name
-        for t in (1, 12, 25):
+        for t in (0, 11, 24):
             assert getattr(p, name + "_resid")(t) == pytest.approx(0.0, abs=1e-8), (name, t)
 
 
@@ -1081,7 +1109,7 @@ def test_the_reserve_roll_forward_is_the_strongest_check(de_klv_anchor):
     premium still credited after the *Beitragszahlungsdauer* has ended.
     """
     p = de_klv_anchor
-    for t in (1, 2, 12, 24, 25):
+    for t in (0, 1, 11, 23, 24):
         q1 = p.mort_rate_at_age(p.age(t))
         left = (p.res_pp(t) + p.prem_zill_pp()) * (1.0 + p.rechnungszins())
         right = q1 * p.sum_death() + (1.0 - q1) * p.res_pp(t + 1)
@@ -1120,21 +1148,22 @@ def test_the_deckrv_cohort_ceilings_are_parameter_invariants(kapitallebensversic
 def test_the_in_force_point_opens_where_it_should(kapitallebensversicherung):
     """Model point 10 is a 2012 cohort valued at duration 14, with an opening balance.
 
-    The frame opens at ``t_start() = 15``, ``pols_if`` opens at ``pols_if_init()`` exactly,
-    and neither the acquisition expense nor the initial commission is charged: both were
-    incurred at conclusion. Expense inflation is nevertheless measured from **issue**, so the
-    maintenance expense opens already inflated.
+    The frame opens at ``t_start() = duration_init() = 14`` -- an elapsed count, already
+    0-based -- ``pols_if`` opens at ``pols_if_init()`` exactly, and neither the acquisition
+    expense nor the initial commission is charged: both were incurred at conclusion. Expense
+    inflation is nevertheless measured from **issue**, so the maintenance expense opens
+    already inflated by fourteen years.
     """
     p = kapitallebensversicherung.Projection[10]
-    assert p.duration_init() == 14 and p.t_start() == 15 and p.proj_len() == 30
+    assert p.duration_init() == 14 and p.t_start() == 14 and p.proj_len() == 30
     df = p.result_cf()
-    assert list(df.index) == list(range(15, 31))
+    assert list(df.index) == list(range(14, 30))
     assert df["pols_if"].iloc[0] == p.pols_if_init() == 1.0
-    assert p.av_sur_pp(15) == p.av_sur_pp_init() == 6000.0
-    assert p.commissions(15) == 0.0 and p.commissions(16) > 0.0
-    assert p.expenses_pp(15) == pytest.approx(45.0 * 1.018 ** 14, rel=1e-12)
-    assert p.inflation_factor(15) == pytest.approx(1.018 ** 14, rel=1e-12)
-    assert p.expenses(15) == pytest.approx(61.22, abs=CENT)
+    assert p.av_sur_pp(14) == p.av_sur_pp_init() == 6000.0
+    assert p.commissions(14) == 0.0 and p.commissions(15) > 0.0
+    assert p.expenses_pp(14) == pytest.approx(45.0 * 1.018 ** 14, rel=1e-12)
+    assert p.inflation_factor(14) == pytest.approx(1.018 ** 14, rel=1e-12)
+    assert p.expenses(14) == pytest.approx(61.22, abs=CENT)
     assert df["net_cf"].sum() == pytest.approx(-41078.88, abs=CENT)
     for name in ("check_net_cf", "check_pols_roll_fwd", "check_res_roll_fwd",
                  "check_surplus_roll_fwd", "check_decrement_closure"):
@@ -1157,8 +1186,8 @@ def test_the_frequency_loading_applies_to_an_unechte_zahlweise_only(
     assert unecht.unterjaehrig_form() == "unecht" and echt.unterjaehrig_form() == "echt"
     assert unecht.prem_freq_load() == 1.05 and echt.prem_freq_load() == 1.0
     assert unecht.prem_gross_pp() == pytest.approx(echt.prem_gross_pp(), rel=1e-15)
-    assert unecht.prem_charged_pp(1) == pytest.approx(
-        1.05 * echt.prem_charged_pp(1), rel=1e-12)
+    assert unecht.prem_charged_pp(0) == pytest.approx(
+        1.05 * echt.prem_charged_pp(0), rel=1e-12)
     assert unecht.result_cf()["premiums"].sum() == pytest.approx(35033.52, abs=CENT)
     assert echt.result_cf()["premiums"].sum() == pytest.approx(TOTALS["premiums"], abs=CENT)
     # The loading is a premium-income assumption and touches nothing else.
@@ -1191,24 +1220,25 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_klv_anchor):
     outgo = (df["claims_death"] + df["claims_maturity"] + df["claims_lapse"]
              + df["expenses"] + df["commissions"])
     assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(0.0, abs=1e-9)
-    assert (df["commissions"] > df["expenses"]).sum() == 1     # year one only
-    # Year one very nearly washes; the strain of a gezillmert endowment is in the reserve.
+    assert (df["commissions"] > df["expenses"]).sum() == 1     # t = 0 only
+    # The first year very nearly washes; the strain of a gezillmert endowment is in the
+    # reserve.
     assert df["net_cf"].iloc[0] == pytest.approx(320.89, abs=CENT)
     assert (df["net_cf"].iloc[:-1] > 0).all()
     assert df["net_cf"].iloc[-1] == pytest.approx(-28172.76, abs=CENT)
-    assert de_klv_anchor.res_pp(1) == pytest.approx(-1252.53, abs=CENT)
+    assert de_klv_anchor.res_pp(0) == pytest.approx(-1252.53, abs=CENT)
 
 
 def test_invalid_enum_values_raise(de_klv_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        de_klv_anchor.claims(1, "SURRENDER")
+        de_klv_anchor.claims(0, "SURRENDER")
     with pytest.raises(FormulaError):
-        de_klv_anchor.res_pp_at(1, "AFTER_PREMIUM")
+        de_klv_anchor.res_pp_at(0, "AFTER_PREMIUM")
     with pytest.raises(FormulaError):
-        de_klv_anchor.av_sur_pp_at(1, "AFTER_INTEREST")
+        de_klv_anchor.av_sur_pp_at(0, "AFTER_INTEREST")
     with pytest.raises(FormulaError):
-        de_klv_anchor.pols_if_at(1, "AFTER_LAPSE")
+        de_klv_anchor.pols_if_at(0, "AFTER_LAPSE")
 
 
 def test_docstrings_describe_the_current_structure(kapitallebensversicherung):
@@ -1224,8 +1254,10 @@ def test_docstrings_describe_the_current_structure(kapitallebensversicherung):
     assert "Notes symbol" in proj
     for cells in ("proj_len", "model_point", "res_pp", "res_guar_pp", "surr_value_pp",
                   "av_sur_pp_at", "bfz_si_pp", "zins_ueberschuss_rate", "storno_rate",
-                  "mort_rate_at_age", "liability_cf"):
+                  "mort_rate_at_age", "liability_cf", "policy_year"):
         assert cells in proj, cells
+    # The time index is 0-based and the contractual policy year is derived from it.
+    assert "0-based" in proj and "policy_year(t) = t + 1" in proj
     data = kapitallebensversicherung.Data.doc
     assert "TradLife_A" in data
     assert "0.001200" in data                     # the mortality proxy's anchor
@@ -1239,7 +1271,7 @@ def test_docstrings_describe_the_current_structure(kapitallebensversicherung):
 def test_the_endowment_chassis_vocabulary_is_present(kapitallebensversicherung):
     """Names the other Überschussbeteiligung products inherit must mean the same here."""
     shared = {
-        "model_point", "proj_len", "t_start", "age", "duration",
+        "model_point", "proj_len", "t_start", "age", "duration", "policy_year",
         "pols_if", "pols_if_at", "pols_if_init", "pols_death", "pols_lapse",
         "pols_maturity", "mort_rate", "mort_rate_base", "mort_rate_at_age",
         "lapse_rate", "storno_rate", "prem_gross_pp", "prem_net_level_pp",
@@ -1323,11 +1355,11 @@ def test_the_behaviour_modules_are_off_and_reachable(kapitallebensversicherung,
     assert proj.roll_fwd_tol == 1e-10
     p = de_klv_anchor
     # bwr_rate off: no Bewertungsreserven share leaks into the maturity benefit.
-    assert p.benefit_maturity_pp(25) == pytest.approx(
-        p.sum_assured() + p.av_sur_pp(26) + p.bonus_si_pp(26) + p.term_bonus_pp(26), rel=1e-12)
+    assert p.benefit_maturity_pp(24) == pytest.approx(
+        p.sum_assured() + p.av_sur_pp(25) + p.bonus_si_pp(25) + p.term_bonus_pp(25), rel=1e-12)
     # term_surr_share off: the accrued terminal share is not paid on surrender.
-    assert p.surr_value_pp(24) == pytest.approx(
-        p.res_guar_pp(24) * (1.0 - p.storno_rate(24)) + p.av_sur_pp_at(24, "AFT_CREDIT"),
+    assert p.surr_value_pp(23) == pytest.approx(
+        p.res_guar_pp(23) * (1.0 - p.storno_rate(23)) + p.av_sur_pp_at(23, "AFT_CREDIT"),
         rel=1e-12)
 
 
@@ -1344,8 +1376,8 @@ def test_the_bewertungsreserven_switch_is_reachable():
         model.Projection.bwr_rate = 0.02
         model.Projection.clear_all()
         p = model.Projection[1]
-        assert p.benefit_maturity_pp(25) == pytest.approx(
-            65227.99 + 0.02 * p.res_guar_pp(25), abs=CENT)
+        assert p.benefit_maturity_pp(24) == pytest.approx(
+            65227.99 + 0.02 * p.res_guar_pp(24), abs=CENT)
         assert p.result_cf()["claims_maturity"].sum() > TOTALS["claims_maturity"]
         assert p.check_net_cf() is True
         # It touches the maturity benefit and nothing else.
@@ -1377,7 +1409,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
             model.Data.clear_all()
             model.Projection.clear_all()
             swapped = model.Projection[1]
-            assert swapped.mort_rate_base(1) == pytest.approx(0.0006, abs=5e-13)
+            assert swapped.mort_rate_base(0) == pytest.approx(0.0006, abs=5e-13)
             assert swapped.result_cf()["claims_death"].sum() < base
             assert swapped.prem_gross_pp() != pytest.approx(
                 TARIFF["prem_gross_pp"], abs=5e-4)

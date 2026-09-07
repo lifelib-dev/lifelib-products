@@ -53,7 +53,10 @@ prose. Amounts are in Korean won; because Korean documents quote in 만원 (10,0
   자동전환하여 공시이율로 운용합니다」 [S6].
 - **Projection frequency: monthly**, 0-based. `t = 0` is the month containing the 계약일 and
   the first 기본보험료; row `t` of `result_cf()` carries month `t`. `proj_len()` is the
-  **last row index and not a row count**: the anchor cell has 960 rows, 0 … 959.
+  **number of projected months and not the last row index**: the frame is
+  `t = 0 … proj_len() − 1`, so the anchor cell has `proj_len()` = 960 rows, 0 … 959.
+  Policy year is the contractual 1-based label derived from `t`: `policy_year(t)` =
+  ⌊t/12⌋ + 1, so the first policy year is `t = 0 … 11`.
 - **The monthly grid is itself a [std] standardization, and a consequential one.** The
   계약자적립액 is contractually a **daily** 좌수 (*jwasu*, unit count) × 기준가격
   (*gijun gagyeok*, unit price) ledger quoted per 1,000좌 [S7 제43조], valued every business
@@ -126,8 +129,8 @@ model point **1**, the illustration point three independent carriers publish
 
 Derived on the anchor: `prem_ann_pp()` = ₩3,600,000, `prem_total_pp()` = **₩36,000,000
 (3,600만원)**, `t_ann()` = **240**, `defer_years()` = 20, `bond_floor()` = **0.50** (the
->12년 rung), `proj_len()` = **959** (attained 보험나이 119, terminal age `omega_age` = 120
-**[std]**).
+>12년 rung), `proj_len()` = **960** months, so the last row is `t` = 959 (attained
+보험나이 119, terminal age `omega_age` = 120 **[std]**).
 
 ### The ten shipped model points
 
@@ -326,7 +329,7 @@ than hidden.
 | Symbol | Cells | Meaning |
 |---|---|---|
 | t | (index of `result_cf`) | projection month, 0-based; row t carries month t |
-| N | `proj_len()` | last month index; rows run 0 … N |
+| N | `proj_len()` | number of projected months; rows run 0 … N − 1 |
 | x | `age_at_entry()` | 가입나이, **보험나이** |
 | x + ⌊t/12⌋ | `age(t)` | attained **보험나이** in month t |
 | y | `policy_year(t)` | policy year containing month t, = ⌊t/12⌋ + 1 |
@@ -624,7 +627,7 @@ so that the roll-forward closes. **A 종신연금형 pays nothing at the horizon
 `claims_maturity` is structurally zero at every t; the column exists so that the truncation
 at `omega_age` is visible rather than absorbed into the last row's decrements.
 
-### Processing order (month t = 0 … N)
+### Processing order (month t = 0 … N − 1)
 
 The order is not presentational: five of the flows depend on it, and two of the `check_*`
 identities exist only because it is fixed.
@@ -841,7 +844,7 @@ Derived, at the precision the model produces:
 pay_months()                                 120
 t_ann()                                      240
 defer_years()                                 20
-proj_len()                                   959      rows 0 ... 959; (120 − 40) x 12 − 1
+proj_len()                                   960      rows 0 ... 959; (120 − 40) x 12
 prem_ann_pp()                          3,600,000.00
 prem_total_pp()                       36,000,000.00   (3,600만원)
 loading_rate()                                 0.0867
@@ -1675,12 +1678,13 @@ eight `check_*()` cells.
     annuitant basis through the deferral understates the GMDB cost; using the insurance
     basis in the payout understates the annuity.
     *Test:* both values on point 1, and `mort_rate_at_age(60) != ann_mort_rate_at_age(60)`.
-15. **Reading `proj_len()` as a row count.** It is the **last row index**. The anchor has
-    **960** rows, 0 … 959, and `(120 − 40) × 12 − 1 = 959`. An off-by-one drops the horizon
-    month, in which `pols_maturity` carries out the survivors and the in-force roll-forward
-    closes.
-    *Test:* `len(result_cf()) == proj_len() + 1` on every model point, and
-    `check_pols_roll_fwd()`.
+15. **Reading `proj_len()` as the last row index.** It is the **number of projected
+    months**, the frame's exclusive end: the frame is `range(proj_len())` and the last row
+    is `proj_len() − 1`. The anchor has **960** rows, 0 … 959, and `(120 − 40) × 12 = 960`.
+    An off-by-one either drops the horizon month, in which `pols_maturity` carries out the
+    survivors and the in-force roll-forward closes, or adds a phantom row past it.
+    *Test:* `len(result_cf()) == proj_len()` and `result_cf().index[-1] == proj_len() − 1`
+    on every model point, and `check_pols_roll_fwd()`.
 16. **Reversing the decrement order, or applying both rates to the opening count.** Death
     is taken first and 해지 on the survivors [std]: `s(0) = (1 − d_rate) × w_mth`, not
     `l(0) × w_mth`. The difference is second-order in a month and first-order over 240 of

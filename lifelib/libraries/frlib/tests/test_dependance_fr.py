@@ -185,7 +185,7 @@ def test_worked_example_lifetime_totals_and_counts(fr_dep_anchor):
     """The notes' lifetime table: claims are 60.0% of premiums, 65.0% of them past 85."""
     p = fr_dep_anchor
     df = p.result_cf()
-    assert len(df) == 480 and df.index[-1] == p.proj_len() == 479
+    assert len(df) == p.proj_len() == 480 and df.index[-1] == 479
     for column, total in LIFETIME.items():
         assert df[column].sum() == pytest.approx(total, abs=0.005), column
     claims = lifetime_claims(p)
@@ -614,7 +614,7 @@ def test_premiums_are_never_carried_on_the_whole_in_force_block(dependance):
     for point_id in dependance.Data.model_point_table().index:
         proj = dependance.Projection[point_id]
         for t in (0, 12, 120):
-            if t > proj.proj_len() or not proj.premium_due(t):
+            if t >= proj.proj_len() or not proj.premium_due(t):
                 continue
             assert proj.premiums(t) == pytest.approx(
                 proj.premium_mth_pp(t) * proj.premium_months() * proj.pols_prem(t),
@@ -1012,8 +1012,8 @@ def test_the_product_has_no_surrender_value_no_death_benefit_and_no_maturity(dep
         dependance.Projection[1].claims(0, "DEATH")
     # Cover is viagere: what ends the projection is the terminal age of the basis.
     p = dependance.Projection[1]
-    assert p.proj_len() == 12 * (p.terminal_age - p.age_at_entry()) - 1
-    assert p.age(p.proj_len()) == 109
+    assert p.proj_len() == 12 * (p.terminal_age - p.age_at_entry())
+    assert p.age(p.proj_len() - 1) == 109
     # The enum accessors validate rather than propagating a typo into a lookup.
     for call in (lambda: p.pols_if_at(0, "BEF_NOTHING"),
                  lambda: p.claims(0, "MATURITY"),

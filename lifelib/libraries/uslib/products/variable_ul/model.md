@@ -109,7 +109,7 @@ the model docstring carries the same list in prose:
 | Net amount at risk | `DB / (1 + i_gm) − AV'`, one month discounted at the guaranteed rate | `max(0, DB − AV')`, **no discount** | The VUL prospectuses define NAAR as death benefit − account value [S2]. **Sourced.** |
 | Investment return | one declared credited rate `i_cr` | per-subaccount `(1 + r)(1 − e_i/12)(1 − m/12)` on exogenous gross returns, plus a declared rate on the fixed option only | The account value is a separate-account vector |
 | Charge base | per-unit charge on the **current** face, `units(t)` | $0.20 charge *and* surrender charge on **F₀**, `units()` — no `t` | "per $1,000 of F₀" [S2] |
-| Surrender charge | amortized **monthly**, `max(0, 9.00 − t/12)` | steps by **policy year**, `18.00 × (15 − y)/14` | The worked example pins the step at 12/14 in policy year 3 |
+| Surrender charge | amortized **monthly**, `max(0, 9.00 − (duration_mth(t) + 1)/12)` | steps by **policy year**, `18.00 × (15 − y)/14` | The worked example pins the step at 12/14 in policy year 3 |
 | Maintenance expense | $75/year inflating at 2.5% | flat $75/year, `inflation_rate = 0.0` | The variable-UL notes give no inflation |
 | Lapse shock | a whole shock **year** at surrender-charge expiry | a one-**month** spike, optional, magnitude an input | "spike multiplier on q^w in the month after SC_t reaches zero" |
 | Total lapse cap | 35% **[std]** | none — the dynamic multiplier is already bounded at 2.0 | The variable-UL notes set no cap |

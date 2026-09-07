@@ -16,20 +16,20 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 print("model point {}: {}{} concluded at age {}, in force {} years, "
       "Rentenbeginn {}".format(
-          point_id, proj.sex(), proj.age(1), proj.issue_age(),
+          point_id, proj.sex(), proj.age(0), proj.issue_age(),
           proj.duration_init(), proj.rentenbeginn_age()))
 print("contribution form = {} ({}), contrib_ratio = {:.2f}, "
       "frequency = {} (phi = {:.4f}), bfs_year = {}".format(
           proj.contrib_form(), proj.income_id(), proj.contrib_ratio(),
           proj.prem_freq(), proj.prem_freq_load(), proj.bfs_year()))
-print("t = 1 .. {}, conversion at t = {} (age {}, calendar {}), "
+print("t = 0 .. {}, conversion at t = {} (age {}, calendar {}), "
       "rechnungszins = {:.4f}, scenario = {}".format(
-          proj.proj_len(), proj.t_conv(), proj.age(proj.t_conv()),
+          proj.proj_len() - 1, proj.t_conv(), proj.age(proj.t_conv()),
           proj.calendar_year(proj.t_conv()), proj.rechnungszins(),
           proj.scenario_id()))
 print("opening: av_total_pp = {:,.2f}  guar_pp = {:,.2f}  "
       "garantieluecke_pp = {:,.2f}".format(
-          proj.av_total_pp(1), proj.guar_pp(1), proj.garantieluecke_pp(1)))
+          proj.av_total_pp(0), proj.guar_pp(0), proj.garantieluecke_pp(0)))
 print()
 print("conversion: account {:,.2f}  guarantee {:,.2f}  capital {:,.2f}  "
       "Garantieluecke {:,.2f}".format(

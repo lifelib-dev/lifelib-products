@@ -66,8 +66,9 @@ the model and its inputs must travel together.
 refinement of an annual one: the *Pflegerente* is a monthly annuity, the *Beitrag* a
 monthly instalment, and the *Pflegegrad* can change in any month. ``t`` is the policy
 month index, 0-based; the frame starts at ``duration_mth_init()`` — ``0`` for new
-business, the elapsed duration for an in-force point — and ends at
-``proj_len() = 12 * (omega_age - age_at_entry) - 1``. The *Beitrag*, the *Pflegerente*
+business, the elapsed duration for an in-force point — and runs to ``proj_len() - 1``,
+where ``proj_len() = 12 * (omega_age - age_at_entry)`` is the **number of projected
+months**, the exclusive end of the frame. The *Beitrag*, the *Pflegerente*
 and the per-policy expenses fall at the **start** of the month; transitions act over the
 month; surrender and death benefits fall at the **end** of it.
 

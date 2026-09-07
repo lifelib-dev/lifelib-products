@@ -12,7 +12,8 @@ premium override so the *Bruttobeitrag* is **derived by equivalence**, a
 *Beitragsverrechnung* of 0.70, no *Risikozuschlag*, the *AU-Klausel* off, a
 *Wiedereingliederungshilfe* of six monthly *Renten*, and a new-business valuation date
 (``duration_init_months = 0``).  Model point 1 is that cell.  ``pols_if_init() = 1.0`` and
-``proj_len() = 12 x (67 - 30) - 1 = 443``, so the frame is 444 monthly rows and the notes
+``proj_len() = 12 x (67 - 30) = 444``, so the frame is 444 monthly rows ``t = 0 ... 443``
+and the notes
 print eighteen of them plus a Total row over all of them.  The equivalence gives
 ``P = 1,013.0697368527`` EUR p.a. of *Bruttobeitrag*, an instalment of
 ``P x 1.05 / 12 = 88.6436019746`` EUR and a *Zahlbeitrag* of ``0.70 x`` that.
@@ -196,13 +197,13 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_bu_anchor):
 
 
 def test_the_frame_spans_the_whole_projection(de_bu_anchor):
-    """444 monthly rows, 0-based, ending at proj_len() -- the library's reading of it."""
+    """444 monthly rows, 0-based, ending at proj_len() - 1 -- the library's reading of it."""
     p = de_bu_anchor
-    assert p.proj_len() == 12 * (67 - 30) - 1 == 443
+    assert p.proj_len() == 12 * (67 - 30) == 444
     df = p.result_cf()
     assert list(df.index) == list(range(0, 444))
     assert df.index.name == "t"
-    assert df.index[-1] == p.proj_len()
+    assert df.index[-1] == p.proj_len() - 1
     assert df["pols_if"].iloc[0] == pytest.approx(p.pols_if_init(), rel=1e-12) == 1.0
     assert p.age(0) == 30 and p.age(443) == 66
 
@@ -327,15 +328,15 @@ def test_the_decrements_close_three_ways(de_bu_anchor):
     """
     p = de_bu_anchor
     n = p.proj_len()
-    deaths = sum(p.pols_death(t) for t in range(0, n + 1))
-    lapses = sum(p.pols_lapse(t) for t in range(0, n + 1))
-    survivors = p.pols_if_at(n, "END")
+    deaths = sum(p.pols_death(t) for t in range(0, n))
+    lapses = sum(p.pols_lapse(t) for t in range(0, n))
+    survivors = p.pols_if_at(n - 1, "END")
     assert deaths == pytest.approx(CLOSURE["deaths"], abs=5e-12)
     assert lapses == pytest.approx(CLOSURE["lapses"], abs=5e-12)
     assert survivors == pytest.approx(CLOSURE["survivors"], abs=5e-12)
     assert deaths + lapses + survivors == pytest.approx(1.0, abs=1e-11)
     # A claim in payment is paid to the horizon and then simply stops.
-    assert p.claims(n, "BU_RENTE") > 0.0
+    assert p.claims(n - 1, "BU_RENTE") > 0.0
 
 
 def test_the_brutto_zahl_ratio_survives_aggregation(de_bu_anchor):
@@ -409,7 +410,7 @@ def test_the_dynamik_variant_totals_and_its_zillmerung_base(berufsunfaehigkeit):
     the month-0 acquisition charge is 2 382,92 EUR of that row's 2 489,01 EUR.
     """
     p = berufsunfaehigkeit.Projection[4]
-    assert p.proj_len() == 12 * (67 - 25) - 1 == 503
+    assert p.proj_len() == 12 * (67 - 25) == 504
     df = p.result_cf()
     assert list(df.index) == list(range(0, 504))
     for column, total in DYNAMIK_TOTALS.items():
@@ -458,7 +459,7 @@ def test_pitfall_01_the_premium_is_weighted_by_the_premium_paying_count(
     claiming = df["pols_dis"] + df["pols_runoff"]
     assert (df.loc[claiming > 0, "pols_prem"] < df.loc[claiming > 0, "pols_if"]).all()
     # The size of the mistake: weighting by pols_if would add this much premium income.
-    wrong = sum(p.prem_gross_pp(t) * p.pols_if(t) for t in range(0, p.proj_len() + 1))
+    wrong = sum(p.prem_gross_pp(t) * p.pols_if(t) for t in range(0, p.proj_len()))
     assert wrong > df["premiums"].sum()
     assert wrong / df["premiums"].sum() - 1.0 == pytest.approx(0.026, abs=0.002)
     # An in-force claim pays no premium at all: model point 7 opens leistungspflichtig.
@@ -530,11 +531,11 @@ def test_pitfall_05_the_run_off_is_not_forgotten(de_bu_anchor):
     """
     p = de_bu_anchor
     n = p.proj_len()
-    for t in range(1, n + 1):
+    for t in range(1, n):
         recent = sum(p.pols_recovery(t - k) for k in (1, 2, 3) if t - k >= 0)
         if recent > 0.0:
             assert p.pols_runoff(t) > 0.0, t
-    run_off_benefit = sum(sum(p.runoff_cohorts(t)[1]) for t in range(0, n + 1))
+    run_off_benefit = sum(sum(p.runoff_cohorts(t)[1]) for t in range(0, n))
     assert run_off_benefit == pytest.approx(206.41, abs=CENT)
     total = p.result_cf()["claims_bu_rente"].sum()
     assert run_off_benefit / total == pytest.approx(0.0157, abs=0.0005)
@@ -594,9 +595,9 @@ def test_pitfall_08_the_premium_runs_through_the_karenzzeit(
         assert karenz.pols_prem(t) == pytest.approx(
             karenz.pols_actv(t) + inside, rel=1e-13)
     n = karenz.proj_len()
-    above = [t for t in range(0, n + 1)
+    above = [t for t in range(0, n)
              if karenz.pols_prem(t) - karenz.pols_actv(t) > 1e-15]
-    assert len(above) == n          # every month but the first
+    assert len(above) == n - 1      # every month but the first
     # The anchor has no Karenzzeit at all.
     assert de_bu_anchor.karenz_months() == 0
     assert max(abs(de_bu_anchor.pols_prem(t) - de_bu_anchor.pols_actv(t))
@@ -726,15 +727,15 @@ def test_pitfall_13_benefit_stops_at_the_leistungsendalter_and_premium_does_not(
     """
     p = berufsunfaehigkeit.Projection[9]
     assert p.cover_end_age() == 67 and p.benefit_end_age() == 63
-    assert p.entry_age() == 45 and p.proj_len() == 12 * (67 - 45) - 1 == 263
-    boundary = min(t for t in range(0, p.proj_len() + 1) if p.age(t) >= 63)
+    assert p.entry_age() == 45 and p.proj_len() == 12 * (67 - 45) == 264
+    boundary = min(t for t in range(0, p.proj_len()) if p.age(t) >= 63)
     assert boundary == 216
     assert p.claims(215, "BU_RENTE") > 0.0
-    assert all(p.claims(t, "BU_RENTE") == 0.0 for t in range(boundary, p.proj_len() + 1))
+    assert all(p.claims(t, "BU_RENTE") == 0.0 for t in range(boundary, p.proj_len()))
     assert all(p.claim_expenses(t) == pytest.approx(800.0 * p.pols_inception(t), rel=1e-12)
                for t in (216, 240, 263))
-    assert all(p.premiums(t) > 0.0 for t in range(boundary, p.proj_len() + 1))
-    assert sum(p.premiums(t) for t in range(boundary, p.proj_len() + 1)) == (
+    assert all(p.premiums(t) > 0.0 for t in range(boundary, p.proj_len()))
+    assert sum(p.premiums(t) for t in range(boundary, p.proj_len())) == (
         pytest.approx(2244.03, abs=CENT))
     assert p.check_cover_end() is True
     for t in (0, 215, 216, 263):
@@ -752,7 +753,7 @@ def test_pitfall_14_no_acquisition_charge_on_an_in_force_point(
     in_force = berufsunfaehigkeit.Projection[6]
     assert in_force.duration_init_months() == 180
     assert in_force.prem_mode() == "half_yearly"
-    assert in_force.proj_len() == 12 * (67 - 30) - 1 - 180 == 263
+    assert in_force.proj_len() == 12 * (67 - 30) - 180 == 264
     expected = (0.09 * in_force.prem_gross_pp(0) * in_force.pols_prem(0)
                 + 18.0 / 12.0 * in_force.pols_if(0))
     assert in_force.expenses(0) == pytest.approx(expected, rel=1e-15)
@@ -801,8 +802,8 @@ def test_pitfall_16_the_reintegration_benefit_is_paid_on_a_completed_run_off(
     n = p.proj_len()
     paid = p.result_cf()["claims_reintegration"].sum()
     identity = sum(6 * p.runoff_val(t, 3) * (1.0 - p.mort_rate_mth(t))
-                   for t in range(0, n + 1))
-    naive = sum(6 * p.runoff_value_in(t) for t in range(0, n + 1))
+                   for t in range(0, n))
+    naive = sum(6 * p.runoff_value_in(t) for t in range(0, n))
     assert paid == pytest.approx(identity, rel=1e-12)
     assert paid == pytest.approx(409.61, abs=CENT)
     assert naive == pytest.approx(418.79, abs=CENT)

@@ -5,11 +5,14 @@ products/fondsgebundene_rentenversicherung/technical-notes.md ("Worked example")
 a **configuration** rather than a scenario: a *fondsgebundene Rentenversicherung* -- the
 German unit-linked deferred private annuity, Schicht 3, single life, one fund, no
 *Beitragsgarantie* -- sold to a man aged 37 last birthday, new business so
-``duration_init_m = 0`` and ``proj_start() = 1``, with a level recurring *Beitrag* of
-200,00 EUR a month for 30 years and *Rentenbeginn* at 67, so ``proj_len() = 360``.  The
+``duration_init_m = 0`` and ``proj_start() = 0``, with a level recurring *Beitrag* of
+200,00 EUR a month for 30 years and *Rentenbeginn* at 67, so ``proj_len() = 360`` months
+and the frame is ``t = 0 ... 359``.  ``t`` is the **0-based** policy month counted from
+inception, ``t = 0`` being the inception month, and ``proj_len()`` is the month **count**
+-- the frame's exclusive end.  The
 *Beitragssumme* is 200.00 x 12 x 30 = 72 000,00 EUR, the acquisition charge is 2.50 % of it
 -- the *Höchstzillmersatz* -- spread over sixty monthly instalments of 30,00 EUR, so the
-*Anlagebeitrag* is 162,00 EUR while the instalment runs and 192,00 EUR from month 61.  The
+*Anlagebeitrag* is 162,00 EUR while the instalment runs and 192,00 EUR from ``t = 60``.  The
 death benefit is the *Beitragsrückgewähr* ``max(Fondsguthaben, Summe der gezahlten
 Beiträge)``; the charge scale is ``std_gross`` (beta 4.00 % of each *Beitrag*, gamma
 0.30 % p.a. of the fund taken as 0.30 %/12 a month, *Stückkosten* 3,00 EUR a month, no
@@ -19,14 +22,14 @@ month; the factors are ``std_2026``, guaranteed and current both 25.00 at age 67
 module.
 
 360 months is too long to assert row by row, so this module asserts the seventeen the notes
-print -- the first six, 12, 24, the acquisition cliff at 59 to 61, 120, 240, the
-tax-threshold step at 300 to 301 and the last two -- together with **every column total at
+print -- the first six, ``t = 11`` and ``23``, the acquisition cliff at 58 to 60, 119, 239,
+the tax-threshold step at 299 to 300 and the last two -- together with **every column total at
 full precision**, where a slice of rows cannot hide an error.  Goldens are hard-coded
 rather than pickled so a reviewer can compare them with the notes by eye, and tolerances
 follow the precision the notes display: money to the cent, ``pols_if`` to six decimals.
 
-Beyond the worked example: the notes' three independent rebuilds (month 1 from the tariff
-alone, month 61 at the cliff, the reduction in yield read as a savings account); the four
+Beyond the worked example: the notes' three independent rebuilds (``t = 0`` from the tariff
+alone, ``t = 60`` at the cliff, the reduction in yield read as a savings account); the four
 closure identities it prints; the *Einmalbeitrag* variant and the four-tariff
 reduction-in-yield comparison; the seven ``check_*()`` identities and their residuals,
 ``check_net_cf()`` among them -- delib's first ruling; **one test per numbered modeling
@@ -65,23 +68,23 @@ def _names(model):
 # notes omit them.  t: (pols_if, premiums, prem_to_av, charge_acq, charge_admin_prem,
 # charge_admin_fund, charge_policy_fee, charge_risk, expenses, commissions, net_cf)
 PANEL_A = {
-    1:   (1.000000, 200.00, 162.00, 30.00, 8.00, 0.04, 3.00, 0.00,  204.26, 1803.00, -1966.22),
-    2:   (0.994807, 198.96, 161.16, 29.84, 7.96, 0.08, 2.98, 0.01,    4.25,    2.98,    33.64),
-    3:   (0.989641, 197.93, 160.32, 29.69, 7.92, 0.12, 2.97, 0.01,    4.23,    2.97,    33.49),
-    4:   (0.984502, 196.90, 159.49, 29.54, 7.88, 0.16, 2.95, 0.01,    4.22,    2.95,    33.35),
-    5:   (0.979390, 195.88, 158.66, 29.38, 7.84, 0.20, 2.94, 0.01,    4.20,    2.94,    33.21),
-    6:   (0.974304, 194.86, 157.84, 29.23, 7.79, 0.24, 2.92, 0.02,    4.19,    2.92,    33.08),
-    12:  (0.944340, 188.87, 152.98, 28.33, 7.55, 0.46, 2.83, 0.03,    4.10,    2.83,    32.26),
-    24:  (0.887098, 177.42, 143.71, 26.61, 7.10, 0.88, 2.66, 0.05,    3.92,    2.66,    30.69),
-    59:  (0.738908, 147.78, 119.70, 22.17, 5.91, 1.93, 2.22, 0.10,    3.45,    2.22,    26.58),
-    60:  (0.735054, 147.01, 119.08, 22.05, 5.88, 1.95, 2.21, 0.10,    3.44,    2.21,    26.47),
-    61:  (0.731221, 146.24, 140.39,  0.00, 5.85, 1.98, 2.19, 0.11,    3.33,    2.19,     4.53),
-    120: (0.625891, 125.18, 120.17,  0.00, 5.01, 4.02, 1.88, 0.00,    3.14,    1.88,     5.89),
-    240: (0.459656,  91.93,  88.25,  0.00, 3.68, 7.71, 1.38, 0.00,    2.81,    1.38,     8.58),
-    300: (0.385184,  77.04,  73.96,  0.00, 3.08, 9.16, 1.16, 0.00,    2.60,    1.16,     9.64),
-    301: (0.384018,  76.80,  73.73,  0.00, 3.07, 9.19, 1.15, 0.00,    2.68,    1.15,     9.58),
-    359: (0.304251,  60.85,  58.42,  0.00, 2.43, 9.82, 0.91, 0.00,    2.27,    0.91,     9.98),
-    360: (0.303239,  60.65,  58.22,  0.00, 2.43, 9.84, 0.91, 0.00,   32.53,    0.91,   -20.27),
+    0:   (1.000000, 200.00, 162.00, 30.00, 8.00, 0.04, 3.00, 0.00,  204.26, 1803.00, -1966.22),
+    1:   (0.994807, 198.96, 161.16, 29.84, 7.96, 0.08, 2.98, 0.01,    4.25,    2.98,    33.64),
+    2:   (0.989641, 197.93, 160.32, 29.69, 7.92, 0.12, 2.97, 0.01,    4.23,    2.97,    33.49),
+    3:   (0.984502, 196.90, 159.49, 29.54, 7.88, 0.16, 2.95, 0.01,    4.22,    2.95,    33.35),
+    4:   (0.979390, 195.88, 158.66, 29.38, 7.84, 0.20, 2.94, 0.01,    4.20,    2.94,    33.21),
+    5:   (0.974304, 194.86, 157.84, 29.23, 7.79, 0.24, 2.92, 0.02,    4.19,    2.92,    33.08),
+    11:  (0.944340, 188.87, 152.98, 28.33, 7.55, 0.46, 2.83, 0.03,    4.10,    2.83,    32.26),
+    23:  (0.887098, 177.42, 143.71, 26.61, 7.10, 0.88, 2.66, 0.05,    3.92,    2.66,    30.69),
+    58:  (0.738908, 147.78, 119.70, 22.17, 5.91, 1.93, 2.22, 0.10,    3.45,    2.22,    26.58),
+    59:  (0.735054, 147.01, 119.08, 22.05, 5.88, 1.95, 2.21, 0.10,    3.44,    2.21,    26.47),
+    60:  (0.731221, 146.24, 140.39,  0.00, 5.85, 1.98, 2.19, 0.11,    3.33,    2.19,     4.53),
+    119: (0.625891, 125.18, 120.17,  0.00, 5.01, 4.02, 1.88, 0.00,    3.14,    1.88,     5.89),
+    239: (0.459656,  91.93,  88.25,  0.00, 3.68, 7.71, 1.38, 0.00,    2.81,    1.38,     8.58),
+    299: (0.385184,  77.04,  73.96,  0.00, 3.08, 9.16, 1.16, 0.00,    2.60,    1.16,     9.64),
+    300: (0.384018,  76.80,  73.73,  0.00, 3.07, 9.19, 1.15, 0.00,    2.68,    1.15,     9.58),
+    358: (0.304251,  60.85,  58.42,  0.00, 2.43, 9.82, 0.91, 0.00,    2.27,    0.91,     9.98),
+    359: (0.303239,  60.65,  58.22,  0.00, 2.43, 9.84, 0.91, 0.00,   32.53,    0.91,   -20.27),
 }
 
 # The notes' Total row, summed at full precision and then rounded.
@@ -96,18 +99,18 @@ PANEL_A_TOTALS = {
 # non-unit boundary.
 # t: (claims_death, claims_lapse, claims_maturity, av_releases, death_strain, liability_cf)
 PANEL_B = {
-    1:   ( 0.01,   0.82,     0.00,     0.83, 0.0020, 1966.22),
-    2:   ( 0.02,   1.64,     0.00,     1.65, 0.0040,  -33.64),
-    6:   ( 0.06,   4.84,     0.00,     4.89, 0.0114,  -33.08),
-    12:  ( 0.11,   9.48,     0.00,     9.57, 0.0212,  -32.26),
-    24:  ( 0.23,  18.18,     0.00,    18.38, 0.0398,  -30.69),
-    60:  ( 0.65,  40.13,     0.00,    40.70, 0.0745,  -26.47),
-    61:  ( 0.72,  20.10,     0.00,    20.73, 0.0799,   -4.53),
-    120: ( 1.90,  40.75,     0.00,    42.64, 0.0000,   -5.89),
-    240: ( 9.43,  78.11,     0.00,    87.54, 0.0000,   -8.58),
-    301: (19.90, 237.76,     0.00,   257.66, 0.0000,   -9.58),
-    359: (31.15,  99.47,     0.00,   130.61, 0.0000,   -9.98),
-    360: (31.19,   0.00, 39298.91, 39330.11, 0.0000,   20.27),
+    0:   ( 0.01,   0.82,     0.00,     0.83, 0.0020, 1966.22),
+    1:   ( 0.02,   1.64,     0.00,     1.65, 0.0040,  -33.64),
+    5:   ( 0.06,   4.84,     0.00,     4.89, 0.0114,  -33.08),
+    11:  ( 0.11,   9.48,     0.00,     9.57, 0.0212,  -32.26),
+    23:  ( 0.23,  18.18,     0.00,    18.38, 0.0398,  -30.69),
+    59:  ( 0.65,  40.13,     0.00,    40.70, 0.0745,  -26.47),
+    60:  ( 0.72,  20.10,     0.00,    20.73, 0.0799,   -4.53),
+    119: ( 1.90,  40.75,     0.00,    42.64, 0.0000,   -5.89),
+    239: ( 9.43,  78.11,     0.00,    87.54, 0.0000,   -8.58),
+    300: (19.90, 237.76,     0.00,   257.66, 0.0000,   -9.58),
+    358: (31.15,  99.47,     0.00,   130.61, 0.0000,   -9.98),
+    359: (31.19,   0.00, 39298.91, 39330.11, 0.0000,   20.27),
 }
 
 PANEL_B_TOTALS = {
@@ -119,30 +122,31 @@ PANEL_B_TOTALS = {
 # units_pp, av_pp, bef_charge, aft_charge, bef_decr, cum_prem_pp, nar_pp, lapse_rate_mth,
 # mort_rate_mth)
 PANEL_C = {
-    1:   (100.371482, 0.000000, 0.00, 162.60, 159.56, 159.56, 200.00, 40.44, 0.00514301, 5e-05),
-    2:   (100.744344, 1.589679, 159.56, 322.75, 319.67, 319.67, 400.00, 80.33, 0.00514301, 5e-05),
-    6:   (102.249694, 7.885561, 803.31, 968.90, 965.66, 965.64, 1200.00, 234.34, 0.00514301, 5e-05),
-    60:  (124.916609, 83.728674, 10420.39, 10621.70, 10616.05, 10615.91, 12000.00, 1383.95, 0.00514301, 0.00007321),
-    61:  (125.380652, 84.984001, 10615.91, 10848.06, 10842.35, 10842.20, 12200.00, 1357.65, 0.00253505, 0.00008053),
-    94:  (141.700579, 131.144920, 18514.53, 18776.02, 18768.33, 18768.33, 18800.00, 31.67, 0.00253505, 0.00009744),
-    95:  (142.226971, 132.450597, 18768.33, 19030.76, 19023.00, 19023.00, 19000.00, 0.00, 0.00253505, 0.00009744),
-    240: (243.489783, 274.678167, 66633.79, 67074.04, 67054.27, 67054.27, 48000.00, 0.00, 0.00253505, 0.00030580),
-    359: (378.539129, 340.534729, 128428.63, 129098.43, 129063.16, 129063.16, 71800.00, 0.00, 0.00253505, 0.00079315),
-    360: (379.945333, 340.950641, 129063.16, 129735.32, 129699.88, 129699.88, 72000.00, 0.00, 0.0, 0.00079315),
+    0:   (100.371482, 0.000000, 0.00, 162.60, 159.56, 159.56, 200.00, 40.44, 0.00514301, 5e-05),
+    1:   (100.744344, 1.589679, 159.56, 322.75, 319.67, 319.67, 400.00, 80.33, 0.00514301, 5e-05),
+    5:   (102.249694, 7.885561, 803.31, 968.90, 965.66, 965.64, 1200.00, 234.34, 0.00514301, 5e-05),
+    59:  (124.916609, 83.728674, 10420.39, 10621.70, 10616.05, 10615.91, 12000.00, 1383.95, 0.00514301, 0.00007321),
+    60:  (125.380652, 84.984001, 10615.91, 10848.06, 10842.35, 10842.20, 12200.00, 1357.65, 0.00253505, 0.00008053),
+    93:  (141.700579, 131.144920, 18514.53, 18776.02, 18768.33, 18768.33, 18800.00, 31.67, 0.00253505, 0.00009744),
+    94:  (142.226971, 132.450597, 18768.33, 19030.76, 19023.00, 19023.00, 19000.00, 0.00, 0.00253505, 0.00009744),
+    239: (243.489783, 274.678167, 66633.79, 67074.04, 67054.27, 67054.27, 48000.00, 0.00, 0.00253505, 0.00030580),
+    358: (378.539129, 340.534729, 128428.63, 129098.43, 129063.16, 129063.16, 71800.00, 0.00, 0.00253505, 0.00079315),
+    359: (379.945333, 340.950641, 129063.16, 129735.32, 129699.88, 129699.88, 72000.00, 0.00, 0.0, 0.00079315),
 }
 
-# The Einmalbeitrag variant, model point 2: 50 000,00 EUR at 50, proj_len() = 204, a `fund`
+# The Einmalbeitrag variant, model point 2: 50 000,00 EUR at 50, proj_len() = 204 months so
+# the frame is t = 0 .. 203, a `fund`
 # death benefit so charge_risk is 0.00 everywhere.  t: (pols_if, premiums, prem_to_av,
 # charge_acq, charge_admin_prem, charge_admin_fund, charge_policy_fee, expenses,
 # commissions, net_cf, av)
 SINGLE_PREMIUM = {
-    1:   (1.000000, 50000.00, 46750.00, 1250.00, 2000.00, 11.73, 3.00,  204.28, 2000.00, 1060.45, 46908.94),
-    2:   (0.994685,     0.00,     0.00,    0.00,    0.00, 11.71, 2.98,    4.27,    0.00,   10.43, 47068.42),
-    3:   (0.989399,     0.00,     0.00,    0.00,    0.00, 11.69, 2.97,    4.25,    0.00,   10.40, 47228.46),
-    12:  (0.943067,     0.00,     0.00,    0.00,    0.00, 11.48, 2.83,    4.11,    0.00,   10.20, 48694.00),
-    60:  (0.728611,     0.00,     0.00,    0.00,    0.00, 10.45, 2.19,    3.43,    0.00,    9.20, 57329.28),
-    120: (0.611558,     0.00,     0.00,    0.00,    0.00, 10.76, 1.83,    3.09,    0.00,    9.50, 70347.78),
-    204: (0.457239,     0.00,     0.00,    0.00,    0.00, 10.72, 1.37,   48.30,    0.00,  -36.21, 93766.43),
+    0:   (1.000000, 50000.00, 46750.00, 1250.00, 2000.00, 11.73, 3.00,  204.28, 2000.00, 1060.45, 46908.94),
+    1:   (0.994685,     0.00,     0.00,    0.00,    0.00, 11.71, 2.98,    4.27,    0.00,   10.43, 47068.42),
+    2:   (0.989399,     0.00,     0.00,    0.00,    0.00, 11.69, 2.97,    4.25,    0.00,   10.40, 47228.46),
+    11:  (0.943067,     0.00,     0.00,    0.00,    0.00, 11.48, 2.83,    4.11,    0.00,   10.20, 48694.00),
+    59:  (0.728611,     0.00,     0.00,    0.00,    0.00, 10.45, 2.19,    3.43,    0.00,    9.20, 57329.28),
+    119: (0.611558,     0.00,     0.00,    0.00,    0.00, 10.76, 1.83,    3.09,    0.00,    9.50, 70347.78),
+    203: (0.457239,     0.00,     0.00,    0.00,    0.00, 10.72, 1.37,   48.30,    0.00,  -36.21, 93766.43),
 }
 
 SINGLE_PREMIUM_TOTALS = {
@@ -251,8 +255,8 @@ def test_the_totals_are_summed_at_full_precision(de_frv_anchor):
         4.33, abs=CENT)     # the rounded-cell sum, against 4.39 at full precision
 
 
-def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
-    """The notes' first independent check: month 1 from the parameters, not the recursion.
+def test_the_inception_month_rebuilt_from_the_tariff_alone(de_frv_anchor):
+    """The notes' first independent check: ``t = 0`` from the parameters, not the recursion.
 
     Nine decimals are carried because six do not close the chain -- the *Gammakosten* at
     0.040650 would leave 159.561151 instead of 159.561150.
@@ -261,48 +265,48 @@ def test_month_one_rebuilt_from_the_tariff_alone(de_frv_anchor):
     assert p.beitragssumme() == pytest.approx(200.0 * 12 * 30, rel=1e-12) == 72000.0
     assert p.charge_acq_total() == pytest.approx(0.025 * 72000.0, rel=1e-12) == 1800.0
     assert p.acq_instalments() == 60
-    assert p.charge_acq_pp(1) == pytest.approx(1800.0 / 60, rel=1e-12) == 30.0
-    assert p.charge_admin_prem_pp(1) == pytest.approx(0.04 * 200.0, rel=1e-12) == 8.0
-    assert p.prem_to_av_pp(1) == pytest.approx(200.0 - 30.0 - 8.0, rel=1e-12) == 162.0
-    i = p.fund_return_net_mth(1)
+    assert p.charge_acq_pp(0) == pytest.approx(1800.0 / 60, rel=1e-12) == 30.0
+    assert p.charge_admin_prem_pp(0) == pytest.approx(0.04 * 200.0, rel=1e-12) == 8.0
+    assert p.prem_to_av_pp(0) == pytest.approx(200.0 - 30.0 - 8.0, rel=1e-12) == 162.0
+    i = p.fund_return_net_mth(0)
     assert i == pytest.approx(1.0455 ** (1.0 / 12.0) - 1.0, rel=1e-14)
     assert i == pytest.approx(0.0037148195588312, abs=5e-16)
-    assert p.unit_price(1) == pytest.approx(100.0 * (1.0 + i), rel=1e-14)
-    assert p.av_pp_at(1, "BEF_CHARGE") == pytest.approx(162.601800769, abs=5e-9)
-    assert p.charge_admin_fund_pp(1) == pytest.approx(0.040650450, abs=5e-9)
-    assert p.charge_policy_fee_pp(1) == 3.0 and p.db_floor_pp(1) == 200.0
-    assert p.av_pp_at(1, "AFT_CHARGE") == pytest.approx(159.561150318, abs=5e-9)
-    assert p.nar_pp(1) == pytest.approx(40.438849682, abs=5e-9)
-    assert p.charge_risk_pp(1) == pytest.approx(0.00080 / 12 * 40.438849682, abs=5e-10)
-    assert p.av_pp_at(1, "BEF_DECR") == pytest.approx(159.558454395, abs=5e-9)
-    assert p.units_pp(2) == pytest.approx(159.558454395 / p.unit_price(1), abs=5e-9)
+    assert p.unit_price(0) == pytest.approx(100.0 * (1.0 + i), rel=1e-14)
+    assert p.av_pp_at(0, "BEF_CHARGE") == pytest.approx(162.601800769, abs=5e-9)
+    assert p.charge_admin_fund_pp(0) == pytest.approx(0.040650450, abs=5e-9)
+    assert p.charge_policy_fee_pp(0) == 3.0 and p.db_floor_pp(0) == 200.0
+    assert p.av_pp_at(0, "AFT_CHARGE") == pytest.approx(159.561150318, abs=5e-9)
+    assert p.nar_pp(0) == pytest.approx(40.438849682, abs=5e-9)
+    assert p.charge_risk_pp(0) == pytest.approx(0.00080 / 12 * 40.438849682, abs=5e-10)
+    assert p.av_pp_at(0, "BEF_DECR") == pytest.approx(159.558454395, abs=5e-9)
+    assert p.units_pp(1) == pytest.approx(159.558454395 / p.unit_price(0), abs=5e-9)
 
 
-def test_month_sixty_one_is_the_cliff_and_the_risk_charge_at_a_second_age(de_frv_anchor):
+def test_month_sixty_is_the_cliff_and_the_risk_charge_at_a_second_age(de_frv_anchor):
     """The notes' second rebuild: the acquisition instalment stops and the age steps.
 
     The same row carries a second step -- ``claims_lapse`` halves from 40.13 to 20.10,
-    because month 61 opens policy year 6 and the annual lapse rate drops from 6 % to 3 %.
+    because ``t = 60`` opens policy year 6 and the annual lapse rate drops from 6 % to 3 %.
     """
     p = de_frv_anchor
-    assert p.charge_acq_pp(60) == 30.0 and p.charge_acq_pp(61) == 0.0
-    assert p.prem_to_av_pp(60) == pytest.approx(162.0, rel=1e-12)
-    assert p.prem_to_av_pp(61) == pytest.approx(192.0, rel=1e-12)
-    assert p.av_pp_at(61, "BEF_CHARGE") == pytest.approx(
-        (10615.913263 + 192.0) * (1.0 + p.fund_return_net_mth(61)), abs=5e-6)
-    assert p.av_pp_at(61, "BEF_CHARGE") == pytest.approx(10848.062710117, abs=5e-6)
-    assert p.charge_admin_fund_pp(61) == pytest.approx(2.712015678, abs=5e-8)
-    assert p.av_pp_at(61, "AFT_CHARGE") == pytest.approx(10842.350694440, abs=5e-6)
-    assert p.policy_year(61) == 6 and p.age(61) == 42
-    assert p.mort_rate_tariff_mth(61) == pytest.approx(0.000107367333, abs=5e-13)
-    assert p.cum_prem_pp(61) == pytest.approx(12200.0, rel=1e-12)
-    assert p.nar_pp(61) == pytest.approx(1357.649305560, abs=5e-6)
-    assert p.charge_risk_pp(61) == pytest.approx(0.145767186, abs=5e-9)
-    assert p.charge_risk(61) == pytest.approx(0.10658796, abs=5e-8)
-    assert p.lapse_rate(60) == pytest.approx(0.06, rel=1e-12)
-    assert p.lapse_rate(61) == pytest.approx(0.03, rel=1e-12)
-    assert p.claims(60, "LAPSE") == pytest.approx(40.13, abs=CENT)
-    assert p.claims(61, "LAPSE") == pytest.approx(20.10, abs=CENT)
+    assert p.charge_acq_pp(59) == 30.0 and p.charge_acq_pp(60) == 0.0
+    assert p.prem_to_av_pp(59) == pytest.approx(162.0, rel=1e-12)
+    assert p.prem_to_av_pp(60) == pytest.approx(192.0, rel=1e-12)
+    assert p.av_pp_at(60, "BEF_CHARGE") == pytest.approx(
+        (10615.913263 + 192.0) * (1.0 + p.fund_return_net_mth(60)), abs=5e-6)
+    assert p.av_pp_at(60, "BEF_CHARGE") == pytest.approx(10848.062710117, abs=5e-6)
+    assert p.charge_admin_fund_pp(60) == pytest.approx(2.712015678, abs=5e-8)
+    assert p.av_pp_at(60, "AFT_CHARGE") == pytest.approx(10842.350694440, abs=5e-6)
+    assert p.policy_year(60) == 6 and p.age(60) == 42
+    assert p.mort_rate_tariff_mth(60) == pytest.approx(0.000107367333, abs=5e-13)
+    assert p.cum_prem_pp(60) == pytest.approx(12200.0, rel=1e-12)
+    assert p.nar_pp(60) == pytest.approx(1357.649305560, abs=5e-6)
+    assert p.charge_risk_pp(60) == pytest.approx(0.145767186, abs=5e-9)
+    assert p.charge_risk(60) == pytest.approx(0.10658796, abs=5e-8)
+    assert p.lapse_rate(59) == pytest.approx(0.06, rel=1e-12)
+    assert p.lapse_rate(60) == pytest.approx(0.03, rel=1e-12)
+    assert p.claims(59, "LAPSE") == pytest.approx(40.13, abs=CENT)
+    assert p.claims(60, "LAPSE") == pytest.approx(20.10, abs=CENT)
 
 
 def test_the_reduction_in_yield_read_as_a_savings_account(de_frv_anchor):
@@ -315,11 +319,11 @@ def test_the_reduction_in_yield_read_as_a_savings_account(de_frv_anchor):
     irr = p.irr_ann()
     assert irr == pytest.approx(0.036592629, abs=5e-9)
     monthly = (1.0 + irr) ** (1.0 / 12.0) - 1.0
-    balance = sum(200.0 * (1.0 + monthly) ** (361 - t) for t in range(1, 361))
+    balance = sum(200.0 * (1.0 + monthly) ** (360 - t) for t in range(360))
     assert balance == pytest.approx(129699.8842, abs=CENT)
     assert p.av_maturity_pp() == pytest.approx(129699.8842, abs=CENT)
     gross = 1.05 ** (1.0 / 12.0) - 1.0
-    gross_balance = sum(200.0 * (1.0 + gross) ** (361 - t) for t in range(1, 361))
+    gross_balance = sum(200.0 * (1.0 + gross) ** (360 - t) for t in range(360))
     assert gross_balance == pytest.approx(163739.57, abs=1.0)
     assert gross_balance - balance == pytest.approx(34039.69, abs=1.0)
     assert p.gross_return_ref() == pytest.approx(0.05, abs=1e-12)  # a level path
@@ -337,20 +341,20 @@ def test_the_four_identities_that_close(de_frv_anchor):
     p = de_frv_anchor
     n = p.proj_len()
     df = p.result_cf()
-    deaths = sum(p.pols_death(t) for t in range(1, n + 1))
-    lapses = sum(p.pols_lapse(t) for t in range(1, n + 1))
+    deaths = sum(p.pols_death(t) for t in range(n))
+    lapses = sum(p.pols_lapse(t) for t in range(n))
     assert deaths == pytest.approx(DECREMENTS["deaths"], abs=5e-9)
     assert lapses == pytest.approx(DECREMENTS["lapses"], abs=5e-9)
-    assert p.pols_maturity(n) == pytest.approx(DECREMENTS["maturity"], abs=5e-9)
-    assert deaths + lapses + p.pols_maturity(n) == pytest.approx(1.0, abs=1e-12)
-    assert p.pols_if(n + 1) == 0.0
+    assert p.pols_maturity(n - 1) == pytest.approx(DECREMENTS["maturity"], abs=5e-9)
+    assert deaths + lapses + p.pols_maturity(n - 1) == pytest.approx(1.0, abs=1e-12)
+    assert p.pols_if(n) == 0.0   # one past the frame's last index
     charge_risk, strain = df["charge_risk"].sum(), df["death_strain"].sum()
     assert charge_risk == pytest.approx(RISK_RESULT["charge_risk"], abs=5e-7)
     assert strain == pytest.approx(RISK_RESULT["death_strain"], abs=5e-7)
     assert charge_risk - strain == pytest.approx(RISK_RESULT["result"], abs=5e-7)
     assert charge_risk - strain == pytest.approx(0.25 * charge_risk, rel=1e-12)
-    assert p.cum_charge_acq_pp(n) == pytest.approx(60 * 30.0, abs=1e-9) == 1800.0
-    assert p.cum_charge_acq_pp(n) == pytest.approx(
+    assert p.cum_charge_acq_pp(n - 1) == pytest.approx(60 * 30.0, abs=1e-9) == 1800.0
+    assert p.cum_charge_acq_pp(n - 1) == pytest.approx(
         p.alpha_rate() * p.beitragssumme(), rel=1e-12)
     assert df["charge_acq"].sum() == pytest.approx(1549.75, abs=CENT)
     benefits = sum(df[c].sum() for c in
@@ -372,12 +376,12 @@ def test_the_annuity_the_contract_exists_for(de_frv_anchor):
     p = de_frv_anchor
     n = p.proj_len()
     assert p.av_maturity_pp() == pytest.approx(129699.88, abs=CENT)
-    assert p.av_maturity_pp() == pytest.approx(p.av_pp_at(n, "BEF_DECR"), rel=1e-15)
+    assert p.av_maturity_pp() == pytest.approx(p.av_pp_at(n - 1, "BEF_DECR"), rel=1e-15)
     assert p.annuity_age() == 67
     assert p.rentenfaktor_guar() == p.rentenfaktor_curr() == p.rentenfaktor_applied() == 25.0
     assert p.annuity_mth_pp() == pytest.approx(129699.88 / 10000.0 * 25.0, abs=CENT)
-    assert p.claims(n, "MATURITY") == pytest.approx(
-        p.pols_maturity(n) * p.av_maturity_pp(), rel=1e-12)
+    assert p.claims(n - 1, "MATURITY") == pytest.approx(
+        p.pols_maturity(n - 1) * p.av_maturity_pp(), rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -386,9 +390,10 @@ def test_the_annuity_the_contract_exists_for(de_frv_anchor):
 
 @pytest.mark.parametrize("t", sorted(SINGLE_PREMIUM))
 def test_the_einmalbeitrag_variant_row(fondsgebundene_rentenversicherung, t):
-    """Model point 2: the charges are taken once at the front and the sign reverses -- month
-    1 carries a ``net_cf`` of **+1 060,45** where the anchor's is -1 966,22, the 3 250,00
-    withheld at inception more than covering the 2 204,28 of acquisition cost."""
+    """Model point 2: the charges are taken once at the front and the sign reverses -- the
+    inception month ``t = 0`` carries a ``net_cf`` of **+1 060,45** where the anchor's is
+    -1 966,22, the 3 250,00 withheld at inception more than covering the 2 204,28 of
+    acquisition cost."""
     (pols_if, prem, to_av, acq, admin_prem, admin_fund, fee, exp, comm, net,
      av) = SINGLE_PREMIUM[t]
     p = fondsgebundene_rentenversicherung.Projection[2]
@@ -440,8 +445,8 @@ def test_the_reduction_in_yield_across_the_four_charge_scales(
     assert p.reduction_in_yield() == pytest.approx(riy, abs=5e-7)
     assert p.av_maturity_pp() == pytest.approx(av, abs=CENT)
     assert p.gross_return_ref() == pytest.approx(0.05, abs=1e-9)
-    assert p.expense_acq_pp(1) == 200.0
-    assert p.comm_acq_pp(1) == pytest.approx(0.025 * p.beitragssumme(), rel=1e-12)
+    assert p.expense_acq_pp(0) == 200.0
+    assert p.comm_acq_pp(0) == pytest.approx(0.025 * p.beitragssumme(), rel=1e-12)
     if charge_id == "std_netto":
         assert p.alpha_rate() == 0.0 and p.charge_acq_total() == 0.0
         assert p.result_cf()["charge_acq"].sum() == 0.0
@@ -455,43 +460,43 @@ def test_the_reduction_in_yield_across_the_four_charge_scales(
 def test_pitfall_1_the_fund_charge_cancels_units_and_survives_the_premium(
         fondsgebundene_rentenversicherung):
     """A model netting gamma off the *Beitrag* is right until the premium stops.  Model
-    point 7 goes *beitragsfrei* at 121 on a zero-return fund: from there ``premiums`` is
-    zero, ``charge_admin_fund`` is not, and the fund decays."""
+    point 7 goes *beitragsfrei* at ``t = 120`` on a zero-return fund: from there
+    ``premiums`` is zero, ``charge_admin_fund`` is not, and the fund decays."""
     p = fondsgebundene_rentenversicherung.Projection[7]
-    assert p.pup_month() == 121 and p.scenario_id() == "zero"
-    assert p.premiums(120) > 0.0
-    for t in (121, 122, 200, 240, 324):
+    assert p.pup_month() == 120 and p.scenario_id() == "zero"
+    assert p.premiums(119) > 0.0
+    for t in (120, 121, 199, 239, 323):
         assert p.premiums(t) == 0.0
         assert p.charge_admin_prem(t) == 0.0      # stops with the premium
         assert p.charge_acq(t) == 0.0
         assert p.charge_admin_fund(t) > 0.0       # continues by unit cancellation
         assert p.charge_policy_fee(t) > 0.0 and p.charge_risk(t) > 0.0
-    assert p.av_pp_at(122, "BEF_DECR") < p.av_pp_at(121, "BEF_DECR")
-    assert p.av_pp_at(324, "BEF_DECR") < p.av_pp_at(121, "BEF_DECR")
-    assert p.charge_admin_fund_pp(200) == pytest.approx(
-        p.gamma_rate_mth() * p.av_pp_at(200, "BEF_CHARGE"), rel=1e-12)
+    assert p.av_pp_at(121, "BEF_DECR") < p.av_pp_at(120, "BEF_DECR")
+    assert p.av_pp_at(323, "BEF_DECR") < p.av_pp_at(120, "BEF_DECR")
+    assert p.charge_admin_fund_pp(199) == pytest.approx(
+        p.gamma_rate_mth() * p.av_pp_at(199, "BEF_CHARGE"), rel=1e-12)
     assert p.gamma_rate_mth() == pytest.approx(0.0030 / 12.0, rel=1e-15) == 0.00025
 
 
 def test_pitfall_2_the_ter_lives_in_the_unit_price_and_in_no_charge_column(
         fondsgebundene_rentenversicherung, de_frv_anchor):
-    """unit_price(t)/unit_price(t-1) = (1 + gross - ter)^(1/12), exactly.  Charging the
+    """unit_price(t)/unit_price_open(t) = (1 + gross - ter)^(1/12), exactly.  Charging the
     TER explicitly double-counts the fund's costs and ignoring it overstates the return;
     the model nets it off the assumed return, so it is in no ``charge_*`` cells."""
     p = de_frv_anchor
-    assert p.fund_return_gross_ann(1) == 0.05 and p.fund_ter_ann(1) == 0.0045
-    assert p.fund_return_net_ann(1) == pytest.approx(0.0455, rel=1e-12)
-    for t in (1, 2, 61, 180, 360):
+    assert p.fund_return_gross_ann(0) == 0.05 and p.fund_ter_ann(0) == 0.0045
+    assert p.fund_return_net_ann(0) == pytest.approx(0.0455, rel=1e-12)
+    for t in (0, 1, 60, 179, 359):
         step = (1.0 + p.fund_return_gross_ann(t) - p.fund_ter_ann(t)) ** (1.0 / 12.0)
-        assert p.unit_price(t) / p.unit_price(t - 1) == pytest.approx(step, rel=1e-14)
+        assert p.unit_price(t) / p.unit_price_open(t) == pytest.approx(step, rel=1e-14)
     assert [c for c in p.result_cf().columns if c.startswith("charge_")] == [
         "charge_acq", "charge_admin_prem", "charge_admin_fund", "charge_policy_fee",
         "charge_risk"]
     for absent in ("charge_ter", "charge_fund_cost", "ter_charge_pp", "fund_cost_pp"):
         assert absent not in _names(fondsgebundene_rentenversicherung), absent
     etf = fondsgebundene_rentenversicherung.Projection[11]   # same gross, a cheaper fund
-    assert etf.fund_ter_ann(1) == 0.0015
-    assert etf.fund_return_net_mth(1) > p.fund_return_net_mth(1)
+    assert etf.fund_ter_ann(0) == 0.0015
+    assert etf.fund_return_net_mth(0) > p.fund_return_net_mth(0)
 
 
 def test_pitfall_3_the_two_mortality_bases_live_in_two_files(
@@ -510,8 +515,8 @@ def test_pitfall_3_the_two_mortality_bases_live_in_two_files(
     assert readers["rentenfaktor_curr"] == {"data.rentenfaktor_table("}
     assert [nm for nm, hits in readers.items() if len(hits) == 2] == []
     p = de_frv_anchor
-    assert p.charge_risk_pp(1) == pytest.approx(
-        p.mort_rate_tariff_mth(1) * p.nar_pp(1), rel=1e-12)
+    assert p.charge_risk_pp(0) == pytest.approx(
+        p.mort_rate_tariff_mth(0) * p.nar_pp(0), rel=1e-12)
     assert p.mort_rate_tariff_at_age(37) == 0.00080 and p.rentenfaktor_guar() == 25.0
     assert p.mort_rate_tariff_at_age(47) == pytest.approx(0.00080 * 1.10 ** 10, rel=1e-9)
 
@@ -527,10 +532,10 @@ def test_pitfall_4_the_risk_result_is_exactly_a_quarter_of_the_risk_charge(de_fr
     charge, strain = df["charge_risk"].sum(), df["death_strain"].sum()
     assert charge > 0.0 and strain > 0.0 and charge - strain > 0.0
     assert charge - strain == pytest.approx(0.25 * charge, rel=1e-12)
-    assert p.mort_rate(1) == pytest.approx(0.75 * p.mort_rate_tariff(1), rel=1e-15)
-    assert p.mort_rate(1) == pytest.approx(0.00060, abs=5e-9)
-    assert p.mort_rate_tariff(1) == pytest.approx(0.00080, abs=5e-9)
-    for t in (1, 30, 61):
+    assert p.mort_rate(0) == pytest.approx(0.75 * p.mort_rate_tariff(0), rel=1e-15)
+    assert p.mort_rate(0) == pytest.approx(0.00060, abs=5e-9)
+    assert p.mort_rate_tariff(0) == pytest.approx(0.00080, abs=5e-9)
+    for t in (0, 29, 60):
         assert p.death_strain(t) == pytest.approx(
             p.pols_death(t) * p.nar_pp(t), rel=1e-12)
         assert p.charge_risk(t) - p.death_strain(t) == pytest.approx(
@@ -543,10 +548,10 @@ def test_pitfall_5_the_two_monthly_conversions_stay_different(
 
     At q = 0.00080 the splits differ by 0.04 %, which would land entirely in the risk
     result.  The tax-threshold step needs **both** limbs of the 12/62 rule: the anchor
-    passes duration 12 at age 48, so its step falls in policy year 26, not at month 145.
+    passes duration 12 at age 48, so its step falls in policy year 26, not at ``t = 144``.
     """
     p = de_frv_anchor
-    for t in (1, 61, 300, 360):
+    for t in (0, 60, 299, 359):
         assert p.mort_rate_mth(t) == pytest.approx(p.mort_rate(t) / 12.0, rel=1e-15)
         assert p.mort_rate_tariff_mth(t) == pytest.approx(
             p.mort_rate_tariff(t) / 12.0, rel=1e-15)
@@ -554,24 +559,24 @@ def test_pitfall_5_the_two_monthly_conversions_stay_different(
     assert 0.00080 / 12.0 == pytest.approx(0.00006667, abs=5e-9)
     assert geometric == pytest.approx(0.00006669, abs=5e-9)
     assert geometric / (0.00080 / 12.0) - 1.0 == pytest.approx(0.0004, abs=5e-5)
-    for t in (1, 61, 301):
+    for t in (0, 60, 300):
         assert p.lapse_rate_mth(t) == pytest.approx(
             1.0 - (1.0 - p.lapse_rate(t)) ** (1.0 / 12.0), rel=1e-14)
         assert p.lapse_rate_mth(t) < p.lapse_rate(t)
-    assert p.lapse_rate_mth(1) == pytest.approx(0.00514301, abs=EIGHT_DP)
-    assert (1.0 + p.fund_return_net_mth(1)) ** 12 - 1.0 == pytest.approx(
-        p.fund_return_net_ann(1), rel=1e-14)
+    assert p.lapse_rate_mth(0) == pytest.approx(0.00514301, abs=EIGHT_DP)
+    assert (1.0 + p.fund_return_net_mth(0)) ** 12 - 1.0 == pytest.approx(
+        p.fund_return_net_ann(0), rel=1e-14)
     assert p.gamma_rate_mth() * 12.0 == pytest.approx(p.gamma_rate_ann(), rel=1e-15)
-    assert max(13, 62 - p.entry_age() + 1) == 26 == p.policy_year(301)
-    assert p.age(301) == 62
-    assert p.lapse_tax_step(300) == 1.0 and p.lapse_tax_step(313) == 1.0
-    assert all(p.lapse_tax_step(t) == 2.5 for t in (301, 306, 312))
-    assert p.lapse_rate(301) == pytest.approx(0.075, rel=1e-12)
-    assert p.lapse_rate_mth(301) == pytest.approx(0.00647574, abs=EIGHT_DP)
-    assert p.lapse_rate(145) == pytest.approx(0.03, rel=1e-12)   # duration 13, age 49
+    assert max(13, 62 - p.entry_age() + 1) == 26 == p.policy_year(300)
+    assert p.age(300) == 62
+    assert p.lapse_tax_step(299) == 1.0 and p.lapse_tax_step(312) == 1.0
+    assert all(p.lapse_tax_step(t) == 2.5 for t in (300, 305, 311))
+    assert p.lapse_rate(300) == pytest.approx(0.075, rel=1e-12)
+    assert p.lapse_rate_mth(300) == pytest.approx(0.00647574, abs=EIGHT_DP)
+    assert p.lapse_rate(144) == pytest.approx(0.03, rel=1e-12)   # duration 13, age 49
     short = fondsgebundene_rentenversicherung.Projection[12]   # its step year never comes
     assert short.entry_age() == 55 and short.proj_len() == 144
-    assert all(short.lapse_tax_step(t) == 1.0 for t in range(1, 145))
+    assert all(short.lapse_tax_step(t) == 1.0 for t in range(144))
 
 
 def test_pitfall_6_the_net_amount_at_risk_is_floored_at_zero(
@@ -579,25 +584,26 @@ def test_pitfall_6_the_net_amount_at_risk_is_floored_at_zero(
     """max(D - F, 0), not D - F.  Without the floor the death strain turns negative.
 
     On the *Beitragsrückgewähr* shape the amount at risk vanishes once the fund overtakes
-    the premiums paid -- month 95 on the anchor -- and the unfloored difference is large
+    the premiums paid -- ``t = 94`` on the anchor -- and the unfloored difference is large
     and negative thereafter.  A `pct_fund` floor grows with the fund; `fund` has none.
     """
     p = de_frv_anchor
     n = p.proj_len()
-    assert all(p.nar_pp(t) >= 0.0 and p.death_strain(t) >= 0.0 for t in range(1, n + 1))
-    assert p.nar_pp(94) > 0.0 and p.nar_pp(95) == 0.0
-    assert p.av_pp_at(94, "AFT_WD") < p.cum_prem_pp(94)
-    assert p.av_pp_at(95, "AFT_WD") > p.cum_prem_pp(95)
-    assert p.db_floor_pp(240) - p.av_pp_at(240, "AFT_WD") < -18000.0
-    assert p.charge_risk_pp(240) == 0.0
+    assert all(p.nar_pp(t) >= 0.0 and p.death_strain(t) >= 0.0 for t in range(n))
+    assert p.nar_pp(93) > 0.0 and p.nar_pp(94) == 0.0
+    assert p.av_pp_at(93, "AFT_WD") < p.cum_prem_pp(93)
+    assert p.av_pp_at(94, "AFT_WD") > p.cum_prem_pp(94)
+    assert p.db_floor_pp(239) - p.av_pp_at(239, "AFT_WD") < -18000.0
+    assert p.charge_risk_pp(239) == 0.0
     for point_id in (2, 13):
         q = fondsgebundene_rentenversicherung.Projection[point_id]
         assert q.db_form() == "fund"     # no floor, so no Risikobeitrag at all
         assert q.result_cf()["charge_risk"].sum() == 0.0
-        assert all(q.nar_pp(t) == 0.0 for t in (1, q.proj_len() // 2, q.proj_len()))
+        assert all(q.nar_pp(t) == 0.0
+                   for t in (0, q.proj_len() // 2, q.proj_len() - 1))
     pct = fondsgebundene_rentenversicherung.Projection[12]
     assert pct.db_form() == "pct_fund" and pct.db_pct() == 1.1
-    for t in (1, 24, 144):
+    for t in (0, 23, 143):
         assert pct.nar_pp(t) == pytest.approx(0.1 * pct.av_pp_at(t, "AFT_WD"), rel=1e-9)
     assert pct.result_cf()["charge_risk"].sum() > 0.0
 
@@ -608,32 +614,32 @@ def test_pitfall_7_the_acquisition_instalment_stops_at_its_window(
 
     60 monthly, 20 quarterly, 10 half-yearly, 5 annual, 24 on model point 12.  Two
     exceptions follow from the charge's definition and are stated rather than asserted
-    away: ``charge_acq(121)`` is non-zero on point 9, where the *Zuzahlung* pays 500,00 of
+    away: ``charge_acq(120)`` is non-zero on point 9, where the *Zuzahlung* pays 500,00 of
     *Zuzahlungskosten*; and the per-policy total equals ``alpha_rate x beitragssumme()``
     on eleven points but not on point 6, whose frame opens past the window, nor on 9.
     """
     assert de_frv_anchor.acq_window_months() == 60
-    assert all(de_frv_anchor.charge_acq_pp(t) == 30.0 for t in (1, 30, 59, 60))
-    assert all(de_frv_anchor.charge_acq_pp(t) == 0.0 for t in (61, 62, 120, 360))
+    assert all(de_frv_anchor.charge_acq_pp(t) == 30.0 for t in (0, 29, 58, 59))
+    assert all(de_frv_anchor.charge_acq_pp(t) == 0.0 for t in (60, 61, 119, 359))
     for point_id, (mode, count, instalment) in {
             1: (1, 60, 30.0), 3: (3, 20, 111.0), 4: (6, 10, 132.0), 5: (12, 5, 630.0)
     }.items():
         q = fondsgebundene_rentenversicherung.Projection[point_id]
         assert q.prem_mode_months() == mode and q.acq_window_months() == 60
         assert q.acq_instalments() == count
-        assert q.charge_acq_pp(1) == pytest.approx(instalment, abs=CENT)
+        assert q.charge_acq_pp(0) == pytest.approx(instalment, abs=CENT)
         assert q.charge_acq_total() == pytest.approx(count * instalment, abs=CENT)
         assert q.check_acq_charge() is True
     short = fondsgebundene_rentenversicherung.Projection[12]
     assert short.prem_term_y() == 2
     assert short.acq_window_months() == 24 and short.acq_instalments() == 24
     assert short.charge_acq_total() == pytest.approx(0.025 * 12000.0, rel=1e-12) == 300.0
-    assert short.charge_acq_pp(24) == 12.5 and short.charge_acq_pp(25) == 0.0
-    assert short.cum_charge_acq_pp(144) == pytest.approx(300.0, abs=1e-9)
+    assert short.charge_acq_pp(23) == 12.5 and short.charge_acq_pp(24) == 0.0
+    assert short.cum_charge_acq_pp(143) == pytest.approx(300.0, abs=1e-9)
     topup = fondsgebundene_rentenversicherung.Projection[9]
-    assert topup.charge_acq_pp(121) == pytest.approx(500.0, rel=1e-12)
-    assert topup.charge_acq_pp(122) == 0.0
-    assert sum(topup.charge_acq_pp(t) for t in range(1, topup.proj_len() + 1)) == (
+    assert topup.charge_acq_pp(120) == pytest.approx(500.0, rel=1e-12)
+    assert topup.charge_acq_pp(121) == 0.0
+    assert sum(topup.charge_acq_pp(t) for t in range(topup.proj_len())) == (
         pytest.approx(3380.0, abs=1e-9))
     assert topup.alpha_rate() * topup.beitragssumme() == pytest.approx(2880.0, rel=1e-12)
     assert topup.check_acq_charge() is True
@@ -641,28 +647,31 @@ def test_pitfall_7_the_acquisition_instalment_stops_at_its_window(
 
 def test_pitfall_8_an_in_force_cell_carries_no_acquisition_charge_or_commission(
         fondsgebundene_rentenversicherung):
-    """Model point 6 opens at t = 97: the charge and the commission are both behind it.
+    """Model point 6 opens at t = 96: the charge and the commission are both behind it.
 
-    That is the whole difference between an in-force cell and a new-business one here, and
-    why ``t`` counts policy months from inception: one rule serves both.
+    ``duration_init_m`` is an elapsed count and is already 0-based, so it **is** the first
+    projected index.  That is the whole difference between an in-force cell and a
+    new-business one here, and why ``t`` counts policy months from inception: one rule
+    serves both.
     """
     p = fondsgebundene_rentenversicherung.Projection[6]
-    assert p.duration_init_m() == 96 and p.proj_start() == 97
-    assert p.result_cf().index[0] == 97
+    assert p.duration_init_m() == 96 and p.proj_start() == 96
+    assert p.result_cf().index[0] == 96
     assert p.acq_window_months() == 60          # the window is real, and already closed
     assert p.charge_acq_total() == pytest.approx(0.025 * 111000.0, rel=1e-12) == 2775.0
-    assert p.result_cf()["charge_acq"].sum() == 0.0 == p.cum_charge_acq_pp(p.proj_len())
-    assert p.expense_acq_pp(97) == 0.0 and p.comm_acq_pp(97) == 0.0
-    assert p.expenses(97) < 20.0
-    assert p.expenses(97) == pytest.approx(
-        p.expense_maint_pp(97) * p.pols_if(97)
-        + 150.0 * p.pols_death(97) + 50.0 * p.pols_lapse(97), rel=1e-12)
-    assert p.commissions(97) == pytest.approx(
-        0.015 * p.prem_pp(97) * p.pols_if(97), rel=1e-12)
+    assert p.result_cf()["charge_acq"].sum() == 0.0 == p.cum_charge_acq_pp(
+        p.proj_len() - 1)
+    assert p.expense_acq_pp(96) == 0.0 and p.comm_acq_pp(96) == 0.0
+    assert p.expenses(96) < 20.0
+    assert p.expenses(96) == pytest.approx(
+        p.expense_maint_pp(96) * p.pols_if(96)
+        + 150.0 * p.pols_death(96) + 50.0 * p.pols_lapse(96), rel=1e-12)
+    assert p.commissions(96) == pytest.approx(
+        0.015 * p.prem_pp(96) * p.pols_if(96), rel=1e-12)
     # It opens with a live fund, a real Beitragsrückgewähr base and a live risk charge.
-    assert p.av_pp(97) == pytest.approx(190.0 * 118.4, rel=1e-12) == 22496.0
-    assert p.cum_prem_init() == 24000.0 and p.cum_prem_pp(96) == 24000.0
-    assert p.nar_pp(97) > 0.0 and p.charge_risk(97) > 0.0
+    assert p.av_pp(96) == pytest.approx(190.0 * 118.4, rel=1e-12) == 22496.0
+    assert p.cum_prem_init() == 24000.0 and p.cum_prem_pp(95) == 24000.0
+    assert p.nar_pp(96) > 0.0 and p.charge_risk(96) > 0.0
     assert all(getattr(p, c)() is True for c in CHECKS)
 
 
@@ -676,14 +685,14 @@ def test_pitfall_9_the_beitragssumme_is_the_premiums_payable_at_the_initial_leve
         p.prem_pp_base() * (12.0 / p.prem_mode_months()) * p.prem_term_y(), rel=1e-12)
     assert p.beitragssumme() == 72000.0
     assert p.result_cf()["premiums"].sum() < 0.6 * p.beitragssumme()
-    pup = fondsgebundene_rentenversicherung.Projection[7]   # beitragsfrei from 121
+    pup = fondsgebundene_rentenversicherung.Projection[7]   # beitragsfrei from t = 120
     assert pup.beitragssumme() == pytest.approx(250.0 * 12 * 27, rel=1e-12) == 81000.0
-    assert pup.cum_charge_acq_pp(pup.proj_len()) == pytest.approx(2025.0, abs=1e-9)
+    assert pup.cum_charge_acq_pp(pup.proj_len() - 1) == pytest.approx(2025.0, abs=1e-9)
     dyn = fondsgebundene_rentenversicherung.Projection[10]
     assert dyn.dynamik_rate() == 0.03
-    assert dyn.prem_pp(1) == 150.0 and dyn.prem_pp(12) == 150.0
-    assert dyn.prem_pp(13) == pytest.approx(150.0 * 1.03, rel=1e-12)
-    assert dyn.prem_pp(25) == pytest.approx(150.0 * 1.03 ** 2, rel=1e-12)
+    assert dyn.prem_pp(0) == 150.0 and dyn.prem_pp(11) == 150.0
+    assert dyn.prem_pp(12) == pytest.approx(150.0 * 1.03, rel=1e-12)
+    assert dyn.prem_pp(24) == pytest.approx(150.0 * 1.03 ** 2, rel=1e-12)
     assert dyn.beitragssumme() == pytest.approx(150.0 * 12 * 39, rel=1e-12) == 70200.0
     topup = fondsgebundene_rentenversicherung.Projection[9]   # nor does a Zuzahlung
     assert topup.beitragssumme() == pytest.approx(300.0 * 12 * 32, rel=1e-12) == 115200.0
@@ -691,19 +700,19 @@ def test_pitfall_9_the_beitragssumme_is_the_premiums_payable_at_the_initial_leve
 
 def test_pitfall_10_beitragsfreistellung_is_a_change_of_state_and_not_an_exit(
         fondsgebundene_rentenversicherung):
-    """pols_if is continuous across month 121 while premiums step to zero.
+    """pols_if is continuous across t = 120 while premiums step to zero.
 
     One is an exit paying the *Rückkaufswert*, the other a change of state paying nothing.
     It is a model point election, not a cohort decrement: one point carries it, and no
     paid-up rate exists anywhere in the model.
     """
     p = fondsgebundene_rentenversicherung.Projection[7]
-    assert p.premiums(120) > 0.0 and p.premiums(121) == 0.0
-    ordinary = 1.0 / ((1.0 - p.mort_rate_mth(120)) * (1.0 - p.lapse_rate_mth(120)))
-    assert p.pols_if(120) / p.pols_if(121) == pytest.approx(ordinary, rel=1e-12)
-    assert p.claims(121, "LAPSE") == pytest.approx(
-        p.pols_lapse(121) * p.av_pp_at(121, "BEF_DECR"), rel=1e-12)
-    assert p.pols_lapse(121) > 0.0 and p.pols_maturity(121) == 0.0
+    assert p.premiums(119) > 0.0 and p.premiums(120) == 0.0
+    ordinary = 1.0 / ((1.0 - p.mort_rate_mth(119)) * (1.0 - p.lapse_rate_mth(119)))
+    assert p.pols_if(119) / p.pols_if(120) == pytest.approx(ordinary, rel=1e-12)
+    assert p.claims(120, "LAPSE") == pytest.approx(
+        p.pols_lapse(120) * p.av_pp_at(120, "BEF_DECR"), rel=1e-12)
+    assert p.pols_lapse(120) > 0.0 and p.pols_maturity(120) == 0.0
     table = fondsgebundene_rentenversicherung.Data.model_point_table()
     assert (table["pup_month"] > 0).sum() == 1 and table.loc[1, "pup_month"] == 0
     for absent in ("pup_rate", "pols_pup", "paid_up_rate", "pols_paidup"):
@@ -720,18 +729,18 @@ def test_pitfall_11_the_surrender_value_is_the_fund_and_nothing_else(
     p = de_frv_anchor
     n = p.proj_len()
     assert p.stornoabzug_rate() == 0.0
-    for t in (1, 12, 61, 240, 359):
+    for t in (0, 11, 60, 239, 358):
         assert p.claims(t, "LAPSE") == pytest.approx(
             p.pols_lapse(t) * p.av_pp_at(t, "BEF_DECR"), rel=1e-12)
-    assert p.av_pp_at(1, "BEF_DECR") > 0.0 and p.claims(1, "LAPSE") > 0.0  # positive at once
+    assert p.av_pp_at(0, "BEF_DECR") > 0.0 and p.claims(0, "LAPSE") > 0.0  # positive at once
     names = _names(fondsgebundene_rentenversicherung)
     for absent in ("disc_factor", "tech_rate", "rechnungszins", "deckungskapital",
                    "min_surr_value_pp", "zillmer_rate", "surr_value_pp",
                    "paid_up_factor", "asset_share", "mvr"):
         assert absent not in names, absent
     # In the last month a surrender and an annuitisation are the same event.
-    assert p.lapse_rate_base(n) > 0.0 and p.lapse_rate_mth(n) == 0.0
-    assert p.pols_lapse(n) == 0.0 and p.claims(n, "LAPSE") == 0.0
+    assert p.lapse_rate_base(n - 1) > 0.0 and p.lapse_rate_mth(n - 1) == 0.0
+    assert p.pols_lapse(n - 1) == 0.0 and p.claims(n - 1, "LAPSE") == 0.0
 
 
 def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
@@ -744,14 +753,14 @@ def test_pitfall_12_the_stornoabzug_is_a_flat_rate_on_the_fund(
     """
     p = fondsgebundene_rentenversicherung.Projection[5]
     assert p.charge_id() == "std_high" and p.stornoabzug_rate() == 0.02
-    for t in (1, 13, 60, 240):
+    for t in (0, 12, 59, 239):
         assert p.stornoabzug(t) == pytest.approx(
             0.02 * p.pols_lapse(t) * p.av_pp_at(t, "BEF_DECR"), rel=1e-12)
         assert p.claims(t, "LAPSE") == pytest.approx(
             p.pols_lapse(t) * p.av_pp_at(t, "BEF_DECR") * 0.98, rel=1e-12)
-    assert p.charge_acq_total() - p.cum_charge_acq_pp(13) > 0.0
-    assert p.charge_acq_total() - p.cum_charge_acq_pp(240) == 0.0
-    assert p.stornoabzug_pp(240) > p.stornoabzug_pp(13)
+    assert p.charge_acq_total() - p.cum_charge_acq_pp(12) > 0.0
+    assert p.charge_acq_total() - p.cum_charge_acq_pp(239) == 0.0
+    assert p.stornoabzug_pp(239) > p.stornoabzug_pp(12)
     assert p.result_cf()["stornoabzug"].sum() == pytest.approx(853.00, abs=CENT)
     assert p.check_benefit_funding() is True and p.check_net_cf() is True
     charges = fondsgebundene_rentenversicherung.Data.charge_table()
@@ -767,7 +776,7 @@ def test_pitfall_13_the_fund_is_not_booked_as_an_insurer_outgo(de_frv_anchor):
     p = de_frv_anchor
     df = p.result_cf()
     assert p.check_net_cf() is True and p.check_benefit_funding() is True
-    for t in (1, 61, 240, 360):
+    for t in (0, 60, 239, 359):
         rebuilt = (p.charge_acq(t) + p.charge_admin_prem(t) + p.charge_admin_fund(t)
                    + p.charge_policy_fee(t) + p.charge_risk(t) + p.stornoabzug(t)
                    - p.expenses(t) - p.commissions(t) - p.death_strain(t))
@@ -775,13 +784,13 @@ def test_pitfall_13_the_fund_is_not_booked_as_an_insurer_outgo(de_frv_anchor):
         funded = (p.claims(t, "DEATH") + p.claims(t, "LAPSE") + p.claims(t, "MATURITY")
                   + p.withdrawals(t) + p.stornoabzug(t))
         assert funded == pytest.approx(p.av_releases(t) + p.death_strain(t), abs=1e-8)
-    assert df.loc[360, "claims_maturity"] == pytest.approx(39298.91, abs=CENT)
-    assert df.loc[360, "net_cf"] == pytest.approx(-20.27, abs=CENT)
+    assert df.loc[359, "claims_maturity"] == pytest.approx(39298.91, abs=CENT)
+    assert df.loc[359, "net_cf"] == pytest.approx(-20.27, abs=CENT)
 
 
 def test_pitfall_14_the_rentenfaktor_is_read_at_the_annuity_age(
         fondsgebundene_rentenversicherung, de_frv_anchor):
-    """age(proj_len()) is annuity_age - 1, because the annuity begins at the month's end.
+    """age(proj_len() - 1) is annuity_age - 1: the annuity begins at that month's end.
 
     The off-by-one would fetch 24.449878 at 66 instead of 25.00 at 67 and understate the
     pension by 2.2 %.
@@ -789,7 +798,7 @@ def test_pitfall_14_the_rentenfaktor_is_read_at_the_annuity_age(
     p = de_frv_anchor
     n = p.proj_len()
     assert n == 12 * (67 - 37) == 360
-    assert p.age(n) == 66 == p.annuity_age() - 1 and p.policy_year(n) == 30
+    assert p.age(n - 1) == 66 == p.annuity_age() - 1 and p.policy_year(n - 1) == 30
     assert p.rentenfaktor_guar() == 25.0
     table = fondsgebundene_rentenversicherung.Data.rentenfaktor_table()
     off_by_one = float(table.loc[("std_2026", 66), "rentenfaktor_guar"])
@@ -824,8 +833,8 @@ def test_pitfall_15_the_applied_factor_is_the_higher_of_guaranteed_and_current(
     guaranteed_only = rich.av_maturity_pp() / 10000.0 * rich.rentenfaktor_guar()
     assert rich.annuity_mth_pp() / guaranteed_only == pytest.approx(1.12, abs=5e-8)
     assert rich.kapitalwahl() is True   # a reporting split that moves no cash flow
-    assert rich.claims(rich.proj_len(), "MATURITY") == pytest.approx(
-        rich.pols_maturity(rich.proj_len()) * rich.av_maturity_pp(), rel=1e-12)
+    assert rich.claims(rich.proj_len() - 1, "MATURITY") == pytest.approx(
+        rich.pols_maturity(rich.proj_len() - 1) * rich.av_maturity_pp(), rel=1e-12)
 
 
 def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
@@ -836,19 +845,19 @@ def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
     charges the fractionation twice.  There is no frequency-loading cells here.
     """
     p = de_frv_anchor
-    for t in (1, 12, 61, 360):
+    for t in (0, 11, 60, 359):
         assert p.premiums(t) == pytest.approx(p.prem_pp(t) * p.pols_if(t), rel=1e-12)
         assert p.prem_pp(t) == pytest.approx(p.prem_pp_base(), rel=1e-12)
     for point_id, (mode, amount) in {3: (3, 600.0), 4: (6, 1200.0),
                                      5: (12, 3000.0)}.items():
         q = fondsgebundene_rentenversicherung.Projection[point_id]
-        assert q.prem_pp(1) == pytest.approx(amount, abs=CENT)
-        assert q.premiums(1) == pytest.approx(amount * q.pols_if(1), rel=1e-12)
+        assert q.prem_pp(0) == pytest.approx(amount, abs=CENT)
+        assert q.premiums(0) == pytest.approx(amount * q.pols_if(0), rel=1e-12)
         for offset in range(1, mode):
-            assert q.prem_pp(1 + offset) == 0.0 and q.premiums(1 + offset) == 0.0
-            assert q.charge_admin_prem(1 + offset) == 0.0
-            assert q.charge_acq(1 + offset) == 0.0
-        assert q.prem_pp(1 + mode) == pytest.approx(amount, abs=CENT)
+            assert q.prem_pp(offset) == 0.0 and q.premiums(offset) == 0.0
+            assert q.charge_admin_prem(offset) == 0.0
+            assert q.charge_acq(offset) == 0.0
+        assert q.prem_pp(mode) == pytest.approx(amount, abs=CENT)
     for absent in ("prem_freq_load", "prem_freq_fee", "freq_loading_table",
                    "ratenzahlungszuschlag", "prem_tariff_pp"):
         assert absent not in _names(fondsgebundene_rentenversicherung), absent
@@ -856,20 +865,22 @@ def test_pitfall_16_the_stated_instalment_is_not_loaded_again(
 
 def test_pitfall_17_the_death_benefit_floor_is_the_premiums_paid_not_invested(
         de_frv_anchor):
-    """cum_prem_pp(60) = 12 000,00 against 9 720,00 actually put into units: reading the
+    """cum_prem_pp(59) = 12 000,00 against 9 720,00 actually put into units: reading the
     floor off the invested amount understates the death benefit by 19 % over the whole
     acquisition window, exactly where the amount at risk is largest."""
     p = de_frv_anchor
-    assert p.cum_prem_pp(60) == pytest.approx(60 * 200.0, rel=1e-12) == 12000.0
-    invested = sum(p.prem_to_av_pp(t) for t in range(1, 61))
+    assert p.cum_prem_pp(59) == pytest.approx(60 * 200.0, rel=1e-12) == 12000.0
+    invested = sum(p.prem_to_av_pp(t) for t in range(60))
     assert invested == pytest.approx(60 * 162.0, rel=1e-12) == 9720.0
-    assert 1.0 - invested / p.cum_prem_pp(60) == pytest.approx(0.19, abs=0.0005)
+    assert 1.0 - invested / p.cum_prem_pp(59) == pytest.approx(0.19, abs=0.0005)
     assert p.db_form() == "prem_return" and p.cum_prem_init() == 0.0
-    assert p.db_floor_pp(60) == pytest.approx(p.cum_prem_pp(60), rel=1e-15)
-    for t in (1, 61, 240, 360):
+    assert p.db_floor_pp(59) == pytest.approx(p.cum_prem_pp(59), rel=1e-15)
+    for t in (60, 239, 359):    # the recursion step; t = 0 is the seeded first month
         assert p.cum_prem_pp(t) == pytest.approx(
             p.cum_prem_pp(t - 1) + p.prem_pp(t) + p.topup_pp(t), rel=1e-12)
-    for t in (1, 60, 94, 240):
+    assert p.cum_prem_pp(0) == pytest.approx(
+        p.cum_prem_init() + p.prem_pp(0) + p.topup_pp(0), rel=1e-12)
+    for t in (0, 59, 93, 239):
         assert p.db_pp(t) == pytest.approx(
             p.av_pp_at(t, "BEF_DECR") + p.nar_pp(t), rel=1e-12)
         assert p.claims(t, "DEATH") == pytest.approx(
@@ -886,17 +897,17 @@ def test_pitfall_18_no_balance_goes_negative_and_no_floor_is_triggered(
     """
     timings = ("BEF_CHARGE", "AFT_CHARGE", "AFT_WD", "BEF_DECR")
     p = de_frv_anchor
-    for t in range(1, p.proj_len() + 1, 17):
+    for t in range(0, p.proj_len(), 17):
         assert all(p.av_pp_at(t, tau) >= 0.0 for tau in timings), t
     hard = fondsgebundene_rentenversicherung.Projection[7]
     assert hard.db_form() == "sum_assured" and hard.sum_assured() == 40000.0
-    for t in range(hard.proj_start(), hard.proj_len() + 1, 11):
+    for t in range(hard.proj_start(), hard.proj_len(), 11):
         assert all(hard.av_pp_at(t, tau) >= 0.0 for tau in timings), t
         assert hard.charge_policy_fee_pp(t) == pytest.approx(3.0, rel=1e-12)
         assert hard.charge_risk_pp(t) == pytest.approx(
             hard.mort_rate_tariff_mth(t) * hard.nar_pp(t), rel=1e-12)
-    assert hard.nar_pp(324) > hard.nar_pp(121) and hard.av_maturity_pp() > 0.0
-    assert hard.charge_risk_pp(324) > hard.charge_risk_pp(121)
+    assert hard.nar_pp(323) > hard.nar_pp(120) and hard.av_maturity_pp() > 0.0
+    assert hard.charge_risk_pp(323) > hard.charge_risk_pp(120)
 
 
 # ---------------------------------------------------------------------------
@@ -914,9 +925,9 @@ def test_check_net_cf_is_delib_ruling_one_and_crosses_the_unit_boundary(de_frv_a
     for name in CHECKS:
         assert getattr(p, name)() is True, name
         resid = getattr(p, name + "_resid")
-        for t in (1, 2, 60, 61, 120, 240, 301, 359, 360):
+        for t in (0, 1, 59, 60, 119, 239, 300, 358, 359):
             assert abs(resid(t)) < 1e-8, (name, t)
-    for t in (1, 2, 61, 240, 360):
+    for t in (0, 1, 60, 239, 359):
         withheld = p.premiums(t) - p.prem_to_av(t)
         assert withheld == pytest.approx(
             p.charge_acq(t) + p.charge_admin_prem(t), abs=1e-9)
@@ -935,7 +946,7 @@ def test_the_unit_and_account_identities_are_not_redundant(de_frv_anchor):
     the account identity catches the return applied at the wrong point in the order.
     """
     p = de_frv_anchor
-    for t in (1, 2, 61, 240, 359):
+    for t in (0, 1, 60, 239, 358):
         assert p.units_pp(t + 1) == pytest.approx(
             p.units_pp(t) + p.units_bought_pp(t) - p.units_cancelled_pp(t), abs=1e-9)
         assert p.units_cancelled_pp(t) == pytest.approx(
@@ -946,8 +957,10 @@ def test_the_unit_and_account_identities_are_not_redundant(de_frv_anchor):
                   - p.withdrawals_pp(t) - p.charge_risk_pp(t))
         assert p.av_pp_at(t, "BEF_DECR") == pytest.approx(rolled, abs=1e-8)
     assert p.check_units_roll_fwd() is True and p.check_av_roll_fwd() is True
-    assert p.units_bought_pp(1) == pytest.approx(1.62, rel=1e-12)  # premium in advance
-    assert p.unit_price(0) == p.unit_price_init() == 100.0
+    assert p.units_bought_pp(0) == pytest.approx(1.62, rel=1e-12)  # premium in advance
+    # The opening price is its own cells: on a 0-based frame there is no t = -1 to read.
+    assert p.unit_price_open(0) == p.unit_price_init() == 100.0
+    assert p.unit_price_open(1) == p.unit_price(0)
 
 
 def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor):
@@ -958,17 +971,18 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
     """
     p = de_frv_anchor
     n = p.proj_len()
-    for t in (1, 61, 240, 359, 360):
+    for t in (0, 60, 239, 358, 359):
         assert p.pols_if(t) == pytest.approx(
             p.pols_death(t) + p.pols_lapse(t) + p.pols_maturity(t) + p.pols_if(t + 1),
             abs=1e-12)
     assert p.check_pols_roll_fwd() is True
-    assert p.pols_if(1) == p.pols_if_init() == 1.0
-    assert p.pols_if_at(1, "AFT_DEATH") == pytest.approx(
-        p.pols_if(1) * (1.0 - p.mort_rate_mth(1)), rel=1e-15)
-    assert p.pols_if_at(1, "AFT_DECR") == pytest.approx(p.pols_if(2), rel=1e-15)
-    assert p.pols_if_at(n, "AFT_DECR") == pytest.approx(p.pols_maturity(n), rel=1e-15)
-    assert p.pols_if(n + 1) == 0.0
+    assert p.pols_if(0) == p.pols_if_init() == 1.0
+    assert p.pols_if_at(0, "AFT_DEATH") == pytest.approx(
+        p.pols_if(0) * (1.0 - p.mort_rate_mth(0)), rel=1e-15)
+    assert p.pols_if_at(0, "AFT_DECR") == pytest.approx(p.pols_if(1), rel=1e-15)
+    assert p.pols_if_at(n - 1, "AFT_DECR") == pytest.approx(
+        p.pols_maturity(n - 1), rel=1e-15)
+    assert p.pols_if(n) == 0.0
 
     df = p.result_cf()
     assert list(df.columns) == [
@@ -977,7 +991,7 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
         "withdrawals", "claims_death", "claims_lapse", "claims_maturity",
         "av_releases", "death_strain", "expenses", "commissions", "net_cf",
         "liability_cf"]
-    assert list(df.index) == list(range(1, 361)) and df.index[-1] == n
+    assert list(df.index) == list(range(360)) and df.index[-1] == n - 1
     assert "claims" not in df.columns          # no subtotal beside its own parts
     assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(0.0, abs=1e-12)
     assert df["net_cf"].iloc[0] == pytest.approx(-1966.22, abs=CENT)  # new-business strain
@@ -990,8 +1004,8 @@ def test_the_frame_closes_and_publishes_both_signs_of_the_net_flow(de_frv_anchor
     assert (fund["mort_rate_tariff_mth"] > fund["mort_rate_mth"]).all()
     assert fund["unit_price"].is_monotonic_increasing
     # The enum accessors validate rather than propagating a typo into a lookup.
-    for bad in (lambda: p.claims(1, "SURRENDER"), lambda: p.av_pp_at(1, "AFTER_CHARGE"),
-                lambda: p.pols_if_at(1, "AFTER_DECR")):
+    for bad in (lambda: p.claims(0, "SURRENDER"), lambda: p.av_pp_at(0, "AFTER_CHARGE"),
+                lambda: p.pols_if_at(0, "AFTER_DECR")):
         with pytest.raises(FormulaError):
             bad()
 
@@ -1008,22 +1022,22 @@ def test_the_modules_off_in_the_base_run_are_reachable(
     assert proj.mort_be_factor == 0.75
     assert proj.mmkt_return_ann == 0.015 and proj.glide_months == 60
     p = de_frv_anchor
-    assert all(p.lapse_dyn_add(t) == 0.0 for t in (1, 61, 240, 360))
+    assert all(p.lapse_dyn_add(t) == 0.0 for t in (0, 60, 239, 359))
     assert all(p.lapse_rate(t) == pytest.approx(
-        p.lapse_rate_base(t) * p.lapse_tax_step(t), rel=1e-12) for t in (1, 61, 301))
+        p.lapse_rate_base(t) * p.lapse_tax_step(t), rel=1e-12) for t in (0, 60, 300))
     assert p.ablauf_flag() is False
-    assert all(p.fund_return_gross_ann(t) == 0.05 for t in (1, 300, 360))
+    assert all(p.fund_return_gross_ann(t) == 0.05 for t in (0, 299, 359))
     for absent in ("surplus_rate", "bonus_rate", "ueberschuss_pp", "schlussueberschuss",
                    "rfb_rate", "surplus_units_pp"):
         assert absent not in _names(fondsgebundene_rentenversicherung), absent
     glide = proj[8]
     assert glide.ablauf_flag() is True and glide.proj_len() == 240
-    assert glide.fund_return_gross_ann(180) == 0.05        # 60 months remaining
-    assert glide.fund_return_gross_ann(181) == pytest.approx(
+    assert glide.fund_return_gross_ann(179) == 0.05        # 60 months remaining
+    assert glide.fund_return_gross_ann(180) == pytest.approx(
         0.05 - (0.05 - 0.015) / 60.0, rel=1e-9)
-    assert glide.fund_return_gross_ann(210) == pytest.approx(0.0325, abs=5e-7)
-    assert glide.fund_return_gross_ann(240) == pytest.approx(0.015, rel=1e-12)
-    assert glide.fund_ter_ann(240) == pytest.approx(glide.fund_ter_ann(1), rel=1e-15)
+    assert glide.fund_return_gross_ann(209) == pytest.approx(0.0325, abs=5e-7)
+    assert glide.fund_return_gross_ann(239) == pytest.approx(0.015, rel=1e-12)
+    assert glide.fund_ter_ann(239) == pytest.approx(glide.fund_ter_ann(0), rel=1e-15)
     assert all(getattr(glide, c)() is True for c in CHECKS)
     assert proj.model.Data.model_point_table()["ablauf_flag"].sum() == 1
 
@@ -1034,19 +1048,19 @@ def test_the_zuzahlung_buys_units_and_the_teilentnahme_cancels_them(
     published as ``withdrawals`` and never as a claim, settled by cancelling units at the
     closing *Anteilspreis* after the fund charges."""
     p = fondsgebundene_rentenversicherung.Projection[9]
-    assert p.topup_month() == 121 and p.wd_month() == 241
-    assert p.topup_pp(121) == 20000.0 and p.topup_pp(122) == 0.0
-    assert p.prem_to_av_pp(121) == pytest.approx(
-        p.prem_pp(121) + 20000.0 - 500.0 - 0.04 * p.prem_pp(121), rel=1e-12)
-    assert p.cum_prem_pp(121) - p.cum_prem_pp(120) == pytest.approx(
-        p.prem_pp(121) + 20000.0, rel=1e-12)
-    assert p.av_pp_at(121, "BEF_DECR") > p.av_pp_at(120, "BEF_DECR") + 19000.0
-    assert p.withdrawals_pp(241) == 15000.0 and p.withdrawals_pp(242) == 0.0
-    assert p.av_pp_at(241, "AFT_WD") == pytest.approx(
-        p.av_pp_at(241, "AFT_CHARGE") - 15000.0, rel=1e-12)
+    assert p.topup_month() == 120 and p.wd_month() == 240
+    assert p.topup_pp(120) == 20000.0 and p.topup_pp(121) == 0.0
+    assert p.prem_to_av_pp(120) == pytest.approx(
+        p.prem_pp(120) + 20000.0 - 500.0 - 0.04 * p.prem_pp(120), rel=1e-12)
+    assert p.cum_prem_pp(120) - p.cum_prem_pp(119) == pytest.approx(
+        p.prem_pp(120) + 20000.0, rel=1e-12)
+    assert p.av_pp_at(120, "BEF_DECR") > p.av_pp_at(119, "BEF_DECR") + 19000.0
+    assert p.withdrawals_pp(240) == 15000.0 and p.withdrawals_pp(241) == 0.0
+    assert p.av_pp_at(240, "AFT_WD") == pytest.approx(
+        p.av_pp_at(240, "AFT_CHARGE") - 15000.0, rel=1e-12)
     assert "claims_wd" not in p.result_cf().columns
     assert p.result_cf()["withdrawals"].sum() == pytest.approx(
-        15000.0 * p.pols_if(241), rel=1e-12)
+        15000.0 * p.pols_if(240), rel=1e-12)
     assert all(getattr(p, c)() is True for c in CHECKS)
 
 
@@ -1061,13 +1075,14 @@ def test_the_dynamic_lapse_module_bites_where_the_fund_is_under_water():
         model.Projection.lapse_dyn_beta = 0.15
         model.Projection.clear_all()
         p = model.Projection[12]
-        assert p.av_pp(13) < p.cum_prem_pp(13)
-        assert p.lapse_dyn_add(13) == pytest.approx(
-            0.15 * (1.0 - p.av_pp(13) / p.cum_prem_pp(13)), rel=1e-12)
-        assert p.lapse_rate_base(13) < p.lapse_rate(13) <= model.Projection.lapse_cap
+        assert p.av_pp(12) < p.cum_prem_pp(12)
+        assert p.lapse_dyn_add(12) == pytest.approx(
+            0.15 * (1.0 - p.av_pp(12) / p.cum_prem_pp(12)), rel=1e-12)
+        assert p.lapse_rate_base(12) < p.lapse_rate(12) <= model.Projection.lapse_cap
         assert p.check_pols_roll_fwd() is True and p.check_net_cf() is True
-        assert p.av_pp(p.proj_len()) > p.cum_prem_pp(p.proj_len())
-        assert p.lapse_dyn_add(p.proj_len()) == 0.0
+        last = p.proj_len() - 1
+        assert p.av_pp(last) > p.cum_prem_pp(last)
+        assert p.lapse_dyn_add(last) == 0.0
     finally:
         model.close()
 

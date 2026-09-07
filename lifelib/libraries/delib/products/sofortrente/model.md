@@ -57,7 +57,17 @@ model.Projection[1].result_cf()
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
 `result_cf()` returns a `DataFrame` indexed by the month `t` with eight columns — the
 six-line cash flow statement and `net_cf` in both orientations — and `result_pols()` puts the
-state behind it beside it. The model and both its Spaces carry docstrings: `model.doc`
+state behind it beside it.
+
+`t` is the library's **0-based** month index, counted in complete months from
+*Vertragsbeginn*: a new-business point's first row is `t = 0`, the completed policy year is
+`t // 12` and the contractual policy year is `t // 12 + 1`. `proj_len()` is the **exclusive
+end** of the frame, so the frame is `range(t_start(), proj_len())`, the last row is
+`proj_len() − 1` and the row count is `proj_len() − t_start()`. On the anchor cell
+`proj_len() = 672` and the frame is `t = 0 … 671`, 672 monthly rows; on the in-force point 10
+`t_start() = 156` and the same `proj_len() = 672` gives 516 rows, `t = 156 … 671`.
+
+The model and both its Spaces carry docstrings: `model.doc`
 describes the product and says what makes it a payout model rather than a shortened
 accumulation one, `model.Projection.doc` holds the full mapping from the technical notes'
 symbols to the cells names, and `model.Data.doc` states the decrement proxy's construction,
@@ -150,8 +160,8 @@ own condition set, for which the GDV publishes model conditions [S9] — so it i
 gated leg here with its own insured life, and it is **off in the base run**. Switched on it
 makes the contract a joint-life last-survivor annuity: `proj_len()` takes the **maximum** of
 the annuitant's horizon, the guarantee's own end and the second life's horizon, and on model
-point 4 the second life is three years younger and the frame runs to `t = 707`, three years
-past the annuitant's own horizon. `(1 − l_a(t)) l_s(t)` is the probability that the annuitant
+point 4 the second life is three years younger, so `proj_len() = 708` and the frame runs to
+`t = 707`, three years past the annuitant's own horizon. `(1 − l_a(t)) l_s(t)` is the probability that the annuitant
 is dead and the second life alive at the payment instant, **assuming independence** [std]:
 real joint lives are positively dependent, so this overstates the joint-life annuity value
 and understates the rider's cost, and no delib source quantifies the dependence. The
@@ -284,6 +294,16 @@ conventions suite counts the reads and asserts the file set.
 | `improvement_table.csv` | `improvement_file` / `improvement_table()` | The *Trendfunktion* `λ(x)` by `(basis, age)`: **[std]** 1,5 % a year to age 70 on the second-order basis, tapering linearly to zero at 105, with the first-order basis improving 25 % faster. DAV 2004 R's own trend is **not public and was not reachable** — the DAV derivation and the contemporaneous expositions are members' and conference materials with no open address [R10] [R12] |
 | `surplus_scale_table.csv` | `surplus_scale_file` / `surplus_scale_table()` | `surplus_init_pct` and `surplus_growth` for the *Überschussverwendung* forms. **[std]** and **uncalibrated**: one carrier group's payout-phase declaration is now in the corpus — 3,35 % less the *Rechnungszins* for 2026, interest surplus only [S10] — and one carrier's realised increase, 0,75 % for 2024 [S8], but neither was used to set these values and the shipped two-component shape does not match either. The corpus still gives no range [R21] [R22] (research gap 4 narrows) |
 | `hoechstrechnungszins_table.csv` | `hoechstrechnungszins_file` / `hoechstrechnungszins_table()` | The statutory rate history by vintage band [REG-R14] [REG-R15]; the two mid-year steps of 1994 and 2000 are assigned **[std]** to the rate in force on 1 January of the split year |
+
+**No input file is keyed by the frame's `t`,** so the move to the 0-based convention left every
+CSV byte-identical. The time-like columns and why each stands: `mort_table.csv` and
+`improvement_table.csv` key on `age`, an **attained age** read at `age(t, life)`;
+`hoechstrechnungszins_table.csv` keys on `year_from`/`year_to`, **calendar years** matched
+against `entry_year()`; and in `model_point_table.csv`, `entry_year`, `birth_year` and
+`surv_birth_year` are calendar years, `entry_age` and `surv_age` are ages, `defer_years` and
+`guar_years` are contractual **durations in years**, and `duration_mth_init` is an **elapsed
+count** of months — already 0-based by nature, and the frame's first `t` exactly because a
+count of completed months and a 0-based month index are the same number.
 
 Every file but the model point table carries a final `provenance` column, one tag per row, per
 the library's second ruling. `Data.input_dir()` resolves the location from `_model.path.parent`

@@ -13,8 +13,9 @@ projecting model point 1::
 
 ``t`` counts **policy months**, 0-based: ``t = 0`` is the first projected month — the
 month of inception for a new-business point, the valuation month for an in-force one —
-and ``proj_len()`` is the **last** projected index, so :func:`result_cf` runs
-``t = 0 ... proj_len()`` and ends there. On the anchor cell that is 444 monthly rows.
+and ``proj_len()`` is the **number** of projected months, the exclusive end of the frame,
+so :func:`result_cf` runs ``t = 0 ... proj_len() - 1`` and ends there. On the anchor cell
+that is ``proj_len() == 444``, i.e. 444 monthly rows ending at ``t = 443``.
 Nothing is payable at the end: cover ceases at attained age ``cover_end_age``, there is
 no maturity value, no surrender value and no death benefit, and a claim still in payment
 at the horizon simply stops.
@@ -61,8 +62,8 @@ use compact actuarial symbols instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ===============================
 (none)                     model_point()                   The selected model point row
-n                          proj_len()                      Last projected month index
-(none)                     first_len()                     Last month of the pricing run
+n                          proj_len()                      Number of projected months
+(none)                     first_len()                     Months in the pricing run
 u(t)                       duration_mth(t)                 Elapsed policy months at t
 y(t)                       policy_year(t)                  Policy year containing t
 x(t)                       age(t)                          Attained age, ALB
@@ -588,28 +589,30 @@ def pols_if_init():
 # --- the time frame ---
 
 def proj_len():
-    """n: the **last projected month index**, so the frame runs ``t = 0 ... proj_len()``.
+    """n: the **number of projected months**, so the frame runs ``t = 0 ... proj_len() - 1``.
 
-    ``12 x (cover_end_age() - entry_age()) - 1 - duration_init_months()``.  Cover ceases
+    ``12 x (cover_end_age() - entry_age()) - duration_init_months()``.  Cover ceases
     at attained age ``cover_end_age()``, so the last projected month is the last month of
-    attained age ``cover_end_age() - 1``.  On the anchor cell that is
-    ``12 x (67 - 30) - 1 = 443``, i.e. 444 monthly rows.
+    attained age ``cover_end_age() - 1``, index ``proj_len() - 1``.  On the anchor cell
+    that is ``12 x (67 - 30) = 444`` monthly rows, the last of them ``t = 443``.
 
-    This is the library's reading of ``proj_len()`` — the last index, not the row count —
-    and ``result_cf().index[-1] == proj_len()`` is asserted for every model point.
+    This is the library's reading of ``proj_len()`` — the **exclusive end** of the frame,
+    the row count rather than the last index — and ``result_cf().index[-1] ==
+    proj_len() - 1`` is asserted for every model point.
     """
-    return 12 * (cover_end_age() - entry_age()) - 1 - duration_init_months()
+    return 12 * (cover_end_age() - entry_age()) - duration_init_months()
 
 
 def first_len():
-    """The last month index of the **first-order pricing run**, from inception.
+    """The **number of months** in the **first-order pricing run**, from inception.
 
-    ``12 x (cover_end_age() - entry_age()) - 1``, which is ``proj_len() +
-    duration_init_months()``.  The shadow ledgers run over the contract's original term
-    whatever duration the model point has already run, because the *Bruttobeitrag* was
-    struck at inception and does not change afterwards.
+    ``12 x (cover_end_age() - entry_age())``, which is ``proj_len() +
+    duration_init_months()``, so the run is ``s = 0 ... first_len() - 1``.  The shadow
+    ledgers run over the contract's original term whatever duration the model point has
+    already run, because the *Bruttobeitrag* was struck at inception and does not change
+    afterwards.
     """
-    return 12 * (cover_end_age() - entry_age()) - 1
+    return 12 * (cover_end_age() - entry_age())
 
 
 def duration_mth(t):
@@ -679,12 +682,13 @@ def seed_claim_dur():
 def max_claim_dur():
     """The longest claim duration the cohort vectors have to carry.
 
-    ``proj_len() + seed_claim_dur() + 2``.  A cohort seeded at ``seed_claim_dur()``
-    reaches ``seed_claim_dur() + proj_len() + 1`` at ``t = proj_len() + 1``, which the
-    roll-forward checks read, and the extra element is what makes the duration shift
-    lossless — the last slot is structurally zero, so nothing falls off the end.
+    ``proj_len() + seed_claim_dur() + 1``.  A cohort seeded at ``seed_claim_dur()``
+    reaches ``seed_claim_dur() + proj_len()`` at ``t = proj_len()``, the month past the
+    end of the frame that the roll-forward checks read, and the extra element is what
+    makes the duration shift lossless — the last slot is structurally zero, so nothing
+    falls off the end.
     """
-    return proj_len() + seed_claim_dur() + 2
+    return proj_len() + seed_claim_dur() + 1
 
 
 def cohort_len(t):
@@ -701,10 +705,10 @@ def cohort_len(t):
 def cohort_len_first(s):
     """The cohort-vector length in the first-order pricing run at month s.
 
-    ``min(first_len() + 2, s + 1)``: the shadow chain always starts as a new-business
+    ``min(first_len() + 1, s + 1)``: the shadow chain always starts as a new-business
     active life, so it carries no seeded claim and its first cohort appears at ``s = 1``.
     """
-    return min(first_len() + 2, s + 1)
+    return min(first_len() + 1, s + 1)
 
 
 # --- the rate tables, keyed by age ---
@@ -1159,7 +1163,7 @@ def pols_actv_first(s):
     ``- deaths - inceptions + reactivations``, with **no lapse**: a prudent German pricing
     basis does not anticipate a decrement that releases the liability.
     """
-    if s < 0 or s > first_len() + 1:
+    if s < 0 or s > first_len():
         return 0.0
     if s == 0:
         return 1.0
@@ -1322,7 +1326,7 @@ def pv_prem_unit_first():
     a re-expression of it.
     """
     return sum(disc_first(s) * dyn_factor_first(s) * pols_prem_first(s) / 12.0
-               for s in range(0, first_len() + 1))
+               for s in range(0, first_len()))
 
 
 def pv_rente_first():
@@ -1334,7 +1338,7 @@ def pv_rente_first():
     this sum understates the premium by the whole of the § 174 tail.
     """
     total = 0.0
-    for s in range(0, first_len() + 1):
+    for s in range(0, first_len()):
         if age_first(s) >= benefit_end_age():
             continue
         val = dis_cohorts_first(s)[1]
@@ -1355,7 +1359,7 @@ def pv_wiedereingl_first():
     return sum(disc_first(s) * wiedereingliederung_months()
                * runoff_val_first(s, runoff_months)                  # noqa: F821
                * (1.0 - mort_rate_first_mth(s))
-               for s in range(0, first_len() + 1))
+               for s in range(0, first_len()))
 
 
 def pv_claim_cost_first():
@@ -1368,7 +1372,7 @@ def pv_claim_cost_first():
     ratio of its inception rates.
     """
     total = 0.0
-    for s in range(0, first_len() + 1):
+    for s in range(0, first_len()):
         total += disc_first(s) * claim_assess_cost * pols_inception_first(s)  # noqa: F821
         if age_first(s) < benefit_end_age():
             pols = dis_cohorts_first(s)[0]
@@ -1386,7 +1390,7 @@ def pv_admin_first():
     the left-hand side of the equivalence and reduces the denominator instead.
     """
     return sum(disc_first(s) * admin_flat_ann / 12.0 * pols_if_first(s)  # noqa: F821
-               for s in range(0, first_len() + 1))
+               for s in range(0, first_len()))
 
 
 # --- the best-estimate ledgers ---
@@ -1399,7 +1403,7 @@ def pols_actv(t):
     one.  Thereafter ``- deaths - lapses - inceptions + reactivations``, the last of them
     being the § 174 return arc three months behind the recovery that produced it.
     """
-    if t < 0 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
         return pols_if_init() if status() == "aktiv" else 0.0
@@ -1458,8 +1462,8 @@ def dis_cohorts(t):
     month of disabled-lives mortality and one month of reactivation.
 
     This is the model's list-valued cells and the reason is cost: a two-argument recursion
-    would be ``(proj_len() + 1) x max_claim_dur()`` separate cells — nearly two hundred
-    thousand on the anchor cell — where this is ``proj_len() + 1`` cells with a loop
+    would be ``proj_len() x max_claim_dur()`` separate cells — nearly two hundred
+    thousand on the anchor cell — where this is ``proj_len()`` cells with a loop
     inside.  :func:`pols_dis_dur` reads elements out of it, so the notes' two-dimensional
     object is still addressable by name.  A new list is built on each step rather than the
     previous one mutated, so holding a returned list cannot corrupt the cache.
@@ -1678,7 +1682,7 @@ def pols_if(t):
     value is ``pols_if_init()`` exactly.  End-of-month state goes through
     :func:`pols_if_at`.
     """
-    if t < 0 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
         return pols_if_init()
@@ -1694,7 +1698,7 @@ def pols_if_at(t, timing):
 
     ``"END"``
         ``pols_if(t + 1)``, the end-of-month state after deaths and lapses.
-        At ``t = proj_len()`` it is the population whose cover simply runs
+        At ``t = proj_len() - 1`` it is the population whose cover simply runs
         out, and nothing is payable to it.
     """
     if timing == "BEG":
@@ -1907,7 +1911,7 @@ def check_net_cf():
     """
     return all(abs(check_net_cf_resid(t)) <= roll_fwd_tol            # noqa: F821
                * max(1.0, abs(bu_rente_pp(t)))
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_states_resid(t):
@@ -1931,7 +1935,7 @@ def check_states():
     """True when the three ledgers account for the whole in-force population at every t."""
     return all(abs(check_states_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(0, proj_len() + 2))
+               for t in range(0, proj_len() + 1))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1955,7 +1959,7 @@ def check_pols_roll_fwd():
     """True when the in-force roll-forward closes in every projected month."""
     return all(abs(check_pols_roll_fwd_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_dis_roll_fwd_resid(t):
@@ -1978,7 +1982,7 @@ def check_dis_roll_fwd():
     """True when the disabled ledger rolls forward exactly in every projected month."""
     return all(abs(check_dis_roll_fwd_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_runoff_roll_fwd_resid(t):
@@ -1998,7 +2002,7 @@ def check_runoff_roll_fwd():
     """True when the § 174 run-off ledger rolls forward exactly in every projected month."""
     return all(abs(check_runoff_roll_fwd_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_prem_split_resid(t):
@@ -2018,7 +2022,7 @@ def check_prem_split():
     """True when the two premium columns reconcile to the *Zahlbeitrag* in every month."""
     return all(abs(check_prem_split_resid(t)) <= roll_fwd_tol        # noqa: F821
                * max(1.0, abs(prem_gross_ann_pp(t)))
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_cover_end_resid(t):
@@ -2047,7 +2051,7 @@ def check_cover_end_resid(t):
 def check_cover_end():
     """True when benefit and premium both stop exactly at their own contractual ages."""
     return all(abs(check_cover_end_resid(t)) <= roll_fwd_tol         # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 # --- the result frames ---
@@ -2068,11 +2072,11 @@ def result_cf():
     scope statement is made rather than inferred.  ``liability_cf`` is ``net_cf``
     outgo-positive.
 
-    The frame runs ``t = 0 ... proj_len()`` and stops: cover ceases at attained age
+    The frame runs ``t = 0 ... proj_len() - 1`` and stops: cover ceases at attained age
     ``cover_end_age()`` with nothing payable, and a claim still in payment at the horizon
     simply stops.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2107,7 +2111,7 @@ def result_states():
     Read it as the shape of the assumption, not as the rate applied in that month; the
     rate applied to a cohort is ``recov_rate(z)`` and belongs to the cohort.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_inception": [pols_inception(t) for t in ts],

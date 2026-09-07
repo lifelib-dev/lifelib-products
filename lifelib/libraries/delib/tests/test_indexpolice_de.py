@@ -4,10 +4,13 @@ The golden values are the worked example in
 ``products/indexpolice/technical-notes.md`` ("Worked example"), which is a
 **configuration** and not a scenario: model point 1, ``policy_id = "DE-IDX-0001"``, a male
 aged 40 last birthday writing an *indexgebundene Rentenversicherung* to *Rentenbeginn* at
-67, so ``proj_len() = 67 - 40 = 27``.  It is new business -- ``dur_init = 0``, hence
-``t_start() = 1``, ``pols_if_init = 1.0``, ``av_pp_init = guar_locked_init =
-prem_paid_init = 0`` -- which makes the notes' twenty-seven-row table the **entire**
-projection rather than a slice of one, so every row of it is asserted here.
+67, so ``proj_len() = 67 - 40 = 27`` periods, ``t = 0 ... 26``.  It is new business --
+``dur_init = 0``, hence ``t_start() = 0``, ``pols_if_init = 1.0``, ``av_pp_init =
+guar_locked_init = prem_paid_init = 0`` -- which makes the notes' twenty-seven-row table
+the **entire** projection rather than a slice of one, so every row of it is asserted here.
+
+``t`` is the library's 0-based period index: ``t = 0`` is the first policy year, the
+contractual label is ``policy year = t + 1``, and every golden below is keyed on ``t``.
 
 The cell in full: a level *Beitrag* of 2 400,00 EUR a year (the research file's 200,00 EUR
 a month taken annually) for all 27 years, ``prem_freq = annual`` so ``freq_load() = 1.000``
@@ -15,7 +18,8 @@ and the *Beitragssumme* is ``27 x 2 400,00 = 64 800,00 EUR``; ``guar_level = 0.9
 *Beitragsgarantie* of 58 320,00 EUR at *Rentenbeginn* plus every locked-in credit;
 ``guar_rate = 0.0100``, the *Hoechstrechnungszins* for 2025-2026; ``payoff_form = "cap"``;
 ``index_id = "eqidx_vol17"``, a broad equity price index at a 3,00 % monthly Cap whose
-*Indexjahre* at ``t = 9`` and ``t = 10`` are the research file's Example A and Example B;
+*Indexjahre* at ``t = 8`` and ``t = 9`` -- policy years 9 and 10 -- are the research
+file's Example A and Example B;
 ``elect_id = "always_index"``, so ``w(t) = 1.00`` in all 27 years and the *sichere
 Verzinsung* arm is never used; ``death_min_rate = 0.50``, a *Mindesttodesfallschutz* floor
 of 32 400,00 EUR; ``ann_option = "annuity"``; and ``surr_charge_on = 1``.
@@ -27,9 +31,10 @@ way against 3 780,62 EUR if the rounded cells are added, and the same one-cent s
 ``expenses`` and on ``net_cf``.
 
 What this module asserts: every row of the notes' table and the Total row at full
-precision; the notes' six independent checks (year 1 rebuilt end to end, the *Indexjahr* of
-year 9 rebuilt on its own terms, the decrement closure, the account roll-forward at
-``t = 9``, the cash flow statement on the Total row, the guarantee at *Rentenbeginn*); the
+precision; the notes' six independent checks (policy year 1 -- ``t = 0`` -- rebuilt end to end, the
+*Indexjahr* of policy year 9 rebuilt on its own terms, the decrement closure, the account
+roll-forward at ``t = 8``, the cash flow statement on the Total row, the guarantee at
+*Rentenbeginn*); the
 *Partizipationsquote* variant on the identical index path, its totals and the four designs
 at *Rentenbeginn*; **one test per numbered modeling pitfall**, each named for its pitfall;
 the product's own invariants and each of the six ``check_*()`` identities with its per-``t``
@@ -70,33 +75,33 @@ INPUT_CSVS = {
 # surplus_credit is 0.00 at every t here and liability_cf is exactly -net_cf; both are
 # omitted from the notes' printed table for width and are asserted in the row test.
 WORKED_EXAMPLE = {
-    1:  (40, 1.000000, 2400.00,  38.88,   98.81,     0.00, 1656.00,  19.99,    0.00,     0.00,    606.31),
-    2:  (41, 0.948860, 2277.26,  40.40,  188.20,     0.00,   34.67,  38.08,   81.79,  1915.73,   2014.00),
-    3:  (42, 0.900233, 2160.56,  41.97,  163.70,     0.00,   33.39,  55.21,  186.81,  3730.48,   1921.51),
-    4:  (43, 0.871969, 2092.73,  44.51,  216.92,     0.00,   32.82,  73.17, 1204.06,  5587.67,   1798.47),
-    5:  (44, 0.844477, 2026.75,  47.20,  297.26,     0.00,   32.27, 100.28,    0.00,  8360.99,   1650.01),
-    6:  (45, 0.817730, 1962.55,  50.05,  346.23,     0.00,   31.71, 116.82,   41.78,  9807.67,   1534.56),
-    7:  (46, 0.791700, 1900.08,  53.06,  393.37,     0.00,   31.16, 132.75,    0.00, 11465.08,   1422.49),
-    8:  (47, 0.766360, 1839.26,  56.24,  436.27,     0.00,   30.62, 147.26,    0.00, 12978.50,   1316.13),
-    9:  (48, 0.741686, 1780.05,  59.60,  476.31,     0.00,   30.08, 160.80, 1239.56, 14394.07,   1214.06),
-    10: (49, 0.717651, 1722.36,  63.15,  550.17,     0.00,   29.54, 185.79,    0.00, 16954.47,   1079.50),
-    11: (50, 0.694231, 1666.15,  66.89,  583.79,     0.00,   29.00, 197.19,    0.00, 18152.02,    986.47),
-    12: (51, 0.671401, 1611.36,  70.84, 1229.59,     0.00,   28.47, 207.72,    0.00, 19261.02,    282.46),
-    13: (52, 0.629062, 1509.75,  75.88,  415.58,     0.00,   27.08, 210.68,  823.46, 19656.70,    991.21),
-    14: (53, 0.614282, 1474.28,  90.60,  453.04,     0.00,   26.84, 229.75,    0.00, 21602.56,    903.80),
-    15: (54, 0.599646, 1439.15, 103.58,  472.83,     0.00,   26.59, 239.88,    0.00, 22651.89,    836.15),
-    16: (55, 0.585141, 1404.34, 117.93,  491.43,     0.00,   26.34, 249.41,    0.00, 23641.56,    768.64),
-    17: (56, 0.570753, 1369.81, 133.76,  508.81,     0.00,   26.07, 258.35,    0.00, 24571.29,    701.16),
-    18: (57, 0.556471, 1335.53, 151.20,  524.98,     0.00,   25.80, 266.69,    0.00, 25440.64,    633.55),
-    19: (58, 0.542280, 1301.47, 170.37,  539.92,     0.00,   25.52, 274.43,    0.00, 26249.06,    565.67),
-    20: (59, 0.528168, 1267.60, 191.39,  553.60,     0.00,   25.23, 281.55,    0.00, 26995.84,    497.38),
-    21: (60, 0.514121, 1233.89, 214.41,  566.02,     0.00,   24.93, 288.05,    0.00, 27680.11,    428.53),
-    22: (61, 0.500125, 1200.30, 239.56,  577.14,     0.00,   24.61, 293.91,    0.00, 28300.85,    358.99),
-    23: (62, 0.486168, 1166.80, 266.98,  586.94,     0.00,   24.29, 299.14,    0.00, 28856.92,    288.59),
-    24: (63, 0.472234, 1133.36, 296.81,  595.39,     0.00,   23.94, 303.70,    0.00, 29346.98,    217.22),
-    25: (64, 0.458311, 1099.95, 329.17,  602.46,     0.00,   23.59, 307.59,    0.00, 29769.58,    144.73),
-    26: (65, 0.444386, 1066.53, 364.19,  608.12,     0.00,   23.21, 310.80,    0.00, 30123.10,     71.00),
-    27: (66, 0.430446, 1033.07, 402.00,    0.00, 31240.67,   22.82, 313.29,    0.00, 30405.82, -30632.42),
+    0:  (40, 1.000000, 2400.00,  38.88,   98.81,     0.00, 1656.00,  19.99,    0.00,     0.00,    606.31),
+    1:  (41, 0.948860, 2277.26,  40.40,  188.20,     0.00,   34.67,  38.08,   81.79,  1915.73,   2014.00),
+    2:  (42, 0.900233, 2160.56,  41.97,  163.70,     0.00,   33.39,  55.21,  186.81,  3730.48,   1921.51),
+    3:  (43, 0.871969, 2092.73,  44.51,  216.92,     0.00,   32.82,  73.17, 1204.06,  5587.67,   1798.47),
+    4:  (44, 0.844477, 2026.75,  47.20,  297.26,     0.00,   32.27, 100.28,    0.00,  8360.99,   1650.01),
+    5:  (45, 0.817730, 1962.55,  50.05,  346.23,     0.00,   31.71, 116.82,   41.78,  9807.67,   1534.56),
+    6:  (46, 0.791700, 1900.08,  53.06,  393.37,     0.00,   31.16, 132.75,    0.00, 11465.08,   1422.49),
+    7:  (47, 0.766360, 1839.26,  56.24,  436.27,     0.00,   30.62, 147.26,    0.00, 12978.50,   1316.13),
+    8:  (48, 0.741686, 1780.05,  59.60,  476.31,     0.00,   30.08, 160.80, 1239.56, 14394.07,   1214.06),
+    9:  (49, 0.717651, 1722.36,  63.15,  550.17,     0.00,   29.54, 185.79,    0.00, 16954.47,   1079.50),
+    10: (50, 0.694231, 1666.15,  66.89,  583.79,     0.00,   29.00, 197.19,    0.00, 18152.02,    986.47),
+    11: (51, 0.671401, 1611.36,  70.84, 1229.59,     0.00,   28.47, 207.72,    0.00, 19261.02,    282.46),
+    12: (52, 0.629062, 1509.75,  75.88,  415.58,     0.00,   27.08, 210.68,  823.46, 19656.70,    991.21),
+    13: (53, 0.614282, 1474.28,  90.60,  453.04,     0.00,   26.84, 229.75,    0.00, 21602.56,    903.80),
+    14: (54, 0.599646, 1439.15, 103.58,  472.83,     0.00,   26.59, 239.88,    0.00, 22651.89,    836.15),
+    15: (55, 0.585141, 1404.34, 117.93,  491.43,     0.00,   26.34, 249.41,    0.00, 23641.56,    768.64),
+    16: (56, 0.570753, 1369.81, 133.76,  508.81,     0.00,   26.07, 258.35,    0.00, 24571.29,    701.16),
+    17: (57, 0.556471, 1335.53, 151.20,  524.98,     0.00,   25.80, 266.69,    0.00, 25440.64,    633.55),
+    18: (58, 0.542280, 1301.47, 170.37,  539.92,     0.00,   25.52, 274.43,    0.00, 26249.06,    565.67),
+    19: (59, 0.528168, 1267.60, 191.39,  553.60,     0.00,   25.23, 281.55,    0.00, 26995.84,    497.38),
+    20: (60, 0.514121, 1233.89, 214.41,  566.02,     0.00,   24.93, 288.05,    0.00, 27680.11,    428.53),
+    21: (61, 0.500125, 1200.30, 239.56,  577.14,     0.00,   24.61, 293.91,    0.00, 28300.85,    358.99),
+    22: (62, 0.486168, 1166.80, 266.98,  586.94,     0.00,   24.29, 299.14,    0.00, 28856.92,    288.59),
+    23: (63, 0.472234, 1133.36, 296.81,  595.39,     0.00,   23.94, 303.70,    0.00, 29346.98,    217.22),
+    24: (64, 0.458311, 1099.95, 329.17,  602.46,     0.00,   23.59, 307.59,    0.00, 29769.58,    144.73),
+    25: (65, 0.444386, 1066.53, 364.19,  608.12,     0.00,   23.21, 310.80,    0.00, 30123.10,     71.00),
+    26: (66, 0.430446, 1033.07, 402.00,    0.00, 31240.67,   22.82, 313.29,    0.00, 30405.82, -30632.42),
 }
 
 # The notes' Total row: summed at full precision and then rounded.  Three of the eight
@@ -108,37 +113,37 @@ TOTALS = {
 }
 
 # The twelve monthly returns of the two Indexjahre the mechanic turns on, in per cent,
-# straight from the research file: eqidx_vol17 rows t = 9 and t = 10.
+# straight from the research file: eqidx_vol17 rows t = 8 and t = 9.
 EXAMPLE_A = (1.80, -2.40, 4.60, 0.90, -3.70, 2.20, 3.40, -1.10, 0.40, 5.20, -0.80, 2.60)
 EXAMPLE_B = (6.50, -2.10, 5.80, -1.90, -2.40, 4.20, -3.10, 0.60, -2.80, 5.10, -1.70, -1.20)
 
 # t: (index_sum, index_return_year, index_credit_rate) -- every year that credits
 # something, plus the four that most sharply separate the capped sum from the raw return.
 INDEXJAHR = {
-    1:  (0.1204, 0.195591, 0.1204),
-    2:  (0.0450, 0.126362, 0.0450),
-    3:  (0.0517, 0.209523, 0.0517),
-    4:  (0.2225, 0.592280, 0.2225),
-    5:  (-0.0868, -0.031740, 0.0000),
-    6:  (0.0044, 0.028913, 0.0044),
-    9:  (0.0890, 0.134548, 0.0890),
-    10: (-0.0260, 0.064402, 0.0000),
-    11: (-0.0122, 0.080888, 0.0000),
-    13: (0.0429, 0.064102, 0.0429),
-    16: (-0.1114, 0.100909, 0.0000),
-    27: (-0.2139, -0.168146, 0.0000),
+    0:  (0.1204, 0.195591, 0.1204),
+    1:  (0.0450, 0.126362, 0.0450),
+    2:  (0.0517, 0.209523, 0.0517),
+    3:  (0.2225, 0.592280, 0.2225),
+    4:  (-0.0868, -0.031740, 0.0000),
+    5:  (0.0044, 0.028913, 0.0044),
+    8:  (0.0890, 0.134548, 0.0890),
+    9:  (-0.0260, 0.064402, 0.0000),
+    10: (-0.0122, 0.080888, 0.0000),
+    12: (0.0429, 0.064102, 0.0429),
+    15: (-0.1114, 0.100909, 0.0000),
+    26: (-0.2139, -0.168146, 0.0000),
 }
 
 # The Partizipationsquote variant -- model point 2, the anchor with payoff_form = "quote"
 # and nothing else changed.  t: (pols_if, premiums, claims_death, claims_lapse,
 # claims_maturity, expenses, guar_int, index_credit, av, net_cf).
 QUOTE_VARIANT = {
-    1:  (1.000000, 2400.00,  38.88,  98.81,     0.00, 1656.00,  19.99,    0.00,     0.00,    606.31),
-    4:  (0.871969, 2092.73,  44.51, 226.65,     0.00,   32.82,  76.45, 2036.27,  5916.59,   1788.74),
-    9:  (0.741686, 1780.05,  59.60, 511.12,     0.00,   30.08, 172.56, 1216.40, 15572.35,   1179.24),
-    10: (0.717651, 1722.36,  63.15, 583.42,     0.00,   29.54, 197.01,  675.83, 18079.93,   1046.25),
-    13: (0.629062, 1509.75,  84.90, 465.03,     0.00,   27.08, 235.75,  832.65, 22169.87,    932.74),
-    27: (0.430446, 1033.07, 538.84,   0.00, 41875.02,   22.82, 419.94,    0.00, 41097.09, -41403.61),
+    0:  (1.000000, 2400.00,  38.88,  98.81,     0.00, 1656.00,  19.99,    0.00,     0.00,    606.31),
+    3:  (0.871969, 2092.73,  44.51, 226.65,     0.00,   32.82,  76.45, 2036.27,  5916.59,   1788.74),
+    8:  (0.741686, 1780.05,  59.60, 511.12,     0.00,   30.08, 172.56, 1216.40, 15572.35,   1179.24),
+    9:  (0.717651, 1722.36,  63.15, 583.42,     0.00,   29.54, 197.01,  675.83, 18079.93,   1046.25),
+    12: (0.629062, 1509.75,  84.90, 465.03,     0.00,   27.08, 235.75,  832.65, 22169.87,    932.74),
+    26: (0.430446, 1033.07, 538.84,   0.00, 41875.02,   22.82, 419.94,    0.00, 41097.09, -41403.61),
 }
 
 QUOTE_TOTALS = {
@@ -147,7 +152,7 @@ QUOTE_TOTALS = {
     "surplus_credit": 0.00, "index_credit": 16521.86, "net_cf": -21136.33,
 }
 
-# The notes' "four designs at Rentenbeginn" table, per policy at t = n + 1 -- so the credit
+# The notes' "four designs at Rentenbeginn" table, per policy at t = n -- so the credit
 # columns are the ledger and are larger than the frame's fund-level totals, which carry the
 # decrements.  point_id: (index credits, safe-arm credits, account, guaranteed capital,
 # benefit, monthly Rente, index_budget_ratio).
@@ -208,62 +213,64 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_index_anchor)
 
 
 def test_check_one_policy_year_one_rebuilt_from_scratch(de_index_anchor):
-    """The notes' first check: row 1 rebuilt end to end, nothing read from the frame."""
+    """The notes' first check: the first row, ``t = 0`` -- contractual policy year 1 --
+    rebuilt end to end, nothing read from the frame."""
     p = de_index_anchor
     assert p.prem_sum() == 64800.0 and p.freq_load() == 1.0
-    assert p.prem_gross_pp(1) == pytest.approx(2400.00, abs=CENT)
-    assert p.prem_charge_acq_pp(1) == pytest.approx(0.025 * 64800.0 / 5, abs=CENT) == (
+    assert p.prem_gross_pp(0) == pytest.approx(2400.00, abs=CENT)
+    assert p.prem_charge_acq_pp(0) == pytest.approx(0.025 * 64800.0 / 5, abs=CENT) == (
         pytest.approx(324.00, abs=CENT))
-    assert p.prem_charge_adm_pp(1) == pytest.approx(0.03 * 2400.00, abs=CENT)
-    assert p.prem_to_av_pp(1) == pytest.approx(2400.00 - 324.00 - 72.00, abs=CENT)
-    assert p.av_pp_at(1, "BEF_PREM") == 0.0
-    assert p.av_pp_at(1, "AFT_PREM") == pytest.approx(2004.00, abs=CENT)
-    assert p.av_charge_pp(1) == pytest.approx(0.0025 * 2004.00, abs=CENT)
-    assert p.av_pp_at(1, "AFT_CHARGE") == pytest.approx(1998.99, abs=CENT)
-    assert p.guar_int_pp(1) == pytest.approx(0.01 * 1998.99, rel=1e-12)
-    assert p.guar_int(1) == pytest.approx(19.9899, abs=5e-5)
-    assert p.av_pp_at(1, "AFT_GUAR") == pytest.approx(2018.9799, abs=5e-5)
-    # Decrements: q_d(1) is the proxy's own anchor, then surrender on the survivors.
-    assert p.mort_rate(1) == 0.001200 and p.lapse_rate(1) == 0.05
-    assert p.pols_death(1) == pytest.approx(0.001200, rel=1e-12)
-    assert p.pols_lapse(1) == pytest.approx(0.05 * (1 - 0.001200), rel=1e-12)
-    assert p.pols_if(2) == pytest.approx(0.948860, abs=SIX_DP)
-    # Benefits: the Mindesttodesfallschutz floor dominates the account in year 1.
-    assert p.db_pp(1) == pytest.approx(0.50 * 64800.0, abs=CENT)
-    assert p.claims(1, "DEATH") == pytest.approx(32400.00 * 0.001200, abs=CENT)
-    assert p.cv_pp(1) == pytest.approx(2018.9799 * 0.98, abs=5e-4)
-    assert p.claims(1, "LAPSE") == pytest.approx(1978.6003 * 0.04994, abs=5e-4)
-    assert p.expenses(1) == pytest.approx(1620.00 + 36.00, abs=CENT)
-    assert p.net_cf(1) == pytest.approx(2400.00 - 38.88 - 98.81 - 1656.00, abs=CENT)
+    assert p.prem_charge_adm_pp(0) == pytest.approx(0.03 * 2400.00, abs=CENT)
+    assert p.prem_to_av_pp(0) == pytest.approx(2400.00 - 324.00 - 72.00, abs=CENT)
+    assert p.av_pp_at(0, "BEF_PREM") == 0.0
+    assert p.av_pp_at(0, "AFT_PREM") == pytest.approx(2004.00, abs=CENT)
+    assert p.av_charge_pp(0) == pytest.approx(0.0025 * 2004.00, abs=CENT)
+    assert p.av_pp_at(0, "AFT_CHARGE") == pytest.approx(1998.99, abs=CENT)
+    assert p.guar_int_pp(0) == pytest.approx(0.01 * 1998.99, rel=1e-12)
+    assert p.guar_int(0) == pytest.approx(19.9899, abs=5e-5)
+    assert p.av_pp_at(0, "AFT_GUAR") == pytest.approx(2018.9799, abs=5e-5)
+    # Decrements: q_d(0) is the proxy's own anchor, then surrender on the survivors.
+    assert p.mort_rate(0) == 0.001200 and p.lapse_rate(0) == 0.05
+    assert p.pols_death(0) == pytest.approx(0.001200, rel=1e-12)
+    assert p.pols_lapse(0) == pytest.approx(0.05 * (1 - 0.001200), rel=1e-12)
+    assert p.pols_if(1) == pytest.approx(0.948860, abs=SIX_DP)
+    # Benefits: the Mindesttodesfallschutz floor dominates the account in the first year.
+    assert p.db_pp(0) == pytest.approx(0.50 * 64800.0, abs=CENT)
+    assert p.claims(0, "DEATH") == pytest.approx(32400.00 * 0.001200, abs=CENT)
+    assert p.cv_pp(0) == pytest.approx(2018.9799 * 0.98, abs=5e-4)
+    assert p.claims(0, "LAPSE") == pytest.approx(1978.6003 * 0.04994, abs=5e-4)
+    assert p.expenses(0) == pytest.approx(1620.00 + 36.00, abs=CENT)
+    assert p.net_cf(0) == pytest.approx(2400.00 - 38.88 - 98.81 - 1656.00, abs=CENT)
 
 
 def test_check_two_the_indexjahr_of_year_nine_rebuilt_on_its_own_terms(de_index_anchor):
-    """The notes' second check: Example A, rebuilt from its twelve monthly returns.
-    ``S(9) = +8,90 %`` is positive, so ``rho(9) = 8,90 %`` on the **opening** balance, to
-    the survivors of both decrements.  Compounding the same twelve capped returns gives
-    8,9599 %, and the raw year return is +13,4548 % against a raw sum of +13,10 %."""
+    """The notes' second check: Example A, the *Indexjahr* of policy year 9 (``t = 8``),
+    rebuilt from its twelve monthly returns.  ``S(8) = +8,90 %`` is positive, so
+    ``rho(8) = 8,90 %`` on the **opening** balance, to the survivors of both decrements.
+    Compounding the same twelve capped returns gives 8,9599 %, and the raw year return is
+    +13,4548 % against a raw sum of +13,10 %."""
     p = de_index_anchor
-    monthly = [p.index_return(9, m) for m in range(1, 13)]
-    capped = [p.index_return_capped(9, m) for m in range(1, 13)]
+    monthly = [p.index_return(8, m) for m in range(1, 13)]
+    capped = [p.index_return_capped(8, m) for m in range(1, 13)]
     assert monthly == pytest.approx([r / 100.0 for r in EXAMPLE_A], abs=1e-12)
     assert capped == pytest.approx([min(r / 100.0, 0.03) for r in EXAMPLE_A], abs=1e-12)
     assert sum(monthly) == pytest.approx(0.1310, abs=1e-12)
-    assert p.index_sum(9) == pytest.approx(0.0890, abs=1e-12)
-    assert p.index_credit_rate(9) == pytest.approx(0.0890, abs=1e-12)
-    assert p.index_base_pp(9) == pytest.approx(19407.2450, abs=5e-5)
-    assert p.index_credit_pp(9) == pytest.approx(0.0890 * 19407.2450, abs=5e-4) == (
+    assert p.index_sum(8) == pytest.approx(0.0890, abs=1e-12)
+    assert p.index_credit_rate(8) == pytest.approx(0.0890, abs=1e-12)
+    assert p.index_base_pp(8) == pytest.approx(19407.2450, abs=5e-5)
+    assert p.index_credit_pp(8) == pytest.approx(0.0890 * 19407.2450, abs=5e-4) == (
         pytest.approx(1727.2448, abs=5e-4))
-    assert p.pols_if_at(9, "AFT_LAPSE") == pytest.approx(0.717651, abs=SIX_DP)
-    assert p.index_credit(9) == pytest.approx(1727.2448 * 0.717651, abs=1e-3) == (
+    assert p.pols_if_at(8, "AFT_LAPSE") == pytest.approx(0.717651, abs=SIX_DP)
+    assert p.index_credit(8) == pytest.approx(1727.2448 * 0.717651, abs=1e-3) == (
         pytest.approx(1239.56, abs=CENT))
     compounded_capped = 1.0
     for x in capped:
         compounded_capped *= (1.0 + x)
     assert compounded_capped - 1.0 == pytest.approx(0.089599, abs=5e-7)
-    assert p.index_return_year(9) == pytest.approx(0.134548, abs=5e-7)
+    assert p.index_return_year(8) == pytest.approx(0.134548, abs=5e-7)
     # The cap bound in exactly three months and cost 4,20 points.
-    assert sum(1 for m in range(1, 13) if p.index_return(9, m) > 0.03) == 3
-    assert sum(monthly) - p.index_sum(9) == pytest.approx(0.0420, abs=1e-12)
+    assert sum(1 for m in range(1, 13) if p.index_return(8, m) > 0.03) == 3
+    assert sum(monthly) - p.index_sum(8) == pytest.approx(0.0420, abs=1e-12)
 
 
 def test_check_three_the_decrements_close_three_ways(de_index_anchor):
@@ -272,41 +279,43 @@ def test_check_three_the_decrements_close_three_ways(de_index_anchor):
     ``pols_if`` -- which is what catches a life that leaves twice or never leaves."""
     p = de_index_anchor
     n = p.proj_len()
-    deaths = sum(p.pols_death(t) for t in range(1, n + 1))
-    lapses = sum(p.pols_lapse(t) for t in range(1, n + 1))
-    mats = sum(p.pols_maturity(t) for t in range(1, n + 1))
+    deaths = sum(p.pols_death(t) for t in range(n))
+    lapses = sum(p.pols_lapse(t) for t in range(n))
+    mats = sum(p.pols_maturity(t) for t in range(n))
     assert deaths == pytest.approx(0.074584, abs=5e-7)
     assert lapses == pytest.approx(0.500439, abs=5e-7)
     assert mats == pytest.approx(0.424977, abs=5e-7)
     assert deaths + lapses + mats == pytest.approx(1.0, abs=1e-12)
-    assert p.pols_if(n + 1) == 0.0
-    assert p.pols_maturity(n) == pytest.approx(p.pols_if_at(n, "AFT_LAPSE"), rel=1e-12)
-    assert all(p.pols_maturity(t) == 0.0 for t in range(1, n))
+    assert p.pols_if(n) == 0.0
+    assert p.pols_maturity(n - 1) == pytest.approx(
+        p.pols_if_at(n - 1, "AFT_LAPSE"), rel=1e-12)
+    assert all(p.pols_maturity(t) == 0.0 for t in range(n - 1))
     assert p.check_pols_roll_fwd() is True
 
 
 def test_check_four_the_account_rolls_forward_at_year_nine(de_index_anchor):
-    """The notes' fourth check: the fund-level roll-forward at ``t = 9``, term by term.
-    Every term is on a **different population** -- premium, charge and guaranteed interest
-    on the opening in-force, the credit on the survivors, ``av_released`` on the exits at
-    the balance they left with, which is what they take out and not what they are paid."""
+    """The notes' fourth check: the fund-level roll-forward at ``t = 8`` -- policy year 9
+    -- term by term.  Every term is on a **different population** -- premium, charge and
+    guaranteed interest on the opening in-force, the credit on the survivors,
+    ``av_released`` on the exits at the balance they left with, which is what they take
+    out and not what they are paid."""
     p = de_index_anchor
-    assert p.av(9) == pytest.approx(14394.0730, abs=5e-4)
-    assert p.prem_to_av_pp(9) == pytest.approx(2328.00, abs=CENT)
-    assert p.prem_to_av(9) == pytest.approx(2328.00 * p.pols_if(9), rel=1e-12)
-    assert p.prem_to_av(9) == pytest.approx(1726.6439, abs=5e-4)
-    assert p.av_charge(9) == pytest.approx(40.3018, abs=5e-4)
-    assert p.guar_int(9) == pytest.approx(160.8042, abs=5e-4)
-    assert p.surplus_credit(9) == 0.0
-    assert p.index_credit(9) == pytest.approx(1239.5583, abs=5e-4)
-    assert p.av_pp_at(9, "AFT_GUAR") == pytest.approx(21897.7159, abs=5e-4)
-    assert p.av_released(9) == pytest.approx(
-        p.av_pp_at(9, "AFT_GUAR") * (p.pols_death(9) + p.pols_lapse(9)),
+    assert p.av(8) == pytest.approx(14394.0730, abs=5e-4)
+    assert p.prem_to_av_pp(8) == pytest.approx(2328.00, abs=CENT)
+    assert p.prem_to_av(8) == pytest.approx(2328.00 * p.pols_if(8), rel=1e-12)
+    assert p.prem_to_av(8) == pytest.approx(1726.6439, abs=5e-4)
+    assert p.av_charge(8) == pytest.approx(40.3018, abs=5e-4)
+    assert p.guar_int(8) == pytest.approx(160.8042, abs=5e-4)
+    assert p.surplus_credit(8) == 0.0
+    assert p.index_credit(8) == pytest.approx(1239.5583, abs=5e-4)
+    assert p.av_pp_at(8, "AFT_GUAR") == pytest.approx(21897.7159, abs=5e-4)
+    assert p.av_released(8) == pytest.approx(
+        p.av_pp_at(8, "AFT_GUAR") * (p.pols_death(8) + p.pols_lapse(8)),
         rel=1e-12) == pytest.approx(526.3103, abs=5e-4)
-    assert p.av(10) == pytest.approx(
-        p.av(9) + p.prem_to_av(9) - p.av_charge(9) + p.guar_int(9)
-        + p.surplus_credit(9) + p.index_credit(9) - p.av_released(9), abs=1e-9)
-    assert p.av(10) == pytest.approx(16954.4673, abs=5e-4)
+    assert p.av(9) == pytest.approx(
+        p.av(8) + p.prem_to_av(8) - p.av_charge(8) + p.guar_int(8)
+        + p.surplus_credit(8) + p.index_credit(8) - p.av_released(8), abs=1e-9)
+    assert p.av(9) == pytest.approx(16954.4673, abs=5e-4)
     assert p.check_av_roll_fwd() is True
 
 
@@ -334,17 +343,18 @@ def test_check_six_the_guarantee_at_rentenbeginn(de_index_anchor):
     and the maturity is the account.  The monthly *Rente* is reported, never paid."""
     p = de_index_anchor
     n = p.proj_len()
-    assert p.credit_cum_pp(n + 1) == pytest.approx(4851.4383, abs=5e-4) == (
-        pytest.approx(sum(p.index_credit_pp(t) for t in range(1, n + 1)), abs=5e-4))
-    assert p.prem_paid_pp(n + 1) == pytest.approx(64800.0, abs=CENT)
-    assert p.guar_floor_pp(n + 1) == pytest.approx(0.90 * 64800.0, abs=CENT)
-    assert p.guar_cap_pp(n + 1) == pytest.approx(63171.4383, abs=5e-4)
-    assert p.av_pp(n + 1) == pytest.approx(73511.3936, abs=5e-4)
-    assert p.av_pp(n + 1) > p.guar_cap_pp(n + 1)          # the floor does not bind here
-    assert p.mat_pp(n) == pytest.approx(73511.39, abs=CENT)
-    assert p.pols_maturity(n) == pytest.approx(0.424977, abs=SIX_DP)
-    assert p.claims(n, "MATURITY") == pytest.approx(
-        p.mat_pp(n) * p.pols_maturity(n), rel=1e-12) == pytest.approx(31240.67, abs=CENT)
+    assert p.credit_cum_pp(n) == pytest.approx(4851.4383, abs=5e-4) == (
+        pytest.approx(sum(p.index_credit_pp(t) for t in range(n)), abs=5e-4))
+    assert p.prem_paid_pp(n) == pytest.approx(64800.0, abs=CENT)
+    assert p.guar_floor_pp(n) == pytest.approx(0.90 * 64800.0, abs=CENT)
+    assert p.guar_cap_pp(n) == pytest.approx(63171.4383, abs=5e-4)
+    assert p.av_pp(n) == pytest.approx(73511.3936, abs=5e-4)
+    assert p.av_pp(n) > p.guar_cap_pp(n)                  # the floor does not bind here
+    assert p.mat_pp(n - 1) == pytest.approx(73511.39, abs=CENT)
+    assert p.pols_maturity(n - 1) == pytest.approx(0.424977, abs=SIX_DP)
+    assert p.claims(n - 1, "MATURITY") == pytest.approx(
+        p.mat_pp(n - 1) * p.pols_maturity(n - 1), rel=1e-12) == pytest.approx(
+            31240.67, abs=CENT)
     assert p.rentenfaktor() == 25.0
     assert p.ann_monthly_pp() == pytest.approx(
         73511.3936 / 10000.0 * 25.0, abs=5e-4) == pytest.approx(183.78, abs=CENT)
@@ -373,19 +383,19 @@ def test_the_partizipationsquote_variant_row(indexpolice, t):
 
 
 def test_the_two_payoff_designs_are_not_interchangeable(indexpolice, de_index_anchor):
-    """``t = 10`` is the most instructive row in the library: nothing against 675,83 EUR.
-    The Cap design credits **zero** on a sum of ``-2,60 %``; the *Quote* design credits
-    3,8641 % of ``G`` on the same twelve returns.  At ``t = 9`` the ranking reverses,
-    Example A's give-up having been concentrated in three months."""
+    """``t = 9`` -- policy year 10 -- is the most instructive row in the library: nothing
+    against 675,83 EUR.  The Cap design credits **zero** on a sum of ``-2,60 %``; the
+    *Quote* design credits 3,8641 % of ``G`` on the same twelve returns.  At ``t = 8`` the
+    ranking reverses, Example A's give-up having been concentrated in three months."""
     cap, quote = de_index_anchor, indexpolice.Projection[2]
-    assert cap.index_credit_rate(10) == 0.0 and cap.index_credit(10) == 0.0
-    assert quote.index_credit_rate(10) == pytest.approx(0.0386412, abs=5e-7)
-    assert quote.index_credit_rate(10) == pytest.approx(
-        0.60 * quote.index_return_year(10), rel=1e-12)
-    assert quote.index_credit(10) == pytest.approx(675.83, abs=CENT)
-    assert cap.index_credit_rate(9) == pytest.approx(0.0890, abs=1e-12)
-    assert quote.index_credit_rate(9) == pytest.approx(0.0807289, abs=5e-7)
-    assert cap.index_credit_rate(9) > quote.index_credit_rate(9)
+    assert cap.index_credit_rate(9) == 0.0 and cap.index_credit(9) == 0.0
+    assert quote.index_credit_rate(9) == pytest.approx(0.0386412, abs=5e-7)
+    assert quote.index_credit_rate(9) == pytest.approx(
+        0.60 * quote.index_return_year(9), rel=1e-12)
+    assert quote.index_credit(9) == pytest.approx(675.83, abs=CENT)
+    assert cap.index_credit_rate(8) == pytest.approx(0.0890, abs=1e-12)
+    assert quote.index_credit_rate(8) == pytest.approx(0.0807289, abs=5e-7)
+    assert cap.index_credit_rate(8) > quote.index_credit_rate(8)
     df = quote.result_cf()
     for column, total in QUOTE_TOTALS.items():
         assert df[column].sum() == pytest.approx(total, abs=CENT), column
@@ -395,13 +405,13 @@ def test_the_two_payoff_designs_are_not_interchangeable(indexpolice, de_index_an
     assert df["expenses"].sum() == pytest.approx(base["expenses"].sum(), rel=1e-12)
     # And the payoff bounds hold in both forms: 0 <= rho <= 12 C, or <= q max(Y, 0).
     assert cap.check_index_credit() is True and quote.check_index_credit() is True
-    for t in range(1, cap.proj_len() + 1):
+    for t in range(cap.proj_len()):
         assert 0.0 <= cap.index_credit_rate(t) <= 12.0 * cap.index_cap(t)
         assert 0.0 <= quote.index_credit_rate(t) <= (
             quote.index_quote(t) * max(quote.index_return_year(t), 0.0) + 1e-12)
-    assert cap.index_cap(1) == 0.03 and cap.index_quote(1) == 0.60
+    assert cap.index_cap(0) == 0.03 and cap.index_quote(0) == 0.60
     house = indexpolice.Projection[3]
-    assert house.index_cap(1) == 0.06 and house.index_quote(1) == 1.00
+    assert house.index_cap(0) == 0.06 and house.index_quote(0) == 1.00
 
 
 @pytest.mark.parametrize("point_id", sorted(DESIGNS))
@@ -412,14 +422,14 @@ def test_the_four_designs_at_rentenbeginn(indexpolice, point_id):
     idx, safe, account, guar, benefit, rente, ratio = DESIGNS[point_id]
     p = indexpolice.Projection[point_id]
     n = p.proj_len()
-    assert sum(p.index_credit_pp(t) for t in range(1, n + 1)) == pytest.approx(
+    assert sum(p.index_credit_pp(t) for t in range(n)) == pytest.approx(
         idx, abs=CENT)
-    assert sum(p.surplus_credit_pp(t) for t in range(1, n + 1)) == pytest.approx(
+    assert sum(p.surplus_credit_pp(t) for t in range(n)) == pytest.approx(
         safe, abs=CENT)
-    assert p.credit_cum_pp(n + 1) == pytest.approx(idx + safe, abs=CENT)
-    assert p.av_pp(n + 1) == pytest.approx(account, abs=CENT)
-    assert p.guar_cap_pp(n + 1) == pytest.approx(guar, abs=CENT)
-    assert p.mat_pp(n) == pytest.approx(benefit, abs=CENT)
+    assert p.credit_cum_pp(n) == pytest.approx(idx + safe, abs=CENT)
+    assert p.av_pp(n) == pytest.approx(account, abs=CENT)
+    assert p.guar_cap_pp(n) == pytest.approx(guar, abs=CENT)
+    assert p.mat_pp(n - 1) == pytest.approx(benefit, abs=CENT)
     assert p.ann_monthly_pp() == pytest.approx(rente, abs=CENT)
     assert p.index_budget_ratio() == pytest.approx(ratio, abs=5e-5)
 
@@ -432,8 +442,8 @@ def test_the_safe_arm_beats_the_cap_design_on_this_path(indexpolice, de_index_an
     """
     safe = indexpolice.Projection[11]
     assert safe.elect_id() == "always_safe"
-    assert safe.av_pp(28) - de_index_anchor.av_pp(28) == pytest.approx(21914.12, abs=CENT)
-    assert round(safe.av_pp(28), 2) - round(de_index_anchor.av_pp(28), 2) == (
+    assert safe.av_pp(27) - de_index_anchor.av_pp(27) == pytest.approx(21914.12, abs=CENT)
+    assert round(safe.av_pp(27), 2) - round(de_index_anchor.av_pp(27), 2) == (
         pytest.approx(21914.13, abs=CENT))
 
 
@@ -446,12 +456,12 @@ def test_pitfall_01_treating_the_contract_as_unit_linked(indexpolice, de_index_a
     names are asserted too -- they are what a unit-linked reading would add."""
     p = de_index_anchor
     n = p.proj_len()
-    for t in range(1, n + 1):
+    for t in range(n):
         assert p.av_pp_at(t, "AFT_CREDIT") >= p.av_pp_at(t, "AFT_GUAR")
-    assert any(p.index_sum(t) < 0.0 for t in range(1, n + 1))
-    assert all(p.index_credit_pp(t) >= 0.0 for t in range(1, n + 1))
+    assert any(p.index_sum(t) < 0.0 for t in range(n))
+    assert all(p.index_credit_pp(t) >= 0.0 for t in range(n))
     # The surrender value derives from the account, not from a unit price.
-    for t in (1, 9, 13, 26):
+    for t in (0, 8, 12, 25):
         assert p.cv_pp(t) == pytest.approx(
             max(p.av_pp_at(t, "AFT_GUAR"), p.min_surr_pp(t)) - p.surr_charge_pp(t),
             rel=1e-12)
@@ -465,40 +475,41 @@ def test_pitfall_01_treating_the_contract_as_unit_linked(indexpolice, de_index_a
 
 def test_pitfall_02_flooring_each_month_at_zero(de_index_anchor):
     """``x(m) = min(r, C)`` has **no lower bound**; the floor is on the year alone.  On
-    ``t = 10`` (Example B) the sum is ``-2,60 %`` and the credit is 0,00 EUR.  Flooring each
-    capped month gives ``S = +12,60 %``, the corrected figure the notes record, 9,60 points
-    being what the cap *gave away* rather than what flooring produces."""
+    ``t = 9`` (Example B, policy year 10) the sum is ``-2,60 %`` and the credit is
+    0,00 EUR.  Flooring each capped month gives ``S = +12,60 %``, the corrected figure the
+    notes record, 9,60 points being what the cap *gave away* rather than what flooring
+    produces."""
     p = de_index_anchor
-    monthly = [p.index_return(10, m) for m in range(1, 13)]
-    capped = [p.index_return_capped(10, m) for m in range(1, 13)]
+    monthly = [p.index_return(9, m) for m in range(1, 13)]
+    capped = [p.index_return_capped(9, m) for m in range(1, 13)]
     assert monthly == pytest.approx([r / 100.0 for r in EXAMPLE_B], abs=1e-12)
     assert min(capped) == pytest.approx(-0.031, abs=1e-12)   # not floored at zero
-    assert p.index_sum(10) == pytest.approx(-0.0260, abs=1e-12)
-    assert p.index_sum(10) < 0.0
-    assert p.index_credit_rate(10) == 0.0
-    assert p.index_credit_pp(10) == 0.0 and p.index_credit(10) == 0.0
+    assert p.index_sum(9) == pytest.approx(-0.0260, abs=1e-12)
+    assert p.index_sum(9) < 0.0
+    assert p.index_credit_rate(9) == 0.0
+    assert p.index_credit_pp(9) == 0.0 and p.index_credit(9) == 0.0
     # What a month-floored implementation would produce, and what the cap gave away.
     assert sum(max(x, 0.0) for x in capped) == pytest.approx(0.1260, abs=1e-12)
-    assert sum(monthly) - p.index_sum(10) == pytest.approx(0.0960, abs=1e-12)
+    assert sum(monthly) - p.index_sum(9) == pytest.approx(0.0960, abs=1e-12)
     assert p.check_index_credit() is True
 
 
 def test_pitfall_03_compounding_the_capped_returns(de_index_anchor):
-    """The contractual formula is a **sum**: ``S(9) = +8,90 %`` exactly.  Compounding the
+    """The contractual formula is a **sum**: ``S(8) = +8,90 %`` exactly.  Compounding the
     same twelve capped returns gives 8,9599 % -- 0,0599 points, small enough to look like
-    rounding and wrong at every duration; on the anchor's base, 11,62 EUR in year 9."""
+    rounding and wrong at every duration; on the anchor's base, 11,62 EUR at ``t = 8``."""
     p = de_index_anchor
-    capped = [p.index_return_capped(9, m) for m in range(1, 13)]
-    assert p.index_sum(9) == pytest.approx(sum(capped), rel=1e-12)
-    assert p.index_sum(9) == pytest.approx(0.0890, abs=1e-12)
+    capped = [p.index_return_capped(8, m) for m in range(1, 13)]
+    assert p.index_sum(8) == pytest.approx(sum(capped), rel=1e-12)
+    assert p.index_sum(8) == pytest.approx(0.0890, abs=1e-12)
     compounded = 1.0
     for x in capped:
         compounded *= (1.0 + x)
     assert compounded - 1.0 == pytest.approx(0.0895989, abs=5e-7)
-    assert compounded - 1.0 - p.index_sum(9) == pytest.approx(0.000599, abs=5e-7)
-    assert (compounded - 1.0 - p.index_sum(9)) * p.index_base_pp(9) == pytest.approx(
+    assert compounded - 1.0 - p.index_sum(8) == pytest.approx(0.000599, abs=5e-7)
+    assert (compounded - 1.0 - p.index_sum(8)) * p.index_base_pp(8) == pytest.approx(
         11.62, abs=CENT)
-    for t in (2, 3, 4, 13):
+    for t in (1, 2, 3, 12):
         assert p.index_sum(t) == pytest.approx(
             sum(p.index_return_capped(t, m) for m in range(1, 13)), rel=1e-12)
 
@@ -506,7 +517,7 @@ def test_pitfall_03_compounding_the_capped_returns(de_index_anchor):
 @pytest.mark.parametrize("t", sorted(INDEXJAHR))
 def test_pitfall_04_applying_the_floor_to_the_compounded_raw_return(de_index_anchor, t):
     """``rho(t) = max(S(t), 0)`` -- never ``max(Y(t), 0)``, never ``max(q Y(t), 0)``.  At
-    ``t = 10``, ``Y = +6,4402 %`` and the credit is **zero**; the two wrong readings would
+    ``t = 9``, ``Y = +6,4402 %`` and the credit is **zero**; the two wrong readings would
     credit 6,44 % and 3,86 % on a Cap point."""
     s, y, rho = INDEXJAHR[t]
     p = de_index_anchor
@@ -515,28 +526,29 @@ def test_pitfall_04_applying_the_floor_to_the_compounded_raw_return(de_index_anc
     assert p.index_credit_rate(t) == pytest.approx(rho, abs=5e-7)
     assert p.index_credit_rate(t) == pytest.approx(max(p.index_sum(t), 0.0), rel=1e-12)
     assert p.index_credit_rate(t) >= 0.0
-    if t in (10, 11, 16):
+    if t in (9, 10, 15):
         # The index rose and the credit was nothing -- and not once but three times here.
         assert p.index_return_year(t) > 0.0 and p.index_credit_rate(t) == 0.0
-    if t == 10:
-        assert 0.60 * p.index_return_year(10) == pytest.approx(0.038641, abs=5e-7)
+    if t == 9:
+        assert 0.60 * p.index_return_year(9) == pytest.approx(0.038641, abs=5e-7)
 
 
 def test_pitfall_05_striking_the_participation_on_the_wrong_base(de_index_anchor):
     """``G(t) = av_pp(t)``, **before** the year's premium and before the year's charges, so
-    a new-business point credits nothing in year 1 however well the index does; striking the
-    base after the premium credits a first-year amount that does not exist, 243,09 EUR."""
+    a new-business point credits nothing at ``t = 0`` however well the index does; striking
+    the base after the premium credits a first-year amount that does not exist,
+    243,09 EUR."""
     p = de_index_anchor
-    for t in range(1, p.proj_len() + 1):
+    for t in range(p.proj_len()):
         assert p.index_base_pp(t) == pytest.approx(p.av_pp(t), rel=1e-12)
         assert p.index_base_pp(t) == pytest.approx(p.av_pp_at(t, "BEF_PREM"), rel=1e-12)
-    assert p.index_base_pp(1) == 0.0
-    assert p.index_credit_rate(1) == pytest.approx(0.1204, abs=1e-12)
-    assert p.index_credit_pp(1) == 0.0            # the base is zero, not the rate
-    assert p.opt_budget_pp(1) == 0.0
-    assert 0.1204 * p.av_pp_at(1, "AFT_GUAR") == pytest.approx(243.09, abs=CENT)
-    assert p.index_base_pp(2) == pytest.approx(2018.9799, abs=5e-5)
-    assert p.index_base_pp(2) < p.av_pp_at(2, "AFT_PREM")
+    assert p.index_base_pp(0) == 0.0
+    assert p.index_credit_rate(0) == pytest.approx(0.1204, abs=1e-12)
+    assert p.index_credit_pp(0) == 0.0            # the base is zero, not the rate
+    assert p.opt_budget_pp(0) == 0.0
+    assert 0.1204 * p.av_pp_at(0, "AFT_GUAR") == pytest.approx(243.09, abs=CENT)
+    assert p.index_base_pp(1) == pytest.approx(2018.9799, abs=5e-5)
+    assert p.index_base_pp(1) < p.av_pp_at(1, "AFT_PREM")
 
 
 def test_pitfall_06_crediting_the_index_and_the_declared_surplus(
@@ -547,21 +559,21 @@ def test_pitfall_06_crediting_the_index_and_the_declared_surplus(
     p = de_index_anchor
     n = p.proj_len()
     assert p.check_surplus_alloc() is True
-    for t in (1, 2, 9, 10, 27):
+    for t in (0, 1, 8, 9, 26):
         assert p.check_surplus_alloc_resid(t) == pytest.approx(0.0, abs=1e-9)
         assert p.opt_budget_pp(t) + p.surplus_credit_pp(t) == pytest.approx(
             p.surplus_rate(t) * p.index_base_pp(t), rel=1e-12)
-    assert all(p.elect_index(t) == 1.0 for t in range(1, n + 1))
-    assert all(p.surplus_credit_pp(t) == 0.0 for t in range(1, n + 1))
+    assert all(p.elect_index(t) == 1.0 for t in range(n))
+    assert all(p.surplus_credit_pp(t) == 0.0 for t in range(n))
     assert all(p.opt_budget_pp(t) == pytest.approx(0.025 * p.av_pp(t), rel=1e-12)
-               for t in range(1, n + 1))
+               for t in range(n))
     safe = indexpolice.Projection[11]
     assert safe.check_surplus_alloc() is True
     assert all(safe.elect_index(t) == safe.index_credit_pp(t) == safe.opt_budget_pp(t)
-               == 0.0 for t in range(1, safe.proj_len() + 1))
+               == 0.0 for t in range(safe.proj_len()))
     half = indexpolice.Projection[12]
     assert half.elect_id() == "half_half" and half.check_surplus_alloc() is True
-    for t in (1, 5, 20, 37):
+    for t in (0, 4, 19, 36):
         assert half.elect_index(t) == 0.5
         assert half.opt_budget_pp(t) == pytest.approx(half.surplus_credit_pp(t), rel=1e-12)
 
@@ -572,14 +584,14 @@ def test_pitfall_07_adding_the_declared_rate_on_top_of_the_guaranteed_rate(index
     by nothing more; point 11 runs ``w = 0``, so it grows by that **plus** ``b G(t)``."""
     flat = indexpolice.Projection[9]
     assert flat.index_id() == "zero_path" and flat.elect_id() == "always_index"
-    for t in range(1, flat.proj_len() + 1):
+    for t in range(flat.proj_len()):
         assert flat.index_credit_rate(t) == 0.0
         assert flat.index_credit_pp(t) == 0.0
         assert flat.surplus_credit_pp(t) == 0.0
         assert flat.av_pp_at(t, "AFT_CREDIT") == pytest.approx(
             flat.av_pp_at(t, "AFT_PREM") * (1.0 - 0.0025) * (1.0 + 0.01), rel=1e-12)
     safe = indexpolice.Projection[11]
-    for t in (2, 9, 15, 27):
+    for t in (1, 8, 14, 26):
         assert safe.av_pp_at(t, "AFT_CREDIT") == pytest.approx(
             safe.av_pp_at(t, "AFT_PREM") * (1.0 - 0.0025) * (1.0 + 0.01)
             + 0.025 * safe.av_pp(t), rel=1e-12)
@@ -594,19 +606,19 @@ def test_pitfall_08_crediting_the_indexjahr_to_the_lives_that_left(de_index_anch
     p = de_index_anchor
     n = p.proj_len()
     assert p.check_av_roll_fwd() is True
-    for t in range(1, n + 1):
+    for t in range(n):
         assert p.check_av_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
         assert p.index_credit(t) == pytest.approx(
             p.index_credit_pp(t) * p.pols_if_at(t, "AFT_LAPSE"), rel=1e-12)
         assert p.surplus_credit(t) == pytest.approx(
             p.surplus_credit_pp(t) * p.pols_if_at(t, "AFT_LAPSE"), rel=1e-12)
     # While the premium, the charge and the guaranteed interest are on the opening count.
-    for t in (1, 9, 20):
+    for t in (0, 8, 19):
         assert p.prem_to_av(t) == pytest.approx(
             p.prem_to_av_pp(t) * p.pols_if(t), rel=1e-12)
         assert p.av_charge(t) == pytest.approx(p.av_charge_pp(t) * p.pols_if(t), rel=1e-12)
         assert p.guar_int(t) == pytest.approx(p.guar_int_pp(t) * p.pols_if(t), rel=1e-12)
-    wrong = p.index_credit_pp(9) * (p.pols_if(9) - p.pols_if_at(9, "AFT_LAPSE"))
+    wrong = p.index_credit_pp(8) * (p.pols_if(8) - p.pols_if_at(8, "AFT_LAPSE"))
     assert wrong == pytest.approx(41.50, abs=1.0) and wrong > 0.0
 
 
@@ -614,77 +626,78 @@ def test_pitfall_09_paying_a_pro_rata_index_credit_on_a_mid_year_exit(de_index_a
     """A death or a surrender is struck on the balance **before** the year's credits.  The
     assertion carrying the meaning is on ``av_pp_at(t, "AFT_GUAR")`` and **not** on
     ``db_pp``: the *Mindesttodesfallschutz* floor of 32 400,00 EUR exceeds the account until
-    year 13, so the benefit is larger there at any timing.  That correction is the notes'."""
+    ``t = 12``, so the benefit is larger there at any timing.  That correction is the
+    notes'."""
     p = de_index_anchor
     n = p.proj_len()
     floor = 0.50 * p.prem_sum()
     assert floor == 32400.0
-    for t in range(1, n + 1):
+    for t in range(n):
         assert p.db_pp(t) == pytest.approx(
             max(p.av_pp_at(t, "AFT_GUAR"), floor), rel=1e-12)
-    credited = [t for t in range(1, n + 1) if p.index_credit_pp(t) > 0.0]
-    assert credited == [2, 3, 4, 6, 9, 13]
+    credited = [t for t in range(n) if p.index_credit_pp(t) > 0.0]
+    assert credited == [1, 2, 3, 5, 8, 12]
     for t in credited:
         assert p.av_pp_at(t, "AFT_GUAR") < p.av_pp(t + 1)
         assert p.av_pp(t + 1) - p.av_pp_at(t, "AFT_GUAR") == pytest.approx(
             p.index_credit_pp(t), rel=1e-12)
-    # The floor binds to year 12 and stops binding at year 13, exactly as the notes say.
-    assert all(p.db_pp(t) == floor for t in range(1, 13))
-    assert p.db_pp(13) == pytest.approx(p.av_pp_at(13, "AFT_GUAR"), rel=1e-12)
-    assert p.db_pp(13) > floor
+    # The floor binds through t = 11 and stops binding at t = 12, exactly as the notes say.
+    assert all(p.db_pp(t) == floor for t in range(12))
+    assert p.db_pp(12) == pytest.approx(p.av_pp_at(12, "AFT_GUAR"), rel=1e-12)
+    assert p.db_pp(12) > floor
     # The maturity is the one benefit that does include the year's credits.
-    assert p.mat_pp(n) == pytest.approx(
-        max(p.av_pp(n + 1), p.guar_cap_pp(n + 1)), rel=1e-12)
+    assert p.mat_pp(n - 1) == pytest.approx(
+        max(p.av_pp(n), p.guar_cap_pp(n)), rel=1e-12)
 
 
 def test_pitfall_10_testing_the_lock_in_as_the_account_never_falls(
         indexpolice, de_index_anchor):
     """It is the **credits** that ratchet, not the balance.  On point 13 the *Rechnungszins*
-    equals the reserve charge and premiums stop at year 12, so the account falls from year 14
-    while ``guar_cap_pp`` is monotone; a lock-in check on ``av_pp`` would fail a correct
-    implementation and pass a wrong one."""
+    equals the reserve charge and premiums stop after policy year 12 (``t = 11``), so the
+    account falls from ``t = 13`` while ``guar_cap_pp`` is monotone; a lock-in check on
+    ``av_pp`` would fail a correct implementation and pass a wrong one."""
     p = de_index_anchor
     assert p.check_lock_in() is True
-    for t in (1, 9, 13, 27):
+    for t in (0, 8, 12, 26):
         assert p.check_lock_in_resid(t) == pytest.approx(0.0, abs=1e-9)
     falling = indexpolice.Projection[13]
     n = falling.proj_len()
     assert falling.guar_rate() == 0.0025 == falling.exp_av_rate
-    assert falling.prem_term_y() == 12 and falling.t_start() == 5 and n == 22
+    assert falling.prem_term_y() == 12 and falling.t_start() == 4 and n == 22
     assert falling.check_lock_in() is True
     assert any(falling.av_pp(t + 1) < falling.av_pp(t)
-               for t in range(falling.t_start(), n + 1))
-    assert falling.av_pp(23) < falling.av_pp(14)
+               for t in range(falling.t_start(), n))
+    assert falling.av_pp(22) < falling.av_pp(13)
     assert all(falling.guar_cap_pp(t + 1) >= falling.guar_cap_pp(t)
-               for t in range(falling.t_start(), n + 1))
+               for t in range(falling.t_start(), n))
     assert all(falling.credit_cum_pp(t + 1) >= falling.credit_cum_pp(t)
-               for t in range(falling.t_start(), n + 1))
+               for t in range(falling.t_start(), n))
     assert all(p.guar_cap_pp(t) == pytest.approx(
-        p.guar_floor_pp(t) + p.credit_cum_pp(t), rel=1e-12) for t in (1, 9, 27, 28))
+        p.guar_floor_pp(t) + p.credit_cum_pp(t), rel=1e-12) for t in (0, 8, 26, 27))
 
 
 def test_pitfall_11_running_the_guarantee_as_an_annual_rate_on_the_reserve(
         de_index_anchor):
     """*Neue Klassik*: the guarantee is owed at *Rentenbeginn* and at no other date.
     ``guar_cap_pp(t)`` enters one benefit and no other, and ``av_pp(t) < guar_cap_pp(t)`` at
-    intermediate ``t`` is permitted and ordinary -- it holds at ``t = 2 ... 7`` here, while
+    intermediate ``t`` is permitted and ordinary -- it holds at ``t = 1 ... 6`` here, while
     the *Zillmer* charge is being recovered -- with no check failing there."""
     p = de_index_anchor
     n = p.proj_len()
-    assert [t for t in range(1, n + 2) if p.av_pp(t) < p.guar_cap_pp(t)] == [
-        2, 3, 4, 5, 6, 7]
+    assert [t for t in range(n + 1) if p.av_pp(t) < p.guar_cap_pp(t)] == [
+        1, 2, 3, 4, 5, 6]
     assert p.check_lock_in() is True and p.check_av_roll_fwd() is True
     # No death benefit and no surrender value anywhere sees the guaranteed capital; their
     # forms are asserted for every t by the tests for pitfalls 9 and 13.
-    for t in (2, 5, 7, 20):
+    for t in (1, 4, 6, 19):
         assert p.db_pp(t) == pytest.approx(
             max(p.av_pp_at(t, "AFT_GUAR"), 0.50 * p.prem_sum()), rel=1e-12)
         assert p.cv_pp(t) == pytest.approx(
             max(p.av_pp_at(t, "AFT_GUAR"), p.min_surr_pp(t)) - p.surr_charge_pp(t),
             rel=1e-12)
-    assert p.claims(n, "MATURITY") == pytest.approx(
-        max(p.av_pp(n + 1), p.guar_cap_pp(n + 1)) * p.pols_maturity(n), rel=1e-12)
-    assert all(p.mat_pp(t) == 0.0 for t in range(1, n))
+    assert p.claims(n - 1, "MATURITY") == pytest.approx(
+        max(p.av_pp(n), p.guar_cap_pp(n)) * p.pols_maturity(n - 1), rel=1e-12)
+    assert all(p.mat_pp(t) == 0.0 for t in range(n - 1))
 
 
 def test_pitfall_12_forgetting_the_beitragsgarantie_floor_at_rentenbeginn(
@@ -695,16 +708,16 @@ def test_pitfall_12_forgetting_the_beitragsgarantie_floor_at_rentenbeginn(
     binding = indexpolice.Projection[9]
     n = binding.proj_len()
     assert binding.guar_level() == 1.0 and binding.index_id() == "zero_path"
-    assert binding.credit_cum_pp(n + 1) == 0.0
-    assert binding.guar_cap_pp(n + 1) == pytest.approx(28800.00, abs=CENT)
-    assert binding.av_pp(n + 1) == pytest.approx(28555.54, abs=CENT)
-    assert binding.guar_cap_pp(n + 1) > binding.av_pp(n + 1)
-    assert binding.mat_pp(n) == pytest.approx(binding.guar_cap_pp(n + 1), rel=1e-12)
-    assert binding.mat_pp(n) == pytest.approx(28800.00, abs=CENT)
+    assert binding.credit_cum_pp(n) == 0.0
+    assert binding.guar_cap_pp(n) == pytest.approx(28800.00, abs=CENT)
+    assert binding.av_pp(n) == pytest.approx(28555.54, abs=CENT)
+    assert binding.guar_cap_pp(n) > binding.av_pp(n)
+    assert binding.mat_pp(n - 1) == pytest.approx(binding.guar_cap_pp(n), rel=1e-12)
+    assert binding.mat_pp(n - 1) == pytest.approx(28800.00, abs=CENT)
     # And it does not bind on the anchor, which is why one point is not enough.
     p = de_index_anchor
-    assert p.mat_pp(27) == pytest.approx(p.av_pp(28), rel=1e-12)
-    assert p.av_pp(28) > p.guar_cap_pp(28)
+    assert p.mat_pp(26) == pytest.approx(p.av_pp(27), rel=1e-12)
+    assert p.av_pp(27) > p.guar_cap_pp(27)
 
 
 def test_pitfall_13_confusing_the_minimum_surrender_value_with_the_zillmer_cap(
@@ -716,9 +729,9 @@ def test_pitfall_13_confusing_the_minimum_surrender_value_with_the_zillmer_cap(
     p = de_index_anchor
     n = p.proj_len()
     assert p.zill_years == 5 and p.acq_cost_rate == 0.025 and p.zill_cap_rate == 0.025
-    for t in range(1, n + 2):
+    for t in range(n + 1):
         assert p.av_min_pp(t) == pytest.approx(p.av_pp(t), abs=1e-6)
-    for t in range(1, n + 1):
+    for t in range(n):
         assert p.prem_charge_acq_min_pp(t) == pytest.approx(
             p.prem_charge_acq_pp(t), rel=1e-12)
         assert p.min_surr_pp(t) == pytest.approx(p.av_pp_at(t, "AFT_GUAR"), abs=1e-6)
@@ -728,7 +741,7 @@ def test_pitfall_13_confusing_the_minimum_surrender_value_with_the_zillmer_cap(
     # A tariff without the clause is a real configuration and not a special case.
     no_charge = indexpolice.Projection[13]
     assert no_charge.surr_charge_on() == 0
-    for t in (5, 12, 22):
+    for t in (4, 11, 21):
         assert no_charge.surr_charge_pp(t) == 0.0
         assert no_charge.cv_pp(t) == pytest.approx(
             max(no_charge.av_pp_at(t, "AFT_GUAR"), no_charge.min_surr_pp(t)), rel=1e-12)
@@ -741,43 +754,43 @@ def test_pitfall_14_double_charging_or_mis_basing_the_ratenzahlungszuschlag(inde
     not inflate the acquisition charge or the death floor."""
     p = indexpolice.Projection[4]
     assert p.prem_freq() == "monthly" and p.freq_load() == 1.05
-    assert p.prem_base_pp(1) == pytest.approx(2400.00, abs=CENT)
-    assert p.prem_gross_pp(1) == pytest.approx(
+    assert p.prem_base_pp(0) == pytest.approx(2400.00, abs=CENT)
+    assert p.prem_gross_pp(0) == pytest.approx(
         2400.00 * 1.05, abs=CENT) == pytest.approx(2520.00, abs=CENT)
     assert p.prem_sum() == pytest.approx(
         2400.00 * 32, abs=CENT) == pytest.approx(76800.00, abs=CENT)
-    assert p.prem_charge_acq_pp(1) == pytest.approx(
+    assert p.prem_charge_acq_pp(0) == pytest.approx(
         0.025 * 76800.00 / 5, abs=CENT) == pytest.approx(384.00, abs=CENT)
-    assert p.db_pp(1) == pytest.approx(0.50 * 76800.00, abs=CENT)
+    assert p.db_pp(0) == pytest.approx(0.50 * 76800.00, abs=CENT)
     # The premium administration charge is on what is collected, so it does move.
-    assert p.prem_charge_adm_pp(1) == pytest.approx(0.03 * 2520.00, abs=CENT)
+    assert p.prem_charge_adm_pp(0) == pytest.approx(0.03 * 2520.00, abs=CENT)
     assert indexpolice.Projection[5].freq_load() == 1.03
     assert indexpolice.Projection[6].freq_load() == 1.02
     assert indexpolice.Projection[1].freq_load() == 1.0
-    assert indexpolice.Projection[1].prem_gross_pp(1) == pytest.approx(
-        indexpolice.Projection[1].prem_base_pp(1), rel=1e-12)
+    assert indexpolice.Projection[1].prem_gross_pp(0) == pytest.approx(
+        indexpolice.Projection[1].prem_base_pp(0), rel=1e-12)
 
 
 def test_pitfall_15_letting_the_cap_and_the_option_budget_be_independent(
         indexpolice, de_index_anchor):
     """The Cap is the level at which the option strip costs the budget, so the two are not
     free parameters, and ``index_budget_ratio()`` reports the discrepancy.  On the anchor it
-    is **0,2082** on amounts, for timing rather than pricing reasons: the path credits in
-    years 1-4, 6, 9 and 13 and never after, while ``G(t)`` runs to 70 637,97 EUR.  On rates
-    it credits 2,1330 % against a 2,50 % budget, a ratio of 0,853."""
+    is **0,2082** on amounts, for timing rather than pricing reasons: the path credits at
+    ``t = 1, 2, 3, 5, 8`` and ``12`` and never after, while ``G(t)`` runs to 70 637,97 EUR.
+    On rates it credits 2,1330 % against a 2,50 % budget, a ratio of 0,853."""
     p = de_index_anchor
     n = p.proj_len()
-    credits = sum(p.index_credit_pp(t) for t in range(1, n + 1))
-    budget = sum(p.opt_budget_pp(t) for t in range(1, n + 1))
+    credits = sum(p.index_credit_pp(t) for t in range(n))
+    budget = sum(p.opt_budget_pp(t) for t in range(n))
     assert credits == pytest.approx(4851.44, abs=CENT)
     assert budget == pytest.approx(23298.38, abs=CENT)
     assert p.index_budget_ratio() == pytest.approx(
         credits / budget, rel=1e-12) == pytest.approx(0.2082, abs=5e-5)
-    mean_rate = sum(p.index_credit_rate(t) for t in range(1, n + 1)) / n
+    mean_rate = sum(p.index_credit_rate(t) for t in range(n)) / n
     assert mean_rate == pytest.approx(0.021330, abs=5e-7)
     assert mean_rate / 0.025 == pytest.approx(0.853, abs=5e-4)
-    assert p.index_base_pp(1) == 0.0
-    assert p.index_base_pp(27) == pytest.approx(70637.97, abs=CENT)
+    assert p.index_base_pp(0) == 0.0
+    assert p.index_base_pp(26) == pytest.approx(70637.97, abs=CENT)
     # The other two designs sit either side of 1, which is the point of reporting it.
     assert indexpolice.Projection[2].index_budget_ratio() == pytest.approx(
         0.9782, abs=5e-5)
@@ -789,22 +802,22 @@ def test_pitfall_15_letting_the_cap_and_the_option_budget_be_independent(
 def test_pitfall_16_assuming_the_wahlrecht_is_exercised_optimally(indexpolice):
     """The election is a **behavioural** assumption whose path is read, never derived.
     Point 11 reproduces a *klassische Rentenversicherung* exactly -- every index cells
-    evaluates and none reaches the account -- and point 10 switches arms at 15, never
-    crediting both in one year."""
+    evaluates and none reaches the account -- and point 10 switches arms after policy year
+    15 (``t = 14``), never crediting both in one year."""
     safe = indexpolice.Projection[11]
     n = safe.proj_len()
     assert safe.elect_id() == "always_safe" and safe.payoff_form() == "cap"
-    assert safe.index_credit_rate(4) == pytest.approx(0.2225, abs=1e-12)   # it evaluates
-    assert safe.index_sum(10) == pytest.approx(-0.0260, abs=1e-12)
-    assert all(safe.index_credit_pp(t) == 0.0 for t in range(1, n + 1))
+    assert safe.index_credit_rate(3) == pytest.approx(0.2225, abs=1e-12)   # it evaluates
+    assert safe.index_sum(9) == pytest.approx(-0.0260, abs=1e-12)
+    assert all(safe.index_credit_pp(t) == 0.0 for t in range(n))
     assert safe.result_cf()["index_credit"].sum() == 0.0
     assert safe.result_cf()["surplus_credit"].sum() == pytest.approx(13770.05, abs=CENT)
     switch = indexpolice.Projection[10]
     assert switch.elect_id() == "switch_at_15"
-    assert all(switch.elect_index(t) == 1.0 for t in range(1, 16))
-    assert all(switch.elect_index(t) == 0.0 for t in range(16, 28))
-    assert all(switch.surplus_credit_pp(t) == 0.0 for t in range(1, 16))
-    assert all(switch.index_credit_pp(t) == 0.0 for t in range(16, 28))
+    assert all(switch.elect_index(t) == 1.0 for t in range(15))
+    assert all(switch.elect_index(t) == 0.0 for t in range(15, 27))
+    assert all(switch.surplus_credit_pp(t) == 0.0 for t in range(15))
+    assert all(switch.index_credit_pp(t) == 0.0 for t in range(15, 27))
     assert switch.check_surplus_alloc() is True
     df = switch.result_cf()
     assert df["index_credit"].sum() > 0.0 and df["surplus_credit"].sum() > 0.0
@@ -812,21 +825,22 @@ def test_pitfall_16_assuming_the_wahlrecht_is_exercised_optimally(indexpolice):
 
 def test_pitfall_17_a_lapse_assumption_flat_in_duration(de_index_anchor):
     """The duration-12 tax threshold is the strongest single driver of German surrender.
-    ``lapse_rate(12) = 6 %`` against 3 % the year before, and the worked example's year-12
-    spike -- 1 229,59 EUR against 583,79 EUR -- is that step and nothing else.  In the final
-    year the applied rate is zero while the table still says 2 %."""
+    ``lapse_rate(11) = 6 %`` -- policy year 12 -- against 3 % the year before, and the
+    worked example's spike at ``t = 11`` -- 1 229,59 EUR against 583,79 EUR -- is that step
+    and nothing else.  In the final period the applied rate is zero while the table still
+    says 2 %."""
     p = de_index_anchor
     n = p.proj_len()
-    assert p.lapse_rate(1) == 0.05 and p.lapse_rate(2) == 0.05
-    assert p.lapse_rate(11) == 0.03 and p.lapse_rate(12) == 0.06
-    assert p.lapse_rate(12) > p.lapse_rate(11)
-    assert p.lapse_rate(13) == 0.02
-    assert p.lapse_rate(n) == 0.0 and p.lapse_rate_base(n) == 0.02
-    assert p.pols_lapse(n) == 0.0 and p.claims(n, "LAPSE") == 0.0
-    assert len({p.lapse_rate(t) for t in range(1, n + 1)}) == 5
-    assert p.claims(12, "LAPSE") == pytest.approx(1229.59, abs=CENT)
-    assert p.claims(11, "LAPSE") == pytest.approx(583.79, abs=CENT)
-    assert p.claims(12, "LAPSE") > 2.0 * p.claims(11, "LAPSE")
+    assert p.lapse_rate(0) == 0.05 and p.lapse_rate(1) == 0.05
+    assert p.lapse_rate(10) == 0.03 and p.lapse_rate(11) == 0.06
+    assert p.lapse_rate(11) > p.lapse_rate(10)
+    assert p.lapse_rate(12) == 0.02
+    assert p.lapse_rate(n - 1) == 0.0 and p.lapse_rate_base(n - 1) == 0.02
+    assert p.pols_lapse(n - 1) == 0.0 and p.claims(n - 1, "LAPSE") == 0.0
+    assert len({p.lapse_rate(t) for t in range(n)}) == 5
+    assert p.claims(11, "LAPSE") == pytest.approx(1229.59, abs=CENT)
+    assert p.claims(10, "LAPSE") == pytest.approx(583.79, abs=CENT)
+    assert p.claims(11, "LAPSE") > 2.0 * p.claims(10, "LAPSE")
 
 
 def test_pitfall_18_reporting_the_credits_inside_net_cf(de_index_anchor):
@@ -842,7 +856,7 @@ def test_pitfall_18_reporting_the_credits_inside_net_cf(de_index_anchor):
                - statement["expenses"])
     assert (rebuilt - statement["net_cf"]).abs().max() == pytest.approx(0.0, abs=1e-9)
     assert p.check_net_cf() is True
-    for t in range(1, p.proj_len() + 1):
+    for t in range(p.proj_len()):
         assert p.check_net_cf_resid(t) == pytest.approx(0.0, abs=1e-9)
     moved = df["guar_int"].sum() + df["surplus_credit"].sum() + df["index_credit"].sum()
     assert moved == pytest.approx(9139.74, abs=CENT)
@@ -866,9 +880,9 @@ def test_every_check_returns_a_bool_and_its_residual_is_zero(de_index_anchor):
         assert value is True, name
         assert isinstance(value, bool), name
         resid = getattr(p, name + "_resid")
-        for t in (1, 2, 9, 10, 13, 27):
+        for t in (0, 1, 8, 9, 12, 26):
             assert abs(resid(t)) < 1e-6, (name, t)
-    for t in (1, 9, 12, 27):
+    for t in (0, 8, 11, 26):
         assert p.claims(t) == pytest.approx(
             p.claims(t, "DEATH") + p.claims(t, "LAPSE") + p.claims(t, "MATURITY"),
             rel=1e-12)
@@ -878,20 +892,21 @@ def test_every_check_returns_a_bool_and_its_residual_is_zero(de_index_anchor):
 
 def test_the_in_force_cell_reproduces_both_indexjahre_on_a_50000_euro_base(indexpolice):
     """Model point 8 starts at ``dur_init = 8`` with 50 000,00 EUR, the research file's ``G``,
-    so its first projected *Indexjahr* is ``t = 9`` on exactly that base: Example A credits
-    4 450,00 EUR against a safe arm of 1 250,00 EUR, and Example B credits nothing."""
+    so its frame opens at ``t = 8`` and its first projected *Indexjahr* is that period, on
+    exactly that base: Example A credits 4 450,00 EUR against a safe arm of 1 250,00 EUR,
+    and Example B, at ``t = 9``, credits nothing."""
     p = indexpolice.Projection[8]
-    assert p.dur_init() == 8 and p.t_start() == 9 and p.proj_len() == 27
+    assert p.dur_init() == 8 and p.t_start() == 8 and p.proj_len() == 27
     assert len(p.result_cf()) == 19
-    assert p.result_cf().index[-1] == p.proj_len() == 27
-    assert p.av_pp_init() == 50000.0 and p.index_base_pp(9) == 50000.0
-    assert p.index_credit_pp(9) == pytest.approx(
+    assert p.result_cf().index[-1] == p.proj_len() - 1 == 26
+    assert p.av_pp_init() == 50000.0 and p.index_base_pp(8) == 50000.0
+    assert p.index_credit_pp(8) == pytest.approx(
         0.0890 * 50000.0, abs=CENT) == pytest.approx(4450.00, abs=CENT)
-    assert p.index_credit_pp(9) / (0.025 * 50000.0) == pytest.approx(3.56, abs=5e-3)
-    assert p.index_base_pp(10) == pytest.approx(60631.57, abs=CENT)
-    assert p.index_credit_pp(10) == 0.0
-    assert 0.025 * p.index_base_pp(10) == pytest.approx(1515.79, abs=CENT)
-    assert p.guar_locked_init() == 4300.0 and p.credit_cum_pp(9) == 4300.0
+    assert p.index_credit_pp(8) / (0.025 * 50000.0) == pytest.approx(3.56, abs=5e-3)
+    assert p.index_base_pp(9) == pytest.approx(60631.57, abs=CENT)
+    assert p.index_credit_pp(9) == 0.0
+    assert 0.025 * p.index_base_pp(9) == pytest.approx(1515.79, abs=CENT)
+    assert p.guar_locked_init() == 4300.0 and p.credit_cum_pp(8) == 4300.0
     assert p.check_av_roll_fwd() is True and p.check_lock_in() is True
 
 
@@ -907,8 +922,9 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_index_anchor):
         "expenses", "guar_int", "surplus_credit", "index_credit", "av",
         "liability_cf", "net_cf",
     ]
-    assert list(df.index) == list(range(1, 28)) and df.index.name == "t"
-    assert df.index[-1] == p.proj_len() == 27
+    assert list(df.index) == list(range(27)) and df.index.name == "t"
+    assert df.index[0] == p.t_start() == 0
+    assert df.index[-1] == p.proj_len() - 1 == 26
     assert df["pols_if"].iloc[0] == p.pols_if_init() == 1.0
     assert "claims" not in df.columns          # never the subtotal beside its parts
     assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(0.0, abs=1e-9)
@@ -923,11 +939,11 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(de_index_anchor):
 def test_invalid_enum_values_raise(de_index_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        de_index_anchor.claims(1, "SURRENDER")
+        de_index_anchor.claims(0, "SURRENDER")
     with pytest.raises(FormulaError):
-        de_index_anchor.pols_if_at(1, "AFTER_LAPSE")
+        de_index_anchor.pols_if_at(0, "AFTER_LAPSE")
     with pytest.raises(FormulaError):
-        de_index_anchor.av_pp_at(1, "AFTER_CREDIT")
+        de_index_anchor.av_pp_at(0, "AFTER_CREDIT")
 
 
 def test_docstrings_describe_the_current_structure(indexpolice):
@@ -1005,23 +1021,25 @@ def test_the_shipped_tables_mark_their_own_provenance():
         "eqidx_vol17", "houseidx_vol5", "zero_path"}
     assert [c for c in returns.columns if c != "provenance"] == months
     # The two anchor rows a replacement path must preserve, and the flat instrument.
-    for year, example in ((9, EXAMPLE_A), (10, EXAMPLE_B)):
+    for year, example in ((8, EXAMPLE_A), (9, EXAMPLE_B)):
         assert returns.loc[("eqidx_vol17", year), months].astype(float).tolist() == (
             pytest.approx([r / 100.0 for r in example], abs=1e-12))
     assert (returns.loc["zero_path", months].astype(float) == 0.0).all().all()
 
     params = pd.read_csv(parent / "index_param_table.csv", index_col=["index_id", "t"])
-    assert [float(params.loc[(i, 1), c]) for i in ("eqidx_vol17", "houseidx_vol5")
+    assert [float(params.loc[(i, 0), c]) for i in ("eqidx_vol17", "houseidx_vol5")
             for c in ("cap", "quote")] == [0.03, 0.60, 0.06, 1.00]
 
     election = pd.read_csv(parent / "election_table.csv", index_col=["elect_id", "t"])
     assert set(election.index.get_level_values("elect_id")) == {
         "always_index", "always_safe", "half_half", "switch_at_15"}
-    assert float(election.loc[("half_half", 1), "w"]) == 0.5
+    assert float(election.loc[("half_half", 0), "w"]) == 0.5
     assert set(pd.read_csv(parent / "surplus_rate_table.csv")["surplus_rate"]) == {0.025}
     lapse = pd.read_csv(parent / "lapse_table.csv", index_col="t")
-    assert [float(lapse.loc[t, "lapse_rate"]) for t in (1, 3, 12, 13)] == [
+    # The key column is the model's own 0-based t, so policy years 1, 3, 12 and 13.
+    assert [float(lapse.loc[t, "lapse_rate"]) for t in (0, 2, 11, 12)] == [
         0.05, 0.03, 0.06, 0.02]
+    assert lapse.index[0] == 0 and lapse.index[-1] == 39
     freq = pd.read_csv(parent / "freq_load_table.csv", index_col="prem_freq")
     assert [float(freq.loc[f, "freq_load"]) for f in
             ("annual", "half_yearly", "quarterly", "monthly")] == [1.0, 1.02, 1.03, 1.05]
@@ -1049,11 +1067,11 @@ def test_an_input_can_be_swapped_without_touching_formulas():
             model.Data.clear_all()
             model.Projection.clear_all()
             p = model.Projection[1]
-            assert p.index_sum(9) == pytest.approx(-0.12, abs=1e-12)
+            assert p.index_sum(8) == pytest.approx(-0.12, abs=1e-12)
             assert p.result_cf()["index_credit"].sum() == 0.0
             assert p.check_index_credit() is True and p.check_lock_in() is True
             # The account still grows: the guaranteed rate is untouched by the index.
-            assert p.av_pp(28) > 0.0 and p.result_cf()["guar_int"].sum() > 0.0
+            assert p.av_pp(27) > 0.0 and p.result_cf()["guar_int"].sum() > 0.0
         finally:
             (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
     finally:

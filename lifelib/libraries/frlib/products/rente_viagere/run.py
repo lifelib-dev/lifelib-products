@@ -35,8 +35,10 @@ print("annuites garanties = {} months   frais d'arrerages = {:.2%}   "
           proj.guarantee_mths(), proj.arrerage_charge_rate(),
           proj.revalo_rate, proj.mort_basis()))
 print()
-rows = [t for t in (1, 9, 10, 12, 21, 22, 25, 26, 27, 30, 33, 34, 36)
-        if t <= proj.proj_len()]
+print("cash flow at the worked-example months, t 0-based (t = 0 .. {})".format(
+    proj.proj_len() - 1))
+rows = [t for t in (0, 8, 9, 11, 20, 21, 24, 25, 26, 29, 32, 33, 35)
+        if t < proj.proj_len()]
 print(proj.result_cf().loc[rows].round(2).to_string())
 
 model.close()

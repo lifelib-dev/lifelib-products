@@ -21,13 +21,14 @@ print("model point {}: {} - {}{} {} - capital {:,.0f} EUR, cover to {}, "
           proj.cover_end_age(), proj.ptia_end_age()))
 print("premium form = {}   cotisation {:,.2f} -> {:,.2f} EUR over {} years   "
       "frequency = {}".format(
-          proj.premium_form(), proj.prem_pp(1), proj.prem_pp(proj.proj_len()),
+          proj.premium_form(), proj.prem_pp(0), proj.prem_pp(proj.proj_len() - 1),
           proj.proj_len(), proj.prem_freq()))
 print("rating factor = {:.2f}   waiting period = {} y   "
       "accident multiplier = {:.2f}".format(
           proj.rating_factor(), proj.waiting_period_y(),
           proj.accident_multiplier()))
 print()
+print("result_cf(), first 12 rows -- t is 0-based, t = 0 is the first policy year:")
 print(proj.result_cf().head(12).round(2).to_string())
 print()
 print("totals over {} years: premiums {:,.2f}  claims {:,.2f}  "

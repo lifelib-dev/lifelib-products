@@ -62,8 +62,11 @@ the model and its inputs must travel together.
 
 **Projection basis.** Annual steps, which are the *contract's own* grid rather than an
 approximation of a finer one: the cover is a one-year risk renewed by *tacite
-reconduction* and repriced at each renewal. Policy year ``t`` runs 1, 2, ...,
-``proj_len()``, where ``proj_len() = cover_end_age() - issue_age()``. Cotisations,
+reconduction* and repriced at each renewal. The time index ``t`` is **0-based**, the
+library-wide convention: ``t = 0`` is the first projected year, the attained age is
+``issue_age() + t``, and ``proj_len() = cover_end_age() - issue_age()`` is the number of
+projected years, so the frame runs ``t = 0, 1, ..., proj_len() - 1``. The contractual
+policy year is the derived 1-based label ``policy_year(t) = t + 1``. Cotisations,
 maintenance expense and commission fall at the start of the year; death and PTIA claims
 and their claim expense at the end; lapses at the end, on the survivors of both insured
 decrements. Acquisition expense and the initial commission fall at issue. The sibling

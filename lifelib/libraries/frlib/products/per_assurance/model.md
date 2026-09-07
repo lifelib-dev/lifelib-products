@@ -42,6 +42,39 @@ worked-example table, whose `pols_if_eoy` column is the notes' end-of-year `l(t)
 `result_cf()` gives the cash flows, and its `pols_if` column is the count each row
 **opens** with, which is the weight that row's flows carry.
 
+## The time index
+
+`t` is **0-based**, as everywhere in the library: `t = 0` is the first projected plan
+year, plan year `t` runs from time `t` to time `t + 1`, and `proj_len()` is the **number**
+of projected years rather than the last index. Both result frames are
+`range(proj_len())` — `t = 0 … proj_len() − 1`, `proj_len()` rows — so the anchor cell's
+twelve plan years are labelled `t = 0 … 11` and its settlement falls on row 11. Nothing is
+indexed at `t = −1`: the state carried into the first year is the `"BEF_REBAL"` timing of
+`av_euro_pp_at`, `av_uc_pp_at`, `av_pp_at` and `death_floor_pp_at`, which returns the model
+point's `*_init` columns at `t = 0` and last year's closing balance afterwards.
+
+Two clocks run beside `t` and neither is it:
+
+- `duration(t) = duration_ifo + t` is the completed years since the **first *versement***
+  at the start of year `t`, 0-based in lifelib's sense — nil through the plan's first
+  year. An in-force cell opens the frame at `t = 0` like any other; its history is carried
+  in `duration_ifo`, not in a frame offset.
+- `plan_year(t) = duration(t) + 1` is the plan's own **1-based** *ancienneté* year, the
+  contractual label the *ancienneté* schedules are written in. It keys `exit_table.csv`
+  and the transfer indemnity window (`plan_year(t) < 5`), and it is the only place a
+  1-based year appears in a formula.
+
+**The input CSVs.** No column in any of the five is the frame's `t` under another name,
+and none of them shifts with it:
+
+| File | Column | Decision |
+|---|---|---|
+| `allocation_grid.csv` | `years_to_horizon` | Unchanged. It is a years-**remaining** key, read at `k(t) = n − t`, which runs from `n` at `t = 0` down to 1 in the last year |
+| `exit_table.csv` | `duration` | Unchanged. Its first row is the plan's **first** year, so it is a 1-based *ancienneté* label read at `plan_year(t)`, not the 0-based `duration(t)` |
+| `mort_table.csv`, `annuity_factor.csv` | `age` | Unchanged. Attained age, read at `age(t)` and at `retirement_age()` |
+| `model_point_table.csv` | `age`, `retirement_age` | Unchanged. Ages, not points on the frame |
+| `model_point_table.csv` | `duration_ifo` | Unchanged. An elapsed count, already 0-based: two completed years is `2` |
+
 ## Accumulation with a two-way exit
 
 That sentence is the product, and it is the reason this model looks unlike the other
@@ -61,7 +94,7 @@ pay the same amount:
 |---|---|---|
 | What it is | *Déblocage anticipé* on one of the seven `L. 224-4` cases [R3] | Transfer of acquired rights to another PER [R3 L. 224-6](#frlib-per_assurance-r3) |
 | Trigger | A listed event — death of a spouse, invalidity, serious illness of a dependent child, over-indebtedness, exhaustion of unemployment rights, business liquidation, purchase of the main residence | The holder's election, at any time |
-| Charge | **None** [S2] [S3] [S7] | 1 % of acquired rights while `duration < 5`, nil after [R3 L. 224-6](#frlib-per_assurance-r3) |
+| Charge | **None** [S2] [S3] [S7] | 1 % of acquired rights while `plan_year(t) < 5`, nil after [R3 L. 224-6](#frlib-per_assurance-r3) |
 | Pays | The **whole** account value | `A(t) · (1 − ι(t))` |
 | Compartment 3 | Reduced — the main-residence limb is closed to it [R3 L. 224-4 I 6°](#frlib-per_assurance-r3) | Unchanged |
 | Where the money goes | Out of the regime | Stays in the regime: the *blocage*, the compartments and the exit conditions travel with it |
@@ -84,7 +117,7 @@ moving the declared retirement date, which re-cuts the whole allocation immediat
 `euro_share` and `uc_share`. `alloc_euro(t)` is a lookup, not a formula.
 
 ```
-k(t) = n − t + 1
+k(t) = n − t
 a(t) = allocation_grid[allocation_profile, k(t)].euro_share
 ```
 
@@ -127,31 +160,35 @@ bucket.
 ## The rebalancing, and which support pays for it
 
 ```
-m(t)   = a(t)·A(t−1) − av_euro_pp(t−1)
+m(t)   = a(t)·A⁻(t) − E_eu⁻(t)
 arb(t) = arb_rate·|m(t)|
-E_eu   = av_euro_pp(t−1) + m(t)          + a(t)·V_net              (m ≥ 0)
-E_uc   = av_uc_pp(t−1)   − m(t) − arb(t) + (1 − a(t))·V_net
+E_eu   = E_eu⁻(t) + m(t)          + a(t)·V_net                     (m ≥ 0)
+E_uc   = E_uc⁻(t) − m(t) − arb(t) + (1 − a(t))·V_net
 ```
 
-with the roles of the two supports exchanged when `m(t) < 0`. Two conventions, both
-**[std]** and both load-bearing.
+with the roles of the two supports exchanged when `m(t) < 0`. A `⁻` is the balance
+carried into the year — `av_pp_at(t, "BEF_REBAL")` and its two support halves, which are
+the model point's opening state at `t = 0`. Two conventions, both **[std]** and both
+load-bearing.
 
 **The arbitrage charge comes off the *source* support.** The destination receives the
 switch in full, so on a de-risking switch the post-rebalancing euro share lands at or just
-above the regulatory minimum rather than just below it. On the anchor cell's year-8 band
-crossing the BOY euro share is 50.04 % against a 50 % target; taking the charge from the
+above the regulatory minimum rather than just below it. On the anchor cell's band crossing
+at `t = 7` the BOY euro share is 50.04 % against a 50 % target; taking the charge from the
 destination instead would put it under, at every crossing, by `(1 − a)·arb`.
 `check_euro_share_min()` asserts it.
 
 **The *versement* is not a switch.** New money is allocated directly at the target mix and
 bears no arbitrage charge, which is what "allocation of both contributions and existing
 balance" means in the one contract publishing its ladder [S1].
-`arbitrage_charge_pp(t) = 0` in years 1 and 2 of the anchor cell, where the *équilibré*
-grid asks for no euro support at all, even though €3 000 was paid in each.
+`arbitrage_charge_pp(t) = 0` in the anchor cell's first two years, `t = 0` and `t = 1`,
+where the *équilibré* grid asks for no euro support at all, even though €3 000 was paid in
+each.
 
 **The minimum binds at the rebalancing date, not continuously.** Between dates the mix
-drifts with relative performance: the anchor cell is at 70.00 % euro after its year-12
-rebalancing and 69.67 % at the year end. Nothing in the model reads the year-end share,
+drifts with relative performance: the anchor cell is at 70.00 % euro after the rebalancing
+of its last year, `t = 11`, and 69.67 % at that year's end. Nothing in the model reads the
+year-end share,
 because re-imposing the target there would invent a rebalancing frequency the annual grid
 does not have. Real contracts rebalance quarterly to semi-annually [S1] [S3] [S7], and the
 annual grid concentrates each step into one switch.
@@ -177,7 +214,7 @@ nothing else.
 ## The garantie plancher is not a floor at gross premiums
 
 ```
-g(t) = g(t−1) + V_net − arb(t) − mgmt_charge_pp(t)
+g(t) = g⁻(t) + V_net − arb(t) − mgmt_charge_pp(t)
 ```
 
 *Versements* net of entry loading, less the management charges levied over the plan's
@@ -188,7 +225,7 @@ what this model computes; see *The garantie plancher base* in the technical note
 is the source of truth for the recursion. It follows that
 
 ```
-A(t) − g(t) = [A(0) − g(0)] + Σ gross investment return credited to date
+A(t) − g(t) = [A⁻(0) − g⁻(0)] + Σ gross investment return credited to date
 ```
 
 so the floor bites only where cumulative investment return is negative.
@@ -217,9 +254,10 @@ neither published figure — 0.10 % p.a. on UC balances [S3], 0.12 % inside a 1 
 
 ## Settlement: a capital leg, and a rente that usually is not one
 
-At `t = n` the survivors settle. The capital leg bears **no exit charge** [S1] [S2] [S3]
-[S7] [S8]. The annuity leg is converted at `annuity_factor()`, charged the *frais
-d'arrérages* at 1.50 % **[std]** [S8], and tested against the commutation threshold.
+In the last projected year, `t = n − 1`, the survivors settle. The capital leg bears
+**no exit charge** [S1] [S2] [S3] [S7] [S8]. The annuity leg is converted at
+`annuity_factor()`, charged the *frais d'arrérages* at 1.50 % **[std]** [S8], and tested
+against the commutation threshold.
 
 Two things follow from the 0 % maximum technical rate [R9 A. 142-1](#frlib-per_assurance-r9).
 
@@ -259,8 +297,9 @@ the payout chassis here would give the library two of them to keep in step.
 **Staged capital is settled at the horizon** **[std]**. The *capital fractionné* option
 [R3 L. 224-5](#frlib-per_assurance-r3) changes *when* the capital leg is paid, not how much: there is no exit
 charge, and the technical notes fix `proj_len` at the declared horizon. The model records
-the whole capital leg at `t = n`, publishes the instalment as `capital_instalment_pp()`,
-and credits nothing to the unpaid balance. Exact on an undiscounted gross-cash-flow basis;
+the whole capital leg at `t = n − 1`, publishes the instalment as
+`capital_instalment_pp()`, and credits nothing to the unpaid balance.
+Exact on an undiscounted gross-cash-flow basis;
 not exact for anything that discounts, and a discounting layer needs the schedule.
 
 **No PPB stock** **[std]**. The euro support is credited at the asset return [S9] and
@@ -331,7 +370,7 @@ read once per model rather than once per model point; a test counts the reads.
 | `model_point_table.csv` | Twelve model points. **Point 1 is the technical notes' worked example** — M 52, horizon 64, `duration_ifo` 2, c1, *équilibré*, €16 600 all in UC against a €16 000 floor base, €3 000 a year, 70/30 exit. Point 2 is a c3 annuity-only cell arriving with a reverse switch; 3, 4 and 5 are the *prudent*, *dynamique* and *offensif* ladders; 6 is the anchor at a 50 % annuity share, above the commutation threshold; 7 and 8 are the two capital forms; 9 crosses the 70th birthday; 10 is the anchor with a floor that bites; 11 is a c2 cell with no floor and no contributions; 12 is a 32-year *prudent* annuity cell | anchor cell **[std]**, technical notes' worked example; €16 600 is the published average accumulation-phase balance [R22] |
 | `allocation_grid.csv` | Target `euro_share` and `uc_share` by (`allocation_profile`, `years_to_horizon`), four profiles, `k` = 1 to 45 | the regulatory minimum grid [R6 art. 1](#frlib-per_assurance-r6); band edges **[std]** |
 | `mort_table.csv` | Annual mortality by sex and age 18–120, capped at 1 | **[std]** proxy shaped on French population mortality [REG-R24]; **level** anchored so that `mort_be_factor × q(M, 52)` is the notes' 0.00500 placeholder exactly — *not* TH 00-02 / TF 00-02 [REG-R22] [REG-R23] |
-| `exit_table.csv` | `early_release_rate` and `transfer_out_rate` by (`compartment`, `duration`); 1.60 % / 1.00 % on c1 and c2, reduced release on c3 | **[std]**, split of the 2.62 % aggregate of [R22]; c3 loses the main-residence case [R3 L. 224-4 I 6°](#frlib-per_assurance-r3) |
+| `exit_table.csv` | `early_release_rate` and `transfer_out_rate` by (`compartment`, `duration`), the `duration` key being the plan's **1-based** *ancienneté* year and so read at `plan_year(t)`; 1.60 % / 1.00 % on c1 and c2, reduced release on c3 | **[std]**, split of the 2.62 % aggregate of [R22]; c3 loses the main-residence case [R3 L. 224-4 I 6°](#frlib-per_assurance-r3) |
 | `annuity_factor.csv` | Undiscounted conversion factors by sex and age 55–80, anchored at 22.0000 for a male 64 | **[std]** placeholder; TGH05 / TGF05 cited and not shipped [R12] [REG-R21] |
 
 **What is deliberately not in a file.** The charge levels — the entry loading, the two
@@ -366,7 +405,7 @@ because the notes and the library index it at opposite ends of the year.
 | Notes symbol | Cells | Why it needed care |
 |---|---|---|
 | `lapse_rate` | **does not exist** | There is no surrender right [R3 L. 224-4](#frlib-per_assurance-r3) [S2] [S3] [S4] [S7]. `early_release_rate` and `transfer_out_rate` are named for the events they are, and `claims_early_release` and `claims_transfer` for the amounts they pay |
-| `l(t−1)` | `pols_if(t)` | The count the year **opens** with, `pols_if(1) = 1`, and the weight on that same `result_cf()` row. This is the library's settled convention, shared with `MYGA_US_S` and `WP_UK_A`: divide a flow by its own row's `pols_if` and you get a per-policy amount for the same period |
+| `l⁻(t)` | `pols_if(t)` | The count the year **opens** with, `pols_if(0) = 1`, and the weight on that same `result_cf()` row. This is the library's settled convention, shared with `MYGA_US_S` and `WP_UK_A`: divide a flow by its own row's `pols_if` and you get a per-policy amount for the same period |
 | `l(t)` | `pols_if_at(t, "AFT_DECR")` | The count the year **ends** with — the notes' own indexing, and the column their worked-example table prints. It is published as the `pols_if_eoy` column of `result_state()` and it is one period ahead of `pols_if`: `pols_if_at(t, "AFT_DECR") == pols_if(t + 1)`. It carried the bare name `pols_if` in an earlier draft, which put the next period's exposure on every cash flow row — silently, since nothing raised — and the rename is what fixed it. `pols_if_at` also exposes the two intermediate steps, `"BEF_RELEASE"` and `"BEF_TRANSFER"` |
 | `m(t)` | `switch_pp(t)` | **Signed**, because the sign decides which support bears the arbitrage charge. Positive on the ordinary de-risking switch; negative where a cell arrives above the grid's minimum |
 | `a_x` | `annuity_factor()` | An **undiscounted expected-instalment count**, not a discounted annuity factor [R9 A. 142-1](#frlib-per_assurance-r9). Named for what it is so nothing discounts it twice |
@@ -399,7 +438,9 @@ no profile or horizon change.
 ## Tests
 
 `tests/test_per_assurance_fr.py` asserts every row of the notes' worked example to the
-cent and `l(t)` to six decimals, the settlement table and the commutation identity, and
+cent and `l(t)` to six decimals — on the 0-based frame, `t = 0 … 11`, with the twelve rows
+of `result_cf()` labelled `range(proj_len())` — the settlement table and the commutation
+identity, and
 then one test per listed modelling pitfall — the glide-path band edge, the *versement*
 that is not a switch, the source-charging convention and the reverse-switch bound, the
 minimum binding at the rebalancing date, the floor identity and the two cells where the
@@ -408,9 +449,9 @@ window measured from the first *versement*, the three decrements not double-coun
 undiscounted conversion factor, the monthly commutation threshold and its cliff, the
 per-policy against aggregate distinction, and the projection stopping at the horizon with
 tax outside it. It asserts the exposure convention separately and over every model point,
-because breaking it is silent: `result_cf()` has to open at `pols_if_init()`, each row's
-`pols_if` has to be the count that row opens with, and the notes' `l(t)` has to sit one
-period ahead of it at `pols_if_at(t, "AFT_DECR")`. It also asserts that a compartment-3
+because breaking it is silent: `result_cf()` has to open at `pols_if_init()` on row
+`t = 0`, each row's `pols_if` has to be the count that row opens with, and the notes'
+`l(t)` has to sit one period ahead of it at `pols_if_at(t, "AFT_DECR")`. It also asserts that a compartment-3
 cell electing capital raises, that a contradictory `annuity_share` raises, that the glide
 path can be swapped without touching a formula, and that the model round-trips.
 
