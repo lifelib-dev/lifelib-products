@@ -114,6 +114,21 @@ TITLES = {
         "Occupational Disability (selbständige Berufsunfähigkeitsversicherung)",
     ("delib", "pflegerentenversicherung"):
         "Long-Term Care Annuity (Pflegerentenversicherung)",
+    # krlib.  Same arrangement as jplib, frlib and delib: the English name leads and the
+    # Korean name -- what the product is called, and what every document in the library
+    # uses -- follows it in parentheses.
+    ("krlib", "whole_life"): "Whole Life (종신보험)",
+    ("krlib", "term_life"): "Term Life (정기보험)",
+    ("krlib", "ci_insurance"): "Critical Illness (CI보험)",
+    ("krlib", "child"): "Children's Insurance (어린이보험), with 태아가입",
+    ("krlib", "indemnity_medical"):
+        "Indemnity Medical, 4th generation (실손의료보험, 4세대)",
+    ("krlib", "cancer"): "Cancer (암보험)",
+    ("krlib", "long_term_care"): "Long-Term Care (간병보험)",
+    ("krlib", "pension_savings"):
+        "Tax-Qualified Pension Savings (연금저축보험)",
+    ("krlib", "variable_annuity"): "Variable Annuity (변액연금보험)",
+    ("krlib", "immediate_annuity"): "Immediate Annuity (즉시연금)",
 }
 
 

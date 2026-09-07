@@ -17,6 +17,7 @@ which Sphinx builds from the models' own docstrings.
    libraries/jplib/index
    libraries/frlib/index
    libraries/delib/index
+   libraries/krlib/index
 
 The **uslib** library covers twelve U.S. individual life and annuity product types; the
 **uklib** library covers seven UK ones, including the pension annuity; the **jplib**
@@ -25,13 +26,16 @@ products — medical, cancer and nursing care — which is what Japanese househo
 the **frlib** library covers nine French ones, five of them built on *assurance vie*
 and its *participation aux bénéfices*, which is the French savings vehicle, and one of them
 *assurance emprunteur*, the cover a French borrower buys with a mortgage and the largest
-individual protection market in the country; and the **delib** library covers ten German
+individual protection market in the country; the **delib** library covers ten German
 ones, organised on the *Drei-Schichten-Modell* the *Alterseinkünftegesetz* imposed on
 German retirement saving, with the *Berufsunfähigkeitsversicherung* that is the country's
-flagship protection product. Each product directory holds its
-representative specification, the liability cash flow model derived from it, the modelx
-model itself, the cells reference generated from that model's docstrings, and the source
-list every citation resolves against.
+flagship protection product; and the **krlib** library covers ten Korean ones, four of them
+제3보험 (third-insurance) products — indemnity medical, cancer, long-term care and
+children's cover — which is the statutory 상해·질병·간병 category Korean households buy,
+one of those four being 실손의료보험, the only indemnity contract in this repository. Each
+product directory holds its representative specification, the liability cash flow model
+derived from it, the modelx model itself, the cells reference generated from that model's
+docstrings, and the source list every citation resolves against.
 
 .. _create-a-project:
 
@@ -44,15 +48,16 @@ this repository, and it does not travel with them: this page stays behind at the
 
 Until then, each library is simply a directory — clone the repository and work in
 ``lifelib/libraries/uslib/``, ``lifelib/libraries/uklib/``, ``lifelib/libraries/jplib/``,
-``lifelib/libraries/frlib/`` or ``lifelib/libraries/delib/`` directly, which is where
-lifelib itself keeps them. Each model reads its inputs from its own product directory, so
-it runs in place::
+``lifelib/libraries/frlib/``, ``lifelib/libraries/delib/`` or
+``lifelib/libraries/krlib/`` directly, which is where lifelib itself keeps them. Each
+model reads its inputs from its own product directory, so it runs in place::
 
     python lifelib/libraries/uslib/products/term_life/run.py
     python lifelib/libraries/uklib/products/term_assurance/run.py
     python lifelib/libraries/jplib/products/term_life/run.py
     python lifelib/libraries/frlib/products/assurance_vie_euro/run.py
     python lifelib/libraries/delib/products/klassische_rentenversicherung/run.py
+    python lifelib/libraries/krlib/products/term_life/run.py
 
 .. note::
 
