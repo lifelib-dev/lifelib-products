@@ -40,18 +40,24 @@ keep their German form in prose.
   is declared once a year and allocated at the *Bilanzstichtag* [S9], the *Rückkaufswert* is struck at
   the end of the current *Versicherungsperiode* [R2], the *beitragsfreie Versicherungssumme* is
   tabulated *für jedes Versicherungsjahr* [R3], and the *Ablauf* falls on an anniversary [S7].
-- **What `t` counts.** `t` is the **policy year**, **1-based**, measured from **issue**: policy year
-  `t` runs from the (`t`−1)-th policy anniversary to the `t`-th, and `age(t) = issue_age + t − 1` is
-  the attained age at the start of it. `duration(t) = t − 1` is the completed policy years at the start
-  of year `t`, and is what every duration-keyed schedule — the *Stornoabzug*, the lapse table, the
-  § 169 Abs. 3 five-year spreading, the *beitragsfreie Versicherungssumme* — is indexed on. **Counting
-  `t` from issue rather than from the valuation date makes every one of those lookups direct.**
-- **Where the frame starts, and `proj_len()`.** `proj_len() = policy_term`: the **last projected period
-  index**, the policy year in which the *Ablauf* falls and the *Erlebensfallleistung* is paid. The frame
-  runs `t = t_start() … proj_len()` contiguously with `t_start() = duration_init + 1`, so a
-  new-business point opens at `t = 1` and an in-force point at the duration already run. Hence
-  `result_cf().index[-1] == proj_len()`, `result_cf().index[0] == t_start()` and
-  `pols_if(t_start()) == pols_if_init()` on every model point. **There is no `t = proj_len() + 1` row.**
+- **What `t` counts, and it is 0-based.** `t` is the **policy year index**, **0-based**, measured from
+  **issue**: `t = 0` is the **first** policy year, year `t` runs from the `t`-th policy anniversary to
+  the (`t`+1)-th, and `age(t) = issue_age + t` is the attained age at the start of it.
+  `duration(t) = t` is the completed policy years at the start of year `t`, and is what every
+  duration-keyed schedule — the *Stornoabzug*, the lapse table, the § 169 Abs. 3 five-year spreading,
+  the *beitragsfreie Versicherungssumme* — is indexed on. The **contractual** policy year is the
+  1-based label `policy_year(t) = t + 1`, and it is **derived, never indexed by**: it is the key into
+  the tables whose own column is called `policy_year`. **Counting `t` from issue rather than from the
+  valuation date makes every one of those duration lookups direct.**
+- **Where the frame starts, and `proj_len()`.** `proj_len() = policy_term`: the **number of policy
+  years counted from `t = 0`**, and therefore the frame's **exclusive** end. The frame runs
+  `t = t_start() … proj_len() − 1` contiguously with `t_start() = duration_init` — an elapsed count,
+  already 0-based — so a new-business point opens at `t = 0` and an in-force point at the duration
+  already run. Hence `result_cf().index[-1] == proj_len() − 1`,
+  `len(result_cf()) == proj_len() − t_start()`, `result_cf().index[0] == t_start()` and
+  `pols_if(t_start()) == pols_if_init()` on every model point. This is lifelib's own
+  `for t in range(proj_len())`. The *Ablauf* falls at the end of year `proj_len() − 1`; **there is no
+  `t = proj_len()` row.**
 - **Timing conventions [std].** *Beiträge* at the **start** of the policy year (annual in advance);
   acquisition expense and initial commission at issue; maintenance expense and renewal commission at
   the start of the year on the in-force; the guaranteed *Deckungskapital* rolling forward over the year
@@ -92,9 +98,9 @@ Every column of `model_point_table.csv` is published as a cells of the same name
 | `smoker` | enum {N, S} | Feeds `rating_factor`; no published scale [R14] | 14 (S) |
 | `issue_year` | int | Cohort identity: fixes the DeckRV ceilings [REG-R15] and the tax cohort [R10] | 10 (2012) |
 | `issue_age` | int | Age last birthday at issue | all |
-| `duration_init` | int | Completed policy years at the valuation date; 0 = new business | 10 (14) |
+| `duration_init` | int | Completed policy years at the valuation date; 0 = new business. An **elapsed count**, so already 0-based: it *is* `t_start()` | 10 (14) |
 | `pols_if_init` | float | Policies represented at `t_start()` | all |
-| `policy_term` | int | *Versicherungsdauer*, in years; equals `proj_len()` | all |
+| `policy_term` | int | *Versicherungsdauer*, in years; equals `proj_len()`, the number of policy years from `t = 0` | all |
 | `prem_term` | int | *Beitragszahlungsdauer* ≤ `policy_term`; **1 = *Einmalbeitrag*** | 2 (1), 3 (15) |
 | `sum_assured` | EUR | Guaranteed *Erlebensfallleistung* (*Versicherungssumme*) | all |
 | `death_ratio` | float | *Todesfallleistung* ÷ *Erlebensfallleistung*; 1.00 = the endowment proper | 14 (0.60) |
@@ -108,7 +114,7 @@ Every column of `model_point_table.csv` is published as a cells of the same name
 | `rating_factor` | float | *Risikozuschlag* multiplier on the risk premium; 1.00 at standard rates [R5] | 14 (1.50) |
 | `av_sur_pp_init` | EUR | *Überschussguthaben* carried at the valuation date | 10 |
 | `bonus_si_init` | EUR | Bonus sum insured already bought (*Bonussystem*, in force) | — |
-| `bfz_year` | int | Policy year at whose end *Beitragsfreistellung* is elected; 0 = never; ≤ `duration_init` = already paid-up | 11 (10), 12 (3) |
+| `bfz_year` | int | **Contractual, 1-based policy year** at whose end *Beitragsfreistellung* is elected; 0 = never; ≤ `duration_init` = already paid-up. Not a frame index: the election falls at the end of period `bfz_year − 1`, so the contract is paid-up from period `bfz_year` onwards. The column stays 1-based because 0 has to remain free to mean "never" | 11 (10), 12 (3) |
 
 `sum_assured` and `death_ratio` are the two halves of the *gemischte Versicherung*, and the
 *Mindesttodesfallschutz* [R12] [REG-R45] requires the death sum to be at least 50 % of the
@@ -131,9 +137,9 @@ something it does not. Every one satisfies the *Mindesttodesfallschutz* [R12] [R
 | 7 | Quarterly (3 % loading), female — the unisex-pricing pair with 1 | `prem_freq` quarterly, `sex` **F** |
 | 8 | ***Bonussystem*** — pairs with 1 for the [R28] maturity/death asymmetry | `surplus_use` **bonus** |
 | 9 | ***Beitragsverrechnung*** — the surplus reduces the *Zahlbeitrag* instead of a benefit | `surplus_use` **beitragsverrechnung** |
-| 10 | **In force**, a 2012 cohort on a 1,75 % guarantee, opening at `t_start()` = 15 with an *Überschussguthaben* | issue 2012, M 40, term 30, `duration_init` 14, `rechnungszins` **1.75%**, `av_sur_pp_init` 6,000 |
-| 11 | ***Beitragsfreistellung*** succeeding: premiums cease at the end of year 10, the contract stays in force | as 1 with `bfz_year` = **10** |
-| 12 | **Boundary.** *Beitragsfreistellung* **failing** the *Mindestversicherungsleistung*, so the election becomes a surrender at `t` = 3 [R3] | M 45, term 20, SI **6,000**, `bfz_year` = **3** |
+| 10 | **In force**, a 2012 cohort on a 1,75 % guarantee, opening at `t_start()` = 14 with an *Überschussguthaben* | issue 2012, M 40, term 30, `duration_init` 14, `rechnungszins` **1.75%**, `av_sur_pp_init` 6,000 |
+| 11 | ***Beitragsfreistellung*** succeeding: premiums cease at the end of policy year 10 (`t` = 9), the contract stays in force | as 1 with `bfz_year` = **10** |
+| 12 | **Boundary.** *Beitragsfreistellung* **failing** the *Mindestversicherungsleistung*, so the election becomes a surrender at the end of policy year 3, `t` = 2 [R3] | M 45, term 20, SI **6,000**, `bfz_year` = **3** |
 | 13 | **Non-*gezillmert*** — the § 169 floor is then slack and the three reserves coincide. **[std]**: all four retrieved wordings that state a method apply § 4 DeckRV *Zillmerung* [S7] [S9] [S18], so this point exercises the ceiling being a maximum rather than a market option anyone was observed taking | as 1 with `zillmer_on` = **0** |
 | 14 | **Boundary.** Unequal sums, old entry, a *Risikozuschlag*, and zero declared surplus | M 55 smoker, term 12, SI 30,000, ratio **0.60**, `rating_factor` **1.50**, `scenario_id` **nil** |
 
@@ -144,10 +150,10 @@ something it does not. Every one satisfies the *Mindesttodesfallschutz* [R12] [R
 | Variable | Description | Updated |
 |---|---|---|
 | `pols_if(t)` | Policies in force at the **start** of policy year `t`; `pols_if(t_start()) = pols_if_init()`. `pols_if_at(t, timing)` gives `"BEF_DECR"` / `"AFT_MORT"` / `"AFT_LAPSE"` | annual decrements |
-| `res_pp(t)` | Guaranteed *Deckungskapital* per policy at the **start** of year `t` (= duration `t − 1`), on the first-order basis. `res_pp_at(t, timing)` gives `"BEF_PREM"` / `"AFT_PREM"` / `"AFT_INT"` | annual, prospective, with a roll-forward check |
+| `res_pp(t)` | Guaranteed *Deckungskapital* per policy at the **start** of year `t` (= duration `t`), on the first-order basis. `res_pp_at(t, timing)` gives `"BEF_PREM"` / `"AFT_PREM"` / `"AFT_INT"` | annual, prospective, with a roll-forward check |
 | `av_sur_pp(t)`, `bonus_si_pp(t)` | *Überschussguthaben* per policy at the start of year `t`, nil unless `surplus_use = ansammlung`, with `av_sur_pp_at(t, timing)` and `av_sur_at(t, timing)` per the house convention for a *verzinsliche Ansammlung* side account — library-wide `av_pp` is the **principal** balance, which in this product is the reserve `res_pp` and not an account; and the bonus sum insured bought out of surplus, nil unless `surplus_use = bonus` | annual recursion |
 | `term_bonus_pp(t)` | Accrued *Schlussüberschussanteil* at the start of year `t`, payable at the *Ablauf* and on death, not on surrender in the base run | annual accrual |
-| `is_paid_up(t)` | Whether the contract is *beitragsfrei* at the start of year `t` | set once, at `bfz_year` |
+| `is_paid_up(t)` | Whether the contract is *beitragsfrei* at the start of year `t`; true from `t = bfz_year` onwards, the election falling at the end of period `bfz_year − 1` | set once, at the `bfz_year` election |
 | `bfz_si_pp` | *Beitragsfreie Versicherungssumme* bought at the *Beitragsfreistellung*, or 0 where the *Mindestversicherungsleistung* test fails and the election became a surrender | once per model point |
 
 There is **no** unit fund, **no** policyholder account fed by premium and **no** partial-withdrawal
@@ -168,8 +174,8 @@ per row: delib's second ruling, machine-checked.
 |---|---|---|
 | `model_point_table.csv` | `point_id` | the 22 further attributes of the table above (exempt from `provenance`) |
 | `mort_table.csv` | `sex`, `age` | `mort_rate_1st`, `provenance` |
-| `lapse_table.csv` | `policy_year` | `lapse_rate`, `storno_rate`, `provenance` |
-| `surplus_rate_table.csv` | `scenario_id`, `policy_year` | `decl_rate`, `term_rate`, `ans_rate`, `provenance` |
+| `lapse_table.csv` | `policy_year` (**1-based label**, read as `policy_year(t) = t + 1`) | `lapse_rate`, `storno_rate`, `provenance` |
+| `surplus_rate_table.csv` | `scenario_id`, `policy_year` (**1-based label**, read as `t + 1`) | `decl_rate`, `term_rate`, `ans_rate`, `provenance` |
 | `cost_table.csv` | `cost_id` | `alpha_rate`, `beta_rate`, `gamma_rate`, `acq_expense`, `maint_expense`, `expense_infl`, `claim_expense`, `comm_init_rate`, `comm_renew_rate`, `provenance` |
 | `freq_loading_table.csv` | `prem_freq` | `instalments`, `prem_freq_load`, `provenance` |
 | `deckrv_table.csv` | `issue_year` | `hoechstrechnungszins`, `hoechstzillmersatz`, `provenance` |
@@ -297,9 +303,12 @@ named here and asserted as pitfall 13 rather than papered over.
 
 **Lapse [std].** The decrement is **surrender only**. `lapse_table.csv`:
 
-| Policy year | 1–2 | 3–8 | 9–11 | 12 | 13+ | final year |
+| Policy year (`t + 1`) | 1–2 | 3–8 | 9–11 | 12 | 13+ | final year |
 |---|---|---|---|---|---|---|
 | `lapse_rate` | 5.0% | 3.5% | 2.0% | 6.0% | 2.5% | **0** |
+
+The file's key column is the **contractual, 1-based** `policy_year`, so the row for policy year 12 is
+read at `t` = 11.
 
 The **shape** is the one thing the evidence supports: the half-income tax rule needs twelve years and
 age 60 or 62 [R10] [REG-R45], so surrenders are suppressed approaching duration 12 and spike at it,
@@ -311,8 +320,8 @@ The 2,72 % for 2024 and the second 1,2 % measure recorded here before this pass 
 retrieved GDV publication and are withdrawn. What the supervisor adds is directional rather than
 numerical: some products show "sehr hohen Stornoquoten ... speziell in den ersten Jahren nach
 Vertragsabschluss", which is the shape of the first two rows above [R18]. In the **final
-policy year the rate is zero**: the end of policy year `n` is the *Ablauf*, so the survivors leave as a
-maturity. Unlike frlib's term product this is not a bookkeeping split — a year-`n` surrender would pay
+policy year the rate is zero**: the end of year `t = n − 1` is the *Ablauf*, so the survivors leave as
+a maturity. Unlike frlib's term product this is not a bookkeeping split — a final-year surrender would pay
 the § 169 value while a maturity pays the sum insured plus surplus — so it decides a real payment, and
 is stated as an assumption and asserted as pitfall 18.
 
@@ -354,9 +363,10 @@ optional modules are under *Policyholder behaviour modelling*.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t`, `k` | — | policy year, `t = t_start … n`; completed years `k = t − 1` |
-| `n`, `m` | `policy_term`, `prem_term` | *Versicherungsdauer*; *Beitragszahlungsdauer* |
-| `x(t)` | `age(t)` | attained age at the start of year `t` = `issue_age + t − 1` |
+| `t`, `k` | — | policy year index, **0-based**, `t = t_start … n − 1`; completed years `k = duration(t) = t` |
+| `y(t)` | `policy_year(t)` | contractual, **1-based** policy year label, `= t + 1`; the key into the `policy_year` column of the input tables |
+| `n`, `m` | `policy_term`, `prem_term` | *Versicherungsdauer*; *Beitragszahlungsdauer*. `n` is also `proj_len()`, the **number** of projected years and the frame's exclusive end |
+| `x(t)` | `age(t)` | attained age at the start of year `t` = `issue_age + t` |
 | `SE`, `SD` | `sum_assured`, `sum_death` | guaranteed survival sum; guaranteed death sum `= SE × death_ratio` |
 | `i₁`, `v₁` | `rechnungszins` | first-order interest rate; `v₁ = 1/(1 + i₁)` |
 | `q₁(x)` | `mort_rate_at_age(x)` | first-order **tariff** mortality at attained age `x`: the unisex blend, which prices and reserves |
@@ -423,7 +433,7 @@ the correct answer, not a degenerate case.
 
 ### The Deckungskapital
 
-Prospectively, at the start of year `t` (duration `k = t − 1`), on the first-order basis, over the
+Prospectively, at the start of year `t` (duration `k = t`), on the first-order basis, over the
 remaining term and the remaining premium period:
 
 ```
@@ -432,12 +442,12 @@ ann_due_prem_fut(t)  = Σ_{j=0}^{max(0, m-k)-1} v₁^j · jp(x(t))
 
 res_net_pp(t)   = pv_benefit_fut(t) − prem_net_level_pp · ann_due_prem_fut(t)
 res_zill_pp(t)  = res_net_pp(t) − alpha_cost · ann_due_prem_fut(t) / ann_due_prem_1st
-res_min_pp(t)   = res_net_pp(t) − alpha_cost · max(0, 1 − (t − 1) / 5)
+res_min_pp(t)   = res_net_pp(t) − alpha_cost · max(0, 1 − t / 5)
 res_pp(t)       = res_zill_pp(t)                       while premium-paying
                 = bfz_si_pp · pu_single_prem(t)        once paid-up
 ```
 
-Three facts about those three lines. **`res_zill_pp(1) = −alpha_cost`** exactly: the *gezillmerte
+Three facts about those three lines. **`res_zill_pp(0) = −alpha_cost`** exactly: the *gezillmerte
 Deckungskapital* is **negative at issue**, which is the arithmetic of [R28] and the reason § 169
 Abs. 3 needs a floor at all. **How long it stays negative is a parameter question, not a structural
 one**, and on the shipped basis the answer is under a year: 25 ‰ of a twenty-five-year
@@ -463,8 +473,12 @@ res_guar_pp(t)     = max( res_zill_pp(t+1), res_min_pp(t+1), 0 )
 surr_value_pp(t)   = res_guar_pp(t) · (1 − storno_rate(t)) + av_sur_pp_at(t, "AFT_CREDIT")
                      + term_surr_share · term_bonus_pp(t+1)
 pu_single_prem(t)  = SD/SE · Σ_{j} v₁^(j+1) · jp(x(t)) · q₁(x(t)+j)  +  v₁^(n-k) · (n-k)p(x(t))
-bfz_si_pp          = res_guar_pp(bfz_year) / pu_single_prem(bfz_year + 1)
+bfz_si_pp          = res_guar_pp(e) / pu_single_prem(e + 1),   e = bfz_year − 1
 ```
+
+`e = bfz_year − 1` is the **0-based index of the election year**: `bfz_year` is the contractual,
+1-based policy year at whose end the election falls, so that end is the end of period `e` and the
+start of period `e + 1 = bfz_year`.
 
 `pu_single_prem(t)` is the first-order single premium for **one unit** of paid-up endowment over the
 remaining term, so `bfz_si_pp` is the *beitragsfreie Versicherungssumme* the § 169 value will buy —
@@ -477,8 +491,8 @@ Three rules ride on those four lines:
   *Ablauf* and on death, not on surrender (`product-spec.md`, footnote 12); the parameter is exposed.
 - **The *Mindestversicherungsleistung* test**: if `bfz_si_pp < bfz_min_si` (**2,500 EUR [std]**) the
   election is **not** a *Beitragsfreistellung* — § 165 VVG obliges the insurer to pay the § 169 value
-  instead, so the model converts the point to a **surrender at the end of `bfz_year`** and the
-  projection terminates there [R3] (pitfall 8). Model point 12 exercises that branch.
+  instead, so the model converts the point to a **surrender at the end of year `e = bfz_year − 1`**
+  and the projection terminates there [R3] (pitfall 8). Model point 12 exercises that branch.
 
 Where the election succeeds the contract stays in force with `bfz_si_pp` in place of `SE`, no further
 premium and a reserve `bfz_si_pp · pu_single_prem(t)`. Because the § 169 floor generally exceeds the
@@ -520,7 +534,8 @@ Then the three *Überschussverwendung* systems:
 ```
 ansammlung:           av_sur_pp(t+1)    = av_sur_pp(t) · (1 + ans_rate(t)) + surplus_credit_pp(t)
 bonus:                bonus_si_pp(t+1)  = bonus_si_pp(t) + surplus_credit_pp(t) / pu_single_prem(t+1)
-beitragsverrechnung:  prem_offset_pp(t) = min( prem_charged_pp(t), surplus_credit_pp(t-1) )
+beitragsverrechnung:  prem_offset_pp(t) = min( prem_charged_pp(t), surplus_credit_pp(t-1) )   for t > t_start
+                                        = 0                                                  at t = t_start
 ```
 
 Under `ansammlung` the surplus compounds at `ans_rate` and raises the maturity benefit; under `bonus`
@@ -533,21 +548,22 @@ the test that distinguishes them (pitfall 15).
 ### Premium, decrements, benefits and cash flows
 
 ```
-prem_charged_pp(t) = prem_gross_pp · prem_freq_load        if t ≤ prem_term and not is_paid_up(t)
+prem_charged_pp(t) = prem_gross_pp · prem_freq_load        if t < prem_term and not is_paid_up(t)
                    = 0                                      otherwise
 prem_paid_pp(t)    = prem_charged_pp(t) − prem_offset_pp(t)
 premiums(t)        = prem_paid_pp(t) · pols_if(t)
 
 pols_death(t)      = pols_if(t) · mort_rate(t)
 pols_lapse(t)      = pols_if(t) · (1 − mort_rate(t)) · lapse_rate(t)
-pols_maturity(t)   = pols_if(t) · (1 − mort_rate(t))        at t = n, else 0
+pols_maturity(t)   = pols_if(t) · (1 − mort_rate(t))        at t = n − 1, else 0
 pols_if(t+1)       = pols_if(t) − pols_death(t) − pols_lapse(t)
 
 benefit_full_pp(t)     = sum_death + av_sur_pp(t+1) + bonus_si_pp(t+1) + term_bonus_pp(t+1)
 benefit_death_pp(t)    = (1 − suicide_share) · benefit_full_pp(t) + suicide_share · surr_value_pp(t)
-                                                            for t ≤ 3, else benefit_full_pp(t)
-benefit_maturity_pp(n) = sum_assured + av_sur_pp(n+1) + bonus_si_pp(n+1) + term_bonus_pp(n+1)
-                         + bwr_rate · res_guar_pp(n)
+                                                            for t < 3 (policy years 1–3),
+                                                            else benefit_full_pp(t)
+benefit_maturity_pp(N) = sum_assured + av_sur_pp(N+1) + bonus_si_pp(N+1) + term_bonus_pp(N+1)
+                         + bwr_rate · res_guar_pp(N),        N = n − 1
 
 claims(t, "DEATH")    = pols_death(t)    · benefit_death_pp(t)
 claims(t, "MATURITY") = pols_maturity(t) · benefit_maturity_pp(t)
@@ -569,7 +585,7 @@ renewal commission is charged on `prem_charged_pp`, not `prem_paid_pp`**: under 
 the intermediary is paid on the tariff premium, the surplus offset being a policyholder rebate.
 
 `result_cf()` is a `DataFrame` indexed by `t` (`df.index.name == "t"`), contiguous from `t_start()` to
-`proj_len()`, with columns **in this order**:
+`proj_len() − 1`, with columns **in this order**:
 
 ```
 pols_if, premiums, claims_death, claims_maturity, claims_lapse, expenses, commissions, net_cf
@@ -593,10 +609,10 @@ per-`t` residual at `check_*_resid(t)`. The conventions suite calls every one on
 | Identity | What it asserts |
 |---|---|
 | `check_net_cf()` | **delib's first ruling.** `net_cf(t)` equals `premiums − claims_death − claims_maturity − claims_lapse − expenses − commissions`, rebuilt from `result_cf()`'s own published columns |
-| `check_pols_roll_fwd()` | `pols_if(t+1) == pols_if(t) − pols_death(t) − pols_lapse(t)`, and at `t = n` the survivors of mortality are exactly `pols_maturity(n)` |
+| `check_pols_roll_fwd()` | `pols_if(t+1) == pols_if(t) − pols_death(t) − pols_lapse(t)`, and at `t = n − 1` the survivors of mortality are exactly `pols_maturity(n − 1)` |
 | `check_decrement_closure()` | `Σ_t ( pols_death + pols_lapse + pols_maturity ) == pols_if_init()` |
 | `check_res_roll_fwd()` | The Fackler recursion on the guaranteed *Deckungskapital*: `( res_pp(t) + prem_zill_charged(t) ) · (1 + i₁) + bfz_uplift_pp(t) == f · q₁(x(t)) · sum_death + (1 − q₁(x(t))) · res_pp(t+1)`, where `q₁` is the unisex tariff rate and the *Risikozuschlag* `f` loads the death term only. This is the strongest single check in the model: it proves the premium, the first-order mortality, the interest and the prospective formula are mutually consistent |
-| `check_surplus_roll_fwd()` | The active surplus vehicle's ledger closes: `av_sur_pp(t+1) == av_sur_pp(t)·(1 + a(t)) + C(t)` under `ansammlung`, the bonus-purchase identity under `bonus`, and `prem_offset_pp(t) == min(prem_charged_pp(t), C(t−1))` under `beitragsverrechnung` |
+| `check_surplus_roll_fwd()` | The active surplus vehicle's ledger closes: `av_sur_pp(t+1) == av_sur_pp(t)·(1 + a(t)) + C(t)` under `ansammlung`, the bonus-purchase identity under `bonus`, and `prem_offset_pp(t) == min(prem_charged_pp(t), C(t−1))` under `beitragsverrechnung`, with `C(t−1)` read as zero at `t = t_start` |
 | `check_surr_floor()` | § 169 Abs. 3: `res_guar_pp(t) ≥ res_zill_pp(t+1)`, `≥ res_min_pp(t+1)` and `≥ 0` at every `t`, and `surr_value_pp(t) ≥ 0` |
 | `check_equivalence()` | The first-order pricing equivalence closes: `B·(1 − β)·ann_due_prem_1st − α·BS == pv_benefit_1st + γ·SE·ann_due_term_1st` |
 | `check_rechnungszins_cap()`, `check_zillmer_cap()` | The two DeckRV cohort ceilings: `rechnungszins ≤ hoechstrechnungszins(issue_year)` under § 2 [REG-R14] [REG-R15], and `alpha_rate ≤ hoechstzillmersatz(issue_year)` with `alpha_cost ≤ hoechstzillmersatz · beitragssumme` under § 4 [R7] [REG-R16] |
@@ -607,12 +623,12 @@ on a 2026 issue year is not a stress, it is a data error.
 
 ### Annual processing order
 
-For `t = t_start() … proj_len()`, in this order:
+For `t = t_start() … proj_len() − 1`, in this order:
 
-1. **Open the year.** `x(t) = issue_age + t − 1`, `k = t − 1`; carry in `pols_if(t)`, `res_pp(t)`,
+1. **Open the year.** `x(t) = issue_age + t`, `k = t`; carry in `pols_if(t)`, `res_pp(t)`,
    `av_sur_pp(t)`, `bonus_si_pp(t)`, `term_bonus_pp(t)`, `is_paid_up(t)`.
-2. **Decide whether a premium is due**: `t ≤ prem_term` **and** not `is_paid_up(t)`. Apply `φ` only
-   where `unterjaehrig_form = unecht`.
+2. **Decide whether a premium is due**: `t < prem_term` **and** not `is_paid_up(t)` — the `m`
+   premiums fall in `t = 0 … m − 1`. Apply `φ` only where `unterjaehrig_form = unecht`.
 3. **Apply the *Beitragsverrechnung* offset**, where elected: last year's declared surplus reduces this
    year's *Zahlbeitrag*, floored at zero.
 4. **Collect the premium in advance**: `premiums(t) = prem_paid_pp(t) × pols_if(t)`. A life that dies
@@ -630,11 +646,11 @@ For `t = t_start() … proj_len()`, in this order:
    as next year's premium offset.
 9. **End of year, deaths** at the **best-estimate** `mort_rate(t)`: the benefit is the guaranteed death
    sum plus the *Überschussguthaben*, the bonus sum and the accrued terminal bonus, with the § 161
-   substitution of the *Rückkaufswert* on the suicide share for `t ≤ 3`.
-10. **End of year, maturity or surrender.** At `t = n` the survivors of mortality mature and take the
-    *Erlebensfallleistung*; the projection stops. Otherwise `lapse_rate(t)` applies to the survivors of
-    mortality and pays `surr_value_pp(t)`.
-11. **The *Beitragsfreistellung* election**, where `t = bfz_year`: strike `res_guar_pp(t)`, buy
+   substitution of the *Rückkaufswert* on the suicide share for `t < 3` (policy years 1 to 3).
+10. **End of year, maturity or surrender.** At `t = n − 1` the survivors of mortality mature and take
+    the *Erlebensfallleistung*; the projection stops. Otherwise `lapse_rate(t)` applies to the
+    survivors of mortality and pays `surr_value_pp(t)`.
+11. **The *Beitragsfreistellung* election**, where `t = bfz_year − 1`: strike `res_guar_pp(t)`, buy
     `bfz_si_pp`, and test it against `bfz_min_si` — **below the minimum the election becomes a
     surrender** and the projection terminates as at step 10.
 12. **Roll forward** `pols_if(t+1)`, `res_pp(t+1)`, `av_sur_pp(t+1)`, `bonus_si_pp(t+1)`,
@@ -664,7 +680,7 @@ a test in `tests/test_kapitallebensversicherung_de.py`.
    negative at issue [R28]. Assert `surplus_base_pp(t) ≥ 0` at every `t` and that
    `surplus_credit_pp(t) == 0` wherever `res_pp_at(t, "AFT_INT") < 0`. **On the shipped 25 ‰ basis
    that set is empty**, because the base is the *closing* reserve and it is positive from policy year
-   1 — so the assertion holds vacuously on every shipped model point, and it is stated here as what
+   1 (`t` = 0) — so the assertion holds vacuously on every shipped model point, and it is stated here as what
    it is: a guard against a parameter this run does not use (the pre-2015 40 ‰ ceiling, or a long
    term with a short *Beitragszahlungsdauer*), not a behaviour the base run exhibits. The test should
    therefore also assert the guard directly, by evaluating the credit against a negative base.
@@ -687,14 +703,15 @@ a test in `tests/test_kapitallebensversicherung_de.py`.
    *leistungsfrei* **and** obliges it to pay the *Rückkaufswert* including *Überschussanteile* under
    § 169 [R4] [REG-R26]: the German rule is a **benefit substitution**, not a forfeiture, unlike art.
    L. 132-7 of the French code. Assert
-   `benefit_death_pp(t) == 0.98 · benefit_full_pp(t) + 0.02 · surr_value_pp(t)` for `t ≤ 3` and
-   `== benefit_full_pp(t)` for `t ≥ 4`, and that `benefit_death_pp(1) > 0` even where `surr_value_pp(1)`
-   is nil.
+   `benefit_death_pp(t) == 0.98 · benefit_full_pp(t) + 0.02 · surr_value_pp(t)` for `t < 3` — policy
+   years 1 to 3, so `t` = 0, 1, 2 — and `== benefit_full_pp(t)` for `t ≥ 3`, and that
+   `benefit_death_pp(0) > 0` even where `surr_value_pp(0)` is nil.
 8. **Offering *Beitragsfreistellung* without the *Mindestversicherungsleistung* test.** § 165 VVG makes
    the election a **surrender** where the minimum is not reached [R3]. Assert that model point 11
-   (`bfz_year = 10`) continues in force to `proj_len()` with `prem_paid_pp(t) == 0` from `t = 11`, and
-   that model point 12 (`bfz_year = 3`, small sum) instead **terminates** at `t = 3` with a
-   `claims_lapse` payment and nothing thereafter.
+   (`bfz_year = 10`) continues in force to `proj_len() − 1` with `prem_paid_pp(t) == 0` from `t = 10`
+   — the election falls at the end of policy year 10, `t` = 9 — and that model point 12
+   (`bfz_year = 3`, small sum) instead **terminates** at `t = 2` with a `claims_lapse` payment and
+   nothing thereafter.
 9. **Removing the paid-up policy from `pols_if`.** *Beitragsfreistellung* keeps the contract alive with
    a reduced sum insured [R3] [S7]; only a *Kündigung* removes it. Assert `pols_if(t)` is unaffected by
    `bfz_year` on model point 11 relative to the anchor, while `prem_paid_pp` and
@@ -747,11 +764,13 @@ a test in `tests/test_kapitallebensversicherung_de.py`.
     `mort_rate_base`, which is the policy's own row; reading one where the other belongs is silent,
     and it moved the anchor's premium by 9,15 € when it was first written that way.
 18. **Running past the *Ablauf*, or letting a final-year surrender collide with the maturity.**
-    `proj_len() = policy_term` and there is no `t = proj_len() + 1` row. `lapse_rate(n) = 0` **[std]**,
-    so the survivors of mortality in year `n` all leave as a maturity — and unlike a term product the
-    two exits do **not** pay the same thing, a surrender paying the § 169 value and a maturity the sum
-    insured plus surplus, so this is a real payment decision. Assert `lapse_rate(proj_len()) == 0`,
-    `pols_maturity(n) == pols_if(n) · (1 − mort_rate(n))`, and closure to 1e-12.
+    `proj_len() = policy_term` is the frame's **exclusive** end, so the last row is
+    `t = proj_len() − 1` and there is no `t = proj_len()` row. `lapse_rate(n − 1) = 0` **[std]**,
+    so the survivors of mortality in the last year all leave as a maturity — and unlike a term product
+    the two exits do **not** pay the same thing, a surrender paying the § 169 value and a maturity the
+    sum insured plus surplus, so this is a real payment decision. Assert
+    `lapse_rate(proj_len() − 1) == 0`,
+    `pols_maturity(n − 1) == pols_if(n − 1) · (1 − mort_rate(n − 1))`, and closure to 1e-12.
 
 ---
 
@@ -789,8 +808,9 @@ All formulas are **[std]**; no German calibration evidence exists for any of the
 
 **Configuration.** Model point 1, the anchor cell of `model_point_table.csv`: `policy_id`
 `DE-KLV-0001`; `sex` **M**; `smoker` **N**; `issue_year` **2026**; `issue_age` **37**;
-`duration_init` **0**, so `t_start() = 1` and the projection opens at issue; `pols_if_init` **1.0**;
-`policy_term` **25**, so `proj_len() = 25` and the table below is the **entire** projection, with the
+`duration_init` **0**, so `t_start() = 0` and the projection opens at issue; `pols_if_init` **1.0**;
+`policy_term` **25**, so `proj_len() = 25`, the frame is `t` = 0 … 24 and the table below is the
+**entire** projection, with the
 *Ablauf* at attained age **62** — the age the half-income tax rule requires for a contract concluded
 after 31 December 2011 [R10] [REG-R45]; `prem_term` **25**, the full term, so the contract is
 premium-paying to the *Ablauf*; `sum_assured` **50,000.00 EUR**; `death_ratio` **1.00**, so the
@@ -809,7 +829,7 @@ Mortality `mort_rate_1st(M, x) = 0.00022 + B · 1.10^x`, `B` fixed by the anchor
 `mort_rate_1st(M, 37) = 0.001200` exactly **[std]**, standing in for **DAV 2008 T**, which is not
 public and is not shipped [R14] [REG-R47] [REG-R48]; the tariff prices and reserves on the **unisex
 blend** `mort_rate_at_age(37) = ½ · 0.001200 + ½ · 0.000896288505 = 0.001048144253` **[std]**
-[REG-R34], and the anchor cell's own decrement is `mort_rate(1) = 0.001200 × 0.75 = 0.000900`. *Zillmersatz* `alpha_rate = 25 ‰` of the
+[REG-R34], and the anchor cell's own decrement is `mort_rate(0) = 0.001200 × 0.75 = 0.000900`. *Zillmersatz* `alpha_rate = 25 ‰` of the
 *Beitragssumme* — the § 4 DeckRV ceiling [R7] [REG-R16], the level **[std]**. Premium loading
 `beta_rate = 3.0%` of the *Bruttobeitrag* over the *Beitragszahlungsdauer* — the form is the one the
 corpus establishes [R28], the level **[std]**. Sum loading `gamma_rate = 1.5 ‰` of the
@@ -835,11 +855,13 @@ Bayerische [S9]; and 100 € + 0,2 % of the gap between sum insured and *Rückka
 *Second order.* Mortality `mort_rate(t) = mort_rate_base(t) × 0.75` on this policy's own
 sex-specific row, `mort_be_factor = 0.75` **[std]**
 — a 33 % first-order safety loading, whose systematic release is the *Risikoüberschuss* [REG-R47].
-Surrender `lapse_rate` 5.0% in policy years 1–2, 3.5% in 3–8, 2.0% in 9–11, **6.0% in year 12** — the
-twelve-year tax threshold [R10] [REG-R45] — 2.5% from year 13, and **0 in year 25**, the *Ablauf*
-year — all **[std]**, no endowment-specific or duration-specific German lapse rate having been
-established (gap 10). Suicide share `suicide_share = 0.02` for policy years 1 to 3, with the
-*Rückkaufswert* substituted for the sum insured on that share [R4] [REG-R26] — the share **[std]**.
+Surrender `lapse_rate` 5.0% in policy years 1–2, 3.5% in 3–8, 2.0% in 9–11, **6.0% in policy year 12**
+— the twelve-year tax threshold [R10] [REG-R45] — 2.5% from policy year 13, and **0 in policy year 25**
+(`t` = 24), the *Ablauf* year — all **[std]**, no endowment-specific or duration-specific German lapse
+rate having been established (gap 10); the schedule is keyed by the 1-based `policy_year = t + 1`.
+Suicide share `suicide_share = 0.02` for policy years 1 to 3 (`t` = 0, 1, 2), with the
+*Rückkaufswert* substituted for the sum insured on that share [R4] [REG-R26] — that is `t` = 0, 1, 2
+on the 0-based frame — the share **[std]**.
 Expenses **[std]** throughout: `acq_expense = 300.00 EUR` at issue, `comm_init_rate = 2.5%` of the
 *Beitragssumme* at issue — set at the 25 ‰ *zillmering* ceiling [R7], which does not cap commission
 [R29], and with **no carrier commission rate established anywhere in the corpus** — `maint_expense = 45.00 EUR` per in-force policy p.a. inflating at `expense_infl = 1.8%` p.a.,
@@ -861,35 +883,36 @@ the two annuities coinciding because the *Beitragszahlungsdauer* is the whole
 Transcribed from `KLV_DE_A.Projection[1].result_cf()`. `pols_if` is the count at the **start** of
 the policy year and is the weight on that same row's cash flows; every other column is that
 year's euro flow. `expenses` **excludes** commission, so the six flow columns sum to `net_cf`
-exactly. The frame is the whole contract, `t` = 1 to 25, and there is no `t` = 26 row.
+exactly. The index `t` is **0-based** — policy year `t` + 1 — so the frame is the whole
+contract, `t` = 0 to 24, and there is no `t` = 25 row.
 
 | t | age | pols_if | premiums | claims_death | claims_maturity | claims_lapse | expenses | commissions | net_cf |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 37 | 1.000000 | 2,004.04 | 44.12 | 0.00 | 35.40 | 351.10 | 1,252.53 | 320.89 |
-| 2 | 38 | 0.949145 | 1,902.13 | 45.38 | 0.00 | 122.81 | 49.28 | 28.53 | 1,656.12 |
-| 3 | 39 | 0.900810 | 1,805.26 | 46.77 | 0.00 | 142.32 | 45.90 | 27.08 | 1,543.19 |
-| 4 | 40 | 0.868365 | 1,740.24 | 49.92 | 0.00 | 197.19 | 44.99 | 26.10 | 1,422.03 |
-| 5 | 41 | 0.837014 | 1,677.41 | 52.42 | 0.00 | 249.34 | 44.09 | 25.16 | 1,306.41 |
-| 6 | 42 | 0.806716 | 1,616.69 | 55.14 | 0.00 | 300.18 | 43.20 | 24.25 | 1,193.92 |
-| 7 | 43 | 0.777431 | 1,558.00 | 58.10 | 0.00 | 342.25 | 42.33 | 23.37 | 1,091.95 |
-| 8 | 44 | 0.749121 | 1,501.27 | 61.33 | 0.00 | 382.22 | 41.48 | 22.52 | 993.72 |
-| 9 | 45 | 0.721747 | 1,446.41 | 64.84 | 0.00 | 240.09 | 39.34 | 21.70 | 1,080.45 |
-| 10 | 46 | 0.706081 | 1,415.02 | 69.72 | 0.00 | 264.69 | 39.16 | 21.23 | 1,020.22 |
-| 11 | 47 | 0.690646 | 1,384.08 | 75.08 | 0.00 | 295.92 | 38.97 | 20.76 | 953.35 |
-| 12 | 48 | 0.675431 | 1,353.59 | 80.96 | 0.00 | 960.52 | 42.02 | 20.30 | 249.78 |
-| 13 | 49 | 0.633469 | 1,269.50 | 83.86 | 0.00 | 412.41 | 37.39 | 19.04 | 716.79 |
-| 14 | 50 | 0.616105 | 1,234.70 | 90.20 | 0.00 | 438.14 | 37.00 | 18.52 | 650.84 |
-| 15 | 51 | 0.599079 | 1,200.58 | 97.15 | 0.00 | 463.02 | 36.61 | 18.01 | 585.79 |
-| 16 | 52 | 0.582376 | 1,167.11 | 104.74 | 0.00 | 498.12 | 36.22 | 17.51 | 510.52 |
-| 17 | 53 | 0.565979 | 1,134.25 | 113.06 | 0.00 | 521.74 | 35.82 | 17.01 | 446.62 |
-| 18 | 54 | 0.549875 | 1,101.97 | 122.15 | 0.00 | 544.48 | 35.41 | 16.53 | 383.40 |
-| 19 | 55 | 0.534048 | 1,070.25 | 132.10 | 0.00 | 566.34 | 35.00 | 16.05 | 320.77 |
-| 20 | 56 | 0.518483 | 1,039.06 | 142.98 | 0.00 | 587.30 | 34.58 | 15.59 | 258.62 |
-| 21 | 57 | 0.503165 | 1,008.36 | 154.87 | 0.00 | 607.36 | 34.16 | 15.13 | 196.85 |
-| 22 | 58 | 0.488079 | 978.13 | 167.87 | 0.00 | 626.50 | 33.73 | 14.67 | 135.37 |
-| 23 | 59 | 0.473210 | 948.33 | 182.06 | 0.00 | 644.70 | 33.29 | 14.22 | 74.05 |
-| 24 | 60 | 0.458543 | 918.94 | 197.56 | 0.00 | 661.95 | 32.84 | 13.78 | 12.80 |
-| 25 | 61 | 0.444064 | 889.92 | 214.48 | 28,750.90 | 0.00 | 83.95 | 13.35 | -28,172.76 |
+| 0 | 37 | 1.000000 | 2,004.04 | 44.12 | 0.00 | 35.40 | 351.10 | 1,252.53 | 320.89 |
+| 1 | 38 | 0.949145 | 1,902.13 | 45.38 | 0.00 | 122.81 | 49.28 | 28.53 | 1,656.12 |
+| 2 | 39 | 0.900810 | 1,805.26 | 46.77 | 0.00 | 142.32 | 45.90 | 27.08 | 1,543.19 |
+| 3 | 40 | 0.868365 | 1,740.24 | 49.92 | 0.00 | 197.19 | 44.99 | 26.10 | 1,422.03 |
+| 4 | 41 | 0.837014 | 1,677.41 | 52.42 | 0.00 | 249.34 | 44.09 | 25.16 | 1,306.41 |
+| 5 | 42 | 0.806716 | 1,616.69 | 55.14 | 0.00 | 300.18 | 43.20 | 24.25 | 1,193.92 |
+| 6 | 43 | 0.777431 | 1,558.00 | 58.10 | 0.00 | 342.25 | 42.33 | 23.37 | 1,091.95 |
+| 7 | 44 | 0.749121 | 1,501.27 | 61.33 | 0.00 | 382.22 | 41.48 | 22.52 | 993.72 |
+| 8 | 45 | 0.721747 | 1,446.41 | 64.84 | 0.00 | 240.09 | 39.34 | 21.70 | 1,080.45 |
+| 9 | 46 | 0.706081 | 1,415.02 | 69.72 | 0.00 | 264.69 | 39.16 | 21.23 | 1,020.22 |
+| 10 | 47 | 0.690646 | 1,384.08 | 75.08 | 0.00 | 295.92 | 38.97 | 20.76 | 953.35 |
+| 11 | 48 | 0.675431 | 1,353.59 | 80.96 | 0.00 | 960.52 | 42.02 | 20.30 | 249.78 |
+| 12 | 49 | 0.633469 | 1,269.50 | 83.86 | 0.00 | 412.41 | 37.39 | 19.04 | 716.79 |
+| 13 | 50 | 0.616105 | 1,234.70 | 90.20 | 0.00 | 438.14 | 37.00 | 18.52 | 650.84 |
+| 14 | 51 | 0.599079 | 1,200.58 | 97.15 | 0.00 | 463.02 | 36.61 | 18.01 | 585.79 |
+| 15 | 52 | 0.582376 | 1,167.11 | 104.74 | 0.00 | 498.12 | 36.22 | 17.51 | 510.52 |
+| 16 | 53 | 0.565979 | 1,134.25 | 113.06 | 0.00 | 521.74 | 35.82 | 17.01 | 446.62 |
+| 17 | 54 | 0.549875 | 1,101.97 | 122.15 | 0.00 | 544.48 | 35.41 | 16.53 | 383.40 |
+| 18 | 55 | 0.534048 | 1,070.25 | 132.10 | 0.00 | 566.34 | 35.00 | 16.05 | 320.77 |
+| 19 | 56 | 0.518483 | 1,039.06 | 142.98 | 0.00 | 587.30 | 34.58 | 15.59 | 258.62 |
+| 20 | 57 | 0.503165 | 1,008.36 | 154.87 | 0.00 | 607.36 | 34.16 | 15.13 | 196.85 |
+| 21 | 58 | 0.488079 | 978.13 | 167.87 | 0.00 | 626.50 | 33.73 | 14.67 | 135.37 |
+| 22 | 59 | 0.473210 | 948.33 | 182.06 | 0.00 | 644.70 | 33.29 | 14.22 | 74.05 |
+| 23 | 60 | 0.458543 | 918.94 | 197.56 | 0.00 | 661.95 | 32.84 | 13.78 | 12.80 |
+| 24 | 61 | 0.444064 | 889.92 | 214.48 | 28,750.90 | 0.00 | 83.95 | 13.35 | -28,172.76 |
 | **Total** | | **16.648981** | **33,365.26** | **2,506.85** | **28,750.90** | **10,104.99** | **1,327.88** | **1,722.94** | **-11,048.31** |
 
 **The Total row is summed at full precision and then rounded, not summed from the rounded cells
@@ -901,11 +924,11 @@ full precision against 16.648982 from the printed column. The other four columns
 cent. Where a reader needs the totals to reconcile with the printed cells rather than with the
 model, it is the printed cells that are the approximation.
 
-The shape is worth naming. Year 1 very nearly washes — **+320,89 €** — the *Beitrag* of
+The shape is worth naming. The first policy year, `t` = 0, very nearly washes — **+320,89 €** — the *Beitrag* of
 2 004,04 € almost exactly meeting the initial commission of 1 252,53 € plus the 300 €
 acquisition expense, so **the new-business strain of a *gezillmert* German endowment is in the
 reserve and not in the cash flow**: the *Deckungskapital* opens at −1 252,53 €. The margin then
-runs near a thousand euros a year and decays with the cohort, dipping visibly at `t` = 12 —
+runs near a thousand euros a year and decays with the cohort, dipping visibly at `t` = 11 —
 249,78 € against 953,35 € — where the surrender rate spikes to 6,0 % at the twelve-year tax
 threshold. The last year is a single outflow of **−28 172,76 €**.
 
@@ -919,21 +942,21 @@ year `t` receives.
 
 | t | res_pp | surplus_base_pp | surplus_credit_pp | av_sur_pp | term_bonus_pp | surr_value_pp |
 |---:|---:|---:|---:|---:|---:|---:|
-| 1 | -1,252.53 | 570.75 | 9.70 | 0.00 | 0.00 | 708.73 |
-| 2 | 570.75 | 2,410.10 | 40.97 | 9.70 | 2.28 | 2,590.38 |
-| 3 | 2,410.10 | 4,265.63 | 72.52 | 50.94 | 11.92 | 4,518.89 |
-| 5 | 6,137.47 | 8,025.74 | 136.44 | 232.53 | 53.54 | 8,521.62 |
-| 10 | 15,747.00 | 17,720.63 | 301.25 | 1,321.31 | 290.92 | 18,779.50 |
-| 12 | 19,712.27 | 21,722.40 | 369.28 | 2,038.12 | 440.65 | 23,755.21 |
-| 15 | 25,800.39 | 27,869.68 | 473.78 | 3,450.48 | 725.75 | 31,007.41 |
-| 20 | 36,372.42 | 38,561.55 | 655.55 | 6,811.60 | 1,367.70 | 45,521.12 |
-| 24 | 45,313.89 | 47,636.03 | 809.81 | 10,540.47 | 2,038.44 | 58,136.33 |
-| 25 | 47,636.03 | 50,000.00 | 850.00 | 11,634.87 | 2,228.98 | 61,549.01 |
+| 0 | -1,252.53 | 570.75 | 9.70 | 0.00 | 0.00 | 708.73 |
+| 1 | 570.75 | 2,410.10 | 40.97 | 9.70 | 2.28 | 2,590.38 |
+| 2 | 2,410.10 | 4,265.63 | 72.52 | 50.94 | 11.92 | 4,518.89 |
+| 4 | 6,137.47 | 8,025.74 | 136.44 | 232.53 | 53.54 | 8,521.62 |
+| 9 | 15,747.00 | 17,720.63 | 301.25 | 1,321.31 | 290.92 | 18,779.50 |
+| 11 | 19,712.27 | 21,722.40 | 369.28 | 2,038.12 | 440.65 | 23,755.21 |
+| 14 | 25,800.39 | 27,869.68 | 473.78 | 3,450.48 | 725.75 | 31,007.41 |
+| 19 | 36,372.42 | 38,561.55 | 655.55 | 6,811.60 | 1,367.70 | 45,521.12 |
+| 23 | 45,313.89 | 47,636.03 | 809.81 | 10,540.47 | 2,038.44 | 58,136.33 |
+| 24 | 47,636.03 | 50,000.00 | 850.00 | 11,634.87 | 2,228.98 | 61,549.01 |
 
-Two rows carry the product. At `t` = 1 the reserve is **−1 252,53 €** — exactly `−alpha_cost`,
+Two rows carry the product. At `t` = 0 the reserve is **−1 252,53 €** — exactly `−alpha_cost`,
 the whole *Zillmerung* unrecovered — while the *closing* reserve the surplus is declared on is
 already **570,75 €**, so the credit is a small positive 9,70 € rather than the negative amount
-an un-floored base would have produced from the opening figure. At `t` = 25 the closing reserve
+an un-floored base would have produced from the opening figure. At `t` = 24 the closing reserve
 is **50 000,00 €** exactly: the last year's *Deckungskapital* **is** the *Erlebensfallleistung*.
 
 ### Three independent checks, and a closure identity
@@ -952,7 +975,7 @@ reserving premiums follow without touching the projection: `prem_net_level_pp` =
 21,680698 = 1 811,1493 + 57,7715 = **1 868,9208 €**.
 
 **2. The reserve at the first anniversary, by Fackler.** The state table gives
-`res_pp(2)` = 570,75 € *prospectively*, as a present value of what remains. Rebuild it
+`res_pp(1)` = 570,75 € *prospectively*, as a present value of what remains. Rebuild it
 *retrospectively*, forwards from the opening reserve. The unisex first-order rate at age 37 is
 ½ × 0,001200000000 + ½ × 0,000896288505 = **0,001048144253**. Then
 (−1 252,5263 + 1 868,9208) × 1,01 = 616,3945 × 1,01 = **622,5584**; deduct the year's death
@@ -962,19 +985,20 @@ figures, which is what `check_res_roll_fwd()` asserts at every `t` — and it is
 statement in the model, because it holds only if the premium, the first-order mortality, the
 *Rechnungszins* and the prospective formula are mutually consistent.
 
-**3. The surplus credited in year 2, and the *Überschussguthaben* it builds.** The declared
+**3. The surplus credited in policy year 2 (`t` = 1), and the *Überschussguthaben* it builds.** The declared
 rate is 2,70 % and the guarantee 1,00 %, so `zins_ueberschuss_rate` = **1,70 pp** — derived by
-subtraction, never added on top. The base is year 2's *closing* reserve, 2 410,101960 €, so
+subtraction, never added on top. The base is that year's *closing* reserve, 2 410,101960 €, so
 the credit is 0,017 × 2 410,101960 = **40,9717 €**, the state table's figure. It then compounds:
-`av_sur_pp(3)` = 9,702741 × 1,027 + 40,971733 = 9,964715 + 40,971733 = **50,9364 €**, and the
-terminal share accrues on the same base, `term_bonus_pp(3)` = 2,282998 + 0,004 × 2 410,101960 =
+`av_sur_pp(2)` = 9,702741 × 1,027 + 40,971733 = 9,964715 + 40,971733 = **50,9364 €**, and the
+terminal share accrues on the same base, `term_bonus_pp(2)` = 2,282998 + 0,004 × 2 410,101960 =
 2,282998 + 9,640408 = **11,9234 €**. Both match the table to the cent.
 
-**4. The year-12 surrender payment, from its three parts.** `claims_lapse(12)` = 960,52 € is
+**4. The policy-year-12 surrender payment, from its three parts.** At `t` = 11,
+`claims_lapse(11)` = 960,52 € is
 the one row where the § 169 floor, the *Stornoabzug* and the surrender spike all bite at once.
 Count: 0,675431 in force × (1 − 0,00226204) surviving the year's mortality × 6,0 % =
-**0,04043417** surrenders. Amount: the § 169 value at the end of year 12 is the **floor**,
-`res_min_pp(13)` = 22 413,4564 €, which exceeds the Zillmer reserve `res_zill_pp(13)` =
+**0,04043417** surrenders. Amount: the § 169 value at the end of that year is the **floor**,
+`res_min_pp(12)` = 22 413,4564 €, which exceeds the Zillmer reserve `res_zill_pp(12)` =
 21 722,3990 € by **691,06 €** — the floor is binding, and this is what a model publishing only
 the Zillmer reserve would lose. Apply the 5 % *Stornoabzug* to that and nothing else:
 22 413,4564 × 0,95 = 21 292,7836 €, then add the *Überschussguthaben* **undeducted**,
@@ -984,8 +1008,8 @@ the Zillmer reserve would lose. Apply the 5 % *Stornoabzug* to that and nothing 
 **The closure identities.** Over the whole projection the cohort accounts for itself exactly:
 deaths **0,04409376**, surrenders **0,51513070** and maturities **0,44077554** sum to
 **1,000000000000** — `check_decrement_closure()`. And the cash flow statement closes row by
-row; at `t` = 12, 1 353,591433 − 80,960814 − 0 − 960,522126 − 42,019865 − 20,303871 =
-**249,784756 €**, which is `net_cf(12)` — `check_net_cf()`, this library's first ruling,
+row; at `t` = 11, 1 353,591433 − 80,960814 − 0 − 960,522126 − 42,019865 − 20,303871 =
+**249,784756 €**, which is `net_cf(11)` — `check_net_cf()`, this library's first ruling,
 asserted from `result_cf()`'s own published columns rather than from the cells behind them.
 
 ### The variant: the *Einmalbeitrag*
@@ -997,18 +1021,18 @@ that same amount, so the 25 ‰ *Zillmersatz* buys only 1 081,83 € of zillmere
 
 | t | pols_if | premiums | claims_death | claims_maturity | claims_lapse | expenses | commissions | net_cf |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 1 | 1.000000 | 43,273.05 | 45.49 | 0.00 | 1,816.26 | 351.10 | 1,081.83 | 39,978.37 |
-| 2 | 0.949145 | 0.00 | 47.50 | 0.00 | 1,773.33 | 49.28 | 0.00 | -1,870.11 |
-| 3 | 0.900810 | 0.00 | 49.67 | 0.00 | 1,211.85 | 45.90 | 0.00 | -1,307.42 |
-| 24 | 0.458543 | 0.00 | 244.33 | 0.00 | 831.06 | 32.84 | 0.00 | -1,108.24 |
-| 25 | 0.444064 | 0.00 | 265.35 | 35,570.54 | 0.00 | 83.95 | 0.00 | -35,919.84 |
+| 0 | 1.000000 | 43,273.05 | 45.49 | 0.00 | 1,816.26 | 351.10 | 1,081.83 | 39,978.37 |
+| 1 | 0.949145 | 0.00 | 47.50 | 0.00 | 1,773.33 | 49.28 | 0.00 | -1,870.11 |
+| 2 | 0.900810 | 0.00 | 49.67 | 0.00 | 1,211.85 | 45.90 | 0.00 | -1,307.42 |
+| 23 | 0.458543 | 0.00 | 244.33 | 0.00 | 831.06 | 32.84 | 0.00 | -1,108.24 |
+| 24 | 0.444064 | 0.00 | 265.35 | 35,570.54 | 0.00 | 83.95 | 0.00 | -35,919.84 |
 | **Total** | **16.648981** | **43,273.05** | **2,983.43** | **35,570.54** | **25,043.35** | **1,327.88** | **1,081.83** | **-22,733.97** |
 
 Three consequences are visible in five rows. **The § 169 floor is slack from the first
-anniversary** — `res_zill_pp(2)` = 39 648,80 € against `res_min_pp(2)` = 38 783,34 €, the reverse
+anniversary** — `res_zill_pp(1)` = 39 648,80 € against `res_min_pp(1)` = 38 783,34 €, the reverse
 of the level-premium ordering, a single premium leaving almost nothing to amortise. **The
 surrender outflow is far larger throughout**, 25 043,35 € in total against 10 104,99 €, every
-surrendering policy carrying a reserve built in year 1; the first year alone pays 1 816,26 €.
+surrendering policy carrying a reserve built in the first year; that year alone pays 1 816,26 €.
 And **the maturity benefit is much higher**, 80 699,89 € against 65 227,99 €. The two forms'
 `net_cf` totals are *not* comparable: the equivalence holds in present value on tariff
 survivorship, not in undiscounted totals over a lapsing cohort.
@@ -1018,7 +1042,7 @@ survivorship, not in undiscounted totals over a lapsing cohort.
 Model points 8 and 9 differ from the anchor in `surplus_use` alone. The same surplus is
 credited in all three; what differs is where it lands.
 
-| model point | `surplus_use` | maturity benefit per policy | death benefit per policy, `t` = 5 | premiums collected | `net_cf` total |
+| model point | `surplus_use` | maturity benefit per policy | death benefit per policy, `t` = 4 | premiums collected | `net_cf` total |
 |---|---|---:|---:|---:|---:|
 | 1 | `ansammlung` | 65,227.99 | 50,460.89 | 33,365.26 | -11,048.31 |
 | 8 | `bonus` | 63,562.77 | 50,532.10 | 33,365.26 | -8,987.04 |

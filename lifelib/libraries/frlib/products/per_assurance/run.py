@@ -16,12 +16,14 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
 n = proj.proj_len()
-print("model point {}: {} - {} {}, horizon {} ({} plan years), {} / {}".format(
-    point_id, proj.policy_id(), proj.sex(), proj.age_init(),
-    proj.retirement_age(), n, proj.compartment(), proj.allocation_profile()))
+print("model point {}: {} - {} {}, horizon {} ({} plan years, t = 0 .. {}), "
+      "{} / {}".format(
+          point_id, proj.policy_id(), proj.sex(), proj.age_init(),
+          proj.retirement_age(), n, n - 1,
+          proj.compartment(), proj.allocation_profile()))
 print("versement {:,.2f} p.a. gross, {:,.2f} net of the {:.2%} loading; "
       "carried in: euro {:,.2f}  UC {:,.2f}  floor {:,.2f}".format(
-          proj.premium_init(), proj.prem_to_av_pp(1),
+          proj.premium_init(), proj.prem_to_av_pp(0),
           model.Projection.load_rate, proj.av_euro_init(), proj.av_uc_init(),
           proj.death_floor_init()))
 print("euro {:.2%} gross less {:.2%} charge; UC {:.2%} gross less {:.2%} charge; "

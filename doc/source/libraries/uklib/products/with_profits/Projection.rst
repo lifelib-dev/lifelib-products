@@ -58,6 +58,8 @@ Cells Descriptions
 
 .. autofunction:: age
 
+.. autofunction:: policy_year
+
 .. autofunction:: is_guarantee_date
 
 .. autofunction:: premium_pp
@@ -84,7 +86,11 @@ Cells Descriptions
 
 .. autofunction:: guar_benefit_pp
 
+.. autofunction:: guar_benefit_open
+
 .. autofunction:: policy_value_pp
+
+.. autofunction:: policy_value_open
 
 .. autofunction:: bonus_supportable
 
@@ -103,6 +109,8 @@ Cells Descriptions
 .. autofunction:: smoothed_payout_capped
 
 .. autofunction:: smoothed_payout
+
+.. autofunction:: smoothed_payout_open
 
 .. autofunction:: final_bonus_pp
 

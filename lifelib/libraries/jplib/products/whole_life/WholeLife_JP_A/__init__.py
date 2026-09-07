@@ -22,7 +22,7 @@ event rather than a behavioural one.
 
 Two structural facts separate it from the protection models in the same library. There
 are **no tail states and no expiry**: the projection runs to the terminal age of the
-mortality table, ω = 109 (M) / 113 (F), every remaining life dies in the final year, and
+mortality table, ω = 109 (M) / 113 (F), every remaining life dies in the final period, and
 nothing is paid at the horizon but the death benefit. And **premiums stop at 払込満了
 while nothing else does** — maintenance expense, death claims, surrender benefits and
 the cash value all continue for life, so a projection truncated at the end of the
@@ -52,10 +52,17 @@ model and its inputs must travel together.
 **Projection basis.** Annual steps on policy years running anniversary to anniversary,
 which is the notes' grid: the composite has no intra-year contractual structure, and the
 one date that matters inside a year — the 払込満了日 — is an anniversary by construction.
-Premium, maintenance expense and renewal commission fall at the start of the year;
+The time index ``t`` is **0-based**: ``t = 0`` is the first policy year, period ``t``
+runs from anniversary ``t`` to anniversary ``t + 1``, the frame is
+``range(proj_len())`` so the last index is ``proj_len() - 1``, and the contractual
+policy year is the derived 1-based label ``policy_year(t) = t + 1``. Values —
+``pol_val_pp``, ``cv_pp``, ``surr_charge_pp``, ``reserve_pp`` — carry a second, already
+0-based index, the anniversary ``d = 0 … proj_len()`` with ``d = 0`` at issue; the flows
+of period ``t`` open on ``d = t`` and close on ``d = t + 1``.
+Premium, maintenance expense and renewal commission fall at the start of the period;
 acquisition expense and initial commission at issue; death claims and claim expense at
-the end of the year of death; surrenders at the end of the year, **after** deaths, on
-the surrender value at that anniversary.
+the end of the period of death; surrenders at the end of the period, **after** deaths,
+on the surrender value at the closing anniversary.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the level
 whole-of-life benefit, 高度障害 paid at the same amount and inside the same decrement,

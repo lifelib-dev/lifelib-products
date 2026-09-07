@@ -30,8 +30,8 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by policy year `t` with one column per
-cash flow line.
+`result_cf()` returns a tidy `DataFrame` indexed by `t` — the 0-based year index from
+issue, policy year = `t + 1` — with one column per cash flow line.
 
 The model and its `Projection` Space both carry docstrings — `model.doc` describes the
 product and the projection basis, and `model.Projection.doc` holds the full mapping
@@ -39,9 +39,9 @@ between the technical notes' symbols and the cells names.
 
 ## No tail states — the structural contrast with `Term_US_A`
 
-Policy year `t` runs 1 … `proj_len()` = `policy_term()`, and **there is nothing after
-it**. Cover ceases at the end of the term with no maturity value, no renewal and no
-conversion [S1] [S2] [S6] [S8] [R8].
+`t` runs 0 … `proj_len() − 1`, where `proj_len()` = `policy_term()` is the number of
+policy years, and **there is nothing after it**. Cover ceases at the end of the term
+with no maturity value, no renewal and no conversion [S1] [S2] [S6] [S8] [R8].
 
 That is the one difference from this library's U.S. term model that changes the shape
 of the liability rather than a parameter. `Term_US_A` runs a *post-level-term* phase:
@@ -61,13 +61,45 @@ The notes' base grid is annual, with a monthly variant described but not impleme
 so `premium_mode` is inert. Two annual-grid approximations are wired in and are, per
 the notes, an offsetting pair:
 
-- the decreasing shape's death benefit is the **mid-year** balance `B(12(t−1) + 6)`;
+- the decreasing shape's death benefit is the **mid-year** balance `B(12t + 6)`;
 - premiums are **annual in advance**, with no allowance for premiums ceasing at a
   mid-year death or lapse, which slightly overstates income.
 
 The notes are explicit that applying a further half-year premium adjustment on top of
 the mid-year claim timing would double-count the correction. The monthly grid is the
 arbiter of both.
+
+## The time index
+
+`t` is 0-based and counts policy years from issue, lifelib's own 0-based convention
+(`annuallife/TradLife_A` on the annual grid, `basiclife/BasicTerm_S` and
+`savings/CashValue_SE` on the monthly one). Here, on the annual grid: `t = 0` is the
+first policy year, `age(t) = age_at_entry() + t`, `duration(t) = t`, `pols_if(0) =
+pols_if_init()`, and the frame is `range(proj_start(), proj_len())` —
+`range(proj_len())`, `proj_len()` rows, for a point projected from issue. `proj_len()`
+is the *number* of years, the exclusive end; the last
+row is `t = proj_len() − 1` and `pols_maturity` fires there. Year `t` runs from time `t`
+to time `t + 1`: `pols_if(t)` is the count at its start, premiums and maintenance
+expense fall at its start, claims and lapses at its end, so `pols_if(t + 1) =
+pols_if_at(t, "AFT_DECR")`.
+
+An in-force model point keeps the same origin and opens later: `proj_start()` is
+`duration_inforce()`, the completed years already elapsed, so model point 8
+(`duration_inforce = 5`) runs `t = 5 … 24` and its `duration(t)`, `age(t)` and lapse
+lookups are identical to the issued point's at the same `t`.
+
+The contractual **policy year** is the 1-based label `t + 1`, carried as
+`policy_year(t)` and used in exactly one place — the lapse-table lookup. The input
+files were reviewed column by column:
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 6) | A contractual 1-based label; **unchanged**. `lapse_rate_base(t)` reads the row `policy_year(t) = t + 1` |
+| `select_factor_table.csv` | `duration` (0 … 5) | An elapsed count, already 0-based; **unchanged**. Read at `duration(t) = t` |
+| `mort_table.csv` | `age` | Attained age, not a time index; **unchanged**. Read at `age(t) = age_at_entry() + t` |
+| `model_point_table.csv` | `duration_inforce` | An elapsed count, already 0-based; **unchanged**. It is `proj_start()` directly |
+
+No input file carries a column named `t`, so none was re-keyed.
 
 ## Inputs are external files
 
@@ -126,7 +158,7 @@ formula change. Tests cover both halves of that bargain.
 | `model_point_table.csv` | Eight model points. **Point 1 is the worked-example anchor cell** (M35 / non-smoker / level / 25-year / £150,000 / £12.00 per month); points 2–8 exercise the decreasing and FIB shapes, FIB commutation, indexation, joint first death, the select mortality basis with waiver of premium, and one policy already in force at duration 5 | anchor cell **[std]**, technical notes' worked example |
 | `mort_table.csv` | Mortality including terminal illness by sex, smoker status and age 18–100, with a `provenance` column marking each row | M/N ages 35–37 are the notes' illustrative worked-example vector; every other cell is a 9% p.a. geometric extension in age with a 2.2 smoker and a 0.70 female factor — all **[std]**, *not* a published table |
 | `select_factor_table.csv` | Select-duration factors, 0.55 grading to 1.00 over a 5-year select period | **[std]**; the select period is the TMNL16/TFNL16 structure [R12] |
-| `lapse_table.csv` | Annual lapse by policy year, 10 / 8 / 7 / 5 / 6 / 4 % | **[std]**, anchored to the FCA 5% in-force average and the clawback-spike pattern [R9] |
+| `lapse_table.csv` | Annual lapse by contractual policy year (1-based key, read at `policy_year(t) = t + 1`), 10 / 8 / 7 / 5 / 6 / 4 % | **[std]**, anchored to the FCA 5% in-force average and the clawback-spike pattern [R9] |
 
 ## Two mortality bases, and why there are two
 
@@ -135,8 +167,8 @@ period, AM92 a 2-year one [R12] — so the mortality interface has to accept a r
 depending on duration since entry as well as attained age. `mort_rate_base(t, life)`
 and `select_factor(t)` provide it.
 
-But the notes' worked example is quoted as three *applied* rates, `q(1) = 0.00055`,
-`q(2) = 0.00060`, `q(3) = 0.00065`, described as illustrative values in the shape of a
+But the notes' worked example is quoted as three *applied* rates, `q(0) = 0.00055`,
+`q(1) = 0.00060`, `q(2) = 0.00065`, described as illustrative values in the shape of a
 non-smoker temporary assurance table and explicitly **not** taken from any CMI table.
 Three numbers rising at 9% a year are not consistent with a graduated select structure,
 where the wearing-off of selection alone moves the applied rate faster than that.
@@ -170,11 +202,11 @@ year `t`. With deaths at mid-year on the annual grid **[std]**,
 claims(t, "FIB") = I × [6 × D(t) + 12 × FIBcum(t)]
 ```
 
-and one death in year `s` generates `6 + 12(n − s)` instalments in total, which is
-exactly `N − k` at `k = 12(s−1) + 6`. `check_fib_ledger()` rebuilds each year's
-instalment count straight off the death vector, with no reference to the recursion, and
-asserts the two agree; a ledger decremented by mortality — the notes' pitfall — or one
-paying only the year-of-death instalments fails there.
+and one death in year `s` generates `6 + 12(n − 1 − s)` instalments in total, which is
+exactly `N − k` at the mid-year death month `k = 12s + 6`. `check_fib_ledger()` rebuilds
+each year's instalment count straight off the death vector, with no reference to the
+recursion, and asserts the two agree; a ledger decremented by mortality — the notes'
+pitfall — or one paying only the year-of-death instalments fails there.
 
 The optional commutation module replaces a proportion of the streams with a lump sum,
 the present value of the remaining instalments at the **[std]** snapshot rate
@@ -203,7 +235,7 @@ values. A column of zeros states the product fact; a missing column would only h
 ## `pols_maturity` — the one cells the notes do not define
 
 The notes give the roll-forward as `l(t+1) = l(t)(1−q)(1−w)` and, separately, terminate
-everything at `t = n`. Those two do not reconcile in the final policy year: its
+everything at the end of `t = n − 1`. Those two do not reconcile in the final year: its
 survivors neither die nor lapse — their cover simply runs out — so the roll-forward
 appears to lose lives with no cause. `pols_maturity(t)` names that quantity, zero in
 every year but the last, which makes the identity close exactly:
@@ -270,22 +302,24 @@ Four cases needed care:
 Everything in this list is **[std]**: the whole mortality table and its select factors;
 the 75% proxy scaling; the lapse duration table; the premium itself (£12.00 per month);
 acquisition expense £150; maintenance £30 inflating at 3%; claim expense £250; initial
-commission 150% of annualized premium and renewal 2.5% from year 2; the clawback
-formula; the FIB commutation rate of 3%; the decreasing shape's 6% schedule rate, its
-`j_m = (1+j)^(1/12) − 1` monthly convention and its mid-year death benefit; the
-selective-lapsation and rebroking constructions; the waiver incidence, recovery and
-premium loading; the flat 3% RPI scenario; and death-before-lapse as the processing
-order.
+commission 150% of annualized premium and renewal 2.5% from policy year 2 (`t ≥ 1`);
+the clawback formula; the FIB commutation rate of 3%; the decreasing shape's 6%
+schedule rate, its `j_m = (1+j)^(1/12) − 1` monthly convention and its mid-year death
+benefit; the selective-lapsation and rebroking constructions; the waiver incidence,
+recovery and premium loading; the flat 3% RPI scenario; and death-before-lapse as the
+processing order.
 
 ## Tests
 
-`tests/test_term_assurance_uk.py` asserts the notes' three-row worked example to the
-penny and the in-force column to six decimals, the `B(60) = £134,588` decreasing-schedule
-anchor and the `j_m` convention behind it, the FIB ledger against an independent rebuild
-and against the annuity-certain total, that the FIB stream is not decremented by
-mortality, expiry with no tail states, the roll-forward identity, the joint first-death
-decrement, indexation's ×1.5 premium factor, the two mortality bases, the four off-by-
-default modules in both positions, and that a lapse pays nothing.
+`tests/test_term_assurance_uk.py` asserts the notes' three-row worked example (rows
+`t = 0, 1, 2`) to the penny and the in-force column to six decimals, the `B(60) =
+£134,588` decreasing-schedule anchor and the `j_m` convention behind it, the FIB ledger
+against an independent rebuild and against the annuity-certain total, that the FIB
+stream is not decremented by mortality, expiry with no tail states (the frame is
+`range(proj_len())`, `pols_if(proj_len())` is zero), the roll-forward identity, the
+joint first-death decrement, indexation's ×1.5 premium factor, the two mortality bases,
+the four off-by-default modules in both positions, that an in-force point opens at
+`t = duration_inforce()`, and that a lapse pays nothing.
 
 ```bash
 python -m pytest tests -q

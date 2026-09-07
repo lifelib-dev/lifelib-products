@@ -40,12 +40,15 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Annual steps, the notes' base grid. Policy year ``t`` runs
-1, 2, ..., ``proj_len()``, where ``proj_len() = policy_term()``. Premiums, maintenance
-expense and renewal commission fall at the start of the year; death and terminal
-illness claims and their claim expense at the end; lapses act on the survivors of
-mortality, death before lapse. Acquisition expense and initial commission fall at
-issue. The notes describe a monthly grid as the arbiter of the two annual-grid
+**Projection basis.** Annual steps, the notes' base grid. The time index ``t`` is
+0-based and counts policy years from issue: ``t = 0`` is the first policy year
+(policy year = ``t + 1``) and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len() = policy_term()`` is the number of policy years; an in-force model point
+opens at ``t = duration_inforce()``. Premiums, maintenance expense and renewal
+commission fall at the start of the year; death and terminal illness claims and their
+claim expense at the end; lapses act on the survivors of mortality, death before lapse.
+Acquisition expense and initial commission fall at issue, in ``t = 0``. The notes
+describe a monthly grid as the arbiter of the two annual-grid
 approximations — the mid-year benefit balance of the decreasing shape and the
 annual-in-advance premium — and it is not implemented; ``premium_mode`` is inert.
 

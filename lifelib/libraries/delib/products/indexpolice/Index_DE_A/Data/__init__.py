@@ -72,12 +72,13 @@ ship, and each is reproducible from its own provenance tag rather than taken on 
 
 * ``eqidx_vol17`` — a broad equity **price index**, from
   ``numpy.random.default_rng(20260829).normal(0.0060, 0.0500, size=(40, 12))`` rounded to
-  four decimal places (0.60 % a month at an annualised 17.3 %). **Rows ``t = 9`` and
-  ``t = 10`` are overwritten** with the research file's constructed Example A and
-  Example B, so that the two *Indexjahre* the mechanic turns on are *reproduced by the
-  model* rather than restated in prose. The anchors a substitute path must preserve are
-  those two rows: ``t = 9`` must sum, capped at 3 %, to **+8.90 %**, and ``t = 10`` must
-  sum to **-2.60 %** while its compounded raw return is **+6.4402 %**.
+  four decimal places (0.60 % a month at an annualised 17.3 %). **Rows ``t = 8`` and
+  ``t = 9`` — policy years 9 and 10 on the 0-based index — are overwritten** with the
+  research file's constructed Example A and Example B, so that the two *Indexjahre* the
+  mechanic turns on are *reproduced by the model* rather than restated in prose. The
+  anchors a substitute path must preserve are those two rows: ``t = 8`` must sum, capped
+  at 3 %, to **+8.90 %**, and ``t = 9`` must sum to **-2.60 %** while its compounded raw
+  return is **+6.4402 %**.
 * ``houseidx_vol5`` — the volatility-targeted house multi-asset index, from
   ``numpy.random.default_rng(20260830).normal(0.0025, 0.0144, size=(40, 12))`` rounded to
   four decimal places, carrying a 6 % Cap and a 100 % *Partizipationsquote* in
@@ -103,7 +104,7 @@ exemption is the library's only one: a model point is a *configuration* — one 
 own terms — rather than an assumption, and tagging it row by row would repeat the same
 provenance once per policy. Thirteen points ship; point 1 is the anchor cell of the
 technical notes' worked example, and point 8 is an in-force cell whose first projected
-*Indexjahr* is ``t = 9``, so it reproduces the research file's Examples A and B on a
+*Indexjahr* is ``t = 8``, so it reproduces the research file's Examples A and B on a
 50,000.00 EUR base to the euro.
 """
 
@@ -173,9 +174,10 @@ def index_param_table():
 
 
 def surplus_rate_table():
-    """The declared *Überschussanteilsatz* by policy year, from *surplus_rate_table.csv*.
+    """The declared *Überschussanteilsatz* by year, from *surplus_rate_table.csv*.
 
-    Indexed by ``t``.  This rate **is** the option budget: for a contract in the index arm
+    Indexed by the model's 0-based ``t``, so its first row is ``t = 0``, the first policy
+    year.  This rate **is** the option budget: for a contract in the index arm
     the same declared amount that a classic contract would receive as interest is spent on
     the option package instead.  It is exogenous here — the model consumes a declared rate
     and does not derive one from an investment result under the MindZV minimum.
@@ -208,12 +210,13 @@ def mort_table():
 
 
 def lapse_table():
-    """The base surrender rates by policy year, read from *lapse_table.csv*.
+    """The base surrender rates by year, read from *lapse_table.csv*.
 
-    Indexed by ``t``.  These are the rates **before** the terminal-year override: in the
-    final policy year the projection applies zero, because the end of that year is
-    *Rentenbeginn* and the survivors leave as maturities rather than as surrenders.  The
-    year-12 step is the § 20 Abs. 1 Nr. 6 EStG tax threshold and is the shape's whole
+    Indexed by the model's 0-based ``t``, so its first row is ``t = 0``, the first policy
+    year.  These are the rates **before** the terminal-year override: in the final period
+    the projection applies zero, because the end of that period is *Rentenbeginn* and the
+    survivors leave as maturities rather than as surrenders.  The step at ``t = 11``
+    (policy year 12) is the § 20 Abs. 1 Nr. 6 EStG tax threshold and is the shape's whole
     point; the levels are **[std]**.
     """
     return pd.read_csv(                                              # noqa: F821

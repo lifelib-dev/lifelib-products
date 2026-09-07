@@ -34,11 +34,43 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a `DataFrame` indexed by policy year `t`, one column per cash flow
-line; `result_pols()` prints the counts, decrement rates, term index and premium beside
+`result_cf()` returns a `DataFrame` indexed by the projection year `t`, one column per cash
+flow line; `result_pols()` prints the counts, decrement rates, term index and premium beside
 them, which is where a renewal boundary becomes legible — the row whose `decline_rate` is
 non-zero and whose `prem_pp` changes on the next row. `model.Projection.doc` carries the
 notes' symbols mapped to the cells names.
+
+## The time index is 0-based
+
+`t` follows the library-wide convention: **`t = 0` is the first projected policy year**,
+the frame is `range(proj_len())`, the last index is `proj_len() - 1`, and
+`len(result_cf()) == proj_len()`. `proj_len()` is therefore the **number** of projected
+years, not the last index; on the anchor cell it is 50 and `result_cf()` is indexed
+`0 .. 49`. Attained age is `age(t) = age_at_entry() + t`, so `age(0)` is the 契約年齢
+itself, and `pols_if(0) == pols_if_init() == 1`.
+
+The **contractual policy year is the 1-based label `t + 1`**, and it is derived, never
+indexed by: the first policy year is `t = 0`, the tenth is `t = 9`. Two 1-based labels stay
+1-based because they are contractual rather than positional — the term index
+`term_index(t) = 1 + t // policy_term()` (`k = 1` in the original 保険期間) and the
+`policy_year` key of `lapse_table.csv`, which `lapse_rate(t)` reads at `t + 1`.
+
+The renewal boundaries — the **last** year of each 保険期間 — are `t = 9, 19, 29, 39` on the
+anchor cell, i.e. `(t + 1) % policy_term() == 0`, and the repriced premium is first charged
+on the following row. `pols_if(t)` is additionally defined at `t = proj_len()`, one row
+beyond the frame, where it is the survivors whose cover expires at the ceiling
+(`pols_if(50) = 0.026042` on the anchor cell).
+
+### CSV time-like columns
+
+| File | Column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 5) | **Unchanged.** A contractual 1-based policy-year label, not the frame's `t`; `lapse_rate(t)` maps through `t + 1` and carries the last row forward |
+| `mort_table.csv` | `age` (20 … 80) | **Unchanged.** Attained age, not a time index; read through `age(t)` |
+| `prem_rate_table.csv` | `issue_age`, `term_y` | **Unchanged.** An entry age and a term length, not points on the frame |
+| `model_point_table.csv` | `issue_age`, `term_y`, `expiry_age`, `renew_ceiling` | **Unchanged.** Ages and term lengths. The table carries no duration, in-force offset or frame-position column — every model point is projected from issue at `t = 0` |
+
+No CSV values changed in the conversion to the 0-based index.
 
 ## The horizon is the renewal ceiling, not the term
 
@@ -52,7 +84,7 @@ issued at age 30 is projected for **fifty** years across five separately priced 
 
 Three cells carry it. `term_index(t)` is the notes' `k`, the state variable a Japanese
 term model needs and a UK one does not, because the premium is a function of the term
-rather than of the policy year; `term_start_age(k)` is the attained age the term is priced
+rather than of the projection year; `term_start_age(k)` is the attained age the term is priced
 at; and `term_len(k)` is `min(n, w_r - x_k)`, where truncation at the ceiling lives. A
 renewal that would carry the policy past attained age 80 renews as an 80歳満了 term
 instead [S1] [S2] [S8], so an issue age of 35 has a final term of five years, priced over
@@ -75,7 +107,7 @@ as a fresh policy gets persistency, the strain pattern and both clocks wrong at 
 `decline_rate(t)` is non-zero **only** in a boundary year, and the lives it removes are
 taken **after** mortality and **after** ordinary lapse — the notes' steps 3, 4 and 5,
 exposed as `pols_if_at(t, "BEF_LAPSE")` and `pols_if_at(t, "BEF_DECLINE")`. Where it
-applies it is the larger exit: in year 10 of the anchor cell it removes 0.08235591 of the
+applies it is the larger exit: at `t = 9` on the anchor cell it removes 0.08235591 of the
 0.11175249 lives that leave, 74% of all exits. Folding it into `lapse_rate` makes the
 boundary invisible and mis-times most of the cohort's departure, so it has its own rate,
 its own count (`pols_decline`) and its own term in the roll-forward check.
@@ -83,8 +115,8 @@ its own count (`pols_decline`) and its own term in the roll-forward check.
 Two behaviours roll into the one rate: the policyholder who gives notice, and the one
 whose **first renewed premium goes unpaid through grace**, where the renewal is treated as
 never having happened and the contract terminates at the original expiry [S1] [S7]. Only
-the first is a decision. Both leave at the boundary, and neither may appear in force in
-year `t + 1` collecting the renewed premium — which is what the processing order enforces.
+the first is a decision. Both leave at the boundary, and neither may appear in force at
+`t + 1` collecting the renewed premium — which is what the processing order enforces.
 
 ## One decrement, one benefit
 
@@ -152,7 +184,7 @@ diff of the model shows logic changes only.
 |---|---|---|
 | `model_point_table.csv` | Nine points. Point 1 is the anchor cell (M30 / 年満了 10年 / ceiling 80 / ¥10,000,000, which the premium scale prices at ¥974 a month); the rest carry the female rate cell, both 歳満了 shapes, ceiling truncation, the `current_term` boundary, all three riders and both ends of the issue-age and sum-assured envelopes. **No premium column** — the premium is looked up, not stored, which is what makes the repricing at 更新 fall out of the same lookup | the cells are **[std]**; the price they resolve to at issue is [S2] |
 | `mort_table.csv` | Table `qx` by sex and attained age 20–80, 122 rows | the canonical `jplib` **[std]** construction, shared across the library, anchored on rates quoted from [REG-R18] [R4] and log-linearly interpolated between them |
-| `lapse_table.csv` | Annual lapse by policy year, 9 / 7 / 6 / 5.5 / 5 percent, last row carried forward | **[std]** shape; level reconciled to [REG-R31] |
+| `lapse_table.csv` | Annual lapse by **contractual, 1-based** policy year (read at `t + 1`), 9 / 7 / 6 / 5.5 / 5 percent, last row carried forward | **[std]** shape; level reconciled to [REG-R31] |
 | `prem_rate_table.csv` | Marginal monthly rate per ¥5,000,000 and the ¥248 flat element, four cells, `is_anchor` marking one row per sex | [S2] rate cards, decomposed row by row in `provenance` |
 
 Every assumption row carries a `provenance` column with its tag and, in the premium table,
@@ -200,14 +232,14 @@ are model point columns and five are References on `Projection`.
 
 | Module | Switch | Off value | On where | What it does |
 |---|---|---|---|---|
-| リビング・ニーズ特約 | `living_needs` | `0` | points 6, 9 | Accelerates the death benefit at `A − A i_ln / 2 −` six months' premiums on `A` [S1] [S7] [S8] [S12], as a share of the existing decrement. Barred within a year of a non-renewable expiry [S1] [S7] — the final projected year, and only that one |
+| リビング・ニーズ特約 | `living_needs` | `0` | points 6, 9 | Accelerates the death benefit at `A − A i_ln / 2 −` six months' premiums on `A` [S1] [S7] [S8] [S12], as a share of the existing decrement. Barred within a year of a non-renewable expiry [S1] [S7] — the final projected year `t = proj_len() - 1`, and only that one |
 | 保険料の払込の免除 | `wop` | `0` | point 7 | A two-state chain on the premium-paying population, on an accident producing a 別表4 state within 180 days [S1] [S8] [S12] [S14] — a much lower bar than the 別表3 test for 高度障害, so it does **not** reuse `mort_rate()` |
 | 復活 | `reinstatement` | `0` | point 8 | The lapsed-but-reinstatable pool and its three-year window [S1], tracked **by vintage**: the window runs from each life's own 失効, and one blanket balance drops a cohort a year early or late |
 | Contract boundary | `contract_boundary` | `ceiling` | point 5 | `current_term` truncates at the end of the 保険期間 in force at the valuation date. The two answers have opposite signs, **+¥50,400.25** against **−¥15,878.74**, and the ESR treatment settling it is [unverified] here [REG-R16] |
 | Selective lapsation | `sel_lapse_lambda` | `0.0` | — | `q_eff = q (1 + λ max(0, 1 − l(t)/l_ref))`, with `sel_lapse_ref = 1.0` **[std]** so the reference block is the cohort at issue. One-directional: renewal takes no 告知 [S1] [S4] [S8] [S12], so an uninsurable life renews while a healthy one re-shops, four times over on the anchor cell |
 | Renewal-decline elasticity | `decline_beta` | `0.0` | — | `d = min(d_max, d_0 (P_a(k+1)/P_a(k))^β)`, the flat 15% at zero. The jump it responds to accelerates: ×1.87, ×2.16, ×2.28, ×2.66, so `decline_max = 0.50` **[std]** binds at β = 2 on every boundary and at β = 1 on none |
 | Age-basis shift | `mort_age_shift` | `False` | — | `q_x → sqrt(q_x q_(x+1))`. 契約年齢 is age last birthday (*man-nenrei*, 満年齢) [S1] and the table is built for age nearest birthday (*hoken-nenrei*, 保険年齢) [REG-R20], so the base run reads half a year early and understates. The shift moves `q` **up** — 0.73% at age 30, 4.15% at 40 — and one moving it down has the sign wrong |
-| Commission at 更新 | `comm_new_term_rate` | `0.0` | — | Pays acquisition commission in the first year of each renewed term. A 更新 is not new business [S1] [S4], but no document discloses a commission scale at all, so the zero is a choice — and a first-year scale would flip the **sign** of years 11, 21, 31 and 41 |
+| Commission at 更新 | `comm_new_term_rate` | `0.0` | — | Pays acquisition commission in the first year of each renewed term. A 更新 is not new business [S1] [S4], but no document discloses a commission scale at all, so the zero is a choice — and a first-year scale would flip the **sign** at `t = 10, 20, 30` and `40` |
 
 Two scope limits are stated rather than approximated. The 復活 arrears at 年6% compound
 [S1] are **not** monetized: they settle premiums for years in which this projection
@@ -244,7 +276,7 @@ per-policy amounts, `claims(t, kind)`, `pols_if_at(t, timing)`. The full map is 
 | `q(t)` and `qbar(x, m)` | `mort_rate` / `mort_table_mean` | Different bases, not one quantity at two arguments: the decrement is best-estimate, the premium scale's shape parameter is the unadjusted table rate |
 | (margin removal) | `mort_be_factor` | The multiplier turning the shipped **valuation** table into the projection's best-estimate basis carries one name across all nine models. Not `mort_ae_factor`: an actual-to-expected ratio is a different quantity, measured rather than assumed |
 | roll-forward identity | `check_pols_roll_fwd()` / `check_pols_roll_fwd_resid(t)` | The per-period in-force roll-forward check has one name in every model of this library and both sister libraries, so one test calls it across all of them |
-| `P_m(k)`, `P_a(k)` | `premium_mth_pp(t)`, `prem_pp(t)` | Indexed by the *term* in the notes and by the policy year here, so every cash flow line is indexed alike; `term_index(t)` resolves it and `check_prem_level()` asserts the premium is still level within each 保険期間 |
+| `P_m(k)`, `P_a(k)` | `premium_mth_pp(t)`, `prem_pp(t)` | Indexed by the *term* in the notes and by the projection year here, so every cash flow line is indexed alike; `term_index(t)` resolves it and `check_prem_level()` asserts the premium is still level within each 保険期間 |
 | `d(t)` | `decline_rate` | Deliberately not any variant of *lapse*. Different year, different population, different size — the name is the first line of defence against the two being merged |
 | `lap(t)` | `pols_lapse_pool` | A **stock** — the lapsed lives still inside the three-year window — where `pols_lapse` is the year's **flow** into it |
 
@@ -291,13 +323,15 @@ anything off model points 6 to 9.
 ## Tests
 
 `tests/test_term_life_jp.py` asserts the notes' worked example **hard-coded**, so a
-reviewer can check it by eye: the year 1, 2, 3, 10 and 11 rows to the yen, `l(t)` to six
+reviewer can check it by eye: the `t = 0, 1, 2, 9` and `10` rows to the yen, `l(t)` to six
 decimals, the renewal ladder ¥974 → ¥1,823 → ¥3,933 → ¥8,976 → ¥23,881 with
-`l(11) = 0.466683` through `l(51) = 0.026042`, the year-10 exit split
+`l(10) = 0.466683` through `l(50) = 0.026042`, the `t = 9` exit split
 0.00049977 / 0.02889681 / 0.08235591, and fifty-year undiscounted totals of ¥470,348.54 of
 premium, ¥309,768.95 of claims and **+¥50,400.25** of net cash flow against **−¥15,878.74**
 over the first ten years — plus the decline sensitivity at all three of the notes' points
-(+¥92,123.94 / +¥50,400.25 / +¥22,587.91).
+(+¥92,123.94 / +¥50,400.25 / +¥22,587.91). It also pins the frame itself: the
+`result_cf()` index is `range(proj_len())`, so it starts at 0 and ends at
+`proj_len() - 1`.
 
 Each of the notes' twelve pitfalls earns a test named after it — that 高度障害 is not a
 second decrement, that 更新 reprices without re-issuing, that truncation shortens the term

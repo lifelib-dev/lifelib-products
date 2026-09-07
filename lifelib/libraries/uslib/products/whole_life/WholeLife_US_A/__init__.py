@@ -34,31 +34,38 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Annual steps on policy years. Policy year ``t`` counts **years**,
-not months, because every cash flow driver in this product — the level annual premium,
-the annual dividend declaration and the anniversary capitalization of loan interest —
-is annual, and there is no account value requiring monthiversary processing. ``t`` runs
-``proj_start()`` .. ``proj_len()``, where ``proj_len() = 100 - age_at_entry()`` is the
-anniversary at attained age 100 and ``proj_start() = duration_inforce() + 1`` lets an
-in-force model point start mid-life. The **value** state variables carry the notes'
-end-of-year subscript: ``cv_pp(t)``, ``pua_face(t)``, ``div_accum(t)`` and
-``loan_bal(t)`` are all **as at the anniversary ending policy year t**, and the notes'
-``t = 0`` initializations (``PUAF_0 = puaf_inforce``, ``DA_0 = 0``,
-``L_0 = loan_inforce``) are the ``t <= duration_inforce()`` branch of each recursion.
+**Projection basis.** Annual steps on policy years, indexed by a **0-based** ``t``:
+``t = 0`` is the first policy year, period ``t`` runs from anniversary ``t`` to
+anniversary ``t + 1``, and the contractual policy year is the 1-based label ``t + 1``.
+``t`` counts **years**, not months, because every cash flow driver in this product —
+the level annual premium, the annual dividend declaration and the anniversary
+capitalization of loan interest — is annual, and there is no account value requiring
+monthiversary processing. The frame is ``t = proj_start() .. proj_len() - 1``, where
+``proj_len() = 100 - age_at_entry()`` is the **number** of policy years projected from
+issue (its last year ends at attained age 100) and ``proj_start() = duration_inforce()``
+— 0 for new business — lets an in-force model point start mid-life.
 
-The **policy count** is the one exception, and deliberately so. ``pols_if(t)`` is the
-number in force at the **start** of policy year t — the notes' ``l_{t-1}``, ``l_0 = 1``
-at issue — because that is the weight every cash flow on the same ``result_cf()`` row
-is computed over, and because it is what ``pols_if`` means in every other model in this
-library. The notes' end-of-year ``l_t`` is ``pols_if_at(t, "AFT_DECR")``, which is
-``pols_if(t + 1)``.
+The **value** state variables are closing balances: ``cv_pp(t)``, ``pua_face(t)``,
+``div_accum(t)`` and ``loan_bal(t)`` are all **as at the anniversary that ends period
+t**. The value entering a period is the closing value of the one before, and at the
+first projected period it is the model point's opening state — the notes'
+initializations ``PUAF = puaf_inforce``, ``DA = 0``, ``L = loan_inforce``, written
+inline as ``pua_face(t - 1) if t > proj_start() else puaf_inforce()`` wherever an
+opening balance is read, so that nothing is ever indexed below the first projected
+period.
 
-Within a policy year the order is the notes': premium, PUA rider premium, premium tax
+``pols_if(t)`` follows the same clock: the number in force at the **start** of period t
+— the notes' ``l_t``, ``l_0 = 1`` at issue — because that is the weight every cash flow
+on the same ``result_cf()`` row is computed over, and because it is what ``pols_if``
+means in every other model in this library. The notes' end-of-period ``l_{t+1}`` is
+``pols_if_at(t, "AFT_DECR")``, which is ``pols_if(t + 1)``.
+
+Within a period the order is the notes': premium, PUA rider premium, premium tax
 and expenses at the **beginning** of the year; then, at the **end**, deaths, loan
 interest capitalization, the dividend credit, surrenders, and — in the final year only
 — maturity. Deaths are therefore valued on the *prior* anniversary's paid-up additions
-(``claim_pp(t, "DEATH")`` carries ``pua_face(t - 1)``) while surrenders are valued on
-the current one, including the dividend just credited.
+(``claim_pp(t, "DEATH")`` carries the paid-up additions entering period t) while
+surrenders are valued on the current one, including the dividend just credited.
 
 The net flow is published under **both** signs, because these notes print ``NetCF_t``
 with outgo positive while the rest of the library is income-positive.
@@ -108,9 +115,9 @@ notes prescribe. State variations are not modeled.
 
 **Model points.** ``model_point_table.csv`` carries fourteen points. Point 1 is the
 worked example's anchor cell, and it is an **in-force** point: the notes walk through
-policy year 10 of a male 45, $100,000, $1,800-premium policy that already holds
-$4,100 of paid-up additions, which is exactly ``duration_inforce = 9`` and
-``puaf_inforce = 4100``. Points 2-10 are the same policy issued as new business under
+policy year 10 — the period ``t = 9`` — of a male 45, $100,000, $1,800-premium policy
+that already holds $4,100 of paid-up additions, which is exactly
+``duration_inforce = 9`` and ``puaf_inforce = 4100``, so its frame opens at ``t = 9``. Points 2-10 are the same policy issued as new business under
 each dividend option and each in-scope rider, plus the limited-pay and female cells;
 points 11-13 are the final-expense variant on the sourced rate table; point 14 is the
 term blend again, this time with no rider premium funding it, so that the shortfall

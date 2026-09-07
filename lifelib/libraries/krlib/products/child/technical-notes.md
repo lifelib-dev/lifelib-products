@@ -116,7 +116,8 @@ Nine things change, and the first two have **no counterpart in `uslib`, `uklib`,
    표준해약공제액 is the [REG-R29] reading of the same cap — **13 months**, ₩364,000.00 — of
    which the 90% the model deducts is **11.70 months**.
 9. **The horizon.** At 계약나이 0 to a 100세 만기 the projection runs **1,200 monthly
-   periods**, the longest in `krlib`, with premium over the first 240. **Eighty of the
+   periods** — `t = 0 … 1,199`, plus the terminal 계약해당일 row at `t = 1,200` — the
+   longest in `krlib`, with premium over the first 240. **Eighty of the
    hundred years are paid-up** and they decide the contract: **89.4% of all outgo falls after
    `t = 240`**, against nil premium.
 
@@ -152,12 +153,17 @@ family buys the indemnity layer as `Medical_KR_S` and the fixed-benefit layer as
   pre-birth period a whole number of grid steps; the 태아 module's 1년만기 신생아 block is
   twelve of them; and the 납입최고 window is operated as a calendar-month one, 「납입기일
   다음날부터 납입기일이 속하는 달의 다음달 마지막 날까지」 [S8]. `t` is the **policy
-  month**, `t = 0, 1, …, proj_len`; month `t` is the interval from `t` to `t + 1` months
-  after the 계약일.
-- **`proj_len()` is the last projected index, not a row count.**
-  `proj_len = 12 × (term_age − issue_age)`, so **1,200** on the anchor cell and **1,201
-  rows** in `result_cf()`. Month `t = proj_len` is the 100세 계약해당일 itself: every cash
-  flow in it is zero, `pols_maturity` records the cover ending, and `claims(t, "MATURITY")`
+  month** and is **0-based**, on the library-wide convention: `t = 0` is the first projected
+  month, month `t` is the interval from `t` to `t + 1` months after the 계약일, the
+  contractual (1-based) policy year containing it is `policy_year(t) = t // 12 + 1`, and
+  the frame is `t = 0, 1, …, proj_len − 1`.
+- **`proj_len()` is the number of projected months — the exclusive end of the frame.**
+  `proj_len = 12 × (term_age − issue_age) + 1`, so **1,201** on the anchor cell and **1,201
+  rows** in `result_cf()`, indexed `t = 0 … 1,200`. Throughout these notes `n = proj_len − 1`
+  is the **terminal 계약해당일 index**, `12 × (term_age − issue_age)` = **1,200** on the
+  anchor cell: the 1,200 months of the 보험기간 are `t = 0 … 1,199` and month `t = n` is the
+  100세 계약해당일 itself, where every cash
+  flow is zero, `pols_maturity` records the cover ending, and `claims(t, "MATURITY")`
   is **0.0000** — there is **no 만기환급금** on the protection part [S1] [S2] and the shipped
   환급률 progression reaches zero at 만기.
 - **Two ages, and which one does what.** The contract's clock is **보험나이** (*boheom nai*,
@@ -252,7 +258,7 @@ Derived scalars on the anchor cell, all read off the shipped model:
 
 | Cells | Value |
 |---|---|
-| `proj_len()` | **1200** |
+| `proj_len()` (the number of months; the frame is `t = 0 … 1200`) | **1201** |
 | `prem_period_mths()` / `prem_end()` | 240 / 239 |
 | `foetal_cover_end()` / `foetal_prem_end()` | **17** / **16** |
 | `pols_if_init()` | 1.0 |
@@ -307,17 +313,26 @@ to 16, giving an office premium of **₩31,000 to `t = 16` and ₩28,000 from `t
 | `pols_void(t)` | Contracts de-recognised in month `t` because the pregnancy did not go to term; zero from birth | derived |
 | `pols_death(t)`, `pols_lapse(t)`, `pols_maturity(t)` | The other three exits | derived |
 | `frac_open(t, j)` | Probability that a policy in force at `t` has **not yet claimed** cover `j`, for the four 최초 1회한 diagnosis limbs; `frac_open(0, j) = 1` | monthly recursion |
-| `cum_prem_pp(t)` | Cumulative **scheduled** core office premium per policy | derived |
-| `prem_foetal_paid_pp(t)` | Cumulative 태아 module premium per policy | derived |
-| `refund_ratio(t)` | 환급률 of the notional 표준형: `refund_build × refund_taper` | derived |
-| `cv_std_pp(t)`, `cv_pp(t)` | The notional 표준형 해약환급금; the amount this form actually pays | derived |
-| `surr_chg_pp(t)` | Unamortised 해약공제액 | derived |
-| `av_pp(t)` | **계약자적립액** per policy, recovered from the published surrender value | derived |
+| `cum_prem_pp(t)` | Cumulative **scheduled** core office premium per policy, at time `t` | derived |
+| `prem_foetal_paid_pp(t)` | Cumulative 태아 module premium per policy, at time `t` | derived |
+| `refund_ratio(t)` | 환급률 of the notional 표준형 at time `t`: `refund_build × refund_taper` | derived |
+| `cv_std_pp(t)`, `cv_pp(t)` | The notional 표준형 해약환급금; the amount this form actually pays — both at time `t` | derived |
+| `surr_chg_pp(t)` | Unamortised 해약공제액 at time `t` | derived |
+| `av_pp(t)` | **계약자적립액** per policy at time `t`, recovered from the published surrender value | derived |
 | `age(t)`, `age_man(t)` | Attained **보험나이**; attained **만나이**, `−1` before birth | annually |
 | `born(t)` | `t >= b` — the gate on every cover written on the child's own life | derived |
 | `mort_rate(t)`, `mort_rate_payer(t)` | Annual mortality of the **insured** (zero before birth) and of the **계약자** | lookup |
 | `lapse_rate(t)`, `void_rate_mth(t)`, `waiver_rate(t)` | The three behavioural decrements | lookup |
 | `net_cf(t)` | Net cash flow of month `t`, insurer perspective, **income-positive** | monthly |
+
+**Every state variable here is a time-point value at time `t`, not a closing balance of
+period `t`.** `cum_prem_pp`, `prem_foetal_paid_pp`, `refund_ratio`, `cv_std_pp`, `cv_pp`,
+`surr_chg_pp` and `av_pp` are read at time `t` (`t = 0` at the 계약일), that is at the start
+of month `t` and **before that month's premium**: `cum_prem_pp(0) = 0`, `av_pp(0) = 0`, and
+twelve instalments stand at `t = 12`; `surr_chg_pp` is full at `t = 0` and nil at `t = 84`.
+The counts `pols_if`, `pols_pay` and `pols_waived` are likewise at the start of month `t`.
+The four exit payments of month `t` fall at its **end** and are valued on those
+start-of-month quantities **[std]** — see *Processing order* below.
 
 **Two compartments, not three, and not one.** The chassis needs three in-force states because
 a 특정소액암 life is diagnosed, keeps paying and carries excess mortality. This product needs
@@ -670,8 +685,9 @@ of it.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | policy month, `t = 0, 1, …, n` |
-| `n` | `proj_len` | `12 × (term_age − issue_age)` = 1,200 |
+| `t` | — | policy month, 0-based: `t = 0, 1, …, proj_len − 1` (= `n`) |
+| — | `proj_len` | the **number** of projected months, `12 × (term_age − issue_age) + 1` = 1,201 |
+| `n` | `proj_len − 1` | the terminal 계약해당일 index, `12 × (term_age − issue_age)` = 1,200 |
 | `m` | `prem_period_mths` | 납입기간 in months = 240; last premium at `m − 1` |
 | `b` | `birth_month` | the policy month of birth = 5; 0 on a non-foetal point |
 | `f` | `foetal_cover_end` | `b + 12` = 17, the end of the 태아 module's cover |
@@ -694,7 +710,9 @@ of it.
 | `ρ(t)` | `reduction_factor` | 감액 factor; 1 throughout the base run |
 | `e(t)` | `pols_waiver_entry` | waiver entries in month `t` |
 | `l_P(t)`, `l_W(t)`, `l(t)` | `pols_pay`, `pols_waived`, `pols_if` | the two compartments and their sum |
-| `A(t)`, `CV(t)`, `X(t)` | `av_pp`, `cv_pp`, `surr_chg_pp` | 계약자적립액; 해약환급금; unamortised 해약공제액 |
+| `A(t)` | `av_pp` | 계약자적립액 **at time `t`** (start of month `t`, before that month's premium; `t = 0` is the 계약일) |
+| `CV(t)` | `cv_pp` | 해약환급금 payable **at time `t`**, same convention |
+| `X(t)` | `surr_chg_pp` | unamortised 해약공제액 **at time `t`**, same convention |
 | `U(t)` | `unearned_prem_pp` | 미경과보험료, half a month's premium **[std]** |
 | `CF(t)` | `net_cf` | net cash flow, **income-positive** |
 
@@ -720,7 +738,9 @@ been born.
     v(t) = 1 − (1 − void_rate_ann)^(1/12)      for foetal and t < b, else 0
 
 `check_cover_at_birth()` asserts that the sum of `claims(t, k)` over `k ∈ {DISABILITY,
-DIAGNOSIS, SURGERY, HOSPITAL, EVENT, LIABILITY, DEATH}` is zero for every `t <= b`. The 태아
+DIAGNOSIS, SURGERY, HOSPITAL, EVENT, LIABILITY, DEATH}` is zero for every `t < b` — the loop
+runs to `t = b`, where the residual is identically zero because the child is born and the
+covers are properly open. The 태아
 module is deliberately **not** in that sum — it is the one thing that may pay in respect of an
 event before the insured legally exists — and is tested separately by
 `check_neonatal_term()`.

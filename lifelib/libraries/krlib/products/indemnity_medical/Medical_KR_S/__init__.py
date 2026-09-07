@@ -73,8 +73,11 @@ the model and its inputs must travel together.
 .. rubric:: Projection basis
 
 Monthly steps, because the product is: 월납 is the only premium mode retrieved and the
-whole published premium series is monthly. ``t`` is the policy month,
-``t = 0, 1, ..., proj_len()``, and ``proj_len()`` is the **last** projected index.
+whole published premium series is monthly. ``t`` is the policy month, 0-based:
+``t = 0, 1, ..., proj_len() - 1``, and ``proj_len()`` is the **number** of projected
+months — the exclusive end of the frame, so ``result_cf()`` has ``proj_len()`` rows.
+The policy year ``policy_year(t) = t // 12 + 1`` is a contractual 1-based label derived
+from ``t``.
 Premium falls at the start of month ``t``; claims and expenses at the end; mortality,
 then lapse, then suspension at the end of every month, and the renewal decline at the
 end of the twelfth month of each policy year, in that order.

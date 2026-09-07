@@ -25,17 +25,23 @@ the reference implementation; [unverified] flags carry over from the research no
   monthiversary processing. Monthly mode matters when modal premium cash flow timing,
   mid-year claim timing, or mode-specific behavior (monthly-mode policies show materially
   lower shock lapse and PLT mortality deterioration [R4]) is in scope.
+- **Time index [std].** `t` is 0-based, as in lifelib: the first period is `t = 0` (the
+  issue year), period `t` runs from time `t` to time `t + 1`, and the frame is
+  `t = 0, 1, …, proj_len − 1` with `proj_len = 95 − x` the number of policy years
+  projected. The contractual policy year is the 1-based label `policy year = t + 1`
+  (`dur(t)` below); where these notes say "policy year k" as contract language, the
+  index is `t = k − 1`.
 - **Timing [std].** Anniversary (BOY/BOM) processing: premiums and premium-linked expenses
   at the beginning of the period; deaths during the period with claims paid at period end;
   lapses, shock lapses, and conversions at period end after deaths. The shock lapse is
-  processed at the END of the final level-period year (equivalently, immediately before the
-  first ART premium falls due) — consistent with VM-20's "shock lapse in the final year of
-  a level premium period" [R2] and the SOA study's measurement of lapse at the end of the
-  level term [R4].
+  processed at the END of the final level-period year, `t = n − 1` (equivalently,
+  immediately before the first ART premium falls due at `t = n`) — consistent with VM-20's
+  "shock lapse in the final year of a level premium period" [R2] and the SOA study's
+  measurement of lapse at the end of the level term [R4].
 - **Age basis.** Age nearest birthday (ANB) **[std choice, sourced pattern]**: all four
   carriers with verifiable age rules use ANB [S2] [S3] [S5] [S6], and 2017 CSO / 2015 VBT are
   published in ANB variants [R3] [REG-R18]. Attained age x+t = issue age + completed policy
-  years [S3] [S5] [S6].
+  years, `t` completed at the start of period `t` [S3] [S5] [S6].
 - **Model points.** Single-policy model points (seriatim); one policy per model point with
   a count/weight field for grouping. VM-20 NPR is a seriatim quantity [R2], so seriatim
   granularity keeps the projection reusable for valuation feeds.
@@ -68,14 +74,14 @@ example below projects. Attribute menu per `product-spec.md` (issue-age grid **[
 
 | Variable | Definition |
 |---|---|
-| `l(t)` | In-force policies at start of period t (l(1) = policy_count at issue) |
+| `l(t)` | In-force policies at start of period t, i.e. at time t (l(0) = policy_count at issue) |
 | `d(t)` | Deaths in period t |
 | `x(t)` | Lapses (incl. shock lapse) at end of period t |
 | `c(t)` | Conversions at end of period t |
-| `AP(t)` | Annualized guaranteed gross premium for policy year t (from rate table + fee) |
-| `dur(t)` | Policy year (curtate duration + 1) |
-| `phase(t)` | LEVEL (dur ≤ n), PLT (n < dur, attained age < 95), EXPIRED |
-| `conv_elig(t)` | Boolean: dur ≤ n and attained age < 70 |
+| `AP(t)` | Annualized guaranteed gross premium for period t (rate-table row for policy year dur(t), + fee) |
+| `dur(t)` | Policy year, dur(t) = t + 1 (curtate duration + 1; a 1-based contractual label) |
+| `phase(t)` | LEVEL (dur ≤ n, i.e. t < n), PLT (n < dur, attained age < 95), EXPIRED (t ≥ 95 − x) |
+| `conv_elig(t)` | Boolean: dur ≤ n (t < n) and attained age < 70 |
 
 No account value, cash surrender value, loan, or shadow-account state exists for this
 product [S3] [S6].
@@ -93,7 +99,7 @@ elements [R2] [REG-R23]).
 | Item | Value | Basis |
 |---|---|---|
 | Guaranteed premium scale | Level `AP` for n years, then guaranteed ART scale to age 95; full schedule printed at issue | [S3] [S6] |
-| Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60, age 95) | [S6] |
+| Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60 — charged at `t = 59`, attained age 94, the final year to expiry at 95) | [S6] |
 | Policy fee | $65/yr, level, inside `AP` | [S6] |
 | Modal factors | SA 0.52 / Q 0.27 / M 0.08333 | [S6] |
 | Death benefit | Level face; proceeds = face + pro-rata unearned premium − due unpaid premium | [S6] |
@@ -132,9 +138,10 @@ intentionally empty so the input schema matches sibling products (UL etc.).
   compressed stand-in chosen so that StdNT reproduces the specimen anchor pricing cell
   [S6] and the NT spread stays inside the RR-table range. Calibration to actual RR tables
   is an implementation refinement.
-- **(B) Level-period lapse [std].** Annual rates by policy year: 6%, 5%, then 4% for years
-  3 through n−2, n−1: 6% (anticipatory rise — lapse rates begin increasing one to two
-  policy years before the end of the level period [R6]), year n: shock lapse (below).
+- **(B) Level-period lapse [std].** Annual rates by policy year (policy year = t + 1):
+  6%, 5%, then 4% for years 3 through n−2, n−1: 6% (anticipatory rise — lapse rates begin
+  increasing one to two policy years before the end of the level period [R6]), year n
+  (t = n − 1): shock lapse (below).
   Detailed study rates by sex/age/band/mode sit behind SOA paid data packages (research
   notes, Gaps); the vector is an order-of-magnitude standardization consistent with the
   public highlights: 30-year term lapse rates at attained ages 60+ run 1.0%–1.5% [R6], so
@@ -157,33 +164,35 @@ intentionally empty so the input schema matches sibling products (UL etc.).
 | Symbol | Meaning |
 |---|---|
 | x | Issue age (ANB); n = level term period in years; F = face amount |
-| t | Policy year, t = 1, 2, …, 95 − x (annual model) |
-| l(t) | In-force count at start of year t; l(1) = 1 per unit model point |
-| q(t) | Best-estimate annual mortality at attained age x+t−1, incl. class factor and PLT multiplier |
-| w(t) | Annual lapse rate for year t (w(n) = shock lapse) |
+| t | Period index, 0-based: t = 0, 1, …, 94 − x (annual model; proj_len = 95 − x periods). Period t is policy year t + 1 |
+| l(t) | In-force count at start of period t (time t); l(0) = 1 per unit model point |
+| q(t) | Best-estimate annual mortality at attained age x+t, incl. class factor and PLT multiplier |
+| w(t) | Annual lapse rate for period t (w(n−1) = shock lapse, in policy year n) |
 | cv(t) | Annual conversion rate (0 outside eligibility window) |
-| AP(t) | Annualized guaranteed gross premium for year t |
-| G(t) | Premium income in year t; K(t) commission; E(t) expenses; X(t) premium tax |
-| DC(t) | Death claims incurred in year t; CV(t) conversion credit outflow |
-| M(d) | PLT mortality multiplier at PLT duration d = t − n |
-| J | Initial premium jump ratio = AP(n+1)/AP(n), fee included [R4] [R2 convention](#uslib-term_life-r2) |
+| AP(t) | Annualized guaranteed gross premium for period t (the schedule's policy year t + 1) |
+| G(t) | Premium income in period t; K(t) commission; E(t) expenses; X(t) premium tax |
+| DC(t) | Death claims incurred in period t; CV(t) conversion credit outflow |
+| M(d) | PLT mortality multiplier at PLT duration d = t + 1 − n (d = 1 in the first PLT year, t = n) |
+| J | Initial premium jump ratio = AP(n)/AP(n−1), the first ART premium (policy year n+1) over the last level premium (policy year n), fee included [R4] [R2 convention](#uslib-term_life-r2) |
 
 ### Decrement order and recursion (annual model)
 
 Deaths first, then end-of-year voluntary decrements (lapse and conversion) applied to
 survivors, with conversion and lapse treated as competing rates on the same survivor pool
-**[std]**:
+**[std]**. Base case l(0) = 1 per unit model point; for t = 0, 1, …:
 
 ```
 d(t)  = l(t) · q(t)
-s(t)  = l(t) · (1 − q(t))                     survivors to end of year t
+s(t)  = l(t) · (1 − q(t))                     survivors to end of period t
 c(t)  = s(t) · cv(t)
 x(t)  = s(t) · (1 − cv(t)) · w(t)
 l(t+1)= s(t) · (1 − cv(t)) · (1 − w(t))
       = l(t) · (1 − q(t)) · (1 − cv(t)) · (1 − w(t))
 ```
 
-Termination at expiry: l(t) = 0 for x + t − 1 ≥ 95 [S2] [S3] [S5] [S6].
+Termination at expiry: l(t) = 0 for x + t ≥ 95, i.e. for t ≥ proj_len = 95 − x
+[S2] [S3] [S5] [S6]; the survivors of the last period t = 94 − x expire rather than
+decrement (the implementation books them as `pols_maturity`).
 
 ### Cash flows (annual model, per unit in force at issue)
 
@@ -191,11 +200,13 @@ Termination at expiry: l(t) = 0 for x + t − 1 ≥ 95 [S2] [S3] [S5] [S6].
 G(t)  = AP(t) · l(t)                          premium, BOY  [S6 schedule]
 K(t)  = k(t) · G(t)                           commission, BOY  [std]
 X(t)  = 0.02 · G(t)                           premium tax, BOY  [std]
-E(t)  = 300 · 1{t=1} + 30 · 1.02^(t−1) · l(t) maintenance/acquisition, BOY  [std]
+E(t)  = 300 · 1{t=0} + 30 · 1.02^t · l(t)     maintenance/acquisition, BOY  [std]
 DC(t) = F · d(t)                              death claims, EOY  [S6]
-CV(t) = AP(t) · c(t) · 1{t>1}                 conversion credit, EOY  [S6]
+CV(t) = AP(t) · c(t) · 1{t>0}                 conversion credit, EOY  [S6]
 NetCF(t) = G(t) − K(t) − X(t) − E(t) − DC(t) − CV(t)
 ```
+
+with k(t) = 80% at t = 0, 5% for 0 < t < n, 2% for t ≥ n **[std]**.
 
 Simplifications **[std]**: (i) the pro-rata unearned-premium refund on death [S6] is
 ignored in the annual model (it is a half-premium-sized timing item on the deceased cohort;
@@ -222,14 +233,15 @@ Two defensible treatments exist:
 ### Monthly option — processing order (monthiversary)
 
 Monthly decrements **[std]**: `q_m = 1 − (1 − q)^(1/12)`, `w_m = 1 − (1 − w)^(1/12)` for
-ordinary lapses; the shock lapse `w(n)` is NOT spread — it is applied in full at the final
-level-period monthiversary (month 12n). Numbered order each month:
+ordinary lapses; the shock lapse `w(n−1)` is NOT spread — it is applied in full at the end
+of the final level-period month (month `12n − 1`, months being 0-based like `t`).
+Numbered order each month:
 
 1. Check expiry (attained age 95) and terminate [S2] [S3] [S5] [S6].
 2. Collect modal premium if due this month (monthly mode: 0.08333 × AP [S6]); annualized
    modal load is implicit in the modal factor.
 3. Pay commission and premium tax on premium collected **[std]**.
-4. Incur 1/12 of annual maintenance expense; acquisition expense in month 1 only **[std]**.
+4. Incur 1/12 of annual maintenance expense; acquisition expense in month 0 only **[std]**.
 5. Apply deaths at `q_m`; pay claims at end of month: F + pro-rata unearned premium − due
    unpaid premium [S6].
 6. Apply conversions at `cv_m` if within the eligibility window; pay conversion credit
@@ -250,11 +262,13 @@ industry formula.
 
 ### Shock lapse at end of level period
 
-Keyed to the initial premium jump ratio J = AP(n+1)/AP(n) with the policy fee included in
-both premiums — the jump definition used by both the SOA 2021 study [R4] and VM-20's
-prescribed-shock table (premium increase per $1,000 including the policy fee) [R2]:
+Keyed to the initial premium jump ratio J = AP(n)/AP(n−1) — the first ART premium
+(policy year n+1) over the last level premium (policy year n) — with the policy fee
+included in both premiums — the jump definition used by both the SOA 2021 study [R4] and
+VM-20's prescribed-shock table (premium increase per $1,000 including the policy fee)
+[R2]. The shock is w(n−1), the lapse rate of the last level-period year:
 
-| J (jump ratio) | Shock lapse w(n) **[std]** |
+| J (jump ratio) | Shock lapse w(n−1) **[std]** |
 |---|---|
 | ≤ 2.0 | 35% |
 | 2.0 – 4.0 | 55% |
@@ -272,18 +286,20 @@ supported by the study: +5 pts at attained ages 60+ and −15 pts for monthly-mo
 
 ### PLT lapse after the shock
 
-Elevated but declining by PLT duration [R4]: w(n+1) = 30%, w(n+2) = 15%, w(n+d) = 10% for
-d ≥ 3 **[std]**, until expiry.
+Elevated but declining by PLT duration d = t + 1 − n [R4]: w(n) = 30% (d = 1),
+w(n+1) = 15% (d = 2), w(t) = 10% for t ≥ n + 2 (d ≥ 3) **[std]**, until expiry.
 
 ### PLT mortality deterioration (anti-selection)
 
 Multiplicative on the best-estimate base table:
 
 ```
-q(n+d) = q_base(x+n+d−1) · class_factor · M(d)
+q(t)   = q_base(x+t) · class_factor · M(d),   d = t + 1 − n ≥ 1  (i.e. t ≥ n)
 M(1)   = min(8.0, 1 + 0.55 · (J − 1))          [std]
 M(d)   = max(2.0, M(1) − 0.15 · (d − 1))       [std]  (grade to 200%, then level)
 ```
+
+(M(d) = 1 during the level period, t < n.)
 
 For the anchor cell J ≈ 5.46 gives M(1) = 3.45 ≈ 3.50 (the worked example uses 3.50).
 Rationale: first-year Jump-to-ART deterioration observed at 154%–1,066% of level-period
@@ -294,9 +310,9 @@ Monthly-mode policies show lower deterioration [R4]; an optional 0.75 multiplier
 
 ### Anticipatory lapse
 
-w(n−1) is set 2 points above the mid-duration level (6% vs 4% in the base vector), because
-lapse rates begin to rise one to two policy years before the end of the level period [R6]
-**[std]**.
+w(n−2), the rate of policy year n−1, is set 2 points above the mid-duration level (6% vs
+4% in the base vector), because lapse rates begin to rise one to two policy years before
+the end of the level period [R6] **[std]**.
 
 ### Conversion
 
@@ -312,41 +328,44 @@ Conversion treatment above).
 ## Worked example
 
 Specimen anchor-cell model point M35 / Standard NT / $100,000 / 10-year plan / annual mode, unit
-in-force. Contractual premiums from the specimen guaranteed schedule: AP(1..10) = $140,
-AP(11) = $764, AP(12) = $830 [S6]; J = 764/140 ≈ 5.46. Assumptions: illustrative
+in-force. Contractual premiums from the specimen guaranteed schedule: AP(0..9) = $140
+(policy years 1–10), AP(10) = $764, AP(11) = $830 (policy years 11, 12) [S6];
+J = 764/140 ≈ 5.46. Assumptions: illustrative
 best-estimate q_base rising from 0.00080 (age 35) to 0.00160 (age 44) — vector 0.00080,
 0.00085, 0.00090, 0.00095, 0.00100, 0.00110, 0.00120, 0.00130, 0.00145, 0.00160 — then
 0.00180/0.00200 (ages 45/46) with M(1) = 3.50, M(2) = 3.35 **[std]**; lapse vector 6%, 5%, 4%×6, 6%
 (anticipatory), 80% (shock), 30%, 15% **[std]**; commission 80%/5%/2%, premium tax 2%,
-maintenance $30 × 1.02^(t−1), acquisition $300 **[std]**. All flows per the recursion above
-(premium/commission/tax/expense BOY, claims EOY, no discounting).
+maintenance $30 × 1.02^t, acquisition $300 **[std]**. All flows per the recursion above
+(premium/commission/tax/expense BOY, claims EOY, no discounting). Rows are the first
+twelve periods t = 0 … 11 of the frame (policy years 1–12: policy year = t + 1).
 
 | t | l(t) | Premium G | Claims DC | Comm K | Maint+Acq E | Tax X | Net CF | l(t+1) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | 1.000000 | 140.00 | 80.00 | 112.00 | 330.00 | 2.80 | −384.80 | 0.939248 |
-| 2 | 0.939248 | 131.49 | 79.84 | 6.57 | 28.74 | 2.63 | 13.71 | 0.891527 |
-| 3 | 0.891527 | 124.81 | 80.24 | 6.24 | 27.83 | 2.50 | 8.01 | 0.855096 |
-| 4 | 0.855096 | 119.71 | 81.23 | 5.99 | 27.22 | 2.39 | 2.88 | 0.820112 |
-| 5 | 0.820112 | 114.82 | 82.01 | 5.74 | 26.63 | 2.30 | −1.86 | 0.786520 |
-| 6 | 0.786520 | 110.11 | 86.52 | 5.51 | 26.05 | 2.20 | −10.16 | 0.754229 |
-| 7 | 0.754229 | 105.59 | 90.51 | 5.28 | 25.48 | 2.11 | −17.79 | 0.723191 |
-| 8 | 0.723191 | 101.25 | 94.01 | 5.06 | 24.92 | 2.02 | −24.78 | 0.693361 |
-| 9 | 0.693361 | 97.07 | 100.54 | 4.85 | 24.37 | 1.94 | −34.63 | 0.650814 |
-| 10 | 0.650814 | 91.11 | 104.13 | 4.56 | 23.33 | 1.82 | −42.73 | **0.129955** |
-| 11 | 0.129955 | 99.29 | 81.87 | 1.99 | 4.75 | 1.99 | 8.69 | 0.090395 |
-| 12 | 0.090395 | 75.03 | 60.56 | 1.50 | 3.37 | 1.50 | 8.09 | 0.076321 |
+| 0 | 1.000000 | 140.00 | 80.00 | 112.00 | 330.00 | 2.80 | −384.80 | 0.939248 |
+| 1 | 0.939248 | 131.49 | 79.84 | 6.57 | 28.74 | 2.63 | 13.71 | 0.891527 |
+| 2 | 0.891527 | 124.81 | 80.24 | 6.24 | 27.83 | 2.50 | 8.01 | 0.855096 |
+| 3 | 0.855096 | 119.71 | 81.23 | 5.99 | 27.22 | 2.39 | 2.88 | 0.820112 |
+| 4 | 0.820112 | 114.82 | 82.01 | 5.74 | 26.63 | 2.30 | −1.86 | 0.786520 |
+| 5 | 0.786520 | 110.11 | 86.52 | 5.51 | 26.05 | 2.20 | −10.16 | 0.754229 |
+| 6 | 0.754229 | 105.59 | 90.51 | 5.28 | 25.48 | 2.11 | −17.79 | 0.723191 |
+| 7 | 0.723191 | 101.25 | 94.01 | 5.06 | 24.92 | 2.02 | −24.78 | 0.693361 |
+| 8 | 0.693361 | 97.07 | 100.54 | 4.85 | 24.37 | 1.94 | −34.63 | 0.650814 |
+| 9 | 0.650814 | 91.11 | 104.13 | 4.56 | 23.33 | 1.82 | −42.73 | **0.129955** |
+| 10 | 0.129955 | 99.29 | 81.87 | 1.99 | 4.75 | 1.99 | 8.69 | 0.090395 |
+| 11 | 0.090395 | 75.03 | 60.56 | 1.50 | 3.37 | 1.50 | 8.09 | 0.076321 |
 
-Reading the table: the 80% shock lapse at the end of year 10 collapses in-force from 0.651
-to 0.130; year-11 premium per survivor jumps 5.46× while year-11 expected claims per
-survivor reflect q = 0.00180 × 3.50 = 0.0063 — the anti-selected PLT block barely clears
-its own claims [pattern per R4]. Conversion is switched off (cv = 0) in this table to keep
-it to one decrement narrative; enabling cv(t) per the behavior section removes a further
-~1%/yr of `s(t)` during years 1–10 and adds the CV(t) outflow. (This worked example uses
-guaranteed premiums that are contractual [S6]; every decrement/expense number is
+Reading the table: the 80% shock lapse at the end of t = 9 (policy year 10, the last
+level-period year) collapses in-force from 0.651 to 0.130; at t = 10 (policy year 11, the
+first ART year) premium per survivor jumps 5.46× while expected claims per survivor reflect
+q = 0.00180 × 3.50 = 0.0063 — the anti-selected PLT block barely clears its own claims
+[pattern per R4]. Conversion is switched off (cv = 0) in this table to keep it to one
+decrement narrative; enabling cv(t) per the behavior section removes a further ~1%/yr of
+`s(t)` during t = 0–9 (policy years 1–10) and adds the CV(t) outflow. (This worked example
+uses guaranteed premiums that are contractual [S6]; every decrement/expense number is
 illustrative **[std]** — it is a mechanics check, not a pricing result.)
 
 Cross-checks: the table was computed mechanically from the recursion exactly as specified
-above; l(11) = 0.650814 × (1 − 0.0016) × (1 − 0.80)
+above; l(10) = l(9) × (1 − q(9)) × (1 − w(9)) = 0.650814 × (1 − 0.0016) × (1 − 0.80)
 = 0.129955 ✓; monthly q from annual 0.0016 would be 1 − (1 − 0.0016)^(1/12) = 0.00013343 ✓.
 
 ---
@@ -401,8 +420,9 @@ Dominant assumptions, in rough order of economic impact for a level-term block:
    worked example — premiums ≈ expected claims at Standard NT); a few basis points of A/E
    [R8] [REG-R19] move the block's lifetime result materially.
 3. **Level-period lapse.** Term with no cash value is lapse-supported in early durations
-   (acquisition strain recovery) and lapse-sensitive before the shock (each year-9
-   anticipatory lapse [R6] forfeits a year of level premium against no benefit).
+   (acquisition strain recovery) and lapse-sensitive before the shock (each anticipatory
+   lapse at t = n − 2 — policy year 9 of a T10 — [R6] forfeits a year of level premium
+   against no benefit).
 4. **Conversion incidence.** Converts remove healthy-ish premium payers and (in linked
    models) deliver anti-selected lives to the permanent block [R7]; sensitivity grows with
    the conversion window length.
@@ -411,9 +431,10 @@ Dominant assumptions, in rough order of economic impact for a level-term block:
 
 Known modeling pitfalls:
 
-- **Shock timing double-count.** Applying the shock lapse both at end of year n and start
-  of year n+1, or spreading it across months, changes the PLT premium base materially; it
-  belongs at the single point immediately before the first ART premium [R2] [R4] **[std]**.
+- **Shock timing double-count.** Applying the shock lapse both at the end of t = n − 1
+  (policy year n) and the start of t = n (policy year n+1), or spreading it across months,
+  changes the PLT premium base materially; it belongs at the single point immediately
+  before the first ART premium, i.e. in w(n−1) [R2] [R4] **[std]**.
 - **Jump ratio definition.** Include the policy fee in both numerator and denominator —
   the 2021 SOA study defines the jump including the fee (the 2014 study did not) [R4], and
   VM-20's shock table keys on premium increase per $1,000 including the fee [R2].
@@ -432,8 +453,10 @@ Known modeling pitfalls:
   the ANB basis [S2] [S3] [S5] [S6] [R3]; a silent ALB table import shifts mortality by half a
   year of age.
 - **Expiry handling.** The guaranteed schedule ends at attained age 95 [S6]; projecting
-  ART premiums past 95, or terminating at 94 (off-by-one on `x + t − 1 ≥ 95`), corrupts
-  the tail.
+  ART premiums past 95, or terminating a year early, corrupts the tail. The correct rule
+  is `l(t) = 0 for x + t ≥ 95`: the last projected period is `t = 94 − x`, the year running
+  from attained age 94 to expiry at 95; testing `x + t ≥ 94`, or ending the frame at
+  `proj_len − 2`, drops it.
 - **Banding on face decrease.** A requested face decrease re-scales premium excluding the
   fee (((a − b) × c) + b [S6]) and can cross a band boundary [S3]; implementations that
   re-derive `band` from `face_amount` each period handle this automatically.

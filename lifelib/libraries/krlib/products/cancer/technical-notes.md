@@ -105,14 +105,17 @@ in it:
   approximation. Three of the product's mechanics live on it: 월납 is the dominant retail
   mode, the only mode at one direct writer [S8], and the mode named in the 감독규정's own
   기준연령 요건 [REG-R9]; the 90-day 면책기간 lands on the grid boundary `t = 3`; and the
-  one-year 감액기간 lands on `t = 12`. `t` is the **policy month**, `t = 0, 1, …, proj_len`;
-  month `t` is the interval from `t` to `t + 1` months after the 보험계약일.
-- **`proj_len()` is the last projected index, not a row count.** `proj_len = 12 × (expiry_age
-  − issue_age)`, so **720** on the anchor cell and **721 rows** in `result_cf()`. Month
-  `t = proj_len` is the 100세 계약해당일 itself: every cash flow in it is zero, `pols_maturity`
-  records the cover ending, and `claims(t, "MATURITY")` is **0.00** — there is no 만기환급금
-  on the 순수보장형 form and the only retrieved surrender-value illustration shows the value
-  returning to nil at maturity [S8].
+  one-year 감액기간 lands on `t = 12`. `t` is the **policy month** and it is **0-based**: the
+  first projected month is `t = 0`, month `t` is the interval from `t` to `t + 1` months after
+  the 보험계약일, the frame is `t = 0, 1, …, proj_len − 1`, and the policy year is the
+  contractual 1-based label `y(t) = floor(t / 12) + 1`.
+- **`proj_len()` is the number of projected months — the frame's exclusive end, not the last
+  index.** `proj_len = 12 × (expiry_age − issue_age) + 1`, so **721** on the anchor cell and
+  **721 rows** in `result_cf()`, indexed `t = 0 … 720`. The `+ 1` is the terminal row: the 720
+  months of cover are `t = 0 … 719` and month `t = proj_len − 1` is the 100세 계약해당일
+  itself. Every cash flow in it is zero, `pols_maturity` records the cover ending, and
+  `claims(t, "MATURITY")` is **0.00** — there is no 만기환급금 on the 순수보장형 form and the only
+  retrieved surrender-value illustration shows the value returning to nil at maturity [S8].
 - **The waiting period lands on a grid boundary.** The 암보장개시일 is the 91st day counting
   the 보험계약일 as day 1 [S1] [S2] [S3] [S4] [S7], with the 약관's own worked example
   보험계약일 2014-04-10 ⇒ 보장개시일 2014-07-09 [S1]. On a monthly grid that is three
@@ -150,7 +153,7 @@ in it:
 - **Model points.** One policy at a time, projected on an expected (probability-weighted)
   basis. `Projection` is parameterized by `point_id`; no aggregation logic is specified here.
   Ten points are shipped and every one of them satisfies every `check_*()` cells.
-- **Termination.** Cover to the **100세 계약해당일**, `t = proj_len`. The decrements are
+- **Termination.** Cover to the **100세 계약해당일**, `t = proj_len − 1`. The decrements are
   death and lapse and nothing else: **there is no benefit-driven termination**. Payment of a
   diagnosis benefit neither terminates nor exhausts the contract [S1] [S3] [S4], the
   once-only flags exhaust a *tier* and not the policy, and the 180-day inpatient cap is a cap
@@ -195,7 +198,7 @@ in it:
 | `waiver_trigger` | enum {cancer_diag, none} | cancer_diag |
 | `cv_form` | enum {mijigeup, pyojun} | mijigeup (해약환급금 미지급형) |
 
-Derived scalars on the anchor cell, all read off the model: `proj_len() = 720`,
+Derived scalars on the anchor cell, all read off the model: `proj_len() = 721`,
 `pay_months() = 240`, `pols_if_init() = 1.0`, `surr_chg_months() = 84` and
 **`surr_chg_cap_pp() = 585,000`**.
 
@@ -295,7 +298,7 @@ individual's and defers the exhaustion forever.
 assured. There is **no 보험계약대출 and no automatic premium loan during the 납입기간** on
 the 미지급형 form, because there is no surrender value to lend against [S3] [REG-R28] — so a
 missed premium really does lapse the policy at the end of the 14-day 납입최고. And there is
-**no 만기환급금**: `claims(proj_len, "MATURITY")` is zero and the column exists only so that
+**no 만기환급금**: `claims(proj_len − 1, "MATURITY")` is zero and the column exists only so that
 the statement's shape matches the rest of the library.
 
 ---
@@ -642,10 +645,10 @@ third bullet **excludes long-term-care risk premium** from the ratio [REG-R21].
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0, 1, …, T` with `T = proj_len()` |
+| `t` | policy month, **0-based**: `t = 0, 1, …, proj_len() − 1`, with `T = proj_len() − 1` |
 | `x`, `age(t)` | issue 만나이; attained 만나이 `x + floor(t/12)` |
-| `y(t)` | policy year, `floor(t/12) + 1` |
-| `T`, `m` | `proj_len()` = 12 (100 − x); `pay_months()` = 12 × `pay_term_y`, or `T` on 전기납 |
+| `y(t)` | policy year, the contractual 1-based label `floor(t/12) + 1` |
+| `T`, `m` | `T = proj_len() − 1` = 12 (100 − x), the last projected month, so `proj_len()` = 12 (100 − x) + 1 is the row count; `pay_months()` = 12 × `pay_term_y`, or `T` on 전기납 |
 | `S`, `P` | 보험가입금액; level monthly office premium |
 | `W`, `W_j` | 면책기간 in months (3); tier `j`'s own 면책기간 (3, 3, 3, **0**) |
 | `cover(t)` | `1{t ≥ W_general}` — the invasive gate |
@@ -1106,7 +1109,7 @@ is the cell at which the 표준해약공제액 comparison [REG-R20], the 보험�
 anchor makes the model point and the regulatory reference point the same cell, which no other
 choice achieves.
 
-Derived scalars, read off the model: `proj_len() = 720` (so `result_cf()` has **721 rows**,
+Derived scalars, read off the model: `proj_len() = 721` (so `result_cf()` has **721 rows**,
 `t = 0 … 720`, index name `t`, first column `pols_if`), `pay_months() = 240`,
 `pols_if_init() = 1.0`, `surr_chg_months() = 84`, **`surr_chg_cap_pp() = 585,000`**.
 
@@ -1755,16 +1758,16 @@ point 1 is the only cell whose account is exhausted anywhere near the middle of 
 
 | id | sex / 만나이 | 납입 | `S` | `premium` | `proj_len` | ratio | Σ `net_cf` | what it exercises |
 |---|---|---|---|---|---|---|---|---|
-| 1 | M 40 | 20년 | 30,000,000 | 45,000 | 720 | 1.2352 | −7,466,785.49 | the anchor; the 기준연령 요건 cell [REG-R9] |
-| 2 | F 40 | 20년 | 30,000,000 | 54,000 | 720 | 1.0202 | −5,576,954.27 | the female incidence limb — 2.52× the male rate at 40 — and a much larger 유사암 share |
-| 3 | M 40 | 전기납 | 30,000,000 | 62,000 | 720 | 0.8769 | −4,619,382.83 | the **갱신형** chassis: `wait_months = 0`, `reduction_months = 0`, no 면책 and no 감액 [S2] [S4] |
-| 4 | F 30 | 20년 | 50,000,000 | 65,000 | 840 | 1.0271 | −9,387,556.77 | the modal **24-month** 감액기간 [S3] [S4] [S5] [S7]; young-female 유사암 exposure |
-| 5 | M 15 | 20년 | 30,000,000 | 39,000 | 1020 | 1.0478 | −11,195,873.06 | the minimum issue age and the longest projection, 85 years |
-| 6 | M 65 | 10년 | 50,000,000 | 331,000 | 420 | 0.9882 | −5,612,192.29 | the maximum issue age and the shortest projection |
-| 7 | F 55 | 전기납 | 30,000,000 | 52,000 | 540 | 0.9206 | −2,356,283.74 | the **diagnosis-only** shape [S3] [S6] [S7]; a 전기납 미지급형 contract has **no surrender value at any duration** [S3 제41조] |
-| 8 | M 45 | 20년 | 30,000,000 | 34,000 | 660 | 1.0806 | −3,712,985.12 | the **treatment-cost-only** shape of [S5], `diag_module = 0` |
-| 9 | F 50 | 20년 | 100,000,000 | 194,000 | 600 | 0.9568 | −10,552,299.99 | **표준형** surrender basis, no 감액기간, and **no premium waiver** — the diagnosed keep paying and can lapse |
-| 10 | M 35 | 30년 | 10,000,000 | 23,000 | 780 | 1.1010 | −4,471,108.86 | the pre-2022 **70%** 유사암 ratio [S8], 24-month 감액, the sum-insured floor |
+| 1 | M 40 | 20년 | 30,000,000 | 45,000 | 721 | 1.2352 | −7,466,785.49 | the anchor; the 기준연령 요건 cell [REG-R9] |
+| 2 | F 40 | 20년 | 30,000,000 | 54,000 | 721 | 1.0202 | −5,576,954.27 | the female incidence limb — 2.52× the male rate at 40 — and a much larger 유사암 share |
+| 3 | M 40 | 전기납 | 30,000,000 | 62,000 | 721 | 0.8769 | −4,619,382.83 | the **갱신형** chassis: `wait_months = 0`, `reduction_months = 0`, no 면책 and no 감액 [S2] [S4] |
+| 4 | F 30 | 20년 | 50,000,000 | 65,000 | 841 | 1.0271 | −9,387,556.77 | the modal **24-month** 감액기간 [S3] [S4] [S5] [S7]; young-female 유사암 exposure |
+| 5 | M 15 | 20년 | 30,000,000 | 39,000 | 1021 | 1.0478 | −11,195,873.06 | the minimum issue age and the longest projection, 85 years |
+| 6 | M 65 | 10년 | 50,000,000 | 331,000 | 421 | 0.9882 | −5,612,192.29 | the maximum issue age and the shortest projection |
+| 7 | F 55 | 전기납 | 30,000,000 | 52,000 | 541 | 0.9206 | −2,356,283.74 | the **diagnosis-only** shape [S3] [S6] [S7]; a 전기납 미지급형 contract has **no surrender value at any duration** [S3 제41조] |
+| 8 | M 45 | 20년 | 30,000,000 | 34,000 | 661 | 1.0806 | −3,712,985.12 | the **treatment-cost-only** shape of [S5], `diag_module = 0` |
+| 9 | F 50 | 20년 | 100,000,000 | 194,000 | 601 | 0.9568 | −10,552,299.99 | **표준형** surrender basis, no 감액기간, and **no premium waiver** — the diagnosed keep paying and can lapse |
+| 10 | M 35 | 30년 | 10,000,000 | 23,000 | 781 | 1.1010 | −4,471,108.86 | the pre-2022 **70%** 유사암 ratio [S8], 24-month 감액, the sum-insured floor |
 
 Points **3, 7, 8 and 10** never exhaust their account. Points 2, 4, 5, 6 and 9 exhaust it
 only in the last fifth of their term — 96.9%, 80.6%, 86.5%, 89.5% and 97.3% of the way
@@ -2056,9 +2059,12 @@ and each is either asserted by a `check_*()` cells or is a test target in
 - **`commissions(0)` is 323,999.9999999999 and not 324,000.00.** `0.6 × 12` is
   7.199999999999999 in binary floating point. The notes print the model's value; a test
   written against a hand-cleaned 324,000.00 at ten decimals fails, and correctly so.
-- **`proj_len()` is the last index, not a row count.** `result_cf()` has `proj_len() + 1`
-  rows. Sizing an array at `proj_len()` silently drops the expiry row, which is the one row
-  where every cash flow is zero and `pols_maturity` is not.
+- **`proj_len()` is the row count, not the last index.** `result_cf()` has `proj_len()` rows,
+  indexed `t = 0 … proj_len() − 1`; the last of them is the expiry row, the one row where
+  every cash flow is zero and `pols_maturity` is not. Reading `proj_len()` as the last index
+  and sweeping `range(proj_len() + 1)` runs a month past the end of the contract; indexing
+  `result_cf()` at `proj_len()` is a `KeyError`. The 보험기간 in months is `proj_len() − 1`,
+  which is what `pay_months()` returns on a 전기납 model point.
 - **`inc_rate` interpolates log-linearly and `tier_share` linearly, and the two must not be
   swapped.** The incidence grid is published on ten-year ages and rises by a factor of 20.8
   across the projection, so linear interpolation of it understates the mid-decade rate

@@ -64,12 +64,17 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps; policy year ``t`` runs 1, 2, ..., ``proj_len()``.
-Premiums and maintenance expense fall at the start of the year; acquisition expense and
-initial commission at issue; death claims and their claim expense at the end of the year;
-ordinary lapse at the end of the year after deaths; the renewal decline at the end of a
-boundary year after ordinary lapse; the 만기보험금 of the 만기환급형 variant at the end
-of the final year. The age basis is **보험나이**.
+**Projection basis.** Annual steps; the time index ``t`` is **0-based**, so ``t = 0`` is
+the first policy year, period ``t`` runs from time ``t`` to time ``t + 1``, the
+contractual policy year is the derived 1-based label ``t + 1``, and ``proj_len()`` is the
+number of projected periods — the frame is ``t = 0, 1, ..., proj_len() - 1``.
+Premiums and maintenance expense fall at the start of the period; acquisition expense and
+initial commission at issue, which is the start of period ``t = 0``; death claims and
+their claim expense at the end of the period;
+ordinary lapse at the end of the period after deaths; the renewal decline at the end of a
+boundary period after ordinary lapse; the 만기보험금 of the 만기환급형 variant at the end
+of the final period ``t = proj_len() - 1``. The age basis is **보험나이**, and the attained
+age is ``age_at_entry() + t``.
 
 **No surrender value, anywhere.** The representative form is 해약환급금 미지급형 on a
 전기납 contract, and the 약관 pays nothing at any duration [S1] [S2 제33조제2항] [S12], so

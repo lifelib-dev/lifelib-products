@@ -48,7 +48,7 @@ value floor beside it.
 **The *Rentengarantiezeit* is paid to the dead.** Inside the guarantee window the
 instalment is due whether or not the annuitant is alive, so the annuity is weighted by the
 **annuitised** count and not by survivors: ``pols_annuity(t) = max(pols_if(t),
-1{n < t <= n+m} pols_annuitization(n))``, asserted by ``check_annuity_guarantee()`` on
+1{n <= t < n+m} pols_annuitization(n - 1))``, asserted by ``check_annuity_guarantee()`` on
 every model point.
 
 **Spaces.** The model contains two:
@@ -73,18 +73,20 @@ time rather than stored inside the model. The model folder itself holds no data 
 together. This follows ``annuallife.TradLife_A``; contrast ``basiclife.BasicTerm_S``,
 which keeps its inputs inside the model.
 
-**Projection basis.** Annual steps. ``t`` counts **policy years** from inception, 1-based:
-policy year ``t`` runs from the anniversary at attained age ``issue_age + t - 1`` to the
-next, and the calendar year of the row is ``issue_year + t - 1`` for every point in the
-table, which is what lets one generational mortality surface and one declared-rate path
-serve a book of mixed vintages. A new-business point opens at ``t = 1``; an in-force point
-that has already run ``duration_init`` complete policy years opens at
-``t = duration_init + 1`` carrying its balances on the model point. ``proj_len() =
-omega_age() - issue_age`` is the **last** projected policy year, so a life annuity is
-projected to exhaustion rather than truncated at a fixed horizon — on the anchor cell,
-``t = 1 ... 71``. The *Rentenbeginn* falls at the end of policy year ``n = aufschub_y``:
-accumulation rows are ``t <= n``, payout rows ``t > n``, the *Kapitalabfindung* is paid in
-row ``n`` and the first annuity instalment in row ``n + 1``.
+**Projection basis.** Annual steps. ``t`` counts **policy years** from inception and is
+**0-based**: ``t = 0`` is the first policy year, running from issue to the first
+anniversary, so the attained age at the start of the row is ``issue_age + t``, the calendar
+year of the row is ``issue_year + t`` for every point in the table — which is what lets one
+generational mortality surface and one declared-rate path serve a book of mixed vintages —
+and the contractual policy year is ``t + 1``. A new-business point opens at ``t = 0``; an
+in-force point that has already run ``duration_init`` complete policy years opens at
+``t = duration_init`` carrying its balances on the model point. ``proj_len() =
+omega_age() - issue_age`` is the **number** of projected policy years and the **exclusive**
+end of the frame, so a life annuity is projected to exhaustion rather than truncated at a
+fixed horizon — on the anchor cell, ``t = 0 ... 70``. The *Rentenbeginn* falls at the end of
+the deferment period of ``n = aufschub_y`` years: accumulation rows are ``t < n``, payout
+rows ``t >= n``, the *Kapitalabfindung* is paid in row ``n - 1`` and the first annuity
+instalment in row ``n``.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 *Deckungskapital* as the premium net of risk and expense cover accumulated at the

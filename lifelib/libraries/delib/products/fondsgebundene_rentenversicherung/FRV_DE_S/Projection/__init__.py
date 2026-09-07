@@ -11,13 +11,16 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 7            # or switch the default
 
-``t`` counts **policy months from the contract's own inception**, 1-based, so ``t = 61``
-means the same thing on every model point: the first month after the acquisition-charge
-instalment ends. The frame runs ``t = proj_start() ... proj_len()`` with ``proj_start() =
-duration_init_m + 1`` — 1 for new business, 97 for the in-force cell — and ``proj_len() =
-12 x (annuity_age - entry_age)``. There is nothing after ``proj_len()``: the end of that
-month is *Rentenbeginn*, the units are cancelled, the *Fondsguthaben* is converted at the
-*Rentenfaktor* and the contract leaves this model.
+``t`` counts **policy months from the contract's own inception** and is **0-based**:
+``t = 0`` is the inception month, so ``t = 60`` means the same thing on every model point —
+the first month after the acquisition-charge instalment ends. The frame runs
+``t = proj_start() ... proj_len() - 1`` with ``proj_start() = duration_init_m`` — 0 for new
+business, 96 for the in-force cell — and ``proj_len() = 12 x (annuity_age - entry_age)``,
+which is the **number** of policy months from inception and so the frame's **exclusive
+end**. There is nothing after ``t = proj_len() - 1``: the end of that month is
+*Rentenbeginn*, the units are cancelled, the *Fondsguthaben* is converted at the
+*Rentenfaktor* and the contract leaves this model. The contractual policy year is the
+1-based label ``policy_year(t) = t // 12 + 1``, derived and never indexed by.
 
 .. rubric:: Input data
 
@@ -65,9 +68,10 @@ notes use compact actuarial symbols. The mapping is:
 Notes symbol               Cells                            Meaning
 =========================  ===============================  =========================
 (none)                     model_point()                    The selected model point row
-t0                         proj_start()                     duration_init_m + 1
-n                          proj_len()                       Last projected policy month
-y(t)                       policy_year(t)                   floor((t-1)/12) + 1
+t0                         proj_start()                     duration_init_m (0-based)
+n                          proj_len()                       Policy months from inception;
+                                                            the frame's exclusive end
+y(t)                       policy_year(t)                   t // 12 + 1 (1-based label)
 x(t)                       age(t)                           Attained age in month t
 S                          beitragssumme()                  Sum of premiums payable
 B(t)                       prem_pp(t)                       Gross Beitrag due in month t
@@ -79,13 +83,14 @@ beta B(t)                  charge_admin_prem_pp(t)          Premium-based admin 
 A(t)                       prem_to_av_pp(t)                 Anlagebeitrag - what buys units
 C(t)                       cum_prem_pp(t)                   Cumulative gross premiums paid
 p(t)                       unit_price(t)                    Anteilspreis at the END of t
+p_open(t)                  unit_price_open(t)               Anteilspreis at the START of t
 i(t)                       fund_return_net_mth(t)           Monthly return net of the TER
 (scenario)                 fund_return_gross_ann(t)         Gross annual return
 (scenario)                 fund_ter_ann(t)                  Fund TER, netted off the return
 u(t)                       units_pp(t)                      Units at the START of month t
 du(t)                      units_bought_pp(t)               Units bought with A(t)
 (cancellations)            units_cancelled_pp(t)            Units cancelled for charges
-F(t)                       av_pp(t)                         Fondsguthaben, u(t) p(t-1)
+F(t)                       av_pp(t)                         Fondsguthaben, u(t) p_open(t)
 F_tau(t)                   av_pp_at(t, timing)              BEF_CHARGE / AFT_CHARGE /
                                                             AFT_WD / BEF_DECR
 (in force)                 av_at(t, timing)                 av_pp_at(t, timing) pols_if(t)
@@ -101,7 +106,7 @@ q(t)                       mort_rate_mth(t)                 Second-order monthly
 f                          mort_be_factor                   0.75; q(t) = f q_I(t)
 (table)                    lapse_rate_base(t)               Table lapse rate
 (tax)                      lapse_tax_step(t)                x 2.5 in the threshold year
-w(t)                       lapse_rate_mth(t)                Monthly lapse rate; w(n) = 0
+w(t)                       lapse_rate_mth(t)                Monthly lapse rate; w(n-1) = 0
 l(t)                       pols_if(t)                       In force at the START of month t
 l(t)(1-q), l(t+1)          pols_if_at(t, timing)            BEF_DECR / AFT_DEATH / AFT_DECR
 sigma                      stornoabzug_rate()               Stornoabzug rate
@@ -155,14 +160,14 @@ Charging it explicitly double-counts; ignoring it overstates the policyholder's 
 The *Beitragsverrechnung* withholds the acquisition instalment and the premium-based
 administration charge **before** units are bought::
 
-    A(t) = B(t) + Z(t) - alpha(t) - beta B(t)          then  du(t) = A(t) / p(t-1)
+    A(t) = B(t) + Z(t) - alpha(t) - beta B(t)        then  du(t) = A(t) / p_open(t)
 
 while the fund-based administration charge, the *Stückkosten* and the *Risikobeitrag* are
 levied **after** the month's return, by cancelling units that already exist. The
 distinction is not cosmetic and it is the model's most easily-hidden error: a model that
 nets the fund-based charge out of the *Beitrag* gives the right answer while premiums are
 paid and the wrong answer the moment they stop. Model point 7 goes *beitragsfrei* at
-month 121 on a zero-return fund; from there ``premiums(t)`` is zero while
+``t = 120`` on a zero-return fund; from there ``premiums(t)`` is zero while
 ``charge_admin_fund(t)`` and ``charge_policy_fee(t)`` continue, and the fund decays. That
 decay is the product fact § 165 VVG makes possible, not a modelling artefact.
 
@@ -203,8 +208,9 @@ an effective annual rate, while a German tariff's charge rates are nominal.
 **payable**, which is the *Höchstzillmersatz* — spread in equal instalments over
 ``acq_window_months() = min(alpha_spread_months, 12 x prem_term_y)`` months at the
 policy's own premium frequency. On the anchor cell that is 1 800,00 € over 60 monthly
-instalments of 30,00 €, which is **15 % of each of the first 60 premiums and nothing from
-month 61**. On model point 12, whose premium term is two years, the window is 24 months
+instalments of 30,00 €, which is **15 % of each of the first 60 premiums, ``t = 0 ... 59``,
+and nothing from ``t = 60``**. On model point 12, whose premium term is two years, the
+window is 24 months
 and the instalment count is 24, not 60; on the quarterly, half-yearly and annual cells it
 is 20, 10 and 5 instalments of the corresponding size.
 
@@ -215,9 +221,9 @@ own sixty months, and an increment cannot be assumed at inception. The bias that
 an understated acquisition charge on a dynamic contract, is stated rather than hidden.
 
 An **in-force** model point opens after the window has closed. Model point 6 starts at
-``t = 97``, so ``charge_acq(t)`` is zero at every projected month **and**
-``commissions(97)`` carries no *Abschlussprovision*: the acquisition commission and the
-issue expense fall at ``t = 1`` and only there, and ``t = 1`` is not in that model point's
+``t = 96``, so ``charge_acq(t)`` is zero at every projected month **and**
+``commissions(96)`` carries no *Abschlussprovision*: the acquisition commission and the
+issue expense fall at ``t = 0`` and only there, and ``t = 0`` is not in that model point's
 frame. That is the whole of the difference between an in-force cell and a new-business one
 on this chassis.
 
@@ -228,7 +234,7 @@ risk is ``max(C(t) - F(t), 0)`` — positive early and after a market fall, vani
 the fund overtakes the premiums paid. That makes ``cum_prem_pp`` a genuine state variable
 of this product rather than a reporting convenience, and it makes the risk charge a
 quantity that has to be recomputed every month. ``C(t)`` is the premiums **paid**, gross:
-on the anchor cell ``cum_prem_pp(60) = 12 000,00 €`` against ``sum of prem_to_av_pp`` over
+on the anchor cell ``cum_prem_pp(59) = 12 000,00 €`` against ``sum of prem_to_av_pp`` over
 the same months of 9 720,00 €, so reading the floor off the premiums *invested* would
 understate the death benefit by 19 %.
 
@@ -258,15 +264,16 @@ and only model point 5 uses it.
 
 .. rubric:: The last month, and the age at Rentenbeginn
 
-``lapse_rate_mth(proj_len()) = 0``. The end of the last projected month is
+``lapse_rate_mth(proj_len() - 1) = 0``. The end of the last projected month is
 *Rentenbeginn*, so a surrender and an annuitisation are the same event releasing the same
 *Fondsguthaben*, and the whole surviving cohort is booked as ``pols_maturity``. No cash
 flow moves either way; the convention only decides the split between the lapse total and
 the maturity count, and it is what the closure identity reproduces. It is frlib's
 convention on ``TD_FR_A`` and delib adopts it.
 
-``age(proj_len()) = annuity_age - 1``, because the annuity begins at the **end** of that
-month. The *Rentenfaktor* is read at ``annuity_age`` and not at ``age(proj_len())``: on
+``age(proj_len() - 1) = annuity_age - 1``, because the annuity begins at the **end** of
+that month. The *Rentenfaktor* is read at ``annuity_age`` and not at ``age(proj_len() -
+1)``: on
 the anchor cell 25.00 at 67, not the 24.45 an off-by-one would fetch at 66. The rule
 applied is ``max(guaranteed, current)`` — a guarantee **with upside**, so a model that
 applies only the guaranteed factor understates the benefit whenever the current tariff is
@@ -328,8 +335,9 @@ orientation. :func:`liability_cf` publishes the same stream outgo-positive,
 with the unit liability added at market value. Both are columns of :func:`result_cf`, so
 the identity is verifiable in the frame rather than only in prose.
 
-The shape to expect is a large negative ``net_cf`` in month 1 — on the anchor cell
--1 966,22 €, because the 2.50 % acquisition commission and the issue expense both fall
+The shape to expect is a large negative ``net_cf`` in the inception month ``t = 0`` — on
+the anchor cell -1 966,22 €, because the 2.50 % acquisition commission and the issue
+expense both fall
 there while the acquisition charge that funds them arrives over sixty months — then a
 thin positive margin that grows with the fund as the *kapitalbezogene* charge compounds
 against it.
@@ -379,8 +387,8 @@ def entry_age():
     """Age last birthday at inception.
 
     The age basis steps at each policy anniversary, so ``age(t) = entry_age() +
-    policy_year(t) - 1`` and the attained age in the last projected month is
-    ``annuity_age() - 1``.
+    policy_year(t) - 1 = entry_age() + t // 12`` and the attained age in the last projected
+    month, ``t = proj_len() - 1``, is ``annuity_age() - 1``.
     """
     return int(model_point()["entry_age"])
 
@@ -388,10 +396,12 @@ def entry_age():
 def duration_init_m():
     """Policy months already elapsed at the valuation date; 0 for new business.
 
-    It fixes :func:`proj_start`, and through it everything that keys off the policy month
-    counted from inception — the acquisition window above all.  Model point 6 opens at
-    duration 96, past the window, and is the cell that shows what that costs an insurer:
-    nothing, because the charge and the commission it funded are both behind it.
+    An **elapsed count**, so it is 0-based by nature and ``proj_start() ==
+    duration_init_m()`` exactly.  It fixes :func:`proj_start`, and through it everything
+    that keys off the policy month counted from inception — the acquisition window above
+    all.  Model point 6 opens at duration 96, past the window, and is the cell that shows
+    what that costs an insurer: nothing, because the charge and the commission it funded
+    are both behind it.
     """
     return int(model_point()["duration_init_m"])
 
@@ -409,8 +419,8 @@ def annuity_age():
     """Age at *Rentenbeginn*.
 
     It fixes :func:`proj_len` and it is the row read from ``rentenfaktor_table.csv`` —
-    **not** ``age(proj_len())``, which is one lower because the annuity begins at the end
-    of the last projected month.
+    **not** ``age(proj_len() - 1)``, which is one lower because the annuity begins at the
+    end of the last projected month.
     """
     return int(model_point()["annuity_age"])
 
@@ -474,7 +484,12 @@ def dynamik_rate():
 
 
 def pup_month():
-    """The policy month from which the contract is *beitragsfrei*; 0 = never.
+    """The 0-based policy month from which the contract is *beitragsfrei*; 0 = never.
+
+    The column carries a point on the frame's own time axis, so it moved with the frame:
+    model point 7 goes paid-up at ``t = 120``.  **Zero is the "never" sentinel**, not the
+    inception month — a contract *beitragsfrei* from inception is not a contract, so
+    nothing is lost by spending the value that way.
 
     *Beitragsfreistellung* is a **model point election** on this chassis, not a cohort
     decrement, and the reason is in the Space docstring.  From ``pup_month`` the premium
@@ -537,7 +552,7 @@ def rentenfaktor_id():
 
 
 def unit_price_init():
-    """The *Anteilspreis* at the projection's opening, ``unit_price(proj_start() - 1)``.
+    """The *Anteilspreis* at the projection's opening, ``unit_price_open(proj_start())``.
 
     100.00 EUR on every new-business cell, which makes the unit counts readable; 118.40 on
     the in-force cell, where it is the price a *Standmitteilung* would report.
@@ -565,7 +580,12 @@ def cum_prem_init():
 
 
 def topup_month():
-    """The policy month of a *Zuzahlung*; 0 = none."""
+    """The 0-based policy month of a *Zuzahlung*; 0 = none.
+
+    A point on the frame's time axis, so it moved with the frame: model point 9 tops up at
+    ``t = 120``.  **Zero is the "none" sentinel** rather than the inception month, a
+    *Zuzahlung* at inception being indistinguishable from a larger first *Beitrag*.
+    """
     return int(model_point()["topup_month"])
 
 
@@ -581,7 +601,11 @@ def topup_amount():
 
 
 def wd_month():
-    """The policy month of a *Teilentnahme*; 0 = none."""
+    """The 0-based policy month of a *Teilentnahme*; 0 = none.
+
+    A point on the frame's time axis, so it moved with the frame: model point 9 withdraws
+    at ``t = 240``.  **Zero is the "none" sentinel** rather than the inception month.
+    """
     return int(model_point()["wd_month"])
 
 
@@ -622,35 +646,45 @@ def kapitalwahl():
 # ----------------------------------------  the frame
 
 def proj_start():
-    """The first projected policy month, ``duration_init_m() + 1``.
+    """The first projected policy month, ``duration_init_m()`` — 0-based.
 
-    1 for new business, 97 for the in-force cell.  Because ``t`` counts from the
-    contract's own inception rather than from the valuation date, a single
-    :func:`charge_acq_pp` rule serves both without a duration offset.
+    0 for new business, 96 for the in-force cell: ``t`` counts policy months from the
+    contract's own inception with ``t = 0`` the inception month, so the elapsed-month count
+    **is** the first projected index and needs no ``+ 1``.  Because the origin is inception
+    rather than the valuation date, a single :func:`charge_acq_pp` rule serves the
+    new-business and the in-force cell without a duration offset.
     """
-    return duration_init_m() + 1
+    return duration_init_m()
 
 
 def proj_len():
-    """The **last** projected policy month, ``12 x (annuity_age() - entry_age())``.
+    """The **number** of projected policy months from inception,
+    ``12 x (annuity_age() - entry_age())``.
 
-    The library's reading of ``proj_len()``: a last index, not a row count.
-    ``result_cf().index[-1] == proj_len()`` on every model point.  The end of that month
-    is *Rentenbeginn*; there is no ``t = proj_len() + 1`` row.
+    The library's reading of ``proj_len()``: a period **count**, so it is the frame's
+    **exclusive** end.  ``result_cf()`` covers ``t = proj_start() ... proj_len() - 1`` and
+    ``result_cf().index[-1] == proj_len() - 1`` on every model point.  The end of month
+    ``proj_len() - 1`` is *Rentenbeginn*; there is no ``t = proj_len()`` row.
     """
     return 12 * (annuity_age() - entry_age())
 
 
 def policy_year(t):
-    """The policy year containing month t, ``floor((t - 1)/12) + 1``."""
-    return (t - 1) // 12 + 1
+    """The policy year containing month t, ``t // 12 + 1``.
+
+    The **contractual** label, and 1-based by contract: policy year 1 is ``t = 0 ... 11``.
+    It is derived from ``t`` and never indexed by, and it is the key into the annual tables
+    — ``lapse_table.csv`` and ``fund_scenario_table.csv`` — whose own ``policy_year``
+    column is that same 1-based label.
+    """
+    return t // 12 + 1
 
 
 def age(t):
-    """Attained age in month t, ``entry_age() + policy_year(t) - 1``.
+    """Attained age in month t, ``entry_age() + policy_year(t) - 1 = entry_age() + t // 12``.
 
-    At ``t = proj_len()`` this is ``annuity_age() - 1``, because the annuity begins at the
-    **end** of that month.  Reading the *Rentenfaktor* off this cells instead of off
+    At ``t = proj_len() - 1`` this is ``annuity_age() - 1``, because the annuity begins at
+    the **end** of that month.  Reading the *Rentenfaktor* off this cells instead of off
     :func:`annuity_age` is a listed pitfall and would fetch 24.45 in place of 25.00 on the
     anchor cell.
     """
@@ -758,7 +792,8 @@ def stornoabzug_rate():
 def dynamik_factor(t):
     """The *Beitragsdynamik* multiplier in month t, ``(1 + dynamik_rate())^(y(t) - 1)``.
 
-    Steps at each policy anniversary, so it is 1.0 for the whole of policy year 1.  Off
+    Steps at each policy anniversary, so it is 1.0 for the whole of policy year 1,
+    ``t = 0 ... 11``.  Off
     (identically 1.0) on twelve of the thirteen model points.
     """
     return (1.0 + dynamik_rate()) ** (policy_year(t) - 1)
@@ -777,7 +812,7 @@ def prem_pp(t):
     """
     if prem_form() == "einmal":
         return prem_pp_base() if t == proj_start() else 0.0
-    if t > 12 * prem_term_y():
+    if t >= 12 * prem_term_y():
         return 0.0
     if pup_month() > 0 and t >= pup_month():
         return 0.0
@@ -854,8 +889,8 @@ def charge_acq_pp(t):
 
     One instalment of ``charge_acq_total() / acq_instalments()`` on each premium date
     inside the window, nothing after it, plus the *Zuzahlungskosten* on any *Zuzahlung*
-    falling in the month.  On the anchor cell that is **30,00 EUR for t = 1 ... 60 and
-    0,00 from t = 61** — 15 % of each of the first sixty premiums, then a cliff.  That
+    falling in the month.  On the anchor cell that is **30,00 EUR for t = 0 ... 59 and
+    0,00 from t = 60** — 15 % of each of the first sixty premiums, then a cliff.  That
     cliff is the characteristic shape of a German unit-linked contract's early values and
     it is the reason this model runs monthly.
 
@@ -866,7 +901,7 @@ def charge_acq_pp(t):
     if prem_form() == "einmal":
         if t == proj_start():
             reg = charge_acq_total()
-    elif t <= acq_window_months() and prem_pp(t) > 0.0:
+    elif t < acq_window_months() and prem_pp(t) > 0.0:
         reg = charge_acq_total() / acq_instalments()
     return reg + zuzahlung_charge_rate() * topup_pp(t)
 
@@ -875,12 +910,16 @@ def cum_charge_acq_pp(t):
     """Cumulative acquisition charge withheld to and including month t, per policy.
 
     The ledger :func:`check_acq_charge` closes against an independently counted
-    expectation.  It is seeded at zero at ``proj_start() - 1``, so on an in-force model
-    point it measures the charge taken **inside the projection** and not the charge the
-    contract has already paid.
+    expectation.  It opens at ``charge_acq_pp(proj_start())`` in the frame's first month,
+    so on an in-force model point it measures the charge taken **inside the projection**
+    and not the charge the contract has already paid.  The seed sits in the first month
+    itself rather than at ``proj_start() - 1``, which on a new-business cell would be
+    ``t = -1``.
     """
     if t < proj_start():
         return 0.0
+    if t == proj_start():
+        return charge_acq_pp(t)
     return cum_charge_acq_pp(t - 1) + charge_acq_pp(t)
 
 
@@ -898,7 +937,7 @@ def prem_to_av_pp(t):
     """The *Anlagebeitrag*: what is left of the month's money to buy units, per policy.
 
     ``B(t) + Z(t) - alpha(t) - beta B(t)``.  On the anchor cell **162,00 EUR while the
-    acquisition instalment runs (t <= 60) and 192,00 EUR after it** — the step at month 61
+    acquisition instalment runs (t < 60) and 192,00 EUR after it** — the step at ``t = 60``
     is the whole point of the sixty-month window.
     """
     return (prem_pp(t) + topup_pp(t)
@@ -909,12 +948,17 @@ def cum_prem_pp(t):
     """Cumulative **gross** premiums paid to and including month t, per policy.
 
     The *Beitragsrückgewähr* base, seeded at :func:`cum_prem_init`.  It is the premiums
-    **paid**, not the premiums invested: on the anchor cell ``cum_prem_pp(60) =
+    **paid**, not the premiums invested: on the anchor cell ``cum_prem_pp(59) =
     12 000,00 EUR`` against 9 720,00 EUR actually put into units, so reading the death
     benefit off the invested amount would understate it by 19 %.  A *Zuzahlung* counts.
+
+    The seed is added **inside** the frame's first month rather than read from
+    ``cum_prem_pp(proj_start() - 1)``, which on a new-business cell would be ``t = -1``.
     """
     if t < proj_start():
         return cum_prem_init()
+    if t == proj_start():
+        return cum_prem_init() + prem_pp(t) + topup_pp(t)
     return cum_prem_pp(t - 1) + prem_pp(t) + topup_pp(t)
 
 
@@ -937,7 +981,7 @@ def fund_return_gross_ann(t):
     base = float(base)
     if not ablauf_flag():
         return base
-    remaining = proj_len() - t
+    remaining = (proj_len() - 1) - t
     if remaining >= glide_months:                                    # noqa: F821
         return base
     step = (glide_months - remaining) / float(glide_months)          # noqa: F821
@@ -977,17 +1021,29 @@ def fund_return_net_mth(t):
     return (1.0 + fund_return_net_ann(t)) ** (1.0 / 12.0) - 1.0
 
 
+def unit_price_open(t):
+    """The *Anteilspreis* at the **start** of policy month t.
+
+    ``unit_price_init()`` in the frame's first month and ``unit_price(t - 1)`` in every
+    month after it.  It is a cells of its own rather than a ``unit_price(t - 1)`` written
+    at every call site because on a new-business cell ``proj_start()`` is 0, and nothing in
+    a 0-based frame may be indexed at ``t = -1``.  Units bought out of month t's premium
+    are bought at this price; everything cancelled during the month is cancelled at
+    :func:`unit_price`.
+    """
+    if t <= proj_start():
+        return unit_price_init()
+    return unit_price(t - 1)
+
+
 def unit_price(t):
     """The *Anteilspreis* at the **end** of policy month t.
 
-    ``unit_price(proj_start() - 1) = unit_price_init()`` is the opening price, so units
-    bought out of month t's premium are bought at ``unit_price(t - 1)`` and everything
-    cancelled during the month is cancelled at ``unit_price(t)``.  The whole of the fund's
-    own cost lives in this recursion and nowhere else.
+    ``unit_price_open(t) x (1 + fund_return_net_mth(t))``, seeded by
+    ``unit_price_open(proj_start()) = unit_price_init()``.  The whole of the fund's own
+    cost lives in this recursion and nowhere else.
     """
-    if t < proj_start():
-        return unit_price_init()
-    return unit_price(t - 1) * (1.0 + fund_return_net_mth(t))
+    return unit_price_open(t) * (1.0 + fund_return_net_mth(t))
 
 
 def units_pp(t):
@@ -1006,10 +1062,10 @@ def units_pp(t):
 def units_bought_pp(t):
     """Units bought in month t with the *Anlagebeitrag*, at the **opening** price.
 
-    ``prem_to_av_pp(t) / unit_price(t - 1)``.  Premium is in advance, so the month's
+    ``prem_to_av_pp(t) / unit_price_open(t)``.  Premium is in advance, so the month's
     investment return accrues on the units it buys.
     """
-    return prem_to_av_pp(t) / unit_price(t - 1)
+    return prem_to_av_pp(t) / unit_price_open(t)
 
 
 def units_cancelled_pp(t):
@@ -1028,11 +1084,11 @@ def units_cancelled_pp(t):
 def av_pp(t):
     """The *Fondsguthaben* per policy at the **start** of month t, before the premium.
 
-    ``units_pp(t) x unit_price(t - 1)``.  The within-month balances are
+    ``units_pp(t) x unit_price_open(t)``.  The within-month balances are
     :func:`av_pp_at`; the closing fund of the surviving cohort is ``av_pp(t + 1) x
     pols_if(t + 1)`` and not any of them.
     """
-    return units_pp(t) * unit_price(t - 1)
+    return units_pp(t) * unit_price_open(t)
 
 
 def av_pp_at(t, timing):
@@ -1088,8 +1144,8 @@ def charge_admin_fund_pp(t):
     ``gamma_rate_mth() x av_pp_at(t, "BEF_CHARGE")`` — taken by **cancelling units**, on
     the fund as it stands after the premium and the month's return.  It continues when
     premiums stop, which is what makes a paid-up unit-linked contract decay; a model that
-    netted it out of the *Beitrag* instead would be right until month 121 of model point 7
-    and wrong from then on.
+    netted it out of the *Beitrag* instead would be right until ``t = 120`` on model
+    point 7 and wrong from then on.
     """
     return gamma_rate_mth() * av_pp_at(t, "BEF_CHARGE")
 
@@ -1291,9 +1347,9 @@ def lapse_tax_step(t):
 
     **Keying the spike on duration alone is wrong**, and is a listed pitfall: the anchor
     cell passes duration 12 at age 48, fourteen years before the tax benefit exists, so
-    its step falls in policy year 26 — months 301 to 312, where the base 3.0 % becomes
-    7.5 %.  On model point 12 the step never fires, because the projection ends at month
-    144 and the step year begins at month 145.
+    its step falls in policy year 26 — ``t = 300`` to ``311``, where the base 3.0 % becomes
+    7.5 %.  On model point 12 the step never fires, because the projection ends at
+    ``t = 143`` and the step year begins at ``t = 144``.
     """
     step_year = max(13, 62 - entry_age() + 1)
     return 2.5 if policy_year(t) == step_year else 1.0
@@ -1336,13 +1392,13 @@ def lapse_rate_mth(t):
     lapse rate and the annual rate is the observable that twelve monthly steps must
     reproduce: 0.514301 % at 6 % p.a. and 0.253505 % at 3 %.
 
-    ``lapse_rate_mth(proj_len()) = 0`` **[std]**: the end of the last month is
-    *Rentenbeginn*, so a surrender and an annuitisation are the same event releasing the
+    ``lapse_rate_mth(proj_len() - 1) = 0`` **[std]**: the end of the last projected month
+    is *Rentenbeginn*, so a surrender and an annuitisation are the same event releasing the
     same *Fondsguthaben*, and the whole surviving cohort is booked as
     :func:`pols_maturity`.  No cash flow moves either way; the convention decides the
     split between the lapse total and the maturity count.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     return 1.0 - (1.0 - lapse_rate(t)) ** (1.0 / 12.0)
 
@@ -1355,12 +1411,13 @@ def pols_if(t):
     dividing a flow by it recovers the per-policy amount.  End-of-month state is
     :func:`pols_if_at`.
 
-    ``pols_if(proj_len() + 1) = 0``: the survivors of the last month leave as
-    :func:`pols_maturity` and there is nothing after *Rentenbeginn* in this model.
+    ``pols_if(proj_len()) = 0``, one past the frame's last index: the survivors of the last
+    projected month leave as :func:`pols_maturity` and there is nothing after
+    *Rentenbeginn* in this model.
     """
     if t <= proj_start():
         return pols_if_init()
-    if t > proj_len():
+    if t >= proj_len():
         return 0.0
     return (pols_if(t - 1) * (1.0 - mort_rate_mth(t - 1))
             * (1.0 - lapse_rate_mth(t - 1)))
@@ -1374,9 +1431,9 @@ def pols_if_at(t, timing):
     ``"AFT_DEATH"``
         after deaths and before lapses — the ordering, deaths first, is **[std]**.
     ``"AFT_DECR"``
-        after both, which for ``t < proj_len()`` is ``pols_if(t + 1)``.  At
-        ``t = proj_len()`` it is the surviving cohort **before** the maturity sweep, and
-        so equals ``pols_maturity(proj_len())`` rather than ``pols_if(proj_len() + 1)``,
+        after both, which for ``t < proj_len() - 1`` is ``pols_if(t + 1)``.  At
+        ``t = proj_len() - 1`` it is the surviving cohort **before** the maturity sweep,
+        and so equals ``pols_maturity(proj_len() - 1)`` rather than ``pols_if(proj_len())``,
         which is zero.
     """
     if timing == "BEF_DECR":
@@ -1410,12 +1467,13 @@ def pols_lapse(t):
 def pols_maturity(t):
     """Policies reaching *Rentenbeginn*: zero except in the last projected month.
 
-    At ``t = proj_len()`` it is the whole surviving cohort, ``pols_if_at(t, "AFT_DECR")``,
-    since the lapse rate is zero there.  Named ``pols_maturity`` and not ``pols_expiry``
-    per the library's register: it is the count whose cover ends at the scheduled end of
-    the contract, and what is paid for it is ``claims(t, "MATURITY")``.
+    At ``t = proj_len() - 1`` it is the whole surviving cohort,
+    ``pols_if_at(t, "AFT_DECR")``, since the lapse rate is zero there.  Named
+    ``pols_maturity`` and not ``pols_expiry`` per the library's register: it is the count
+    whose cover ends at the scheduled end of the contract, and what is paid for it is
+    ``claims(t, "MATURITY")``.
     """
-    if t < proj_len():
+    if t < proj_len() - 1:
         return 0.0
     return pols_if_at(t, "AFT_DECR")
 
@@ -1442,8 +1500,9 @@ def prem_to_av(t):
 def charge_acq(t):
     """*Abschluss- und Vertriebskosten* collected in month t, in force.
 
-    Zero for ``t > 60`` on every model point, and zero at every projected month of an
-    in-force cell that opens past the window.
+    Zero for ``t >= 60`` on every model point but 9, where a *Zuzahlung* books its
+    *Zuzahlungskosten* here — ``charge_acq(120) = 312.63``.  Zero at every projected month
+    of an in-force cell that opens past the window.
     """
     return charge_acq_pp(t) * pols_if(t)
 
@@ -1548,23 +1607,23 @@ def death_strain(t):
 
 
 def expense_acq_pp(t):
-    """The issue expense per policy issued, at t = 1: ``expense_issue``, 200,00 EUR.
+    """The issue expense per policy issued, at t = 0: ``expense_issue``, 200,00 EUR.
 
     The insurer's own acquisition cost **excluding the commission**, which is
     :func:`comm_acq_pp` — the split :func:`expenses` and :func:`commissions` publish
     separately, and which is why this cells is not the whole 2 000,00 EUR of acquisition
     cash that leaves at inception.
 
-    It falls at ``t = 1`` and only there, so an in-force model point whose frame opens at
-    ``t = 97`` never incurs it.
+    It falls at ``t = 0``, the inception month, and only there, so an in-force model point
+    whose frame opens at ``t = 96`` never incurs it.
     """
-    if t != 1:
+    if t != 0:
         return 0.0
     return expense_issue                                             # noqa: F821
 
 
 def comm_acq_pp(t):
-    """The *Abschlussprovision* per policy issued, at t = 1: ``comm_acq_rate x S``.
+    """The *Abschlussprovision* per policy issued, at t = 0: ``comm_acq_rate x S``.
 
     On the anchor cell 2.50 % of a 72 000,00 EUR *Beitragssumme* = **1 800,00 EUR**, and
     zero at every other month.
@@ -1585,10 +1644,10 @@ def comm_acq_pp(t):
     alternative is a second unsourced commission scale, and it is said here rather than
     left to be discovered in a negative ``net_cf`` total.
 
-    It falls at ``t = 1`` and only there, so an in-force model point whose frame opens at
-    ``t = 97`` never incurs it.
+    It falls at ``t = 0``, the inception month, and only there, so an in-force model point
+    whose frame opens at ``t = 96`` never incurs it.
     """
-    if t != 1:
+    if t != 0:
         return 0.0
     return comm_acq_rate * beitragssumme()                           # noqa: F821
 
@@ -1596,17 +1655,18 @@ def comm_acq_pp(t):
 def expense_maint_pp(t):
     """Maintenance expense per policy in month t, inflating from inception.
 
-    ``expense_maint_mth x (1 + expense_infl)^((t - 1)/12)`` — 4,00 EUR a month at 2 % p.a.
-    Inflated off the policy month rather than the projection's own start, so an in-force
-    cell picks up the inflation its elapsed duration has already accrued.
+    ``expense_maint_mth x (1 + expense_infl)^(t/12)`` — 4,00 EUR a month at 2 % p.a., and
+    exactly 4,00 EUR in the inception month ``t = 0``.  Inflated off the policy month
+    rather than the projection's own start, so an in-force cell picks up the inflation its
+    elapsed duration has already accrued.
     """
-    return expense_maint_mth * (1.0 + expense_infl) ** ((t - 1) / 12.0)  # noqa: F821
+    return expense_maint_mth * (1.0 + expense_infl) ** (t / 12.0)     # noqa: F821
 
 
 def expenses(t):
     """Total insurer expense in month t, **excluding commission**.
 
-    Five components: the issue expense at ``t = 1``; the inflating monthly maintenance
+    Five components: the issue expense at ``t = 0``; the inflating monthly maintenance
     expense; and the per-event expenses of a death, a surrender and an annuitisation.
 
     Commission is **not** in here.  It is :func:`commissions`, its own
@@ -1625,7 +1685,7 @@ def expenses(t):
 def commissions(t):
     """Commission outgo in month t, published beside :func:`expenses`.
 
-    The *Abschlussprovision* at ``t = 1`` — :func:`comm_acq_pp` on the count in force in
+    The *Abschlussprovision* at ``t = 0`` — :func:`comm_acq_pp` on the count in force in
     that month, and nil on an in-force model point whose frame opens later, the commission
     being sunk — plus the *Bestandsprovision* ``comm_renew_rate x prem_pp(t)`` on every
     gross *Beitrag* collected.  Both **[std]**: no German unit-linked commission scale was
@@ -1643,9 +1703,10 @@ def net_cf(t):
     and is therefore absent from this line; what the insurer earns is the charge stack and
     what it bears is its own expenses, its commission and the net amount at risk.
 
-    On the anchor cell month 1 is **-1 966,22 EUR** — the acquisition commission and the
-    issue expense both fall there while the acquisition charge that funds them arrives over
-    sixty months — after which the margin turns positive and grows with the fund.
+    On the anchor cell the inception month ``t = 0`` is **-1 966,22 EUR** — the acquisition
+    commission and the issue expense both fall there while the acquisition charge that
+    funds them arrives over sixty months — after which the margin turns positive and grows
+    with the fund.
     """
     return (charge_acq(t) + charge_admin_prem(t) + charge_admin_fund(t)
             + charge_policy_fee(t) + charge_risk(t) + stornoabzug(t)
@@ -1669,8 +1730,9 @@ def rentenfaktor_guar():
     """The *garantierter Rentenfaktor*: euro of monthly annuity per 10 000 EUR of fund.
 
     Read from ``rentenfaktor_table.csv`` at **``annuity_age()``**, not at
-    ``age(proj_len())``, which is one lower: the annuity begins at the *end* of the last
-    projected month.  On the anchor cell 25.00 at age 67; the off-by-one would fetch 24.45.
+    ``age(proj_len() - 1)``, which is one lower: the annuity begins at the *end* of the
+    last projected month.  On the anchor cell 25.00 at age 67; the off-by-one would fetch
+    24.45.
 
     **[std]** and derived rather than observed — ``10 000 / (12 T_eff)`` at a 0 %
     *Rechnungszins* — and it is fixed for the life of the contract.  A reduction under
@@ -1708,12 +1770,13 @@ def rentenfaktor_applied():
 
 
 def av_maturity_pp():
-    """The *Fondsguthaben* per policy at *Rentenbeginn*: ``av_pp_at(proj_len(), "BEF_DECR")``.
+    """The *Fondsguthaben* per policy at *Rentenbeginn*.
 
-    The last closing balance, after the last month's charges.  It is what the surviving
-    cohort releases, and what the *Rentenfaktor* converts.
+    ``av_pp_at(proj_len() - 1, "BEF_DECR")``: the closing balance of the frame's last
+    month, after that month's charges.  It is what the surviving cohort releases, and what
+    the *Rentenfaktor* converts.
     """
-    return av_pp_at(proj_len(), "BEF_DECR")
+    return av_pp_at(proj_len() - 1, "BEF_DECR")
 
 
 def annuity_mth_pp():
@@ -1738,9 +1801,9 @@ def gross_return_ref():
     on the base scenario.
     """
     prod = 1.0
-    for t in range(proj_start(), proj_len() + 1):
+    for t in range(proj_start(), proj_len()):
         prod *= (1.0 + fund_return_gross_ann(t)) ** (1.0 / 12.0)
-    return prod ** (12.0 / (proj_len() - proj_start() + 1)) - 1.0
+    return prod ** (12.0 / (proj_len() - proj_start())) - 1.0
 
 
 def irr_ann():
@@ -1759,10 +1822,10 @@ def irr_ann():
     """
     n = proj_len()
     t0 = proj_start()
-    flows = [(prem_pp(t) + topup_pp(t), (n - t + 1) / 12.0)
-             for t in range(t0, n + 1)]
-    flows += [(-withdrawals_pp(t), (n - t) / 12.0) for t in range(t0, n + 1)]
-    flows += [(av_pp(t0), (n - t0 + 1) / 12.0)]
+    flows = [(prem_pp(t) + topup_pp(t), (n - t) / 12.0)
+             for t in range(t0, n)]
+    flows += [(-withdrawals_pp(t), (n - 1 - t) / 12.0) for t in range(t0, n)]
+    flows += [(av_pp(t0), (n - t0) / 12.0)]
     target = av_maturity_pp()
     lo, hi = -0.99, 5.0
     for _ in range(200):
@@ -1824,7 +1887,7 @@ def check_net_cf():
     :func:`check_net_cf_resid` gives the signed residual of the month that failed.
     """
     return all(abs(check_net_cf_resid(t)) <= val_tol * max(1.0, abs(net_cf(t)))  # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_prem_split_resid(t):
@@ -1844,7 +1907,7 @@ def check_prem_split():
     """True when the premium splits exactly three ways in every projected month."""
     return all(abs(check_prem_split_resid(t))
                <= val_tol * max(1.0, abs(premiums(t)))               # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_units_roll_fwd_resid(t):
@@ -1865,7 +1928,7 @@ def check_units_roll_fwd():
     """True when the unit count rolls forward exactly in every projected month."""
     return all(abs(check_units_roll_fwd_resid(t))
                <= val_tol * max(1.0, abs(units_pp(t)))               # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_av_roll_fwd_resid(t):
@@ -1889,7 +1952,7 @@ def check_av_roll_fwd():
     """True when the *Fondsguthaben* rolls forward exactly in every projected month."""
     return all(abs(check_av_roll_fwd_resid(t))
                <= val_tol * max(1.0, abs(av_pp_at(t, "BEF_DECR")))   # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_benefit_funding_resid(t):
@@ -1914,7 +1977,7 @@ def check_benefit_funding():
     """True when every benefit is funded from the fund or the insurer, in every month."""
     return all(abs(check_benefit_funding_resid(t))
                <= val_tol * max(1.0, abs(av_releases(t)))            # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1924,7 +1987,8 @@ def check_pols_roll_fwd_resid(t):
     Everyone who starts a month either dies, surrenders, reaches *Rentenbeginn* or is
     still there at the start of the next one.  Summed over the projection it is the
     closure identity — the three exits account for the whole opening cohort — and at
-    ``t = proj_len()`` it is what the ``lapse_rate_mth(n) = 0`` convention closes.
+    ``t = proj_len() - 1`` it is what the ``lapse_rate_mth(proj_len() - 1) = 0``
+    convention closes.
     """
     return pols_if(t) - (pols_death(t) + pols_lapse(t) + pols_maturity(t)
                          + pols_if(t + 1))
@@ -1934,7 +1998,7 @@ def check_pols_roll_fwd():
     """True when the in-force count rolls forward exactly in every projected month."""
     return all(abs(check_pols_roll_fwd_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_acq_charge_resid(t):
@@ -1947,14 +2011,14 @@ def check_acq_charge_resid(t):
     long, if a shortened premium term is still spread over sixty months, or if an
     instalment is charged in a month with no premium.
 
-    At ``t = proj_len()`` on a new-business cell it says that the whole acquisition charge
-    has been collected and no more: ``alpha_rate x beitragssumme()`` exactly, which on the
-    anchor is 1 800,00 EUR.
+    At ``t = proj_len() - 1`` on a new-business cell it says that the whole acquisition
+    charge has been collected and no more: ``alpha_rate x beitragssumme()`` exactly, which
+    on the anchor is 1 800,00 EUR.
     """
     if prem_form() == "einmal":
         elapsed = 1 if t >= proj_start() else 0
     else:
-        hi = min(t, acq_window_months())
+        hi = min(t, acq_window_months() - 1)
         if pup_month() > 0:
             hi = min(hi, pup_month() - 1)
         elapsed = 0 if hi < proj_start() else (
@@ -1972,7 +2036,7 @@ def check_acq_charge():
     """True when the acquisition-charge ledger matches its counted expectation everywhere."""
     return all(abs(check_acq_charge_resid(t))
                <= val_tol * max(1.0, charge_acq_total())             # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 # ----------------------------------------  result tables
@@ -1982,8 +2046,8 @@ def result_cf():
 
     ``pols_if`` is the start-of-month count and is the weight applied to every cash flow
     on the same row, so dividing a flow by it recovers the per-policy amount.  The frame
-    runs ``proj_start() ... proj_len()`` and stops: the end of the last month is
-    *Rentenbeginn*.
+    is ``range(proj_start(), proj_len())`` — ``t = proj_start() ... proj_len() - 1`` — and
+    stops there: the end of the last month is *Rentenbeginn*.
 
     The columns fall into three groups and the grouping is the point.  ``premiums`` and
     ``prem_to_av`` are the money coming in and the part of it that goes straight into the
@@ -1995,7 +2059,7 @@ def result_cf():
     has a commission to publish.  ``liability_cf`` is ``net_cf`` outgo positive, published
     so the sign convention is verifiable in the frame.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2031,7 +2095,7 @@ def result_fund():
     *Standmitteilung* reports, which is not a coincidence — the statement's line items are
     this model's state vector.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "unit_price": [unit_price(t) for t in ts],

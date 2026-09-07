@@ -88,6 +88,10 @@ Cells Descriptions
 
 .. autofunction:: disc_factor
 
+.. autofunction:: premium_initial_pp
+
+.. autofunction:: prem_init_after_charge
+
 .. autofunction:: premium_gross_pp
 
 .. autofunction:: prem_after_charge_pp
@@ -115,6 +119,8 @@ Cells Descriptions
 .. autofunction:: mg_at
 
 .. autofunction:: mg
+
+.. autofunction:: cum_prem_net_at
 
 .. autofunction:: cum_prem_net
 
@@ -145,6 +151,8 @@ Cells Descriptions
 .. autofunction:: part_value
 
 .. autofunction:: provision_value
+
+.. autofunction:: provision_value_at
 
 .. autofunction:: insurer_contribution
 

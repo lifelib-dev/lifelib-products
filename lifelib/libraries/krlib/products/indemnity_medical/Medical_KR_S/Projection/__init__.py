@@ -12,9 +12,12 @@ projecting model point 1::
     >>> Projection.point_id = 8            # or switch the default
 
 ``t`` counts **policy months**, 0-based: ``t = 0`` is the first policy month and
-``t = proj_len()`` the last, so ``result_cf()`` has ``proj_len() + 1`` rows and
-``proj_len()`` is the last projected index rather than a row count. Month ``t`` is the
-interval from ``t`` to ``t + 1`` months after the 계약일.
+``t = proj_len() - 1`` the last, so the frame is ``range(proj_len())`` and
+``result_cf()`` has ``proj_len()`` rows — ``proj_len()`` is the **number** of projected
+months, the exclusive end of the frame, and not the last index. Month ``t`` is the
+interval from ``t`` to ``t + 1`` months after the 계약일. The **policy year**
+``y = policy_year(t) = t // 12 + 1`` is a contractual 1-based label and keeps its own
+clock: it is derived from ``t``, never indexed by it.
 
 .. rubric:: Age basis
 
@@ -74,7 +77,7 @@ x                          issue_age()                     가입나이, 만나�
 age(t)                     age(t)                          Attained 만나이 in month t
 y(t)                       policy_year(t)                  floor(t/12) + 1
 (none)                     sex()                           M or F
-proj_len                   proj_len()                      Last projected policy month
+proj_len                   proj_len()                      Number of projected months
 P0                         premium_mth_pp()                First-year office premium
 s                          np_share()                      비급여 share of the premium
 (switch)                   np_rider()                      비급여 특약 held
@@ -571,8 +574,9 @@ def suspend_rate():
 # --- Time and the projection horizon ---------------------------------------
 
 def proj_len():
-    """The **last** projected policy month, so ``result_cf()`` has ``proj_len() + 1``
-    rows.
+    """The **number** of projected policy months: the exclusive end of the frame, so the
+    projection runs over ``t = 0 .. proj_len() - 1`` and ``result_cf()`` has
+    ``proj_len()`` rows.
 
     Two five-year 보장내용 변경주기 — ten policy years — or the run to
     ``max_cover_age`` if that comes first, which on the shipped model points it does
@@ -592,7 +596,7 @@ def proj_len():
     """
     years = min(reentry_cycles * reentry_period,                     # noqa: F821
                 max_cover_age - issue_age())                         # noqa: F821
-    return 12 * int(years) - 1
+    return 12 * int(years)
 
 
 def policy_year(t):
@@ -709,9 +713,9 @@ def pols_if(t):
 
     :func:`pols_if_init` at ``t = 0``, then
     ``l(t+1) = l(t)(1 - q)(1 - w)(1 - susp)(1 - decline)``.  This is the weight on every
-    cash flow of the same ``result_cf()`` row.  Zero outside ``0 .. proj_len()``.
+    cash flow of the same ``result_cf()`` row.  Zero outside ``0 .. proj_len() - 1``.
     """
-    if t < 0 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if t == 0:
         return pols_if_init()
@@ -752,7 +756,7 @@ def pols_if_at(t, timing):
     if timing == "BEF_RENEWAL":
         return pols_if_at(t, "BEF_SUSPEND") * (1.0 - suspend_rate_mth(t))
     if timing == "AFT_DECR":
-        if t < 0 or t >= proj_len():
+        if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_RENEWAL") * (1.0 - renewal_decline(t))
     raise ValueError("invalid timing")
@@ -811,10 +815,10 @@ def pols_maturity(t):
     there is no maturity benefit on a 순수보장성 contract, so there is no
     ``claims(t, "MATURITY")`` limb — but the count is needed for the in-force
     roll-forward to close in the final month.  What ends here is the *stated horizon* of
-    :func:`proj_len`, which is the fourth 재가입 or the maximum cover age, whichever
+    :func:`proj_len`, which is the second 재가입 or the maximum cover age, whichever
     comes first; the contract itself continues into the then-current generation.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "BEF_RENEWAL") * (1.0 - renewal_decline(t))
 
@@ -1798,7 +1802,7 @@ def check_pols_roll_fwd():
     signed residual of the month that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_net_cf_resid(t):
@@ -1817,7 +1821,7 @@ def check_net_cf_resid(t):
 def check_net_cf():
     """True when the printed cash flow statement adds to ``net_cf`` in every month."""
     return all(abs(check_net_cf_resid(t)) <= cash_tol                # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_claim_shape_resid():
@@ -1855,7 +1859,7 @@ def check_band_shares_resid(y):
 def check_band_shares():
     """True when the band shares partition the contracts in every policy year."""
     return all(abs(check_band_shares_resid(y)) <= roll_fwd_tol       # noqa: F821
-               for y in range(1, policy_year(proj_len()) + 1))
+               for y in range(1, policy_year(proj_len() - 1) + 1))
 
 
 def check_relativity_neutral_resid(y):
@@ -1879,7 +1883,7 @@ def check_relativity_neutral_resid(y):
 def check_relativity_neutral():
     """True when the experience relativity is self-financing in every policy year."""
     return all(abs(check_relativity_neutral_resid(y)) <= roll_fwd_tol  # noqa: F821
-               for y in range(1, policy_year(proj_len()) + 1))
+               for y in range(1, policy_year(proj_len() - 1) + 1))
 
 
 def check_renewal_corridor_resid(y):
@@ -1908,7 +1912,7 @@ def check_renewal_corridor_resid(y):
 def check_renewal_corridor():
     """True when neither priced unit moves more than 25% in a year, age effect excluded."""
     return all(check_renewal_corridor_resid(y) <= roll_fwd_tol       # noqa: F821
-               for y in range(1, policy_year(proj_len()) + 1))
+               for y in range(1, policy_year(proj_len() - 1) + 1))
 
 
 def check_annual_limits_resid(y):
@@ -1949,7 +1953,7 @@ def check_annual_limits_resid(y):
 def check_annual_limits():
     """True when no contractual money or count limit is exceeded in any policy year."""
     return all(check_annual_limits_resid(y) <= roll_fwd_tol          # noqa: F821
-               for y in range(1, policy_year(proj_len()) + 1))
+               for y in range(1, policy_year(proj_len() - 1) + 1))
 
 
 def check_indemnity_resid(y):
@@ -1968,7 +1972,7 @@ def check_indemnity_resid(y):
 def check_indemnity():
     """True when the claim never exceeds the incurred covered loss in any policy year."""
     return all(check_indemnity_resid(y) <= roll_fwd_tol              # noqa: F821
-               for y in range(1, policy_year(proj_len()) + 1))
+               for y in range(1, policy_year(proj_len() - 1) + 1))
 
 
 def check_oop_ceiling_resid(y):
@@ -1988,7 +1992,7 @@ def check_oop_ceiling_resid(y):
 def check_oop_ceiling():
     """True when the truncated 급여 covered loss stays inside the public annual ceiling."""
     return all(check_oop_ceiling_resid(y) <= roll_fwd_tol            # noqa: F821
-               for y in range(1, policy_year(proj_len()) + 1))
+               for y in range(1, policy_year(proj_len() - 1) + 1))
 
 
 def check_expense_split_resid():
@@ -2021,7 +2025,7 @@ def result_cf():
     3대비급여 classes with their own sub-limits — and they sum to the whole benefit
     outgo; there is deliberately no ``claims`` subtotal column beside them.
     """
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2042,7 +2046,7 @@ def result_cf():
 
 def result_pols():
     """Result table of in-force movements and decrement rates, indexed by policy month t."""
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2067,7 +2071,7 @@ def result_prem():
     that the loop can be read off a single frame rather than reconstructed from the cash
     flow statement.
     """
-    ys = list(range(1, policy_year(proj_len()) + 1))
+    ys = list(range(1, policy_year(proj_len() - 1) + 1))
     return pd.DataFrame(                                             # noqa: F821
         {
             "claims_np_rated_pp": [claims_np_rated_pp(y) for y in ys],

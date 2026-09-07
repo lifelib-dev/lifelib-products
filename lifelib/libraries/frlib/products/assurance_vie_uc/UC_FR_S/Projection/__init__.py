@@ -12,14 +12,23 @@ projecting model point 1::
     >>> Projection[2].result_cf()          # the base run, 360 months
     >>> Projection.point_id = 3            # the indexee floor on the same path
 
-``t`` counts **policy months**, 1-based, and every balance is read at the **end** of
-month ``t`` after that month's levy — so ``av_euro_pp(t)`` is the opening euro balance of
-month ``t + 1``, exactly as the notes' worked-example table prints it. ``t = 0`` is the
-issue point: :func:`units`, :func:`av_euro_pp`, :func:`cum_prem_net`,
-:func:`uc_cost_basis` and :func:`plancher_ratchet` all resolve there and give the notes'
-row 0. The in-force count is the one exception and is read the other way round —
-:func:`pols_if` ``(t)`` is the count at the **start** of month ``t``, so the frame opens at
-``pols_if(1) = pols_if_init()``; see below.
+``t`` counts **policy months** and is **0-based**: ``t = 0`` is the issue month, period
+``t`` runs from time ``t`` to time ``t + 1``, and the frame is ``t = 0 … proj_len() - 1``.
+Every balance is read at the **end** of month ``t`` after that month's levy — so
+``av_euro_pp(t)`` is the opening euro balance of month ``t + 1``, exactly as the notes'
+worked-example table prints it.
+
+The balances **at issue** — time 0, before month 0 opens, the notes' `init` row — are not a
+frame row. They are the ``*_init`` cells (:func:`unit_price_init`, :func:`units_init`,
+:func:`av_euro_init_pp`, :func:`cum_prem_net_init`, :func:`uc_cost_basis_init`,
+:func:`prem_to_av_pp`), and each month reaches its own opening balance through an opening
+cells — :func:`unit_price_open`, :func:`units_open`, :func:`av_euro_open_pp` and
+``av_pp_at(t, "OPENING")`` — which is the issue value when ``t = 0`` and the previous
+month's close thereafter. Nothing is ever indexed at ``t = -1``.
+
+The in-force count is read the other way round — :func:`pols_if` ``(t)`` is the count at
+the **start** of month ``t``, so the frame opens at ``pols_if(0) = pols_if_init()``; see
+below.
 
 .. rubric:: Input data
 
@@ -59,26 +68,32 @@ compact symbols instead. The mapping is:
 =========================  ==================================  ==========================
 Notes symbol               Cells                               Meaning
 =========================  ==================================  ==========================
-t                          (the cells argument)                Policy month
-y = ceil(t/12)             policy_year(t)                      Policy year containing t
+t                          (the cells argument)                Policy month, 0-based
+y = t//12 + 1              policy_year(t)                      Policy year containing t
 a                          age(t)                              Attained age (ALB)
 (none)                     duration(t)                         Completed policy years
-(none)                     duration_mth(t)                     Months elapsed at end of t
+(none)                     duration_mth(t)                     Months elapsed at start of t
 (the model point row)      model_point()                       The selected model point
-(projection length)        proj_len()                          Months projected
+(number of periods)        proj_len()                          Months projected
 P, e                       premium(), prem_charge_rate()       Single premium and charge
 P(1-e)                     prem_to_av_pp()                     Net premium allocated
 alpha                      uc_alloc()                          Share allocated to UC
 1 - alpha                  euro_alloc()                        Share allocated to euro
-p(t)                       unit_price(t)                       Liquidation value
+p_init                     unit_price_init()                   Liquidation value at issue
+p(t)                       unit_price(t)                       Liquidation value, end of t
+p(t-1)                     unit_price_open(t)                  The same, start of t
 (scenario)                 uc_return_mth(t)                    Monthly UC return
-n(t)                       units(t)                            Unit count held
+n_init                     units_init()                        Unit count at issue
+n(t)                       units(t)                            Unit count held, end of t
+n(t-1)                     units_open(t)                       The same, start of t
 n(t-1) c_m                 fee_units(t)                        Units cancelled by the fee
 c, c_m                     mgmt_fee_rate_uc(),
                            mgmt_fee_rate_uc_mth()              UC management charge
 mgmt_fee_uc(t)             mgmt_fee_uc_pp(t)                   Charge collected, per policy
 U(t)                       av_uc_pp(t)                         UC account value
-V(t)                       av_euro_pp(t)                       Euro account value
+V_init                     av_euro_init_pp()                   Euro balance at issue
+V(t)                       av_euro_pp(t)                       Euro account value, end of t
+V(t-1)                     av_euro_open_pp(t)                  The same, start of t
 i_e                        euro_credit_rate()                  Euro credited rate, net
 (1+i_e)^(1/12)             euro_credit_factor_mth()            Its monthly factor
 av_pp_at(t, timing)        av_pp_at(t, timing)                 Total account value
@@ -87,6 +102,7 @@ A(t), phi                  arb_amount_pp(t),
                            arbitrage_fee_rate()                Arbitrage and its fee
 W(t)                       wd_amount_pp(t)                     Partial surrender
 W_uc(t), W_eur(t)          wd_uc_pp(t), wd_eur_pp(t)           Its pro-rata split
+S_init                     cum_prem_net_init()                 Floor base at issue
 S(t)                       cum_prem_net(t)                     Floor base
 R(t)                       plancher_ratchet(t)                 Ratchet level (cliquet)
 F(t)                       plancher_amount(t)                  The floor
@@ -94,6 +110,7 @@ K(t)                       nar(t)                              Capital sous risq
 pi(a)                      plancher_rate(t)                    Tariff / 10,000
 pi(a)/12                   plancher_rate_mth(t)                Its monthly step
 K pi/12                    plancher_charge_pp(t)               Rider premium, per policy
+B_init                     uc_cost_basis_init()                Levy base at issue
 B(t)                       uc_cost_basis(t)                    Prelevements sociaux base
 tau                        social_levy_rate                    17.2%
 q_a, q_m(t)                mort_rate(t), mort_rate_mth(t)      Mortality rates
@@ -101,8 +118,8 @@ w_base(y)                  lapse_rate_base(t)                  Table surrender r
 M_perf(t)                  perf_factor(t)                      Performance multiplier
 M_pl(t)                    plancher_factor(t)                  Moneyness multiplier
 w_ann(y,t), w_m(t)         lapse_rate(t), lapse_rate_mth(t)    Surrender rates applied
-l(t-1)                     pols_if(t)                          In force at the start of t
-l(t)                       pols_if_at(t, "AFT_DECR")           End of t, after decrements
+l(t)                       pols_if(t)                          In force at the start of t
+l(t+1)                     pols_if_at(t, "AFT_DECR")           End of t, after decrements
 (none)                     pols_death(t), pols_lapse(t)        Decrements in month t
 E(t)                       expenses(t)                         Acquisition + maintenance
 (benefit outgo)            claims(t, kind)                     Gross benefit outgo by kind
@@ -122,16 +139,16 @@ splits :func:`plancher_charge_pp` from :func:`plancher_charge` and
 why its year-1 management charge is 621.33 € against the table's 630.20 €.
 
 ``pols_if(t)`` is the in-force probability at the **start** of month ``t``, so
-``pols_if(1) = pols_if_init()`` and ``result_cf()`` opens on it. It is therefore
+``pols_if(0) = pols_if_init()`` and ``result_cf()`` opens on it. It is therefore
 **exactly the weight carried by the flows on its own row**, which is the one thing a
 reader of the frame needs it to be: dividing any cash flow on row ``t`` by that row's
 ``pols_if`` recovers the per-policy amount.
 
-This model was first written the other way round, publishing the notes' end-of-month
-``l(t)`` under the name ``pols_if`` while weighting each row's flows at ``pols_if(t - 1)``.
+This model was first written the other way round, publishing the **end**-of-month count
+under the name ``pols_if`` while weighting each row's flows at ``pols_if(t - 1)``.
 Nothing raised and nothing went NaN — the published exposure column was simply the correct
 series shifted one month, and a per-policy amount recovered from it was one month stale.
-The rename fixes it and collides with nothing, because the notes' end-of-month quantity is
+The rename fixes it and collides with nothing, because the end-of-month quantity is
 still here: it is **``pols_if_at(t, "AFT_DECR")``**, the ``CashValue_SE`` timing form the
 shared vocabulary prescribes, equal to ``pols_if(t) (1 - q_m)(1 - w_m)`` and to
 ``pols_if(t + 1)`` everywhere the projection runs on. ``"BEF_DECR"`` and ``"BEF_LAPSE"``
@@ -140,9 +157,9 @@ unchanged by the rename; only the ``pols_if`` column moved.
 
 The account value is a stock read at the end of the month, so :func:`av_at`,
 :func:`av_uc_at` and :func:`av_euro_at` weight it by ``pols_if_at(t, "AFT_DECR")`` — the
-notes' ``l(t)``, the policies the balance is still carried for once the month's decrements
-have gone — which is what makes ``av_at(12, "BEF_DECR") = 77,330.08 x 0.968240`` on the
-anchor cell.
+notes' ``l(t + 1)``, the policies the balance is still carried for once the month's
+decrements have gone — which is what makes ``av_at(11, "BEF_DECR") = 77,330.08 x 0.968240``
+on the anchor cell's last month.
 
 ``net_cf`` on this product is the **non-unit** cash flow of the UC leg and the rider, not
 a gross liability total and not the contract's margin. Every benefit is funded by
@@ -174,10 +191,15 @@ Per policy, within month ``t``::
     plancher premium levied, euro first
     decrements at end of month, deaths before surrenders
 
+``p(t-1)``, ``n(t-1)`` and ``V(t-1)`` above are the *opening* balances of month ``t``,
+which in the first month, ``t = 0``, are the balances at issue: they are read through
+:func:`unit_price_open`, :func:`units_open` and :func:`av_euro_open_pp` rather than by
+indexing a month that does not exist.
+
 Two points in that order are load-bearing and both are listed pitfalls. **The management
 charge is taken on the opening unit count**, ``n(t-1)``, not the closing one: in a month
 with an arbitrage the two differ by the arbitrage's units, 52.28 € against 59.54 € at
-month 3 of the anchor cell. And **the monthly charge rate is ``c/12``**, not
+``t = 2`` on the anchor cell. And **the monthly charge rate is ``c/12``**, not
 ``1 - (1 - c)^(1/12)``: the insurers compound the *periodic* rate, so 0.25% a quarter
 gives an annual factor of ``(1 - 0.0025)^4 = 0.99003744`` rather than ``1 - 1.00%``.
 :func:`av_pp_at` exposes ``"BEF_FEE"``, ``"BEF_WD"``, ``"BEF_LEVY"`` and ``"BEF_DECR"``
@@ -192,7 +214,7 @@ base of premiums net of the premium charge less partial surrenders; ``indexee`` 
 that base at 3.50% a year and deducts the **nominal** withdrawal; ``cliquet`` locks in
 account-value highs at each ratchet date and adjusts for a partial surrender
 **proportionally**, because a ratchet is a value level rather than a premium tally. On the
-same path the three give 94,000.00, 97,378.25 and 94,216.29 at month 12.
+same path the three give 94,000.00, 97,378.25 and 94,216.29 at ``t = 11``.
 
 The `capital sous risque` is ``min(cap, max(0, F - AV))``, and everything about the rider
 follows from that one expression:
@@ -200,7 +222,7 @@ follows from that one expression:
 - it is **floored at zero**, so the rider costs nothing out of the money and the death
   strain never becomes a rebate booked as insurance profit;
 - it is the **charge base**, not the account value — the charge on the account value would
-  be 4.6 times larger at month 12 of the anchor cell;
+  be 4.6 times larger at ``t = 11`` on the anchor cell;
 - it is **capped on the risk**, not on the benefit, so the excess reduces the floor
   rather than truncating what the beneficiary is paid; and
 - it is the insurer's **cost per death**, exactly, because the rest of the death benefit
@@ -211,7 +233,7 @@ value between the legs and pays a fee, and :func:`check_floor_base` asserts that
 base is the net premium less cumulative withdrawals and nothing else.
 
 The levy source matters to the unit count. Under ``euro_first`` the premium is taken from
-the euro support and the unit count is untouched — 745.036125 units at month 12 of the
+the euro support and the unit count is untouched — 745.036125 units at ``t = 11`` on the
 anchor cell against 744.044774 under ``uc_units`` — which is what makes the count a
 deterministic function of the event schedule alone. Where the euro balance cannot cover
 the premium the remainder cancels units, which is the branch a 100%-UC allocation runs
@@ -222,7 +244,7 @@ down.
 Art. L. 136-7 II, 3°, a) levies the contribution on the euro component **annually**, as
 interest is credited; II, 3°, c) levies it on the unit-linked component only at
 `dénouement`. So the UC leg is taxed on a **gain**, at surrender, partial surrender or
-death, and on a loss it is zero — at month 12 of the anchor cell the UC leg is
+death, and on a loss it is zero — at ``t = 11`` on the anchor cell the UC leg is
 17,284.34 € under water and the levy is nil. Accruing it annually on the UC leg is a
 listed pitfall: it would understate the account value throughout and shrink the base the
 management charge is levied on. The euro leg's annual component belongs to ``Euro_FR_A``.
@@ -330,7 +352,7 @@ def euro_alloc():
 
 
 def unit_price_init():
-    """p(0): the liquidation value of the composite UC support at issue, 100.00 **[std]**.
+    """p_init: the liquidation value of the composite UC support at issue, 100.00 **[std]**.
 
     A scaling convention, not a fact: the unit count and the liquidation value are
     reciprocal, and only their product enters the liability.
@@ -412,7 +434,7 @@ def plancher_ratchet_months():
     """The ratchet period of a ``cliquet`` floor in months, 12 **[std]**.
 
     A one-month ratchet is the same recursion observed twelve times as often, and on the
-    anchor path it locks in the pre-fall high: 98,476.25 against 94,216.29 at month 12.
+    anchor path it locks in the pre-fall high: 98,476.25 against 94,216.29 at ``t = 11``.
     """
     return int(model_point()["plancher_ratchet_months"])
 
@@ -422,7 +444,8 @@ def plancher_gross_basis():
 
     Both bases are sourced and they differ by exactly the premium charge.  Net is chosen
     for the anchor because it makes the floor equal the account value at issue, so
-    ``nar(0) = 0`` is an assertable fact rather than an accident of the premium charge; on
+    the net amount at risk **at issue** is zero - an assertable fact rather than an accident
+    of the premium charge; on
     the gross basis the rider starts 1,000 EUR in the money on a 100,000 EUR premium.
     """
     return bool(model_point()["plancher_gross_basis"])
@@ -520,38 +543,46 @@ def pols_if_init():
 
 
 def proj_len():
-    """The projection length in months, from the model point.
+    """The **number of projected months**, from the model point.
 
-    12 on the worked-example anchor and 360 on the base run.  The contract is written
-    `viagere` and has no maturity date, so the horizon is a modelling choice rather than a
-    contractual one and it is a per-policy column.
+    The exclusive end of the 0-based frame: ``result_cf()`` runs ``t = 0 … proj_len() - 1``
+    and has ``proj_len()`` rows.  12 on the worked-example anchor and 360 on the base run.
+    The contract is written `viagere` and has no maturity date, so the horizon is a
+    modelling choice rather than a contractual one and it is a per-policy column.
     """
     return int(model_point()["proj_len"])
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``.
+
+    0-based, as everywhere in lifelib: 0 through the first policy year.
+    """
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from issue at the end of month t; equal to t.
+    """Months elapsed from issue at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly models
-    in this library share one vocabulary.
+    ``t`` is 0-based and counts from issue, so the identity is trivial - the cells exists
+    so the monthly models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y = ceil(t/12): the policy year containing month t; 1 for t = 1..12."""
+    """y: the 1-based contractual policy year containing month t; 1 for t = 0..11.
+
+    ``duration(t) + 1``.  A contractual label, derived and never indexed by - it is what
+    the `policy_year` column of *lapse_table.csv* is keyed on.
+    """
     return duration(t) + 1
 
 
 def age(t):
     """a: the attained age (ALB) in the policy year containing month t.
 
-    ``issue_age + ceil(t/12) - 1``, so the tariff steps at each policy anniversary.
+    ``issue_age + duration(t)``, so the tariff steps at each policy anniversary.
     """
     return issue_age() + duration(t)
 
@@ -560,13 +591,14 @@ def prem_to_av_pp():
     """P(1 - e): the premium credited to the account value, net of `frais sur versement`.
 
     The whole of it is allocated between the two legs, and on the net-premium floor basis
-    it is also the floor at issue - which is why ``nar(0) = 0`` exactly.
+    it is also the floor at issue - which is why the net amount at risk at issue,
+    ``cum_prem_net_init() - prem_to_av_pp()``, is zero exactly.
     """
     return premium() * (1.0 - prem_charge_rate())
 
 
 def units_init():
-    """n(0) = P(1-e) alpha / p(0): the unit count bought at issue.
+    """n_init = P(1-e) alpha / p_init: the unit count bought at issue.
 
     Unit conversion is contractually to four decimal places, `au dix millieme`.  The model
     carries full precision and reports to four, because rounding the count at every
@@ -576,12 +608,12 @@ def units_init():
 
 
 def av_euro_init_pp():
-    """V(0) = P(1-e)(1 - alpha): the euro balance at issue."""
+    """V_init = P(1-e)(1 - alpha): the euro balance at issue."""
     return prem_to_av_pp() * euro_alloc()
 
 
 def cum_prem_net_init():
-    """S(0): the floor base at issue.
+    """S_init: the floor base at issue.
 
     ``P(1 - e)`` on the sourced net-premium basis, ``P`` where
     :func:`plancher_gross_basis` elects the gross variant.
@@ -590,7 +622,7 @@ def cum_prem_net_init():
 
 
 def uc_cost_basis_init():
-    """B(0) = P(1-e) alpha: the `prelevements sociaux` cost basis of the UC leg at issue."""
+    """B_init = P(1-e) alpha: the `prelevements sociaux` cost basis of the UC leg at issue."""
     return prem_to_av_pp() * uc_alloc()
 
 
@@ -620,15 +652,28 @@ def uc_return_mth(t):
     """r_uc(t): the UC support's return in month t, from the elected scenario.
 
     The scenario table holds **segments**: a monthly return applying from ``from_month``
-    to ``to_month`` inclusive.  A month outside every segment of the elected scenario
-    raises, rather than falling back on a last-row default - a projection that has run off
-    the end of its scenario is not projecting anything.
+    to ``to_month`` inclusive, both written in the model's own 0-based months, so the first
+    segment of every shipped scenario opens at ``from_month = 0``.  A month outside every
+    segment of the elected scenario raises, rather than falling back on a last-row default -
+    a projection that has run off the end of its scenario is not projecting anything.
     """
     tbl = data.uc_scenario_table().loc[[uc_return_scenario()]]       # noqa: F821
     for lo, hi, r in zip(tbl["from_month"], tbl["to_month"], tbl["uc_return_mth"]):
         if int(lo) <= t <= int(hi):
             return float(r)
     raise ValueError("no scenario segment covers this month")
+
+
+def unit_price_open(t):
+    """p(t-1): the liquidation value at the **start** of month t.
+
+    The close of month ``t - 1``, and :func:`unit_price_init` in the first month - the
+    opening timing that keeps the price recursion off a month ``t = -1`` that does not
+    exist.
+    """
+    if t <= 0:
+        return unit_price_init()
+    return unit_price(t - 1)
 
 
 def unit_price(t):
@@ -639,9 +684,18 @@ def unit_price(t):
     recurring costs, 1.60% a year on the market average, are inside it and accrue to the
     fund manager: they reduce the account value and are **not** insurer income.
     """
+    return unit_price_open(t) * (1.0 + uc_return_mth(t))
+
+
+def units_open(t):
+    """n(t-1): the unit count held at the **start** of month t.
+
+    The close of month ``t - 1``, and :func:`units_init` in the first month.  It is the
+    count the management charge is taken on, which is the whole point of naming it.
+    """
     if t <= 0:
-        return unit_price_init()
-    return unit_price(t - 1) * (1.0 + uc_return_mth(t))
+        return units_init()
+    return units(t - 1)
 
 
 def fee_units(t):
@@ -649,11 +703,11 @@ def fee_units(t):
 
     Taken on the **opening** unit count.  In a month with an arbitrage the opening and
     closing counts differ by the arbitrage's units, so charging on the closing count
-    overstates the fee by 52.28 EUR against 59.54 EUR at month 3 of the anchor cell -
+    overstates the fee by 52.28 EUR against 59.54 EUR at ``t = 2`` on the anchor cell -
     immaterial monthly, systematic over decades, and a common source of a persistent
     reconciliation break against an administration system.
     """
-    return units(t - 1) * mgmt_fee_rate_uc_mth()
+    return units_open(t) * mgmt_fee_rate_uc_mth()
 
 
 def mgmt_fee_uc_pp(t):
@@ -705,15 +759,23 @@ def arb_units(t):
     return arb_amount_pp(t) * (1.0 - arbitrage_fee_rate()) / unit_price(t)
 
 
+def av_euro_open_pp(t):
+    """V(t-1): the euro balance at the **start** of month t, before the accrual.
+
+    The close of month ``t - 1``, and :func:`av_euro_init_pp` in the first month.
+    """
+    if t <= 0:
+        return av_euro_init_pp()
+    return av_euro_pp(t - 1)
+
+
 def av_euro_aft_credit_pp(t):
     """The euro balance after the month's accrual and before any event.
 
     ``V(t-1) x (1 + i_e)^(1/12)``.  On the anchor cell ``29,700.00 x 1.025^(2/12) =
-    29,822.48`` at month 2, which is the notes' own euro-leg check.
+    29,822.48`` at ``t = 1``, which is the notes' own euro-leg check.
     """
-    if t <= 0:
-        return av_euro_init_pp()
-    return av_euro_pp(t - 1) * euro_credit_factor_mth()
+    return av_euro_open_pp(t) * euro_credit_factor_mth()
 
 
 def units_bef_wd(t):
@@ -721,9 +783,7 @@ def units_bef_wd(t):
 
     ``n(t-1) - fee_units(t) + arb_units(t)``.
     """
-    if t <= 0:
-        return units_init()
-    return units(t - 1) - fee_units(t) + arb_units(t)
+    return units_open(t) - fee_units(t) + arb_units(t)
 
 
 def av_uc_bef_wd_pp(t):
@@ -762,7 +822,7 @@ def wd_uc_pp(t):
     """W_uc(t): the UC component of the month's partial surrender.
 
     Split **pro rata across the supports**, which is the only default stated in a
-    retrieved contract.  At month 6 of the anchor cell the UC share is 0.80665095, so
+    retrieved contract.  At ``t = 5`` on the anchor cell the UC share is 0.80665095, so
     4,033.25 EUR of the 5,000 EUR comes off the units and 966.75 EUR off the euro balance.
     An election that emptied the loss-making support first would change
     :func:`uc_cost_basis` and therefore the `prelevements sociaux`.
@@ -804,10 +864,12 @@ def cum_prem_net(t):
     It moves on a **premium or a surrender and on nothing else**.  An arbitrage moves
     value between the legs, pays a fee and leaves the guarantee untouched; letting it move
     the floor is a listed pitfall, and :func:`check_floor_base` asserts against it.
+
+    The opening base of the first month is :func:`cum_prem_net_init`, the floor base at
+    issue.
     """
-    if t <= 0:
-        return cum_prem_net_init()
-    return cum_prem_net(t - 1) - wd_amount_pp(t)
+    opening = cum_prem_net_init() if t <= 0 else cum_prem_net(t - 1)
+    return opening - wd_amount_pp(t)
 
 
 def wd_cum_pp(t):
@@ -816,9 +878,8 @@ def wd_cum_pp(t):
     Exists so :func:`check_floor_base` can rebuild the floor base from the withdrawal
     series rather than from its own recursion.
     """
-    if t <= 0:
-        return 0.0
-    return wd_cum_pp(t - 1) + wd_amount_pp(t)
+    opening = 0.0 if t <= 0 else wd_cum_pp(t - 1)
+    return opening + wd_amount_pp(t)
 
 
 def plancher_ratchet(t):
@@ -826,17 +887,20 @@ def plancher_ratchet(t):
 
     Reduced **proportionally** by a partial surrender, because a ratchet is a value level
     rather than a premium tally - the ``simple`` base is reduced nominally, and on the same
-    path at month 12 the two rules give 94,216.29 and 94,000.00.  Raised to the account
+    path at ``t = 11`` the two rules give 94,216.29 and 94,000.00.  Raised to the account
     value at each ratchet date, observed just before the plancher premium is levied.
+
+    A ratchet date falls at the **end** of month ``t``, which is ``t + 1`` months from
+    issue, so the ``n``-month ratchet fires where ``(t + 1) % n == 0``: the first annual
+    ratchet is the end of ``t = 11``, the twelfth month.  The opening level of the first
+    month is the account value at issue.
     """
-    if t <= 0:
-        return prem_to_av_pp()
-    r = plancher_ratchet(t - 1)
+    r = prem_to_av_pp() if t <= 0 else plancher_ratchet(t - 1)
     total = av_pp_at(t, "BEF_WD")
     if wd_amount_pp(t) > 0.0 and total > 0.0:
         r = r * (1.0 - wd_amount_pp(t) / total)
     n = plancher_ratchet_months()
-    if n > 0 and t % n == 0:
+    if n > 0 and (t + 1) % n == 0:
         r = max(r, av_pp_at(t, "BEF_LEVY"))
     return r
 
@@ -848,11 +912,12 @@ def plancher_amount(t):
         ``S(t)``, the running base of net premiums less surrenders.
 
     ``indexee``
-        ``F(t-1) (1 + i_x)^(1/12) - W(t)``.  Indexing the running floor and then
-        deducting the **nominal** withdrawal is arithmetically identical to
-        indexing the withdrawal forward from its own date and deducting it
-        later, which is the sources' rule that surrenders are indexed on the
-        same basis as the floor [S1] [S3].
+        ``F(t-1) (1 + i_x)^(1/12) - W(t)``, the opening floor of the first month
+        being :func:`cum_prem_net_init`, the floor at issue.  Indexing the
+        running floor and then deducting the **nominal** withdrawal is
+        arithmetically identical to indexing the withdrawal forward from its own
+        date and deducting it later, which is the sources' rule that surrenders
+        are indexed on the same basis as the floor [S1] [S3].
 
     ``cliquet``
         ``max(S(t), R(t))``, so the ratchet can only ever improve the sourced
@@ -862,9 +927,8 @@ def plancher_amount(t):
     if b == "simple":
         return cum_prem_net(t)
     if b == "indexee":
-        if t <= 0:
-            return cum_prem_net_init()
-        return (plancher_amount(t - 1)
+        opening = cum_prem_net_init() if t <= 0 else plancher_amount(t - 1)
+        return (opening
                 * (1.0 + plancher_index_rate()) ** (1.0 / 12.0)
                 - wd_amount_pp(t))
     return max(cum_prem_net(t), plancher_ratchet(t))
@@ -924,7 +988,7 @@ def plancher_charge_pp(t):
     """The plancher premium levied in month t, per policy.
 
     ``K(t) x pi(a)/12`` - levied on the **net amount at risk** and never on the account
-    value.  On the anchor cell at month 12 the correct charge is 27.18 EUR; on the account
+    value.  On the anchor cell at ``t = 11`` the correct charge is 27.18 EUR; on the account
     value it would be 126.35 EUR, a factor of 4.6.  It is nil whenever the account value
     is at or above the floor, which is the whole of the rider being a put.
 
@@ -966,15 +1030,14 @@ def plancher_levy_units(t):
 def units(t):
     """n(t): the unit count held at the end of month t.
 
-    ``n(t-1) - fee_units + arb_units - wd_units - plancher_levy_units``.  This is the
-    quantity art. A. 132-5 makes the insurer's commitment: every charge is a cancellation
-    of units and never a deduction of euros, so with the plancher premium taken from the
-    euro support the count is **market-independent** - with no events at all it collapses
-    to ``n(0)(1 - c_m)^t``, which is the sequence the insurers publish in their own
-    statutory tables.
+    ``n(t-1) - fee_units + arb_units - wd_units - plancher_levy_units``, the opening count
+    being :func:`units_open`.  This is the quantity art. A. 132-5 makes the insurer's
+    commitment: every charge is a cancellation of units and never a deduction of euros, so
+    with the plancher premium taken from the euro support the count is
+    **market-independent** - with no events at all it collapses to
+    ``units_init() (1 - c_m)^(t + 1)``, which is the sequence the insurers publish in their
+    own statutory tables.
     """
-    if t <= 0:
-        return units_init()
     return units_bef_levy(t) - plancher_levy_units(t)
 
 
@@ -987,15 +1050,20 @@ def av_euro_pp(t):
     """V(t): the euro account value per policy at the end of month t, after the levy.
 
     The notes' worked-example table prints this column post-levy, so each row's value is
-    the next row's opening euro balance.
+    the next row's opening euro balance - :func:`av_euro_open_pp` reads it back.
     """
-    if t <= 0:
-        return av_euro_init_pp()
     return av_euro_bef_levy_pp(t) - plancher_levy_eur_pp(t)
 
 
 def av_pp_at(t, timing):
     """The total account value per policy at a point inside policy month t.
+
+    ``"OPENING"``
+        the balance the month opens on, before the liquidation value has moved
+        and before the euro leg accrues: ``av_pp(t - 1)``, and
+        :func:`prem_to_av_pp` - the premium net of the `frais sur versement` -
+        in the first month, ``t = 0``.  It is the term the roll-forward check
+        starts from.
 
     ``"BEF_FEE"``
         after the liquidation value has moved and the euro leg has accrued,
@@ -1014,13 +1082,13 @@ def av_pp_at(t, timing):
         column the notes' worked-example table prints.  It is the surrender
         benefit per lapse and, with ``K(t)`` added, the death benefit.
 
-    All four points are exposed so the ordering is inspectable rather than buried in one
-    expression.  ``t <= 0`` gives the account value at issue at every timing.
+    All five points are exposed so the ordering is inspectable rather than buried in one
+    expression.
     """
-    if t <= 0:
-        return prem_to_av_pp()
+    if timing == "OPENING":
+        return (units_open(t) * unit_price_open(t)) + av_euro_open_pp(t)
     if timing == "BEF_FEE":
-        return units(t - 1) * unit_price(t) + av_euro_aft_credit_pp(t)
+        return units_open(t) * unit_price(t) + av_euro_aft_credit_pp(t)
     if timing == "BEF_WD":
         return av_uc_bef_wd_pp(t) + av_euro_bef_wd_pp(t)
     if timing == "BEF_LEVY":
@@ -1045,9 +1113,9 @@ def av_at(t, timing):
     """The in-force account value: ``av_pp_at(t, timing) x pols_if_at(t, "AFT_DECR")``.
 
     The account value is a **stock**, so it is weighted by the count the balance is still
-    carried for once the month's decrements have gone — the notes' ``l(t)`` — and not by
-    the start-of-month exposure :func:`pols_if` that weights the month's *flows*.  At month
-    12 of the anchor cell ``77,330.08 x 0.968240 = 74,874.07``.
+    carried for once the month's decrements have gone — the notes' ``l(t + 1)`` — and not
+    by the start-of-month exposure :func:`pols_if` that weights the month's *flows*.  At
+    ``t = 11`` on the anchor cell ``77,330.08 x 0.968240 = 74,874.07``.
     """
     return av_pp_at(t, timing) * pols_if_at(t, "AFT_DECR")
 
@@ -1080,23 +1148,21 @@ def av_euro_at(t):
 def uc_cost_basis_bef_wd(t):
     """B(t) before the month's withdrawal, after any investment into the UC leg.
 
-    ``B(t-1) + A(t)(1 - phi)``.  An arbitrage into UC is an investment and adds to the
+    ``B(t-1) + A(t)(1 - phi)``, the opening basis of the first month being
+    :func:`uc_cost_basis_init`.  An arbitrage into UC is an investment and adds to the
     cost basis; the arbitrage fee does not, because it never reaches the support.
     """
-    if t <= 0:
-        return uc_cost_basis_init()
-    return uc_cost_basis(t - 1) + arb_amount_pp(t) * (1.0 - arbitrage_fee_rate())
+    opening = uc_cost_basis_init() if t <= 0 else uc_cost_basis(t - 1)
+    return opening + arb_amount_pp(t) * (1.0 - arbitrage_fee_rate())
 
 
 def uc_cost_basis(t):
     """B(t): the cumulative cost of the UC leg, the `prelevements sociaux` base.
 
-    Investments add to it; an outflow removes its **pro-rata** share.  At month 6 of the
+    Investments add to it; an outflow removes its **pro-rata** share.  At ``t = 5`` on the
     anchor cell it falls from 79,250.00 to 75,420.62 on a 4,033.25 EUR UC surrender.
     """
     b = uc_cost_basis_bef_wd(t)
-    if t <= 0:
-        return b
     u = av_uc_bef_wd_pp(t)
     if wd_uc_pp(t) > 0.0 and u > 0.0:
         b = b * (1.0 - wd_uc_pp(t) / u)
@@ -1106,8 +1172,8 @@ def uc_cost_basis(t):
 def wd_uc_gain_pp(t):
     """The taxable UC gain component of the month's partial surrender, per policy.
 
-    ``W_uc (1 - B / U)``: the amount surrendered less its pro-rata cost.  At month 6 of the
-    anchor cell ``4,033.25 x (1 - 79,250.00/83,469.22) = 203.87``.  **[std]**: no retrieved
+    ``W_uc (1 - B / U)``: the amount surrendered less its pro-rata cost.  At ``t = 5`` on
+    the anchor cell ``4,033.25 x (1 - 79,250.00/83,469.22) = 203.87``.  **[std]**: no retrieved
     document sets out the arithmetic for a multisupport partial surrender.
     """
     u = av_uc_bef_wd_pp(t)
@@ -1119,7 +1185,7 @@ def wd_uc_gain_pp(t):
 def social_levy_wd_pp(t):
     """The `prelevements sociaux` withheld on the month's partial surrender, per policy.
 
-    ``17.2% x max(0, gain)`` - 35.07 EUR at month 6 of the anchor cell.  **Withheld and
+    ``17.2% x max(0, gain)`` - 35.07 EUR at ``t = 5`` on the anchor cell.  **Withheld and
     remitted**: a pass-through, not insurer income and not an expense.
     """
     return social_levy_rate * max(0.0, wd_uc_gain_pp(t))             # noqa: F821
@@ -1129,7 +1195,7 @@ def social_levy_decr_pp(t):
     """The `prelevements sociaux` withheld per exiting policy at the month's decrements.
 
     The UC leg is taxed **only at `denouement`** - surrender, term or death - so the levy
-    is contingent on a gain and is zero on a loss.  At month 12 of the anchor cell the UC
+    is contingent on a gain and is zero on a loss.  At ``t = 11`` on the anchor cell the UC
     leg is 17,284.34 EUR under water and the levy is nil, and any excess already levied
     year by year on the euro leg is restituted at final liquidation under art. L. 136-7
     III bis.  The plancher top-up above the account value is treated as outside the levy
@@ -1178,15 +1244,15 @@ def lapse_rate_base(t):
 def return_12m(t):
     """R_12m: the trailing twelve-month UC return driving the performance multiplier.
 
-    Measured over the **completed** year ending at month ``t - 1``, so it needs twelve
-    months of history and is undefined before month 13.  Where it is undefined it returns
-    the reference return, which makes the multiplier exactly 1 - and that is why the anchor
-    cell's twelve months carry the flat 2.00% a year the notes' worked example states even
-    though its path falls 21.97% over the year.
+    Measured over the twelve **completed** months ending at the start of month ``t``, so it
+    needs twelve months of history and is undefined before ``t = 12``.  Where it is
+    undefined it returns the reference return, which makes the multiplier exactly 1 - and
+    that is why the anchor cell's twelve months carry the flat 2.00% a year the notes'
+    worked example states even though its path falls 21.97% over the year.
     """
-    if t <= 12:
+    if t <= 11:
         return uc_return_ref                                         # noqa: F821
-    return unit_price(t - 1) / unit_price(t - 13) - 1.0
+    return unit_price_open(t) / unit_price_open(t - 12) - 1.0
 
 
 def perf_factor(t):
@@ -1237,18 +1303,18 @@ def lapse_rate_mth(t):
 
 
 def pols_if(t):
-    """l(t-1): the in-force probability at the **start** of policy month t.
+    """l(t): the in-force probability at the **start** of policy month t.
 
-    ``pols_if(1) = pols_if_init()``, and thereafter
+    ``pols_if(0) = pols_if_init()``, and thereafter
     ``pols_if(t) = pols_if(t-1)(1 - q_m(t-1))(1 - w_m(t-1))``, deaths before surrenders
     **[std]**.  It is the weight on every flow of month t and the first column of
     :func:`result_cf`, so the two agree row by row: a cash flow divided by its own row's
     ``pols_if`` is the per-policy amount.
 
-    The notes' ``l(t)`` — the count once month t's decrements have gone — is
+    The notes' ``l(t + 1)`` — the count once month t's decrements have gone — is
     :func:`pols_if_at` ``(t, "AFT_DECR")``.
     """
-    if t <= 1:
+    if t <= 0:
         return pols_if_init()
     return pols_if(t - 1) * (1.0 - mort_rate_mth(t - 1)) * (1.0 - lapse_rate_mth(t - 1))
 
@@ -1264,7 +1330,7 @@ def pols_if_at(t, timing):
         **deaths before surrenders** **[std]**.
 
     ``"AFT_DECR"``
-        the notes' ``l(t)``: the count still in force once the month's
+        the notes' ``l(t + 1)``: the count still in force once the month's
         decrements have gone.  Equal to ``pols_if(t + 1)`` wherever the
         projection runs on, and computed here directly so it also resolves in
         the horizon month.
@@ -1302,7 +1368,7 @@ def claims(t, kind=None):
     ``"DEATH"``
         ``AV + K`` per death - the account value plus the `capital sous
         risque`, which is ``max(F, AV)`` written the way the model uses it.
-        At month 12 of the anchor cell that is ``77,330.08 + 16,642.74 =
+        At ``t = 11`` on the anchor cell that is ``77,330.08 + 16,642.74 =
         93,972.82``, of which only the 16,642.74 is the insurer's.
 
     ``"LAPSE"``
@@ -1345,19 +1411,19 @@ def av_releases(t):
 def prem_charge(t):
     """The `frais sur versement` collected at issue; 1,000.00 EUR on the anchor cell.
 
-    Booked in **month 1**, which is where the notes book it too: the frame is 1-based and
-    ``result_cf`` has no ``t = 0`` row, so the premium charge and the acquisition expense
-    both fall in the first projected month, weighted at ``pols_if(1) = 1``.
+    Booked in the **first projected month**, ``t = 0``, which is where the notes book it
+    too: the issue instant is not a row of its own, so the premium charge and the
+    acquisition expense both fall in month ``t = 0``, weighted at ``pols_if(0) = 1``.
     """
-    if t != 1:
+    if t != 0:
         return 0.0
-    return premium() * prem_charge_rate() * pols_if(1)
+    return premium() * prem_charge_rate() * pols_if(0)
 
 
 def mgmt_fee_uc(t):
     """The UC management charge collected in month t; **insurer income**.
 
-    ``pols_if(t) x mgmt_fee_uc_pp(t)``, the notes' ``l(t-1)`` weight.  The notes'
+    ``pols_if(t) x mgmt_fee_uc_pp(t)``, the notes' ``l(t)`` start-of-month weight.  The notes'
     worked-example table prints the per-policy column, which sums to 630.20 EUR over
     year 1; this weighted line sums to 621.33 EUR.
     """
@@ -1381,7 +1447,7 @@ def plancher_charge(t):
 def plancher_strain(t):
     """The non-unit cost of the month's deaths: the `capital sous risque`, exactly.
 
-    ``pols_if(t) q_m(t) K(t)``, the notes' ``l(t-1) q_m K(t)``.  The whole of the account
+    ``pols_if(t) q_m(t) K(t)``, the notes' ``l(t) q_m K(t)``.  The whole of the account
     value is funded by cancelling units and
     by the euro balance, so the insurer's cost per death is ``K(t)`` and nothing else.
     """
@@ -1403,11 +1469,11 @@ def social_levy_uc(t):
 def expenses(t):
     """Acquisition and maintenance expense in month t **[std]**.
 
-    400 EUR per policy of acquisition expense in **month 1** - the frame is 1-based, so
-    that is the issue month - then 40 EUR per policy a year, level, taken monthly at the
+    400 EUR per policy of acquisition expense in the first projected month, ``t = 0``,
+    which is the issue month - then 40 EUR per policy a year, level, taken monthly at the
     start-of-month exposure.  No retrieved document gives an expense basis of any kind.
     """
-    acq = expense_acq * pols_if(1) if t == 1 else 0.0                # noqa: F821
+    acq = expense_acq * pols_if(0) if t == 0 else 0.0                # noqa: F821
     return acq + expense_maint / 12.0 * pols_if(t)                   # noqa: F821
 
 
@@ -1440,7 +1506,7 @@ def uc_growth_pp(t):
     every charge, so that :func:`check_av_roll_fwd` is an identity the recursion has to
     satisfy rather than a restatement of it.
     """
-    return units(t - 1) * (unit_price(t) - unit_price(t - 1))
+    return units_open(t) * (unit_price(t) - unit_price_open(t))
 
 
 def euro_interest_pp(t):
@@ -1449,20 +1515,22 @@ def euro_interest_pp(t):
     A **policyholder credit**, not an insurer cash flow: ``i_e`` is already net of the euro
     management charge, so the euro leg produces no margin line in this model.
     """
-    return av_euro_pp(t - 1) * (euro_credit_factor_mth() - 1.0)
+    return av_euro_open_pp(t) * (euro_credit_factor_mth() - 1.0)
 
 
 def check_av_roll_fwd_resid(t):
     """The account value roll-forward residual in month t; zero everywhere.
 
-    ``AV(t) - [AV(t-1) + UC return + euro interest - management charge - arbitrage fee
-    - withdrawal - plancher premium]``, per policy.  The growth terms are built from the
+    ``AV(t) - [AV opening + UC return + euro interest - management charge - arbitrage fee
+    - withdrawal - plancher premium]``, per policy, the opening balance being
+    ``av_pp_at(t, "OPENING")`` - the premium net of the `frais sur versement` in the first
+    month.  The growth terms are built from the
     opening unit count and the opening euro balance, so this is a genuine identity and not
     a restatement: charging the management fee on the closing unit count, applying last
     month's price to it, forgetting that the arbitrage fee leaves the contract, or netting
     the withdrawal twice all show up here.
     """
-    built = (av_pp_at(t - 1, "BEF_DECR") + uc_growth_pp(t) + euro_interest_pp(t)
+    built = (av_pp_at(t, "OPENING") + uc_growth_pp(t) + euro_interest_pp(t)
              - mgmt_fee_uc_pp(t) - arb_fee_pp(t) - wd_amount_pp(t)
              - plancher_charge_pp(t))
     return av_pp_at(t, "BEF_DECR") - built
@@ -1476,7 +1544,7 @@ def check_av_roll_fwd():
     """
     tol = roll_fwd_tol * max(1.0, premium())                         # noqa: F821
     return all(abs(check_av_roll_fwd_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_unit_roll_fwd_resid(t):
@@ -1488,7 +1556,7 @@ def check_unit_roll_fwd_resid(t):
     what makes the check say something about the rider - under ``euro_first`` it is zero
     and the count is market-independent, and where the euro support cannot pay it is not.
     """
-    built = (units(t - 1) * (1.0 - mgmt_fee_rate_uc_mth())
+    built = (units_open(t) * (1.0 - mgmt_fee_rate_uc_mth())
              + arb_units(t) - wd_units(t) - plancher_levy_units(t))
     return units(t) - built
 
@@ -1497,14 +1565,14 @@ def check_unit_roll_fwd():
     """True when the unit count closes in every projected month."""
     tol = roll_fwd_tol * max(1.0, units_init())                      # noqa: F821
     return all(abs(check_unit_roll_fwd_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
     """The in-force roll-forward residual in month t; zero everywhere.
 
     ``pols_if(t) - pols_if_at(t, "AFT_DECR") - deaths - surrenders``, the notes'
-    ``l(t-1) - l(t) - deaths - surrenders``.  There is no maturity term: the contract is
+    ``l(t) - l(t+1) - deaths - surrenders``.  There is no maturity term: the contract is
     written `viagere`, so the projection simply stops at :func:`proj_len` with a positive
     in-force count rather than running the population out.
     """
@@ -1515,17 +1583,17 @@ def check_pols_roll_fwd_resid(t):
 def check_pols_roll_fwd():
     """True when the in-force roll-forward closes in every projected month."""
     return all(abs(check_pols_roll_fwd_resid(t)) <= pols_tol         # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_floor_base_resid(t):
     """The floor-base residual in month t; zero everywhere.
 
-    ``S(t) - [S(0) - cumulative withdrawals]``.  :func:`cum_prem_net` reaches month t by
+    ``S(t) - [S_init - cumulative withdrawals]``.  :func:`cum_prem_net` reaches month t by
     its own recursion and :func:`wd_cum_pp` accumulates the withdrawals by another, so a
     model that let an **arbitrage** move the floor - the listed pitfall - would show it
     here as a residual of the arbitraged amount.  On the anchor cell the 10,000 EUR switch
-    at month 3 leaves the floor at 99,000.00.
+    at ``t = 2`` leaves the floor at 99,000.00.
     """
     return cum_prem_net(t) - (cum_prem_net_init() - wd_cum_pp(t))
 
@@ -1534,7 +1602,7 @@ def check_floor_base():
     """True when the floor base moves on premiums and surrenders alone."""
     tol = roll_fwd_tol * max(1.0, premium())                         # noqa: F821
     return all(abs(check_floor_base_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_nar_bounds_resid(t):
@@ -1556,7 +1624,7 @@ def check_nar_bounds_resid(t):
 def check_nar_bounds():
     """True when the `capital sous risque` stays inside ``[0, cap]`` in every month."""
     return all(check_nar_bounds_resid(t) == 0.0
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_benefit_funding_resid(t):
@@ -1578,11 +1646,11 @@ def check_benefit_funding():
     """True when every benefit is funded by the account value plus the death strain."""
     tol = roll_fwd_tol * max(1.0, premium())                         # noqa: F821
     return all(abs(check_benefit_funding_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month t = 0, 1, ..., proj_len() - 1.
 
     ``pols_if`` is the in-force probability at the **start** of the month, which is the
     weight carried by every flow on its own row - divide a flow by it and the per-policy
@@ -1595,7 +1663,7 @@ def result_cf():
     published precisely because it is **not** in ``net_cf``: it is withheld from the
     policyholder and remitted.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1618,13 +1686,13 @@ def result_cf():
 
 
 def result_av():
-    """Result table of the account value recursion, indexed by policy month t.
+    """Result table of the account value recursion, indexed by t = 0, 1, ..., proj_len() - 1.
 
     The notes' worked-example table, column for column: the liquidation value, the unit
     count, the two legs, the end-of-month account value, the floor, the `capital sous
     risque`, and the two per-policy charges.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "unit_price": [unit_price(t) for t in ts],

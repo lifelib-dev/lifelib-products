@@ -18,10 +18,11 @@ print("model point {}: {} - {}{} {} {} sum assured {:,.0f}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(), proj.age_at_entry(),
     proj.rate_class(), proj.plan(), proj.sum_assured()))
 print("jump ratio = {:.4f}   shock lapse = {:.0%}   M(1) = {}   "
-      "expiry = attained age 95 (policy year {})".format(
+      "expiry = attained age 95 (proj_len = {} years, t = 0..{})".format(
           proj.jump_ratio(), proj.shock_lapse_rate(),
-          proj.plt_mort_factor_init(), proj.proj_len()))
+          proj.plt_mort_factor_init(), proj.proj_len(), proj.proj_len() - 1))
 print()
+print("first 12 rows, t = 0..11 (policy years 1-12; the notes' worked example):")
 print(proj.result_cf().head(12).round(2).to_string())
 
 model.close()

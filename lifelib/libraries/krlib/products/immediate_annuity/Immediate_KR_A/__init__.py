@@ -68,9 +68,12 @@ Input data is **external**: plain CSVs in the model folder's parent directory,
 model folder holds nothing but formulas — no ``_data/``, no IOSpec, no embedded values — so
 the model and its inputs must travel together. This follows ``annuallife.TradLife_A``.
 
-**Projection basis.** Annual steps. Period ``t`` runs from time ``t`` to time ``t + 1``,
-row ``t`` of ``result_cf()`` carries the cash flows of period ``t``, and the annuity is
-payable **in arrears** on each 계약해당일, so the payment shown on row ``t`` falls at time
+**Projection basis.** Annual steps on a **0-based** time index: ``t = 0`` is the first
+policy year. Period ``t`` runs from time ``t`` to time ``t + 1``, row ``t`` of
+``result_cf()`` carries the cash flows of period ``t``, and the annuity is payable **in
+arrears** on each 계약해당일, so the payment shown on row ``t`` falls at time ``t + 1``.
+``proj_len()`` is the **number of projected periods**, so the frame is ``range(proj_len())``
+and runs ``t = 0 … proj_len() - 1``; the contractual policy year is the derived label
 ``t + 1``. Ages are **보험나이** throughout. The market default is a monthly 연금월액 and
 the annual mode this model runs is the contract's own 연단위 mode, not an approximation of
 the monthly one; the reconciliation is in the technical notes.

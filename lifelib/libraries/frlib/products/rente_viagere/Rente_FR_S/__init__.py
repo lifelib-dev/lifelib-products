@@ -59,14 +59,17 @@ time rather than stored inside the model. The model folder itself holds no data,
 model and its inputs must travel together.
 
 **Projection basis.** Monthly steps from the effective date, which is always the 1st day
-of a civil month. The model therefore carries the **calendar** — the effective year and
-civil month — and not merely the duration, because revalorisation and expense inflation
-step at 31 December while the *paliers* and the attained ages step on 12-month multiples
-of the effective date. Age is **age last birthday**; the *millésime* (year of birth) is a
+of a civil month. The month index ``t`` is **0-based**: ``t = 0`` is the first projected
+month — the first whole civil month of service — and the frame is
+``t = 0, 1, …, proj_len() - 1``, so ``proj_len()`` is the number of months projected and
+``policy_year(t) = t // 12 + 1``. The model therefore carries the **calendar** — the
+effective year and civil month — and not merely the duration, because revalorisation and
+expense inflation step at 31 December while the *paliers* and the attained ages step on
+12-month multiples of the effective date. Age is **age last birthday**; the *millésime* (year of birth) is a
 separate model point attribute and is never derived from the projection year. The
-limiting age is 120, the published top age of the tables, and the projection stops one
-limiting age before the youngest covered life would reach it — stopping on the
-annuitant's age alone would truncate a younger reversionary's tail.
+limiting age is 120, the published top age of the tables, and the projection runs to the
+last month of age 119 of the **youngest** covered life, ``t = proj_len() - 1`` — stopping
+on the annuitant's age alone would truncate a younger reversionary's tail.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 instalment formula and its *terme échu* timing, the rule that the arrérage of the month
@@ -87,9 +90,9 @@ Replace the basis with a licensed same-schema file before drawing any conclusion
 output.
 
 **Verification.** ``tests/test_rente_viagere_fr.py`` asserts the notes' worked example
-row by row to the cent, including the 1.125% pro-rated first uplift reaching the month-10
-instalment, the whole instalment settled as a *prorata* on the month-26 death, and the
-reversion starting at 60% of the *rente atteinte* in month 27.
+row by row to the cent, including the 1.125% pro-rated first uplift reaching the month-9
+instalment, the whole instalment settled as a *prorata* on the month-25 death, and the
+reversion starting at 60% of the *rente atteinte* in month 26.
 
 Example:
 

@@ -142,7 +142,10 @@ def uc_scenario_table():
     """The UC liquidation-value scenarios, from *uc_scenario_table.csv*.
 
     Each row is a **segment** of one scenario: a monthly return applying from
-    ``from_month`` to ``to_month`` inclusive.  Three scenarios ship, all **[std]**:
+    ``from_month`` to ``to_month`` inclusive.  Both bounds are written in the projection's
+    own **0-based** policy months, so the first segment of every scenario opens at
+    ``from_month = 0`` and ``Projection.uc_return_mth`` compares them against ``t``
+    directly.  Three scenarios ship, all **[std]**:
     ``stress_yr1``, the worked example's path of +1.00% a month for six months then
     -5.00% a month for six; ``base_490``, a deterministic 4.90% a year, the five-year
     average performance of UC supports net of fund charges; and ``bear_5pct``, a

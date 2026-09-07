@@ -22,9 +22,9 @@ standardized composite in its two cells:
     last has no analogue in the U.S. or UK reference models.
 
 The structural difference from a whole life chassis is that there is **no tail and no
-terminal age**: the projection length is exactly the term, every state closes at
-``t = n``, and the closing cash flow is a certain payment of the sum assured to the
-survivors rather than a decrement. Importing a terminal age here would project a
+terminal age**: the projection length is exactly the term, every state closes at the end
+of the last period, and the closing cash flow is a certain payment of the sum assured to
+the survivors rather than a decrement. Importing a terminal age here would project a
 contract that has already matured.
 
 **Spaces.** The model contains two:
@@ -48,12 +48,19 @@ time rather than stored inside the model. The model folder itself holds no data,
 model and its inputs must travel together.
 
 **Projection basis.** Annual steps on policy years running anniversary to anniversary.
-Policy year ``t`` runs 1, 2, ..., ``proj_len()``, where ``proj_len() = policy_term()``.
-Premium, maintenance expense and renewal commission fall at the start of the year;
+The period index ``t`` is **0-based**: ``t = 0`` is the first policy year and
+``t = proj_len() - 1`` the last, where ``proj_len() = policy_term()`` is the number of
+projected years, so the frame is ``range(proj_len())`` and the contractual policy year is
+the 1-based label ``t + 1``. A second index, ``k``, counts anniversaries with ``k = 0`` at
+issue: period ``t`` runs from anniversary ``t`` to anniversary ``t + 1``, and the
+per-policy value construction (``pol_val_pp``, ``cv_pp``, ``surr_charge_pp``,
+``benefit_pct``, ``prem_cum_pp``) is indexed by ``k``, so the flows of period ``t`` read
+it at ``t + 1``.
+Premium, maintenance expense and renewal commission fall at the start of the period;
 acquisition expense and initial commission at issue; death claims and claim expense at
-the end of the policy year of death; the staged benefit and the maturity benefit at the
-end of the policy year, to policies surviving that year's mortality; surrenders at the
-end of the year, after deaths and after any staged benefit due at that anniversary,
+the end of the period of death; the staged benefit and the maturity benefit at the
+end of the period, to policies surviving that period's mortality; surrenders at the
+end of the period, after deaths and after any staged benefit due at that anniversary,
 valued on the surrender value net of that benefit.
 
 **What is sourced and what is not.** Both annual premiums on the two anchor cells are

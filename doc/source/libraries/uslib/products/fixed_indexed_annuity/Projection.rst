@@ -80,6 +80,8 @@ Cells Descriptions
 
 .. autofunction:: covered_age
 
+.. autofunction:: exercise_age
+
 .. autofunction:: scenario_value
 
 .. autofunction:: index_level
@@ -135,6 +137,8 @@ Cells Descriptions
 .. autofunction:: depletion_cause
 
 .. autofunction:: phase
+
+.. autofunction:: rider_in_force_open
 
 .. autofunction:: rider_in_force
 

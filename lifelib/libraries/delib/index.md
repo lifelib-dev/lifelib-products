@@ -177,14 +177,21 @@ registered once in `tests/de_registry.py`, and the conventions suite asserts tha
 registry, the directory on disk and the model's own `_name` all agree, along with the
 country and grid tags.
 
-The registry is per library; the contract it enforces is the one
-[uslib is held to](#uslib-one-shape), and cells names come from lifelib —
-`basiclife/BasicTerm_S` first, then `savings/CashValue_SE` — so a name means the same thing
-here, in uslib, in uklib, in frlib and in lifelib. The
-[shared vocabulary table](#uslib-shared-vocabulary) is the settled ruling across the
-libraries, and delib takes frlib's reading of `proj_len()` with it: **`proj_len()` is the
-last projected period index**, so `result_cf()` ends at `proj_len()` whether the frame is
-0-based or 1-based.
+The registry is per library; the contract it enforces is the one [uslib is held
+to](#uslib-one-shape), and cells names come from lifelib — `basiclife/BasicTerm_S` first,
+then `savings/CashValue_SE` — so a name means the same thing here, in uslib, in uklib, in
+frlib and in lifelib. The [shared vocabulary table](#uslib-shared-vocabulary) is the settled
+ruling across the libraries, and the time index is the same in all of them. The time index
+`t` is 0-based: `t = 0` is the first period of a policy projected from issue (the issue year
+on an annual grid, the issue month on a monthly one), period `t` runs from time `t` to time
+`t + 1`, and the attained age is `age_at_entry + t` on an annual grid
+(`age_at_entry + duration(t)`, `duration(t) = t // 12`, on a monthly one). **`proj_len()` is
+the number of periods from `t = 0`**, i.e. the exclusive end of the frame: `result_cf()`
+covers `t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from
+issue and the elapsed periods for an in-force point. This is lifelib's own convention
+(`basiclife/BasicTerm_S`, `savings/CashValue_SE`: `for t in range(proj_len())`). A
+contractual policy year is the 1-based label `t + 1` (`duration(t) + 1` on a monthly grid)
+and is derived, never indexed by.
 
 (delib-own-rulings)=
 

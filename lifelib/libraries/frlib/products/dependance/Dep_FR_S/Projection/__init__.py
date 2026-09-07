@@ -12,12 +12,12 @@ projecting model point 1::
     >>> Projection.point_id = 9            # or switch the default
 
 ``t`` counts **policy months**, 0-based, exactly as the technical notes index them:
-``t = 0`` is the first policy month and ``t = proj_len()`` the last, so ``result_cf()``
-runs ``0 ... proj_len()``. Cover is *viagère* with no age limit, so what ends the
-projection is a **[std]** terminal age of 110 rather than the contract:
-``proj_len() = 12 (terminal_age - entry_age) - 1``, 479 on the base cell and so 480
-months in all. The state ledgers are indexed at the **start** of the month, so every cash
-flow on a ``result_cf()`` row is weighted by a state count on the same row.
+``t = 0`` is the first policy month and ``t = proj_len() - 1`` the last, so
+``result_cf()`` runs ``0 ... proj_len() - 1``. Cover is *viagère* with no age limit, so
+what ends the projection is a **[std]** terminal age of 110 rather than the contract:
+``proj_len() = 12 (terminal_age - entry_age)`` is the **number of projected months**,
+480 on the base cell. The state ledgers are indexed at the **start** of the month, so
+every cash flow on a ``result_cf()`` row is weighted by a state count on the same row.
 
 .. rubric:: Input data
 
@@ -68,7 +68,8 @@ y(t)                       policy_year(t)                    Policy year, t // 1
 (none)                     duration(t)                       Completed policy years
 (none)                     duration_mth(t)                   Months elapsed, equal to t
 (none)                     terminal_age                      110, what ends the run
-proj_len                   proj_len()                        The last projected month
+proj_len                   proj_len()                        The number of projected
+                                                             months, exclusive end of t
 z                          (the duration argument)           Months since first
                                                              recognition
 fr                         franchise_months()                Franchise, 3 months
@@ -231,8 +232,8 @@ which is what ``z`` records.
 
 :func:`dep_cohorts` holds all four vectors for one month and is the model's only
 list-valued cells. The alternative — four two-argument recursions — would be
-``4 (proj_len() + 1) max_dur()`` separate cells, nearly a million on the base cell, each
-with its own cache entry. Keeping them in one cells per month makes it ``proj_len() + 1``
+``4 proj_len() max_dur()`` separate cells, nearly a million on the base cell, each
+with its own cache entry. Keeping them in one cells per month makes it ``proj_len()``
 cells with a loop inside, and :func:`pols_part_dur` and its siblings read elements out of
 it so that the notes' two-dimensional objects are still addressable by name. The lists
 are rebuilt rather than mutated on each step, so a caller cannot corrupt the cache by
@@ -305,7 +306,8 @@ the rate from 0 to 0.20 to 0.40 moves lifetime claims by only +0.54% / 0 / -0.52
 adding it *without* re-deriving the incidence raises them 0.84% and puts the lives in the
 wrong state. And :func:`inc_rate_partial` **can go negative at extreme ages**, where the
 prevalence slope flattens while excess mortality does not; both rates are floored at
-zero **[std]**, which binds only above age 105 on the shipped basis.
+zero **[std]**, which never binds on the female base cell — :func:`inc_rate_partial` is
+still 0.0040 at attained age 109 — and binds at attained age 109 on the male basis.
 
 .. rubric:: Two indexations, two ledgers
 
@@ -647,20 +649,23 @@ def pols_if_init():
 # --- the policy clock ---
 
 def proj_len():
-    """The last projected month: ``12 (terminal_age - age_at_entry()) - 1``.
+    """The number of projected months: ``12 (terminal_age - age_at_entry())``.
 
-    479 on the base cell, which counting ``t = 0`` is 480 months, and it is the last
-    index of ``result_cf()`` — this library reads ``proj_len()`` as the last projected
-    period and not as a row count.  Cover is *viagère* with no age limit, so **what ends
-    the projection is the terminal age of the decrement basis, not the contract** — there
-    is no maturity, no expiry and no maturity benefit.  ``terminal_age`` is 110 **[std]**,
-    above which the mortality table forces the rate to 1.
+    480 on the base cell, and it is the **exclusive end** of the frame: the projection
+    runs ``t = 0 ... proj_len() - 1`` and ``result_cf()`` has ``proj_len()`` rows, which
+    is lifelib's ``range(proj_len())``.  Cover is *viagère* with no age limit, so **what
+    ends the projection is the terminal age of the decrement basis, not the contract** —
+    there is no maturity, no expiry and no maturity benefit.  ``terminal_age`` is 110
+    **[std]**, above which the mortality table forces the rate to 1.
     """
-    return 12 * (terminal_age - age_at_entry()) - 1                  # noqa: F821
+    return 12 * (terminal_age - age_at_entry())                      # noqa: F821
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``t // 12``."""
+    """Completed policy years at the start of month t: ``t // 12``.
+
+    0-based, as ``duration`` is throughout lifelib: 0 through the first policy year.
+    """
     return t // 12
 
 
@@ -691,13 +696,13 @@ def age(t):
 def max_dur():
     """The longest claim duration the cohort vectors have to carry.
 
-    ``proj_len() + claim_duration_months() + 2``, 481 on the base cell: a cohort seeded
-    at duration ``z0 + 1`` reaches ``z0 + proj_len() + 1`` in the last month
-    ``t = proj_len()``, and one recognised in month 0 reaches ``proj_len() + 1``.  The
+    ``proj_len() + claim_duration_months() + 1``, 481 on the base cell: a cohort seeded
+    at duration ``z0 + 1`` reaches ``z0 + proj_len()`` in the last month
+    ``t = proj_len() - 1``, and one recognised in month 0 reaches ``proj_len()``.  The
     last element is therefore structurally zero, which is what makes the duration shift
     lossless.
     """
-    return proj_len() + claim_duration_months() + 2
+    return proj_len() + claim_duration_months() + 1
 
 
 def seed_dur():
@@ -710,7 +715,7 @@ def cohort_len(t):
 
     The vectors are truncated to this length rather than carried at full
     :func:`max_dur` from month zero.  It is purely a cost decision — a full-length
-    vector in every month is ``(proj_len() + 1) max_dur()`` floats where this is half
+    vector in every month is ``proj_len() max_dur()`` floats where this is half
     that — and :func:`pols_part_dur` returns zero past the end of the list, so nothing
     about the two-dimensional view changes.
     """
@@ -828,9 +833,13 @@ def cum_prem_pp(t):
     premium it ever paid refunded, and this is what is refunded.  It is a per-policy
     amount and not a population-weighted one, which is why :func:`refunds_carence`
     multiplies it by the terminating population rather than adding to it.
+
+    The base case sits at ``t = 0``, the first projected month, and nothing is ever
+    indexed below it: :func:`premium_due` is true at ``t = 0`` on every payment mode, so
+    the first instalment always falls on the first row.
     """
-    if t < 0:
-        return 0.0
+    if t <= 0:
+        return premium_mth_pp(0) * premium_months() if t == 0 else 0.0
     paid = premium_mth_pp(t) * premium_months() if premium_due(t) else 0.0
     return cum_prem_pp(t - 1) + paid
 
@@ -1151,8 +1160,9 @@ def inc_rate_partial(t):
     refinements: dropping them understates incidence, because a rising prevalence is
     being fed against a dependent population that is simultaneously draining at its own
     excess mortality.  Floored at zero **[std]** — the identity can go negative at
-    extreme ages, where the prevalence slope flattens while excess mortality does not,
-    which on the shipped basis binds only above age 105.
+    extreme ages, where the prevalence slope flattens while excess mortality does not.
+    The floor never binds on the female base cell — the rate is still 0.0040 at attained
+    age 109 — and binds at attained age 109 on the male basis.
     """
     pi_p, pi_t = prev_partial(t), prev_total(t)
     pi_h = 1.0 - pi_p - pi_t
@@ -1212,8 +1222,14 @@ def pols_auto(t):
     claim terminates the membership rather than deferring it, so the blocked lives leave
     the in-force ledger exactly as the covered ones do and ``auto(t + 1)`` does not
     depend on ``S(t)`` at all.
+
+    The guard lets the ledger answer **one month past the frame**, at ``t = proj_len()``,
+    which is deliberate and not a leftover of a 1-based index: the population identity
+    :func:`check_states` holds at the **start** of a month, and the last projected month,
+    ``t = proj_len() - 1``, has one.  :func:`pols_red` and :func:`red_rente_value` carry
+    the same guard for the same reason.
     """
-    if t < 0 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
         return pols_if_init() if status() == "autonomous" else 0.0
@@ -1367,8 +1383,11 @@ def pols_red(t):
 
     **This is the ledger a naive model omits**, and omitting it turns every lapse from
     the qualifying period into a full release of liability.
+
+    Answers one month past the frame, at ``t = proj_len()``, for the reason given under
+    :func:`pols_auto`.
     """
-    if t < 0 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
         return pols_if_init() if status() == "reduced" else 0.0
@@ -1391,8 +1410,11 @@ def red_rente_value(t):
     The frozen amount is never revalued **before** claim; it becomes a *rente en service*
     and starts moving at ``reval_rente`` only once it is in payment, which happens on the
     fourth vector of :func:`dep_cohorts`.
+
+    Answers one month past the frame, at ``t = proj_len()``, for the reason given under
+    :func:`pols_auto`.
     """
-    if t < 0 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
     if t == 0:
         if status() != "reduced":
@@ -1426,8 +1448,8 @@ def dep_cohorts(t):
     date and cannot be recovered from the policy year the way the other amounts can.
 
     The model's only list-valued cells, and the reason is cost: four two-argument
-    recursions would be ``4 (proj_len() + 1) max_dur()`` separate cells — nearly a
-    million on the base cell — where this is ``proj_len() + 1`` cells with a loop inside.
+    recursions would be ``4 proj_len() max_dur()`` separate cells — nearly a
+    million on the base cell — where this is ``proj_len()`` cells with a loop inside.
     :func:`pols_part_dur` and its siblings read elements out of it, so the notes'
     two-dimensional objects are still addressable by name.
 
@@ -1610,7 +1632,7 @@ def pols_if_at(t, timing):
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "AFT_DECR":
-        if t < 0 or t > proj_len():
+        if t < 0 or t >= proj_len():
             return 0.0
         return pols_if(t + 1)
     raise ValueError("invalid timing")
@@ -1872,7 +1894,7 @@ def check_pols_roll_fwd():
     """
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_pols_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_states_resid(t):
@@ -1892,11 +1914,14 @@ def check_states():
     """True when the five-ledger population identity holds in every projected month.
 
     No argument, one bool over all t, the library-wide shape of a ``check_*`` cells;
-    :func:`check_states_resid` gives the signed residual of the month that failed.
+    :func:`check_states_resid` gives the signed residual of the month that failed.  The
+    sweep runs ``t = 0 ... proj_len()``, one point past the frame, because the identity
+    holds at the **start** of a month and the last projected month, ``proj_len() - 1``,
+    still has one.
     """
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_states_resid(t)) <= tol
-               for t in range(proj_len() + 2))
+               for t in range(proj_len() + 1))
 
 
 def check_part_roll_fwd_resid(t):
@@ -1919,7 +1944,7 @@ def check_part_roll_fwd():
     """True when the *partielle* ledger closes against its aggregate recursion."""
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_part_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_tot_roll_fwd_resid(t):
@@ -1944,7 +1969,7 @@ def check_tot_roll_fwd():
     """True when the two *totale* ledgers close against their aggregate recursion."""
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_tot_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_model_point():
@@ -1990,7 +2015,7 @@ def result_cf():
     has its own because it is a per-event cost rather than a per-policy one.  Nothing
     here is discounted.
     """
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2014,7 +2039,7 @@ def result_cf():
 
 def result_states():
     """Result table of state movements and rates, indexed by policy month t."""
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_entry_partial": [pols_entry_partial(t) for t in ts],

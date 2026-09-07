@@ -14,6 +14,12 @@ notes by eye.  Tolerances follow the precision the notes display: money to the c
 ``pols_if`` to six decimals, and the totals at full precision -- 10 396,90 EUR of death
 claims that way against 10 396,89 EUR if the seventeen rounded cells are added.
 
+The time index ``t`` is the library-wide **0-based** one, so the goldens below are keyed
+``t = 0 ... 16``: ``t = 0`` is the first policy year, at attained age 58, and
+``proj_len() = 17`` is the *number* of projected years -- the exclusive end of the frame,
+whose last index is 16.  The contractual policy year is the derived label ``t + 1``, which
+is what the two policy-year-keyed CSVs are read at.
+
 Beyond the worked example this module asserts the fourteen product facts the notes list
 as modeling pitfalls -- the ways an implementation of *this* product looks right and is
 wrong: the cotisation is **revisable** and moves every year; PTIA is an **acceleration**
@@ -21,8 +27,8 @@ and never a second payment; PTIA cover stops **before** death cover, at a hard a
 ``q_d`` and ``q_p`` are **dependent** rates and therefore additive; there is **no
 surrender value**, by statute, at any duration; the age basis is the *différence de
 millésime*; the tariff grid is a lookup whose +38 % step at age 60 must survive; the
-suicide factor touches death claims in year 1 and nothing else; the premium-cessation rule
-is applied once; nothing exists at ``t = proj_len + 1``; the two premium forms do **not**
+suicide factor touches death claims in the first year and nothing else; the premium-cessation rule
+is applied once; nothing exists at or beyond ``t = proj_len``; the two premium forms do **not**
 collect the same projected total; a *surprime* scales the cotisation and never the
 capital; the fractionation loading and the *frais d'échéance* are charges of different
 kinds; and the accidental option is a share and not an uplift.
@@ -54,23 +60,23 @@ MODEL_DIR = LIB / MODELS["TD_FR_A"][0]
 # The notes' worked-example table, in full.  claims_lapse is 0.00 at every t and is
 # omitted from the notes' table for space; it is asserted in the row test all the same.
 WORKED_EXAMPLE = {
-    1:  (58, 0.0105, 1.000000, 1575.00, 588.00, 120.00, 905.72,  -38.72),
-    2:  (59, 0.0113, 0.875776, 1484.44, 572.76, 114.55,  97.24,  699.89),
-    3:  (60, 0.0156, 0.784075, 1834.73, 558.94, 111.79, 112.80, 1051.21),
-    4:  (61, 0.0168, 0.717235, 1807.43, 557.30, 111.46, 110.07, 1028.60),
-    5:  (62, 0.0181, 0.670010, 1819.08, 567.46, 113.49, 109.77, 1028.35),
-    6:  (63, 0.0197, 0.625542, 1848.48, 577.48, 115.50, 110.38, 1045.11),
-    7:  (64, 0.0214, 0.583667, 1873.57, 587.32, 117.46, 110.82, 1057.97),
-    8:  (65, 0.0233, 0.544230, 1902.08, 596.92,   0.00, 111.33, 1193.83),
-    9:  (66, 0.0255, 0.507836, 1942.47, 607.14,   0.00, 112.61, 1222.73),
-    10: (67, 0.0278, 0.473561, 1974.75, 617.11,   0.00, 113.50, 1244.13),
-    11: (68, 0.0288, 0.441280, 1906.33, 626.80,   0.00, 109.39, 1170.14),
-    12: (69, 0.0314, 0.410875, 1935.22, 636.14,   0.00, 110.17, 1188.91),
-    13: (70, 0.0343, 0.382236, 1966.60, 645.06,   0.00, 111.09, 1210.45),
-    14: (71, 0.0374, 0.355260, 1993.01, 653.49,   0.00, 111.79, 1227.72),
-    15: (72, 0.0409, 0.329849, 2023.62, 661.36,   0.00, 112.72, 1249.54),
-    16: (73, 0.0446, 0.305913, 2046.56, 668.57,   0.00, 113.29, 1264.70),
-    17: (74, 0.0486, 0.283369, 2065.76, 675.04,   0.00, 113.69, 1277.03),
+    0:  (58, 0.0105, 1.000000, 1575.00, 588.00, 120.00, 905.72,  -38.72),
+    1:  (59, 0.0113, 0.875776, 1484.44, 572.76, 114.55,  97.24,  699.89),
+    2:  (60, 0.0156, 0.784075, 1834.73, 558.94, 111.79, 112.80, 1051.21),
+    3:  (61, 0.0168, 0.717235, 1807.43, 557.30, 111.46, 110.07, 1028.60),
+    4:  (62, 0.0181, 0.670010, 1819.08, 567.46, 113.49, 109.77, 1028.35),
+    5:  (63, 0.0197, 0.625542, 1848.48, 577.48, 115.50, 110.38, 1045.11),
+    6:  (64, 0.0214, 0.583667, 1873.57, 587.32, 117.46, 110.82, 1057.97),
+    7:  (65, 0.0233, 0.544230, 1902.08, 596.92,   0.00, 111.33, 1193.83),
+    8:  (66, 0.0255, 0.507836, 1942.47, 607.14,   0.00, 112.61, 1222.73),
+    9:  (67, 0.0278, 0.473561, 1974.75, 617.11,   0.00, 113.50, 1244.13),
+    10: (68, 0.0288, 0.441280, 1906.33, 626.80,   0.00, 109.39, 1170.14),
+    11: (69, 0.0314, 0.410875, 1935.22, 636.14,   0.00, 110.17, 1188.91),
+    12: (70, 0.0343, 0.382236, 1966.60, 645.06,   0.00, 111.09, 1210.45),
+    13: (71, 0.0374, 0.355260, 1993.01, 653.49,   0.00, 111.79, 1227.72),
+    14: (72, 0.0409, 0.329849, 2023.62, 661.36,   0.00, 112.72, 1249.54),
+    15: (73, 0.0446, 0.305913, 2046.56, 668.57,   0.00, 113.29, 1264.70),
+    16: (74, 0.0486, 0.283369, 2065.76, 675.04,   0.00, 113.69, 1277.03),
 }
 
 # The notes' Total row, summed at full precision and then rounded.
@@ -81,11 +87,11 @@ TOTALS = {"premiums": 31999.13, "claims_death": 10396.90, "claims_ptia": 804.25,
 # level_premium = 0, so P_lev is derived by equivalence.  Model point 2.
 # t: (prem_pp, premiums, claims_death, claims_ptia, expenses, net_cf).
 LEVEL_VARIANT = {
-    1:  (3914.39, 3914.39, 588.00, 120.00, 1841.48, 1364.91),
-    2:  (3914.39, 3428.13, 572.76, 114.55,  194.43, 2546.39),
-    3:  (3914.39, 3069.17, 558.94, 111.79,  174.52, 2223.93),
-    8:  (3914.39, 2130.33, 596.92,   0.00,  122.74, 1410.66),
-    17: (3914.39, 1109.22, 675.04,   0.00,   65.86,  368.32),
+    0:  (3914.39, 3914.39, 588.00, 120.00, 1841.48, 1364.91),
+    1:  (3914.39, 3428.13, 572.76, 114.55,  194.43, 2546.39),
+    2:  (3914.39, 3069.17, 558.94, 111.79,  174.52, 2223.93),
+    7:  (3914.39, 2130.33, 596.92,   0.00,  122.74, 1410.66),
+    16: (3914.39, 1109.22, 675.04,   0.00,   65.86,  368.32),
 }
 
 LEVEL_TOTALS = {"premiums": 36367.46, "claims_death": 10396.90, "claims_ptia": 804.25,
@@ -122,46 +128,46 @@ def test_the_worked_example_totals_are_summed_at_full_precision(fr_td_anchor):
         10396.89, abs=CENT)
 
 
-def test_year_three_rebuilt_from_scratch(fr_td_anchor):
-    """The notes' own independent rebuild of year 3, component by component.
+def test_the_third_row_rebuilt_from_scratch(fr_td_anchor):
+    """The notes' own independent rebuild of ``t = 2``, component by component.
 
-    ``l(3) = 0,875776 x (1 - 0,005232) x 0,90``, then the claims and each of the three
-    expense lines separately, then ``net_cf(3)``.  The last step carries the notes' own
+    ``l(2) = 0,875776 x (1 - 0,005232) x 0,90``, then the claims and each of the three
+    expense lines separately, then ``net_cf(2)``.  The last step carries the notes' own
     one-cent rounding artefact: the four *displayed* figures subtract to 1 051,20 while
     the full-precision result is 1 051,2108, printed as 1 051,21.  Both are asserted.
     """
     p = fr_td_anchor
-    assert p.pols_if(2) == pytest.approx(0.99520 * 0.88, rel=1e-9)
-    assert p.mort_rate(2) == pytest.approx(0.00400 * 1.09, rel=1e-9)
-    assert p.ptia_rate(2) == pytest.approx(0.000872, rel=1e-9)
-    assert p.pols_if(3) == pytest.approx(0.875776 * 0.8952912, abs=1e-8)
-    assert p.mort_rate(3) == pytest.approx(0.0047524, rel=1e-9)
-    assert p.ptia_rate(3) == pytest.approx(0.00095048, rel=1e-9)
-    assert p.claims(3, "DEATH") == pytest.approx(150000 * 0.78407455 * 0.0047524, abs=CENT)
-    assert p.claims(3, "PTIA") == pytest.approx(150000 * 0.78407455 * 0.00095048, abs=CENT)
-    assert p.commissions(3) == pytest.approx(0.05 * 2340.00 * 0.78407455, abs=CENT)
-    assert p.claim_expenses(3) == pytest.approx(150 * 0.78407455 * 0.00570288, abs=0.0005)
-    assert p.expenses(3) == pytest.approx(20.3938 + 91.7367 + 0.6707, abs=CENT)
-    assert p.net_cf(3) == pytest.approx(1051.21, abs=CENT)
+    assert p.pols_if(1) == pytest.approx(0.99520 * 0.88, rel=1e-9)
+    assert p.mort_rate(1) == pytest.approx(0.00400 * 1.09, rel=1e-9)
+    assert p.ptia_rate(1) == pytest.approx(0.000872, rel=1e-9)
+    assert p.pols_if(2) == pytest.approx(0.875776 * 0.8952912, abs=1e-8)
+    assert p.mort_rate(2) == pytest.approx(0.0047524, rel=1e-9)
+    assert p.ptia_rate(2) == pytest.approx(0.00095048, rel=1e-9)
+    assert p.claims(2, "DEATH") == pytest.approx(150000 * 0.78407455 * 0.0047524, abs=CENT)
+    assert p.claims(2, "PTIA") == pytest.approx(150000 * 0.78407455 * 0.00095048, abs=CENT)
+    assert p.commissions(2) == pytest.approx(0.05 * 2340.00 * 0.78407455, abs=CENT)
+    assert p.claim_expenses(2) == pytest.approx(150 * 0.78407455 * 0.00570288, abs=0.0005)
+    assert p.expenses(2) == pytest.approx(20.3938 + 91.7367 + 0.6707, abs=CENT)
+    assert p.net_cf(2) == pytest.approx(1051.21, abs=CENT)
     assert 1834.73 - 558.94 - 111.79 - 112.80 == pytest.approx(1051.20, abs=CENT)
 
 
 def test_the_decrements_close_four_ways(fr_td_anchor):
     """The notes' closure split: deaths, PTIA, lapses and survivors sum to exactly one.
 
-    The last term is ``pols_if(proj_len + 1)``, the expiring cohort, which exists so the
-    identity closes and is a weight on no cash flow.
+    The last term is ``pols_if(proj_len)`` -- one past the frame's last index -- the
+    expiring cohort, which exists so the identity closes and is a weight on no cash flow.
     """
     p = fr_td_anchor
     n = p.proj_len()
-    deaths = sum(p.pols_death(t) for t in range(1, n + 1))
-    ptia = sum(p.pols_ptia(t) for t in range(1, n + 1))
-    lapses = sum(p.pols_lapse(t) for t in range(1, n + 1))
+    deaths = sum(p.pols_death(t) for t in range(n))
+    ptia = sum(p.pols_ptia(t) for t in range(n))
+    lapses = sum(p.pols_lapse(t) for t in range(n))
     assert deaths == pytest.approx(0.06939268, abs=5e-9)
     assert ptia == pytest.approx(0.00536169, abs=5e-9)
     assert lapses == pytest.approx(0.64637711, abs=5e-9)
-    assert p.pols_if(n + 1) == pytest.approx(0.27886852, abs=5e-9)
-    assert deaths + ptia + lapses + p.pols_if(n + 1) == pytest.approx(1.0, abs=1e-12)
+    assert p.pols_if(n) == pytest.approx(0.27886852, abs=5e-9)
+    assert deaths + ptia + lapses + p.pols_if(n) == pytest.approx(1.0, abs=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -186,14 +192,14 @@ def test_the_level_premium_is_reached_two_independent_ways(temporaire_deces):
     """P_lev = 60 476,2476 / 15,449728 = 3 914,3891, and also a weighted mean of the grid.
 
     The second route never forms the premium stream: ``P_lev / SA`` is the
-    ``v^(t-1) p_tau(t)``-weighted mean of the seventeen grid rates, 2,60959276 %.
+    ``v^t p_tau(t)``-weighted mean of the seventeen grid rates, 2,60959276 %.
     """
     p = temporaire_deces.Projection[2]
     assert p.tariff_prem_pv() == pytest.approx(60476.2476, abs=CENT)
     assert p.tariff_annuity() == pytest.approx(15.449728, abs=5e-7)
     assert p.prem_level_pp() == pytest.approx(3914.3891, abs=5e-5)
-    weights = [p.disc_factor(t) * p.pols_tariff(t) for t in range(1, p.proj_len() + 1)]
-    mean_rate = sum(w * p.prem_rate(t) for t, w in enumerate(weights, start=1))
+    weights = [p.disc_factor(t) * p.pols_tariff(t) for t in range(p.proj_len())]
+    mean_rate = sum(w * p.prem_rate(t) for t, w in enumerate(weights))
     mean_rate /= sum(weights)
     assert mean_rate == pytest.approx(0.0260959276, rel=1e-8)
     assert p.sum_assured() * mean_rate == pytest.approx(3914.3891, abs=5e-5)
@@ -201,7 +207,7 @@ def test_the_level_premium_is_reached_two_independent_ways(temporaire_deces):
     # Model point 3 supplies 3 900,00 EUR instead, so the derivation branch is not taken.
     given = temporaire_deces.Projection[3]
     assert given.level_premium() == 3900.0
-    assert all(given.prem_pp(t) == 3900.0 for t in (1, 5, 17))
+    assert all(given.prem_pp(t) == 3900.0 for t in (0, 4, 16))
     assert given.result_cf()["premiums"].sum() < p.result_cf()["premiums"].sum()
 
 
@@ -212,28 +218,28 @@ def test_the_level_premium_is_reached_two_independent_ways(temporaire_deces):
 def test_the_revisable_cotisation_moves_with_attained_age(temporaire_deces, fr_td_anchor):
     """The French default is revisable, not constante -- the notes' first pitfall.
 
-    ``prem_pp(3)/prem_pp(2) = 1,56/1,13 = 1,380531``, and over the whole cover the
+    ``prem_pp(2)/prem_pp(1) = 1,56/1,13 = 1,380531``, and over the whole cover the
     cotisation multiplies by ``r(74)/r(58) = 4,6286`` -- a figure that depends only on the
     grid and not at all on the capital.
     """
     p = fr_td_anchor
     assert p.premium_form() == "revisable"
-    assert len({p.prem_pp(t) for t in range(1, 18)}) == 17
-    assert p.prem_pp(3) / p.prem_pp(2) == pytest.approx(1.56 / 1.13, rel=1e-12)
-    assert p.prem_pp(3) / p.prem_pp(2) == pytest.approx(1.380531, abs=5e-7)
-    assert p.prem_pp(1) == pytest.approx(1575.00, abs=CENT)
-    assert p.prem_pp(17) == pytest.approx(7290.00, abs=CENT)
-    assert p.prem_pp(17) / p.prem_pp(1) == pytest.approx(4.86 / 1.05, rel=1e-12)
-    assert p.prem_pp(17) / p.prem_pp(1) == pytest.approx(4.6286, abs=5e-5)
+    assert len({p.prem_pp(t) for t in range(17)}) == 17
+    assert p.prem_pp(2) / p.prem_pp(1) == pytest.approx(1.56 / 1.13, rel=1e-12)
+    assert p.prem_pp(2) / p.prem_pp(1) == pytest.approx(1.380531, abs=5e-7)
+    assert p.prem_pp(0) == pytest.approx(1575.00, abs=CENT)
+    assert p.prem_pp(16) == pytest.approx(7290.00, abs=CENT)
+    assert p.prem_pp(16) / p.prem_pp(0) == pytest.approx(4.86 / 1.05, rel=1e-12)
+    assert p.prem_pp(16) / p.prem_pp(0) == pytest.approx(4.6286, abs=5e-5)
     # Model point 12 is the same cell at 20 000 EUR: the same ratios, 7,5x less money.
     # It is also the notes' expense sensitivity -- a year-one cotisation of 210 EUR
     # against 250 EUR of acquisition expense, so on small capitals the expense assumption
     # and not mortality decides whether the cell is viable.
     small = temporaire_deces.Projection[12]
-    assert small.prem_pp(1) == pytest.approx(210.00, abs=CENT)
-    assert small.prem_pp(17) / small.prem_pp(1) == pytest.approx(
-        p.prem_pp(17) / p.prem_pp(1), rel=1e-12)
-    assert small.net_cf(1) < 0.0
+    assert small.prem_pp(0) == pytest.approx(210.00, abs=CENT)
+    assert small.prem_pp(16) / small.prem_pp(0) == pytest.approx(
+        p.prem_pp(16) / p.prem_pp(0), rel=1e-12)
+    assert small.net_cf(0) < 0.0
 
 
 def test_the_tariff_grid_is_a_lookup_and_keeps_its_step(temporaire_deces):
@@ -263,13 +269,13 @@ def test_the_capital_is_never_paid_twice(fr_td_anchor):
     """
     p = fr_td_anchor
     n = p.proj_len()
-    events = sum(p.pols_death(t) + p.pols_ptia(t) for t in range(1, n + 1))
-    paid = sum(p.claims(t, "DEATH") + p.claims(t, "PTIA") for t in range(1, n + 1))
+    events = sum(p.pols_death(t) + p.pols_ptia(t) for t in range(n))
+    paid = sum(p.claims(t, "DEATH") + p.claims(t, "PTIA") for t in range(n))
     assert events <= 1.0
     assert p.sum_assured() * events == pytest.approx(11213.155, abs=CENT)
     assert paid == pytest.approx(11201.155, abs=CENT)
     assert p.sum_assured() * events - paid == pytest.approx(12.00, abs=CENT)
-    assert (1 - p.suicide_factor(1)) * p.sum_assured() * p.pols_death(1) == (
+    assert (1 - p.suicide_factor(0)) * p.sum_assured() * p.pols_death(0) == (
         pytest.approx(12.00, abs=CENT))
 
 
@@ -282,7 +288,7 @@ def test_a_ptia_life_leaves_the_in_force(fr_td_anchor):
     p = fr_td_anchor
     assert p.check_pols_roll_fwd() is True
     assert p.check_decrement_closure() is True
-    for t in (1, 7, 8, 17):
+    for t in (0, 6, 7, 16):
         assert p.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
         assert p.check_decrement_closure_resid(t) == pytest.approx(0.0, abs=1e-12)
 
@@ -290,16 +296,16 @@ def test_a_ptia_life_leaves_the_in_force(fr_td_anchor):
 def test_ptia_cover_stops_before_death_cover(temporaire_deces, fr_td_anchor):
     """A hard gate on the attained age, not a taper, at both extremes of the model points.
 
-    On the anchor cell ``age(8) = ptia_end_age = 65``, so the cover is off for the whole
-    of policy year 8 -- ``>=``, not ``>``.  Model point 11 enters at exactly
-    ``ptia_end_age`` and never attaches; model point 7 never switches off.
+    On the anchor cell ``age(7) = ptia_end_age = 65``, so the cover is off for the whole
+    of that year, contractual policy year 8 -- ``>=``, not ``>``.  Model point 11 enters
+    at exactly ``ptia_end_age`` and never attaches; model point 7 never switches off.
     """
     p = fr_td_anchor
     assert p.ptia_end_age() == 65 and p.cover_end_age() == 75
-    assert all(p.ptia_rate(t) > 0.0 for t in range(1, 8))
-    assert all(p.ptia_rate(t) == 0.0 for t in range(8, 18))
-    assert all(p.claims(t, "PTIA") == 0.0 for t in range(8, 18))
-    assert all(p.claims(t, "DEATH") > 0.0 for t in range(8, 18))
+    assert all(p.ptia_rate(t) > 0.0 for t in range(7))
+    assert all(p.ptia_rate(t) == 0.0 for t in range(7, 17))
+    assert all(p.claims(t, "PTIA") == 0.0 for t in range(7, 17))
+    assert all(p.claims(t, "DEATH") > 0.0 for t in range(7, 17))
     assert p.check_ptia_gate() is True
 
     never = temporaire_deces.Projection[11]
@@ -311,22 +317,22 @@ def test_ptia_cover_stops_before_death_cover(temporaire_deces, fr_td_anchor):
 
     always = temporaire_deces.Projection[7]
     assert always.ptia_end_age() == always.cover_end_age() == 65
-    assert all(always.ptia_rate(t) > 0.0 for t in range(1, always.proj_len() + 1))
+    assert all(always.ptia_rate(t) > 0.0 for t in range(always.proj_len()))
     assert always.check_ptia_gate() is True
 
 
 def test_the_competing_risks_are_dependent_rates_and_therefore_additive(fr_td_anchor):
-    """q_d + q_p, not 1 - (1-q_d)(1-q_p): 0.00480000 against 0.00479680 in year 1.
+    """q_d + q_p, not 1 - (1-q_d)(1-q_p): 0.00480000 against 0.00479680 at t = 0.
 
-    Immaterial here -- 0,48 EUR of year-one claims per 150 000 EUR of capital -- and
+    Immaterial here -- 0,48 EUR of first-year claims per 150 000 EUR of capital -- and
     material at older ages.  The in-force recursion is where the convention shows.
     """
     p = fr_td_anchor
-    qd, qp = p.mort_rate(1), p.ptia_rate(1)
+    qd, qp = p.mort_rate(0), p.ptia_rate(0)
     assert qd + qp == pytest.approx(0.00480000, rel=1e-12)
     assert 1.0 - (1.0 - qd) * (1.0 - qp) == pytest.approx(0.00479680, rel=1e-9)
-    assert p.pols_if_at(1, "BEF_LAPSE") == pytest.approx(1.0 - qd - qp, rel=1e-12)
-    assert p.pols_if(2) == pytest.approx((1.0 - qd - qp) * (1.0 - 0.12), rel=1e-12)
+    assert p.pols_if_at(0, "BEF_LAPSE") == pytest.approx(1.0 - qd - qp, rel=1e-12)
+    assert p.pols_if(1) == pytest.approx((1.0 - qd - qp) * (1.0 - 0.12), rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -340,10 +346,10 @@ def test_a_lapse_pays_nothing_at_any_duration(temporaire_deces, fr_td_anchor):
     model with cash surrender values would add, and every total would still look sane.
     """
     p = fr_td_anchor
-    assert all(p.claims(t, "LAPSE") == 0.0 for t in range(1, 18))
+    assert all(p.claims(t, "LAPSE") == 0.0 for t in range(17))
     assert (p.result_cf()["claims_lapse"] == 0.0).all()
     assert p.check_no_cash_value() is True
-    assert p.pols_lapse(1) > 0.0          # the lapses are real; only the benefit is nil
+    assert p.pols_lapse(0) > 0.0          # the lapses are real; only the benefit is nil
     names = set(temporaire_deces.Projection.cells) | set(
         temporaire_deces.Projection.refs)
     for absent in ("av_pp_at", "av_at", "prem_to_av_pp", "cv_pp", "surr_charge_rate",
@@ -357,16 +363,16 @@ def test_a_lapse_pays_nothing_at_any_duration(temporaire_deces, fr_td_anchor):
 
 
 def test_the_age_basis_is_the_difference_de_millesime(fr_td_anchor):
-    """Calendar year less birth year, so age(t) = issue_age + t - 1 and nothing else.
+    """Calendar year less birth year, so age(t) = issue_age + t and nothing else.
 
-    A one-year shift moves ``prem_pp(1)`` from 1 575,00 EUR (age 58) to 1 695,00 EUR (age
+    A one-year shift moves ``prem_pp(0)`` from 1 575,00 EUR (age 58) to 1 695,00 EUR (age
     59) -- a 7,6 % error in year one that compounds through the whole projection.
     """
     p = fr_td_anchor
     assert p.issue_age() == 58
-    assert [p.age(t) for t in (1, 2, 17)] == [58, 59, 74]
-    assert p.prem_pp(1) == pytest.approx(1575.00, abs=CENT)
-    assert p.prem_pp(2) == pytest.approx(1695.00, abs=CENT)
+    assert [p.age(t) for t in (0, 1, 16)] == [58, 59, 74]
+    assert p.prem_pp(0) == pytest.approx(1575.00, abs=CENT)
+    assert p.prem_pp(1) == pytest.approx(1695.00, abs=CENT)
     assert 1695.00 / 1575.00 - 1 == pytest.approx(0.076, abs=0.0005)
     # issue_date is carried and drives nothing: the millesime basis needs only the age.
     assert p.issue_date() == "2026-01-01"
@@ -380,35 +386,36 @@ def test_pricing_is_unisex_while_the_model_point_still_carries_sex(temporaire_de
     """
     male, female = temporaire_deces.Projection[1], temporaire_deces.Projection[8]
     assert male.sex() == "M" and female.sex() == "F"
-    assert female.prem_rate(1) == male.prem_rate(1)
-    assert female.mort_rate(1) == male.mort_rate(1)
-    assert female.benefit_pp(1) == male.benefit_pp(1)
-    assert female.prem_pp(1) == pytest.approx(150000 * 0.0105 * 1.04 + 6.0, abs=CENT)
+    assert female.prem_rate(0) == male.prem_rate(0)
+    assert female.mort_rate(0) == male.mort_rate(0)
+    assert female.benefit_pp(0) == male.benefit_pp(0)
+    assert female.prem_pp(0) == pytest.approx(150000 * 0.0105 * 1.04 + 6.0, abs=CENT)
 
 
 # ---------------------------------------------------------------------------
 # Pitfall 8 -- the suicide factor
 
 
-def test_the_suicide_factor_touches_death_in_year_one_and_nothing_else(
+def test_the_suicide_factor_touches_death_in_the_first_year_and_nothing_else(
         temporaire_deces, fr_td_anchor):
-    """Art. L. 132-7 voids the death cover for suicide in year 1.  PTIA is not death.
+    """Art. L. 132-7 voids the death cover for suicide in the first year, ``t = 0``.
 
-    The art. R. 132-5 immediate-cover ceiling of 120 000 EUR belongs to
-    principal-residence loan cover; importing it would cap the anchor cell's first-year
-    death benefit, so its absence is visible in the numbers and not only in the cells list.
+    PTIA is not death, so it is never touched.  The art. R. 132-5 immediate-cover ceiling
+    of 120 000 EUR belongs to principal-residence loan cover; importing it would cap the
+    anchor cell's first-year death benefit, so its absence is visible in the numbers and
+    not only in the cells list.
     """
     p = fr_td_anchor
-    assert p.suicide_factor(1) == 0.98
-    assert all(p.suicide_factor(t) == 1.0 for t in (2, 3, 17))
+    assert p.suicide_factor(0) == 0.98
+    assert all(p.suicide_factor(t) == 1.0 for t in (1, 2, 16))
+    assert p.claims(0, "DEATH") == pytest.approx(
+        0.98 * p.benefit_pp(0) * p.pols_death(0), rel=1e-12)
     assert p.claims(1, "DEATH") == pytest.approx(
-        0.98 * p.benefit_pp(1) * p.pols_death(1), rel=1e-12)
-    assert p.claims(2, "DEATH") == pytest.approx(
-        p.benefit_pp(2) * p.pols_death(2), rel=1e-12)
-    assert p.claims(1, "PTIA") == pytest.approx(
-        p.benefit_pp(1) * p.pols_ptia(1), rel=1e-12)
-    assert p.benefit_death_pp(1) == 150000.0
-    assert p.claims(1, "DEATH") / p.pols_death(1) > 120000.0
+        p.benefit_pp(1) * p.pols_death(1), rel=1e-12)
+    assert p.claims(0, "PTIA") == pytest.approx(
+        p.benefit_pp(0) * p.pols_ptia(0), rel=1e-12)
+    assert p.benefit_death_pp(0) == 150000.0
+    assert p.claims(0, "DEATH") / p.pols_death(0) > 120000.0
     names = set(temporaire_deces.Projection.cells) | set(
         temporaire_deces.Projection.refs)
     for absent in ("immediate_cover_cap", "suicide_cover_cap", "loan_cover_cap"):
@@ -423,30 +430,30 @@ def test_the_premium_cessation_rule_is_applied_once(fr_td_anchor):
     """Cotisations are in advance and claims at year end, so a claimant has already paid.
 
     Multiplying ``premiums(t)`` by ``(1 - q_d - q_p)`` as well applies the rule twice and
-    understates year-t income by about 0,5 % at the anchor age.
+    understates period-t income by about 0,5 % at the anchor age.
     """
     p = fr_td_anchor
-    for t in (1, 5, 17):
+    for t in (0, 4, 16):
         assert p.premiums(t) == pytest.approx(p.prem_pp(t) * p.pols_if(t), rel=1e-12)
-    twice = p.prem_pp(1) * p.pols_if(1) * (1 - p.mort_rate(1) - p.ptia_rate(1))
-    assert p.premiums(1) - twice == pytest.approx(1575.00 * 0.0048, abs=CENT)
+    twice = p.prem_pp(0) * p.pols_if(0) * (1 - p.mort_rate(0) - p.ptia_rate(0))
+    assert p.premiums(0) - twice == pytest.approx(1575.00 * 0.0048, abs=CENT)
 
 
 def test_commissions_are_inside_expenses_not_beside_them(fr_td_anchor):
-    """expenses(1) = 250 + 25 + 0,72 + 630 = 905,72, and the last term is the commission.
+    """expenses(0) = 250 + 25 + 0,72 + 630 = 905,72, and the last term is the commission.
 
     ``result_cf()`` publishes both columns because the notes' table does, so an
     implementation that also subtracted ``commissions`` from ``net_cf`` would charge it
-    twice -- loudest in year one, where the commission is 40 % of the cotisation.
+    twice -- loudest in the first year, where the commission is 40 % of the cotisation.
     """
     p = fr_td_anchor
-    assert p.commissions(1) == pytest.approx(0.40 * 1575.00, abs=CENT)
-    assert p.claim_expenses(1) == pytest.approx(150 * 0.0048, abs=CENT)
-    assert p.expenses(1) == pytest.approx(250.0 + 25.0 + 0.72 + 630.0, abs=CENT)
-    assert p.net_cf(1) == pytest.approx(
-        p.premiums(1) - p.claims(1) - p.expenses(1), rel=1e-12)
+    assert p.commissions(0) == pytest.approx(0.40 * 1575.00, abs=CENT)
+    assert p.claim_expenses(0) == pytest.approx(150 * 0.0048, abs=CENT)
+    assert p.expenses(0) == pytest.approx(250.0 + 25.0 + 0.72 + 630.0, abs=CENT)
+    assert p.net_cf(0) == pytest.approx(
+        p.premiums(0) - p.claims(0) - p.expenses(0), rel=1e-12)
     assert (p.result_cf()["commissions"] <= p.result_cf()["expenses"]).all()
-    assert p.commissions(2) == pytest.approx(0.05 * p.premiums(2), rel=1e-12)
+    assert p.commissions(1) == pytest.approx(0.05 * p.premiums(1), rel=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -454,25 +461,28 @@ def test_commissions_are_inside_expenses_not_beside_them(fr_td_anchor):
 
 
 def test_nothing_runs_past_the_age_limit(temporaire_deces, fr_td_anchor):
-    """proj_len = cover_end_age - issue_age, and there is no tail state after it.
+    """proj_len is the number of projected years, and there is no tail state after it.
 
-    No maturity benefit, no renewal, no conversion and no post-level-term phase -- the
-    last of which ``Term_US_A`` has and importing it here would invent.  In the final year
-    a lapse and an expiry are the same event paying the same nothing, so ``lapse_rate(17)``
-    is zero: that is what makes the notes' closure split 64,638 % lapses and 27,887 %
-    survivors rather than 66,311 % and 26,214 %, and it changes no cash flow.
+    ``proj_len() = cover_end_age - issue_age = 17``, so the frame is ``t = 0 ... 16`` --
+    seventeen rows whose last index is ``proj_len() - 1``.  No maturity benefit, no
+    renewal, no conversion and no post-level-term phase -- the last of which ``Term_US_A``
+    has and importing it here would invent.  In the final projected year a lapse and an
+    expiry are the same event paying the same nothing, so ``lapse_rate(16)`` is zero: that
+    is what makes the notes' closure split 64,638 % lapses and 27,887 % survivors rather
+    than 66,311 % and 26,214 %, and it changes no cash flow.
     """
     p = fr_td_anchor
     assert p.proj_len() == 75 - 58 == 17
     df = p.result_cf()
-    assert list(df.index) == list(range(1, 18))
+    assert list(df.index) == list(range(17))
+    assert df.index[-1] == p.proj_len() - 1
     assert df.index.name == "t"
-    assert p.pols_if(18) == pytest.approx(0.27886852, abs=5e-9)
-    assert p.pols_if(19) == 0.0
-    assert p.pols_if_at(17, "AFT_DECR") == pytest.approx(p.pols_if(18), rel=1e-12)
-    assert p.lapse_rate_base(17) == 0.06 and p.lapse_rate(17) == 0.0
-    assert p.pols_lapse(17) == 0.0
-    assert p.lapse_rate(16) == pytest.approx(0.06, rel=1e-12) and p.pols_lapse(16) > 0.0
+    assert p.pols_if(17) == pytest.approx(0.27886852, abs=5e-9)
+    assert p.pols_if(18) == 0.0
+    assert p.pols_if_at(16, "AFT_DECR") == pytest.approx(p.pols_if(17), rel=1e-12)
+    assert p.lapse_rate_base(16) == 0.06 and p.lapse_rate(16) == 0.0
+    assert p.pols_lapse(16) == 0.0
+    assert p.lapse_rate(15) == pytest.approx(0.06, rel=1e-12) and p.pols_lapse(15) > 0.0
     names = set(temporaire_deces.Projection.cells) | set(
         temporaire_deces.Projection.refs)
     for absent in ("claims_maturity", "pols_maturity", "maturity_benefit_pp",
@@ -514,12 +524,12 @@ def test_a_surprime_scales_the_cotisation_and_never_the_capital(temporaire_deces
     """
     rated, std = temporaire_deces.Projection[5], temporaire_deces.Projection[1]
     assert rated.rating_factor() == 1.5 and rated.smoker() == "S"
-    assert rated.prem_pp(1) == pytest.approx(1.5 * std.prem_pp(1), rel=1e-12)
+    assert rated.prem_pp(0) == pytest.approx(1.5 * std.prem_pp(0), rel=1e-12)
     rdf, sdf = rated.result_cf(), std.result_cf()
     assert (rdf["claims_death"] - sdf["claims_death"]).abs().max() < 1e-9
     assert (rdf["claims_ptia"] - sdf["claims_ptia"]).abs().max() < 1e-9
     assert (rdf["pols_if"] - sdf["pols_if"]).abs().max() < 1e-12
-    assert rated.benefit_pp(1) == std.benefit_pp(1)
+    assert rated.benefit_pp(0) == std.benefit_pp(0)
     assert rdf["premiums"].sum() == pytest.approx(1.5 * sdf["premiums"].sum(), rel=1e-12)
 
 
@@ -534,21 +544,21 @@ def test_the_fractionation_loading_and_the_fee_are_charges_of_different_kinds(
     p = temporaire_deces.Projection[4]
     assert p.prem_freq() == "monthly"
     assert p.prem_freq_load() == 1.04 and p.prem_freq_fee() == 18.0
-    assert p.prem_tariff_pp(1) == pytest.approx(200000 * 0.0044 * 1.04, abs=CENT)
-    assert p.prem_pp(1) == pytest.approx(915.20 + 18.00, abs=CENT)
+    assert p.prem_tariff_pp(0) == pytest.approx(200000 * 0.0044 * 1.04, abs=CENT)
+    assert p.prem_pp(0) == pytest.approx(915.20 + 18.00, abs=CENT)
     # The fee is flat in t while the loaded cotisation climbs with the grid, and it is
     # charged once a year at every t -- the notes' P(t) = P_tar(t) + F.
-    assert p.prem_pp(30) - p.prem_tariff_pp(30) == pytest.approx(18.0, abs=CENT)
+    assert p.prem_pp(29) - p.prem_tariff_pp(29) == pytest.approx(18.0, abs=CENT)
     assert all(p.prem_pp(t) - p.prem_tariff_pp(t) == pytest.approx(18.0, abs=CENT)
-               for t in range(1, p.proj_len() + 1))
+               for t in range(p.proj_len()))
     # It is part of what the policyholder pays, so it reaches premium income and the
     # commission base -- while the constante equivalence is struck on P_tar alone.
-    assert p.premiums(1) == pytest.approx(p.prem_pp(1) * p.pols_if(1), rel=1e-12)
-    assert p.commissions(2) == pytest.approx(
-        0.05 * p.prem_pp(2) * p.pols_if(2), rel=1e-12)
+    assert p.premiums(0) == pytest.approx(p.prem_pp(0) * p.pols_if(0), rel=1e-12)
+    assert p.commissions(1) == pytest.approx(
+        0.05 * p.prem_pp(1) * p.pols_if(1), rel=1e-12)
     half = temporaire_deces.Projection[10]
     assert half.prem_freq() == "half_yearly"
-    assert half.prem_pp(1) == pytest.approx(250000 * 0.0015 * 1.025 + 3.0, abs=CENT)
+    assert half.prem_pp(0) == pytest.approx(250000 * 0.0015 * 1.025 + 3.0, abs=CENT)
     annual = temporaire_deces.Projection[1]
     assert annual.prem_freq_load() == 1.0 and annual.prem_freq_fee() == 0.0
 
@@ -563,7 +573,7 @@ def test_the_accidental_option_is_a_share_and_not_an_uplift(temporaire_deces):
     opt, base = temporaire_deces.Projection[6], temporaire_deces.Projection[1]
     assert opt.accident_multiplier() == 2.0 and base.accident_multiplier() == 1.0
     assert opt.acc_share == 0.0
-    assert all(opt.accident_extra_pp(t) == 0.0 for t in range(1, 18))
+    assert all(opt.accident_extra_pp(t) == 0.0 for t in range(17))
     assert (opt.result_cf() - base.result_cf()).abs().max().max() == 0.0
 
     model = mx.read_model(MODEL_DIR, name="TD_FR_A_acc")
@@ -571,8 +581,8 @@ def test_the_accidental_option_is_a_share_and_not_an_uplift(temporaire_deces):
         model.Projection.acc_share = 0.1
         model.Projection.clear_all()
         # (2.00 - 1) x 0.10 x 150 000 = 15 000 EUR of extra capital per claim.
-        assert model.Projection[6].accident_extra_pp(1) == pytest.approx(15000.0)
-        assert model.Projection[1].accident_extra_pp(1) == 0.0
+        assert model.Projection[6].accident_extra_pp(0) == pytest.approx(15000.0)
+        assert model.Projection[1].accident_extra_pp(0) == 0.0
         assert model.Projection[6].result_cf()["claims_death"].sum() > (
             base.result_cf()["claims_death"].sum())
     finally:
@@ -586,23 +596,25 @@ def test_the_accidental_option_is_a_share_and_not_an_uplift(temporaire_deces):
 def test_the_waiting_period_returns_the_cotisations_and_suspends_ptia(temporaire_deces):
     """Model point 9 carries a one-year *délai d'attente* on a 40 000 EUR capital.
 
-    Inside the window an illness-caused death pays back what was paid -- 296,00 EUR, the
-    single cotisation collected in advance -- and PTIA pays nothing; from year 2 the full
-    capital is at risk again.  The window changes what a claim pays, never who leaves.
-    Only this one model point elects one; five of the eight carriers have none.
+    A ``waiting_period_y`` of 1 is one *contractual* policy year, so the window is period
+    ``t = 0`` alone.  Inside it an illness-caused death pays back what was paid --
+    296,00 EUR, the single cotisation collected in advance -- and PTIA pays nothing; from
+    ``t = 1`` the full capital is at risk again.  The window changes what a claim pays,
+    never who leaves.  Only this one model point elects one; five of the eight carriers
+    have none.
     """
     p = temporaire_deces.Projection[9]
     assert p.waiting_period_y() == 1
-    assert p.in_waiting(1) is True and p.in_waiting(2) is False
-    assert p.prem_pp(1) == pytest.approx(296.00, abs=CENT)
-    assert p.prem_refund_pp(1) == pytest.approx(296.00, abs=CENT)
-    assert p.benefit_death_pp(1) == pytest.approx(296.00, abs=CENT)
-    assert p.benefit_ptia_pp(1) == 0.0
-    assert p.claims(1, "PTIA") == 0.0
-    assert p.claims(1, "DEATH") == pytest.approx(0.98 * 296.00 * p.pols_death(1), abs=CENT)
-    assert p.benefit_death_pp(2) == 40000.0
-    assert p.claims(2, "PTIA") > 0.0
-    assert p.pols_ptia(1) > 0.0            # a benefit is suppressed, not a decrement
+    assert p.in_waiting(0) is True and p.in_waiting(1) is False
+    assert p.prem_pp(0) == pytest.approx(296.00, abs=CENT)
+    assert p.prem_refund_pp(0) == pytest.approx(296.00, abs=CENT)
+    assert p.benefit_death_pp(0) == pytest.approx(296.00, abs=CENT)
+    assert p.benefit_ptia_pp(0) == 0.0
+    assert p.claims(0, "PTIA") == 0.0
+    assert p.claims(0, "DEATH") == pytest.approx(0.98 * 296.00 * p.pols_death(0), abs=CENT)
+    assert p.benefit_death_pp(1) == 40000.0
+    assert p.claims(1, "PTIA") > 0.0
+    assert p.pols_ptia(0) > 0.0            # a benefit is suppressed, not a decrement
     assert p.check_decrement_closure() is True
     table = temporaire_deces.Data.model_point_table()
     assert (table["waiting_period_y"] > 0).sum() == 1
@@ -621,13 +633,13 @@ def test_the_behaviour_modules_are_off_and_reachable(temporaire_deces):
     assert proj.sel_lapse_lambda == 0.0 and proj.sel_lapse_ref == 0.3
     assert proj.acc_share == 0.0
     p = temporaire_deces.Projection[1]
-    assert all(p.shock_lapse_factor(t) == 1.0 for t in (1, 3, 17))
-    assert all(p.sel_lapse_factor(t) == 1.0 for t in (1, 3, 17))
-    assert all(p.mort_rate(t) == p.mort_rate_base(t) for t in (1, 3, 17))
+    assert all(p.shock_lapse_factor(t) == 1.0 for t in (0, 2, 16))
+    assert all(p.sel_lapse_factor(t) == 1.0 for t in (0, 2, 16))
+    assert all(p.mort_rate(t) == p.mort_rate_base(t) for t in (0, 2, 16))
 
 
 def test_the_premium_shock_module_bites_where_the_grid_steps():
-    """Switched on, M_shock lifts the lapse rate at t = 3 and nowhere else.
+    """Switched on, M_shock lifts the lapse rate at t = 2 and nowhere else.
 
     The grid's +38 % step at age 60 is the only year whose cotisation rise clears the 10 %
     tolerance, which is the whole point of carrying the module on a revisable form.
@@ -637,10 +649,10 @@ def test_the_premium_shock_module_bites_where_the_grid_steps():
         model.Projection.shock_lapse_beta = 1.5
         model.Projection.clear_all()
         p = model.Projection[1]
-        assert p.shock_lapse_factor(3) == pytest.approx(
+        assert p.shock_lapse_factor(2) == pytest.approx(
             1.0 + 1.5 * (1.380531 - 1.0 - 0.10), abs=1e-6)
-        assert all(p.shock_lapse_factor(t) == 1.0 for t in (1, 2, 4, 5, 10, 16))
-        assert p.lapse_rate(3) > 0.08
+        assert all(p.shock_lapse_factor(t) == 1.0 for t in (0, 1, 3, 4, 9, 15))
+        assert p.lapse_rate(2) > 0.08
         assert p.result_cf()["premiums"].sum() < 31999.13
     finally:
         model.close()
@@ -657,11 +669,11 @@ def test_the_selective_lapsation_module_loads_persisters():
         model.Projection.sel_lapse_lambda = 0.25
         model.Projection.clear_all()
         p = model.Projection[1]
-        assert p.lapse_cum(1) == 0.0 and p.sel_lapse_factor(1) == 1.0
-        assert p.lapse_cum(17) > 0.30
-        assert p.sel_lapse_factor(17) == pytest.approx(
-            1.0 + 0.25 * (p.lapse_cum(17) - 0.30), rel=1e-12)
-        assert p.mort_rate(17) > p.mort_rate_base(17)
+        assert p.lapse_cum(0) == 0.0 and p.sel_lapse_factor(0) == 1.0
+        assert p.lapse_cum(16) > 0.30
+        assert p.sel_lapse_factor(16) == pytest.approx(
+            1.0 + 0.25 * (p.lapse_cum(16) - 0.30), rel=1e-12)
+        assert p.mort_rate(16) > p.mort_rate_base(16)
         assert p.check_pols_roll_fwd() is True
         assert p.check_decrement_closure() is True
     finally:
@@ -675,9 +687,9 @@ def test_tariff_drift_reprices_the_card_and_nothing_else():
         model.Projection.tariff_drift = 0.02
         model.Projection.clear_all()
         p = model.Projection[1]
-        assert p.prem_rate(1) == pytest.approx(0.0105, rel=1e-12)
-        assert p.prem_rate(3) == pytest.approx(0.0156 * 1.02 ** 2, rel=1e-12)
-        assert p.mort_rate(3) == pytest.approx(0.00400 * 1.09 ** 2, rel=1e-8)
+        assert p.prem_rate(0) == pytest.approx(0.0105, rel=1e-12)
+        assert p.prem_rate(2) == pytest.approx(0.0156 * 1.02 ** 2, rel=1e-12)
+        assert p.mort_rate(2) == pytest.approx(0.00400 * 1.09 ** 2, rel=1e-8)
         assert p.result_cf()["premiums"].sum() > 31999.13
     finally:
         model.close()
@@ -690,7 +702,7 @@ def test_tariff_drift_reprices_the_card_and_nothing_else():
 def test_result_cf_shape_and_both_signs_of_the_net_flow(fr_td_anchor):
     """The notes' eight columns plus liability_cf, the notes' own outgo orientation."""
     df = fr_td_anchor.result_cf()
-    assert list(df.index) == list(range(1, 18))
+    assert list(df.index) == list(range(17))
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_death", "claims_ptia", "claims_lapse",
         "expenses", "commissions", "net_cf", "liability_cf",
@@ -709,9 +721,9 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(fr_td_anchor):
 def test_invalid_enum_values_raise(fr_td_anchor):
     """The enum accessors validate rather than propagating a typo into a lookup."""
     with pytest.raises(FormulaError):
-        fr_td_anchor.claims(1, "SURRENDER")
+        fr_td_anchor.claims(0, "SURRENDER")
     with pytest.raises(FormulaError):
-        fr_td_anchor.pols_if_at(1, "AFTER_LAPSE")
+        fr_td_anchor.pols_if_at(0, "AFTER_LAPSE")
 
 
 def test_docstrings_describe_the_current_structure(temporaire_deces):
@@ -726,8 +738,8 @@ def test_docstrings_describe_the_current_structure(temporaire_deces):
     assert "ADE_FR_S" in doc and "Obseques_FR_S" in doc   # the siblings on this chassis
     proj = temporaire_deces.Projection.doc
     assert "Notes symbol" in proj
-    for cells in ("proj_len", "model_point", "prem_pp", "ptia_rate", "suicide_factor",
-                  "benefit_death_pp", "lapse_cum", "pols_if_at"):
+    for cells in ("proj_len", "policy_year", "model_point", "prem_pp", "ptia_rate",
+                  "suicide_factor", "benefit_death_pp", "lapse_cum", "pols_if_at"):
         assert cells in proj, cells
     data = temporaire_deces.Data.doc
     assert "TradLife_A" in data

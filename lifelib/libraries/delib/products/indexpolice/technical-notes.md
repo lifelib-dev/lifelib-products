@@ -42,7 +42,8 @@ shipped index path so that the mechanics are asserted against them cell by cell.
 - **The accumulation phase only.** The projection runs from inception (or from the valuation date for an
   in-force point) to *Rentenbeginn*, where the capital falls due as a single terminal amount. Whether it
   is taken as a *Kapitalabfindung* or converted at the *Rentenfaktor* changes **what is reported**, not
-  the terminal cash flow: either way the capital leaves the accumulation contract at `t = proj_len()`.
+  the terminal cash flow: either way the capital leaves the accumulation contract at the end of the
+  last period, `t = proj_len() − 1`.
 - **Projection frequency: annual.** The contract's own clock is annual — the *Indexjahr* is twelve
   months, the surplus is declared once a year, the *Wahlrecht* is exercised once a year and the credit
   is struck once a year — so the annual grid is the product's grid, not an approximation of a finer one.
@@ -50,15 +51,19 @@ shipped index path so that the mechanics are asserted against them cell by cell.
   with one row per year and twelve return columns. That is the whole reason `Index_DE_A` is `_A` while
   the genuinely unit-linked `FRV_DE_S` is `_S`: a unit-linked contract has a unit price every day, an
   Indexpolice has a value at one date a year.
-- **The frame is 1-based and `t` counts policy years from issue.** Policy year `t` runs from the
-  `(t−1)`-th policy anniversary to the `t`-th, and covers attained age `entry_age + t − 1`. A
-  **new-business** point starts at `t = 1`; an **in-force** point starts at `t = dur_init + 1`, because
-  `t` is the policy's own duration and not an offset from the valuation date. `result_cf()` is therefore
-  indexed `t_start() … proj_len()`, contiguous, and its first `pols_if` value is `pols_if_init()`.
-- **`proj_len()` is the last projected policy year**, `proj_len() = ann_start_age − entry_age`, so
-  `result_cf().index[-1] == proj_len()` — the library's reading of `proj_len()`, inherited from frlib
-  and asserted in the conventions suite. It is **not** a row count: an in-force point at
-  `dur_init = 8` publishes `27 − 8 = 19` rows and still reports `proj_len() = 27`.
+- **The frame is 0-based and `t` counts policy years from issue.** `t = 0` is the first policy year:
+  period `t` runs from the `t`-th policy anniversary to the `(t+1)`-th, and covers attained age
+  `entry_age + t`. The contractual **policy year is the 1-based label `t + 1`** and is derived, never
+  indexed by. A **new-business** point starts at `t = 0`; an **in-force** point starts at
+  `t = dur_init`, because `t` is the policy's own elapsed duration and not an offset from the valuation
+  date, and both are 0-based counts of completed years. `result_cf()` is therefore indexed
+  `t_start() … proj_len() − 1`, contiguous, and its first `pols_if` value is `pols_if_init()`.
+- **`proj_len()` is the number of projected policy years**, `proj_len() = ann_start_age − entry_age`,
+  counted from `t = 0` and therefore the **exclusive end** of the frame, so
+  `result_cf().index[-1] == proj_len() − 1` — the library's reading of `proj_len()` and lifelib's own
+  `for t in range(proj_len())`, asserted in the conventions suite. It is **not** the row count of an
+  in-force point: one at `dur_init = 8` publishes `27 − 8 = 19` rows and still reports
+  `proj_len() = 27`.
 - **The *Indexjahr* is aligned with the policy year [std].** The contractual *Indexstichtag* need not
   fall on the policy anniversary, and no carrier's convention was established. An annual-grid model has
   no other defensible alignment, and the misalignment would change the calibration of the Cap rather
@@ -103,9 +108,10 @@ rebuild them exactly rather than take them on trust:
   an annualised 17,3 % — the research file's own volatility assumption and a plausible level for a broad
   European equity index. The **17,3 %** figure stays [unverified] — no index rulebook or realised-
   volatility series was retrieved for the EURO STOXX 50 or any other underlying — but the index itself
-  is now a named one at a retrieved carrier [S2]. **Rows `t = 9` and `t = 10` are then overwritten** with the
-  research file's constructed Example A and Example B (below), so that the two examples the whole
-  mechanic turns on are reproduced by the model rather than restated in prose.
+  is now a named one at a retrieved carrier [S2]. **Rows `t = 8` and `t = 9` — policy years 9 and 10 —
+  are then overwritten** with the research file's constructed Example A and Example B (below), so that
+  the two examples the whole mechanic turns on are reproduced by the model rather than restated in
+  prose.
 - **`houseidx_vol5`** — the **volatility-targeted house multi-asset index** case, from
   `numpy.random.default_rng(20260830).normal(0.0025, 0.0144, size=(40, 12))`, rounded to four decimal
   places: 0,25 % a month at an annualised 5,0 %, the volatility target the research file records for
@@ -120,9 +126,9 @@ rebuild them exactly rather than take them on trust:
   **instrument**: it isolates the guaranteed accumulation, makes every *Indexjahr* credit exactly
   0,00 €, and lets the *Beitragsgarantie* floor at *Rentenbeginn* be tested where it actually binds.
 
-**Example A (`t = 9`)**, monthly returns in per cent:
+**Example A (`t = 8`, policy year 9)**, monthly returns in per cent:
 1,80 / −2,40 / 4,60 / 0,90 / −3,70 / 2,20 / 3,40 / −1,10 / 0,40 / 5,20 / −0,80 / 2,60.
-**Example B (`t = 10`)**:
+**Example B (`t = 9`, policy year 10)**:
 6,50 / −2,10 / 5,80 / −1,90 / −2,40 / 4,20 / −3,10 / 0,60 / −2,80 / 5,10 / −1,70 / −1,20.
 
 ---
@@ -137,8 +143,8 @@ from its base value, so that no column is carried without being tested.
 | `point_id` | int | key; **model point 1 is the worked example's anchor cell** | all |
 | `policy_id` | str | label, `DE-IDX-nnnn`; reporting only | all |
 | `sex` | enum {M, F} | selects the best-estimate mortality row; **never a rating factor** [REG-R34] | 3, 5, 7, 10, 12 |
-| `entry_age` | int | age last birthday at inception; `age(t) = entry_age + t − 1` | 3–13 |
-| `dur_init` | int | completed policy years at the valuation date; 0 = new business; the frame starts at `dur_init + 1` | 8, 13 |
+| `entry_age` | int | age last birthday at inception; `age(t) = entry_age + t` | 3–13 |
+| `dur_init` | int | completed policy years at the valuation date; 0 = new business; the frame starts at `t = dur_init` (already a 0-based elapsed count) | 8, 13 |
 | `pols_if_init` | float | policies represented at `t_start()` | — (1.0 everywhere) |
 | `ann_start_age` | int | attained age at *Rentenbeginn*; `proj_len() = ann_start_age − entry_age` | 6 |
 | `prem_form` | enum {level, single} | *laufender Beitrag* or *Einmalbeitrag* | 7 |
@@ -171,12 +177,12 @@ points, four *Rechnungszins* cohorts and four *Garantieniveaus*.
 | 5 | F 45 → 67, **quarterly** premiums of 3 600,00 € a year (22 years) |
 | 6 | M 50 → **65**, **half-yearly** premiums of 6 000,00 € a year, 80 % guarantee (15 years) |
 | 7 | F 55 → 67, ***Einmalbeitrag*** of 50 000,00 €, `ann_option = cash` — a 12-year term, which is also the § 20 Abs. 1 Nr. 6 EStG boundary [REG-R45] |
-| 8 | **In-force.** M 40 → 67 at `dur_init = 8`, `av_pp_init = 50 000,00 €`, 6 000,00 € a year, 0,90 % cohort rate — **its first projected *Indexjahr* is `t = 9`, so it reproduces the research file's Examples A and B to the euro** |
+| 8 | **In-force.** M 40 → 67 at `dur_init = 8`, `av_pp_init = 50 000,00 €`, 6 000,00 € a year, 0,90 % cohort rate — **its frame opens at `t = 8` and that is its first projected *Indexjahr*, so it reproduces the research file's Examples A and B to the euro** |
 | 9 | **Boundary — the guarantee binds.** M 55 → 67, 100 % *Beitragsgarantie*, `zero_path`: every credit is 0,00 € and the terminal capital falls **below** the guarantee |
-| 10 | F 40 → 67, `elect_id = switch_at_15` — index arm to year 15, safe arm thereafter |
+| 10 | F 40 → 67, `elect_id = switch_at_15` — index arm to policy year 15 (`t ≤ 14`), safe arm thereafter |
 | 11 | M 40 → 67, `elect_id = always_safe` — the *sichere Verzinsung* comparator, which reduces the contract to a *klassische Rentenversicherung* |
 | 12 | F 30 → 67 (**37 years**, the longest), 1 800,00 € a year, 60 % guarantee, `elect_id = half_half` — a partial election |
-| 13 | **In-force, boundary.** M 45 → 67 at `dur_init = 4`, `prem_term_y = 12` so premiums stop at year 12, `guar_rate = 0,25 %` **equal to the reserve charge**, `death_min_rate = 0`, `surr_charge_on = 0` |
+| 13 | **In-force, boundary.** M 45 → 67 at `dur_init = 4`, `prem_term_y = 12` so premiums stop after policy year 12 (`t = 11`), `guar_rate = 0,25 %` **equal to the reserve charge**, `death_min_rate = 0`, `surr_charge_on = 0` |
 
 ---
 
@@ -184,19 +190,19 @@ points, four *Rechnungszins* cohorts and four *Garantieniveaus*.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `proj_len()`, `t_start()` | last projected policy year; first projected policy year | once per model point |
-| `age(t)` | attained age at the start of policy year `t` | annual |
-| `pols_if(t)` | policies in force at the **start** of policy year `t`; `pols_if(t_start()) = pols_if_init()` | annual recursion |
-| `pols_if_at(t, timing)` | the within-year points of the same count: `"BEF_DECR"`, `"AFT_DEATH"`, `"AFT_LAPSE"` | within year `t` |
-| `av_pp(t)` | *Deckungskapital* per policy at the **start** of policy year `t`; `av_pp(t_start()) = av_pp_init` | annual recursion |
-| `av_pp_at(t, timing)` | `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_CHARGE"`, `"AFT_GUAR"`, `"AFT_CREDIT"` | within year `t` |
-| `av_at(t, timing)`, `av(t)` | the same balances at fund level, `× pols_if(t)` | within year `t` |
-| `prem_paid_pp(t)` | cumulative annual-mode premiums paid to the **start** of year `t`, including `prem_paid_init` | annual, non-decreasing |
+| `proj_len()`, `t_start()` | the number of projected policy years (the frame's exclusive end); the first projected index | once per model point |
+| `age(t)` | attained age at the start of period `t` | annual |
+| `pols_if(t)` | policies in force at time `t`, the **start** of period `t`; `pols_if(t_start()) = pols_if_init()` | annual recursion |
+| `pols_if_at(t, timing)` | the within-year points of the same count: `"BEF_DECR"`, `"AFT_DEATH"`, `"AFT_LAPSE"` | within period `t` |
+| `av_pp(t)` | *Deckungskapital* per policy at time `t`, the **start** of period `t`; `av_pp(t_start()) = av_pp_init` | annual recursion |
+| `av_pp_at(t, timing)` | `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_CHARGE"`, `"AFT_GUAR"`, `"AFT_CREDIT"` | within period `t` |
+| `av_at(t, timing)`, `av(t)` | the same balances at fund level, `× pols_if(t)` | within period `t` |
+| `prem_paid_pp(t)` | cumulative annual-mode premiums paid to time `t`, including `prem_paid_init` | annual, non-decreasing |
 | `credit_cum_pp(t)` | the ***Höchststandsicherung*** ledger: every index and safe-arm credit made, cumulated | annual, non-decreasing |
 | `guar_floor_pp(t)` | the *Beitragsgarantie*, `guar_level × prem_paid_pp(t)` | annual, non-decreasing |
 | `guar_cap_pp(t)` | the guaranteed capital, `guar_floor_pp(t) + credit_cum_pp(t)` | annual, non-decreasing |
 | `av_min_pp(t)`, `av_min_pp_at(t, timing)` | the shadow *Deckungskapital* on a **five-year** acquisition-cost spread, with the same within-year timings — the § 169 Abs. 3 floor [REG-R28] | annual recursion |
-| `index_base_pp(t)` | `G(t)`, the participating capital of *Indexjahr* `t` = `av_pp(t)`, **before** that year's premium | annual |
+| `index_base_pp(t)` | `G(t)`, the participating capital of the *Indexjahr* of period `t` = `av_pp(t)`, **before** that year's premium | annual |
 
 There is **no unit account, no unit price and no fund value** anywhere in this model, and that is a
 product fact rather than a simplification: the capital is in the *Sicherungsvermögen* [REG-R7] and the
@@ -222,7 +228,7 @@ changed on the strength of what it established; `model.md` records each comparis
 | Payoff, *Quote* form | `max( q(t) × (Π_m (1 + r(t,m)) − 1), 0 )` | mechanic firm; level **[std]** |
 | Base of the participation | `G(t) = av_pp(t)`, the capital at the start of the *Indexjahr*, **before** that year's premium | **confirmed by clause** — [S2] Ziffer 3.3 Absatz 2 e), [S7] § 3 Ziffer 2; spec footnote 14 |
 | *Höchststandsicherung* | a credit, once made, is permanently added to the guaranteed capital and enters `G` of every later year | mechanic firm |
-| Guarantee at *Rentenbeginn* | `max( av_pp(n+1), guar_level × prem_sum_paid + credit_cum_pp(n+1) )`; **not** an annual guaranteed rate on the reserve | [R11] [R12]; composition **[std]** |
+| Guarantee at *Rentenbeginn* | `max( av_pp(n), guar_level × prem_sum_paid + credit_cum_pp(n) )`, the time-`n` values; **not** an annual guaranteed rate on the reserve | [R11] [R12]; composition **[std]** |
 | Death benefit | `max( av_pp_at(t,"AFT_GUAR"), death_min_rate × prem_sum() )` — the account **excluding the running *Indexjahr***, floored at 50 % of the *Beitragssumme* | shape [S7] § 1 Ziffer 5 (*Policenwert*, min. 90 % of premiums), **not** [S9], whose default is no death benefit at all; floor **[std]** [R14] [REG-R45] |
 | Surrender value | `max( av_pp_at(t,"AFT_GUAR"), av_min_pp(t) ) × (1 − storno_rate × surr_charge_on)` | [R2] [REG-R28]; level **[std]** |
 | § 169 Abs. 3 floor | the *Deckungskapital* with acquisition costs spread evenly over the **first five contract years** | [R2] [REG-R28] |
@@ -308,15 +314,17 @@ surrender behaviour — the **duration-12 and age-62 double threshold** of § 20
 which only half the *Unterschiedsbetrag* becomes taxable and at the personal rate rather than by final
 withholding [R14] [REG-R45]:
 
-| Policy year `t` | 1–2 | 3–11 | **12** | 13 … n−1 | **n** |
+| Policy year (`t + 1`) | 1–2 | 3–11 | **12** | 13 … n−1 | **n** |
 |---|---|---|---|---|---|
+| Index `t` | 0–1 | 2–10 | **11** | 12 … n−2 | **n−1** |
 | `lapse_rate_base(t)` **[std]** | 5 % | 3 % | **6 %** | 2 % | 2 % |
 | `lapse_rate(t)` applied | 5 % | 3 % | 6 % | 2 % | **0 %** |
 
-The mean over the anchor's 27 years is about **2,6 %**, so the level stays inside the research file's
-**[std]** while the shape carries the tax threshold. **In the final policy year the applied rate is
-zero [std]**: the end of policy year `n` is *Rentenbeginn*, so a lapse and a maturity are the same event
-at the same instant, and the whole surviving cohort is booked as a maturity. Unlike frlib's term
+`lapse_table.csv` is keyed on the model's own 0-based `t`, so its first row is `t = 0` and the tax step
+sits at `t = 11`. The mean over the anchor's 27 years is about **2,6 %**, so the level stays inside the
+research file's **[std]** while the shape carries the tax threshold. **In the final period the applied
+rate is zero [std]**: the end of period `n − 1` is *Rentenbeginn*, so a lapse and a maturity are the
+same event at the same instant, and the whole surviving cohort is booked as a maturity. Unlike frlib's term
 product, where the two paid the same nothing, **here they pay different amounts** — the surrender value
 carries the *Stornoabzug* and forfeits the running *Indexjahr*, the maturity value carries neither and
 takes the guarantee floor — so this convention moves real money and is not merely a bookkeeping split.
@@ -347,7 +355,7 @@ what other IndexSelect policyholders with the same *Indexstichtag* most often ch
 real simplification: an inert population does not stay where it was put. Four **[std]** paths are
 shipped: `always_index` (`w = 1`, the base run, because a base run in the safe
 arm would reduce the product to `RV_DE_A`), `always_safe` (`w = 0`), `half_half` (`w = 0,5`) and
-`switch_at_15` (`w = 1` to year 15, then 0).
+`switch_at_15` (`w = 1` through policy year 15, i.e. `t ≤ 14`, then 0).
 
 **Expenses (insurer outgo) and contractual charges (deductions from the account).** These are two
 different things and the model keeps them apart: a charge reduces the policyholder's *Deckungskapital*,
@@ -377,19 +385,19 @@ oversight.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | policy year, `t = t₀ … n`; `t₀ = t_start() = dur_init + 1`, `n = proj_len() = ann_start_age − entry_age` |
-| `x(t)` | `age(t)` | attained age at the start of policy year `t` = `entry_age + t − 1` |
-| `l(t)` | `pols_if(t)` | policies in force at the start of year `t`; `l(t₀) = pols_if_init()` |
+| `t` | — | the 0-based period index, `t = t₀ … n−1`; `t₀ = t_start() = dur_init`, `n = proj_len() = ann_start_age − entry_age` is the **number** of policy years; the contractual policy year is `t + 1` |
+| `x(t)` | `age(t)` | attained age at the start of period `t` = `entry_age + t` |
+| `l(t)` | `pols_if(t)` | policies in force at time `t`, the start of period `t`; `l(t₀) = pols_if_init()` |
 | `φ` | `freq_load()` | the *Ratenzahlungszuschlag* multiplier |
-| `P_b(t)`, `P(t)` | `prem_base_pp(t)`, `prem_gross_pp(t)` | the annual-mode premium due in year `t`; the amount actually collected, `P_b(t)·φ` |
+| `P_b(t)`, `P(t)` | `prem_base_pp(t)`, `prem_gross_pp(t)` | the annual-mode premium due in period `t`; the amount actually collected, `P_b(t)·φ` |
 | `BS` | `prem_sum()` | *Beitragssumme* = `Σ_t P_b(t)` over the whole contract, **on the annual-mode premium** |
 | `α(t)`, `α₅(t)` | `prem_charge_acq_pp(t)`, `prem_charge_acq_min_pp(t)` | the acquisition charge on the tariff spread and on the five-year spread |
 | `β·P(t)` | `prem_charge_adm_pp(t)` | the premium-based administration charge |
 | `P⁺(t)` | `prem_to_av_pp(t)` | the premium credited to the account, `P(t) − α(t) − β·P(t)` |
-| `A(t)` | `av_pp(t)` | *Deckungskapital* per policy at the start of year `t` |
+| `A(t)` | `av_pp(t)` | *Deckungskapital* per policy at time `t`, the start of period `t` |
 | `γ`, `F(t)` | `exp_av_rate`, `av_charge_pp(t)` | the reserve charge rate; the amount charged, `γ·(A(t) + P⁺(t))` |
 | `i_g`, `I(t)` | `guar_rate`, `guar_int_pp(t)` | the guaranteed rate; the guaranteed interest, `i_g·av_pp_at(t,"AFT_CHARGE")` |
-| `G(t)` | `index_base_pp(t)` | the participating capital of *Indexjahr* `t` = `A(t)` |
+| `G(t)` | `index_base_pp(t)` | the participating capital of the *Indexjahr* of period `t` = `A(t)` |
 | `b(t)`, `w(t)` | `surplus_rate(t)`, `elect_index(t)` | the declared surplus rate; the fraction of it directed to the index arm |
 | `r(t,m)`, `C(t)`, `q(t)` | `index_return(t, m)`, `index_cap(t)`, `index_quote(t)` | the month's index return; the monthly Cap; the *Partizipationsquote* |
 | `S(t)` | `index_sum(t)` | `Σ_{m=1..12} min(r(t,m), C(t))` |
@@ -400,19 +408,20 @@ oversight.
 | `K(t)` | `credit_cum_pp(t)` | the *Höchststandsicherung* ledger, `Σ_{u<t} (X(u) + U(u))` |
 | `Π(t)`, `Γ(t)` | `prem_paid_pp(t)`, `guar_cap_pp(t)` | cumulative annual-mode premiums paid; the guaranteed capital, `guar_level·Π(t) + K(t)` |
 | `q_d(t)`, `w_l(t)` | `mort_rate(t)`, `lapse_rate(t)` | the annual death and surrender rates |
-| `D(t)`, `V(t)`, `M(t)` | `db_pp(t)`, `cv_pp(t)`, `mat_pp(t)` | the death benefit, the surrender value, the benefit at *Rentenbeginn* |
+| `D(t)`, `V(t)`, `M(t)` | `db_pp(t)`, `cv_pp(t)`, `mat_pp(t)` | the death benefit, the surrender value, the benefit at *Rentenbeginn* (non-zero only at `t = n−1`) |
 
 `q_d` and `w_l` are dimensionless annual probabilities; every other quantity above is EUR per policy,
 and the aggregate of any per-policy amount is that amount times the count it is struck on.
 
 ### The premium
 
-    P_b(t) = prem_gross_pp        for t ≤ prem_term_y  (level form)
+    P_b(t) = prem_gross_pp        for t < prem_term_y  (level form: policy years 1 … prem_term_y)
            = prem_gross_pp        for t = t₀ only      (single form)
            = 0                    otherwise
     P(t)   = P_b(t) · φ
-    α(t)   = min(acq_cost_rate, zill_cap_rate) · BS / min(zill_years, prem_term_y)   for the first
-             min(zill_years, prem_term_y) premium-paying years, 0 afterwards
+    α(t)   = min(acq_cost_rate, zill_cap_rate) · BS / min(zill_years, prem_term_y)   for
+             t < min(zill_years, prem_term_y), i.e. the first that many premium-paying
+             years, 0 afterwards
     α₅(t)  = the same with zill_years replaced by 5, unconditionally
     P⁺(t)  = P(t) − α(t) − exp_prem_rate · P(t)
     Π(t+1) = Π(t) + P_b(t),      Π(t₀) = prem_paid_init
@@ -473,27 +482,27 @@ delib's charge profile is already at the statutory floor. Set `zill_years = 1` a
 ### Decrements
 
     q_d(t)  = mort_table[sex, x(t)]
-    w_l(t)  = 0                       if t == n
+    w_l(t)  = 0                       if t == n − 1
             = lapse_table[t]          otherwise
     pols_if_at(t, "BEF_DECR")  = l(t)
     pols_death(t)              = l(t) · q_d(t)
     pols_if_at(t, "AFT_DEATH") = l(t) − pols_death(t)
     pols_lapse(t)              = pols_if_at(t, "AFT_DEATH") · w_l(t)
     pols_if_at(t, "AFT_LAPSE") = pols_if_at(t, "AFT_DEATH") − pols_lapse(t)
-    pols_maturity(t)           = pols_if_at(t, "AFT_LAPSE")   if t == n, else 0
-    l(t+1)                     = 0                            if t == n
+    pols_maturity(t)           = pols_if_at(t, "AFT_LAPSE")   if t == n − 1, else 0
+    l(t+1)                     = 0                            if t == n − 1
                                = pols_if_at(t, "AFT_LAPSE")   otherwise
 
 Death and surrender are **sequential**, not competing: the year's deaths are taken first and the lapse
 rate is applied to the survivors of death. **Closure**, asserted by `check_pols_roll_fwd()`:
 
-    Σ_{t=t₀..n} [ pols_death(t) + pols_lapse(t) + pols_maturity(t) ] = pols_if_init()
+    Σ_{t=t₀..n−1} [ pols_death(t) + pols_lapse(t) + pols_maturity(t) ] = pols_if_init()
 
 ### Benefits
 
     D(t) = max( av_pp_at(t, "AFT_GUAR"), death_min_rate · BS )
     V(t) = max( av_pp_at(t, "AFT_GUAR"), av_min_pp_at(t, "AFT_GUAR") ) · (1 − storno_rate · surr_charge_on)
-    M(n) = max( A(n+1), Γ(n+1) )
+    M(n−1) = max( A(n), Γ(n) )
 
     claims(t, "DEATH")    = D(t) · pols_death(t)
     claims(t, "LAPSE")    = V(t) · pols_lapse(t)
@@ -501,19 +510,19 @@ rate is applied to the survivors of death. **Closure**, asserted by `check_pols_
 
 **Read the asymmetry, because it is the point.** Death and surrender are struck on
 `av_pp_at(t, "AFT_GUAR")` — the account **before** the year's index and safe-arm credits — because a
-mid-year exit forfeits the running *Indexjahr* [std]. The maturity is struck on `A(n+1)`, **including**
-that year's credits, because the contract ran the *Indexjahr* to its end. Two exits at the same instant
+mid-year exit forfeits the running *Indexjahr* [std]. The maturity is struck on `A(n)`, the balance at
+*Rentenbeginn*, **including** that year's credits, because the contract ran the *Indexjahr* to its end. Two exits at the same instant
 therefore take different amounts, and a model that pays them the same has lost the product's own rule.
 
 Two reported quantities that are not cash flows:
 
     rentenfaktor()   = max( rentenfaktor_guar, rentenfaktor_curr )
-    ann_monthly_pp() = M(n) / 10 000 × rentenfaktor()    if ann_option == "annuity", else 0.0
+    ann_monthly_pp() = M(n−1) / 10 000 × rentenfaktor()  if ann_option == "annuity", else 0.0
 
 ### Expenses and the cash flow statement
 
     exp_acq_pp(t)   = acq_expense_rate · BS      at t = t₀ and only if dur_init == 0
-    exp_maint_pp(t) = exp_fixed_pp · (1 + exp_infl)^(t − 1)
+    exp_maint_pp(t) = exp_fixed_pp · (1 + exp_infl)^t
     expenses(t)     = ( exp_acq_pp(t) + exp_maint_pp(t) ) · l(t)
 
     premiums(t)        = P(t) · l(t)
@@ -548,7 +557,7 @@ Six `check_*()` cells, each taking no argument, returning a `bool` over all `t`,
 | Check | Identity |
 |---|---|
 | `check_net_cf()` | `net_cf(t) = premiums(t) − claims_death(t) − claims_lapse(t) − claims_maturity(t) − expenses(t)` |
-| `check_av_roll_fwd()` | `av(t+1) = av(t) + prem_to_av(t) − av_charge(t) + guar_int(t) + surplus_credit(t) + index_credit(t) − av_released(t)`, where `av_released(t) = av_pp_at(t,"AFT_GUAR")·(pols_death(t) + pols_lapse(t)) + A(t+1)·pols_maturity(t)` |
+| `check_av_roll_fwd()` | `av(t+1) = av(t) + prem_to_av(t) − av_charge(t) + guar_int(t) + surplus_credit(t) + index_credit(t) − av_released(t)`, where `av_released(t) = av_pp_at(t,"AFT_GUAR")·(pols_death(t) + pols_lapse(t)) + A(t+1)·pols_maturity(t)`; at `t = n−1` the `A(t+1)` term is `A(n)` |
 | `check_pols_roll_fwd()` | `pols_if(t+1) = pols_if(t) − pols_death(t) − pols_lapse(t) − pols_maturity(t)`, and the three exits plus nothing sum to `pols_if_init()` |
 | `check_surplus_alloc()` | `opt_budget_pp(t) + surplus_credit_pp(t) = surplus_rate(t) · index_base_pp(t)` |
 | `check_lock_in()` | `guar_cap_pp(t+1) ≥ guar_cap_pp(t)`, `index_credit_pp(t) ≥ 0` and `surplus_credit_pp(t) ≥ 0` |
@@ -562,11 +571,11 @@ Tolerance `roll_fwd_tol = 1e-8` relative to the balance.
 
 ### Annual processing order
 
-For `t = t₀ … n`, in exactly this order:
+For `t = t₀ … n−1`, in exactly this order:
 
-1. **Open the year.** `l(t)`, `A(t)`, `x(t) = entry_age + t − 1`. If `t > n`, stop.
+1. **Open the year.** `l(t)`, `A(t)`, `x(t) = entry_age + t`. If `t ≥ n`, stop.
 2. **Strike the participating base**, `G(t) = A(t)` — before this year's premium. This is what the
-   *Indexjahr* is measured on, and it is the reason a new-business point credits nothing in year 1
+   *Indexjahr* is measured on, and it is the reason a new-business point credits nothing at `t = 0`
    however well the index does.
 3. **Read the election and the declaration**: `w(t)` from `election_table.csv`, `b(t)` from
    `surplus_rate_table.csv`. Split the surplus: option budget `B(t) = w(t)·b(t)·G(t)`, safe-arm credit
@@ -583,14 +592,14 @@ For `t = t₀ … n`, in exactly this order:
    `C(t)` with **no floor on the month**; **sum** the twelve; floor the sum at zero — or, in the *Quote*
    form, apply `q(t)` to the compounded year return and floor that. The credit is `X(t) = ρ(t)·w(t)·G(t)`.
 10. **End of year — decrements.** Deaths at `q_d(t)`; then surrenders at `w_l(t)` on the survivors of
-    death. At `t = n` the surrender rate is zero and the survivors of death are maturities.
+    death. At `t = n−1` the surrender rate is zero and the survivors of death are maturities.
 11. **End of year — benefits.** Deaths take `D(t)`, surrenders take `V(t)`, both struck on
     `av_pp_at(t,"AFT_GUAR")` with **no index or safe-arm credit in the year of exit**.
 12. **End of year — credit and lock in.** Add `X(t)` and `U(t)` to the account of the **survivors**;
     roll the ledger `K(t+1) = K(t) + X(t) + U(t)` and the guaranteed capital
     `Γ(t+1) = guar_level·Π(t+1) + K(t+1)`.
-13. **At `t = n` only.** The benefit at *Rentenbeginn*, `M(n) = max(A(n+1), Γ(n+1))`, falls due to
-    `pols_maturity(n)`; report the annuity it buys at `max(rentenfaktor_guar, rentenfaktor_curr)`, or
+13. **At `t = n−1` only.** The benefit at *Rentenbeginn*, `M(n−1) = max(A(n), Γ(n))`, falls due to
+    `pols_maturity(n−1)`; report the annuity it buys at `max(rentenfaktor_guar, rentenfaktor_curr)`, or
     nothing if the *Kapitalwahlrecht* is exercised.
 14. **Roll** `l(t+1)`, `A(t+1)`, `Π(t+1)`, `K(t+1)`, `av_min_pp(t+1)`.
 
@@ -630,23 +639,23 @@ take deliberately and is not made in a provenance pass.
    [REG-R28]. Assert that no `unit_price` / `fund_value` cells exists, that `cv_pp(t)` derives from
    `av_pp`, and that a negative index year never reduces the account:
    `av_pp_at(t,"AFT_CREDIT") ≥ av_pp_at(t,"AFT_GUAR")` at every `t`.
-2. **Flooring each month at zero.** `x(m) = min(r, C)` has **no lower bound**. On the anchor's `t = 10`
-   (research Example B) the correct sum is **−2,60 %** and the credit is **0,00 €**; an implementation
-   that floors each capped month gets `S = +12,60 %` and credits something. Assert `index_sum(10) < 0`
-   and `index_credit_pp(10) == 0.0`.
+2. **Flooring each month at zero.** `x(m) = min(r, C)` has **no lower bound**. On the anchor's `t = 9`
+   (research Example B, policy year 10) the correct sum is **−2,60 %** and the credit is **0,00 €**; an
+   implementation that floors each capped month gets `S = +12,60 %` and credits something. Assert
+   `index_sum(9) < 0` and `index_credit_pp(9) == 0.0`.
 3. **Compounding the capped returns instead of summing them.** The contractual formula is a **sum**. On
-   `t = 9` (Example A) assert `index_sum(9) == 0.0890` exactly; compounding the same twelve capped
-   returns gives **8,9599 %**, an error of 0,0599 points — small enough to look like rounding and large
-   enough to be wrong at every duration.
-4. **Applying the floor to the compounded raw return.** On `t = 10` the raw year return is
-   `Y(10) = +6,4402 %` — **the index rose and the credit is zero**. An implementation that computes
+   `t = 8` (Example A, policy year 9) assert `index_sum(8) == 0.0890` exactly; compounding the same
+   twelve capped returns gives **8,9599 %**, an error of 0,0599 points — small enough to look like
+   rounding and large enough to be wrong at every duration.
+4. **Applying the floor to the compounded raw return.** On `t = 9` the raw year return is
+   `Y(9) = +6,4402 %` — **the index rose and the credit is zero**. An implementation that computes
    `max(Y, 0)` credits 6,44 %, and one that computes `max(q·Y, 0)` on the Cap model point credits
-   3,86 %. Assert `index_return_year(10) > 0` while `index_credit_rate(10) == 0.0` on model point 1.
+   3,86 %. Assert `index_return_year(9) > 0` while `index_credit_rate(9) == 0.0` on model point 1.
 5. **Striking the participation on the wrong base.** `G(t) = av_pp(t)`, **before** the year's premium
    and before the year's charges — no longer **[std]** but the rule in both retrieved AVB, which
    exclude the year's premiums and *Zuzahlungen* from the *Bezugsgröße* ([S2] Ziffer 3.3, [S7] § 3
    Ziffer 2). Assert `index_base_pp(t) == av_pp(t)` at every `t`, and that on
-   the anchor `index_credit_pp(1) == 0.0` even though `index_credit_rate(1) > 0` — the base is zero at
+   the anchor `index_credit_pp(0) == 0.0` even though `index_credit_rate(0) > 0` — the base is zero at
    inception. A model striking the base after the premium credits a first-year amount that does not
    exist.
 6. **Crediting the index *and* the declared surplus.** They are alternative applications of **one**
@@ -668,8 +677,8 @@ take deliberately and is not made in a provenance pass.
    and that `av_pp_at(t,"AFT_GUAR") < av_pp(t+1)` in every year the index credited something — the
    benefit is struck on the balance **before** the year's credits. Assert it on that balance and not
    on `db_pp` itself: the *Mindesttodesfallschutz* floor of 32 400,00 € exceeds the anchor's account
-   until year 13, so the death benefit there is larger than the account at any timing, which is what
-   a floor is for.
+   until `t = 12` (policy year 13), so the death benefit before then is larger than the account at any
+   timing, which is what a floor is for.
 10. **Testing the lock-in as "the account never falls".** It is the **credits** that ratchet, not the
     balance. On model point 13 (`guar_rate = 0,25 % = γ`) the account is flat or falling once premiums
     stop, while `guar_cap_pp` is still monotone. Assert `check_lock_in()` on every point **and** that
@@ -680,10 +689,10 @@ take deliberately and is not made in a provenance pass.
     exactly so, "Dieser Schutz vor künftigen Marktentwicklungen gilt jedoch nicht, wenn Sie vor dem
     vereinbarten Rentenbeginn einlösen" [S6], and R+V's AVB § 1 Ziffer 2 owes 90 % of premiums "zum
     vereinbarten Rentenbeginn" [S7]. Assert that `guar_cap_pp(t)` never
-    enters a benefit before `t = n`, that `av_pp(t) < guar_cap_pp(t)` is permitted at intermediate `t`,
-    and that `claims_maturity(n) == max(av_pp(n+1), guar_cap_pp(n+1)) * pols_maturity(n)`.
+    enters a benefit before `t = n−1`, that `av_pp(t) < guar_cap_pp(t)` is permitted at intermediate
+    `t`, and that `claims_maturity(n−1) == max(av_pp(n), guar_cap_pp(n)) * pols_maturity(n−1)`.
 12. **Forgetting the *Beitragsgarantie* floor at *Rentenbeginn*.** Assert that on model point 9 the
-    floor **binds**: `mat_pp(n) == guar_cap_pp(n+1) > av_pp(n+1)`, and that it does **not** bind on the
+    floor **binds**: `mat_pp(n−1) == guar_cap_pp(n) > av_pp(n)`, and that it does **not** bind on the
     anchor. A model with no floor and a model with a floor that never binds look identical on twelve of
     the thirteen points.
 13. **Confusing the § 169 Abs. 3 floor with the *Höchstzillmersatz*.** Two different rules with two
@@ -703,10 +712,11 @@ take deliberately and is not made in a provenance pass.
     **behavioural** assumption, not a contractual one. Assert that model point 11 (`always_safe`)
     reproduces a *klassische Rentenversicherung* exactly — every index cells evaluates, none of them
     reaches the account — and that model point 10 (`switch_at_15`) has `index_credit_pp(t) == 0.0` for
-    every `t ≥ 16` and `surplus_credit_pp(t) == 0.0` for every `t ≤ 15`.
+    every `t ≥ 15` and `surplus_credit_pp(t) == 0.0` for every `t ≤ 14`.
 17. **A lapse assumption flat in duration.** The duration-12 tax threshold is the strongest single
-    driver of German surrender behaviour [R14] [REG-R45]. Assert `lapse_rate(12) > lapse_rate(11)` and
-    `lapse_rate(proj_len()) == 0.0` while `lapse_rate_base(proj_len())` is still the table's 2 %.
+    driver of German surrender behaviour [R14] [REG-R45]. Assert `lapse_rate(11) > lapse_rate(10)` —
+    policy year 12 against policy year 11 — and `lapse_rate(proj_len() − 1) == 0.0` while
+    `lapse_rate_base(proj_len() − 1)` is still the table's 2 %.
 18. **Reporting the credits inside `net_cf`.** `guar_int`, `surplus_credit` and `index_credit` are state
     movements; they reach the insurer's cash flow only through a benefit. Assert `check_net_cf()`, and
     assert that `net_cf` is unchanged when the three columns are dropped from the frame.
@@ -748,16 +758,16 @@ them, and none for this product specifically.
 ## Worked example
 
 **Configuration.** Model point 1, the anchor cell, in full: `point_id = 1`;
-`policy_id = "DE-IDX-0001"`; `sex = M`; `entry_age = 40`; `dur_init = 0`, so `t_start() = 1` and the
+`policy_id = "DE-IDX-0001"`; `sex = M`; `entry_age = 40`; `dur_init = 0`, so `t_start() = 0` and the
 table below is the **entire** projection; `pols_if_init = 1.0`; `ann_start_age = 67`, hence
-`proj_len() = 67 − 40 = 27`; `prem_form = level`; `prem_gross_pp = 2 400,00 €` (the annual-mode
+`proj_len() = 67 − 40 = 27` policy years, `t = 0 … 26`; `prem_form = level`; `prem_gross_pp = 2 400,00 €` (the annual-mode
 *Jahresbeitrag*, i.e. the research file's 200,00 € a month taken annually); `prem_freq = annual`, so
 `freq_load() = 1,000` and the premium collected equals the premium due; `prem_term_y = 27`, premiums
 payable throughout, so `prem_sum() = 27 × 2 400,00 = 64 800,00 €`; `av_pp_init = 0,00 €`;
 `guar_locked_init = 0,00 €`; `prem_paid_init = 0,00 €`; `guar_level = 0,90`, a *Beitragsgarantie* of
 `0,90 × 64 800,00 = 58 320,00 €` at *Rentenbeginn* plus every locked-in credit; `guar_rate = 0,0100`,
 the *Höchstrechnungszins* for 2025–2026 [R7] [R18] [REG-R15]; `payoff_form = "cap"`;
-`index_id = "eqidx_vol17"`, so the Cap is 3,00 % a month and the *Indexjahre* at `t = 9` and `t = 10`
+`index_id = "eqidx_vol17"`, so the Cap is 3,00 % a month and the *Indexjahre* at `t = 8` and `t = 9`
 are the research file's Examples A and B; `elect_id = "always_index"`, so `w(t) = 1,00` in every one of
 the 27 years and the safe arm is never used; `death_min_rate = 0,50`, a *Mindesttodesfallschutz* floor
 of `0,50 × 64 800,00 = 32 400,00 €`; `ann_option = "annuity"`; `surr_charge_on = 1`.
@@ -772,13 +782,14 @@ document could confirm. *Partizipationsquote* `q(t) = 60 %` **[std]**, carried b
 Monthly index returns from `eqidx_vol17` **[std]**: 40 years × 12 months from
 `numpy.random.default_rng(20260829).normal(0.0060, 0.0500, size=(40, 12))` rounded to four decimal
 places — a monthly mean of 0,60 % and standard deviation of 5,00 %, an annualised 17,3 % — with row
-`t = 9` replaced by Example A (1,80 / −2,40 / 4,60 / 0,90 / −3,70 / 2,20 / 3,40 / −1,10 / 0,40 / 5,20 /
-−0,80 / 2,60 per cent) and row `t = 10` by Example B (6,50 / −2,10 / 5,80 / −1,90 / −2,40 / 4,20 /
+`t = 8` replaced by Example A (1,80 / −2,40 / 4,60 / 0,90 / −3,70 / 2,20 / 3,40 / −1,10 / 0,40 / 5,20 /
+−0,80 / 2,60 per cent) and row `t = 9` by Example B (6,50 / −2,10 / 5,80 / −1,90 / −2,40 / 4,20 /
 −3,10 / 0,60 / −2,80 / 5,10 / −1,70 / −1,20 per cent). Mortality `qx(M, x) = 0,001200 × 1,095^(x − 40)`
-**[std]**, so `mort_rate(1) = 0,001200` at attained age 40 and the proxy is anchored there; DAV 2008 T
+**[std]**, so `mort_rate(0) = 0,001200` at attained age 40 and the proxy is anchored there; DAV 2008 T
 and DAV 2004 R are cited by name and never shipped [REG-R48] [REG-R49]. Surrender
-`lapse_rate_base` = 5 % in years 1–2, 3 % in years 3–11, 6 % in year 12, 2 % from year 13 **[std]**,
-with `lapse_rate(27) = 0` because the end of the last policy year is *Rentenbeginn*. Acquisition charge
+`lapse_rate_base` = 5 % in policy years 1–2 (`t = 0, 1`), 3 % in policy years 3–11, 6 % in policy year
+12 (`t = 11`), 2 % from policy year 13 **[std]**, with `lapse_rate(26) = 0` because the end of the last
+period is *Rentenbeginn*. Acquisition charge
 `acq_cost_rate = 2,5 %` of the *Beitragssumme* **[std]** — `0,025 × 64 800,00 = 1 620,00 €` — spread
 over `zill_years = 5` premium-paying years at `324,00 €` a year, inside the DeckRV § 4
 *Höchstzillmersatz* of 25 ‰ [REG-R16]. Premium charge `β = 3 %` of each gross premium **[std]**, i.e.
@@ -799,33 +810,33 @@ column is deliberately not totalled: adding twenty-seven opening balances is not
 
 | t | x(t) | pols_if | premiums | claims_death | claims_lapse | claims_maturity | expenses | guar_int | index_credit | av | net_cf |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 40 | 1.000000 | 2,400.00 | 38.88 | 98.81 | 0.00 | 1,656.00 | 19.99 | 0.00 | 0.00 | 606.31 |
-| 2 | 41 | 0.948860 | 2,277.26 | 40.40 | 188.20 | 0.00 | 34.67 | 38.08 | 81.79 | 1,915.73 | 2,014.00 |
-| 3 | 42 | 0.900233 | 2,160.56 | 41.97 | 163.70 | 0.00 | 33.39 | 55.21 | 186.81 | 3,730.48 | 1,921.51 |
-| 4 | 43 | 0.871969 | 2,092.73 | 44.51 | 216.92 | 0.00 | 32.82 | 73.17 | 1,204.06 | 5,587.67 | 1,798.47 |
-| 5 | 44 | 0.844477 | 2,026.75 | 47.20 | 297.26 | 0.00 | 32.27 | 100.28 | 0.00 | 8,360.99 | 1,650.01 |
-| 6 | 45 | 0.817730 | 1,962.55 | 50.05 | 346.23 | 0.00 | 31.71 | 116.82 | 41.78 | 9,807.67 | 1,534.56 |
-| 7 | 46 | 0.791700 | 1,900.08 | 53.06 | 393.37 | 0.00 | 31.16 | 132.75 | 0.00 | 11,465.08 | 1,422.49 |
-| 8 | 47 | 0.766360 | 1,839.26 | 56.24 | 436.27 | 0.00 | 30.62 | 147.26 | 0.00 | 12,978.50 | 1,316.13 |
-| 9 | 48 | 0.741686 | 1,780.05 | 59.60 | 476.31 | 0.00 | 30.08 | 160.80 | 1,239.56 | 14,394.07 | 1,214.06 |
-| 10 | 49 | 0.717651 | 1,722.36 | 63.15 | 550.17 | 0.00 | 29.54 | 185.79 | 0.00 | 16,954.47 | 1,079.50 |
-| 11 | 50 | 0.694231 | 1,666.15 | 66.89 | 583.79 | 0.00 | 29.00 | 197.19 | 0.00 | 18,152.02 | 986.47 |
-| 12 | 51 | 0.671401 | 1,611.36 | 70.84 | 1,229.59 | 0.00 | 28.47 | 207.72 | 0.00 | 19,261.02 | 282.46 |
-| 13 | 52 | 0.629062 | 1,509.75 | 75.88 | 415.58 | 0.00 | 27.08 | 210.68 | 823.46 | 19,656.70 | 991.21 |
-| 14 | 53 | 0.614282 | 1,474.28 | 90.60 | 453.04 | 0.00 | 26.84 | 229.75 | 0.00 | 21,602.56 | 903.80 |
-| 15 | 54 | 0.599646 | 1,439.15 | 103.58 | 472.83 | 0.00 | 26.59 | 239.88 | 0.00 | 22,651.89 | 836.15 |
-| 16 | 55 | 0.585141 | 1,404.34 | 117.93 | 491.43 | 0.00 | 26.34 | 249.41 | 0.00 | 23,641.56 | 768.64 |
-| 17 | 56 | 0.570753 | 1,369.81 | 133.76 | 508.81 | 0.00 | 26.07 | 258.35 | 0.00 | 24,571.29 | 701.16 |
-| 18 | 57 | 0.556471 | 1,335.53 | 151.20 | 524.98 | 0.00 | 25.80 | 266.69 | 0.00 | 25,440.64 | 633.55 |
-| 19 | 58 | 0.542280 | 1,301.47 | 170.37 | 539.92 | 0.00 | 25.52 | 274.43 | 0.00 | 26,249.06 | 565.67 |
-| 20 | 59 | 0.528168 | 1,267.60 | 191.39 | 553.60 | 0.00 | 25.23 | 281.55 | 0.00 | 26,995.84 | 497.38 |
-| 21 | 60 | 0.514121 | 1,233.89 | 214.41 | 566.02 | 0.00 | 24.93 | 288.05 | 0.00 | 27,680.11 | 428.53 |
-| 22 | 61 | 0.500125 | 1,200.30 | 239.56 | 577.14 | 0.00 | 24.61 | 293.91 | 0.00 | 28,300.85 | 358.99 |
-| 23 | 62 | 0.486168 | 1,166.80 | 266.98 | 586.94 | 0.00 | 24.29 | 299.14 | 0.00 | 28,856.92 | 288.59 |
-| 24 | 63 | 0.472234 | 1,133.36 | 296.81 | 595.39 | 0.00 | 23.94 | 303.70 | 0.00 | 29,346.98 | 217.22 |
-| 25 | 64 | 0.458311 | 1,099.95 | 329.17 | 602.46 | 0.00 | 23.59 | 307.59 | 0.00 | 29,769.58 | 144.73 |
-| 26 | 65 | 0.444386 | 1,066.53 | 364.19 | 608.12 | 0.00 | 23.21 | 310.80 | 0.00 | 30,123.10 | 71.00 |
-| 27 | 66 | 0.430446 | 1,033.07 | 402.00 | 0.00 | 31,240.67 | 22.82 | 313.29 | 0.00 | 30,405.82 | −30,632.42 |
+| 0 | 40 | 1.000000 | 2,400.00 | 38.88 | 98.81 | 0.00 | 1,656.00 | 19.99 | 0.00 | 0.00 | 606.31 |
+| 1 | 41 | 0.948860 | 2,277.26 | 40.40 | 188.20 | 0.00 | 34.67 | 38.08 | 81.79 | 1,915.73 | 2,014.00 |
+| 2 | 42 | 0.900233 | 2,160.56 | 41.97 | 163.70 | 0.00 | 33.39 | 55.21 | 186.81 | 3,730.48 | 1,921.51 |
+| 3 | 43 | 0.871969 | 2,092.73 | 44.51 | 216.92 | 0.00 | 32.82 | 73.17 | 1,204.06 | 5,587.67 | 1,798.47 |
+| 4 | 44 | 0.844477 | 2,026.75 | 47.20 | 297.26 | 0.00 | 32.27 | 100.28 | 0.00 | 8,360.99 | 1,650.01 |
+| 5 | 45 | 0.817730 | 1,962.55 | 50.05 | 346.23 | 0.00 | 31.71 | 116.82 | 41.78 | 9,807.67 | 1,534.56 |
+| 6 | 46 | 0.791700 | 1,900.08 | 53.06 | 393.37 | 0.00 | 31.16 | 132.75 | 0.00 | 11,465.08 | 1,422.49 |
+| 7 | 47 | 0.766360 | 1,839.26 | 56.24 | 436.27 | 0.00 | 30.62 | 147.26 | 0.00 | 12,978.50 | 1,316.13 |
+| 8 | 48 | 0.741686 | 1,780.05 | 59.60 | 476.31 | 0.00 | 30.08 | 160.80 | 1,239.56 | 14,394.07 | 1,214.06 |
+| 9 | 49 | 0.717651 | 1,722.36 | 63.15 | 550.17 | 0.00 | 29.54 | 185.79 | 0.00 | 16,954.47 | 1,079.50 |
+| 10 | 50 | 0.694231 | 1,666.15 | 66.89 | 583.79 | 0.00 | 29.00 | 197.19 | 0.00 | 18,152.02 | 986.47 |
+| 11 | 51 | 0.671401 | 1,611.36 | 70.84 | 1,229.59 | 0.00 | 28.47 | 207.72 | 0.00 | 19,261.02 | 282.46 |
+| 12 | 52 | 0.629062 | 1,509.75 | 75.88 | 415.58 | 0.00 | 27.08 | 210.68 | 823.46 | 19,656.70 | 991.21 |
+| 13 | 53 | 0.614282 | 1,474.28 | 90.60 | 453.04 | 0.00 | 26.84 | 229.75 | 0.00 | 21,602.56 | 903.80 |
+| 14 | 54 | 0.599646 | 1,439.15 | 103.58 | 472.83 | 0.00 | 26.59 | 239.88 | 0.00 | 22,651.89 | 836.15 |
+| 15 | 55 | 0.585141 | 1,404.34 | 117.93 | 491.43 | 0.00 | 26.34 | 249.41 | 0.00 | 23,641.56 | 768.64 |
+| 16 | 56 | 0.570753 | 1,369.81 | 133.76 | 508.81 | 0.00 | 26.07 | 258.35 | 0.00 | 24,571.29 | 701.16 |
+| 17 | 57 | 0.556471 | 1,335.53 | 151.20 | 524.98 | 0.00 | 25.80 | 266.69 | 0.00 | 25,440.64 | 633.55 |
+| 18 | 58 | 0.542280 | 1,301.47 | 170.37 | 539.92 | 0.00 | 25.52 | 274.43 | 0.00 | 26,249.06 | 565.67 |
+| 19 | 59 | 0.528168 | 1,267.60 | 191.39 | 553.60 | 0.00 | 25.23 | 281.55 | 0.00 | 26,995.84 | 497.38 |
+| 20 | 60 | 0.514121 | 1,233.89 | 214.41 | 566.02 | 0.00 | 24.93 | 288.05 | 0.00 | 27,680.11 | 428.53 |
+| 21 | 61 | 0.500125 | 1,200.30 | 239.56 | 577.14 | 0.00 | 24.61 | 293.91 | 0.00 | 28,300.85 | 358.99 |
+| 22 | 62 | 0.486168 | 1,166.80 | 266.98 | 586.94 | 0.00 | 24.29 | 299.14 | 0.00 | 28,856.92 | 288.59 |
+| 23 | 63 | 0.472234 | 1,133.36 | 296.81 | 595.39 | 0.00 | 23.94 | 303.70 | 0.00 | 29,346.98 | 217.22 |
+| 24 | 64 | 0.458311 | 1,099.95 | 329.17 | 602.46 | 0.00 | 23.59 | 307.59 | 0.00 | 29,769.58 | 144.73 |
+| 25 | 65 | 0.444386 | 1,066.53 | 364.19 | 608.12 | 0.00 | 23.21 | 310.80 | 0.00 | 30,123.10 | 71.00 |
+| 26 | 66 | 0.430446 | 1,033.07 | 402.00 | 0.00 | 31,240.67 | 22.82 | 313.29 | 0.00 | 30,405.82 | −30,632.42 |
 | **Total** | | | **42,474.94** | **3,780.63** | **12,476.88** | **31,240.67** | **2,376.60** | **5,562.28** | **3,577.46** | — | **−7,399.84** |
 
 The **Total** row is the sum **at full precision, then rounded**. Three of the eight totals differ from
@@ -836,57 +847,58 @@ them and look like a modelling error.
 
 The shape is the one a *Zillmer*-financed savings contract has and no other: a **first year that is
 almost the whole story of the strain** — 1 620,00 € of acquisition expense against 2 400,00 € of
-premium, so `net_cf(1) = 606,31 €` rather than the 2 000 € the premium suggests — then twenty-five
+premium, so `net_cf(0) = 606,31 €` rather than the 2 000 € the premium suggests — then twenty-five
 thin positive years while the account builds, then one very large negative year when the whole
-surviving cohort's capital falls due at once. The year-12 surrender spike (1 229,59 € against 583,79 €
-the year before) is the § 20 Abs. 1 Nr. 6 EStG threshold in the lapse table and nothing else.
+surviving cohort's capital falls due at once. The surrender spike at `t = 11`, contractual policy year
+12 (1 229,59 € against 583,79 € the year before), is the § 20 Abs. 1 Nr. 6 EStG threshold in the lapse
+table and nothing else.
 
 ### Independent checks
 
 Six checks. Four rebuild a number in the table by a route the model does not take, and two are
 closure identities — the decrements, and the cash flow statement itself.
 
-**1. Policy year 1, rebuilt end to end with a calculator.** The acquisition charge is
-`0,025 × 64 800,00 = 1 620,00 €` over five years, `324,00 €` a year; the administration charge is
-`0,03 × 2 400,00 = 72,00 €`; so `P⁺(1) = 2 400,00 − 324,00 − 72,00 = 2 004,00 €`. The account opens at
-zero, so `av_pp_at(1,"AFT_PREM") = 2 004,00`, the reserve charge is
-`0,0025 × 2 004,00 = 5,01 €`, `av_pp_at(1,"AFT_CHARGE") = 1 998,99` and the guaranteed interest is
-`0,01 × 1 998,99 = 19,9899 €` — the table's `guar_int` of **19,99**, on `pols_if(1) = 1`. That leaves
-`av_pp_at(1,"AFT_GUAR") = 2 018,9799 €`. Decrements: `q_d(1) = 0,001200` at attained age 40 by the
+**1. The first period `t = 0` — contractual policy year 1 — rebuilt end to end with a calculator.**
+The acquisition charge is `0,025 × 64 800,00 = 1 620,00 €` over five years, `324,00 €` a year; the
+administration charge is `0,03 × 2 400,00 = 72,00 €`; so `P⁺(0) = 2 400,00 − 324,00 − 72,00 =
+2 004,00 €`. The account opens at zero, so `av_pp_at(0,"AFT_PREM") = 2 004,00`, the reserve charge is
+`0,0025 × 2 004,00 = 5,01 €`, `av_pp_at(0,"AFT_CHARGE") = 1 998,99` and the guaranteed interest is
+`0,01 × 1 998,99 = 19,9899 €` — the table's `guar_int` of **19,99**, on `pols_if(0) = 1`. That leaves
+`av_pp_at(0,"AFT_GUAR") = 2 018,9799 €`. Decrements: `q_d(0) = 0,001200` at attained age 40 by the
 proxy's own anchor, so 0,001200 deaths, then `0,05 × (1 − 0,001200) = 0,049940` surrenders and
-`pols_if(2) = 0,948860` — the table's second row to six decimals. Benefits: the *Mindesttodesfallschutz*
+`pols_if(1) = 0,948860` — the table's second row to six decimals. Benefits: the *Mindesttodesfallschutz*
 floor is `0,50 × 64 800,00 = 32 400,00 €` and dominates the account, so
-`claims_death(1) = 32 400,00 × 0,001200 = 38,88 €`; the surrender value is
-`2 018,9799 × 0,98 = 1 978,6003 €` and `claims_lapse(1) = 1 978,6003 × 0,049940 = 98,8113 €`. Expenses
+`claims_death(0) = 32 400,00 × 0,001200 = 38,88 €`; the surrender value is
+`2 018,9799 × 0,98 = 1 978,6003 €` and `claims_lapse(0) = 1 978,6003 × 0,049940 = 98,8113 €`. Expenses
 are `1 620,00 + 36,00 = 1 656,00 €`. Hence
-`net_cf(1) = 2 400,00 − 38,88 − 98,81 − 0 − 1 656,00 = 606,31 €`. Every figure in row 1 is reproduced
-without the model.
+`net_cf(0) = 2 400,00 − 38,88 − 98,81 − 0 − 1 656,00 = 606,31 €`. Every figure in the first row is
+reproduced without the model.
 
-**2. The *Indexjahr* of year 9, rebuilt on its own terms.** The twelve capped monthly returns of
-research Example A sum to `S(9) = +8,90 %` (table below), which is positive, so
-`ρ(9) = 8,90 %`. The base is the **opening** balance `G(9) = av_pp(9) = 19 407,2450 €`, giving
-`X(9) = 0,0890 × 19 407,2450 = 1 727,2448 €` per policy; the credit goes to the survivors of both
-decrements, `pols_if_at(9,"AFT_LAPSE") = 0,717651`, so
-`index_credit(9) = 1 727,2448 × 0,717651 = 1 239,5583 €` — the table's **1 239,56**. Two contrasts a
+**2. The *Indexjahr* of `t = 8` — policy year 9 — rebuilt on its own terms.** The twelve capped
+monthly returns of research Example A sum to `S(8) = +8,90 %` (table below), which is positive, so
+`ρ(8) = 8,90 %`. The base is the **opening** balance `G(8) = av_pp(8) = 19 407,2450 €`, giving
+`X(8) = 0,0890 × 19 407,2450 = 1 727,2448 €` per policy; the credit goes to the survivors of both
+decrements, `pols_if_at(8,"AFT_LAPSE") = 0,717651`, so
+`index_credit(8) = 1 727,2448 × 0,717651 = 1 239,5583 €` — the table's **1 239,56**. Two contrasts a
 reader can check on the same twelve numbers: **compounding** the capped returns instead of summing them
-gives 8,9599 %, and the **raw** year return is `Y(9) = +13,4548 %` against a raw sum of +13,10 %.
+gives 8,9599 %, and the **raw** year return is `Y(8) = +13,4548 %` against a raw sum of +13,10 %.
 
-**3. The decrement closure.** Summed over the twenty-seven years, deaths **0,074584**, surrenders
+**3. The decrement closure.** Summed over the twenty-seven periods, deaths **0,074584**, surrenders
 **0,500439** and maturities **0,424977** add to **1,000000** exactly — the whole opening cohort, with
-nothing left in force at `t = 28`. This is `check_pols_roll_fwd()`'s second condition, and it is built
+nothing left in force at `t = 27`. This is `check_pols_roll_fwd()`'s second condition, and it is built
 by direct summation over the exit cells with no reference to the recursion that produced `pols_if`.
 
-**4. The account roll-forward at `t = 9`, at fund level.**
+**4. The account roll-forward at `t = 8`, at fund level.**
 
-    av(9)              14,394.0730
-    + prem_to_av(9)     1,726.6439      = 2,328.00 x 0.741686
-    − av_charge(9)         40.3018      = 54.3381 x 0.741686
-    + guar_int(9)         160.8042
-    + surplus_credit(9)     0.0000      w(9) = 1, so the safe arm is empty
-    + index_credit(9)   1,239.5583      to the survivors, not to pols_if(9)
-    − av_released(9)      526.3103      = 21,897.7159 x (0.0018396 + 0.0221954)
+    av(8)              14,394.0730
+    + prem_to_av(8)     1,726.6439      = 2,328.00 x 0.741686
+    − av_charge(8)         40.3018      = 54.3381 x 0.741686
+    + guar_int(8)         160.8042
+    + surplus_credit(8)     0.0000      w(8) = 1, so the safe arm is empty
+    + index_credit(8)   1,239.5583      to the survivors, not to pols_if(8)
+    − av_released(8)      526.3103      = 21,897.7159 x (0.0018396 + 0.0221954)
     -------------------------------
-    = av(10)           16,954.4673      the table's next row
+    = av(9)            16,954.4673      the table's next row
 
 Every term is struck on a **different population**, which is the whole difficulty of this product: the
 premium, the charge and the guaranteed interest on the opening in-force, the credit on the survivors,
@@ -899,10 +911,11 @@ guaranteed interest of 5 562,28 € and the index credits of 3 577,46 € are mo
 policyholder's account, and adding them would move `net_cf` by 9 139,74 €. This is `check_net_cf()`.
 
 **6. The guarantee at *Rentenbeginn*.** The ledger closes at
-`credit_cum_pp(28) = 4 851,4383 €` — the sum of the per-policy index credits over the 27 years, the safe
-arm being empty — and the *Beitragsgarantie* at `0,90 × 64 800,00 = 58 320,00 €`, so the guaranteed
-capital is `guar_cap_pp(28) = 63 171,4383 €`. The account stands at `av_pp(28) = 73 511,3936 €`, above
-it, so the floor **does not bind** on the anchor and `mat_pp(27) = 73 511,39 €`. The maturity cash flow
+`credit_cum_pp(27) = 4 851,4383 €` — its value at time `n = 27`, the sum of the per-policy index credits
+over the 27 periods, the safe arm being empty — and the *Beitragsgarantie* at
+`0,90 × 64 800,00 = 58 320,00 €`, so the guaranteed capital is `guar_cap_pp(27) = 63 171,4383 €`. The
+account stands at `av_pp(27) = 73 511,3936 €`, above it, so the floor **does not bind** on the anchor
+and `mat_pp(26) = 73 511,39 €`. The maturity cash flow
 is `73 511,3936 × 0,424977 = 31 240,67 €`, the table's last row. Reported beside it, and **not a cash
 flow of this model**: `ann_monthly_pp() = 73 511,3936 / 10 000 × 25,00 = 183,78 €` a month.
 
@@ -917,11 +930,11 @@ different things are in it.
   research file's expectation of about 2,97 % a year at these parameters, one realised path being a
   sample of size 27 from a distribution with a 65 % chance of zero in any year.
 - **On amounts** the ratio collapses to 0,2082, and the reason is **timing, not pricing**: the path
-  credits at a positive rate in years 1, 2, 3, 4, 6, 9 and 13 and in no year after 13 — and year 1's
-  rate of 12,04 % lands on a base of zero — so the six years that actually credit all fall while the
-  account is small and the twenty-one that do not fall while it is large. `G(t)` runs from 0,00 € at
-  `t = 1` to 70 637,97 € at `t = 27`, and a rate ratio weighted by `G(t)` is dominated by the late
-  years.
+  credits at a positive rate at `t = 0, 1, 2, 3, 5, 8` and `12`, and in no period after `t = 12` — and
+  the rate of 12,04 % at `t = 0` lands on a base of zero — so the six periods that actually credit all
+  fall while the account is small and the twenty-one that do not fall while it is large. `G(t)` runs
+  from 0,00 € at `t = 0` to 70 637,97 € at `t = 26`, and a rate ratio weighted by `G(t)` is dominated
+  by the late years.
 
 Both numbers are worth having and neither should be quoted alone. What the pair says about the shipped
 parameters is that **the Cap and the option budget are not badly mismatched on this path** — 0,853 on
@@ -933,11 +946,11 @@ discrepancy**, which is the honest treatment when neither number could be establ
 
 ### The two *Indexjahre* the mechanic turns on
 
-`t = 9` and `t = 10` of `eqidx_vol17` are the research file's constructed Example A and Example B,
-wired into the shipped path so that the model reproduces them rather than restating them. Monthly
-returns in per cent, Cap `C = 3,00 %`:
+`t = 8` and `t = 9` of `eqidx_vol17` — policy years 9 and 10 — are the research file's constructed
+Example A and Example B, wired into the shipped path so that the model reproduces them rather than
+restating them. Monthly returns in per cent, Cap `C = 3,00 %`:
 
-| Month `m` | A: `r(9,m)` | A: `min(r, C)` | B: `r(10,m)` | B: `min(r, C)` |
+| Month `m` | A: `r(8,m)` | A: `min(r, C)` | B: `r(9,m)` | B: `min(r, C)` |
 |---|---|---|---|---|
 | 1 | +1.80 | +1.80 | +6.50 | +3.00 |
 | 2 | −2.40 | −2.40 | −2.10 | −2.10 |
@@ -955,10 +968,10 @@ returns in per cent, Cap `C = 3,00 %`:
 | **Compounded `Y`** | **+13.4548** | | **+6.4402** | |
 
 **Example A** is the strong year. The cap bound in three months and cost `13,10 − 8,90 = 4,20` points;
-`S(9) = +8,90 %` and `ρ(9) = 8,90 %`.
+`S(8) = +8,90 %` and `ρ(8) = 8,90 %`.
 
 **Example B is the case the product is criticised for**: the cap bound in four months and cost
-`7,00 − (−2,60) = 9,60` points, `S(10) = −2,60 %`, and so `ρ(10) = max(−2,60 %, 0) = 0`. **The index
+`7,00 − (−2,60) = 9,60` points, `S(9) = −2,60 %`, and so `ρ(9) = max(−2,60 %, 0) = 0`. **The index
 rose 6,4402 % over the year and the credit was nothing.** The capital was untouched, and the year's
 option budget bought options that expired worthless. An implementation that floors each *month* at zero
 gets `S = +12,60 %` here; one that applies the floor to the compounded raw return credits 6,44 %; one
@@ -966,12 +979,12 @@ that applies the *Partizipationsquote* to it credits 3,86 %. All three are wrong
 entirely plausible in a printout.
 
 **Model point 8 reproduces both to the euro.** It is the in-force cell, `dur_init = 8` and
-`av_pp_init = 50 000,00 €`, so its first projected *Indexjahr* is `t = 9` and its base is exactly the
-research file's `G = 50 000,00 €`:
+`av_pp_init = 50 000,00 €`, so its frame opens at `t = 8` — its first projected *Indexjahr* — and its
+base is exactly the research file's `G = 50 000,00 €`:
 
-- `index_credit_pp(9) = 0,0890 × 50 000,00 = 4 450,00 €`, against a *sichere Verzinsung* arm that would
+- `index_credit_pp(8) = 0,0890 × 50 000,00 = 4 450,00 €`, against a *sichere Verzinsung* arm that would
   have credited `0,0250 × 50 000,00 = 1 250,00 €` — the index arm paying **3,56 times** the safe arm;
-- `index_credit_pp(10) = 0,00 €` on a base of 60 631,57 €, the safe arm having offered 1 515,79 €.
+- `index_credit_pp(9) = 0,00 €` on a base of 60 631,57 €, the safe arm having offered 1 515,79 €.
 
 ### The *Partizipationsquote* variant, on the identical index path
 
@@ -981,12 +994,12 @@ covers all 27 years, not only the six displayed:
 
 | t | x(t) | pols_if | premiums | claims_death | claims_lapse | claims_maturity | expenses | guar_int | index_credit | av | net_cf |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 40 | 1.000000 | 2,400.00 | 38.88 | 98.81 | 0.00 | 1,656.00 | 19.99 | 0.00 | 0.00 | 606.31 |
-| 4 | 43 | 0.871969 | 2,092.73 | 44.51 | 226.65 | 0.00 | 32.82 | 76.45 | 2,036.27 | 5,916.59 | 1,788.74 |
-| 9 | 48 | 0.741686 | 1,780.05 | 59.60 | 511.12 | 0.00 | 30.08 | 172.56 | 1,216.40 | 15,572.35 | 1,179.24 |
-| 10 | 49 | 0.717651 | 1,722.36 | 63.15 | 583.42 | 0.00 | 29.54 | 197.01 | 675.83 | 18,079.93 | 1,046.25 |
-| 13 | 52 | 0.629062 | 1,509.75 | 84.90 | 465.03 | 0.00 | 27.08 | 235.75 | 832.65 | 22,169.87 | 932.74 |
-| 27 | 66 | 0.430446 | 1,033.07 | 538.84 | 0.00 | 41,875.02 | 22.82 | 419.94 | 0.00 | 41,097.09 | −41,403.61 |
+| 0 | 40 | 1.000000 | 2,400.00 | 38.88 | 98.81 | 0.00 | 1,656.00 | 19.99 | 0.00 | 0.00 | 606.31 |
+| 3 | 43 | 0.871969 | 2,092.73 | 44.51 | 226.65 | 0.00 | 32.82 | 76.45 | 2,036.27 | 5,916.59 | 1,788.74 |
+| 8 | 48 | 0.741686 | 1,780.05 | 59.60 | 511.12 | 0.00 | 30.08 | 172.56 | 1,216.40 | 15,572.35 | 1,179.24 |
+| 9 | 49 | 0.717651 | 1,722.36 | 63.15 | 583.42 | 0.00 | 29.54 | 197.01 | 675.83 | 18,079.93 | 1,046.25 |
+| 12 | 52 | 0.629062 | 1,509.75 | 84.90 | 465.03 | 0.00 | 27.08 | 235.75 | 832.65 | 22,169.87 | 932.74 |
+| 26 | 66 | 0.430446 | 1,033.07 | 538.84 | 0.00 | 41,875.02 | 22.82 | 419.94 | 0.00 | 41,097.09 | −41,403.61 |
 | **Total** | | | **42,474.94** | **4,636.36** | **14,723.29** | **41,875.02** | **2,376.60** | **6,712.41** | **16,521.86** | — | **−21,136.33** |
 
 Summed at full precision and then rounded, as above; here **four** of the eight totals differ from
@@ -995,9 +1008,9 @@ the sum of the twenty-seven rounded cells rather than three: `claims_death` by t
 (2 376,60 € against 2 376,59 €, 16 521,86 € against 16 521,85 €, and −21 136,33 € against
 −21 136,34 €). `index_credit` agrees at the cent on the Cap design and does not here.
 
-The single most instructive row is `t = 10`. On the Cap design that year credits **nothing**; on the
-*Quote* design the same twelve returns credit `max(0,60 × 6,4402 %, 0) = 3,8641 %` of `G(10)`, which is
-**675,83 €** at fund level. At `t = 9` the ranking reverses — the Cap design credits 8,90 % against the
+The single most instructive row is `t = 9`. On the Cap design that year credits **nothing**; on the
+*Quote* design the same twelve returns credit `max(0,60 × 6,4402 %, 0) = 3,8641 %` of `G(9)`, which is
+**675,83 €** at fund level. At `t = 8` the ranking reverses — the Cap design credits 8,90 % against the
 *Quote*'s `0,60 × 13,4548 % = 8,0729 %` — because Example A's give-up was concentrated in three months
 while the *Quote* gives away 40 % of the year in every state. **The two designs are not
 interchangeable and they fail differently**, which is why a product specification may not describe one
@@ -1010,8 +1023,8 @@ these levels, `q = 60 %` on a 17 %-volatility price index is close to a fair spe
 
 All four are the same 40-year-old paying 2 400,00 € a year to 67 under a 90 % *Beitragsgarantie* at
 `i_g = 1,00 %`, differing only in what the declared surplus buys. Every column below is **per policy**
-at `t = n + 1 = 28`, so the credit columns are the ledger `credit_cum_pp(28)` and are larger than the
-frame's fund-level totals, which carry the decrements: the anchor's 4 851,44 € of per-policy index
+at time `t = n = 27`, *Rentenbeginn*, so the credit columns are the ledger `credit_cum_pp(27)` and are
+larger than the frame's fund-level totals, which carry the decrements: the anchor's 4 851,44 € of per-policy index
 credits is the 3 577,46 € of the `index_credit` column above, before survivorship.
 
 | Model point | Design | Index path | Index credits | Safe-arm credits | Account | Guaranteed capital | Benefit | Monthly *Rente* | `index_budget_ratio()` |
@@ -1037,12 +1050,12 @@ The model was built to the specification above and reproduces it; two numbers in
 pitfalls* list did not survive contact with it, and the notes rather than the model were corrected.
 
 1. **Pitfall 2** said that an implementation flooring each month at zero would get `S = +9,60 %` on
-   `t = 10`. 9,60 points is what the cap *gave away* that year, `7,00 − (−2,60)`; flooring each capped
-   month at zero gives `3,00 + 3,00 + 3,00 + 0,60 + 3,00 = +12,60 %`. The pitfall's point is unchanged
+   `t = 9` (Example B). 9,60 points is what the cap *gave away* that year, `7,00 − (−2,60)`; flooring
+   each capped month at zero gives `3,00 + 3,00 + 3,00 + 0,60 + 3,00 = +12,60 %`. The pitfall's point is unchanged
    and the corrected figure is now in it.
 2. **Pitfall 9** asked for `db_pp(t) < av_pp(t+1)` in every year the index credited something. That is
    false at early durations for a reason the product intends: the *Mindesttodesfallschutz* floor of
-   32 400,00 € exceeds the account until year 13, so the death benefit is larger than the account at
+   32 400,00 € exceeds the account until `t = 12`, so the death benefit is larger than the account at
    *any* timing there. The assertion that carries the pitfall's meaning — that the death benefit is
    struck on the balance **before** the year's credits — is
    `av_pp_at(t,"AFT_GUAR") < av_pp(t+1)` in every year that credited, and that is what the pitfall now

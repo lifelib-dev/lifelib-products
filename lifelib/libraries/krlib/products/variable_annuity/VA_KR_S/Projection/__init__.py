@@ -12,9 +12,12 @@ projecting model point 1::
     >>> Projection.point_id = 4            # or switch the default
 
 ``t`` counts **projection months**, 0-based: ``t = 0`` is the month containing the
-계약일 and the first 기본보험료, and ``t = proj_len()`` the last month before attained age
-``omega_age``. Two dates cut the projection in two. ``pay_months()`` ends the
-premium-paying period, and the monthly deduction **steps up** there rather than down,
+계약일 and the first 기본보험료, and ``t = proj_len() - 1`` the last month before attained
+age ``omega_age``. ``proj_len()`` is the **number** of projected months, so the frame is
+``range(proj_len())`` and the policy year containing month ``t`` is ``t // 12 + 1``.
+
+Two dates cut the projection in two. ``pay_months()`` ends the premium-paying period,
+and the monthly deduction **steps up** there rather than down,
 because the 계약관리비용 for the period after 납입완료 was collected inside the premium
 and is now drawn back out of the fund. ``t_ann()`` is the 연금개시나이 계약해당일: the
 특별계정 exists for ``t < t_ann()`` and is empty afterwards, the whole 계약자적립액
@@ -71,7 +74,7 @@ n_p                        pay_term()                      납입기간, in year
 y                          annuity_age()                   연금개시나이, 보험나이
 T                          t_ann()                         Month of the 연금개시 계약해당일
 m                          defer_years()                   연금개시 전 보험기간, in years
-t = 0..N                   proj_len()                      Last projected month, N
+t = 0..N-1                 proj_len()                      Number of projected months, N
 omega                      omega_age                       Terminal age of the table, 120
 (switch)                   gmab_flag()                     1 보증형, 0 미보증형
 (none)                     fund_set()                      Allocation set, on the ladder
@@ -242,7 +245,8 @@ at 70%. Point **8** exercises **추가납입** at 100% of the basic premium, whi
 GMDB base and the GMAB strike without a loading [S1] and — because 보험료총액 is defined
 on premiums *paid* as well as payable — grows the premium-based guarantee charge with
 it. Point **9** exercises **중도인출**, 10% of the 해약환급금 once a year from the
-eleventh policy year, which re-bases both guarantees proportionally [S2]
+eleventh 계약해당일 (``t = 132``, the start of the twelfth policy year), which re-bases
+both guarantees proportionally [S2]
 [S7 제51조제8항]: without that adjustment a policyholder could withdraw the fund and keep
 the strike [R1]. Point **10** is the issue envelope — 가입나이 70, 연금개시나이 80,
 기본보험료 at the ₩1,000,000 per 구좌 maximum [S1] [S2] [S9] — on the ``min_guar``
@@ -366,7 +370,12 @@ def wd_ratio():
 
 
 def wd_start_year():
-    """The first policy year in which a 중도인출 is taken; 0 with the module off.
+    """The number of completed policy years after which the first 중도인출 is taken.
+
+    An **elapsed count**, not a 1-based policy-year label: the first withdrawal falls on
+    the ``wd_start_year``-th 계약해당일, ``t = 12 * wd_start_year()``. With 11 on model
+    point 9 that is ``t = 132``, the start of the twelfth policy year. 0 with the module
+    off.
 
     The contract permits twelve withdrawals a policy year from one month after the
     계약일 [S1]; the model takes at most one a year, on the 계약해당일 **[std]**.
@@ -405,15 +414,17 @@ def defer_years():
 
 
 def proj_len():
-    """The last projected month index, ``N``.
+    """The **number** of projected months, ``N`` — the frame's exclusive end.
 
-    The contract is a 종신연금형 and has no maturity, so the horizon is the terminal age
-    of the shipped mortality table: the projection runs while ``age(t) < omega_age``,
-    ending at ``(omega_age - age_at_entry()) * 12 - 1``. The survivors at that horizon
-    leave through :func:`pols_maturity` with no payment, so the in-force roll-forward
-    closes and the truncation is visible rather than absorbed.
+    The frame is ``range(proj_len())``, so ``t`` runs ``0 … proj_len() - 1`` and
+    ``len(result_cf()) == proj_len()``. The contract is a 종신연금형 and has no maturity,
+    so the horizon is the terminal age of the shipped mortality table: the projection
+    runs while ``age(t) < omega_age``, which is ``(omega_age - age_at_entry()) * 12``
+    months. The survivors at that horizon leave through :func:`pols_maturity` with no
+    payment, so the in-force roll-forward closes and the truncation is visible rather
+    than absorbed.
     """
-    return (omega_age - age_at_entry()) * 12 - 1                     # noqa: F821
+    return (omega_age - age_at_entry()) * 12                         # noqa: F821
 
 
 def age(t):
@@ -773,7 +784,7 @@ def wd_pp(t):
     """
     if wd_ratio() <= 0.0 or t >= t_ann() or t < 12 * wd_start_year():
         return 0.0
-    if t % 12 != 0:
+    if t % 12 != 0 or t == 0:        # a 계약해당일, not the 계약일 itself
         return 0.0
     base = av_pp_at(t, "BEF_DEDUCT") - mth_deduct_pp(t)
     if base <= 0.0:
@@ -788,10 +799,11 @@ def wd_pp(t):
 
 
 def wd_cum_pp(t):
-    """Cumulative 중도인출금 taken to the end of month ``t``, per contract."""
-    if t < 0:
-        return 0.0
-    return wd_cum_pp(t - 1) + wd_pp(t)
+    """Cumulative 중도인출금 taken to the end of month ``t``, per contract.
+
+    Nil before the first month: the accumulation opens at zero in ``t = 0``.
+    """
+    return (wd_cum_pp(t - 1) if t > 0 else 0.0) + wd_pp(t)
 
 
 def prem_paid_gross_pp(t):
@@ -799,11 +811,10 @@ def prem_paid_gross_pp(t):
 
     The base of the ten-year cumulative withdrawal limit [S1] [S2] [S5], which is stated
     on 「실제 납입한 보험료 총액」 and so is not the reduced guarantee base
-    :func:`prem_paid_pp`.
+    :func:`prem_paid_pp`. Nil before the first month: the accumulation opens at zero in
+    ``t = 0``, the 계약일 premium being ``prem_pp(0)``.
     """
-    if t < 0:
-        return 0.0
-    return prem_paid_gross_pp(t - 1) + prem_pp(t)
+    return (prem_paid_gross_pp(t - 1) if t > 0 else 0.0) + prem_pp(t)
 
 
 def fund_pp_at(t, j, timing):
@@ -813,11 +824,14 @@ def fund_pp_at(t, j, timing):
     the fixed allocation; ``AFT_DEDUCT`` has cancelled the 월공제액 and any 중도인출 pro
     rata across the funds; ``AFT_DERISK`` has applied the mandatory pre-annuitisation
     reallocation. :func:`fund_pp` then grows this last one over the month.
+
+    The account **opens at nil in month 0**: there is no 특별계정 balance before the first
+    premium, so ``BEF_PREM`` is ``0`` at ``t = 0`` and ``fund_pp(t - 1, j)`` thereafter.
     """
     if t >= t_ann():
         return 0.0
     if timing == "BEF_PREM":
-        return fund_pp(t - 1, j)
+        return 0.0 if t == 0 else fund_pp(t - 1, j)
     if timing == "BEF_DEDUCT":
         return fund_pp_at(t, j, "BEF_PREM") + prem_to_av_pp(t) * fund_alloc(j)
     if timing == "AFT_DEDUCT":
@@ -856,7 +870,7 @@ def derisk_amount_pp(t):
     run leaves off because a single deterministic path cannot distinguish them from a
     different fixed allocation, this one is **not optional and is on**.
     """
-    if t >= t_ann() or t % 12 != 0:
+    if t >= t_ann() or t % 12 != 0 or t == 0:   # a 계약해당일, not the 계약일 itself
         return 0.0
     if not (0 < t_ann() - t <= 12 * derisk_lead_years):              # noqa: F821
         return 0.0
@@ -873,7 +887,7 @@ def fund_pp(t, j):
     the 운용보수 together, the fee being deducted inside the 기준가격 [S7 제43조제2호].
     Zero from ``t_ann()``, the 특별계정 having been emptied into the 일반계정 [S6].
     """
-    if t < 0 or t >= t_ann():
+    if t >= t_ann():
         return 0.0
     return fund_pp_at(t, j, "AFT_DERISK") * fund_growth(j)
 
@@ -898,7 +912,7 @@ def av_pp(t):
     to the surrender value and the annuity amount. It is the hard boundary on how far a
     public-source reconstruction of a Korean variable annuity can go.
     """
-    if t < 0 or t >= t_ann():
+    if t >= t_ann():
         return 0.0
     return sum(fund_pp(t, j) for j in fund_ids())
 
@@ -976,10 +990,10 @@ def prem_paid_pp(t):
     Without that adjustment a policyholder could withdraw the fund and keep the strike,
     and [R1] is explicit that it is a guarantee-risk mitigant rather than a convenience:
     「중도인출금은 최저보증한도에서 차감된다」.
+
+    The strike opens at nil in month 0, the 계약일 premium being ``prem_pp(0)``.
     """
-    if t < 0:
-        return 0.0
-    base = prem_paid_pp(t - 1) + prem_pp(t)
+    base = (prem_paid_pp(t - 1) if t > 0 else 0.0) + prem_pp(t)
     if wd_pp(t) <= 0.0:
         return base
     av_bef = av_pp_at(t, "BEF_DEDUCT") - mth_deduct_pp(t)
@@ -1227,7 +1241,7 @@ def pols_if(t):
     before ``t_ann()``, living annuitants after it. The end-of-month count is
     ``pols_if_at(t, "AFT_DECR")``.
     """
-    if t <= 0:
+    if t == 0:
         return pols_if_init()
     return (pols_if(t - 1) - pols_death(t - 1)
             - pols_lapse(t - 1) - pols_maturity(t - 1))
@@ -1248,9 +1262,10 @@ def pols_maturity(t):
 
     A 종신연금형 has no maturity and pays nothing here: the projection stops at attained
     age ``omega_age`` and this cells makes the truncation visible rather than absorbing
-    it into the last row's decrements.
+    it into the last row's decrements. Non-zero only in the last row,
+    ``t = proj_len() - 1``.
     """
-    if t == proj_len():
+    if t == proj_len() - 1:
         return pols_if(t) - pols_death(t) - pols_lapse(t)
     return 0.0
 
@@ -1635,7 +1650,7 @@ def check_net_cf():
     """
     return all(abs(check_net_cf_resid(t))
                <= val_tol * max(1.0, abs(net_cf_gen(t)) + abs(net_cf_sep(t)))  # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1657,7 +1672,7 @@ def check_pols_roll_fwd():
     ``roll_fwd_tol``.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) < roll_fwd_tol      # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_av_roll_fwd_resid(t):
@@ -1667,11 +1682,14 @@ def check_av_roll_fwd_resid(t):
     return − 특별계정 운용보수 − the 연금재원 transferred at 연금개시``. The mandatory
     de-risking does not appear because it conserves the total; it moves money between
     funds, not out of the account.
+
+    Defined on **every** month of the frame including ``t = 0``, whose opening balance is
+    nil: the first row carries the single premium, the 계약체결비용 and the whole first
+    month's charge stack, and the identity closes on it.
     """
-    if t < 1:
-        return 0.0
-    transfer = av_pp(t - 1) if t == t_ann() else 0.0
-    expected = (av_pp(t - 1) + prem_to_av_pp(t) - mth_deduct_pp(t) - wd_pp(t)
+    opening = av_pp(t - 1) if t > 0 else 0.0
+    transfer = opening if t == t_ann() else 0.0
+    expected = (opening + prem_to_av_pp(t) - mth_deduct_pp(t) - wd_pp(t)
                 + inv_income_pp(t) - mgmt_fee_pp(t) - transfer)
     return av_pp(t) - expected
 
@@ -1685,7 +1703,7 @@ def check_av_roll_fwd():
     """
     return all(abs(check_av_roll_fwd_resid(t))
                <= val_tol * max(1.0, abs(av_pp(t)))                  # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_charge_split_resid(t):
@@ -1707,7 +1725,7 @@ def check_charge_split():
     """True when the separate-account investment identity closes at every month."""
     return all(abs(check_charge_split_resid(t))
                <= val_tol * max(1.0, abs(av_pp(t)))                  # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_gmdb_floor_resid(t):
@@ -1727,7 +1745,7 @@ def check_gmdb_floor():
     """True when the death benefit splits cleanly into fund and guarantee at every month."""
     return all(abs(check_gmdb_floor_resid(t))
                <= val_tol * max(1.0, abs(db_pp(t)))                  # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_bond_floor_resid(t):
@@ -1747,7 +1765,7 @@ def check_bond_floor_resid(t):
 def check_bond_floor():
     """True when the 채권형 weight meets the mandatory ladder at every projected month."""
     return all(abs(check_bond_floor_resid(t)) < roll_fwd_tol         # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_surr_chg_cap_resid(t):
@@ -1766,7 +1784,7 @@ def check_surr_chg_cap_resid(t):
 def check_surr_chg_cap():
     """True when the surrender charge is inside the statutory cap at every month."""
     return all(abs(check_surr_chg_cap_resid(t)) < val_tol            # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def check_prem_alloc_resid(t):
@@ -1791,7 +1809,7 @@ def check_prem_alloc_resid(t):
 def check_prem_alloc():
     """True when the premium allocation matches the published fee stack at every month."""
     return all(abs(check_prem_alloc_resid(t)) < val_tol              # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(0, proj_len()))
 
 
 def result_cf():
@@ -1803,7 +1821,7 @@ def result_cf():
     outgo, income positive. There is no ``claims`` column — the split lines are published
     instead, so the columns add up without a reader having to know which to skip.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1828,7 +1846,7 @@ def result_pols():
     Rows read across: ``pols_if − pols_death − pols_lapse − pols_maturity`` is the next
     row's ``pols_if``, which is what :func:`check_pols_roll_fwd` asserts.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1849,7 +1867,7 @@ def result_av():
     the quantities the guarantees are struck on. Reading a row left to right is reading
     :func:`check_av_roll_fwd_resid`.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "av_pp_bef_deduct": [av_pp_at(t, "BEF_DEDUCT") for t in ts],
@@ -1880,7 +1898,7 @@ def result_charges():
     components out of the 계약자적립액 on the 월계약해당일; 특별계정 운용보수 inside the
     기준가격. Collapsing them into one charge is the error the columns exist to prevent.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(0, proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "acq_charge_pp": [acq_charge_pp(t) for t in ts],

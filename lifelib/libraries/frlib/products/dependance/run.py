@@ -24,10 +24,11 @@ print("status = {} (claim duration {} months)   capital {:,.0f}   "
           proj.status(), proj.claim_duration_months(), proj.capital_amount(),
           proj.premium_mth(), proj.premium_mode()))
 print("carence {}/{}/{} months by cause   franchise {} months   "
-      "reduction from {} years   proj_len {}".format(
+      "reduction from {} years   proj_len {} months (t = 0 .. {})".format(
           proj.carence_accident_months(), proj.carence_illness_months(),
           proj.carence_neuro_months(), proj.franchise_months(),
-          proj.reduction_qualifying_years(), proj.proj_len()))
+          proj.reduction_qualifying_years(), proj.proj_len(),
+          proj.proj_len() - 1))
 print("mort_rate({}) = {:.6f}   partielle {:.6f}   totale {:.6f}   "
       "sojourn in totale from 84 = {:.4f} years".format(
           proj.age(0), proj.mort_rate(0), proj.mort_rate_partial(0),

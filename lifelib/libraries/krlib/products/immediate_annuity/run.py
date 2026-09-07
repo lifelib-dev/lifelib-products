@@ -40,8 +40,8 @@ print("{} = {} years   lapse {:.2%}".format(
 print("crediting basis {}: gongsi iyul {:.2%}, choejeo bojeung iyul {:.2%} to {:.2%}"
       " -> credited {:.2%} at t = 0 and {:.2%} at t = {}".format(
           proj.crediting_basis(), proj.decl_rate(), proj.min_guar_rate(0),
-          proj.min_guar_rate(proj.proj_len()), proj.crediting_rate(0),
-          proj.crediting_rate(proj.proj_len()), proj.proj_len()))
+          proj.min_guar_rate(proj.proj_len() - 1), proj.crediting_rate(0),
+          proj.crediting_rate(proj.proj_len() - 1), proj.proj_len() - 1))
 print("expense load {:.2%} + wiheom boheomnyo {:.2%} -> opening gyeyakja jeongnimaek"
       " KRW {:,.0f} ({:.2%} of premium)".format(
           proj.expense_load_rate(), proj.risk_prem_rate(), proj.av_pp_init(),
@@ -58,17 +58,17 @@ else:
     if proj.retention_shortfall_pp() > 0.0:
         print("cost of the 2017 jojeong gyeoljeong liability at inception:"
               " KRW {:,.0f}".format(proj.retention_shortfall_pp()))
-print("projection runs t = 0 .. {} (annual, in arrears; row t pays at t + 1)".format(
-    proj.proj_len()))
+print("projection runs t = 0 .. {} ({} periods; annual, in arrears; row t pays at t + 1)"
+      .format(proj.proj_len() - 1, proj.proj_len()))
 print()
 
 cf = proj.result_cf()
 rows = [t for t in (0, 1, 2, 3, 4, 5, 9, 10, 11, 19, 20, 29, 30, 49, 50, 64, 65)
-        if t <= proj.proj_len()]
+        if t < proj.proj_len()]
 print("Cash flow statement (KRW, income positive in net_cf)")
 print(cf.loc[rows].round(2).to_string())
 print()
-print("undiscounted totals over t = 0 .. {}:".format(proj.proj_len()))
+print("undiscounted totals over t = 0 .. {}:".format(proj.proj_len() - 1))
 for col in ("premiums", "annuity_payments", "claims_death", "claims_lapse",
             "claims_maturity", "commissions", "expenses", "net_cf"):
     print("    {:<20s} {:>20,.2f}".format(col, cf[col].sum()))

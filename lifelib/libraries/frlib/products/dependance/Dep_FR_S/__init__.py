@@ -62,10 +62,10 @@ time rather than stored inside the model. The model folder itself holds no data,
 the model and its inputs must travel together.
 
 **Projection basis.** Monthly steps, matching the *rente mensuelle à terme échu* and the
-monthly premium. Policy month ``t`` runs 0, 1, ..., ``proj_len()``, where
-``proj_len() = 12 (110 - entry_age) - 1`` is the **last projected month**, 479 and so 480
-months for the base cell — cover is *viagère* with no age limit, so what ends the
-projection is a **[std]** terminal age of 110, not the contract. Premium and
+monthly premium. Policy month ``t`` is **0-based** and runs 0, 1, ...,
+``proj_len() - 1``, where ``proj_len() = 12 (110 - entry_age)`` is the **number of
+projected months**, 480 for the base cell — cover is *viagère* with no age limit, so what
+ends the projection is a **[std]** terminal age of 110, not the contract. Premium and
 expenses fall at the start of the month, benefits and transitions at the end of it, and
 the two *revalorisations* and any tariff revision at the start of months 12, 24, ...
 

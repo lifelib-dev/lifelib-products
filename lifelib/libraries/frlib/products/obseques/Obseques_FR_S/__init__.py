@@ -28,14 +28,14 @@ guaranteed-acceptance over-50s cell that is otherwise almost the same contract. 
 **capital is a state variable, not a constant** — it is uprated annually out of the
 *participation aux benefices*, so the benefit in force compounds for the whole of a whole
 life contract. And **lapse pays money**: the surrender value is the *provision
-mathematique*, so ``claims_lapse`` is non-zero from month 1 and the UK design's "every
-lapse extinguishes a liability for nothing" arithmetic does not carry over. On the anchor
-cell removing the lapse decrement *raises* the undiscounted net stream, because the
+mathematique*, so ``claims_lapse`` is non-zero from the first month and the UK design's
+"every lapse extinguishes a liability for nothing" arithmetic does not carry over. On the
+anchor cell removing the lapse decrement *raises* the undiscounted net stream, because the
 premiums a lapser stops paying are worth more than the reserve handed back.
 
 The *delai de carence* is **two benefits, not one**. For twelve months a non-accidental
 death refunds the premiums collected while an accidental death pays the full capital from
-day one, so month-1 expected death outgo is 0.380884 rather than the 3.345618 an
+day one, so the first month's expected death outgo is 0.380884 rather than the 3.345618 an
 implementation that paid the capital inside the waiting period would report — and rather
 than the 0.224846 an implementation that dropped the accident leg would report. Both
 errors are in the model docstring because both are eight- and four-tenths-fold wrong on
@@ -63,11 +63,14 @@ and its inputs must travel together.
 
 **Projection basis.** Monthly steps, which the twelve-month waiting period requires: its
 boundary is a discontinuity — expected death outgo steps by a factor of 7.8080 between
-months 12 and 13 on the anchor cell — and an annual grid would smooth it away. Policy
-month ``t`` runs 1, 2, ..., ``proj_len()``, where
+``t = 11`` and ``t = 12`` on the anchor cell — and an annual grid would smooth it away.
+Policy month ``t`` is **0-based**: it runs 0, 1, ..., ``proj_len() - 1``, so
+``proj_len()`` is the number of projected months,
 ``proj_len() = 12 x (omega_age - entry_age + 1)`` with ``omega_age = 112``, the tabulation
 limit of TH 00-02: whole life has no maturity, so the projection is truncated at a
-limiting age rather than ending at a contractual date. Premiums fall at the beginning of
+limiting age rather than ending at a contractual date. The policy year is the contractual
+1-based label derived from it, ``policy_year(t) = t // 12 + 1``, and is what the premium,
+lapse and select schedules are keyed by. Premiums fall at the beginning of
 the month, deaths at the end against the beginning-of-month in-force, surrenders and
 *reductions* at the end after deaths. The capital, the premium and the attained age step
 at policy anniversaries. Age is the *difference de millesime* — calendar year of
@@ -88,9 +91,9 @@ at all. **This model is a mechanics demonstration, not a pricing or reserving re
 Replace the basis with homologated tables and company experience first.
 
 **Verification.** ``tests/test_obseques_fr.py`` asserts the notes' fifteen-row worked
-example to the cent and the in-force column to five decimals, including the month-12/13
-*carence* discontinuity, the two crossovers at months 169 and 205, and the undiscounted
-totals over the full 756-month horizon.
+example to the cent and the in-force column to five decimals, including the *carence*
+discontinuity between ``t = 11`` and ``t = 12``, the two crossovers at ``t = 168`` and
+``t = 204``, and the undiscounted totals over the full 756-month horizon.
 
 Example:
 

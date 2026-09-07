@@ -34,6 +34,41 @@ model.Projection[1].result_cf()
 against smoothed payout, and the final bonus or MVR the gap between them produces.
 `result_cf()` gives the cash flows.
 
+## The time index and the frame
+
+`t` is the library's **0-based** policy year index. `t = 0` is the first policy year,
+period `t` runs from time `t` to time `t + 1`, and the contractual policy year is the
+1-based label `policy_year(t) = t + 1`. `age(t) = age_at_entry() + t`.
+
+`t` counts from **issue**, not from the projection start, so an in-force cell opens its
+frame at its elapsed policy years: `proj_start() = duration_inforce()`. The worked
+example's bond is in force at duration 5, so it is projected from `t = 5`, its sixth
+policy year — the year the notes work through.
+
+`proj_len()` is the **number of policy years from issue**, i.e. the exclusive end of the
+frame: `result_cf()` and `result_payout()` are indexed by
+`range(proj_start(), proj_len())`, the last row is `proj_len() - 1`, and the row count
+is `proj_len() - duration_inforce()`. On the shipped points that is 60 rows for the
+bond cells (`t = 5 … 64`, `proj_len() = 120 - 55`), 28 for the withdrawing cell whose
+fund exhausts (`t = 5 … 32`, `proj_len() = 33`), 25 for the new-business endowment
+(`t = 0 … 24`, `proj_len() = 25`) and 5 for the same endowment in force at duration 20
+(`t = 20 … 24`).
+
+**Carried-in state is an opening balance, not a row below the frame.** `asset_share`,
+`unit_price`, `units`, `guar_benefit_pp` and `smoothed_payout` are all *closing*
+balances — the value at the end of period `t` — so the state an in-force cell brings in
+is the value the first projected period **opens** with, and it is read through
+`asset_share_at(t, "BEF_PREM")`, `guar_benefit_open(t)`, `smoothed_payout_open(t)` and
+`policy_value_open(t)`. Nothing is ever indexed at a negative `t`, which is what those
+accessors are for: on a new-business cell `proj_start()` is 0, and "the period before
+the first" does not exist.
+
+Two contractual schedules are keyed by the **policy year**, not by `t`, and the model
+maps rather than re-keys them: the lapse table's `policy_year` column
+(`surr_rate_base()` reads row `policy_year(t)`) and the model point's `guarantee_dates`
+anniversaries (`is_guarantee_date(t)` is true when `policy_year(t)` is one of them, so
+the 10th anniversary ends period `t = 9`).
+
 ## The asset share is a state variable, not a cash flow
 
 That sentence is the model.
@@ -56,8 +91,9 @@ and nobody is paid it — and the guaranteed benefit is not a fund either. Both 
 modelled, under their own names, and the gap between them is where the whole product
 lives. Naming either of them `av_pp_at` would assert something false about the contract.
 
-`asset_share_at(t, timing)` exposes the recursion one step at a time — `"BEF_RETURN"`,
-`"AFT_RETURN"`, `"AFT_CHARGE"`, `"AFT_ST"`, `"AFT_MC"` — because the order is
+`asset_share_at(t, timing)` exposes the recursion one step at a time — `"BEF_PREM"`,
+`"BEF_RETURN"`, `"AFT_RETURN"`, `"AFT_CHARGE"`, `"AFT_ST"`, `"AFT_MC"` — because the
+order is
 **contractual discipline** rather than arithmetic convenience: the shareholder transfer
 is charged to asset shares *after* the charges and *before* the mortality charge, and the
 mortality charge's sum at risk is measured on the balance after the transfer.
@@ -75,10 +111,10 @@ changing the target payout*. That is the whole tension the discretion manages.
 |---|---|---|
 | Guaranteed benefit | `FV(t) = U(t)·Q(t)`, unit face value | `G(t) = SA + attaching bonuses` |
 | Rolls forward by | `Q(t) = Q(t−1)(1 + b(t))` | `G(t) = G(t−1)(1 + b_rev(t))` |
-| Cost of bonus | `b(t)·FV(t−1)` | `ΔG(t)·v_sv^(n−t)` |
+| Cost of bonus | `b(t)·FV(t−1)` | `ΔG(t)·v_sv^(n−(t+1))` |
 | Death benefit | `1.01 × (FV + FB)` | `G + TB` |
 | Surrender | `FV + FB − MVR` | smoothed payout, capped at `G + TB` |
-| Maturity | none — whole of life | `G(n) + TB(n)` |
+| Maturity | none — whole of life | `G(n−1) + TB(n−1)` |
 
 Both are **one cells**, `guar_benefit_pp`. Every rule that consumes them — the bonus
 cost, the mortality charge's sum at risk, the final bonus, the MVR — treats them
@@ -104,17 +140,21 @@ does not — exactly the pattern the two rules are designed to produce.
 
 Two things the cap cannot say, both visible in the shipped cells:
 
-- It is **skipped in the first projected year of a new-business cell**, where `S(t−1) = 0`
-  would otherwise clamp the payout to nil.
+- It is **skipped in the first projected period of a new-business cell**, where the
+  opening payout `smoothed_payout_open(t)` is nil and the cap would otherwise clamp the
+  payout to nil with it.
 - On a **premium-paying** policy it is only loosely meaningful. A firm's ±10% discipline
   is a *like-for-like* comparison between successive maturity cohorts — this year's payout
   on a 25-year endowment against last year's — not a comparison of one policy's own payout
   across its own durations. A regular-premium asset share grows far faster than 10% a year
-  early on because premiums, not investment return, dominate it, so the cap binds
-  throughout and the **corridor floor** is what actually sets the payout: 80% of the asset
-  share at duration 1 on the shipped endowment cell, rising to 100.0% at maturity as the
-  asset share outgrows the premium. The single-premium bond the worked example uses has no
-  such problem, which is why the notes can state the cap plainly.
+  early on because premiums, not investment return, dominate it, so the cap's upper bound
+  binds and the **corridor floor** is what actually sets the payout: exactly 80% of the
+  asset share from the second policy year (`t = 1`) through `t = 12` on the shipped
+  endowment cell — `t = 0` is the one period where the cap is skipped, so the payout there
+  is the asset share itself. From `t = 13` the corridor floor no longer binds and the ±10%
+  cap alone carries the payout up, reaching 100.0% of the asset share at maturity as the
+  asset share outgrows the premium. The single-premium bond the worked
+  example uses has no such problem, which is why the notes can state the cap plainly.
 
 The corridor implements the 80–120% target range deterministically at model-point level.
 The regulatory test is a **portfolio** property — a proportion of policies within the
@@ -141,7 +181,7 @@ deterrent keys off the scale being positive while the payout keys off what is ap
 it for the unitised chassis alone; a conventional endowment has no units to reduce.
 Applying the same arithmetic there would be arithmetically harmless — it happens to
 collapse the surrender payout onto the asset share — but it would report a £19,575
-"market value reduction" in policy year 1 of a 25-year endowment, which is not a thing
+"market value reduction" in the first policy year of a 25-year endowment, which is not a thing
 that exists. The endowment's surrender value is set on a surrender basis instead: the
 smoothed payout, capped at the prospective value `G + TB`.
 
@@ -153,8 +193,8 @@ the incentive structure rather than measured:
 | Overlay | Factor | When |
 |---|---|---|
 | MVR deterrent | 0.6 | while an MVR would be applied — an active MVR penalizes exit |
-| Guarantee-date spike | 2.5 | in a guarantee-date year, **only when `GB > AS`** |
-| Guarantee-imminent | 0.8 | in the year before a guarantee date |
+| Guarantee-date spike | 2.5 | in a period ending on a guarantee date, **only when `GB > AS`** |
+| Guarantee-imminent | 0.8 | in the period before one |
 
 **The gate on the second is the point.** MVR-free encashment is worth exercising precisely
 when the guaranteed benefit exceeds the asset share and worth nothing otherwise, so
@@ -167,9 +207,11 @@ for the best estimate rather than an optional refinement.
 
 The MVR-free allowance is 5% of the original premium a year, and the withdrawing cell
 (model point 4) takes the whole of it every year. Against a fund whose growth is only the
-declared bonus, that **exhausts the fund**: the cell cancels its last unit in policy year
-34. `wd_pp()` caps the withdrawal at the unit fund it comes out of, and `proj_len()` stops
-the projection the year before exhaustion, where `is_forced_encashment()` marks the ending
+declared bonus, that **exhausts the fund**: the cell cancels its last unit at `t = 33`,
+its thirty-fourth policy year, so `fund_exhaust_year()` is 33. `wd_pp()` caps the
+withdrawal at the unit fund it comes out of, and `proj_len()` stops the projection at the
+period before exhaustion (`proj_len() = 33`, last row `t = 32`), where
+`is_forced_encashment()` marks the ending
 as a real contractual event and the survivors are paid `FV + FB` — the residual final
 bonus included — rather than nothing. A projection that ends at the *limiting age* pays
 nothing there, because that ending is a modelling truncation.
@@ -240,6 +282,17 @@ is read once per model rather than once per model point; a test counts the reads
 | `mort_table.csv` | Base annual mortality by sex and age 18–120, capped at 1 | **[std]** proxy shaped like the ONS national life tables, anchored so that the 60% best-estimate factor gives the notes' `q(60) = 0.5%` placeholder exactly — *not* a CMI table |
 | `lapse_table.csv` | Annual surrender rates by chassis and policy year: bond flat 5%, endowment 5 / 4 / 3 / 2%+ | **[std]**; no public UK with-profits lapse experience was retrieved |
 
+**No input file is keyed by the model's `t`,** so the move to the 0-based index left
+every CSV byte-for-byte unchanged. Column by column:
+
+| File | Column | Decision | Why |
+|---|---|---|---|
+| `lapse_table.csv` | `policy_year` (1 … 4) | unchanged | a contractual 1-based policy-year label; `surr_rate_base()` reads row `policy_year(t) = t + 1` and caps at the table's last row |
+| `model_point_table.csv` | `duration_inforce` (0, 5, 20) | unchanged | an elapsed count, 0-based by nature, and now `proj_start()` itself |
+| `model_point_table.csv` | `policy_term` (0, 25) | unchanged | a term *length* in years, not a point on the time axis; it is `proj_len()` on the endowment chassis, whose last period is `policy_term() - 1` |
+| `model_point_table.csv` | `guarantee_dates` (10) | unchanged | contractual anniversaries; anniversary `k` ends period `k − 1`, and `is_guarantee_date()` maps through `policy_year(t)` |
+| `mort_table.csv` | `age` (18 … 120) | unchanged | an attained age, not a time index; read at `age(t) = age_at_entry() + t` |
+
 Note how little is in a file. **The discretionary scale that actually drives this product
 is not in a rate table** — the bonus rates, the smoothing cap, the target corridor, the
 guarantee-fill target, the charge levels all live in model point columns and `Projection`
@@ -250,21 +303,23 @@ better than filing them in a table that looks like data.
 
 ## The worked example, both scenarios
 
-`tests/test_with_profits_uk.py` asserts every line of this to the penny:
+`tests/test_with_profits_uk.py` asserts every line of this to the penny. All of it is
+the single row `t = 5` — the sixth policy year of a cell in force at duration 5 — with
+`AS(4) = 30,000.00`, `S(4) = 29,500.00` and `FV(4) = 27,602.02` as its opening balances:
 
 | Step | A (r = +7%) | B (r = −15%) |
 |---|---|---|
 | Asset share after fund return | 32,100.00 | 25,500.00 |
 | After charges (× 0.989) | 31,746.90 | 25,219.50 |
-| Declared bonus `b(6)` | 2.00% | 1.00% |
-| Unit price `Q(6)`; face value `FV(6)` | 1.126162; 28,154.06 | 1.115122; 27,878.04 |
-| Cost of bonus `CB = b·FV(5)` | 552.04 | 276.02 |
+| Declared bonus `b(5)` | 2.00% | 1.00% |
+| Unit price `Q(5)`; face value `FV(5)` | 1.126162; 28,154.06 | 1.115122; 27,878.04 |
+| Cost of bonus `CB = b·FV(4)` | 552.04 | 276.02 |
 | Shareholder transfer `ST = CB/9` | 61.34 | 30.67 |
 | Asset share after `ST` | 31,685.56 | 25,188.83 |
 | Mortality charge `MC` | 0.00 | 14.84 |
-| **Asset share `AS(6)`** | **31,685.56** | **25,173.99** |
+| **Asset share `AS(5)`** | **31,685.56** | **25,173.99** |
 | After the smoothing cap `S_cap` | 31,685.56 | 26,550.00 *(floor binds)* |
-| Smoothed payout `S(6)` | 31,685.56 | 26,550.00 |
+| Smoothed payout `S(5)` | 31,685.56 | 26,550.00 |
 | Final bonus `FB` | 3,531.50 | 0.00 |
 | `MVR` (bound) | 0.00 | 1,328.04 *(bound 2,704.05)* |
 | Guarantee-date payout | 31,685.56 | 27,878.04 |
@@ -279,9 +334,10 @@ absorbs the £2,704.05 difference; and the MVR that makes an ordinary surrender 
 smoothed target sits well inside its regulatory bound. Both scenarios' surrenders land
 inside the 80–120% corridor — 100.0% and 105.5% of the asset share.
 
-The endowment chassis has its own check line: `G(25) = 20,000 × 1.015^25 = £29,018.91`,
-which the new-business cell reaches exactly, against an asset share of £28,903.84 — so the
-guarantee bites by £115 at maturity on the base return.
+The endowment chassis has its own check line: twenty-five declarations, at the end of
+each of the periods 0 to 24, give `G(24) = 20,000 × 1.015^25 = £29,018.91` at the last
+projected period, which the new-business cell reaches exactly, against an asset share of
+£28,903.84 — so the guarantee bites by £115 at maturity on the base return.
 
 ## What is out of scope, and why
 
@@ -319,6 +375,12 @@ corridor, the final bonus, the MVR and its regulatory bound, and all three payou
 plus the endowment chassis end to end, the bonus-hardening floor, the three behavioural
 multipliers in isolation, the withdrawal cap and forced encashment, the guarantee-charge
 lifetime cap, the out-of-scope chassis, and all six invariant checks on every model point.
+
+It also pins the frame: `result_cf()` is indexed by
+`range(proj_start(), proj_len())`, it opens at `duration_inforce()` and ends at
+`proj_len() - 1`, and the new-business endowment opens at `t = 0`. The library-wide
+conventions module (`tests/test_model_conventions_uk.py`) asserts the same rule on every
+model point of every model.
 
 ```bash
 python -m pytest tests -q

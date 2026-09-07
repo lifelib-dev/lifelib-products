@@ -51,10 +51,23 @@ them and the four annual rates beside it. `model.Projection.doc` holds the full 
 The grid is **monthly** and `t` is **0-based**: `t = 0` is the month of issue and
 `age(t) = age_at_entry + t // 12`, so the attained age steps at the policy anniversary. The frame
 **starts** at `duration_mth_init()` — `0` for new business, the elapsed duration for an in-force
-point — and `proj_len()` is the **last** projected index, `12 × (110 − 45) − 1 = 779` on the anchor
-cell: 780 rows, attained ages 45 to 109, in about seven seconds. It depends on the entry age and
-the terminal age alone, so an in-force point publishes a **shorter** frame ending at the same
-index; reading it as a row count, or as a horizon `duration_mth_init` shifts, is a listed pitfall.
+point — and runs to `proj_len() - 1`, where `proj_len()` is the **number of projected months**, the
+frame's **exclusive end** counted from `t = 0`: `12 × (110 − 45) = 780` on the anchor cell, so
+`range(0, 780)` — 780 rows, `t = 0 … 779`, attained ages 45 to 109, in about seven seconds. It
+depends on the entry age and the terminal age alone, so an in-force point opening at
+`duration_mth_init() = d0` publishes a **shorter** frame of `proj_len() - d0` rows and still ends at
+its own `proj_len() - 1`: `duration_mth_init` shortens the frame at the front, never at the back —
+and since `proj_len()` depends on the entry age, that last index is the point's own, not the
+anchor's 779. Reading `proj_len()` as the last index, or as a horizon `duration_mth_init` shifts,
+is a listed pitfall.
+
+The input CSVs carry **no column keyed by `t`**. `lapse_table.csv` and `surrender_table.csv` are
+keyed by `policy_year`, the 1-based contractual *Versicherungsjahr* that the model reaches through
+`policy_year(t) = t // 12 + 1`; `mort_table.csv` and `incidence_table.csv` are keyed by attained
+age; and `model_point_table.csv`'s `duration_mth_init` is an elapsed count of complete months,
+0-based by nature. `wartezeit_months` and `karenz_months` are contractual **lengths** in months,
+not frame indices, so they do not shift either: the gate stays `t < wartezeit_months`, and month
+`wartezeit_months` is the first covered month. None of them moved with this change.
 
 ## Nine states, and only two of them absorbing
 
@@ -257,7 +270,7 @@ place: point `Data.mort_table_file` at another same-schema file and the projecti
 | `incidence_file` | `incidence_table()` | `incidence_table.csv` | Annual incidence into **any** *Pflegegrad* by sex and age. **[std]** `min(I0 exp(g(age − 65)), 0.50)` with `I0_F = 0.0110`, `g_F = 0.1400`, `I0_M = 0.0085`, `g_M = 0.1380`. The slope is anchored on prevalence roughly doubling every five years of age above 75, `ln 2 / 5 = 0.1386`; the observed *Pflegequoten* put the ratio nearer 1,8 over 70–90, i.e. about 0.117 [R18], which is reported in `sources.md` and not implemented |
 | `care_file` | `care_table()` | `care_table.csv` | The whole in-care basis in five rows: `entry_share` 0.20 / 0.38 / 0.24 / 0.13 / 0.05, `det_rate` 0.28 / 0.24 / 0.20 / 0.16 / 0.00, `rec_rate` 0.10 / 0.06 / 0.04 / 0.02 / 0.01 and `mort_mult` 1.5 / 2.5 / 3.5 / 6.0 / 9.0 on the **force**. All **[std]**. `entry_share` is deliberately **not** the stock distribution of about 9 / 44 / 27 / 14 / 6 % [R18]: entrants skew lower than the stock because deterioration moves people up over a spell |
 | `lapse_file` | `lapse_table()` | `lapse_table.csv` | Annual lapse from the **active** state by policy year 1–40, year 40's rate applying thereafter: 6,0 / 5,0 / 4,0 / 3,5 / 3,0 % then 2,5 / 2,0 / 1,5 %. **[std]**, and **no lapse rate for a German *Pflegerente* at any duration was established**; the shape is argued from the *Zillmerung*, and the 14-day *Widerruf* sits inside year 1 [REG-R23] |
-| `surrender_file` | `surrender_table()` | `surrender_table.csv` | The guaranteed *Rückkaufswert* as a fraction of premiums paid to date, by completed policy year 1–40. **[std]** shape encoding two cited facts and no cited level — the 25 ‰ *Zillmerung* allowance, which is why years 1 and 2 are zero [REG-R16], and the § 169 Abs. 3 VVG five-year cost spread, which is why it turns positive in year 3 [REG-R28] |
+| `surrender_file` | `surrender_table()` | `surrender_table.csv` | The guaranteed *Rückkaufswert* as a fraction of premiums paid to date, by *Versicherungsjahr* `y(t) = t // 12 + 1`, 1–40. **[std]** shape encoding two cited facts and no cited level — the 25 ‰ *Zillmerung* allowance, which is why years 1 and 2 are zero [REG-R16], and the § 169 Abs. 3 VVG five-year cost spread, which is why it turns positive in year 3 [REG-R28] |
 | `expense_file` | `expense_table()` | `expense_table.csv` | `acq_permille` 25,000 ‰ of *Beitragssumme*, `admin_prem_pct` 3,0 %, `admin_mth_pp` 2,00 € a month, `claim_expense_pp` 1,50 € per annuity payment, `expense_infl` 1,5 % a year. All levels **[std]**; only the 25 ‰ ceiling the first sits exactly at is cited |
 | `basis_file` | `basis_table()` | `basis_table.csv` | `rechnungszins` 1,00 %, `omega_age` 110, `unisex_mix_male` 0.50, `rec_age_ref` 75, `rec_age_decay` 0.10, `inc_cap` 0.50, `beitragssumme_cap_age` 85, `roll_fwd_tol` 1e−10 and the five first-order margins `inc_margin` 1.25, `det_margin` 1.15, `rec_margin` 0.80, `care_mort_margin` 0.85, `act_mort_margin` 0.90. **Only the *Rechnungszins* is cited** [REG-R14] [REG-R15]; everything else is **[std]** |
 
@@ -296,6 +309,7 @@ three ledgers' own recursions, the second is assembled by **direct summation** w
 them, so it catches a wrong seeding of an in-force point, a life counted in two grades at once, an
 entrant into care who never leaves the active ledger and a *Karenz* cohort that graduates twice.
 Because `mort_rate` is forced to 1,0 at the limiting age it also closes at the far end:
+read one month past the last projected row, at `t = proj_len() = 780`,
 `pols_dead_cum(780) = 0.493968` and `pols_lapse_cum(780) = 0.506032` sum to 1,000000000000.
 
 ## Modules that are off in the base run
@@ -448,7 +462,9 @@ example to the cent and the policy counts to six decimals, the full-precision to
 sum-of-rounded-cells the notes also print, the equivalence premium of 64,198409 € reached two
 independent ways from `A`, `U`, `G` and `C`, month 0 rebuilt term by term, the first month's
 decrements from the annual rates through the forces, the first annuity payment grade by grade, the
-closure identity, the male twin's ten printed rows and totals, the four-cell variant table, the six
+closure identity, the shape of the frame — `proj_len() == 780` on the anchor cell, index
+`range(0, proj_len())`, last index `proj_len() - 1`, 780 rows — the male twin's ten printed rows and
+totals, the four-cell variant table, the six
 `check_*` identities with their residuals, and **one test per numbered modeling pitfall** —
 seventeen of them. The whole-model-point-table sweep is **not** here:
 `tests/test_model_conventions_de.py` owns the library's single sweep.

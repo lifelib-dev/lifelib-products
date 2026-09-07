@@ -42,16 +42,20 @@ German terms of art keep their German form in prose.
   month of issue, and `t` counts complete months elapsed since issue. `age(t) = age_at_entry + t //
   12`, so the attained age steps at the policy anniversary. The frame **starts** at
   `t = duration_mth_init()`, which is `0` for new business and the elapsed duration for an in-force
-  model point, and **ends** at `proj_len()`. Where the frame starts is a product fact and is not
-  asserted by the conventions suite; contiguity is.
-- **`proj_len()` is the last projected period index**, not a row count — frlib's ruling, which delib
-  adopts and asserts. Here
+  model point, and **ends** at `proj_len() - 1`, so the frame is
+  `range(duration_mth_init(), proj_len())` and the policy year is the 1-based label
+  `y(t) = t // 12 + 1`. Where the frame starts is a product fact and is not asserted by the
+  conventions suite; contiguity is.
+- **`proj_len()` is the number of projected periods**, the **exclusive end** of the frame counted
+  from `t = 0` — the library-wide reading, and lifelib's own `range(proj_len())`. Here
 
-      proj_len() = 12 * (omega_age() - age_at_entry()) - 1
+      proj_len() = 12 * (omega_age() - age_at_entry())
 
   which depends only on the entry age and the terminal age, **not** on `duration_mth_init()`. The
-  anchor cell (entry age 45, `omega_age = 110`) therefore runs to `t = 779`, 780 monthly rows,
-  attained ages 45 to 109.
+  anchor cell (entry age 45, `omega_age = 110`) therefore has `proj_len() = 780` and runs to
+  `t = 779`, 780 monthly rows, attained ages 45 to 109. A point opening at `duration_mth_init() = d0`
+  publishes `proj_len() - d0` rows and still ends at its own `proj_len() - 1`:
+  `duration_mth_init` shortens the frame at the front, never at the back.
 - **Terminal age.** `omega_age = 110` **[std]**, with `mort_rate(t) = 1.0` forced in the final year
   of age so the model is a closed system rather than a truncated one and the decrement closure holds
   exactly. It is a modelling choice, not a table fact — the DAV tables run higher [R15] [REG-R51] —
@@ -130,7 +134,7 @@ and `duration_mth_init` shifts where the frame **starts** without changing `proj
 | 11 | M, entry 42, `duration_mth_init = 240`, aktiv, monthly | An in-force point opening at `t = 240` with 20 years run |
 | 12 | F, entry 55, `duration_mth_init = 336`, `status = pg3` | An in-force point **in claim**: waived premium and a paying state at the frame's first row |
 | 13 | **Boundary.** M, entry 65 (top of the observed band), 1 500 €/mth, `rating_factor = 1.50` | Shortest pre-claim period, highest premium, a *Risikozuschlag* |
-| 14 | **Boundary.** F, entry 18 (bottom of the band), 500 €/mth, monthly | Longest projection (`proj_len() = 1103`), smallest benefit, expense-dominated |
+| 14 | **Boundary.** F, entry 18 (bottom of the band), 500 €/mth, monthly | Longest projection (`proj_len() = 1104`, `t = 0 … 1103`), smallest benefit, expense-dominated |
 
 Between them the fourteen exercise both premium forms, all four instalment frequencies, both
 *Leistungsstaffeln*, every switchable option, two in-force points and both ends of the age band.
@@ -191,7 +195,7 @@ Forward moves are deterioration, backward moves are *Herabstufung* and, out of P
 
 | Variable | Description | Updated |
 |---|---|---|
-| `proj_len` | Last projected month index, `12 * (omega_age - age_at_entry) - 1` | once per point |
+| `proj_len` | Number of projected months, `12 * (omega_age - age_at_entry)`; the frame's exclusive end | once per point |
 | `duration_mth(t)`, `policy_year(t)`, `age(t)` | Months since issue (equal to `t`), the *Versicherungsjahr* `t // 12 + 1`, and the attained age `age_at_entry + t // 12` | monthly |
 | `pols_act(t)`, `pols_karenz(t, g, z)` | Lives active at the start of month `t`; lives in *Pflegegrad* `g` whose *Karenzzeit* clock stands at `z`, `1 ≤ z ≤ karenz_months`, the ledger being empty when `karenz_months = 0` | monthly recursion |
 | `pols_pg(t, g)` | Lives in *Pflegegrad* `g` at the start of month `t` whose *Karenzzeit* has been served — the ledger the annuity is paid on | monthly recursion |
@@ -368,14 +372,18 @@ established** (gap 20); the shape is a modeller's construction, argued from *Zil
 and the profile is flatter than a savings product's, and a paid-up contract has no premium-driven
 exit at all. The monthly rate is `1 - (1 - lapse_rate(t)) ** (1/12)`.
 
-**The guaranteed *Rückkaufswert* [std]**, as a fraction of premiums paid to date by completed policy
-year — the scale-free form, and the form a German contract states [REG-R28]:
+**The guaranteed *Rückkaufswert* [std]**, as a fraction of premiums paid to date by
+*Versicherungsjahr* `y(t) = t // 12 + 1` — the scale-free form, and the form a German contract
+states [REG-R28]:
 
 | Policy year | 1 | 2 | 3 | 4 | 5 | 10 | 15 | 20 | 25 | 30 | 40 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `rkw_prem_ratio` | 0.00 | 0.00 | 0.05 | 0.12 | 0.20 | 0.42 | 0.50 | 0.56 | 0.60 | 0.64 | 0.70 |
 
 with intermediate years interpolated in the shipped file and year 40's ratio applying thereafter.
+Year `k`'s ratio applies **throughout** policy year `k`, `t = 12(k − 1) … 12k − 1`: it is the
+current *Versicherungsjahr*, not the completed one, so a surrender at `t = 24` — two completed
+years — already takes year 3's 0.05.
 The shape encodes two cited facts: the 25 ‰ *Zillmerung* allowance [REG-R16], which is why the first
 two years are zero, and the § 169 Abs. 3 five-year spread **floor** [REG-R28], which is why it turns
 positive in year three. It never approaches 1.00, the contract having consumed risk premium
@@ -432,7 +440,7 @@ a 50 / 50 mix while writing 60 / 40" is model risk 7 [REG-R34].
 
 | Symbol | Meaning |
 |---|---|
-| `t`, `x(t)`, `y(t)`, `g` | policy month, 0-based, `t = d0 … n` with `d0 = duration_mth_init` and `n = proj_len`; attained age `age_at_entry + t // 12`; policy year `t // 12 + 1`; *Pflegegrad* `1 … 5` |
+| `t`, `x(t)`, `y(t)`, `g` | policy month, 0-based, `t = d0 … n − 1` with `d0 = duration_mth_init` and `n = proj_len` the number of projected months; attained age `age_at_entry + t // 12`; policy year `t // 12 + 1`; *Pflegegrad* `1 … 5` |
 | `π_g` | `benefit_pct(g)`, the *Leistungsstaffel* percentage |
 | `R` | `rente_mth`, the *vereinbarte Pflegerente* at *Pflegegrad* 5 |
 | `P` | `premium_mth_pp()`, the level monthly gross *Beitrag* per policy |
@@ -522,7 +530,8 @@ that it reports only the aggregate escalation, which is all the cash flow needs.
     pols_if(t) + pols_dead_cum(t) + pols_lapse_cum(t) = pols_if_init()     for every t
 
 The last line is `check_states()`. Because `mort_rate` is forced to 1 in the final year of age, the
-identity closes at `t = n + 1` with `pols_if = 0`, so the decrements sum to `pols_if_init()` exactly
+identity closes at `t = n` — one past the last projected month — with `pols_if = 0`, so the
+decrements sum to `pols_if_init()` exactly
 — a closure a reader can check with a calculator on the worked example.
 ### Premium, waiver and the premium-paying population
 
@@ -603,7 +612,7 @@ Where `premium_mth > 0` on the model point, that is the premium and the engine i
 Where it is `0.0`, `P` is struck by equivalence on the **first-order** bases: every rate multiplied
 by its margin, blended 50 / 50 across the sexes, **no lapse**, discounted at `v = (1+i)^(-1/12)`.
 The `tar_*` ledgers obey exactly the recursions above with `w ≡ 0` and the margined forces. Define,
-over `t = 0 … n` on the tariff ledgers:
+over `t = 0 … n − 1` on the tariff ledgers:
 
     A  = Σ_t v**t * R * Σ_g π_g * tar_esc_pg(t, g)                  EPV of the annuity
     U  = Σ_{t : premium_due(t)} v**t * m * tar_pols_prem(t)         EPV of premium in units of P
@@ -632,7 +641,7 @@ makes it fail.
 ### `result_cf()`
 
 `result_cf()` returns a `DataFrame` indexed by `t` (`df.index.name == "t"`), contiguous from
-`duration_mth_init()` to `proj_len()`, in this column order — eleven cash-flow and exposure columns
+`duration_mth_init()` to `proj_len() - 1`, in this column order — eleven cash-flow and exposure columns
 and then `liability_cf`:
 
 | # | Column | Meaning |
@@ -709,7 +718,7 @@ this list executed in a different sequence.
 12. **Post the ledgers to `t + 1`** and form
     `net_cf(t) = premiums - claims_annuity - claims_lapse - claims_death - expenses - claim_expenses`.
 
-The projection ends at `t = proj_len()`. There is **no maturity, no survival benefit and no tail
+The projection ends at `t = proj_len() - 1`. There is **no maturity, no survival benefit and no tail
 state**: the contract runs for life, and the closure identity is carried by the decrements.
 ## Known modeling pitfalls
 
@@ -801,8 +810,10 @@ The specific ways an implementation of *this* product looks right and is wrong. 
 Two further errors are worth naming because they are the ones a *user* will make. **Reading a
 payment-frequency difference as a price difference**: the model folds the *Ratenzahlungszuschlag*
 into the administration assumption, so annual mode prices slightly *below* monthly, the opposite
-sign to a real tariff. And **treating `proj_len()` as a row count**: it is the last projected index,
-and the frame starts at `duration_mth_init()`.
+sign to a real tariff. And **treating `proj_len()` as the last projected index**: it is the number
+of projected months, the frame's exclusive end, so the last index is `proj_len() - 1`; and because
+the frame starts at `duration_mth_init()`, an in-force point publishes `proj_len() - duration_mth_init()`
+rows, not `proj_len()`.
 
 ---
 
@@ -847,8 +858,8 @@ for any of them exists in this corpus** (research gap 20).
 due in every month of the term; `premium_mth = 0.00`, the sentinel that makes the model strike the
 *Beitrag* by equivalence; `rating_factor = 1.00`, standard rates; `wartezeit_months = 0`;
 `karenz_months = 0`; `leistungsdynamik = 0.00`; `beitragsrueckgewaehr = False`;
-`stornoabzug_rate = 0.00`; `pols_if_init = 1.0`. Hence `proj_len() = 12 × (110 − 45) − 1 = 779`, the
-frame runs from `t = 0` to `t = 779`, and the projection covers attained ages 45 to 109 — 780
+`stornoabzug_rate = 0.00`; `pols_if_init = 1.0`. Hence `proj_len() = 12 × (110 − 45) = 780`, the
+frame runs from `t = 0` to `t = proj_len() − 1 = 779`, and the projection covers attained ages 45 to 109 — 780
 monthly rows, of which the table below shows a representative selection together with the
 full-precision totals.
 
@@ -884,7 +895,7 @@ end of the band it lands at and why.
 ### The model's own output
 
 Every figure is transcribed from `Projection[1].result_cf()`, money to the cent and policy counts to
-six decimals. The frame has **780 rows**, `t = 0 … 779`; thirteen are shown. `claims_death` is a
+six decimals. The frame has **780 rows**, `t = 0 … 779`; fourteen are shown. `claims_death` is a
 column of the frame, is **structurally zero at every `t`** here (`beitragsrueckgewaehr = False`), and
 is omitted rather than printed as 780 zeros. The equivalence premium is
 **`premium_mth_pp() = 64.198409` € a month**.
@@ -981,7 +992,8 @@ share by grade is 9.49 / 24.25 / 27.64 / 21.04 / 17.57 % against an entry share 
 mean to `Σ_t pols_care(t) = 24.241784` gives 9,248.24 € against 13,200.11 € — a **30 % understatement
 of the whole benefit**, produced by an error no total in the frame would reveal.
 
-**The closure identity.** `pols_dead_cum(780) = 0.493968059928` and
+**The closure identity.** Read one month past the last projected row, at `t = proj_len() = 780`:
+`pols_dead_cum(780) = 0.493968059928` and
 `pols_lapse_cum(780) = 0.506031940072` sum to **1.000000000000** with `pols_if(780) = 1.5e-23`: the
 decrements account for the entire policy, exactly, because `mort_rate` is forced to 1.0 at age 109.
 The cash flow statement closes the same way at every `t` — at `t = 0`,
@@ -1047,7 +1059,7 @@ summed at full precision and then rounded:
 |---|---:|---:|---:|---:|
 | Configuration | F 45, `delib_std` | M 45, `delib_std` | F 50, `bahr`, annual | F 45, `d = 0.02` |
 | `premium_mth_pp()` | 64.198409 | 64.198409 | 55.444644 | 72.038378 |
-| `proj_len()` | 779 | 779 | 719 | 779 |
+| `proj_len()` | 780 | 780 | 720 | 780 |
 | `premiums` | 15,857.95 | 15,364.38 | 12,289.30 | 17,794.54 |
 | `claims_annuity` | 13,200.11 | 6,936.34 | 10,110.36 | 15,101.44 |
 | `claims_lapse` | 2,191.72 | 2,086.29 | 1,482.02 | 2,459.37 |

@@ -12,9 +12,12 @@ model point 1::
     >>> Projection.point_id = 5            # or switch the default
 
 ``t`` counts **policy months**, 0-based. Month ``t`` runs from ``t`` to ``t + 1`` months
-after the 계약일; ``t = proj_len()`` is the 계약해당일 at 만나이 ``term_age`` on which the
-contract matures with nothing payable, so ``result_cf()`` carries ``proj_len() + 1`` rows
-and its last row holds the surviving in-force count and no cash flow.
+after the 계약일, so ``t = 0`` is the first projected month. ``proj_len()`` is the **number
+of projected months**, the frame's exclusive end — ``12 x (term_age - issue_age) + 1``, so
+601 on the anchor cell and 601 rows in :func:`result_cf`, indexed 0 to 600, and the frame is
+``range(proj_len())``. The last row, ``t = proj_len() - 1``, is the 계약해당일 at 만나이
+``term_age`` on which the contract matures with nothing payable: it holds the surviving
+in-force count and no cash flow.
 
 .. rubric:: The age basis
 
@@ -38,7 +41,7 @@ The technical notes use compact actuarial symbols; the cells use lifelib names.
 Notes symbol     Cells                               Meaning
 ===============  ==================================  ======================================
 —                ``model_point``                     the selected model point as a Series
-n                ``proj_len``                        last projected policy month
+n                ``proj_len``                        number of projected policy months
 x                ``issue_age``                       만나이 at the 계약일
 x + floor(t/12)  ``age``                             attained 만나이 in month t
 P                ``premium_mth_pp``                  level monthly office premium
@@ -54,8 +57,8 @@ i_D(x)           ``inc_rate_direct_at``              healthy -> care, direct ent
 i_L(x)           ``inc_rate_light_at``               healthy -> light grade
 rho(x)           ``prog_rate_at``                    light grade -> care, progression
 l(t)             ``pols_if``                         in force at the start of month t
-AV(t)            ``av_pp``                           계약자적립액 per policy
-CV(t)            ``cv_pp``                           해약환급금 per policy
+AV(t)            ``av_pp``                           계약자적립액 per policy at the start of month t
+CV(t)            ``cv_pp``                           해약환급금 per policy on a lapse in month t
 CF(t)            ``net_cf``                          net cash flow, income positive
 ===============  ==================================  ======================================
 
@@ -431,14 +434,17 @@ def pols_if_init():
 # --- the timeline ---
 
 def proj_len():
-    """n: the **last** projected policy month, ``12 (term_age() - issue_age())``.
+    """n: the **number** of projected policy months, ``12 (term_age() - issue_age()) + 1``.
 
-    600 on the anchor cell — a 만나이-40 life to the 90세 계약해당일.  This library reads
-    ``proj_len()`` as the last period *index* rather than a row count, so ``result_cf()``
-    carries ``proj_len() + 1`` rows and its last row is the maturity instant: the contract
-    ends there with **nothing payable**, there being no 만기환급금 on a 순수보장성 contract.
+    601 on the anchor cell — a 만나이-40 life to the 90세 계약해당일.  ``proj_len()`` is the
+    **exclusive end** of the frame and not the last index: ``result_cf()`` carries
+    ``proj_len()`` rows indexed 0 to ``proj_len() - 1`` and the frame is
+    ``range(proj_len())``.  The ``+ 1`` is the terminal row — the 600 months of cover are
+    ``t = 0 ... proj_len() - 2`` and ``t = proj_len() - 1`` is the 90세 계약해당일 itself,
+    the maturity instant: the contract ends there with **nothing payable**, there being no
+    만기환급금 on a 순수보장성 contract.
     """
-    return 12 * (term_age() - issue_age())
+    return 12 * (term_age() - issue_age()) + 1
 
 
 def age(t):
@@ -447,7 +453,13 @@ def age(t):
 
 
 def policy_year(t):
-    """y(t): the policy year of month t, ``floor(t / 12) + 1``, 1-based."""
+    """y(t): the policy year containing month t, ``t // 12 + 1``.
+
+    The **contractual** policy-year label, which is 1-based by convention: month ``t = 0``
+    falls in policy year 1.  It is derived from the 0-based index and is never the index
+    itself; only :func:`lapse_rate` reads it, the 로그-선형 lapse model being written in
+    policy years.
+    """
     return t // 12 + 1
 
 
@@ -1022,7 +1034,7 @@ def pols_healthy(t):
     """
     if t <= 0:
         return pols_if_init() if t == 0 else 0.0
-    if t > proj_len():
+    if t >= proj_len():
         return 0.0
     s = t - 1
     return (pols_healthy_mid(s) * (1.0 - mort_rate_mth(s))
@@ -1042,7 +1054,7 @@ def pols_light(t):
     the pool :func:`pols_entry_care_prog` draws from, and on the composite's 1~2등급 gate they
     are about six sevenths of all certified lives.
     """
-    if t <= 0 or t > proj_len():
+    if t <= 0 or t >= proj_len():
         return 0.0
     s = t - 1
     return (pols_light_mid(s) * (1.0 - mort_rate_light_mth(s))
@@ -1061,7 +1073,7 @@ def pols_care(t):
     premium is waived and the 약관 bars surrender — and no recovery, which is a real
     simplification the *contract* makes rather than one this model imposes.
     """
-    if t <= 0 or t > proj_len():
+    if t <= 0 or t >= proj_len():
         return 0.0
     s = t - 1
     return pols_care_mid(s) * (1.0 - mort_rate_care_mth(s))
@@ -1105,11 +1117,11 @@ def pols_if(t):
 
     ``pols_act(t) + pols_care(t)``: alive, not lapsed, not voided and not matured, whether or
     not the premium is being waived.  ``pols_if(0) = pols_if_init() = 1``.  This is the
-    weight on every cash flow of the same :func:`result_cf` row.  At ``t = proj_len()`` it is
-    the count that reaches the 90세 계약해당일, and it is paid **nothing**: there is no
-    만기환급금 on a 순수보장성 contract.
+    weight on every cash flow of the same :func:`result_cf` row.  On the frame's last row,
+    ``t = proj_len() - 1``, it is the count that reaches the 90세 계약해당일, and it is paid
+    **nothing**: there is no 만기환급금 on a 순수보장성 contract.
     """
-    if t < 0 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     return pols_act(t) + pols_care(t)
 
@@ -1147,7 +1159,7 @@ def pols_entry_light(t):
 
     Drawn from the never-certified population alone.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return pols_healthy(t) * inc_rate_light_mth(t)
 
@@ -1159,7 +1171,7 @@ def pols_entry_care_direct(t):
     below 65 and is the minority route above it.  One fifth of gross inflow into the care
     state on the shipped ``direct_entry_share`` **[std]**.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return pols_healthy(t) * inc_rate_direct_mth(t)
 
@@ -1171,7 +1183,7 @@ def pols_entry_care_prog(t):
     single-decrement model that treats the 1·2등급 rate as a healthy-life incidence
     overstates direct entry, understates the delay, and puts the cash flow years too early.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return pols_light(t) * prog_rate_mth(t)
 
@@ -1184,7 +1196,7 @@ def pols_entry_care(t):
     보험료를 돌려드립니다」 — and unlike the cancer chassis there is no cancellation option and
     no revival, so the benefit is simply gone.  Those lives are :func:`pols_void`.
     """
-    if t < 0 or t >= proj_len() or t < wait_mths():
+    if t < 0 or t >= proj_len() - 1 or t < wait_mths():
         return 0.0
     return pols_entry_care_direct(t) + pols_entry_care_prog(t)
 
@@ -1200,7 +1212,7 @@ def pols_void(t):
     at an issue age of 40, so the decrement is of order 1e-7 of the cohort — carried because
     it is a product fact, not because it is material.
     """
-    if t < 0 or t >= proj_len() or t >= wait_mths():
+    if t < 0 or t >= proj_len() - 1 or t >= wait_mths():
         return 0.0
     return pols_entry_care_direct(t) + pols_entry_care_prog(t)
 
@@ -1216,7 +1228,7 @@ def pols_death_act(t):
     decrement on this product, which is a direct consequence of the Korean third-sector
     design rule and has no counterpart in the Japanese contract.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return (pols_healthy_mid(t) * mort_rate_mth(t)
             + pols_light_mid(t) * mort_rate_light_mth(t))
@@ -1229,7 +1241,7 @@ def pols_death_care(t):
     않습니다」.  On this product most deaths of claimants happen here, which is what makes the
     split from :func:`pols_death_act` a cash-flow distinction rather than a bookkeeping one.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return pols_care_mid(t) * mort_rate_care_mth(t)
 
@@ -1247,7 +1259,7 @@ def pols_lapse(t):
     premium-paying period** and 50% of a notional 기본형 value afterwards: a cliff, not a
     curve.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return ((pols_healthy_mid(t) * (1.0 - mort_rate_mth(t))
              + pols_light_mid(t) * (1.0 - mort_rate_light_mth(t)))
@@ -1255,13 +1267,13 @@ def pols_lapse(t):
 
 
 def pols_maturity(t):
-    """Policies reaching the 보험기간's end at ``t = proj_len()``, and nil at every other t.
+    """Policies reaching the 보험기간's end at ``t = proj_len() - 1``, nil at every other t.
 
     They are paid **nothing**: 「이 상품은 순수보장성보험으로 보험계약 만기시 지급받는
     금액(만기환급금)이 없습니다」.  The count is published because the roll-forward has to
     close on the last row, and because a maturity that pays nothing is still a maturity.
     """
-    return pols_if(t) if t == proj_len() else 0.0
+    return pols_if(t) if t == proj_len() - 1 else 0.0
 
 
 # --- the dementia rider's ledger ---
@@ -1273,7 +1285,7 @@ def pols_dem(t):
     or below :func:`pols_if`, so that :func:`pols_entry_dem` always draws from a non-negative
     pool.  Nested inside the in-force block and **never added to** the three compartments.
     """
-    if t <= 0 or t > proj_len() or not dementia_rider():
+    if t <= 0 or t >= proj_len() or not dementia_rider():
         return 0.0
     s = t - 1
     carried = ((pols_dem(s) + pols_entry_dem(s))
@@ -1290,7 +1302,7 @@ def pols_entry_dem(t):
     evidence, and treating them as independent decrements understates the tail.  Driving both
     off the same life with a shared underlying state is what this model does about that.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return (pols_if(t) - pols_dem(t)) * dem_inc_rate_mth(t)
 
@@ -1366,10 +1378,11 @@ def ann_count(t):
 
     The first instalment falls in the **month of certification**, so the ``u = 0`` term is
     :func:`pols_entry_care` itself.  The cap and the maturity truncation bind jointly: nothing
-    is paid at or after ``proj_len()``, which understates the benefit for a late entrant whose
-    ten years of annuity outrun his five years of remaining term.
+    is paid on the maturity row ``t = proj_len() - 1`` or after it, which understates the
+    benefit for a late entrant whose ten years of annuity outrun his five years of remaining
+    term.
     """
-    if not annuity_on() or t < 0 or t >= proj_len():
+    if not annuity_on() or t < 0 or t >= proj_len() - 1:
         return 0.0
     total = 0.0
     for u in range(0, min(t, annuity_max_mths() - 1) + 1):
@@ -1389,7 +1402,7 @@ def ann_pay(t):
     carries the freeze: a cohort entering at 만나이 68 keeps its own grade-blended amount and
     its own 감액 decision for all ten years, whatever later cohorts are paid.
     """
-    if not annuity_on() or t < 0 or t >= proj_len():
+    if not annuity_on() or t < 0 or t >= proj_len() - 1:
         return 0.0
     total = 0.0
     for u in range(0, min(t, annuity_max_mths() - 1) + 1):
@@ -1410,7 +1423,7 @@ def ann_tests(t):
     확정일에 피보험자의 주민등록등본을 제출하여야 합니다」 — which is why the claim-handling
     expense is charged on it rather than on every monthly instalment.
     """
-    if not annuity_on() or t <= 0 or t >= proj_len():
+    if not annuity_on() or t <= 0 or t >= proj_len() - 1:
         return 0.0
     total = 0.0
     for k in range(1, annuity_max_mths() // 12):
@@ -1520,7 +1533,7 @@ def av_pp(t):
     n = prem_period_mths()
     if t <= n:
         return net_prem_ratio() * premium_mth_pp() * prem_accum_factor(t)
-    return (av_ratio_at((t - n) / (proj_len() - n))
+    return (av_ratio_at((t - n) / (proj_len() - 1 - n))
             * premium_mth_pp() * n)
 
 
@@ -1582,7 +1595,7 @@ def premiums(t):
     which is the opposite of the Korean *medical* market's annual renewal, and is the right
     answer for a benefit whose claim arrives thirty years after issue.
     """
-    if t < 0 or t >= prem_period_mths() or t >= proj_len():
+    if t < 0 or t >= prem_period_mths() or t >= proj_len() - 1:
         return 0.0
     return premium_mth_pp() * pols_act(t)
 
@@ -1684,7 +1697,7 @@ def expenses(t):
     own line and published in its own column, which is what ``expenses`` means everywhere in
     this library.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     acq = expense_acq_mths * premium_mth_pp() if t == 0 else 0.0     # noqa: F821
     return acq + expense_maint * inflation_factor(t) * pols_if(t)    # noqa: F821
@@ -1700,7 +1713,7 @@ def claim_expenses(t):
     insurer neither funds nor influences, and because the refusal grounds are administrative:
     「허위 또는 부당 판정사실이 확인되는 경우」 nothing is paid.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     return expense_claim * (pols_entry_care(t) + ann_tests(t)        # noqa: F821
                             + pols_entry_dem(t))
@@ -1725,7 +1738,7 @@ def commissions(t):
     Renewal commission rides on :func:`premiums`, so it stops when the waiver stops the
     premium and when the 납입기간 ends.
     """
-    if t < 0 or t >= proj_len():
+    if t < 0 or t >= proj_len() - 1:
         return 0.0
     init = comm_init_pp() if t == 0 else 0.0
     renew = comm_renewal_rate * premiums(t) if t >= 12 else 0.0      # noqa: F821
@@ -1773,7 +1786,7 @@ def check_pols_roll_fwd():
     :func:`check_pols_roll_fwd_resid` gives the signed residual of the month that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_nesting_resid(t):
@@ -1792,7 +1805,7 @@ def check_nesting_resid(t):
 def check_nesting():
     """True when the compartments stay non-negative and add to the in-force count."""
     return all(check_nesting_resid(t) >= -roll_fwd_tol               # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_ann_ledger_resid(t):
@@ -1804,7 +1817,7 @@ def check_ann_ledger_resid(t):
     late, that ran past the cap, that lost the twelve-month guarantee or that used a ratio
     form of :func:`care_surv` would show up here.
     """
-    if not annuity_on() or t < 0 or t >= proj_len():
+    if not annuity_on() or t < 0 or t >= proj_len() - 1:
         return 0.0
     built = 0.0
     for s in range(max(0, t - annuity_max_mths() + 1), t + 1):
@@ -1819,7 +1832,7 @@ def check_ann_ledger_resid(t):
 def check_ann_ledger():
     """True when the 간병연금 ledger closes in every projected month."""
     return all(abs(check_ann_ledger_resid(t)) <= roll_fwd_tol        # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_av_continuity_resid(t):
@@ -1841,7 +1854,7 @@ def check_av_continuity_resid(t):
 def check_av_continuity():
     """True when the 계약자적립액's two branches meet at 납입완료."""
     return all(abs(check_av_continuity_resid(t)) <= val_tol          # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cv_form_resid(t):
@@ -1862,7 +1875,7 @@ def check_cv_form_resid(t):
 def check_cv_form():
     """True when the surrender-value form behaves in every projected month."""
     return all(check_cv_form_resid(t) >= -val_tol                    # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_net_cf_resid(t):
@@ -1887,7 +1900,7 @@ def check_net_cf():
     The house contract: no model's headline number is reconciled only in prose.
     """
     return all(abs(check_net_cf_resid(t)) <= val_tol                 # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 # --- result tables ---
@@ -1904,10 +1917,11 @@ def result_cf():
     account balance 감독규정 제7-63조제1항제1호 requires on a non-covered death.
     ``claims_maturity`` is a column of zeros by product design and is published rather than
     dropped, as is ``claims_lapse`` for every duration inside the premium-paying period.
-    ``net_cf`` carries the library's income-positive sign.  The last row, ``t = proj_len()``,
-    is the 계약해당일 on which the contract matures: an in-force count and no cash flow.
+    ``net_cf`` carries the library's income-positive sign.  The frame is ``range(proj_len())``
+    and its last row, ``t = proj_len() - 1``, is the 계약해당일 on which the contract matures:
+    an in-force count and no cash flow.
     """
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1934,7 +1948,7 @@ def result_cf():
 
 def result_pols():
     """Result table of policy counts, decrement rates and per-policy values, indexed by ``t``."""
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

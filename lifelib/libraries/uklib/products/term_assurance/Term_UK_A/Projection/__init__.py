@@ -11,9 +11,14 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 3            # or switch the default
 
-``t`` counts **policy years**, 1-based: ``t = 1`` is the first policy year and
-``t = proj_len() = policy_term()`` the last. There is nothing after it — cover ceases
-at the end of the term with no maturity value, no renewal and no conversion.
+``t`` counts **policy years from issue, 0-based**: ``t = 0`` is the first policy year,
+year ``t`` is policy year ``t + 1``, and ``t = proj_len() - 1 = policy_term() - 1`` is
+the last. The frame is ``range(proj_start(), proj_len())`` — ``range(proj_len())`` for
+a point projected from issue, opening at ``t = duration_inforce()`` for a point already
+in force. Year ``t`` runs from time ``t`` to time ``t + 1``: ``pols_if(t)`` is the count
+at its start, premiums and maintenance expense fall at its start, claims and lapses at
+its end. There is nothing after the last year — cover ceases at the end of the term
+with no maturity value, no renewal and no conversion.
 
 .. rubric:: Input data
 
@@ -54,14 +59,15 @@ Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 shape                      shape()                         level / decreasing / fib
 x                          age_at_entry(life)              Issue age (ANB), life 1 or 2
-x + t - 1                  age(t, life)                    Attained age in policy year t
+x + t                      age(t, life)                    Attained age in year t
 (none)                     sex(life), smoker(life)         Rating factors of each life
 n                          policy_term()                   Term in years
 N = 12n                    term_mths()                     Term in months
-t = 1..n                   proj_len()                      Last policy year
-(none)                     proj_start()                    First projected policy year
-(none)                     duration_inforce()              Years already elapsed at t = 0
-(none)                     duration(t)                     Completed years since entry
+(none)                     proj_len()                      Number of years; last t is n-1
+(none)                     proj_start()                    First projected t
+(none)                     duration_inforce()              Years elapsed at projection start
+(none)                     duration(t)                     Completed years since entry, t
+(none)                     policy_year(t)                  Contractual policy year, t + 1
 SA0                        sum_assured()                   Initial sum assured
 I                          fib_income()                    FIB income per month
 j                          sched_rate()                    Decreasing schedule rate p.a.
@@ -132,11 +138,11 @@ kept out of it under :func:`claim_expenses` because the notes' worked-example ta
 prints the two as separate columns.
 
 ``pols_maturity`` has no symbol in the notes at all. The notes give the roll-forward as
-``l(t+1) = l(t)(1-q)(1-w)`` and, separately, terminate everything at ``t = n``. Those
-do not reconcile in the final policy year: its survivors neither die nor lapse — their
-cover simply runs out — so without a term for that the roll-forward appears to lose
-lives with no cause. :func:`pols_maturity` names it, zero in every year but the last,
-so that
+``l(t+1) = l(t)(1-q)(1-w)`` and, separately, terminate everything at the end of
+``t = n - 1``. Those do not reconcile in the final year: its survivors neither die nor
+lapse — their cover simply runs out — so without a term for that the roll-forward
+appears to lose lives with no cause. :func:`pols_maturity` names it, zero in every year
+but the last, so that
 
     pols_if(t) - pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 
@@ -148,10 +154,11 @@ paid is nil.
 .. rubric:: No tail states
 
 This is the structural difference from ``Term_US_A``, and the notes list importing a
-U.S.-style post-level-term tail as a modelling pitfall. A UK term policy expires at
-``t = n``: there is no jump to ART rates, no post-level-term shock lapse, no mortality
-deterioration factor and no conversion option, so none of those cells exist here. What
-does exist and has no U.S. analogue is the family income benefit ledger below.
+U.S.-style post-level-term tail as a modelling pitfall. A UK term policy expires at the
+end of ``t = n - 1``: there is no jump to ART rates, no post-level-term shock lapse, no
+mortality deterioration factor and no conversion option, so none of those cells exist
+here. What does exist and has no U.S. analogue is the family income benefit ledger
+below.
 
 .. rubric:: Terminal illness is not an extra benefit
 
@@ -180,10 +187,10 @@ twelve in each later year, so
 
     claims(t, "FIB") = I x [6 D(t) + 12 FIBcum(t)]
 
-and the whole stream for a death in year ``s`` totals ``6 + 12(n - s)`` instalments,
-which is exactly ``N - k`` at ``k = 12(s-1) + 6``. :func:`check_fib_ledger` rebuilds
-the year's instalment count from the death vector, with no reference to the recursion,
-and asserts the two agree in every projected year.
+and the whole stream for a death in year ``s`` totals ``6 + 12(n - 1 - s)`` instalments,
+which is exactly ``N - k`` at the mid-year death month ``k = 12s + 6``.
+:func:`check_fib_ledger` rebuilds the year's instalment count from the death vector,
+with no reference to the recursion, and asserts the two agree in every projected year.
 
 The optional commutation module replaces a proportion :func:`fib_commute_rate` of the
 streams with a lump sum, the present value of the remaining instalments at the
@@ -197,7 +204,7 @@ other extreme.
 UK assured-lives tables are **select** tables — TMNL16/TFNL16 have a 5-year select
 period, AM92 a 2-year one — so the mortality interface has to accept a rate that
 depends on duration since entry as well as attained age. But the notes' worked example
-is quoted as three applied rates, ``q(1) = 0.00055, q(2) = 0.00060, q(3) = 0.00065``,
+is quoted as three applied rates, ``q(0) = 0.00055, q(1) = 0.00060, q(2) = 0.00065``,
 described as illustrative values in the shape of a non-smoker temporary assurance table
 and explicitly *not* taken from any CMI table. Three numbers rising at 9% a year are
 not consistent with a graduated select structure, where the wearing-off of selection
@@ -255,7 +262,7 @@ library-wide sign of :func:`net_cf`, so unlike the whole life and payout annuity
 there is no ``liability_cf`` companion to publish: one stream, one sign, one name.
 
 Two annual-grid approximations are wired in and are, per the notes, offsetting: the
-decreasing shape's death benefit is the **mid-year** balance ``B(12(t-1) + 6)``, and
+decreasing shape's death benefit is the **mid-year** balance ``B(12t + 6)``, and
 premiums are annual in advance with no allowance for premiums ceasing at a mid-year
 death or lapse, which slightly overstates premium income. The notes are explicit that
 these are a matched pair and that applying a further half-year premium adjustment on
@@ -439,20 +446,22 @@ def fib_commute_rate():
 
 
 def proj_start():
-    """The first projected policy year: ``duration_inforce() + 1``.
+    """The first projected year: ``duration_inforce()``, the 0-based elapsed count.
 
-    1 at issue, so the acquisition expense and the initial commission fall inside the
+    0 at issue, so the acquisition expense and the initial commission fall inside the
     projection; an in-force model point starts later and never sees either.
     """
-    return duration_inforce() + 1
+    return duration_inforce()
 
 
 def proj_len():
-    """Projection length in policy years: the term, exactly.
+    """The number of policy years counted from issue: the term ``n``, exactly.
 
-    Cover ceases at the end of the term with no maturity value, no renewal and no
-    conversion [S1][S2][S6][S8][R8], so the horizon is ``n`` and there is nothing after
-    it - the structural contrast with ``Term_US_A``, which runs on to attained age 95.
+    The exclusive end of the frame, which runs ``t = proj_start(), ..., proj_len() - 1``
+    - ``range(proj_len())`` for a point projected from issue.  Cover ceases at the end of
+    the term with no maturity value, no renewal and no conversion [S1][S2][S6][S8][R8],
+    so the horizon is ``n`` years and there is nothing after ``t = n - 1`` - the
+    structural contrast with ``Term_US_A``, which runs on to attained age 95.
     """
     return policy_term()
 
@@ -463,21 +472,31 @@ def term_mths():
 
 
 def duration(t):
-    """Completed years since entry at the start of policy year t: ``t - 1``.
+    """Completed years since entry at the start of year t: ``t`` itself, 0 in the first.
 
     The select duration, which is what the UK assured lives tables are indexed by
-    alongside attained age.
+    alongside attained age.  ``t`` counts from issue for every model point, so an
+    in-force point's duration is measured from entry, not from the projection start.
     """
-    return t - 1
+    return t
+
+
+def policy_year(t):
+    """The contractual policy year of year t: the 1-based label ``t + 1``.
+
+    Used only where a 1-based schedule is looked up - the lapse table's
+    ``policy_year`` key.  Never the index of anything in the projection.
+    """
+    return t + 1
 
 
 def age(t, life=1):
-    """The attained age (ANB) of ``life`` at the start of policy year t."""
-    return age_at_entry(life) + t - 1
+    """The attained age (ANB) of ``life`` at the start of year t: ``x + t``."""
+    return age_at_entry(life) + t
 
 
 def select_factor(t):
-    """The select-duration factor applying in policy year t **[std]**.
+    """The select-duration factor applying in year t **[std]**.
 
     A 5-year select period, the structure of TMNL16/TFNL16 [R12], with the factor
     grading from 0.55 at duration 0 to 1.00 at and beyond ``select_period``.  Read
@@ -490,7 +509,7 @@ def select_factor(t):
 
 
 def mort_rate_base(t, life=1):
-    """The mortality table rate for ``life`` at its attained age in policy year t.
+    """The mortality table rate for ``life`` at its attained age in year t.
 
     Includes terminal illness, which is an acceleration of the death benefit rather
     than a separate cover [S1][S6][S8]; the 16-Series tables the shipped table proxies
@@ -501,7 +520,7 @@ def mort_rate_base(t, life=1):
 
 
 def mort_rate_life(t, life=1):
-    """The mortality (incl. TI) rate applied to ``life`` in policy year t.
+    """The mortality (incl. TI) rate applied to ``life`` in year t.
 
     The table rate, then on the *select* basis the select factor and the **[std]** 75%
     proxy scaling, then the selective-lapsation loading.  Capped at 1.
@@ -540,7 +559,7 @@ def lapse_cum(t):
 
 
 def sel_lapse_factor(t):
-    """The selective-lapsation loading on mortality in policy year t **[std]**.
+    """The selective-lapsation loading on mortality in year t **[std]**.
 
     ``1 + lambda max(0, w_cum(t) - w_ref)``.  Lapsers are healthier than persisters, so
     a block that has already shed a large proportion of its lives carries impaired
@@ -553,16 +572,17 @@ def sel_lapse_factor(t):
 
 
 def lapse_rate_base(t):
-    """The table lapse rate in policy year t **[std]**, before any rebroking multiplier.
+    """The table lapse rate in year t **[std]**, before any rebroking multiplier.
 
     10 / 8 / 7 / 5 / 6 / 4 percent, anchored to the FCA's 5% average in-force lapse
     rate for pure protection and to the spike pattern just after the two- and four-year
     commission clawback periods end [R9].  A full duration curve is not public and the
-    levels are standardized calibrations.  Policy years beyond the table take its last
-    row.
+    levels are standardized calibrations.  The table is keyed by the contractual
+    1-based policy year, read at :func:`policy_year` ``(t) = t + 1``; policy years
+    beyond the table take its last row.
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    return float(tbl.loc[min(t, int(tbl.index.max())), "lapse_rate"])
+    return float(tbl.loc[min(policy_year(t), int(tbl.index.max())), "lapse_rate"])
 
 
 def rebroke_factor(t):
@@ -578,7 +598,7 @@ def rebroke_factor(t):
 
 
 def lapse_rate(t):
-    """w(t): the annual lapse rate applied at the end of policy year t.
+    """w(t): the annual lapse rate applied at the end of year t.
 
     The table rate times the rebroking multiplier, capped at 1.  A lapse pays nothing:
     there is no surrender or paid-up value at any duration [S1][S6][S8][R8].
@@ -587,14 +607,14 @@ def lapse_rate(t):
 
 
 def pols_if(t):
-    """l(t): the number of policies in force at the **start** of policy year t.
+    """l(t): the number of policies in force at the **start** of year t.
 
-    ``pols_if_init()`` in the first projected year, then the notes' recursion
-    ``l(t+1) = l(t)(1 - q(t))(1 - w(t))``.  This is the weight on every cash flow of
-    the same ``result_cf()`` row.  Zero outside ``proj_start() .. proj_len()``: the
-    cover has not started or has expired.
+    ``pols_if_init()`` in the first projected year ``t = proj_start()`` (``l(0) = 1``
+    at issue), then the notes' recursion ``l(t+1) = l(t)(1 - q(t))(1 - w(t))``.  This is
+    the weight on every cash flow of the same ``result_cf()`` row.  Zero outside
+    ``proj_start() .. proj_len() - 1``: the cover has not started or has expired.
     """
-    if t < proj_start() or t > proj_len():
+    if t < proj_start() or t >= proj_len():
         return 0.0
     if t == proj_start():
         return pols_if_init()
@@ -602,7 +622,7 @@ def pols_if(t):
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside year t.
 
     ``"BEF_DECR"``
         l(t), the start of the year, before any decrement; the same number
@@ -615,22 +635,22 @@ def pols_if_at(t, timing):
 
     ``"AFT_DECR"``
         l(t+1), the end-of-year state: what is left once the year's deaths
-        and lapses are taken, and zero from ``proj_len()`` on because the
-        cover expires there.
+        and lapses are taken, and zero from the final year ``t = proj_len() - 1``
+        on because the cover expires at its end.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
         return pols_if(t) * (1.0 - mort_rate(t))
     if timing == "AFT_DECR":
-        if t < proj_start() or t >= proj_len():
+        if t < proj_start() or t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
     raise ValueError("invalid timing")
 
 
 def pols_death(t):
-    """D(t) = l(t) q(t): expected death and terminal illness claims in policy year t.
+    """D(t) = l(t) q(t): expected death and terminal illness claims in year t.
 
     One decrement covering both: terminal illness accelerates the death benefit rather
     than adding to it [S1][S6][S8].
@@ -639,7 +659,7 @@ def pols_death(t):
 
 
 def pols_lapse(t):
-    """Lapses at the end of policy year t, taken from the survivors of mortality.
+    """Lapses at the end of year t, taken from the survivors of mortality.
 
     Pays nothing - there is no surrender value [S6][R8] - so this moves
     :func:`pols_if` and nothing else.
@@ -650,11 +670,12 @@ def pols_lapse(t):
 def pols_maturity(t):
     """Policies whose cover expires at the end of the term; zero in every other year.
 
-    Not a decrement and not a benefit - the contract simply runs out, with no maturity
-    value [S1][S2][S6][S8][R8] - but needed for the in-force roll-forward to close; see
-    the Space docstring and :func:`check_pols_roll_fwd`.
+    Non-zero only in the final year ``t = proj_len() - 1``.  Not a decrement and not a
+    benefit - the contract simply runs out, with no maturity value
+    [S1][S2][S6][S8][R8] - but needed for the in-force roll-forward to close; see the
+    Space docstring and :func:`check_pols_roll_fwd`.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
 
@@ -679,7 +700,7 @@ def wop_waived_frac(t):
 
 
 def pols_payer(t):
-    """The number of in-force policies actually paying premium in policy year t.
+    """The number of in-force policies actually paying premium in year t.
 
     ``l(t)`` less the waived fraction.  Equal to :func:`pols_if` unless the waiver of
     premium rider is in force.
@@ -703,7 +724,7 @@ def idx_increase():
 
 
 def idx_factor(t):
-    """idx(t): the cumulative **cover** indexation factor at the start of policy year t.
+    """idx(t): the cumulative **cover** indexation factor at the start of year t.
 
     1 in the first projected year and whenever the option is not elected.
     """
@@ -728,7 +749,7 @@ def idx_prem_factor(t):
 
 
 def premium_pp(t):
-    """P_a idx_p(t): the annualized gross premium per policy in policy year t.
+    """P_a idx_p(t): the annualized gross premium per policy in year t.
 
     ``12 P_m``, indexed if the option is elected, and loaded by
     ``wop_prem_loading`` where the waiver rider is in force - a **[std]**
@@ -739,7 +760,7 @@ def premium_pp(t):
 
 
 def premiums(t):
-    """Premium income at the start of policy year t, an inflow.
+    """Premium income at the start of year t, an inflow.
 
     Carried on :func:`pols_payer`, never on the FIB ledger: premiums stop at death
     while family income benefit instalments continue.  Annual in advance with no
@@ -792,18 +813,18 @@ def annuity_certain_factor(m):
 def fib_commute_pp(t):
     """CV: the commuted value of one FIB stream arising from a death in year t **[std]**.
 
-    ``I a(N - k)`` at the mid-year death month ``k = 12(t-1) + 6``, so it falls to zero
+    ``I a(N - k)`` at the mid-year death month ``k = 12t + 6``, so it falls to zero
     as the term runs out.  Zero on the level and decreasing shapes.
     """
     if shape() != "fib":
         return 0.0
-    return fib_income() * annuity_certain_factor(term_mths() - (12 * (t - 1) + 6))
+    return fib_income() * annuity_certain_factor(term_mths() - (12 * t + 6))
 
 
 def benefit_pp(t):
-    """DB(t): the death and terminal illness benefit per policy in policy year t.
+    """DB(t): the death and terminal illness benefit per policy in year t.
 
-    Level: ``SA0 idx(t)``.  Decreasing: the **mid-year** balance ``B(12(t-1) + 6)``
+    Level: ``SA0 idx(t)``.  Decreasing: the **mid-year** balance ``B(12t + 6)``
     **[std]**, the annual grid's reading of a schedule that steps down monthly.  FIB:
     the commuted value of the instalment stream, which is what a commuted claim pays;
     an uncommuted FIB claim has no lump sum at all and goes through
@@ -813,7 +834,7 @@ def benefit_pp(t):
     if s == "level":
         return sum_assured() * idx_factor(t)
     if s == "decreasing":
-        return benefit_sched(12 * (t - 1) + 6)
+        return benefit_sched(12 * t + 6)
     return fib_commute_pp(t)
 
 
@@ -830,7 +851,7 @@ def fib_cum(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in year t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
         the lump sum paid at the end of the year of death: ``DB(t) D(t)`` on
@@ -874,45 +895,48 @@ def claim_expenses(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^(t-1)`` **[std]**."""
-    return (1.0 + inflation_rate) ** (t - 1)                         # noqa: F821
+    """The expense inflation factor in year t: ``(1 + pi)^t`` **[std]**, 1 at issue."""
+    return (1.0 + inflation_rate) ** t                               # noqa: F821
 
 
 def expenses(t):
     """E0 and e(t): acquisition and inflating maintenance expense in year t **[std]**.
 
-    £150 per policy at issue, then £30 per policy per year inflating at 3%, both at the
-    start of the year.  An in-force model point starts after policy year 1 and never
-    sees the acquisition charge.  Premiums as low as £5/month against a £30 maintenance
-    expense make this assumption solvency-relevant on small-sum-assured blocks, which is
-    why the notes rate expense inflation a first-order lever despite its size.
+    £150 per policy at issue (``t = 0``), then £30 per policy per year inflating at 3%,
+    both at the start of the year.  An in-force model point starts after ``t = 0`` and
+    never sees the acquisition charge.  Premiums as low as £5/month against a £30
+    maintenance expense make this assumption solvency-relevant on small-sum-assured
+    blocks, which is why the notes rate expense inflation a first-order lever despite
+    its size.
     """
-    acq = expense_acq * pols_if(t) if t == 1 else 0.0                # noqa: F821
+    acq = expense_acq * pols_if(t) if t == 0 else 0.0                # noqa: F821
     return acq + expense_maint * inflation_factor(t) * pols_if(t)    # noqa: F821
 
 
 def comm_init_pp():
     """c0: initial commission per policy issued **[std]**.
 
-    150% of the annualized premium, paid upfront at issue.  Roughly 96% of protection
-    commission is paid upfront [R9], which with the acquisition expense is what
-    produces the deep year-one new business strain in the worked example.
+    150% of the annualized premium of the first year (``t = 0``), paid upfront at
+    issue.  Roughly 96% of protection commission is paid upfront [R9], which with the
+    acquisition expense is what produces the deep first-year new business strain in the
+    worked example.
     """
-    return comm_init_rate * premium_pp(1)                            # noqa: F821
+    return comm_init_rate * premium_pp(0)                            # noqa: F821
 
 
 def comm_clawback(t):
     """Initial commission recovered on lapses inside the clawback window **[std]**.
 
-    ``c0 (clawback_mths - 12t)/clawback_mths`` per lapsed policy, linear in months in
-    force.  Off in the base run (``clawback_mths`` is 0); set it to 48 for the
-    notes' four-year rule.  Clawback periods of two to four years are evidenced [R9];
-    the linear formula is a standardization.  Inside the window it reverses the sign of
-    the early-lapse sensitivity, which is the point of carrying it.
+    ``c0 (clawback_mths - 12(t+1))/clawback_mths`` per lapsed policy, linear in months
+    in force: a lapse at the end of year t has ``12(t+1)`` months in force.  Off in the
+    base run (``clawback_mths`` is 0); set it to 48 for the notes' four-year rule.
+    Clawback periods of two to four years are evidenced [R9]; the linear formula is a
+    standardization.  Inside the window it reverses the sign of the early-lapse
+    sensitivity, which is the point of carrying it.
     """
     if clawback_mths <= 0:                                           # noqa: F821
         return 0.0
-    mths = 12 * t
+    mths = 12 * (t + 1)
     if mths >= clawback_mths:                                        # noqa: F821
         return 0.0
     return (comm_init_pp() * (clawback_mths - mths)                  # noqa: F821
@@ -920,41 +944,42 @@ def comm_clawback(t):
 
 
 def commissions(t):
-    """Commission outgo in policy year t **[std]**, net of any clawback recovered.
+    """Commission outgo in year t **[std]**, net of any clawback recovered.
 
-    The initial commission in policy year 1, then 2.5% of premium income from policy
-    year 2.  Both are levels chosen for the reference implementation; only the upfront
-    *pattern* is evidenced [R9].
+    The initial commission at issue (``t = 0``), then 2.5% of premium income from the
+    second policy year (``t >= 1``).  Both are levels chosen for the reference
+    implementation; only the upfront *pattern* is evidenced [R9].
     """
-    init = comm_init_pp() * pols_if(t) if t == 1 else 0.0
-    renew = comm_renewal_rate * premiums(t) if t >= 2 else 0.0       # noqa: F821
+    init = comm_init_pp() * pols_if(t) if t == 0 else 0.0
+    renew = comm_renewal_rate * premiums(t) if t >= 1 else 0.0       # noqa: F821
     return init + renew - comm_clawback(t)
 
 
 def net_cf(t):
-    """CF(t): the net cash flow of policy year t, **income positive**.
+    """CF(t): the net cash flow of year t, **income positive**.
 
     Premiums less death and terminal illness claims, claim expense, maintenance and
     acquisition expense and commission.  The notes' own sign - they write ``+ = inflow``
     - which is also the library-wide convention, so unlike the whole life and payout
     annuity models there is no outgo-positive ``liability_cf`` companion to publish.
 
-    The shape to expect on guaranteed term is a deep new business strain in year 1,
-    upfront commission and acquisition expense against a single year's premium, then
-    thin positive margins: the level premium prefunds rising mortality cost, so early
-    lapses forfeit margin to the insurer and late ones relieve it.
+    The shape to expect on guaranteed term is a deep new business strain in the first
+    year (``t = 0``), upfront commission and acquisition expense against a single
+    year's premium, then thin positive margins: the level premium prefunds rising
+    mortality cost, so early lapses forfeit margin to the insurer and late ones
+    relieve it.
     """
     return (premiums(t) - claims(t) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in year t; zero everywhere.
 
     ``pols_if(t) - pols_if(t+1) - deaths - lapses - expiries``.  Expiries are non-zero
-    only in the final policy year, where the survivors neither die nor lapse: their
-    cover runs out.  Without that term the last year appears to lose lives with no
-    cause.
+    only in the final year ``t = proj_len() - 1``, where the survivors neither die nor
+    lapse: their cover runs out.  Without that term the last year appears to lose lives
+    with no cause.
     """
     return (pols_if(t) - pols_if(t + 1)
             - pols_death(t) - pols_lapse(t) - pols_maturity(t))
@@ -969,11 +994,11 @@ def check_pols_roll_fwd():
     ``pols_if_init()``, since the residual accumulates rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_fib_ledger_resid(t):
-    """The family income benefit ledger residual in policy year t; zero everywhere.
+    """The family income benefit ledger residual in year t; zero everywhere.
 
     :func:`claims` ``(t, "FIB")`` less an independent rebuild of the same figure: six
     instalments for a death in year t and twelve for every death in an earlier year,
@@ -996,18 +1021,20 @@ def check_fib_ledger():
     :func:`check_fib_ledger_resid` gives the signed residual of the year that failed.
     """
     return all(abs(check_fib_ledger_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year t.
+    """Result table of cashflows, indexed by year t.
 
-    ``pols_if`` is the start-of-year count, which is the weight applied to every cash
-    flow on the same row.  ``net_cf`` carries the notes' own income-positive sign.
-    ``claims_lapse`` is a column of zeros by product design - there is no surrender
-    value - and is published rather than dropped; see the Space docstring.
+    One row per year ``t = proj_start(), ..., proj_len() - 1`` - ``proj_len()`` rows
+    for a point projected from issue.  ``pols_if`` is the start-of-year count, which is
+    the weight applied to every cash flow on the same row.  ``net_cf`` carries the
+    notes' own income-positive sign.  ``claims_lapse`` is a column of zeros by product
+    design - there is no surrender value - and is published rather than dropped; see
+    the Space docstring.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1025,8 +1052,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts and decrement rates, indexed by policy year t."""
-    ts = list(range(proj_start(), proj_len() + 1))
+    """Result table of policy counts and decrement rates, indexed by year t.
+
+    The same rows as :func:`result_cf`: ``t = proj_start(), ..., proj_len() - 1``.
+    """
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

@@ -53,7 +53,10 @@ prose. Amounts are in Korean won; because Korean documents quote in 만원 (10,0
   자동전환하여 공시이율로 운용합니다」 [S6].
 - **Projection frequency: monthly**, 0-based. `t = 0` is the month containing the 계약일 and
   the first 기본보험료; row `t` of `result_cf()` carries month `t`. `proj_len()` is the
-  **last row index and not a row count**: the anchor cell has 960 rows, 0 … 959.
+  **number of projected months and not the last row index**: the frame is
+  `t = 0 … proj_len() − 1`, so the anchor cell has `proj_len()` = 960 rows, 0 … 959.
+  Policy year is the contractual 1-based label derived from `t`: `policy_year(t)` =
+  ⌊t/12⌋ + 1, so the first policy year is `t = 0 … 11`.
 - **The monthly grid is itself a [std] standardization, and a consequential one.** The
   계약자적립액 is contractually a **daily** 좌수 (*jwasu*, unit count) × 기준가격
   (*gijun gagyeok*, unit price) ledger quoted per 1,000좌 [S7 제43조], valued every business
@@ -121,13 +124,13 @@ model point **1**, the illustration point three independent carriers publish
 | `crediting_basis` | `crediting_basis()` | key of `crediting_table` | `decl_2026` | payout-phase rate ladder |
 | `addl_prem_ratio` | `addl_prem_ratio()` | ratio of 기본보험료 | 0.0 | 추가납입 module, off |
 | `wd_ratio` | `wd_ratio()` | ratio of 해약환급금 | 0.0 | 중도인출 module, off |
-| `wd_start_year` | `wd_start_year()` | policy year | 0 | first 중도인출 year |
+| `wd_start_year` | `wd_start_year()` | completed policy years | 0 | 계약해당일 of the first 중도인출 |
 | `pols_if_init` | `pols_if_init()` | count | 1.0 | contracts at issue |
 
 Derived on the anchor: `prem_ann_pp()` = ₩3,600,000, `prem_total_pp()` = **₩36,000,000
 (3,600만원)**, `t_ann()` = **240**, `defer_years()` = 20, `bond_floor()` = **0.50** (the
->12년 rung), `proj_len()` = **959** (attained 보험나이 119, terminal age `omega_age` = 120
-**[std]**).
+>12년 rung), `proj_len()` = **960** months, so the last row is `t` = 959 (attained
+보험나이 119, terminal age `omega_age` = 120 **[std]**).
 
 ### The ten shipped model points
 
@@ -141,7 +144,7 @@ Derived on the anchor: `prem_ann_pp()` = ₩3,600,000, `prem_total_pp()` = **₩
 | 6 | M | 55 | 500,000 | 5 | 65 | on | bond80_eq20 | base | decl_2026 | — | <12년 ladder rung; 표준해약공제액 cap **binds** |
 | 7 | F | 48 | 200,000 | 5 | 60 | on | bond70_eq30 | base | decl_2026 | — | =12년 ladder rung; cap **binds** |
 | 8 | M | 35 | 300,000 | 10 | 60 | on | bond50_eq50 | base | decl_2026 | 추가납입 100% | strike ₩72,000,000; the charge/strike asymmetry |
-| 9 | F | 45 | 400,000 | 10 | 62 | on | bond50_eq50 | base | decl_2026 | 중도인출 10%/yr from yr 11 | proportional re-basing of both guarantees |
+| 9 | F | 45 | 400,000 | 10 | 62 | on | bond50_eq50 | base | decl_2026 | 중도인출 10%/yr from the 11th anniversary | proportional re-basing of both guarantees |
 | 10 | F | 70 | 1,000,000 | 5 | 80 | on | bond80_eq20 | base | **min_guar** | — | issue-envelope corners; 최저보증이율 ladder |
 
 Every point satisfies the issue envelope of `product-spec.md`: 가입나이 ≤ 70,
@@ -326,7 +329,7 @@ than hidden.
 | Symbol | Cells | Meaning |
 |---|---|---|
 | t | (index of `result_cf`) | projection month, 0-based; row t carries month t |
-| N | `proj_len()` | last month index; rows run 0 … N |
+| N | `proj_len()` | number of projected months; rows run 0 … N − 1 |
 | x | `age_at_entry()` | 가입나이, **보험나이** |
 | x + ⌊t/12⌋ | `age(t)` | attained **보험나이** in month t |
 | y | `policy_year(t)` | policy year containing month t, = ⌊t/12⌋ + 1 |
@@ -459,7 +462,8 @@ represented, and on the shipped points the cap never binds.
 ### 중도인출 and the guarantee re-basing
 
 ```
-W(t) = 0 unless the module is on, t is a 계약해당일 (t mod 12 = 0), t >= 12 x wd_start_year
+W(t) = 0 unless the module is on, t is a 계약해당일 (t mod 12 = 0 and t > 0; t = 0 is the
+       계약일 itself, not an anniversary), t >= 12 x wd_start_year
      = min[ wd_ratio x CV, 0.50 x CV, AV_after_deduct − 5,000,000,
             (premiums paid − withdrawals to date) if t < 120 months ]   [S1] [S2] [S5]
 
@@ -494,7 +498,7 @@ different fixed allocation — this one is **not optional and is on**.
 Fund by fund, in the order the month applies them:
 
 ```
-F_j(t, BEF_PREM)   = F_j(t−1)
+F_j(t, BEF_PREM)   = 0 for t = 0, else F_j(t−1)   (no account before the first premium)
 F_j(t, BEF_DEDUCT) = F_j(t, BEF_PREM) + P_sa(t) w_j
 F_j(t, AFT_DEDUCT) = F_j(t, BEF_DEDUCT)
                      − [D(t) + W(t)] x F_j(t, BEF_DEDUCT) / AV(t, BEF_DEDUCT)
@@ -512,8 +516,10 @@ AV(t) = [ AV(t−1) + P_sa(t) − D(t) − W(t) ] grown at the fund-weighted g
 ```
 
 which is exactly the residual `check_av_roll_fwd_resid(t)` drives to zero, with the
-연금재원 transfer subtracted in the month `t = T`. The 월공제액 and the 중도인출 are taken
-**pro rata across funds** on the `BEF_DEDUCT` weights **[std]**.
+연금재원 transfer subtracted in the month `t = T`. The opening balance `AV(t−1)` is **nil
+in `t = 0`**, so the identity closes on the first row too — the row that carries the single
+premium, the 계약체결비용 and the whole first month's charge stack. The 월공제액 and the
+중도인출 are taken **pro rata across funds** on the `BEF_DEDUCT` weights **[std]**.
 
 Two quantities fall out of the growth step and are published separately, because they land
 in different places:
@@ -624,7 +630,7 @@ so that the roll-forward closes. **A 종신연금형 pays nothing at the horizon
 `claims_maturity` is structurally zero at every t; the column exists so that the truncation
 at `omega_age` is visible rather than absorbed into the last row's decrements.
 
-### Processing order (month t = 0 … N)
+### Processing order (month t = 0 … N − 1)
 
 The order is not presentational: five of the flows depend on it, and two of the `check_*`
 identities exist only because it is fixed.
@@ -715,7 +721,7 @@ All eight are `True` on all ten shipped model points.
 | Module | Control | State on the anchor | Exercised by |
 |---|---|---|---|
 | 추가납입보험료 | `addl_prem_ratio` | **off** | point 8, at 100% of the 기본보험료 |
-| 중도인출 | `wd_ratio`, `wd_start_year` | **off** | point 9, 10% a year from year 11 |
+| 중도인출 | `wd_ratio`, `wd_start_year` | **off** | point 9, 10% a year from the 11th anniversary |
 | The GMAB itself | `gmab` | **on** | point 3 turns it off (미보증형) |
 | The return path | `scenario_id` | `base` (2.50%) | points 4 (−1.00%) and 5 (3.75%) |
 | The 최저보증이율 ladder | `crediting_basis` | **inert** — 2.50% exceeds every step | point 10 (`min_guar`) |
@@ -841,7 +847,7 @@ Derived, at the precision the model produces:
 pay_months()                                 120
 t_ann()                                      240
 defer_years()                                 20
-proj_len()                                   959      rows 0 ... 959; (120 − 40) x 12 − 1
+proj_len()                                   960      rows 0 ... 959; (120 − 40) x 12
 prem_ann_pp()                          3,600,000.00
 prem_total_pp()                       36,000,000.00   (3,600만원)
 loading_rate()                                 0.0867
@@ -1675,12 +1681,13 @@ eight `check_*()` cells.
     annuitant basis through the deferral understates the GMDB cost; using the insurance
     basis in the payout understates the annuity.
     *Test:* both values on point 1, and `mort_rate_at_age(60) != ann_mort_rate_at_age(60)`.
-15. **Reading `proj_len()` as a row count.** It is the **last row index**. The anchor has
-    **960** rows, 0 … 959, and `(120 − 40) × 12 − 1 = 959`. An off-by-one drops the horizon
-    month, in which `pols_maturity` carries out the survivors and the in-force roll-forward
-    closes.
-    *Test:* `len(result_cf()) == proj_len() + 1` on every model point, and
-    `check_pols_roll_fwd()`.
+15. **Reading `proj_len()` as the last row index.** It is the **number of projected
+    months**, the frame's exclusive end: the frame is `range(proj_len())` and the last row
+    is `proj_len() − 1`. The anchor has **960** rows, 0 … 959, and `(120 − 40) × 12 = 960`.
+    An off-by-one either drops the horizon month, in which `pols_maturity` carries out the
+    survivors and the in-force roll-forward closes, or adds a phantom row past it.
+    *Test:* `len(result_cf()) == proj_len()` and `result_cf().index[-1] == proj_len() − 1`
+    on every model point, and `check_pols_roll_fwd()`.
 16. **Reversing the decrement order, or applying both rates to the opening count.** Death
     is taken first and 해지 on the survivors [std]: `s(0) = (1 − d_rate) × w_mth`, not
     `l(0) × w_mth`. The difference is second-order in a month and first-order over 240 of

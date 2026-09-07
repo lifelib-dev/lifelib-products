@@ -3,9 +3,10 @@
     python products/fondsgebundene_rentenversicherung/run.py         # anchor (point_id = 1)
     python products/fondsgebundene_rentenversicherung/run.py 7       # another model point
 
-The frame is 360 months on the anchor cell, so the printout shows the months that carry
-the mechanics: the first six, the acquisition-charge cliff at months 59 to 61, and the
-last two before *Rentenbeginn*.  Totals are summed at full precision.
+The frame is 360 months on the anchor cell -- ``t = 0 .. 359``, ``t`` being the 0-based
+policy month from inception -- so the printout shows the months that carry the mechanics:
+the first six, the acquisition-charge cliff at ``t = 58 .. 60``, and the last two before
+*Rentenbeginn*.  Totals are summed at full precision.
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """
@@ -20,9 +21,9 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 mp = proj.model_point()
 
-print("model point {}: {} - {}{} -> Rentenbeginn at {}, months {} .. {}".format(
+print("model point {}: {} - {}{} -> Rentenbeginn at {}, t = {} .. {}".format(
     point_id, mp["policy_id"], proj.sex(), proj.entry_age(),
-    proj.annuity_age(), proj.proj_start(), proj.proj_len()))
+    proj.annuity_age(), proj.proj_start(), proj.proj_len() - 1))
 print("premium: {} {:,.2f} EUR every {} month(s) for {} years   "
       "Beitragssumme {:,.2f} EUR".format(
           proj.prem_form(), proj.prem_pp_base(), proj.prem_mode_months(),
@@ -42,8 +43,8 @@ print()
 df = proj.result_cf()
 rows = [t for t in (proj.proj_start(), proj.proj_start() + 1, proj.proj_start() + 2,
                     proj.proj_start() + 3, proj.proj_start() + 4, proj.proj_start() + 5,
-                    59, 60, 61, proj.proj_len() - 1, proj.proj_len())
-        if proj.proj_start() <= t <= proj.proj_len()]
+                    58, 59, 60, proj.proj_len() - 2, proj.proj_len() - 1)
+        if proj.proj_start() <= t < proj.proj_len()]
 cols = ["pols_if", "premiums", "prem_to_av", "charge_acq", "charge_admin_prem",
         "charge_admin_fund", "charge_policy_fee", "charge_risk", "claims_death",
         "claims_lapse", "claims_maturity", "expenses", "commissions", "net_cf"]

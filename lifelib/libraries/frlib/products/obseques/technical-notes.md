@@ -40,15 +40,22 @@ so the "every lapse is a free profit release" arithmetic of the UK design does n
 - **Projection frequency.** Monthly **[std]**. The contractual premium is annual and payable in
   advance with instalment options [S1] [S8] [S9]; the monthly grid is required by the
   twelve-month *délai de carence*, whose boundary must not be smoothed.
+- **Time index.** `t` is the **0-based** policy month: `t = 0` is the first policy month, month
+  `t` runs from time `t` to time `t + 1`, and the frame is `t = 0, 1, …, proj_len − 1`, so
+  `proj_len` is the *number* of projected months. The **policy year** is the contractual,
+  1-based label derived from it, `y = policy_year(t) = floor(t/12) + 1`, and it is what the
+  premium, lapse and select schedules are keyed by. Where these notes say "policy year 1" they
+  mean the contractual year `y = 1`, which is `t = 0 … 11`.
 - **Timing conventions [std].** Premiums at the beginning of the policy month (BOM); deaths
   resolved at end of month (EOM) against the BOM in-force; surrenders and *réductions* at EOM
   after deaths. Revalorisation and premium uprating step at policy anniversaries.
 - **Age basis.** ***Différence de millésime*** — calendar year of subscription minus calendar
   year of birth [S1] [S8] [S9]; **not** age last birthday and **not** age nearest birthday. The
   true basis increments on 1 January; the model increments at the policy anniversary instead,
-  `age(t) = entry_age + floor((t−1)/12)` **[std]**, exact for January issues.
-- **Projection horizon.** `proj_len = 12 × (omega − entry_age + 1)` with **omega = 112**
-  **[std]**, the tabulation limit of TH 00-02 in the annexe to art. A. 335-1 CA [REG-R23];
+  `age(t) = entry_age + floor(t/12)` **[std]**, exact for January issues.
+- **Projection horizon.** `proj_len = 12 × (omega − entry_age + 1)` months with **omega = 112**
+  **[std]** — the number of projected months, so the last one is `t = proj_len − 1` — the
+  tabulation limit of TH 00-02 in the annexe to art. A. 335-1 CA [REG-R23];
   `mort_rate` is forced to 1 at attained age omega. One insurer's tables run to attained age 115
   [S15], so the horizon is a modelling convention, not a contractual one.
 - **Currency / units.** EUR. `mort_rate` and `lapse_rate` are annual and dimensionless,
@@ -98,13 +105,13 @@ Five departures, and each is first-order.
 | Anti-selection device | Underwriting itself; a *délai d'attente* only where the adhesion carried no medical formality, and off (`waiting_period_y = 0`) in the base run | A **12-month *délai de carence* on every contract that states a duration** [S1] [S8] [S9] [S11] [S13] — the rest reference *carences* in their tables without giving one [S5] [S14] [S15] [S16] — because underwriting is always waived. Not a variant: it is the chassis of the product |
 | Year-1 exclusion | Suicide voids the death cover in year 1: `suicide_factor(t)`, a multiplicative withholding on `claims_death` in year 1 only, paying **nothing** | Suicide is excluded for 12 months [S1] [S8] [S12] [S13] but the insurer pays the ***valeur de rachat*** / *provision mathématique*, not zero [S1] [S8] [S12]. There is no `suicide_factor` cells here |
 | Sum assured | `sum_assured`, level or on a fixed `benefit_schedule_id`; indexation off in the base run | `capital_pp(t)`, a **state variable that grows** out of the *participation aux bénéfices*, 1.00 % p.a. guaranteed in the reference cell [S14] |
-| Premium-stops | `pols_lapse` moves `pols_if` and **nothing else**; `claims_lapse(t)` is structurally zero, by statute | `pols_lapse` is **paid `surr_value_pp(t)`**; `claims_lapse` is non-zero from month 1 and worth 1005.89 € over the anchor cell's horizon |
+| Premium-stops | `pols_lapse` moves `pols_if` and **nothing else**; `claims_lapse(t)` is structurally zero, by statute | `pols_lapse` is **paid `surr_value_pp(t)`**; `claims_lapse` is non-zero from t = 0 and worth 1005.89 € over the anchor cell's horizon |
 
 Two second-order differences follow from the first five and are worth stating so an implementer
 does not carry a chassis habit across. `TD_FR_A` runs an **annual** grid, because the contract
 is a one-year cover renewed by *tacite reconduction* and repriced at every renewal, and its
 horizon ends at a stated `cover_end_age` where nothing is payable; this model runs a **monthly**
-grid, because the *carence* boundary at month 12 must not be smoothed, and it has **no term at
+grid, because the *carence* boundary at twelve months must not be smoothed, and it has **no term at
 all** — `proj_len = 12 × (omega − entry_age + 1)` with omega = 112 **[std]**, and the contract
 ends only on death, on *rachat* or on lapse [S1] [S8] [S9] [S11]. And the premium moves in
 opposite ways: on `TD_FR_A` the tariff is re-read at the new attained age at every renewal, so
@@ -176,24 +183,24 @@ Footnotes:
 
 | Variable | Description | Updated |
 |---|---|---|
-| `pols_if(t)` = l(t−1) | Premium-paying policies in force; l(t) is measured at **end of month t**, l(0) = 1 | monthly (deaths, surrenders, *réductions*) |
-| `pols_paid_up(t)` = l_r(t−1) | Paid-up (*réduit*) policies in force; l_r(t) at end of month t, l_r(0) = 0 | monthly (entries on *réduction*, exits on death) |
+| `pols_if(t)` = l(t) | Premium-paying policies in force; l(k) is measured at **time k months from issue**, l(0) = 1 | monthly (deaths, surrenders, *réductions*) |
+| `pols_paid_up(t)` = l_r(t) | Paid-up (*réduit*) policies in force; l_r(k) at time k, l_r(0) = 0 | monthly (entries on *réduction*, exits on death) |
 | `capital_pp(t)` | Guaranteed capital per policy, uprated by `reval_rate` | policy anniversaries |
 | `cum_prem_pp(t)` | Premiums collected per policy to the BOM of month t — the *carence* refund base | monthly (premium months only) |
 | `prem_ann(t)` | Current annual premium; rises with the capital when `reval_prem_linked` | policy anniversaries |
 | `surr_value_pp(t)` | Surrender value = *provision mathématique* per policy | monthly |
 | `reduced_capital_pp(t)` | Paid-up capital fixed at the date of *réduction* | on conversion |
-| `in_carence(t)` | Indicator `t <= carence_months` | monthly |
-| `age(t)` | Attained age = `entry_age + floor((t−1)/12)` | policy anniversaries |
+| `in_carence(t)` | Indicator `t < carence_months` | monthly |
+| `age(t)` | Attained age = `entry_age + floor(t/12)` | policy anniversaries |
 
-**Mind the one-month offset on the two in-force strands.** These notes carry l(t) and l_r(t) at
-the **end** of month t, because that is where the recursions below close; the model indexes them
-at the **start**, so `pols_if(t)` is l(t−1) and `pols_paid_up(t)` is l_r(t−1). That is the same
-quantity the worked example prints — its column is headed `pols_if(t−1)` for exactly this reason
-— and it is the weight the model applies to every cash flow of month t. Reading `pols_if(t)` as
-l(t) and comparing cell values against these notes puts an implementation one month out. The
-convention is restated in the `Projection` docstring's symbol map, which is the authority for
-which cells name carries which symbol.
+**l is a time-point function, and on a 0-based frame it lines up exactly.** These notes carry
+l(k) and l_r(k) at **time k months from issue**, l(0) = 1 at issue; the model indexes its
+counts at the **start** of the month, and the start of month t is time t, so `pols_if(t)` is
+l(t) and `pols_paid_up(t)` is l_r(t) with no offset at all. That is the quantity the worked
+example prints — its column is headed `pols_if(t)` — and it is the weight the model applies to
+every cash flow of month t. The end-of-month count is l(t+1), which the model publishes as
+`pols_if_at(t, "AFT_DECR")`. The convention is restated in the `Projection` docstring's symbol
+map, which is the authority for which cells name carries which symbol.
 
 ---
 
@@ -271,7 +278,7 @@ Every figure below is a **[std]** drafting construction, to be replaced by exper
 | Accidental share of deaths `d_acc` | **0.05**, level | **[std]** (g) |
 | Surrender / lapse `lapse_rate` | **6 % / 5 % / 3.5 % / 2.5 %** for policy years 1 / 2 / 3–5 / 6+ | **[std]** (h) |
 | Paid-up share `reduction_share` | 0 in base; 0.5 as the variation | **[std]** (c) |
-| Acquisition expense | **150 €** per policy at t = 1, commission included | **[std]** (j) |
+| Acquisition expense | **150 €** per policy at t = 0, commission included | **[std]** (j) |
 | Maintenance expense | **24 €** per policy per year, 2.00 €/month, inflating **1.8 % p.a.** | **[std]** (j) |
 | Claim handling | Folded into maintenance | **[std]** (i) |
 
@@ -327,12 +334,12 @@ Footnotes:
 
 ## Cash flow components and recursions
 
-### Notation (defined once, used throughout; shared with `product-spec.md`)
+### Notation (defined once, used throughout; `product-spec.md` states the same mechanics with a 1-based contractual month label, t_spec = t + 1)
 
 | Symbol | Meaning | Cells name |
 |---|---|---|
-| t | policy month, t = 1, 2, … | — |
-| y | policy year = floor((t−1)/12) + 1 | — |
+| t | policy month, **0-based**: t = 0, 1, …, proj_len − 1 | — |
+| y | policy year = floor(t/12) + 1 — the contractual, 1-based label | — |
 | x(t) | attained age = `entry_age` + y − 1 (*différence de millésime* proxy **[std]**) | `age` |
 | C(y) | guaranteed capital in policy year y | `capital_pp` |
 | C_0 | capital at issue | `capital_0` |
@@ -353,8 +360,9 @@ Footnotes:
 | M_acc | cap on the accidental benefit, 20000 € [S8] | `accident_cap` |
 | a_ass | assistance premium netted from the refund, 12 €/year [S8] | `assistance_prem_pp` |
 | phi | annual-to-monthly instalment loading, 2.2 % [S11] | `instalment_load` |
-| l(t) | premium-paying in force at end of month t; l(0) = 1 | `pols_if(t+1)` — the model indexes at the start of the month, so `pols_if(t)` = l(t−1) |
-| l_r(t) | paid-up in force at end of month t; l_r(0) = 0 | `pols_paid_up(t+1)`, same offset |
+| l(t) | premium-paying in force at time t months from issue; l(0) = 1 | `pols_if(t)` — the model indexes at the start of month t, which is time t |
+| l_r(t) | paid-up in force at time t; l_r(0) = 0 | `pols_paid_up(t)`, same alignment |
+| surr_scale(t) | the published scale for a *rachat* in month t; the table is keyed by **elapsed months** and read at t + 1, the months elapsed at the end of month t | `surr_scale_pp` |
 
 Dimensional check: capital, premiums and benefits are €; q, w, d, rho are dimensionless; every
 expected cash flow below is € per month per policy issued.
@@ -365,8 +373,13 @@ expected cash flow below is € per month per policy issued.
       q_m(y) = 1 - (1 - q(y))^(1/12)
       w_m(y) = 1 - (1 - w(y))^(1/12)
 
-      l(t)   = l(t-1) x (1 - q_m(y)) x (1 - w_m(y))
-      l_r(t) = l_r(t-1) x (1 - q_m(y)) + l(t-1) x (1 - q_m(y)) x w_m(y) x rho
+      l(t+1)   = l(t) x (1 - q_m(y)) x (1 - w_m(y)),                  l(0)   = 1
+      l_r(t+1) = l_r(t) x (1 - q_m(y)) + l(t) x (1 - q_m(y)) x w_m(y) x rho,
+                                                                      l_r(0) = 0
+
+with y = policy_year(t), the policy year of the month whose decrements are being applied: l(t)
+is the count at the **start** of month t and l(t+1) the count at the end of it, after month t's
+deaths and premium-stops.
 
 Deaths resolve before premium-stops. `w(y) = 0` for a *prime unique* cell and for any month
 after `prem_cease_age`: there are no premiums left to stop paying, so no premium-stop decrement
@@ -376,28 +389,28 @@ applies **[std]**. Voluntary surrender by a paid-up policyholder is not modeled 
 
       P(t)   = P_a(y)   if t is a premium month and t is inside the paying period
              = 0        otherwise
-      K(t)   = K(t-1) + P(t),                             K(0) = 0
+      K(t)   = K(t-1) + P(t),                             K(0) = P(0)
       P_a(y) = annual_premium x (1 + r)^(y-1)             if reval_prem_linked [S9] [S10] [S11]
              = annual_premium                             otherwise [S5] [S14] [S16]
 
-A premium month is `t ≡ 1 (mod 12/prem_freq)`; the paying period is month 1 only
-(*prime unique*), months 1 to 12·`prem_term_y` (*primes temporaires*), or every month until
+A premium month is `t ≡ 0 (mod 12/prem_freq)`; the paying period is month 0 only
+(*prime unique*), months 0 to 12·`prem_term_y` − 1 (*primes temporaires*), or every month until
 `prem_cease_age` (*primes viagères*, unbounded when that is 0). The premium is level and fixed
 at inception unless `reval_prem_linked` [S1] [S5] [S14].
 
 ### Death benefit and the délai de carence
 
-      DB_acc(t)  = C(y)                             if t <= n_car    [S1] [S8] [S9]
-                 = min( k_adb x C(y), M_acc )        if t >  n_car    [S8]
+      DB_acc(t)  = C(y)                             if t <  n_car    [S1] [S8] [S9]
+                 = min( k_adb x C(y), M_acc )        if t >= n_car    [S8]
       R(t)       = K(t)                              gross            [S1]
-                 = max( 0, K(t) - a_ass x ceil(t/12) )  net_assistance [S8]
+                 = max( 0, K(t) - a_ass x y )        net_assistance   [S8]
                  = K(t) / (1 + phi) if prem_freq > 1 else K(t)
                                                      net_instalment   [S9] [S11]
-      DB_ill(t)  = R(t) x (1 + i_ref)^(t/12)         if t <= n_car    i_ref = carence_refund_rate = 0
-                 = C(y)                              if t >  n_car
+      DB_ill(t)  = R(t) x (1 + i_ref)^((t+1)/12)     if t <  n_car    i_ref = carence_refund_rate = 0
+                 = C(y)                              if t >= n_car
 
-      claims_death(t) = l(t-1) x q_m(y) x [ (1 - d_acc) x DB_ill(t) + d_acc x DB_acc(t) ]
-                        + l_r(t-1) x q_m(y) x C_red(t)
+      claims_death(t) = l(t) x q_m(y) x [ (1 - d_acc) x DB_ill(t) + d_acc x DB_acc(t) ]
+                        + l_r(t) x q_m(y) x C_red(t)
 
 The refund is of premiums **collected**, so with an annual premium in advance it is a step
 function, flat across the first twelve months, not a monthly accrual. R(t) carries the three
@@ -427,13 +440,18 @@ leg: that benefit is a refund of premiums, not a capital.
 ### Rachat and réduction
 
       V(t)              = surr_scale(t) x capital_0 / 5000 x (1 - pen(t))
-      pen(t)            = surr_penalty_rate  if t <= 12 x surr_penalty_years, else 0
-      claims_lapse(t)   = l(t-1) x (1 - q_m(y)) x w_m(y) x (1 - rho) x V(t)
+      pen(t)            = surr_penalty_rate  if t < 12 x surr_penalty_years, else 0
+      claims_lapse(t)   = l(t) x (1 - q_m(y)) x w_m(y) x (1 - rho) x V(t)
       C_red(t)          = V(t) / u(x(t))                                on conversion [S1] [S8]
 
-`surr_scale(t)` is an **external input table**: the surrender value in € for a 5000 € capital by
-policy month, for the cell's entry age and premium form, linearly interpolated in policy months
-between the published quinquennial anchors **[std]** and held flat beyond the last one. Each
+`surr_scale(t)` is an **external input table**: the surrender value in € for a 5000 € capital
+by **elapsed months from issue**, for the cell's entry age and premium form, linearly
+interpolated in elapsed months between the published quinquennial anchors **[std]** and held
+flat beyond the last one. That key is a duration, not the projection's 0-based month index, and
+it does not move with the frame. A *rachat* resolves at the **end** of month t, by which time
+t + 1 months have elapsed, so `surr_scale(t)` reads the table at t + 1: the first projected
+month, t = 0, is one month into the contract at 13.07 € on the worked cell, and the published
+five-year anchor of 784.01 € is the value of month t = 59. Each
 grid carries **all nine** published anchors, at 60, 120, 180, 240, 300, 360, 420, 480 and 540
 months, plus a month-0 anchor that is **[std]**; dropping an intermediate one and letting the
 interpolation stand in for it moves the scale by as much as 11 % and can erase the shape the
@@ -459,11 +477,11 @@ mathematical provision into a *valeur de réduction*.
 
 | Cash flow | Formula | Column |
 |---|---|---|
-| Premium income | `l(t−1) × P(t)` | `premiums` |
+| Premium income | `l(t) × P(t)` | `premiums` |
 | Death outgo | per the formula above, both populations | `claims_death` |
-| Surrender outgo | `l(t−1) × (1 − q_m) × w_m × (1 − rho) × V(t)` | `claims_lapse` |
-| Acquisition expense | 150 € at t = 1 **[std]** (j) | `expenses` |
-| Maintenance expense | `(l(t−1) + l_r(t−1)) × 2.00 × 1.018^(y−1)` **[std]** (j) | `expenses` |
+| Surrender outgo | `l(t) × (1 − q_m) × w_m × (1 − rho) × V(t)` | `claims_lapse` |
+| Acquisition expense | 150 € at t = 0 **[std]** (j) | `expenses` |
+| Maintenance expense | `(l(t) + l_r(t)) × 2.00 × 1.018^(y−1)` **[std]** (j) | `expenses` |
 | Paid-up conversion | **no cash flow** — a state change only | — |
 | Post-mortem revalorisation | excluded **[std]** (conventions, above) [S1] [S8] [R8] [REG-R31] | — |
 | Maturity outgo | **identically zero — there is no maturity** [S1] [S8] [S9] | — |
@@ -473,23 +491,24 @@ mathematical provision into a *valeur de réduction*.
 
 ### Monthly processing order **[std]**
 
-At month t, for a policy in force at the end of month t−1:
+At month t — `t = 0` for the first — for the l(t) policies in force at its **start**:
 
 1. **BOM** — premium `P(t)` received if t is a premium month inside the paying period; add it to
    `cum_prem_pp`. Paid-up policies skip this step.
-2. **BOM** — acquisition expense at t = 1; maintenance expense for the month, on both the
+2. **BOM** — acquisition expense at t = 0; maintenance expense for the month, on both the
    premium-paying and the paid-up populations.
-3. **Anniversary** (t ≡ 1 mod 12, t > 12) — uprate `capital_pp` by `reval_rate`; uprate
+3. **Anniversary** (t ≡ 0 mod 12, t > 0) — uprate `capital_pp` by `reval_rate`; uprate
    `prem_ann` by the same rate if `reval_prem_linked`; step `age`. The order matters: the capital
    in force during policy year y is the one set at the start of year y, and the premium collected
    at step 1 of that same month is the uprated one.
-4. **EOM** — deaths at `mort_rate_mth(y)` applied to `pols_if(t−1)` and `pols_paid_up(t−1)`;
+4. **EOM** — deaths at `mort_rate_mth(y)` applied to `pols_if(t)` and `pols_paid_up(t)`;
    benefit per the *carence* rules for the first population, `reduced_capital_pp` for the second.
 5. **EOM** — premium-stops at `lapse_rate_mth(y)` on the survivors of step 4: a fraction `rho`
    converts to paid-up (state change, no cash flow, `reduced_capital_pp` fixed at that month's
    `surr_value_pp / single_prem_rate`), and `1 − rho` surrenders and is paid `surr_value_pp(t)`.
    No premium-stop decrement applies where no premium is due.
-6. Update `pols_if(t)` and `pols_paid_up(t)`.
+6. The survivors are `pols_if(t+1)` and `pols_paid_up(t+1)`, the counts at the start of the next
+   month.
 
 ### Known modeling pitfalls
 
@@ -498,28 +517,31 @@ is stated so that it can be turned into an assertion, and the figures quoted are
 example below.
 
 1. **Paying the full capital inside the *carence*.** The single worst error available here. In
-   the worked cell it turns month-1 expected death outgo from 0.380884 into 3.345618 (×8.78) and
+   the worked cell it turns the first month's (t = 0) expected death outgo from 0.380884 into
+   3.345618 (×8.78) and
    policy-year-1 death outgo from 4.4274 into 38.8893 — an 8.8× overstatement of the front end
-   of the liability. Assert: for `t <= carence_months`, the illness leg of `claims_death` uses
+   of the liability. Assert: for `t < carence_months`, the illness leg of `claims_death` uses
    `cum_prem_pp`, not `capital_pp`.
 2. **Dropping the accident leg inside the *carence*.** The mirror-image error. Accidental death
    pays the **full capital from day 1** [S1] [S8] [S9]; treating the whole waiting period as a
-   refund takes month-1 death outgo from 0.380884 to 0.224846, understating it by **41 %**, and
-   policy-year 1 from 4.4274 to 2.6136. Assert `claims_death(1) > q_m(1) × cum_prem_pp(1)`.
+   refund takes the first month's death outgo from 0.380884 to 0.224846, understating it by
+   **41 %**, and
+   policy-year 1 from 4.4274 to 2.6136. Assert `claims_death(0) > q_m(0) × cum_prem_pp(0)`.
 3. **Accruing the refund base monthly when the premium is annual.** With `prem_freq = 1` the
-   refund base is a **step**, constant at 336.03 through months 1–12. Accruing it as
-   `annual_premium × t / 12` gives 28.00 at month 1 and understates policy-year-1 death outgo by
-   **26 %** (3.2750 against 4.4274). Assert `cum_prem_pp(1) == cum_prem_pp(12) == annual_premium`
+   refund base is a **step**, constant at 336.03 through months t = 0–11. Accruing it as
+   `annual_premium × (t + 1) / 12` gives 28.00 at t = 0 and understates policy-year-1 death outgo
+   by **26 %** (3.2750 against 4.4274). Assert
+   `cum_prem_pp(0) == cum_prem_pp(11) == annual_premium`
    for the annual cell.
 4. **Revalorising too early, or revalorising the wrong thing.** PB accrues only to contracts in
-   force at least a year [S1] [S9], so uprating at issue makes `capital_pp(1) = 5050.00` and
-   overstates the year-1 accidental leg — assert `capital_pp(t) == capital_0` for `t <= 12`. And
+   force at least a year [S1] [S9], so uprating at issue makes `capital_pp(0) = 5050.00` and
+   overstates the year-1 accidental leg — assert `capital_pp(t) == capital_0` for `t < 12`. And
    the illness benefit inside the waiting period is a refund of premiums, not a capital: it must
    not carry `reval_rate`. `carence_refund_rate` (zero in every retrieved contract [S1] [S8]
    [S9]) is a different parameter and must not be confused with it.
 5. **Measuring the overrun against the wrong capital, and off by a year.** Cumulative premiums
-   first exceed the **original** 5000 € capital at t = 169 (policy year 15) and the **revalorised**
-   capital at t = 205 (policy year 18) — three years apart. Separately, the standardised tables
+   first exceed the **original** 5000 € capital at t = 168 (policy year 15) and the **revalorised**
+   capital at t = 204 (policy year 18) — three years apart. Separately, the standardised tables
    date their columns by the age at the **end** of the year, so their "age 65" column is this
    model's attained age 64 during policy year 15. Both conventions are defensible; silently
    mixing them moves the published crossover by up to four years.
@@ -534,7 +556,7 @@ example below.
    model point and never hard-coded.
 8. **Treating lapse as free.** This is where the UK sibling's model is actively misleading.
    *Rachat* pays the *provision mathématique* [S1] [S8] [S9] [S12], so `claims_lapse` is
-   non-zero from month 1. Setting it to zero moves the undiscounted net stream of the worked
+   non-zero from t = 0. Setting it to zero moves the undiscounted net stream of the worked
    cell from 2236.92 to 3242.81 — a **45 % overstatement**. Assert `claims_lapse(t) > 0` for
    every t with `lapse_rate > 0`.
 9. **Treating *réduction* as termination.** Non-payment produces a **paid-up contract**, not an
@@ -570,7 +592,7 @@ the qualitative anchors cited.
   first two decades it is worth a fraction of the premiums paid (784.01 € against 1680.15 € at
   five years, 1574.90 € against 3360.30 € at ten [S14]), so an early lapser loses most of their
   money and a late one has nearly reached a full payout.
-- **No *carence*-completion spike [std].** Nothing changes for the policyholder at month 13
+- **No *carence*-completion spike [std].** Nothing changes for the policyholder at t = 12
   except that the cover becomes worth having, so there is no incentive to lapse there; the
   year-1 rate is set highest instead, for affordability and buyer's-remorse attrition.
 - **Overrun-aware lapse [std].** Sensitivity module, off in base:
@@ -606,50 +628,53 @@ the three contracts that state one [S1] [S8] [S9], because that document's table
 
 Assumptions, each tagged. **Mortality [std]**, an illustrative placeholder attributable to no
 table: `q_base(x) = 0.0040 × 1.09^(x−50)`, anti-selection `f_as` = 1.25, select uplift
-`s(y)` = 1.60 / 1.30 / 1.15 / 1.00 for y = 1 / 2 / 3 / 4+, so `mort_rate(1)` = 0.008000,
-`mort_rate(2)` = 0.0070850, `mort_rate(15)` = 0.0167086. **Lapse [std]** 6 % / 5 % / 3.5 % /
+`s(y)` = 1.60 / 1.30 / 1.15 / 1.00 for y = 1 / 2 / 3 / 4+, so `mort_rate` is 0.008000 in policy
+year 1, 0.0070850 in year 2 and 0.0167086 in year 15. **Lapse [std]** 6 % / 5 % / 3.5 % /
 2.5 % for years 1 / 2 / 3–5 / 6+, all of it surrender since `reduction_share` = 0. **Accidental
 share [std]** `d_acc` = 0.05. Monthly conversion `q_m = 1 − (1 − q)^(1/12)` **[std]**, so
-`mort_rate_mth(1)` = 0.00066912 and `lapse_rate_mth(1)` = 0.00514301. **Surrender scale**
-[S14], linearly interpolated in policy months **[std]** between the published anchors 0 / 784.01
-/ 1574.90 / 2346.97 / 3151.33 / 3980.74 / 4828.57 / 5659.93 / 6429.96 / 7135.11 € at 0 / 60 /
-120 / 180 / 240 / 300 / 360 / 420 / 480 / 540 months. Expenses are omitted from the table for
-clarity; `age(t)` = 49 + y. All amounts in €, full precision carried, displayed rounded.
+`mort_rate_mth` = 0.00066912 and `lapse_rate_mth` = 0.00514301 in policy year 1. **Surrender
+scale** [S14], linearly interpolated in elapsed months **[std]** between the published anchors
+0 / 784.01 / 1574.90 / 2346.97 / 3151.33 / 3980.74 / 4828.57 / 5659.93 / 6429.96 / 7135.11 € at
+0 / 60 / 120 / 180 / 240 / 300 / 360 / 420 / 480 / 540 elapsed months, read at t + 1. Expenses
+are omitted from the table for clarity; `age(t)` = 49 + y. All amounts in €, full precision
+carried, displayed rounded. `t` is the 0-based policy month and `y = floor(t/12) + 1` beside it.
 
-| t | y | capital_pp | cum_prem_pp | db_illness | surr_value_pp | pols_if(t−1) | premiums | claims_death | claims_lapse |
+| t | y | capital_pp | cum_prem_pp | db_illness | surr_value_pp | pols_if(t) | premiums | claims_death | claims_lapse |
 |---|---|---|---|---|---|---|---|---|---|
-| 1 | 1 | 5000.00 | 336.03 | 336.03 | 13.07 | 1.00000 | 336.03 | 0.38 | 0.07 |
-| 6 | 1 | 5000.00 | 336.03 | 336.03 | 78.40 | 0.97129 | 0.00 | 0.37 | 0.39 |
-| 12 | 1 | 5000.00 | 336.03 | 336.03 | 156.80 | 0.93793 | 0.00 | 0.36 | 0.76 |
-| 13 | 2 | 5050.00 | 672.06 | 5050.00 | 169.87 | 0.93248 | 313.34 | 2.79 | 0.68 |
-| 24 | 2 | 5050.00 | 672.06 | 5050.00 | 313.60 | 0.88387 | 0.00 | 2.64 | 1.18 |
-| 60 | 5 | 5203.02 | 1680.15 | 5203.02 | 784.01 | 0.77719 | 0.00 | 2.39 | 1.81 |
-| 120 | 10 | 5468.43 | 3360.30 | 5468.43 | 1574.90 | 0.65347 | 0.00 | 3.25 | 2.17 |
-| 169 | 15 | 5747.37 | 5040.45 | 5747.37 | 2205.42 | 0.55752 | 187.34 | 4.50 | 2.59 |
-| 180 | 15 | 5747.37 | 5040.45 | 5747.37 | 2346.97 | 0.53639 | 0.00 | 4.33 | 2.65 |
-| 205 | 18 | 5921.52 | 6048.54 | 5921.52 | 2682.12 | 0.48896 | 164.30 | 5.27 | 2.76 |
-| 240 | 20 | 6040.54 | 6720.60 | 6040.54 | 3151.33 | 0.42361 | 0.00 | 5.55 | 2.81 |
-| 300 | 25 | 6348.67 | 8400.75 | 6348.67 | 3980.74 | 0.31507 | 0.00 | 6.72 | 2.63 |
-| 360 | 30 | 6672.52 | 10080.90 | 6672.52 | 4828.57 | 0.21337 | 0.00 | 7.43 | 2.16 |
-| 480 | 40 | 7370.61 | 13441.20 | 7370.61 | 6429.96 | 0.05748 | 0.00 | 5.46 | 0.77 |
-| 540 | 45 | 7746.59 | 15121.35 | 7746.59 | 7135.11 | 0.01799 | 0.00 | 2.88 | 0.26 |
+| 0 | 1 | 5000.00 | 336.03 | 336.03 | 13.07 | 1.00000 | 336.03 | 0.38 | 0.07 |
+| 5 | 1 | 5000.00 | 336.03 | 336.03 | 78.40 | 0.97129 | 0.00 | 0.37 | 0.39 |
+| 11 | 1 | 5000.00 | 336.03 | 336.03 | 156.80 | 0.93793 | 0.00 | 0.36 | 0.76 |
+| 12 | 2 | 5050.00 | 672.06 | 5050.00 | 169.87 | 0.93248 | 313.34 | 2.79 | 0.68 |
+| 23 | 2 | 5050.00 | 672.06 | 5050.00 | 313.60 | 0.88387 | 0.00 | 2.64 | 1.18 |
+| 59 | 5 | 5203.02 | 1680.15 | 5203.02 | 784.01 | 0.77719 | 0.00 | 2.39 | 1.81 |
+| 119 | 10 | 5468.43 | 3360.30 | 5468.43 | 1574.90 | 0.65347 | 0.00 | 3.25 | 2.17 |
+| 168 | 15 | 5747.37 | 5040.45 | 5747.37 | 2205.42 | 0.55752 | 187.34 | 4.50 | 2.59 |
+| 179 | 15 | 5747.37 | 5040.45 | 5747.37 | 2346.97 | 0.53639 | 0.00 | 4.33 | 2.65 |
+| 204 | 18 | 5921.52 | 6048.54 | 5921.52 | 2682.12 | 0.48896 | 164.30 | 5.27 | 2.76 |
+| 239 | 20 | 6040.54 | 6720.60 | 6040.54 | 3151.33 | 0.42361 | 0.00 | 5.55 | 2.81 |
+| 299 | 25 | 6348.67 | 8400.75 | 6348.67 | 3980.74 | 0.31507 | 0.00 | 6.72 | 2.63 |
+| 359 | 30 | 6672.52 | 10080.90 | 6672.52 | 4828.57 | 0.21337 | 0.00 | 7.43 | 2.16 |
+| 479 | 40 | 7370.61 | 13441.20 | 7370.61 | 6429.96 | 0.05748 | 0.00 | 5.46 | 0.77 |
+| 539 | 45 | 7746.59 | 15121.35 | 7746.59 | 7135.11 | 0.01799 | 0.00 | 2.88 | 0.26 |
 
 `db_accident` equals `capital_pp` in every row, at every duration, and is therefore not printed.
-Over the full horizon (t = 1 to 756, attained age 112) the undiscounted totals are: `premiums`
+Over the full horizon (t = 0 to 755, 756 months, ending at attained age 112) the undiscounted
+totals are: `premiums`
 6184.01, `claims_death` 2941.20, `claims_lapse` 1005.89, and `net_cf` summing to +2236.92 before
 expenses.
 
 **Checks.** *Survivorship, a different way.* The monthly decrements must compound back to the
 annual ones exactly, so the in-force at the end of policy year 1 is available in closed form:
-l(12) = (1 − `mort_rate(1)`) × (1 − `lapse_rate(1)`) = 0.992 × 0.94 = **0.93248**, which is the
-`pols_if(t−1)` printed against t = 13. Carrying it one year further,
-l(24) = 0.93248 × (1 − 0.0070850) × 0.95 = **0.87957971**; the row at t = 24 prints l(23), one
-month earlier, at 0.88387. *The capital and the surrender value at t = 205, two ways.* Policy
+l(12) = (1 − q(1)) × (1 − w(1)) = 0.992 × 0.94 = **0.93248** — the year-1 annual rates — which
+is the `pols_if(t)` printed against t = 12. Carrying it one year further,
+l(24) = 0.93248 × (1 − 0.0070850) × 0.95 = **0.87957971**; the row at t = 23 prints l(23), one
+month earlier, at 0.88387. *The capital and the surrender value at t = 204, two ways.* Policy
 year 18 has had 17 upratings, so `capital_pp` = 5000 × 1.01^17 = **5921.52**; equivalently, take
 the year-15 figure already in the table and carry it three years, 5747.37 × 1.01³ =
-5747.37 × 1.030301 = **5921.52**. The surrender value interpolates between the published 180-
+5747.37 × 1.030301 = **5921.52**. The surrender value at the end of month t = 204 — 205 elapsed
+months — interpolates between the published 180-
 and 240-month anchors: 2346.97 + (3151.33 − 2346.97) × 25/60 = 2346.97 + 335.15 = **2682.12**.
-*The month-12/13 step.* Expected death outgo rises from 0.357242 to 2.789356, a factor of
+*The t = 11 / t = 12 step.* Expected death outgo rises from 0.357242 to 2.789356, a factor of
 **7.8080**, and it decomposes exactly into three independent moves: in-force
 0.93248/0.93793 = 0.994191, monthly mortality 0.00059234/0.00066912 = 0.885251 (the select
 uplift drops from 1.60 to 1.30 while the base rate rises 9 %), and benefit

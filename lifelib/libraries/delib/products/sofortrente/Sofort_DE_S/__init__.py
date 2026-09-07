@@ -64,9 +64,11 @@ and its inputs must travel together.
 *Vertragsbeginn*, on a **0-based** frame: a new-business point opens at ``t = 0``, which
 is both the month the *Einmalbeitrag* arrives and — under the representative *vorschüssig*
 convention — the month the first instalment is paid. An in-force point opens at
-``t = duration_mth_init()``, the months it has already run. ``proj_len()`` is the **last**
-projected month index, the maximum of the annuitant's survival horizon, the guarantee
-period's own end and the second life's horizon where a survivor's annuity is in force.
+``t = duration_mth_init()``, the months it has already run. ``proj_len()`` is the
+**exclusive end** of the frame — the frame is ``range(t_start(), proj_len())``, its last
+month index is ``proj_len() - 1`` and it carries ``proj_len() - t_start()`` rows — taken
+as the maximum of the annuitant's survival horizon, the guarantee period's own end and
+the second life's horizon where a survivor's annuity is in force.
 
 **What is sourced and what is not.** The mechanics are sourced: the conversion of the
 *Einmalbeitrag* at a factor struck once at inception on DAV 2004 R and a *Rechnungszins*

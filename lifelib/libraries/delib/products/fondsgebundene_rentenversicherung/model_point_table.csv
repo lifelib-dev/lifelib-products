@@ -5,9 +5,9 @@ point_id,policy_id,sex,entry_age,duration_init_m,pols_if_init,annuity_age,prem_f
 4,DE-FRV-0004,F,45,0,1.0,67,laufend,1200.0,6,22,0.0,0,pct_fund,1.1,0.0,std_gross,base,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False
 5,DE-FRV-0005,M,25,0,1.0,67,laufend,3000.0,12,42,0.0,0,prem_return,0.0,0.0,std_high,base,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False
 6,DE-FRV-0006,M,30,96,1.0,67,laufend,250.0,1,37,0.0,0,prem_return,0.0,0.0,std_gross,base,std_2026,118.4,190.0,24000.0,0,0.0,0,0.0,False,False
-7,DE-FRV-0007,F,40,0,1.0,67,laufend,250.0,1,27,0.0,121,sum_assured,0.0,40000.0,std_gross,zero,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False
+7,DE-FRV-0007,F,40,0,1.0,67,laufend,250.0,1,27,0.0,120,sum_assured,0.0,40000.0,std_gross,zero,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False
 8,DE-FRV-0008,M,47,0,1.0,67,laufend,400.0,1,20,0.0,0,prem_return,0.0,0.0,std_gross,base,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,True,False
-9,DE-FRV-0009,F,35,0,1.0,67,laufend,300.0,1,32,0.0,0,prem_return,0.0,0.0,std_gross,base,std_2026,100.0,0.0,0.0,121,20000.0,241,15000.0,False,False
+9,DE-FRV-0009,F,35,0,1.0,67,laufend,300.0,1,32,0.0,0,prem_return,0.0,0.0,std_gross,base,std_2026,100.0,0.0,0.0,120,20000.0,240,15000.0,False,False
 10,DE-FRV-0010,M,28,0,1.0,67,laufend,150.0,1,39,0.03,0,prem_return,0.0,0.0,std_gross,base,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False
 11,DE-FRV-0011,F,35,0,1.0,67,laufend,300.0,1,32,0.0,0,prem_return,0.0,0.0,std_netto,etf,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False
 12,DE-FRV-0012,M,55,0,1.0,67,laufend,500.0,1,2,0.0,0,pct_fund,1.1,0.0,std_gross,stress,std_2026,100.0,0.0,0.0,0,0.0,0,0.0,False,False

@@ -12,9 +12,10 @@ model point 1::
     >>> Projection.point_id = 3            # or switch the default
 
 ``t`` counts **policy months**, 0-based: ``t = 0`` is the month beginning at the 보험계약일
-and ``t = proj_len()`` the 100세 계약해당일 at which the contract expires. ``proj_len()`` is
-the **last projected index** and not a row count -- ``12 x (100 - issue_age)``, so 720 on the
-anchor cell and 721 rows in :func:`result_cf`. Nothing is paid at expiry: there is no
+and ``t = proj_len() - 1`` the 100세 계약해당일 at which the contract expires. ``proj_len()``
+is the **number of projected months**, the frame's exclusive end -- ``12 x (100 - issue_age)
++ 1``, so 721 on the anchor cell and 721 rows in :func:`result_cf`, indexed 0 to 720, and the
+frame is ``range(proj_len())``. Nothing is paid at expiry: there is no
 만기환급금 on the 순수보장형 form and the only retrieved surrender-value illustration shows
 the value returning to nil at maturity [S8].
 
@@ -77,7 +78,7 @@ t                          (the cells argument)                  Policy month, 0
 x                          issue_age()                           만나이 at issue
 age(t)                     age(t)                                Attained 만나이, x + t//12
 y(t)                       policy_year(t)                        Policy year, 1-based
-(horizon)                  proj_len()                            Last projected month
+(horizon)                  proj_len()                            Number of projected months
 S                          sum_assured()                         보험가입금액
 P                          premium_mth_pp()                      Level monthly premium
 W                          wait_months()                         면책기간 in months
@@ -121,20 +122,20 @@ l(t)                       pols_if(t)                            Total in force
 (intra-month timing)       pols_if_at(t, timing)                 In force at a named point
 d(t)                       pols_death(t)                         Deaths in month t
 lap(t)                     pols_lapse(t)                         Lapses in month t
-(expiry)                   pols_maturity(t)                      Cover ending at proj_len()
+(expiry)                   pols_maturity(t)                      Cover ending, at proj_len()-1
 n_g(t)                     diag_gen(t)                           일반암 diagnoses
 n_h(t)                     diag_high(t)                          고액암 diagnoses
 n_m(t)                     diag_minor(t)                         특정소액암 diagnoses
 n_z(t)                     diag_similar(t)                       유사암 diagnoses
-Z(t)                       similar_avail(t)                      유사암 tier unused
-(consumed)                 similar_used(t)                       유사암 tier consumed
+Z(t)                       similar_avail(t)                      유사암 tier unused, at start of t
+(consumed)                 similar_used(t)                       유사암 tier consumed by start of t
 A(k)                       treat_avail(k)                        Treatment benefit unused
 P x pols_payer             premiums(t)                           Premium income
 (claim lines)              claims(t, kind)                       Benefit outgo by kind
-V(t)                       av_pp(t)                              계약자적립액 per policy
-CV_std(t)                  cv_std_pp(t)                          표준형 해약환급금
-CV(t)                      cv_pp(t)                              해약환급금 as written
-alpha(t)                   surr_chg_pp(t)                        해약공제액
+V(t)                       av_pp(t)                              계약자적립액 per policy at start of t
+CV_std(t)                  cv_std_pp(t)                          표준형 해약환급금, at start of t
+CV(t)                      cv_pp(t)                              해약환급금 as written, at start of t
+alpha(t)                   surr_chg_pp(t)                        해약공제액, at start of t
 alpha_cap                  surr_chg_cap_pp()                     표준해약공제액
 e(t)                       expenses(t)                           Acquisition + maintenance
 ec(t)                      claim_expenses(t)                     Claim handling expense
@@ -540,15 +541,18 @@ def cv_form():
 
 
 def proj_len():
-    """The **last** projected policy month, ``12 x (expiry_age - issue_age)``.
+    """The **number** of projected policy months, ``12 x (expiry_age - issue_age) + 1``.
 
-    720 on the anchor cell, so :func:`result_cf` carries 721 rows indexed 0 to 720. This
-    library reads ``proj_len()`` as the last projected index rather than as a row count, so
-    the frame ends at ``proj_len()`` whichever end it starts from. Nothing shortens the
-    horizon: paying a diagnosis benefit neither terminates nor exhausts the contract [S1] [S3]
-    [S4], and the 갱신형 chassis flag renews automatically to the same 100세 계약해당일.
+    721 on the anchor cell, so :func:`result_cf` carries 721 rows indexed 0 to 720 and the
+    frame is ``range(proj_len())``. ``proj_len()`` is the **exclusive end** of the frame and
+    not the last index: the last projected month is ``proj_len() - 1``. The ``+ 1`` is the
+    terminal row -- the 720 months of cover are ``t = 0 ... proj_len() - 2`` and
+    ``t = proj_len() - 1`` is the 100세 계약해당일 itself, which carries the expiring exposure
+    and no cash flow at all. Nothing shortens the horizon: paying a diagnosis benefit neither
+    terminates nor exhausts the contract [S1] [S3] [S4], and the 갱신형 chassis flag renews
+    automatically to the same 100세 계약해당일.
     """
-    return 12 * (expiry_age() - issue_age())
+    return 12 * (expiry_age() - issue_age()) + 1
 
 
 def age(t):
@@ -557,7 +561,12 @@ def age(t):
 
 
 def policy_year(t):
-    """y(t): the policy year containing month t, ``t // 12 + 1``."""
+    """y(t): the policy year containing month t, ``t // 12 + 1``.
+
+    The **contractual** policy year, a **1-based** label: the 0-based month ``t = 0`` falls
+    in policy year 1.  It is derived from the frame's index and is never the index itself;
+    only :func:`lapse_rate` reads it, the lapse scale being written in policy years.
+    """
     return t // 12 + 1
 
 
@@ -566,18 +575,21 @@ def pay_months():
 
     240 on the anchor cell, so 납입완료 falls at ``t = 240`` and the surrender-value cliff of
     the 미지급형 form with it: 「보험료 납입기간 중이라 함은 계약일로부터 보험료 납입기간이
-    경과하여 최초로 도래하는 계약해당일 전일까지의 기간」 [S3].
+    경과하여 최초로 도래하는 계약해당일 전일까지의 기간」 [S3]. On a 전기납 model point it is
+    the whole 보험기간, ``proj_len() - 1`` months -- 720 on model point 3, the 전기납 cell
+    carrying the anchor's term, the frame's 720 months of cover without its terminal expiry
+    row.
     """
-    return proj_len() if pay_term() == 0 else 12 * pay_term()
+    return proj_len() - 1 if pay_term() == 0 else 12 * pay_term()
 
 
 def in_force(t):
     """1.0 while the contract is running, 0.0 at the 100세 계약해당일 itself.
 
-    The terminal row of :func:`result_cf` carries the expiring exposure and no cash flow at
-    all, because nothing is paid at expiry [S4] [S7] [S8].
+    The last row of :func:`result_cf`, ``t = proj_len() - 1``, carries the expiring exposure
+    and no cash flow at all, because nothing is paid at expiry [S4] [S7] [S8].
     """
-    return 1.0 if t < proj_len() else 0.0
+    return 1.0 if t < proj_len() - 1 else 0.0
 
 
 def tier_wait_months(tier):
@@ -602,7 +614,7 @@ def cover(t):
     returns the premium for the affected cover if a diagnosis does fall inside the window [S1]
     [S2] [S3]. It also closes at expiry.
     """
-    return 1.0 if tier_wait_months("general") <= t < proj_len() else 0.0
+    return 1.0 if tier_wait_months("general") <= t < proj_len() - 1 else 0.0
 
 
 def cover_similar(t):
@@ -614,7 +626,7 @@ def cover_similar(t):
     life carrier does apply the wait to 갑상선암 [S3] [S4] and the composite follows the
     majority.
     """
-    return 1.0 if tier_wait_months("similar") <= t < proj_len() else 0.0
+    return 1.0 if tier_wait_months("similar") <= t < proj_len() - 1 else 0.0
 
 
 def reduction_factor(t):
@@ -938,7 +950,7 @@ def pols_healthy(t):
     """
     if t <= 0:
         return pols_if_init() if t == 0 else 0.0
-    if t > proj_len():
+    if t >= proj_len():
         return 0.0
     return (pols_healthy(t - 1) - diag_first(t - 1)) * surv_healthy(t - 1)
 
@@ -1078,7 +1090,7 @@ def pols_waived_dur(t, k):
     one's graduates and gives up its own, and the graduation terms telescope out of the sum,
     which is the identity :func:`check_cancer_roll_fwd` asserts.
     """
-    if t <= 0 or t > proj_len():
+    if t <= 0 or t >= proj_len():
         return 0.0
     total = pols_waived_exp(t - 1, k) * surv_waived(t - 1, k)
     if k >= 2:
@@ -1094,7 +1106,7 @@ def pols_minor_dur(t, k):
     The state that still pays premium. Same six-cohort machinery as :func:`pols_waived_dur`,
     on :func:`surv_minor`.
     """
-    if t <= 0 or t > proj_len():
+    if t <= 0 or t >= proj_len():
         return 0.0
     total = pols_minor_exp(t - 1, k) * surv_minor(t - 1, k)
     if k >= 2:
@@ -1198,7 +1210,7 @@ def pols_death(t):
     제22조] -- so mortality is a liability-releasing decrement carrying only ``claims(t,
     "DEATH")``. Lives diagnosed in month t are already in their new state for this purpose.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     total = (pols_healthy(t) - diag_first(t)) * mort_rate_mth(t)
     trans = 1.0 - inc_rate_gen_mth(t) * cover(t)
@@ -1215,7 +1227,7 @@ def pols_lapse(t):
     What a lapse pays is :func:`cv_pp`, which on the 미지급형 form is **nil for the whole
     납입기간** and 50% of the 표준형 value afterwards [S3 제41조제2항] [REG-R19].
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     total = ((pols_healthy(t) - diag_first(t)) * (1.0 - mort_rate_mth(t))
              * lapse_rate_mth(t))
@@ -1237,8 +1249,10 @@ def pols_maturity(t):
     ends at the scheduled end of the contract, whether or not anything is paid for it. Here
     nothing is -- there is no 만기환급금 on the 순수보장형 form [S8] -- so ``claims(t,
     "MATURITY")`` is identically zero and the column is published rather than dropped.
+
+    It falls on the frame's last row, ``t = proj_len() - 1``.
     """
-    return pols_if(t) if t == proj_len() else 0.0
+    return pols_if(t) if t == proj_len() - 1 else 0.0
 
 
 # ===== Cells: the once-only ledgers =====
@@ -1825,7 +1839,7 @@ def check_pols_roll_fwd():
     """True when the in-force roll-forward closes in every projected month."""
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_pols_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cancer_roll_fwd_resid(t):
@@ -1847,7 +1861,7 @@ def check_cancer_roll_fwd():
     """True when the diagnosed-state roll-forward closes in every projected month."""
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_cancer_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len()))
+               for t in range(proj_len() - 1))
 
 
 def check_canc_dur_ledger_resid(t):
@@ -1876,7 +1890,7 @@ def check_canc_dur_ledger():
     """True when both first duration cohorts rebuild exactly in every projected month."""
     tol = roll_fwd_tol * max(pols_if_init(), 1.0)                    # noqa: F821
     return all(abs(check_canc_dur_ledger_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_similar_ledger_resid(t):
@@ -1897,7 +1911,7 @@ def check_similar_ledger():
     force. Those months carry no information and are excluded rather than papered over.
     """
     return all(abs(check_similar_ledger_resid(t)) <= roll_fwd_tol    # noqa: F821
-               for t in range(proj_len() + 1) if pols_if(t) > 0.0)
+               for t in range(proj_len()) if pols_if(t) > 0.0)
 
 
 def check_treat_ledger_resid(t):
@@ -1914,7 +1928,7 @@ def check_treat_ledger_resid(t):
 def check_treat_ledger():
     """True when the once-only treatment ledger stays inside its cap in every month."""
     return all(abs(check_treat_ledger_resid(t)) <= roll_fwd_tol      # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_tier_shares_resid(t):
@@ -1937,7 +1951,7 @@ def check_tier_shares_resid(t):
 def check_tier_shares():
     """True when the tier decomposition holds at every projected age."""
     return all(abs(check_tier_shares_resid(t)) <= roll_fwd_tol       # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_waiting_period_resid(t):
@@ -1958,7 +1972,7 @@ def check_waiting_period_resid(t):
 def check_waiting_period():
     """True when nothing invasive is paid or transitioned inside the 면책기간."""
     return all(abs(check_waiting_period_resid(t)) <= roll_fwd_tol    # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cv_floor_resid(t):
@@ -1980,7 +1994,7 @@ def check_cv_floor():
     """True when the 해약환급금 stays inside its bounds in every projected month."""
     tol = roll_fwd_tol * max(sum_assured(), 1.0)                     # noqa: F821
     return all(abs(check_cv_floor_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_net_cf_resid(t):
@@ -2004,7 +2018,7 @@ def check_net_cf():
     """True when the published cash flow statement adds up in every projected month."""
     tol = roll_fwd_tol * max(sum_assured(), 1.0)                     # noqa: F821
     return all(abs(check_net_cf_resid(t)) <= tol
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_hosp_cap_resid(t):
@@ -2024,7 +2038,7 @@ def check_hosp_cap_resid(t):
 def check_hosp_cap():
     """True when no cohort's mean stay passes the 180-day per-stay cap."""
     return all(abs(check_hosp_cap_resid(t)) <= roll_fwd_tol          # noqa: F821
-               for t in range(proj_len() + 1))
+               for t in range(proj_len()))
 
 
 # ===== Cells: result tables =====
@@ -2055,7 +2069,7 @@ def result_cf():
     not published. :func:`check_net_cf` asserts the identity off this table in every projected
     month.
     """
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2084,7 +2098,7 @@ def result_cf():
 
 def result_pols():
     """Result table of policy counts, decrement rates and ledgers, indexed by month t."""
-    ts = list(range(proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

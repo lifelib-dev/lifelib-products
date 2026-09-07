@@ -47,7 +47,8 @@ run `run.py` for the unabridged text.
 
 ```text
 model point 1: KR-PEN-0001 - yeongeum jeochuk boheom (tax-qualified pension savings), M40
-age basis boheom nai (insurance age); t counts completed policy years from issue
+age basis boheom nai (insurance age); t counts completed policy years from issue, 0-based
+frame t = 0 .. 80 (81 rows); policy year = t + 1
 gibon boheomryo (basic premium) = KRW 6,000,000 p.a. for 20 years, chuga nabip = KRW 0
 premium term ends at t = 20, annuity starts at t = 25 (age 65), payout form = jongsin
     yeongeumhyeong (life annuity) with a 10-year guarantee
@@ -101,8 +102,9 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the anchor cell of the notes' worked
-example. `result_cf()` returns a `DataFrame` indexed by policy year `t`, with `pols_if`
-first and `net_cf` last. `result_pols()` publishes the decrement and value runs beside it —
+example. `result_cf()` returns a `DataFrame` indexed by the 0-based policy year index `t`,
+running `t = 0 … proj_len() - 1`, with `pols_if` first and `net_cf` last. `result_pols()`
+publishes the decrement and value runs beside it —
 the two in-force measures, the decrements that move them, and the fund, surrender value and
 cumulative premiums that price them — which is where the 환급률 a Korean illustration quotes
 becomes legible. `result_tax()` prints the tax layer, which is **not** a cash flow of the
@@ -117,8 +119,9 @@ net-level-premium reserve with a **survivorship release**: the premiums of those
 to the survivors net of the death benefit paid, so the recursion divides by `(1 - q')`. So —
 and this is the trap, because it is the nearer neighbour and shares the Korean name — does
 `WholeLife_KR_A`'s own 계약자적립액, which runs
-`V(t) = ((V(t-1) + P)(1 + i) - q·SA)/(1 - q)`. **This** 계약자적립액 does none of that. It is
-a contractual balance:
+`V(d) = ((V(d-1) + P·1{d <= m})(1 + i) - q·SA)/(1 - q)`, on **that** model's anniversary
+index `d` (`d = 0` at issue), not on this model's period index `t`. **This** 계약자적립액
+does none of that. It is a contractual balance:
 
 ```
 AV(0)   = 0
@@ -144,24 +147,30 @@ projecting a strain of zero and should say so rather than compute it.
 Mortality enters this contract in one place, `annuity_due_factor_on`, and it is a
 **longevity** exposure that begins at the 연금개시일.
 
-## The horizon is the annuitant table's terminal age, and `proj_len()` is an index
+## The horizon is the annuitant table's terminal age, and `proj_len()` is a count
 
-The contract has no maturity date, so nothing in it fixes a horizon; `proj_len()` derives
-one from the payout form and it is the **last projected index**, not a row count.
+The time index `t` is **0-based**: `t = 0` is the first projected policy year, `age(t)` is
+`x + t`, `pols_if(0)` is `pols_if_init()`, and the contractual policy year is the 1-based
+label `t + 1`. The contract has no maturity date, so nothing in it fixes a horizon;
+`proj_len()` derives one from the payout form and it is the **number of projected years** —
+the frame's exclusive end, `range(proj_len())` — so the last index is `proj_len() - 1`.
 
 - On the **확정기간연금형** the contract pays exactly `k` instalments and ends, so
-  `proj_len() = n + k - 1` and there are no tail states at all. Model point 5 ends at 39.
+  `proj_len() = n + k` and there are no tail states at all. Model point 5's last row is 39.
 - On the **종신연금형** there is no natural end, so the horizon is the terminal age of the
   annuitant table less the issue age — the last year at whose start anyone can still be
-  alive. At the anchor cell that is `120 - 40 = 80`, so `result_cf()` has **81 rows**, and
-  the terminal row is where `q` reaches 1.
+  alive. At the anchor cell that last year is `120 - 40 = 80`, so `proj_len()` is **81**,
+  `result_cf()` has **81 rows** running `t = 0 … 80`, and the terminal row is where `q`
+  reaches 1.
 
 ω = 120 is a **[std]**: no Korean industry table publishes a terminal age, because no
 Korean industry table is published at all [REG-R33] [REG-R34]. It costs almost nothing to
 be generous with it — the last five years of the anchor cell's projection carry 0.0249 of
 combined in-force and ₩170,814 of outgo, 0.12% of the annuity total — while a horizon
-short enough to bite would silently truncate a life annuity's tail. Reading `proj_len()`
-as a count is the off-by-one that drops exactly that terminal row.
+short enough to bite would silently truncate a life annuity's tail. Sweeping
+`range(proj_len() - 1)` — the off-by-one of reading the exclusive end as the last index
+and then subtracting — drops exactly that terminal row; the slip in the other direction,
+`range(proj_len() + 1)`, appends an empty row at `t = 81` instead.
 
 ## The annual grid and the monthly contract
 
@@ -556,6 +565,25 @@ begins with a citation tag or the word `[std]`. That is the library's rule and, 
 necessity: when every row of the mortality file is a standardization, a populated column says
 nothing unless it names which authority the row stands on.
 
+### The time-like columns, and why none of them moved
+
+No shipped CSV is keyed by a column literally named `t`, and under the library's 0-based time
+index none of the time-like columns changes value:
+
+| File | Column or item | Decision | Why |
+|---|---|---|---|
+| `decl_rate_table.csv` | `from_year` | **unchanged, 0-based** | An elapsed policy-year key, read as `max(y ≤ t)`. Its first value is already `0`, which is the first projected year, so `hybrid`'s 3.5% "for five years" is `t` = 0…4 |
+| `guar_rate_table.csv` | `from_year` | **unchanged, 0-based** | The same elapsed key; the ladder steps at `t` = 5 and `t` = 10, which is five and ten completed years |
+| `lapse_table.csv` | `from_year` | **unchanged, 0-based** | Elapsed key on the `premium_paying` segment (0, 1, 2, 3, 5, 10). On `paid_up` and `in_payment` the single `0` row is a placeholder key, not a time at all |
+| `pricing_table.csv` | `acq_charge_years` = 7, `surr_chg_years` = 5 | **unchanged, a count** | Durations, not indexes: the charge runs `t < 7`, i.e. policy years 1–7 |
+| `pricing_table.csv` | `holiday_start_year` = 8, `loan_draw_year` = 15 | **unchanged, 0-based index** | Points on the frame's own axis, already read as `t == 15` / `8 ≤ t < 8 + h`; the frame did not shift, so neither did they |
+| `mort_table.csv` | `age` | **unchanged** | Keyed by attained 보험나이, reached through `age(t) = x + t`; an age, not a time index |
+| `model_point_table.csv` | `premium_term_y`, `defer_gap_y`, `payout_term_y`, `guar_term_y`, `holiday_years` | **unchanged, counts** | Elapsed-year lengths, 0-based by nature |
+| `model_point_table.csv` | `issue_age`, `annuity_start_age` | **unchanged** | Ages in 보험나이, not points on the time axis |
+
+What did change is `proj_len()`, which is now the number of projected years rather than the
+last index — a redefinition of one derived cells, not of any input.
+
 ## Sign convention
 
 `net_cf` is **income positive**, the library-wide sign, and the technical notes print the
@@ -569,8 +597,8 @@ The identity `check_net_cf()` asserts, in one line:
     net_cf(t) = premiums(t) - claims_annuity(t) - claims_death(t) - claims_lapse(t)
                 - expenses(t) - claim_expenses(t) - commissions(t) - policy_loans(t)
 
-for every `t` in `0 … proj_len()` — that is, the columns `result_cf()` publishes add up to
-the `net_cf` column it publishes beside them, and nothing else (the tax layer above all) is
+for every `t` in `0 … proj_len() - 1` — that is, the columns `result_cf()` publishes add up
+to the `net_cf` column it publishes beside them, and nothing else (the tax layer above all) is
 folded in. `check_net_cf_resid(t)` is the signed residual.
 
 The shape is a positive ₩5,533,627.26 at `t = 0`, twenty years of thinning positive margin
@@ -666,7 +694,8 @@ and its absence from the 확정기간연금형 one, `pols_if` flat inside the gu
 acquisition charge that stops at seven years, the floor that guarantees the credited rate and
 not the return, the 예정이율 that is not a crediting rate, the tax layer that is not a cash
 flow, the 연금수령한도 that is disapplied at 연금수령연차 11, the 표준해약공제액 computed on
-the 연납순보험료, `proj_len()` as an index, and the 100.1% floor as a survival guarantee.
+the 연납순보험료, `proj_len()` as a count rather than the last index, and the 100.1% floor
+as a survival guarantee.
 Each of the ten optional modules is asserted in **both** positions, off and on.
 
 Nine `check_*()` cells assert the identities the notes imply, each taking no argument and

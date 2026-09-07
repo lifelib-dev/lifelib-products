@@ -14,8 +14,9 @@ projecting model point 1::
 ``t`` counts **completed policy years since issue**, 0-based, matching the technical notes
 and ``product-spec.md``. Premiums fall at ``t = 0 .. m - 1``; the 계약자적립액 accumulates
 over ``t = 0 .. n`` where ``n = m + d``; the annuity is paid from ``t = n``; and
-:func:`proj_len` is the **last projected period index**, so ``result_cf()`` runs
-``t = 0 .. proj_len()`` inclusive. ``pols_if(t)`` is the in-force count at the **start** of
+:func:`proj_len` is the **number of projected policy years**, the exclusive end of the
+frame, so ``result_cf()`` runs ``t = 0 .. proj_len() - 1``. The contractual policy year is
+the 1-based label ``t + 1``. ``pols_if(t)`` is the in-force count at the **start** of
 year ``t`` and is the weight on that same ``result_cf()`` row.
 
 .. rubric:: The age basis
@@ -90,7 +91,7 @@ Y                  annuity_start_age()           Elected 연금개시나이
 x + n              annuity_age_eff()             보험나이 at the actual 연금개시일
 k                  payout_term_y()               확정기간연금형 term in years
 g                  guar_term_y()                 보증지급기간 of the 종신연금형
-proj_len           proj_len()                    Last projected policy year index
+proj_len           proj_len()                    Number of projected policy years
 P                  prem_pp()                     Annual 기본보험료
 P_a                addl_prem_pp()                Annual 추가납입보험료, module
 alpha(t)           acq_charge_rate(t)            계약체결비용 rate on the premium
@@ -553,16 +554,20 @@ def annuity_age_eff():
 
 
 def proj_len():
-    """The **last** projected policy year index; ``result_cf()`` runs ``t = 0 .. proj_len()``.
+    """The **number** of projected policy years, the exclusive end of the frame.
 
-    ``n + k - 1`` on the 확정기간연금형 form: the contract pays exactly ``k`` instalments and
-    ends, with no tail states.  On the 종신연금형 form there is no natural end, so the
-    horizon is the terminal age of the annuitant table less the issue age — the last year in
-    which anyone can still be alive at the start.
+    ``result_cf()`` runs ``t = 0 .. proj_len() - 1``: the frame is ``range(proj_len())`` and
+    the last projected index is ``proj_len() - 1``.
+
+    ``n + k`` on the 확정기간연금형 form: the contract pays exactly ``k`` instalments, at
+    ``t = n .. n + k - 1``, and ends with no tail states.  On the 종신연금형 form there is no
+    natural end, so the horizon is the terminal age of the annuitant table less the issue age,
+    plus one — the last projected year, ``t = ω - x``, is the last year in which anyone can
+    still be alive at the start.
     """
     if payout_form() == "certain":
-        return annuitisation_t() + payout_term_y() - 1
-    return omega_age(mort_table_name()) - issue_age()
+        return annuitisation_t() + payout_term_y()
+    return omega_age(mort_table_name()) - issue_age() + 1
 
 
 def age(t):
@@ -1275,7 +1280,7 @@ def pols_if(t):
     ``pols_if_init()`` exactly.
     """
     n = annuitisation_t()
-    if t < 0 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if t == 0:
         return pols_if_init()
@@ -1650,7 +1655,7 @@ def check_pols_roll_fwd():
     :func:`check_pols_roll_fwd_resid` gives the signed residual of the year that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol      # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_av_roll_fwd_resid(t):
@@ -1671,7 +1676,7 @@ def check_av_roll_fwd():
     """True when the 계약자적립액 recursion closes in every deferral year."""
     scale = max(1.0, annuity_fund_pp())
     return all(abs(check_av_roll_fwd_resid(t)) <= roll_fwd_tol * scale  # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cv_floor_resid(t):
@@ -1695,7 +1700,7 @@ def check_cv_floor():
     """
     scale = max(1.0, annuity_fund_pp())
     return all(abs(check_cv_floor_resid(t)) <= roll_fwd_tol * scale   # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_surr_chg_cap_resid(t):
@@ -1718,7 +1723,7 @@ def check_surr_chg_cap():
     postal insurer's front-end charge.
     """
     return all(check_surr_chg_cap_resid(t) >= -roll_fwd_tol * max(    # noqa: F821
-        1.0, prem_pp()) for t in range(0, proj_len() + 1))
+        1.0, prem_pp()) for t in range(proj_len()))
 
 
 def check_min_fund_resid(t):
@@ -1741,7 +1746,7 @@ def check_min_fund():
     """
     return all(check_min_fund_resid(t) >= -roll_fwd_tol * max(        # noqa: F821
         1.0, cum_prem_pp(annuitisation_t()))
-        for t in range(0, proj_len() + 1))
+        for t in range(proj_len()))
 
 
 def check_annuity_total_resid(t):
@@ -1770,7 +1775,7 @@ def check_annuity_total():
     total = sum(annuity_pp(t) for t in range(n, n + guaranteed))
     scale = max(1.0, annuity_amount_pp())
     return (all(abs(check_annuity_total_resid(t)) <= roll_fwd_tol * scale  # noqa: F821
-                for t in range(0, proj_len() + 1))
+                for t in range(proj_len()))
             and abs(total - guaranteed * annuity_amount_pp())
             <= roll_fwd_tol * scale * guaranteed)
 
@@ -1799,7 +1804,7 @@ def check_annuity_limit():
     at 16.5%, which is why it is worth a check rather than a comment.
     """
     return all(check_annuity_limit_resid(t) >= -roll_fwd_tol * max(   # noqa: F821
-        1.0, annuity_amount_pp()) for t in range(0, proj_len() + 1))
+        1.0, annuity_amount_pp()) for t in range(proj_len()))
 
 
 def check_mort_law_resid(t):
@@ -1826,7 +1831,7 @@ def check_mort_law():
     a hand edit or a real table.
     """
     return all(abs(check_mort_law_resid(t)) <= 1e-15
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_net_cf_resid(t):
@@ -1845,7 +1850,7 @@ def check_net_cf():
     """True when the published cash flow columns add up to :func:`net_cf` in every year."""
     scale = max(1.0, prem_pp())
     return all(abs(check_net_cf_resid(t)) <= roll_fwd_tol * scale     # noqa: F821
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 # --- Results ---------------------------------------------------------------
@@ -1864,7 +1869,7 @@ def result_cf():
     split so its columns sum to ``net_cf``, and the ``claims(t, kind)`` cells stays.  There is
     no tax column either — see :func:`result_tax`, and :func:`net_cf` for why.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1890,7 +1895,7 @@ def result_pols():
     ``av_pp``, ``cv_pp`` and ``cum_prem_pp`` in one table is the quickest way to see the
     환급률 a Korean illustration quotes and the duration at which it passes 100%.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1920,7 +1925,7 @@ def result_tax():
     would make its columns stop summing to :func:`net_cf`, and would put money that never
     passes through the insurer's account into the liability.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "tax_credit_pp": [tax_credit_pp(t) for t in ts],

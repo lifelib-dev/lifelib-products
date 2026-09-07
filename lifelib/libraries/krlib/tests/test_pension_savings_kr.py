@@ -47,7 +47,7 @@ implementation can look right and be wrong:
 * putting the tax layer into the cash flow;
 * applying the 연금수령한도 formula where the statute disapplies it;
 * computing the 표준해약공제액 on the **gross** premium rather than the 연납순보험료;
-* reading ``proj_len()`` as a count rather than as the last index;
+* reading ``proj_len()`` as the last index rather than as a count;
 * and assuming the 100.1% floor protects a **death** claim, which it does not.
 
 The nine ``check_*`` cells this model publishes are asserted **by name**, because a
@@ -198,25 +198,26 @@ WORKED_EXAMPLE_TOTALS = {
 }
 
 # "The nine model points": point_id -> (sex, x, m, d, n, Y, P, proj_len, F, adue, B,
-# sum net_cf).
+# sum net_cf).  ``proj_len`` is the number of projected policy years, so the frame runs
+# t = 0 .. proj_len - 1.
 MODEL_POINTS = {
-    1: ("M", 40, 20,  5, 25, 65,  6000000.0, 80, 160294805.59, 23.58192,  6763374.59,
+    1: ("M", 40, 20,  5, 25, 65,  6000000.0, 81, 160294805.59, 23.58192,  6763374.59,
         -68516344.57),
-    2: ("F", 40, 20,  5, 25, 65,  6000000.0, 80, 160294805.59, 25.26673,  6312383.96,
+    2: ("F", 40, 20,  5, 25, 65,  6000000.0, 81, 160294805.59, 25.26673,  6312383.96,
         -73799636.48),
-    3: ("M", 45, 20,  0, 20, 65,  3600000.0, 75,  86587174.54, 24.08957,  3576412.79,
+    3: ("M", 45, 20,  0, 20, 65,  3600000.0, 76,  86587174.54, 24.08957,  3576412.79,
         -34649402.87),
-    4: ("F", 25, 20, 15, 35, 60,  1200000.0, 54,  39568543.38, 16.30428,  2414746.68,
+    4: ("F", 25, 20, 15, 35, 60,  1200000.0, 55,  39568543.38, 16.30428,  2414746.68,
         -16598163.32),
-    5: ("M", 30, 10, 20, 30, 60, 12000000.0, 39, 194438355.78,  9.01595, 21458209.25,
+    5: ("M", 30, 10, 20, 30, 60, 12000000.0, 40, 194438355.78,  9.01595, 21458209.25,
         -45678507.48),
-    6: ("F", 50,  5,  0,  5, 55,  6000000.0, 19,  30030000.00, 13.94004,  2143455.00,
+    6: ("F", 50,  5,  0,  5, 55,  6000000.0, 20,  30030000.00, 13.94004,  2143455.00,
         -2440820.60),
-    7: ("M", 40, 20,  5, 25, 65,  6000000.0, 80, 160294805.59, 24.30417,  6562384.22,
+    7: ("M", 40, 20,  5, 25, 65,  6000000.0, 81, 160294805.59, 24.30417,  6562384.22,
         -70853187.86),
-    8: ("M", 40, 20,  5, 25, 65,  6000000.0, 80, 326721162.46, 23.58192, 13785459.86,
+    8: ("M", 40, 20,  5, 25, 65,  6000000.0, 81, 326721162.46, 23.58192, 13785459.86,
         -141563203.47),
-    9: ("M", 40, 20,  5, 27, 65,  6000000.0, 80, 162892867.42, 22.70113,  4266770.29,
+    9: ("M", 40, 20,  5, 27, 65,  6000000.0, 81, 162892867.42, 22.70113,  4266770.29,
         -37607123.25),
 }
 
@@ -423,7 +424,7 @@ def test_worked_example_the_tax_quantities_are_published_and_are_not_cash_flows(
     # The credit is a flat 16.5% of a contribution capped at the ceiling, over m years.
     assert a.tax_credit_pp(19) == pytest.approx(TAX_CREDIT_PA, rel=SAME_DOUBLE)
     assert a.tax_credit_pp(20) == 0.0
-    assert sum(a.tax_credit_pp(t) for t in range(0, a.proj_len() + 1)) == pytest.approx(
+    assert sum(a.tax_credit_pp(t) for t in range(a.proj_len())) == pytest.approx(
         19800000.0, abs=WON)
     # 16.5% of the surrender value, so the net proceeds are the 83.5% the one published
     # 세후지급 예상액 column shows at every duration.
@@ -877,7 +878,7 @@ def test_worked_example_the_assumption_values_the_notes_list(kr_pension_anchor):
     assert all(a.credit_rate(t) > a.min_guar_rate(t) for t in range(0, 26))
     assert a.prem_freq() == 12 and a.annuity_freq() == 12
     assert a.mort_be_factor() == pytest.approx(1.15, abs=RATE)
-    assert a.proj_len() == 80
+    assert a.proj_len() == 81
     assert len(a.result_cf()) == 81
     # The prescribed lapse shape: 4.0 / 3.5 / 3.0 / 2.5 / 2.0 / 1.5 / 1.0 / 0.
     expected = ([0.040, 0.035, 0.030] + [0.025] * 2 + [0.020] * 5 + [0.015] * 10
@@ -976,7 +977,7 @@ def test_the_shipped_model_point_summary_table(pension_savings, point_id):
     assert p.annuity_start_age() == y
     assert p.prem_pp() == pytest.approx(premium, abs=WON)
     assert p.proj_len() == proj_len
-    assert len(p.result_cf()) == proj_len + 1
+    assert len(p.result_cf()) == proj_len
     assert p.annuity_fund_pp() == pytest.approx(fund, abs=WON)
     assert p.annuity_due_factor() == pytest.approx(factor, abs=5e-6)
     assert p.annuity_amount_pp() == pytest.approx(annuity, abs=WON)
@@ -1110,7 +1111,7 @@ def test_the_certain_form_ends_by_counting_and_publishes_a_maturity(pension_savi
     n, k = p.annuitisation_t(), p.payout_term_y()
     assert p.payout_form() == "certain"
     assert (n, k) == (35, 20)
-    assert p.proj_len() == n + k - 1 == 54
+    assert p.proj_len() == n + k == 55
     assert all(p.pols_if(t) == pytest.approx(p.pols_if(n), abs=INFORCE)
                for t in range(n, n + k))
     assert p.pols_if(n + k) == 0.0
@@ -1157,7 +1158,7 @@ def test_the_check_residuals_close_on_the_anchor_cell(kr_pension_anchor):
     that had quietly widened its own tolerance would still be caught here.
     """
     a = kr_pension_anchor
-    ts = range(0, a.proj_len() + 1)
+    ts = range(a.proj_len())
     for name, tol in (("check_pols_roll_fwd", 1e-12),
                       ("check_av_roll_fwd", 1e-6),
                       ("check_cv_floor", 1e-6),
@@ -1187,7 +1188,7 @@ def test_the_check_tolerance_is_a_named_reference(pension_savings, kr_pension_an
     a = kr_pension_anchor
     scaled = refs["roll_fwd_tol"] * a.annuity_fund_pp()
     assert 1e-6 < scaled < 1.0            # far below one won, and above float64 noise
-    worst = max(abs(a.check_av_roll_fwd_resid(t)) for t in range(0, a.proj_len() + 1))
+    worst = max(abs(a.check_av_roll_fwd_resid(t)) for t in range(a.proj_len()))
     assert worst < scaled
 
 
@@ -1226,15 +1227,15 @@ def test_the_inforce_rollforward_is_the_notes_identity(pension_savings):
     """
     for point_id in (1, 4, 6, 9):
         p = pension_savings.Projection[point_id]
-        for t in range(0, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             out = p.pols_death(t) + p.pols_lapse(t) + p.pols_maturity(t)
             assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(out, abs=1e-13), (
                 "point %d, t=%d" % (point_id, t))
         assert p.check_pols_roll_fwd() is True
-        assert p.pols_if(p.proj_len() + 1) == 0.0
-        assert all(0.0 <= p.pols_if(t) <= 1.0 for t in range(0, p.proj_len() + 1))
+        assert p.pols_if(p.proj_len()) == 0.0
+        assert all(0.0 <= p.pols_if(t) <= 1.0 for t in range(p.proj_len()))
         assert all(p.pols_if(t + 1) <= p.pols_if(t) + 1e-15
-                   for t in range(0, p.proj_len() + 1))
+                   for t in range(p.proj_len()))
 
 
 def test_the_decrements_are_taken_in_the_notes_processing_order(kr_pension_anchor):
@@ -1876,31 +1877,33 @@ def test_the_cap_binds_the_point_that_carries_a_real_front_end_charge(pension_sa
 
 
 # ---------------------------------------------------------------------------
-# Pitfall 17: proj_len is the last index
+# Pitfall 17: proj_len is a count, and the last index is proj_len() - 1
 
 
-def test_pitfall_proj_len_is_the_last_index_not_a_count(pension_savings):
-    """Pitfall 17 — reading ``proj_len()`` as a count.
+def test_pitfall_proj_len_is_a_count_not_the_last_index(pension_savings):
+    """Pitfall 17 — reading ``proj_len()`` as the last index.
 
-    It is the **last index**: 80 at the anchor cell, with 81 rows in ``result_cf()``.  An
-    off-by-one here silently drops the terminal row, which on the life form is where the
-    last survivors die — ``q`` = 1 at the terminal age and the whole remaining in-force
-    goes out at once.
+    It is the **number** of projected policy years — the exclusive end of the frame — 81 at
+    the anchor cell, with 81 rows in ``result_cf()`` running ``t = 0 .. 80``.  An off-by-one
+    here either appends an empty row at ``t = proj_len()`` or, sweeping
+    ``range(proj_len() - 1)``, drops the terminal row, which on the life form is where the
+    last survivors die — ``q`` = 1 at the terminal age and the whole remaining in-force goes
+    out at once.
     """
     for point_id in (1, 4, 6):
         p = pension_savings.Projection[point_id]
-        assert len(p.result_cf()) == p.proj_len() + 1
-        assert list(p.result_cf().index) == list(range(0, p.proj_len() + 1))
+        assert len(p.result_cf()) == p.proj_len()
+        assert list(p.result_cf().index) == list(range(p.proj_len()))
     a = pension_savings.Projection[1]
-    assert a.proj_len() == a.omega_age("annuitant_issue") - a.issue_age() == 80
-    assert a.age(a.proj_len()) == 120
+    assert a.proj_len() == a.omega_age("annuitant_issue") - a.issue_age() + 1 == 81
+    assert a.age(a.proj_len() - 1) == 120
     assert a.mort_rate(80) == 1.0
     assert a.pols_death(80) == pytest.approx(a.pols_if(80), rel=SAME_DOUBLE)
     assert a.pols_if(81) == 0.0
     assert a.claims(80, "ANNUITY") == pytest.approx(8465.37, abs=WON)
     # The certain form's horizon is the last instalment, not a mortality terminal age.
     c = pension_savings.Projection[4]
-    assert c.proj_len() == c.annuitisation_t() + c.payout_term_y() - 1
+    assert c.proj_len() == c.annuitisation_t() + c.payout_term_y()
 
 
 # ---------------------------------------------------------------------------

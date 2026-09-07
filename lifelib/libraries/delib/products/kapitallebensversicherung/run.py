@@ -32,8 +32,8 @@ print("Bruttobeitrag {:,.4f} EUR p.a.   Beitragssumme {:,.2f}   alpha_cost "
       "{:,.2f}   P^n {:,.4f}   P^Z {:,.4f}".format(
           proj.prem_gross_pp(), proj.beitragssumme(), proj.alpha_cost(),
           proj.prem_net_level_pp(), proj.prem_zill_pp()))
-print("frame t = {} .. {}   pols_if_init {:.6f}".format(
-    proj.t_start(), proj.proj_len(), proj.pols_if_init()))
+print("frame t = {} .. {} (0-based; policy year = t + 1)   pols_if_init {:.6f}".format(
+    proj.t_start(), proj.proj_len() - 1, proj.pols_if_init()))
 print()
 df = proj.result_cf()
 print(df.head(14).round(2).to_string())

@@ -21,12 +21,24 @@ reference implementation. Parameter values are identical to those in `product-sp
   monthiversary processing is performed; monthly modal premiums would enter only as a
   premium-income refinement via modal factors [S1] and are excluded by the annual-mode
   standardization (product-spec Table 2 note (f)).
+- **Time index: `t` is 0-based.** `t = 0` is the first policy year, period `t` runs from
+  anniversary `t` to anniversary `t + 1`, and the frame is `t = 0 … T − 1` with
+  `T = 100 − x` the number of policy years projected. The contractual **policy year is
+  the 1-based label `t + 1`** and is derived, never indexed by: "policy year 10" below is
+  the period `t = 9`. An in-force model point opens at `t = t0 = duration_inforce`, the
+  policy years already elapsed. A state variable subscripted `t` is its value at the
+  **end** of period `t` (= anniversary `t + 1`); the value entering period `t` is the
+  closing value of period `t − 1`, or the model point's opening state at the first
+  projected period. The one exception is `l_t`, the in-force probability, which is read
+  at the **start** of period `t` so that it weights that period's cash flows.
 - **Timing conventions [std]:** premiums and premium-linked expenses at the beginning of the
   policy year (BOY); death claims, dividends, surrenders, and maturity at the end of the
-  policy year (EOY), in the processing order given below. State variables are stored at EOY
-  (= policy anniversary t).
+  policy year (EOY), in the processing order given below. State variables are stored at
+  EOY: a variable subscripted `t` is its value at the end of period `t`, the anniversary
+  `t + 1`.
 - **Age basis: age nearest birthday (ANB)** **[std]** (product-spec Table 1 note (a)); the
-  2017 CSO set provides ANB tables [R8]. Attained age at anniversary t is `x + t`.
+  2017 CSO set provides ANB tables [R8]. The attained age entering period `t` is `x + t`;
+  at the anniversary that ends it, `x + t + 1`.
 - **Projection horizon:** to the anniversary at attained age 100, where the model pays a
   maturity benefit and terminates **[std]**. The contract itself matures at 121 [S1], but the
   guaranteed CV equals face at 100 and PUA CV equals PUA face at 100 [S1] [S3], so from age 100
@@ -57,20 +69,20 @@ reference implementation. Parameter values are identical to those in `product-sp
 | `term_blend_target` | float (0 = off) | 0.00 (variant: 2 × F **[std]**) |
 | `loan_utilization` | float in [0,1] | 0.00 (variant: 0.20 **[std]**) |
 | `duration_inforce` (t0) | int (0 for new business) | 0 |
-| `puaf_inforce` | float (PUA face at t0) | 0.00 |
+| `puaf_inforce` | float (PUA face entering `t = t0`) | 0.00 |
 | `loan_inforce` | float | 0.00 |
 
 ## State variables
 
 | Variable | Meaning | Initialization |
 |---|---|---|
-| `l_t` | Probability in force at anniversary t (per issued policy) | `l_0 = 1` |
-| `CV_t` | Guaranteed cash value per policy (base), EOY t | table input; `CV_{100−x} = F` [S1] [S3] |
-| `PUAF_t` | Paid-up additions face in force, EOY t | `PUAF_0 = puaf_inforce` |
-| `PUACV_t` | PUA cash value, EOY t | `PUAF_t · NSP_{x+t}` **[std]** |
-| `DA_t` | Dividend accumulation balance (ACCUM option only) | 0 |
-| `L_t` | Loan balance incl. capitalized interest, EOY t | `L_0 = loan_inforce` |
-| `DB_t` | Death benefit payable on death in year t | formula below |
+| `l_t` | Probability in force at the **start** of period t (per issued policy) | `l_0 = 1` |
+| `CV_t` | Guaranteed cash value per policy (base), EOY t | table input; `CV_{T−1} = F` at `T = 100 − x` [S1] [S3] |
+| `PUAF_t` | Paid-up additions face in force, EOY t | opening balance at `t = t0` is `puaf_inforce` |
+| `PUACV_t` | PUA cash value, EOY t | `PUAF_t · NSP_{x+t+1}` **[std]** |
+| `DA_t` | Dividend accumulation balance (ACCUM option only) | opening balance 0 |
+| `L_t` | Loan balance incl. capitalized interest, EOY t | opening balance at `t = t0` is `loan_inforce` |
+| `DB_t` | Death benefit payable on death in period t | formula below |
 | `D_t` | Dividend credited at EOY t | recursion below |
 
 ## Assumption inputs
@@ -114,7 +126,7 @@ of future scale changes.
 |---|---|---|
 | Best-estimate mortality `q^e_{x+t}` | 2015 VBT (sex/smoker-distinct, ANB) × company A/E; industry A/E from the ILEC 2012–2019 study | tables [REG-R18], experience [R9]/[REG-R19]; A/E factor 0.70 × 2017 CSO in the worked example **[std illustrative]** |
 | Base lapse `w_t` | LIMRA/SOA U.S. Individual Life Persistency study (WL by duration/size/mode) | [REG-R20] for the study; rates below **[std]** (study figures not recorded in the research file) |
-| Lapse schedule **[std]** | 5.0% year 1, grading linearly to 2.0% at year 10, level 2.0% thereafter; 0 within 1 year of maturity | **[std]** — "low and level" pattern consistent with mature par WL persistency; source study [REG-R20] |
+| Lapse schedule **[std]** | 5.0% in policy year 1 (`t = 0`), grading linearly to 2.0% at year 10 (`t = 9`), level 2.0% thereafter; 0 within 1 year of maturity (`w_{T−1} = 0`) | **[std]** — "low and level" pattern consistent with mature par WL persistency; source study [REG-R20] |
 | Premium persistency | 1 (premiums are fixed and guaranteed; premium cessation = lapse/RPU) | [S1] [S3]; convention **[std]** |
 | Maintenance expense | $60 per policy per year, inflating 2.0%/yr | **[std]** |
 | Acquisition expense | 90% of first-year premium + $250 per policy | **[std]** |
@@ -130,19 +142,21 @@ Assumptions Resource Manual [REG-R25] and ASOP 56 model governance [REG-R32].
 ### Notation (defined once, used throughout)
 
 ```
-x           issue age (ANB)                     t   policy year, t = 1 … 100 − x
+x           issue age (ANB)                     t   period index, t = 0 … 100 − x − 1
+                                                    (policy year t + 1)
 F           base face amount                    G   gross annual premium
 i_g         guaranteed interest (4.00%)         i_d dividend interest rate (6.00%)
 i_L         policy loan rate (6.00%)            v_g = 1 / (1 + i_g)
 q^g_{y}     2017 CSO rate at attained age y     q^e_{y}  best-estimate rate at age y
-w_t         lapse rate in policy year t         l_t  in-force probability at EOY t
+w_t         lapse rate in period t              l_t  in-force probability, BOY of t
 CV_t        guaranteed cash value (base), EOY t
 NSP_y       net single premium per 1 of paid-up (endow-at-100) WL face at age y,
             on 2017 CSO / 4%:  NSP_y = A_{y:(100−y)|}  (endowment insurance to 100)
 ä_{y:n|}    annuity-due, n years, on 2017 CSO / 4%
 D_t         dividend credited at EOY t          PUAF_t, PUACV_t  PUA face / cash value
 DA_t        dividend accumulation balance       L_t  loan balance at EOY t
-DB_t        death benefit for deaths in year t  E_t  expense outgo in year t
+DB_t        death benefit, deaths in period t   E_t  expense outgo in period t
+            (every state subscript t is an end-of-period t value: anniversary t + 1)
 ```
 
 ### Guaranteed cash value: conceptual formula and practical treatment
@@ -154,11 +168,12 @@ premium method) [R1]:
 NNLP      = F · NSP_x / ä_{x:(100−x)|}                       (net level premium, NF basis)
 EA        = 0.01 · F + 1.25 · min(NNLP, 0.04 · F)            (expense allowance)  [R1]
 P_adj     such that  P_adj · ä_{x:m|} = F · NSP_x + EA       (m = premium period)  [R1]
-CV_t^min  = F · NSP_{x+t} − P_adj · ä_{x+t:(m−t)|}           (t < m; second term 0 for t ≥ m)
+CV_t^min  = F · NSP_{x+t+1} − P_adj · ä_{x+t+1:(m−t−1)|}     (second term 0 once t ≥ m − 1)
 ```
 
-on 2017 CSO / 4% [S1] [R1] [R3]. Properties to verify: `CV_{100−x}^min = F` (since
-`NSP_100 = 1`), and smooth progression by duration [R1].
+on 2017 CSO / 4% [S1] [R1] [R3], written at the anniversary `t + 1` that ends period `t`.
+Properties to verify: `CV_{T−1}^min = F` at `T = 100 − x` (since `NSP_100 = 1`), and smooth
+progression by duration [R1].
 
 Practical treatment **[std]**: the reference implementation reads `CV_t` (per $1,000 of face)
 from a table input, because contractual CV tables are policy-form documents not publicly
@@ -174,7 +189,8 @@ Anchor (published mechanics of one surveyed carrier) [S4]:
 D_t = ( CV_{t−1} + G − MEC_t ) · (1 + i_d) − CV_t
 ```
 
-where `MEC_t` is the mortality-and-expense charge based on actual company results — i.e., the
+with `CV_{t−1}` the guaranteed cash value entering period `t` (zero at issue), and where
+`MEC_t` is the mortality-and-expense charge based on actual company results — i.e., the
 dividend is the excess of an experience-basis accumulated value over the guaranteed value [S4].
 
 Reference parametrization **[std]** (exact carrier factor formulas are proprietary; this is the
@@ -184,7 +200,7 @@ principle [R6]):
 ```
 D_t = D^int_t + D^mort_t + D^exp_t ,   floored at 0
 D^int_t  = (i_d − i_g) · (CV_{t−1} + NP_g)                       (interest margin)
-D^mort_t = (q^g_{x+t−1} − q^{sc}_{x+t−1}) · (F − CV_t)           (mortality margin)
+D^mort_t = (q^g_{x+t} − q^{sc}_{x+t}) · (F − CV_t)               (mortality margin)
 D^exp_t  = e^m_t                                                  (expense margin)
 ```
 
@@ -198,11 +214,12 @@ calibration of `q^{sc}` and `e^m_t` **[std]**.
 Dividends on the PUA block (PUAs are dividend-eligible [S14]) **[std]**:
 
 ```
-D^PUA_t = (i_d − i_g) · PUACV_{t−1} + (q^g_{x+t−1} − q^{sc}_{x+t−1}) · (PUAF_{t−1} − PUACV_{t−1})
+D^PUA_t = (i_d − i_g) · PUACV_{t−1} + (q^g_{x+t} − q^{sc}_{x+t}) · (PUAF_{t−1} − PUACV_{t−1})
 ```
 
-No dividend is credited for policy year 1 (`D_1 = D^PUA_1 = 0`) **[std]** (product-spec Table
-3 note (j); one carrier pays none [S1], another pays a first-year dividend [S3]).
+on the block entering period `t`. No dividend is credited for policy year 1, the period `t = 0`
+(`D_0 = D^PUA_0 = 0`) **[std]** (product-spec Table 3 note (j); one carrier pays none [S1],
+another pays a first-year dividend [S3]).
 
 Direct recognition (loaned values) **[std]** parametrization of [S1] [S3]: replace `i_d` with
 `i_L` on the loaned portion:
@@ -216,27 +233,31 @@ coincidence of the snapshot, not a model property.
 
 ### Dividend application (by option)
 
-- **PUA (default [S1] [S2]):** `ΔPUAF_t = (D_t + D^PUA_t) / NSP_{x+t}`; `PUAF_t = PUAF_{t−1} +
-  ΔPUAF_t`; `PUACV_t = PUAF_t · NSP_{x+t}` **[std]** (valuing all PUA face at the attained-age
-  NSP on the guarantee basis; exact at issue of each layer and at age 100, approximate between
-  **[std]**). At age 100, `NSP_100 = 1` so `PUACV = PUAF` [S1].
+- **PUA (default [S1] [S2]):** `ΔPUAF_t = (D_t + D^PUA_t) / NSP_{x+t+1}`;
+  `PUAF_t = PUAF_{t−1} + ΔPUAF_t`; `PUACV_t = PUAF_t · NSP_{x+t+1}` **[std]** (the purchase
+  falls at the anniversary `t + 1` that ends the period, so it is priced at that attained
+  age; valuing all PUA face at the attained-age NSP on the guarantee basis is exact at issue
+  of each layer and at age 100, approximate between **[std]**). At age 100, `NSP_100 = 1` so
+  `PUACV = PUAF` [S1].
 - **CASH:** dividend paid out; policyholder cash flow at EOY.
-- **REDUCE_PREM:** offsets next year's BOY premium: `G^{net}_{t+1} = max(G − D_t, 0)`, excess
-  to PUAs **[std]** (excess-to-PUA per one carrier's reduce-premium option [S3]).
+- **REDUCE_PREM:** offsets the next period's BOY premium: `G^{net}_{t+1} = max(G − D_t, 0)`,
+  excess to PUAs **[std]** (excess-to-PUA per one carrier's reduce-premium option [S3]).
 - **ACCUM:** `DA_t = DA_{t−1} · (1 + i_d) + D_t`; balance adds to death and surrender
   proceeds [S1] [S2].
 
 ### PUA rider (in-scope rider)
 
 Rider payment `A_t` (BOY, within limits set at issue [S3] [S11]):
-`ΔPUAF^rider_t = A_t · (1 − 0.10) / NSP_{x+t−1}` — 10% load **[std]** from the observed
+`ΔPUAF^rider_t = A_t · (1 − 0.10) / NSP_{x+t}` — the payment falls at the anniversary `t`
+that opens the period — 10% load **[std]** from the observed
 7.5%–10% range [S3]. Rider PUAs merge into `PUAF_t`.
 
 ### Term-blend rider (in-scope rider, simplified **[std]**)
 
 Target face `TF = 2 F` **[std]** (within observed caps: ≤ 9× base [S2], ≤ 300% of base [S3]).
-Each year, OYT face `= max(TF − F − PUAF_t, 0)`; the dividend first pays the OYT cost
-`q^{sc}_{x+t} · OYT_t · v_g` **[std]**, remainder buys PUAs; crossover when `PUAF_t ≥ TF − F`,
+Each period, OYT face `= max(TF − F − PUAF_{t−1}, 0)` on the block entering it (the notes'
+`PUAF_t` is circular — see `model.md`); the dividend first pays the OYT cost
+`q^{sc}_{x+t+1} · OYT_t · v_g` **[std]**, remainder buys PUAs; crossover when `PUAF_t ≥ TF − F`,
 after which the rider is pure PUA [S2] [S3] [S11]. Death benefit while blended: `TF + excess
 PUAs − L_t`.
 
@@ -245,38 +266,42 @@ PUAs − L_t`.
 ```
 DB_t   = F + PUAF_{t−1} + DA_{t−1} − L_{t−1}                 (PUA/ACCUM components as elected)
 CSV_t  = CV_t + PUACV_t + DA_t − L_t                          (surrender value, EOY t)
-MAT    = F + PUAF_T + DA_T − L_T   at T = 100 − x             (model maturity [std])
+MAT    = F + PUAF_{T−1} + DA_{T−1} − L_{T−1}                  (at t = T − 1, T = 100 − x;
+                                                               model maturity [std])
 ```
 
-`DB` per the contractual formula [S1], reduced to modeled components **[std]**. Deaths in year
-t are assumed to occur at EOY before the year-t dividend is credited, so `DB_t` carries the
-prior year's PUA face **[std]** (terminal-dividend and premium-refund items not modeled,
-product-spec Table 3 note (m)).
+`DB` per the contractual formula [S1], reduced to modeled components **[std]**. Deaths in
+period t are assumed to occur at EOY before the period-t dividend is credited, so `DB_t`
+carries the PUA face, accumulation balance and loan **entering** the period **[std]**
+(terminal-dividend and premium-refund items not modeled, product-spec Table 3 note (m)).
 
-### Annual processing order (policy year t, per unit in force `l_{t−1}`)
+### Annual processing order (period t, per unit in force `l_t`)
 
-1. **BOY:** collect gross premium `G` (if `t ≤` premium period) and PUA rider premium `A_t`;
-   pay premium tax and acquisition/maintenance expense `E_t`.
+1. **BOY:** collect gross premium `G` (if `t <` premium period `m`) and PUA rider premium
+   `A_t`; pay premium tax and acquisition/maintenance expense `E_t`.
 2. **BOY:** apply REDUCE_PREM offset from `D_{t−1}` if elected.
-3. **During year:** interest accrues implicitly (CV table on `i_g` [S1]; loan at `i_L` [S1]).
-4. **EOY — deaths:** probability `q^e_{x+t−1}`; outgo `q^e_{x+t−1} · l_{t−1} · DB_t`.
+3. **During the period:** interest accrues implicitly (CV table on `i_g` [S1]; loan at `i_L`
+   [S1]).
+4. **EOY — deaths:** probability `q^e_{x+t}`; outgo `q^e_{x+t} · l_t · DB_t`.
 5. **EOY — loan interest capitalization:** `L_t = L_{t−1} · (1 + i_L)` less repayments [S1].
-6. **EOY — dividend:** credit `D_t + D^PUA_t` to survivors (from t = 2 **[std]**); apply per
-   dividend option; update `PUAF_t, PUACV_t, DA_t`.
+6. **EOY — dividend:** credit `D_t + D^PUA_t` to survivors (from `t = 1`, policy year 2
+   **[std]**); apply per dividend option; update `PUAF_t, PUACV_t, DA_t`.
 7. **EOY — surrenders:** probability `w_t` applied to survivors
-   `l_{t−1} · (1 − q^e_{x+t−1})`; outgo `= CSV_t` per surrendering policy.
-8. **Update in force:** `l_t = l_{t−1} · (1 − q^e_{x+t−1}) · (1 − w_t)`.
-9. **At T = 100 − x:** pay `MAT · l_T`; terminate **[std]**.
+   `l_t · (1 − q^e_{x+t})`; outgo `= CSV_t` per surrendering policy.
+8. **Update in force:** `l_{t+1} = l_t · (1 − q^e_{x+t}) · (1 − w_t)`.
+9. **At `t = T − 1`, `T = 100 − x`:** pay `MAT` to the survivors `l_{T−1} · (1 − q^e_{x+T−1})`
+   — `w_{T−1} = 0`, so nobody surrenders out of the final period — and terminate **[std]**.
 
 Ordering (deaths → dividend → surrenders at EOY) is **[std]**; it makes surrender values
 include the just-credited dividend, consistent with anniversary processing.
 
-### Net liability cash flow (per issued policy, year t)
+### Net liability cash flow (per issued policy, period t)
 
 ```
-NetCF_t = − G^{net}_t · l_{t−1} − A_t · l_{t−1} + E_t · l_{t−1}          (BOY items, sign: outgo +)
-          + q^e · l_{t−1} · DB_t + w_t · l_{t−1}(1 − q^e) · CSV_t        (EOY benefits)
-          + D^{cash}_t · l_{t−1}(1 − q^e) + MAT · l_T · 1{t=T}           (cash dividends, maturity)
+NetCF_t = − G^{net}_t · l_t − A_t · l_t + E_t · l_t                (BOY items, sign: outgo +)
+          + q^e · l_t · DB_t + w_t · l_t(1 − q^e) · CSV_t          (EOY benefits)
+          + D^{cash}_t · l_t(1 − q^e)                              (cash dividends)
+          + MAT · l_t(1 − q^e) · 1{t = T−1}                        (maturity)
 ```
 
 Internal dividend applications (PUA, ACCUM, REDUCE_PREM) are not cash flows when credited;
@@ -296,14 +321,15 @@ account rather than netting into a "net amount at risk" presentation **[std]**.
 
 - Premium: `G = (F/1000) · rate(x, sex, tobacco) + 36` [S7]; no dividends (non-par
   [unverified]; modeled non-par).
-- Graded plan: for natural-cause deaths in years 1–2, `DB_t = 1.10 · (cumulative premiums
-  paid)`; accidental deaths pay `F` from day 1 [S6] [S7]. Accidental split requires an
-  accidental-death fraction of `q^e` **[std]** (reference value 3% of deaths **[std]**).
-- Maturity at age 100 (120 in FL — not modeled **[std]**) pays `F − L_T` [S8].
+- Graded plan: for natural-cause deaths in policy years 1–2 — the periods `t = 0, 1` —
+  `DB_t = 1.10 · (cumulative premiums paid)`; accidental deaths pay `F` from day 1 [S6] [S7].
+  Accidental split requires an accidental-death fraction of `q^e` **[std]** (reference value
+  3% of deaths **[std]**).
+- Maturity at age 100 (120 in FL — not modeled **[std]**) pays `F − L_{T−1}` [S8].
 - CV schedule: reuse of the par nonforfeiture machinery **[std]** (product-spec Table 5 note (r)).
-- Lapse: FE simplified-issue business lapses higher than par WL; reference schedule 12% year 1,
-  10% year 2, grading to 6% level by year 5 **[std]** (no FE-specific study in the research
-  base; flagged as an open issue).
+- Lapse: FE simplified-issue business lapses higher than par WL; reference schedule 12% in
+  policy year 1 (`t = 0`), 10% in year 2, grading to 6% level by year 5 (`t = 4`) **[std]**
+  (no FE-specific study in the research base; flagged as an open issue).
 
 ## Policyholder behavior modeling
 
@@ -330,30 +356,30 @@ Base behavior is static (schedules in class (c)). Dynamic overlays, all **[std]*
 
 Single-year walk-through of the core recursion: RefWL-Par, male Standard NT, `x = 45`,
 `F = 100,000` **[std]**, `G = 1,800` **[std illustrative]**, PUA dividend option, no rider, no
-loan. Policy year `t = 10` (attained age 55 at EOY). All table values are illustrative
-**[std]** (the shipped CV/NSP tables are generated on 2017 CSO / 4% as specified above);
-`i_g = 4.00%` [S1], `i_d = 6.00%` **[std]**.
+loan. Policy year 10 — the period `t = 9` (attained age 55 at the anniversary that ends it).
+All table values are illustrative **[std]** (the shipped CV/NSP tables are generated on
+2017 CSO / 4% as specified above); `i_g = 4.00%` [S1], `i_d = 6.00%` **[std]**.
 
 | Step | Item | Formula | Value |
 |---|---|---|---|
-| 1 | Guaranteed CV, BOY (EOY 9) | `CV_9` (table) | 9,500.00 **[std]** |
-| 2 | Guaranteed CV, EOY | `CV_10` (table) | 11,200.00 **[std]** |
+| 1 | Guaranteed CV entering the period | `CV_8` (table, policy year 9) | 9,500.00 **[std]** |
+| 2 | Guaranteed CV, EOY | `CV_9` (table, policy year 10) | 11,200.00 **[std]** |
 | 3 | Net level premium (NF basis) | `NP_g` | 1,300.00 **[std]** |
 | 4 | Guarantee mortality, age 54 | `q^g_54` | 0.00320 **[std]** |
 | 5 | Scale mortality, age 54 | `q^{sc}_54 = 0.70 · q^g_54` | 0.00224 **[std]** |
 | 6 | Interest margin | `(0.06 − 0.04) · (9,500 + 1,300)` | 216.00 |
 | 7 | Mortality margin | `(0.00320 − 0.00224) · (100,000 − 11,200)` | 85.25 |
-| 8 | Expense margin | `e^m_10` | 25.00 **[std]** |
-| 9 | Dividend | `D_10 = 216.00 + 85.25 + 25.00` | 326.25 |
+| 8 | Expense margin | `e^m_9` | 25.00 **[std]** |
+| 9 | Dividend | `D_9 = 216.00 + 85.25 + 25.00` | 326.25 |
 | 10 | NSP at age 55 | `NSP_55` (table) | 0.42 **[std]** |
-| 11 | PUA face purchased | `ΔPUAF = 326.25 / 0.42` | 776.79 |
-| 12 | PUA face, EOY (prior 4,100.00 **[std]**) | `PUAF_10 = 4,100.00 + 776.79` | 4,876.79 |
-| 13 | PUA cash value, EOY | `PUACV_10 = 4,876.79 × 0.42` | 2,048.25 |
-| 14 | Death benefit for year 11 deaths | `F + PUAF_10` | 104,876.79 |
-| 15 | Surrender value, EOY 10 | `CV_10 + PUACV_10` | 13,248.25 |
+| 11 | PUA face purchased | `ΔPUAF_9 = 326.25 / 0.42` | 776.79 |
+| 12 | PUA face, EOY (prior 4,100.00 **[std]**) | `PUAF_9 = 4,100.00 + 776.79` | 4,876.79 |
+| 13 | PUA cash value, EOY | `PUACV_9 = 4,876.79 × 0.42` | 2,048.25 |
+| 14 | Death benefit for deaths in period `t = 10` | `F + PUAF_9` | 104,876.79 |
+| 15 | Surrender value, EOY of `t = 9` | `CV_9 + PUACV_9` | 13,248.25 |
 
-(For clarity the PUA-block dividend `D^PUA_10` is omitted from this table; in the model it
-adds `(0.02 · PUACV_9) + (0.00096 · (PUAF_9 − PUACV_9))` to the amount in step 9 **[std]**.)
+(For clarity the PUA-block dividend `D^PUA_9` is omitted from this table; in the model it
+adds `(0.02 · PUACV_8) + (0.00096 · (PUAF_8 − PUACV_8))` to the amount in step 9 **[std]**.)
 
 ## Valuation and reserve pointers (brief)
 
@@ -409,7 +435,8 @@ Known modeling pitfalls:
   leaks. Regenerate all guarantee-basis quantities from one 2017 CSO / 4% source [S1] [R1] [R8].
 - **Dividend floor and negative margins:** with `D_t` floored at 0 **[std]**, adverse
   experience does not claw back — asymmetry matters in stochastic runs.
-- **First-dividend timing** (year 1 vs 2) shifts early-duration PUA compounding; it is a real
+- **First-dividend timing** (policy year 1 vs 2, `t = 0` vs `t = 1`) shifts early-duration
+  PUA compounding; it is a real
   cross-carrier difference [S1] [S3], keep it a parameter.
 - **MEC administration on limited-pay variants:** 10-pay premiums approach 7-pay limits; face
   decreases can retroactively create MECs and PUA-rider payments consume 7-pay room

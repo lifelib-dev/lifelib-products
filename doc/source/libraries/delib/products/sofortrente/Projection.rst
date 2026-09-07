@@ -50,6 +50,8 @@ Cells Descriptions
 
 .. autofunction:: duration_mth
 
+.. autofunction:: duration
+
 .. autofunction:: policy_year
 
 .. autofunction:: age

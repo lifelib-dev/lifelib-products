@@ -11,16 +11,20 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked-example anchor cell
     >>> Projection.point_id = 9            # a claim in payment at duration 18 months
 
-``t`` counts **policy months**, 1-based: ``t = 1`` is the first projected month and
-``t = proj_len() = loan_term_months`` the last. The technical notes index the state
-probabilities ``l_h(t)``, ``l_itt(t, z)`` and ``l_ipt(t)`` at the **end** of month ``t``
-with ``l_h(0) = 1``; the library indexes at the **start** of the month, so
-:func:`pols_healthy` ``(t)`` is the notes' ``l_h(t-1)`` and :func:`pols_itt_dur`
-``(t, z)`` its ``l_itt(t-1, z)``. That is deliberate: every cash flow on a
-:func:`result_cf` row is then weighted by a state count on the same row. The notes'
-own end-of-month quantities are published too, as :func:`pols_healthy_close`,
-:func:`pols_itt_close` and :func:`pols_ipt_close`, so the worked-example table can be
-read off directly.
+``t`` counts **policy months**, 0-based: ``t = 0`` is the first projected month and
+``t = proj_len() - 1 = loan_term_months() - 1`` the last, so the frame is
+``range(proj_len())``. Month ``t`` runs from time ``t`` to time ``t + 1``: the premium
+falls at its beginning, and the instalment, the transitions and all benefit at its end.
+The technical notes carry the loan balance and the state probabilities at a **time
+point**, on their own 0-based index ``k`` with ``k = 0`` at adhesion — ``crd(k)``,
+``l_h(k)``, ``l_itt(k, z)`` and ``l_ipt(k)``, with ``crd(0) = capital_initial`` and
+``l_h(0) = 1``. Month ``t`` therefore **opens** on ``crd(t)`` and ``l_h(t)`` and
+**closes** on ``crd(t + 1)`` and ``l_h(t + 1)``, so :func:`pols_healthy` ``(t)`` is the
+notes' ``l_h(t)`` and :func:`pols_itt_dur` ``(t, z)`` its ``l_itt(t, z)``. That is
+deliberate: every cash flow on a :func:`result_cf` row is then weighted by a state count
+on the same row. The notes' end-of-month quantities are published too — the ``l(t + 1)``
+values — as :func:`pols_healthy_close`, :func:`pols_itt_close` and
+:func:`pols_ipt_close`, so the worked-example table can be read off directly.
 
 .. rubric:: Input data
 
@@ -69,12 +73,12 @@ Notes symbol               Cells                               Meaning
 entry_age                  age_at_entry()                      Age at adhesion
 a                          age(t)                              Attained age in month t
 y                          policy_year(t)                      Policy year containing t
-(none)                     duration(t)                         Completed policy years
-(none)                     duration_mth(t)                     Months elapsed at end of t
-T = loan_term_months       proj_len()                          Last projected month
+(none)                     duration(t)                         Completed policy years, t // 12
+(none)                     duration_mth(t)                     Months elapsed at the start of t
+T = loan_term_months       proj_len()                          Months projected; last t is T - 1
 i                          loan_rate_mth()                     Monthly loan rate, nominal/12
 ech                        echeance()                          Level monthly instalment
-crd(k)                     crd(t)                              Capital restant du after t
+crd(k)                     crd(k)                              Capital restant du at time k
 (none)                     loan_interest_total()               T x ech - capital initial
 Q                          quotite()                           Insured share of the loan
 IR                         indemnity_ratio()                   1, or the income loss ratio
@@ -107,15 +111,15 @@ q_ipt                      mort_rate_ipt_mth(t)                The same, monthly
 crd_rate(a)                crd_rate(t)                         CRD-basis annual premium rate
 prem_pp(y)                 prem_pp(t)                          Monthly premium per policy
 prem(t)                    premiums(t)                         Premium income
-l_h(t-1)                   pols_healthy(t)                     In healthy at start of t
-l_h(t)                     pols_healthy_close(t)               In healthy at end of t
-l_itt(t-1, z)              pols_itt_dur(t, z)                  In ITT at duration z
-l_itt(t-1)                 pols_itt(t)                         Total in ITT at start of t
-l_itt(t)                   pols_itt_close(t)                   Total in ITT at end of t
-(the whole vector)         itt_cohorts(t)                      l_itt(t-1, .) as a list
+l_h(t)                     pols_healthy(t)                     In healthy at start of t
+l_h(t+1)                   pols_healthy_close(t)               In healthy at end of t
+l_itt(t, z)                pols_itt_dur(t, z)                  In ITT at duration z
+l_itt(t)                   pols_itt(t)                         Total in ITT at start of t
+l_itt(t+1)                 pols_itt_close(t)                   Total in ITT at end of t
+(the whole vector)         itt_cohorts(t)                      l_itt(t, .) as a list
 (before the transfer)      itt_cohorts_raw(t)                  The same, un-transferred
-l_ipt(t-1)                 pols_ipt(t)                         In IPT at start of t
-l_ipt(t)                   pols_ipt_close(t)                   In IPT at end of t
+l_ipt(t)                   pols_ipt(t)                         In IPT at start of t
+l_ipt(t+1)                 pols_ipt_close(t)                   In IPT at end of t
 (before the transfer)      pols_ipt_raw(t)                     The same, un-transferred
 (none)                     pols_if(t)                          healthy + ITT + IPT
 (none)                     pols_if_at(t, timing)               BEF_DECR / AFT_DECR
@@ -141,7 +145,7 @@ ipt_stay(t)                pols_ipt_stay(t)                    Surviving in IPT
 (none)                     pols_exit(t)                        All exits from the model
 (none)                     pols_exit_cum(t)                    Cumulative exits before t
 (none)                     pols_maturity(t)                    In force at loan expiry
-crd(t) x Q                 benefit_deces_pp(t)                 Deces / PTIA capital
+crd(t+1) x Q               benefit_deces_pp(t)                 Deces / PTIA capital
 ech x Q x IR               benefit_itt_pp()                    Monthly ITT / IPT amount
 ben_deces(t)               claims(t, "DEATH")                  Death benefit outgo
 ben_ptia(t)                claims(t, "PTIA")                   PTIA benefit outgo
@@ -170,13 +174,18 @@ every other model in this library. Mortality in claim is :func:`itt_mort_rate`, 
 claim duration, and mortality in IPT is :func:`mort_rate_ipt`, keyed by month. Three
 mortality rates on two clocks, and the model never mixes them.
 
-``t`` is the policy month and ``z`` the claim duration. Rates out of ``healthy`` take
-``t``; rates out of ITT take ``z``.
+``t`` is the policy month, 0-based, and ``z`` the claim duration, running
+``1 ... itt_max_months()``. Rates out of ``healthy`` take ``t``; rates out of ITT take
+``z``. They are different clocks and the model never mixes them.
 
-:func:`crd` is indexed by the same ``t`` as everything else and is the balance **after**
-the month-``t`` instalment. ``crd(t-1)`` and ``crd(t)`` differ by the month's capital
-repayment — EUR 609.20 at ``t = 1`` on the anchor cell — and whichever is chosen must be
-used everywhere.
+:func:`crd` is **not** on the month index. It is a time-point cells: ``crd(k)`` is the
+balance at time ``k``, the *capital restant dû* after the ``k``-th instalment, with
+``crd(0) = capital_initial`` at adhesion and ``crd(T) = 0``. Month ``t`` therefore opens
+on ``crd(t)`` and closes on ``crd(t + 1)``, and the two differ by that month's capital
+repayment — EUR 609.20 over the first month on the anchor cell. The Décès and PTIA
+capital of month ``t`` is the **closing** balance ``crd(t + 1)``, the instalment falling
+on the day of death being deemed due, and whichever convention is chosen must be used
+everywhere.
 
 .. rubric:: Four states, and why the model needs all of them
 
@@ -219,8 +228,8 @@ inception still in ITT at three years, of which 0.069327 consolidates.
 
 :func:`cover_deces`, :func:`cover_ptia` and :func:`cover_itt` are three separate
 indicators because the three cover-end ages differ — 85, 70 and 70 on the anchor cell,
-against a loan that runs to month 240. Collapsing Décès and PTIA into one decrement is
-tempting, since they pay the identical ``crd(t) x quotite``, and it is wrong: a collapsed
+against a loan of 240 months. Collapsing Décès and PTIA into one decrement is
+tempting, since they pay the identical ``crd(t + 1) x quotite``, and it is wrong: a collapsed
 decrement either pays PTIA after 70 or stops paying death before 85.
 
 At the first month where the ITT/IPT cover has ceased, any claim in payment is **moved**
@@ -271,7 +280,7 @@ All three are model point columns, not variants of the model.
 
 ``ipt_benefit_basis``
     ``echeance`` keeps IPT as a state paying monthly; ``crd`` makes it a single payment
-    of ``crd(t) x quotite`` after which the life leaves the model, exactly as a death
+    of ``crd(t + 1) x quotite`` after which the life leaves the model, exactly as a death
     does — so on that basis :func:`pols_ipt_close` is zero throughout.
 
 :func:`quotite` scales the benefit **and** the premium, once each. Applying it to the CRD
@@ -468,7 +477,7 @@ def ipt_benefit_basis():
     """``echeance`` (IPT is a state paying monthly) or ``crd`` (a single capital).
 
     On the ``crd`` basis IPT is not a state at all: the mass that would enter it instead
-    triggers one payment of ``crd(t) x quotite`` and leaves the model, exactly as a death
+    triggers one payment of ``crd(t + 1) x quotite`` and leaves the model, exactly as a death
     does, so :func:`pols_ipt_close` is zero throughout.
     """
     v = model_point()["ipt_benefit_basis"]
@@ -526,8 +535,11 @@ def pols_if_init():
 
 
 def proj_len():
-    """Projection length in months: the loan's contractual term.
+    """The number of months projected: the loan's contractual term.
 
+    The **exclusive end** of the frame, counted from ``t = 0``: the projection runs
+    ``t = 0 ... proj_len() - 1``, which is lifelib's ``for t in range(proj_len())``, and
+    ``proj_len()`` is also the time point of the last instalment, where ``crd`` is zero.
     All cover and any claim in payment terminate at the loan's expiry with no value, so
     there is nothing after it.  This is what truncates the IPT annuity, which otherwise
     would have no natural end.
@@ -536,28 +548,35 @@ def proj_len():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``(t - 1) // 12``."""
-    return (t - 1) // 12
+    """Completed policy years at the start of month t: ``t // 12``.
+
+    0-based, as ``duration`` is throughout lifelib: 0 through the first policy year.
+    """
+    return t // 12
 
 
 def duration_mth(t):
-    """Months elapsed from the start of the projection at the end of month t; equal to t.
+    """Months elapsed from the start of the projection at the start of month t; equal to t.
 
-    ``t`` is 1-based, so the identity is trivial - the cells exists so the monthly models
-    in this library share one vocabulary.
+    ``t`` is 0-based and counts from adhesion, so the identity is trivial - the cells
+    exists so the monthly models in this library share one vocabulary.
     """
     return t
 
 
 def policy_year(t):
-    """y: the policy year containing month t; 1 for t = 1..12."""
+    """y: the contractual policy year containing month t; 1 for t = 0..11.
+
+    The 1-based label ``duration(t) + 1``, derived from the 0-based ``t`` and never
+    indexed by.  It is what the *résiliation* table and the expense inflation are read on.
+    """
     return duration(t) + 1
 
 
 def age(t):
     """a: the attained age in the policy year containing month t.
 
-    ``entry_age + floor((t - 1) / 12)``.  The annual step is a **[std]** convention: one
+    ``entry_age + floor(t / 12)``.  The annual step is a **[std]** convention: one
     sampled insurer computes age by difference of calendar years instead.
     """
     return age_at_entry() + duration(t)
@@ -576,22 +595,25 @@ def echeance():
     return capital_initial() * i / (1.0 - (1.0 + i) ** (-loan_term_months()))
 
 
-def crd(t):
-    """The *capital restant du* immediately **after** the month-t instalment.
+def crd(k):
+    """The *capital restant du* at **time k**: the balance after the k-th instalment.
 
-    ``ech x (1 - (1 + i)^(-(T - t))) / i``, with ``crd(0) = capital_initial`` and
-    ``crd(T) = 0`` exactly.  This is the sum insured for Décès and PTIA and the only
-    thing linking the loan to the insurance.  Note the convention: ``crd(t-1)``, before
-    the month-t instalment, is larger by the month's capital repayment - EUR 609.20 at
-    ``t = 1`` on the anchor cell - and whichever is chosen must be used everywhere.
-    :func:`check_crd` asserts the schedule against its own roll-forward.
+    A time-point cells, not a month-index one, and already 0-based: ``k = 0`` is
+    adhesion, so ``crd(0) = capital_initial``, and ``crd(T) = 0`` exactly at the last
+    instalment.  ``ech x (1 - (1 + i)^(-(T - k))) / i``.  This is the sum insured for
+    Décès and PTIA and the only thing linking the loan to the insurance.  Month ``t``
+    **opens** on ``crd(t)`` and **closes** on ``crd(t + 1)``, the two differing by that
+    month's capital repayment - EUR 609.20 over the first month on the anchor cell - and
+    the benefit is written on the closing balance ``crd(t + 1)``; whichever convention is
+    chosen must be used everywhere.  :func:`check_crd` asserts the schedule against its
+    own roll-forward.
     """
-    if t <= 0:
+    if k <= 0:
         return capital_initial()
-    if t >= loan_term_months():
+    if k >= loan_term_months():
         return 0.0
     i = loan_rate_mth()
-    return echeance() * (1.0 - (1.0 + i) ** (-(loan_term_months() - t))) / i
+    return echeance() * (1.0 - (1.0 + i) ** (-(loan_term_months() - k))) / i
 
 
 def loan_interest_total():
@@ -974,25 +996,26 @@ def premiums(t):
 # -- The four-state population -----------------------------------------------
 
 def itt_cohorts_raw(t):
-    """l_itt(t-1, .) as a list, **before** any cover-cessation transfer.
+    """l_itt(t, .) as a list, **before** any cover-cessation transfer.
 
     Element ``z - 1`` is the population in ITT payment at the start of month t with claim
-    duration ``z`` months, for ``z = 1 ... itt_max_months()``.  At ``t = 1`` it is the
+    duration ``z`` months, for ``z = 1 ... itt_max_months()``.  At ``t = 0`` it is the
     seeded state: all zeros except on an ``itt`` cell, where ``pols_if_init()`` sits in
     cohort ``claim_duration_months() + 1``.  Thereafter cohort 1 is the previous month's
     inceptions and every other cohort is the previous cohort survived one month - the
     cohort at ``itt_max_months()`` is **not** carried forward, because it is assessed at
     the cap instead.
 
-    Defined one month past ``proj_len()`` so :func:`pols_itt_close` can read the closing
-    state of the last month out of the same recursion that produces every other month.
-    A new list is built on each step rather than the previous one mutated, so a month
-    already computed is never rewritten by a later one.
+    Defined one step past the last projected month, at ``t = proj_len()``, so
+    :func:`pols_itt_close` can read the closing state of the last month out of the same
+    recursion that produces every other month.  A new list is built on each step rather
+    than the previous one mutated, so a month already computed is never rewritten by a
+    later one.
     """
     n = itt_max_months()
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return [0.0] * n
-    if t == 1:
+    if t == 0:
         if status() != "itt":
             return [0.0] * n
         seed = min(claim_duration_months(), n - 1)
@@ -1006,7 +1029,7 @@ def itt_cohorts_raw(t):
 
 
 def itt_cohorts(t):
-    """l_itt(t-1, .) as a list, **after** the cover-cessation transfer.
+    """l_itt(t, .) as a list, **after** the cover-cessation transfer.
 
     Identical to :func:`itt_cohorts_raw` while the ITT/IPT cover is in force, and all
     zeros once it has ceased - the mass has moved into ``healthy``, and
@@ -1015,13 +1038,13 @@ def itt_cohorts(t):
     without any further gating.
     """
     n = itt_max_months()
-    if t < 1 or t > proj_len() or not cover_itt(t):
+    if t < 0 or t >= proj_len() or not cover_itt(t):
         return [0.0] * n
     return itt_cohorts_raw(t)
 
 
 def pols_itt_dur(t, z):
-    """l_itt(t-1, z): the population in ITT at the start of month t at claim duration z.
+    """l_itt(t, z): the population in ITT at the start of month t at claim duration z.
 
     A named lookup into :func:`itt_cohorts`, so the notes' two-dimensional object is
     addressable by name without the model carrying ``proj_len() x itt_max_months()``
@@ -1032,7 +1055,7 @@ def pols_itt_dur(t, z):
 
 
 def pols_itt(t):
-    """l_itt(t-1): the total population in ITT payment at the start of month t."""
+    """l_itt(t): the total population in ITT payment at the start of month t."""
     return sum(itt_cohorts(t))
 
 
@@ -1040,36 +1063,36 @@ def pols_itt_transfer(t):
     """The ITT mass moved into ``healthy`` at the beginning of month t, at cover end.
 
     Non-zero only in the first month where :func:`cover_itt` is 0 and a claim is still in
-    payment: EUR-free, 0.009266 of a policy on the anchor cell at ``t = 217``.  The mass
+    payment: EUR-free, 0.009266 of a policy on the anchor cell at ``t = 216``.  The mass
     is **moved**, not deleted - those lives are alive, still death covered and still
     premium paying, and deleting them would break :func:`check_states` and destroy cover
     they still hold.
     """
-    if t < 1 or t > proj_len() or cover_itt(t):
+    if t < 0 or t >= proj_len() or cover_itt(t):
         return 0.0
     return sum(itt_cohorts_raw(t))
 
 
 def pols_ipt_raw(t):
-    """l_ipt(t-1) **before** any cover-cessation transfer.
+    """l_ipt(t) **before** any cover-cessation transfer.
 
-    Defined one month past ``proj_len()`` for the same reason as
+    Defined one step past the last projected month for the same reason as
     :func:`itt_cohorts_raw`.  Seeded with ``pols_if_init()`` on an ``ipt`` cell.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init() if status() == "ipt" else 0.0
     return pols_ipt_close(t - 1)
 
 
 def pols_ipt(t):
-    """l_ipt(t-1): the population in IPT payment at the start of month t.
+    """l_ipt(t): the population in IPT payment at the start of month t.
 
     Zero once the ITT/IPT cover has ceased, and zero throughout on the ``crd`` IPT
     benefit basis, where IPT is not a state at all.
     """
-    if t < 1 or t > proj_len() or not cover_itt(t):
+    if t < 0 or t >= proj_len() or not cover_itt(t):
         return 0.0
     return pols_ipt_raw(t)
 
@@ -1077,25 +1100,25 @@ def pols_ipt(t):
 def pols_ipt_transfer(t):
     """The IPT mass moved into ``healthy`` at the beginning of month t, at cover end.
 
-    0.013982 of a policy on the anchor cell at ``t = 217``.  An IPT annuitant whose
+    0.013982 of a policy on the anchor cell at ``t = 216``.  An IPT annuitant whose
     guarantee has expired is not dead and has not lapsed: the annuity stops and the life
     resumes paying for the death cover it still holds.
     """
-    if t < 1 or t > proj_len() or cover_itt(t):
+    if t < 0 or t >= proj_len() or cover_itt(t):
         return 0.0
     return pols_ipt_raw(t)
 
 
 def pols_healthy(t):
-    """l_h(t-1): the population in ``healthy`` at the start of month t.
+    """l_h(t): the population in ``healthy`` at the start of month t.
 
-    ``pols_if_init()`` at ``t = 1`` on a ``healthy`` cell and zero on an in-claim one,
+    ``pols_if_init()`` at ``t = 0`` on a ``healthy`` cell and zero on an in-claim one,
     then the previous month's closing healthy population plus anything the cover-cessation
     transfer moved in.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init() if status() == "healthy" else 0.0
     return (pols_healthy_close(t - 1)
             + pols_itt_transfer(t) + pols_ipt_transfer(t))
@@ -1107,7 +1130,7 @@ def pols_death_healthy(t):
     The notes' processing order out of ``healthy`` is **death, then PTIA, then
     *résiliation*, then ITT inception** among the survivors of each **[std]**.  The
     ordering is visible in the arithmetic: on the anchor cell
-    ``claims(1, "PTIA") / claims(1, "DEATH")`` is 0.0998 rather than the ``ptia_ratio`` of
+    ``claims(0, "PTIA") / claims(0, "DEATH")`` is 0.0998 rather than the ``ptia_ratio`` of
     0.10, the difference being the month of death exposure that precedes PTIA.
     """
     return pols_healthy(t) * mort_rate_mth(t)
@@ -1159,7 +1182,7 @@ def pols_healthy_stay(t):
 def pols_itt_recovery(t):
     """rec_itt(t): recoveries out of ITT at the end of month t, back to ``healthy``.
 
-    ``sum over z of l_itt(t-1, z) rho(z)``.  Recovered lives re-enter ``healthy`` and are
+    ``sum over z of l_itt(t, z) rho(z)``.  Recovered lives re-enter ``healthy`` and are
     again exposed to inception **[std]**.  A same-cause recurrence would contractually
     restart payment with no new *franchise*; returning them to the standard inception
     basis ignores that and understates re-inception at short horizons.
@@ -1172,7 +1195,7 @@ def pols_itt_recovery(t):
 def pols_itt_to_ipt(t):
     """trn_ipt(t): ITT claims consolidating into IPT at the end of month t.
 
-    ``sum over z of l_itt(t-1, z) (1 - rho(z)) tau(z)`` - recovery first, then transition
+    ``sum over z of l_itt(t, z) (1 - rho(z)) tau(z)`` - recovery first, then transition
     among the non-recovered.  These lives are paid for month t as ITT and enter IPT at the
     end of it, so the move creates neither an unpaid month nor a doubled one.
     """
@@ -1184,7 +1207,7 @@ def pols_itt_to_ipt(t):
 def pols_itt_death(t):
     """dth_itt(t): deaths in ITT at the end of month t.
 
-    ``sum over z of l_itt(t-1, z) (1 - rho)(1 - tau) q_s``, the last of the three
+    ``sum over z of l_itt(t, z) (1 - rho)(1 - tau) q_s``, the last of the three
     competing exits.  They carry the Décès benefit like any other death.
     """
     v = itt_cohorts(t)
@@ -1244,7 +1267,7 @@ def pols_ipt_entry(t):
     """All entrants to IPT at the end of month t: the transitions plus the cap share.
 
     On the ``crd`` IPT basis these lives do not enter a state at all - they take a single
-    payment of ``crd(t) x quotite`` and leave, which is :func:`pols_ipt_capital`.
+    payment of ``crd(t + 1) x quotite`` and leave, which is :func:`pols_ipt_capital`.
     """
     return pols_itt_to_ipt(t) + pols_cap_to_ipt(t)
 
@@ -1267,7 +1290,7 @@ def pols_ipt_stay(t):
 def pols_ipt_capital(t):
     """The mass leaving the model with an IPT capital, on the ``crd`` basis; else zero.
 
-    On that basis IPT is not a state: the entrants take ``crd(t) x quotite`` once and are
+    On that basis IPT is not a state: the entrants take ``crd(t + 1) x quotite`` once and are
     gone, exactly as a death is.  The cells exists so that :func:`check_states` closes on
     both bases without a special case.
     """
@@ -1275,35 +1298,35 @@ def pols_ipt_capital(t):
 
 
 def pols_healthy_close(t):
-    """l_h(t): the population in ``healthy`` at the **end** of month t.
+    """l_h(t + 1): the population in ``healthy`` at the **end** of month t.
 
     Those staying, plus the month's recoveries, plus the share of the capped cohort sent
-    back.  This is the notes' own ``l_h(t)`` - 0.995344 at ``t = 1`` on the anchor cell -
-    and it is :func:`pols_healthy` ``(t + 1)`` less anything the cover-cessation transfer
-    moves in at the start of the next month.
+    back.  This is the notes' own ``l_h(t + 1)``, the state at time ``t + 1`` - 0.995344
+    at ``t = 0`` on the anchor cell - and it is :func:`pols_healthy` ``(t + 1)`` less
+    anything the cover-cessation transfer moves in at the start of the next month.
     """
     return pols_healthy_stay(t) + pols_itt_recovery(t) + pols_cap_return(t)
 
 
 def pols_itt_close(t):
-    """l_itt(t): the total population in ITT at the **end** of month t.
+    """l_itt(t + 1): the total population in ITT at the **end** of month t.
 
     Read out of :func:`itt_cohorts_raw` ``(t + 1)`` - the *next* month's un-transferred
     opening vector - so it travels through the cohort recursion rather than repeating its
     arithmetic.  That is what makes :func:`check_benefit_split` a real check rather than
     an identity: a mis-indexed duration shift moves this number and not the benefit.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     return sum(itt_cohorts_raw(t + 1))
 
 
 def pols_ipt_close(t):
-    """l_ipt(t): the population in IPT at the **end** of month t.
+    """l_ipt(t + 1): the population in IPT at the **end** of month t.
 
     The survivors plus the month's entrants.  Zero throughout on the ``crd`` IPT basis.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if ipt_benefit_basis() == "crd":
         return 0.0
@@ -1338,7 +1361,7 @@ def pols_if_at(t, timing):
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "AFT_DECR":
-        if t < 1 or t >= proj_len():
+        if t < 0 or t >= proj_len() - 1:
             return 0.0
         return pols_if(t + 1)
     raise ValueError("invalid timing")
@@ -1357,8 +1380,8 @@ def pols_exit(t):
 
 
 def pols_exit_cum(t):
-    """Cumulative exits from the model before the start of month t."""
-    if t <= 1:
+    """Cumulative exits from the model before the start of month t; zero at t = 0."""
+    if t <= 0:
         return 0.0
     return pols_exit_cum(t - 1) + pols_exit(t - 1)
 
@@ -1371,7 +1394,7 @@ def pols_maturity(t):
     it the last month appears to lose lives with no cause and
     :func:`check_pols_roll_fwd` would not close.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_healthy_close(t) + pols_itt_close(t) + pols_ipt_close(t)
 
@@ -1379,12 +1402,14 @@ def pols_maturity(t):
 # -- Benefits, expenses and net cash flow ------------------------------------
 
 def benefit_deces_pp(t):
-    """The Décès and PTIA capital per policy in month t: ``crd(t) x quotite``.
+    """The Décès and PTIA capital per policy in month t: ``crd(t + 1) x quotite``.
 
+    The benefit falls at the **end** of month t, so it is written on that month's closing
+    balance ``crd(t + 1)`` - the instalment falling on the day of death being deemed due.
     One expression for both guarantees, because they pay the identical amount - what
     separates them is :func:`cover_deces` against :func:`cover_ptia`, not the benefit.
     """
-    return crd(t) * quotite()
+    return crd(t + 1) * quotite()
 
 
 def benefit_itt_pp():
@@ -1403,13 +1428,14 @@ def claims(t, kind=None):
     """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
-        ``crd(t) x Q`` on deaths from **all three states**, while
+        ``crd(t + 1) x Q`` on deaths from **all three states**, while
         :func:`cover_deces` holds.  A life dying in ITT or IPT is still a
         death claim.
 
     ``"PTIA"``
-        ``crd(t) x Q`` on PTIA claims out of ``healthy``.  The same capital
-        as death, on a decrement that switches off fifteen years earlier.
+        ``crd(t + 1) x Q`` on PTIA claims out of ``healthy``.  The same
+        capital as death, on a decrement that switches off fifteen years
+        earlier.
 
     ``"ITT"``
         ``ech x Q x IR`` on the mass in payment throughout the month,
@@ -1419,7 +1445,8 @@ def claims(t, kind=None):
         on the ``echeance`` basis, ``ech x Q x IR`` on the IPT survivors
         **plus the month's ITT to IPT transitions** - so a life moving at
         the end of month t is paid exactly once for it.  On the ``crd``
-        basis, ``crd(t) x Q`` once on every entrant, after which they leave.
+        basis, ``crd(t + 1) x Q`` once on every entrant, after which they
+        leave.
 
     ``"LAPSE"``, ``"MATURITY"``
         zero.  There is **no surrender value** at any time and **no
@@ -1495,15 +1522,16 @@ def net_cf(t):
 # -- Checks ------------------------------------------------------------------
 
 def check_crd_resid(t):
-    """The amortisation roll-forward residual in month t; zero everywhere.
+    """The amortisation roll-forward residual over month t; zero everywhere.
 
-    ``crd(t) - (crd(t-1) (1 + i) - ech)``.  The loan spine, two ways: the annuity form
-    against the recursion.  This is the check a pasted *échéancier* fails - and it also
-    catches the wrong rate conversion, since computing ``i`` as
-    ``(1 + nominal)^(1/12) - 1`` moves the *échéance* and breaks the roll-forward against
-    the annuity form.
+    ``crd(t + 1) - (crd(t) (1 + i) - ech)``: the instalment of month t falls at its end,
+    carrying the opening balance ``crd(t)`` to the closing one ``crd(t + 1)``.  The loan
+    spine, two ways: the annuity form against the recursion.  This is the check a pasted
+    *échéancier* fails - and it also catches the wrong rate conversion, since computing
+    ``i`` as ``(1 + nominal)^(1/12) - 1`` moves the *échéance* and breaks the
+    roll-forward against the annuity form.
     """
-    return crd(t) - (crd(t - 1) * (1.0 + loan_rate_mth()) - echeance())
+    return crd(t + 1) - (crd(t) * (1.0 + loan_rate_mth()) - echeance())
 
 
 def check_crd():
@@ -1520,7 +1548,7 @@ def check_crd():
     if abs(crd(0) - capital_initial()) > tol:
         return False
     return all(abs(check_crd_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_states_resid(t):
@@ -1543,7 +1571,7 @@ def check_states():
     :func:`check_states_resid` gives the signed residual of the month that failed.
     """
     return all(abs(check_states_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1565,7 +1593,7 @@ def check_pols_roll_fwd():
     rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_benefit_split_resid(t):
@@ -1574,9 +1602,9 @@ def check_benefit_split_resid(t):
     The paying mass equals the **closing** disabled population, less the month's new
     inceptions, plus the share of the capped cohort that went back to ``healthy``::
 
-        ben_itt + ben_ipt = ech Q IR (l_itt(t) - n_itt(t) + l_ipt(t) + cap_return(t))
+        ben_itt + ben_ipt = ech Q IR (l_itt(t+1) - n_itt(t) + l_ipt(t+1) + cap_return(t))
 
-    on the ``echeance`` IPT basis, and ``ben_itt = ech Q IR (l_itt(t) - n_itt(t) +
+    on the ``echeance`` IPT basis, and ``ben_itt = ech Q IR (l_itt(t+1) - n_itt(t) +
     cap_itt(t))`` on the ``crd`` one, where the entrants take a capital instead.
 
     The ``cap_return`` term is the one an implementation forgets: those lives were in ITT
@@ -1601,7 +1629,7 @@ def check_benefit_split():
     """True when the ITT / IPT paying-mass identity holds in every projected month."""
     scale = max(benefit_itt_pp(), 1.0) * max(pols_if_init(), 1.0)
     return all(abs(check_benefit_split_resid(t)) <= 1e-10 * scale
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cover_end_resid(t):
@@ -1625,13 +1653,16 @@ def check_cover_end_resid(t):
 def check_cover_end():
     """True when no ITT or IPT benefit is paid after the guarantee's age limit."""
     return all(abs(check_cover_end_resid(t)) <= 1e-12
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 # -- Discounting: a companion, not part of the projection --------------------
 
 def disc_factor(t):
-    """v(t) = (1 + i)^(-t/12): the notes' flat discount factor **[std]**.
+    """v(t) = (1 + i)^(-(t + 1)/12): the notes' flat discount factor **[std]**.
+
+    The cash flows of month t fall at its end, time ``t + 1`` months from adhesion, so
+    ``disc_factor(0)`` discounts one month and ``disc_factor(11)`` exactly one year.
 
     A **companion to** the cash flow projection, not part of it: no line of
     :func:`result_cf` is discounted, and every other model in this library projects
@@ -1641,7 +1672,7 @@ def disc_factor(t):
     instead of a flat 2.5 %; no numeric EIOPA curve value was extracted anywhere in this
     library, which is why the reference rate here is a modeling convention.
     """
-    return (1.0 + disc_rate) ** (-t / 12.0)                          # noqa: F821
+    return (1.0 + disc_rate) ** (-(t + 1) / 12.0)                    # noqa: F821
 
 
 def pv_premiums():
@@ -1651,7 +1682,7 @@ def pv_premiums():
     premium basis - a ratio of 1.001062, which is the calibration of the CRD scale.
     """
     return sum(premiums(t) * disc_factor(t)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def pv_claims(kind=None):
@@ -1661,7 +1692,7 @@ def pv_claims(kind=None):
     death and PTIA are 70.8 % of the benefit present value and the incapacity side 29.2 %.
     """
     return sum(claims(t, kind) * disc_factor(t)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def pv_expenses():
@@ -1671,7 +1702,7 @@ def pv_expenses():
     margin.
     """
     return sum(expenses(t) * disc_factor(t)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def pv_outgo():
@@ -1690,17 +1721,18 @@ def result_cf():
     ``pols_if`` is healthy plus ITT plus IPT at the start of the month.  ``pols_healthy``
     is published beside it because it, and not ``pols_if``, is the weight on premium
     income - the difference between the two columns is the population whose premiums are
-    waived.  ``crd`` is the loan balance after the month's instalment, the sum insured for
-    the Décès and PTIA columns.  Nothing here is discounted; see :func:`disc_factor`.
+    waived.  ``crd`` is the loan balance at the **end** of the month, ``crd(t + 1)`` on
+    the loan's own time-point index, which is the sum insured for the Décès and PTIA
+    columns.  Nothing here is discounted; see :func:`disc_factor`.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
             "pols_healthy": [pols_healthy(t) for t in ts],
             "pols_itt": [pols_itt(t) for t in ts],
             "pols_ipt": [pols_ipt(t) for t in ts],
-            "crd": [crd(t) for t in ts],
+            "crd": [crd(t + 1) for t in ts],
             "premiums": [premiums(t) for t in ts],
             "claims_death": [claims(t, "DEATH") for t in ts],
             "claims_ptia": [claims(t, "PTIA") for t in ts],
@@ -1719,10 +1751,11 @@ def result_cf():
 def result_states():
     """Result table of state movements and rates, indexed by policy month t.
 
-    The closing states are the notes' own ``l_h(t)``, ``l_itt(t)`` and ``l_ipt(t)``, so
-    the worked example's table can be read straight off this frame.
+    The closing states are the notes' own ``l_h(t + 1)``, ``l_itt(t + 1)`` and
+    ``l_ipt(t + 1)`` - the state at the end of month t - so the worked example's table
+    can be read straight off this frame.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_healthy_close": [pols_healthy_close(t) for t in ts],

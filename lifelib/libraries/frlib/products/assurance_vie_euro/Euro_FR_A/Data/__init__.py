@@ -128,7 +128,9 @@ def fin_rate_table():
 
     Three scenarios by projection year: the fund's `taux de rendement de l'actif`
     ``r_fin`` and the market reference rate ``ref_rate`` the dynamic surrender term keys
-    off.  The base path runs 3.30% down to 2.30% over twelve years and stays there,
+    off.  The ``t`` column is the model's own time index, so it is **0-based**: ``t = 0``
+    is the first projected year and the file runs 0 to 39.
+    The base path runs 3.30% down to 2.30% over twelve years and stays there,
     anchored to the ACPR's observed asset return - 2.8% in 2025, 2.5% in 2024, half of
     undertakings between 2.4% and 3.3% - and to the reinvestment picture behind it.
     ``ref_rate`` is 2.20% throughout, the 2025 average Livret A rate.  These are

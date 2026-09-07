@@ -29,7 +29,7 @@ because the whole of the account value is funded by cancelling units and by the 
 balance.
 
 **The garantie plancher is the insurance content.** Its charge base is the net amount at
-risk, not the account value: on the anchor cell at month 12 the correct charge is 27.18 €
+risk, not the account value: on the anchor cell at ``t = 11`` the correct charge is 27.18 €
 and the charge on the account value would be 126.35 €, a factor of 4.6. The net amount at
 risk is floored at zero, so the rider costs nothing while the units are above the floor
 and the strain never turns into a rebate; it is capped at 300,000 €, and the cap applies
@@ -66,13 +66,19 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Monthly steps, ``t`` counting policy months from 1. Within month
-``t``: the liquidation value moves and the euro leg accrues; the management charge is
-taken on the units held at the **start** of the month; arbitrages and withdrawals settle;
-the `capital sous risque` is observed; the plancher premium is levied; decrements act at
-the end of the month, deaths before surrenders. Age is **age last birthday** and the
-tariff steps at each policy anniversary. The projection runs for the model point's own
-``proj_len`` months — the contract is whole of life and has no maturity date.
+**Projection basis.** Monthly steps, ``t`` counting policy months from issue and
+**0-based**: ``t = 0`` is the issue month, period ``t`` runs from time ``t`` to time
+``t + 1``, and the frame is ``t = 0 … proj_len() − 1``, so ``result_cf()`` has
+``proj_len()`` rows. A contractual policy year is the 1-based label ``t // 12 + 1``.
+Within month ``t``: the liquidation value moves and the euro leg accrues; the management
+charge is taken on the units held at the **start** of the month; arbitrages and
+withdrawals settle; the `capital sous risque` is observed; the plancher premium is levied;
+decrements act at the end of the month, deaths before surrenders. The balances **at
+issue** are not a row of the frame — they are the ``*_init`` cells, read into month 0
+through the opening cells ``units_open``, ``unit_price_open``, ``av_euro_open_pp`` and
+``av_pp_at(t, "OPENING")``. Age is **age last birthday** and the tariff steps at each
+policy anniversary. The projection runs for the model point's own ``proj_len`` months —
+the contract is whole of life and has no maturity date.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the unit
 count as the thing guaranteed, the death benefit as the account value plus the `capital

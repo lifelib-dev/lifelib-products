@@ -32,14 +32,17 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Annual steps. Policy year ``t`` runs 1, 2, ..., ``proj_len()``,
-where ``proj_len() = 95 - age_at_entry()``. Premiums, commission, premium tax and
-expenses fall at the beginning of the year; death claims and the conversion credit at
-the end; lapses and conversions act on end-of-year survivors. Note the contrast with
-lifelib's ``BasicTerm_S``, where ``t`` counts **months** — here it counts **years**,
-because every decrement in this product is on an annual cycle and there is no account
-value requiring monthiversary processing. The technical notes describe an optional
-monthly mode; it is not implemented.
+**Projection basis.** Annual steps on lifelib's 0-based time index: ``t = 0`` is the
+issue year and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len() = 95 - age_at_entry()`` is the number of policy years projected. Attained
+age is ``age_at_entry() + t``; the contractual policy year is the 1-based label
+``policy_year(t) = t + 1``, used only to read the guaranteed premium schedule.
+Premiums, commission, premium tax and expenses fall at the beginning of the year; death
+claims and the conversion credit at the end; lapses and conversions act on end-of-year
+survivors. Note the contrast with lifelib's ``BasicTerm_S``, where ``t`` counts
+**months** — here it counts **years**, because every decrement in this product is on an
+annual cycle and there is no account value requiring monthiversary processing. The
+technical notes describe an optional monthly mode; it is not implemented.
 
 **What is sourced and what is not.** The contractual elements are taken from a
 specimen policy: the guaranteed premium schedule, the $65 policy fee inside it, and

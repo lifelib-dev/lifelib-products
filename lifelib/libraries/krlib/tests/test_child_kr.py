@@ -4,7 +4,9 @@ The golden values are the worked example in
 products/child/technical-notes.md ("Worked example"), which projects the anchor cell
 CH-KR-0001: a **태아가입** contract priced male because the sex is not known at issue,
 계약나이 0 at the 계약일, **birth at policy month 5**, 보험기간 to the 100세 계약해당일
-(``n = 1200``), 20년납 (``m = 240``), 월납, 표준형, both premium waivers on, the 계약자
+(the terminal index ``n = proj_len() - 1 = 1200``, so ``proj_len() == 1201`` rows on a
+0-based frame ``t = 0 … 1200``), 20년납 (``m = 240``), 월납, 표준형, both premium waivers
+on, the 계약자
 male 만 33, and an office premium of KRW 31,000 a month to ``t = 16`` and KRW 28,000 from
 ``t = 17`` to ``t = 239``.  They are hard-coded here rather than pickled so that a
 reviewer can compare them against the notes by eye.
@@ -449,7 +451,7 @@ def test_the_anchor_cell_is_the_one_the_notes_describe(kr_child_anchor):
     assert a.sex() == "M" and a.payer_sex() == "M"
     assert a.foetal() is True and a.birth_month() == 5
     assert a.issue_age() == 0 and a.issue_age_man() == 0
-    assert a.term_age() == 100 and a.proj_len() == 1200
+    assert a.term_age() == 100 and a.proj_len() == 1201
     assert a.prem_period_years() == 20 and a.prem_period_mths() == 240
     assert a.prem_end() == 239
     assert a.premium_mth() == 28000.0 and a.premium_foetal_mth() == 3000.0
@@ -945,7 +947,7 @@ def test_worked_example_exit_split(kr_child_anchor):
     per-month roll-forward just as well and loses the cash flow that goes with it.
     """
     a = kr_child_anchor
-    ts = range(0, a.proj_len() + 1)
+    ts = range(0, a.proj_len())
     totals = {name: sum(getattr(a, name)(t) for t in ts) for name in EXIT_SPLIT}
     for name, value in EXIT_SPLIT.items():
         assert totals[name] == pytest.approx(value, abs=INFORCE), name
@@ -1324,7 +1326,7 @@ def test_pitfall_the_basic_cover_is_a_percentage_scale_not_a_lump_sum(kr_child_a
     ₩4,626,483.18.  **The error is a factor of 8.3 and it lands on ₩100,000,000 of cover.**
     """
     a = kr_child_anchor
-    n = a.proj_len()
+    n = a.proj_len() - 1        # the terminal row carries no benefit; sum the term itself
     sev = a.basis_param("disab_severity")
     assert sev == 0.12
     accident = sum(a.sum_assured("disability") * sev * a.inc_rate_mth(t, "disability")
@@ -1613,7 +1615,7 @@ def test_the_check_tolerances_are_named_references(child, kr_child_anchor):
     assert refs["val_tol"] < 1.0
     a = kr_child_anchor
     worst = max(abs(a.check_pols_roll_fwd_resid(t))
-                for t in range(0, a.proj_len() + 1))
+                for t in range(0, a.proj_len()))
     assert worst < refs["roll_fwd_tol"] / 100.0
 
 
@@ -1627,11 +1629,11 @@ def test_the_in_force_roll_forward_is_the_notes_identity(kr_child_anchor):
     """
     a = kr_child_anchor
     assert a.check_pols_roll_fwd() is True
-    for t in range(0, a.proj_len() + 1):
+    for t in range(0, a.proj_len()):
         out = (a.pols_void(t) + a.pols_death(t) + a.pols_lapse(t)
                + a.pols_maturity(t))
         assert a.pols_if(t) - a.pols_if(t + 1) == pytest.approx(out, abs=1e-12), t
-    assert a.pols_if(a.proj_len() + 1) == 0.0
+    assert a.pols_if(a.proj_len()) == 0.0
     assert a.pols_if(-1) == 0.0
 
 
@@ -1935,20 +1937,21 @@ def test_the_three_lapse_bases_run_side_by_side(child, kr_child_anchor):
 def test_the_term_and_the_payment_term_envelopes(child, kr_child_anchor):
     """110세만기, 30세만기 and 30년납, each changing the horizon and nothing else.
 
-    ``proj_len()`` is ``12 × (term_age − issue_age)`` and the 환급률 taper is indexed on
+    ``proj_len()`` is ``12 × (term_age − issue_age) + 1`` — the **number** of projected
+    months, so the last index is ``proj_len() - 1`` — and the 환급률 taper is indexed on
     the **fraction** of the term run off, which is what lets one shipped grid serve a
     30세만기, a 100세만기 and a 110세만기 contract without re-basing the published figures.
     """
-    assert kr_child_anchor.proj_len() == 1200
+    assert kr_child_anchor.proj_len() == 1201
 
     long_term = child.Projection[6]
     assert long_term.term_age() == 110 and long_term.issue_age() == 0
-    assert long_term.proj_len() == 1320
+    assert long_term.proj_len() == 1321
     assert long_term.foetal() is True and long_term.birth_month() == 3
     assert long_term.foetal_cover_end() == 15 and long_term.age_man(1320) == 109
 
     short = child.Projection[9]
-    assert short.term_age() == 30 and short.proj_len() == 360
+    assert short.term_age() == 30 and short.proj_len() == 361
     assert short.refund_ratio(360) == 0.0
     assert short.refund_ratio(120) == pytest.approx(0.737, rel=1e-14)
     assert short.runoff(180) == 0.5
@@ -2473,7 +2476,7 @@ def test_round_trip_is_stable(tmp_path):
     reread = mx.read_model(dest, name="Child_KR_S_rt")
     try:
         anchor = reread.Projection[1]
-        assert anchor.proj_len() == 1200 and anchor.birth_month() == 5
+        assert anchor.proj_len() == 1201 and anchor.birth_month() == 5
         for t in (0, 5, 17):
             expected = WORKED_EXAMPLE_CF[t]
             assert anchor.pols_if(t) == pytest.approx(expected[0], abs=INFORCE)

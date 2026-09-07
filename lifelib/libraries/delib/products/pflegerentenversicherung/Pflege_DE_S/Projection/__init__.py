@@ -14,9 +14,10 @@ projecting model point 1::
 ``t`` counts **policy months**, 0-based: ``t = 0`` is the month of issue and
 ``age(t) = age_at_entry + t // 12``, so the attained age steps at the policy anniversary.
 The frame **starts** at ``duration_mth_init()`` — ``0`` for new business, the elapsed
-duration for an in-force model point — and **ends** at
-``proj_len() = 12 * (omega_age() - age_at_entry()) - 1``, which depends on the entry age
-and the terminal age alone. There is no maturity, no survival benefit and no tail state:
+duration for an in-force model point — and runs to ``proj_len() - 1``, where
+``proj_len() = 12 * (omega_age() - age_at_entry())`` is the **number of projected months**,
+the exclusive end of ``range(duration_mth_init(), proj_len())``, and depends on the entry
+age and the terminal age alone. There is no maturity, no survival benefit and no tail state:
 the contract runs for life, and the closure is carried by the decrements.
 
 .. rubric:: Input data
@@ -63,7 +64,7 @@ mapping is:
 Notes symbol                Cells                           Meaning
 ==========================  ==============================  ==========================
 (none)                      model_point()                   The selected model point row
-n = 12(omega - entry) - 1   proj_len()                      Last projected month index
+n = 12(omega - entry)       proj_len()                      Number of projected months
 d0                          duration_mth_init()             Month the frame opens at
 t                           duration_mth(t)                 Months since issue
 y(t) = t // 12 + 1          policy_year(t)                  Versicherungsjahr
@@ -539,18 +540,23 @@ def rechnungszins():
 
 
 def proj_len():
-    """n: the **last projected month index**, ``12 (omega_age - age_at_entry) - 1``.
+    """n: the **number of projected months**, ``12 (omega_age - age_at_entry)``.
 
-    Not a row count.  ``result_cf().index[-1] == proj_len()`` whether the frame is 0-based
-    or opens partway through, which is the library's reading and is asserted for every
-    model point.  On the anchor cell — entry age 45, ``omega_age`` 110 — it is 779, so the
-    frame runs ``t = 0 … 779``, 780 monthly rows, attained ages 45 to 109.
+    The **exclusive end** of the frame, counted from ``t = 0``: the frame is
+    ``range(duration_mth_init(), proj_len())``, the last projected index is
+    ``proj_len() - 1`` and ``result_cf().index[-1] == proj_len() - 1`` whether the frame
+    is 0-based or opens partway through, which is the library's reading and is asserted
+    for every model point.  On the anchor cell — entry age 45, ``omega_age`` 110 — it is
+    780, so the frame runs ``t = 0 … 779``, 780 monthly rows, attained ages 45 to 109.
 
     It depends on the entry age and the terminal age alone, **not** on
-    :func:`duration_mth_init`: an in-force point publishes a shorter frame that ends at the
-    same index.
+    :func:`duration_mth_init`: a point opening at ``duration_mth_init() = d0`` publishes
+    ``proj_len() - d0`` rows and still ends at its own ``proj_len() - 1``, because
+    ``duration_mth_init`` shortens the frame at the front, never at the back.  That last
+    index is the point's own — ``proj_len()`` varies with the entry age — not the anchor's
+    779.
     """
-    return 12 * (omega_age() - age_at_entry()) - 1
+    return 12 * (omega_age() - age_at_entry())
 
 
 def duration_mth(t):
@@ -1733,7 +1739,7 @@ def epv_benefits():
     survival benefit, this annuity is the only thing the contract ever pays.
     """
     total = 0.0
-    for t in range(0, proj_len() + 1):
+    for t in range(proj_len()):
         row = 0.0
         for g in range(1, 6):
             pct = benefit_pct(g)
@@ -1754,7 +1760,7 @@ def epv_prem_units():
     m = prem_mode_months()
     mult = m if m > 0 else 1
     total = 0.0
-    for t in range(0, proj_len() + 1):
+    for t in range(proj_len()):
         if premium_due(t):
             total += disc_factor(t) * mult * tar_pols_prem(t)
     return total
@@ -1765,7 +1771,7 @@ def epv_admin():
     admin_pp = float(data.expense_table().at[                        # noqa: F821
         "admin_mth_pp", "value"])
     total = 0.0
-    for t in range(0, proj_len() + 1):
+    for t in range(proj_len()):
         total += disc_factor(t) * admin_pp * expense_infl_factor(t) * tar_pols_if(t)
     return total
 
@@ -1775,7 +1781,7 @@ def epv_claim_expense():
     per_payment = float(data.expense_table().at[                     # noqa: F821
         "claim_expense_pp", "value"])
     total = 0.0
-    for t in range(0, proj_len() + 1):
+    for t in range(proj_len()):
         row = 0.0
         for g in range(1, 6):
             if waiver_flag(g):
@@ -1841,7 +1847,7 @@ def premium_mth_pp():
         a1 = permille * 12.0 * years
     d1 = 0.0
     if beitragsrueckgewaehr():
-        for t in range(0, proj_len() + 1):
+        for t in range(proj_len()):
             d1 += disc_factor(t) * prem_units_at(t) * tar_pols_death(t)
     numerator = epv_benefits() + epv_admin() + epv_claim_expense()
     denominator = epv_prem_units() * (1.0 - admin_pct) - d1 - a1
@@ -1896,7 +1902,7 @@ def check_net_cf():
     tol = float(data.basis_table().at["roll_fwd_tol", "value"])      # noqa: F821
     scale = max(pols_if_init() * max(rente_mth(), 1.0), 1.0)
     return all(abs(check_net_cf_resid(t)) <= tol * scale
-               for t in range(duration_mth_init(), proj_len() + 1))
+               for t in range(duration_mth_init(), proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1921,7 +1927,7 @@ def check_pols_roll_fwd():
     tol = float(data.basis_table().at["roll_fwd_tol", "value"])      # noqa: F821
     scale = max(pols_if_init(), 1.0)
     return all(abs(check_pols_roll_fwd_resid(t)) <= tol * scale
-               for t in range(duration_mth_init(), proj_len() + 1))
+               for t in range(duration_mth_init(), proj_len()))
 
 
 def check_states_resid(t):
@@ -1952,7 +1958,7 @@ def check_states():
     tol = float(data.basis_table().at["roll_fwd_tol", "value"])      # noqa: F821
     scale = max(pols_if_init(), 1.0)
     return all(abs(check_states_resid(t)) <= tol * scale
-               for t in range(duration_mth_init(), proj_len() + 1))
+               for t in range(duration_mth_init(), proj_len()))
 
 
 def check_waiver_resid(t):
@@ -1978,7 +1984,7 @@ def check_waiver():
     tol = float(data.basis_table().at["roll_fwd_tol", "value"])      # noqa: F821
     scale = max(pols_if_init(), 1.0)
     return all(abs(check_waiver_resid(t)) <= tol * scale
-               for t in range(duration_mth_init(), proj_len() + 1))
+               for t in range(duration_mth_init(), proj_len()))
 
 
 def check_esc_ledger_resid(t):
@@ -2005,7 +2011,7 @@ def check_esc_ledger():
     tol = float(data.basis_table().at["roll_fwd_tol", "value"])      # noqa: F821
     scale = max(pols_if_init(), 1.0)
     return all(abs(check_esc_ledger_resid(t)) <= tol * scale
-               for t in range(duration_mth_init(), proj_len() + 1))
+               for t in range(duration_mth_init(), proj_len()))
 
 
 def check_prem_equiv_resid(t):
@@ -2082,14 +2088,14 @@ def check_prem_equiv():
     if premium_mth() > 0.0:
         return True
     scale = max(premium_mth_pp() / rating_factor() * epv_prem_units(), 1.0)
-    total = sum(check_prem_equiv_resid(t) for t in range(0, proj_len() + 1))
+    total = sum(check_prem_equiv_resid(t) for t in range(proj_len()))
     return abs(total) <= tol * scale
 
 
 def result_cf():
     """Result table of cash flows, indexed by policy month ``t``.
 
-    Contiguous from :func:`duration_mth_init` to :func:`proj_len`.  ``pols_if`` is the
+    Contiguous from :func:`duration_mth_init` to ``proj_len() - 1``.  ``pols_if`` is the
     **start**-of-month count, which is the weight applied to every cash flow on the same
     row, and its first value equals ``pols_if_init()`` exactly.  ``pols_act``,
     ``pols_care`` and ``pols_prem`` split it three ways for a reader following the
@@ -2102,7 +2108,7 @@ def result_cf():
     ``premiums`` less the three ``claims`` columns, ``expenses`` and ``claim_expenses``;
     ``liability_cf`` is its negative.
     """
-    ts = list(range(duration_mth_init(), proj_len() + 1))
+    ts = list(range(duration_mth_init(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2132,7 +2138,7 @@ def result_states():
     ``check_*``; ``mort_rate_care_pg5`` is published in preference to all five grades'
     because the grade-5 rate is the one that carries the product's central biometric fact.
     """
-    ts = list(range(duration_mth_init(), proj_len() + 1))
+    ts = list(range(duration_mth_init(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_pg1": [pols_pg(t, 1) for t in ts],

@@ -46,20 +46,29 @@ is English `lower_snake_case`; French terms of art are kept in French.
   flat 50 % at three others [S5] [S9] [S10] — so one reference number would misrepresent half
   of it. *Mi-temps thérapeutique*, *garantie aide à la famille*, *invalidité AERAS* and the
   exclusion buy-backs are excluded on the same grounds.
-- **Timing and horizon [std].** `t = 1..proj_len`, `proj_len = loan_term_months` (240 in the
-  base cell); all cover ends at the loan's contractual expiry [S1] [S9]. Premiums arrive at
-  the **beginning of the policy month** (BOM) from lives in `healthy`; the *échéance* falls
-  at **end of month** (EOM), so `crd(t)` is the principal outstanding immediately after the
-  month-`t` instalment; transitions occur at EOM. Claim benefit for month `t` is paid at EOM
-  to lives in a paying state at BOM `t` that have neither recovered nor died during the
-  month — monthly in arrears, so a claim incepting at EOM `t` is first paid at EOM `t+1`.
-  Death and PTIA benefits are paid at EOM `t` against `crd(t)`, the instalment falling on the
-  day of death being deemed due [S9].
-- **Age and duration [std].** `age(t) = entry_age + floor((t − 1)/12)`; one insurer computes
+- **Time index [std].** `t` is the **0-based policy month**: `t = 0` is the contract's first
+  month, the frame is `t = 0..proj_len − 1` with `proj_len = loan_term_months` (240 in the
+  base cell, so the last projected month is `t = 239`), and the contractual policy year is
+  the 1-based label `y = floor(t/12) + 1`, derived from `t` and never indexed by. Month `t`
+  runs from time `t` to time `t + 1`. The quantities carried at a **time point** keep their
+  own 0-based index `k`, `k = 0` at adhesion: the loan balance `crd(k)`, with
+  `crd(0) = capital_initial` and `crd(T) = 0`, and the state probabilities `l_h(k)`,
+  `l_itt(k, z)` and `l_ipt(k)`, with `l_h(0) = 1`. Month `t` therefore **opens** on `crd(t)`
+  and `l_h(t)` and **closes** on `crd(t + 1)` and `l_h(t + 1)`.
+- **Timing and horizon [std].** All cover ends at the loan's contractual expiry [S1] [S9].
+  Premiums arrive at the **beginning of the policy month** (BOM) from lives in `healthy`;
+  the *échéance* falls at **end of month** (EOM), so `crd(t + 1)` is the principal
+  outstanding immediately after the month-`t` instalment; transitions occur at EOM. Claim
+  benefit for month `t` is paid at EOM to lives in a paying state at BOM `t` that have
+  neither recovered nor died during the month — monthly in arrears, so a claim incepting at
+  EOM `t` is first paid at EOM `t+1`. Death and PTIA benefits are paid at EOM `t` against
+  `crd(t + 1)`, the instalment falling on the day of death being deemed due [S9].
+- **Age and duration [std].** `age(t) = entry_age + floor(t/12)`; one insurer computes
   age by difference of calendar years [S3] and two set the rate by age at adhesion
   [S9] [S11], so the annual step is a pure convention. `z` is months since **claim payment
-  inception**, i.e. since the end of the *franchise*, running `z = 1..itt_max_months`; the
-  1 095-day cap [S1] [S11] [S12] gives `itt_max_months = 36`.
+  inception**, i.e. since the end of the *franchise*, running `z = 1..itt_max_months` on a
+  clock of its own that the policy-month index never touches; the 1 095-day cap
+  [S1] [S11] [S12] gives `itt_max_months = 36`.
 - **Units.** EUR. `capital_initial`, `crd` and death benefits are amounts; `echeance`, `prem`
   and monthly benefits are EUR per month; rates are probabilities per period unless labelled
   "per mille". Model points are projected on an expected basis; an in-force portfolio needs
@@ -102,13 +111,13 @@ project.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `crd(t)` | Capital restant dû immediately after the month-`t` instalment | monthly, deterministic |
+| `crd(k)` | Capital restant dû at time `k`, i.e. after the `k`-th instalment | at each instalment, deterministic |
 | `echeance` | Level monthly loan instalment, capital and interest | once, at issue |
 | `prem_pp(t)` | Monthly premium per policy in force | at each policy anniversary |
-| `l_h(t)` | Probability in `healthy` at EOM `t` (alive, no claim in payment) | monthly |
-| `l_itt(t, z)` | Probability in ITT payment at EOM `t` at claim duration `z` | monthly, two-dimensional |
-| `l_itt(t)` | Total ITT probability = Σ_z `l_itt(t, z)` | derived |
-| `l_ipt(t)` | Probability in IPT payment at EOM `t` | monthly |
+| `l_h(k)` | Probability in `healthy` at time `k` (alive, no claim in payment); `l_h(0) = 1` | monthly |
+| `l_itt(k, z)` | Probability in ITT payment at time `k` at claim duration `z` | monthly, two-dimensional |
+| `l_itt(k)` | Total ITT probability = Σ_z `l_itt(k, z)` | derived |
+| `l_ipt(k)` | Probability in IPT payment at time `k` | monthly |
 | `n_itt(t)` | New ITT claim-payment inceptions in month `t` (seeds `z = 1`) | monthly |
 | `rec_itt(t)`, `trn_ipt(t)`, `dth_itt(t)` | Exits from ITT: recoveries, transitions to IPT, deaths in claim | monthly |
 | `cap_itt(t)` | ITT mass reaching the 1 095-day assessment at EOM `t` | monthly |
@@ -117,8 +126,9 @@ project.
 
 There is no account value, no surrender value and no unit fund: the state is the insured
 population plus the deterministic loan schedule. `l_h(t) + l_itt(t) + l_ipt(t) +
-Σ_{s ≤ t} (dth_h + ptia_h + lapses + dth_itt + dth_ipt)(s) = 1` for every `t` — that
-identity is `check_states()`.
+Σ_{s < t} (dth_h + ptia_h + lapses + dth_itt + dth_ipt)(s) = 1` for every `t` — the states
+at time `t` plus everything that has left in months `0 .. t − 1`. That identity is
+`check_states()`.
 
 ---
 
@@ -129,7 +139,7 @@ identity is `check_states()`.
 | Input | Value | Basis |
 |---|---|---|
 | Loan spine | `echeance` and `crd(k)` computed from `capital_initial`, `loan_rate_annual`, `loan_term_months` | read from the *échéancier* contractually [S1] [S5] [S9]; computed here **[std]** (spec footnote 3) |
-| Décès / PTIA benefit | `crd(t) × quotite` | [S1] [S5] [S9] [S10] [S11] |
+| Décès / PTIA benefit | `crd(t + 1) × quotite`, the balance at the end of month `t` | [S1] [S5] [S9] [S10] [S11] |
 | ITT / IPT benefit | `echeance × quotite`, monthly | [S1] [S9] [S11] |
 | *Franchise* | 90 days, embedded in the inception basis | [S9]; pick **[std]** (spec footnote 4) |
 | ITT duration cap | 1 095 days = 36 months, then a forced consolidation assessment | [S1] [S11] [S12]; consolidation ≤3 years [S10] |
@@ -273,8 +283,9 @@ anniversary, by attained age; linear interpolation; used only when
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 1..T`, `T = loan_term_months` (240 in the base cell) |
-| `y`, `a` | policy year `floor((t − 1)/12) + 1`; attained age `entry_age + y − 1` |
+| `t` | policy month, 0-based: `t = 0..T − 1`, `T = loan_term_months` (240 in the base cell) |
+| `k` | a time point, 0-based: `k = 0` at adhesion, `k = t` opens month `t` and `k = t + 1` closes it |
+| `y`, `a` | policy year `floor(t/12) + 1`; attained age `entry_age + y − 1` |
 | `i` | monthly loan rate = `loan_rate_annual / 12` = 0.0025 |
 | `ech` | *échéance* = `capital_initial × i / (1 − (1 + i)^(−T))` = 1 109.1952 |
 | `crd(k)` | `ech × (1 − (1 + i)^(−(T − k))) / i`, `k = 0..T`; `crd(0) = capital_initial`, `crd(T) = 0` |
@@ -289,7 +300,7 @@ anniversary, by attained age; linear interpolation; used only when
 | `q_ipt` | monthly `mth(min(ipt_mort_factor × mort_rate(a), 1))` |
 | `D(t)`, `P(t)`, `I(t)` | guarantee-in-force indicators for Décès, PTIA, ITT/IPT |
 | `e_m(y)`, `ec_m(y)` | monthly maintenance and claim expense = `30/12` and `250/12`, × `1.018^(y−1)` |
-| `v(t)` | discount factor (valuation: EIOPA curve [REG-R5]; worked example `1.025^(−t/12)`, footnote (11)) |
+| `v(t)` | discount factor for month `t`, whose flows fall at time `t + 1` (valuation: EIOPA curve [REG-R5]; worked example `1.025^(−(t+1)/12)`, footnote (11)) |
 
 Dimensional check: `q_h`, `q_ptia`, `w`, `ι`, `ρ`, `τ`, `q_s`, `q_ipt` are monthly
 probabilities; `crd` and death benefits are EUR; `ech`, `prem` and monthly benefits are EUR
@@ -308,12 +319,12 @@ must satisfy to floating-point tolerance — that is `check_crd()`:
     crd(k) = ech x (1 - (1 + i)^(-(T - k))) / i
     crd(k) = crd(k - 1) x (1 + i) - ech        with crd(T) = 0 exactly
 
-`crd` is the **only** thing linking the loan to the insurance: the death benefit is
-`crd(t) × Q`, the disability benefit is `ech × Q`. The guarantee indicators are
+`crd` is the **only** thing linking the loan to the insurance: the death benefit in month
+`t` is `crd(t + 1) × Q`, the disability benefit is `ech × Q`. The guarantee indicators are
 
     D(t) = 1 if a < deces_end_age else 0       (85 base cell -> in force for all t)
-    P(t) = 1 if a < ptia_end_age  else 0       (70 base cell -> t <= 216)
-    I(t) = 1 if a < itt_ipt_end_age else 0     (70 base cell -> t <= 216)
+    P(t) = 1 if a < ptia_end_age  else 0       (70 base cell -> t <= 215)
+    I(t) = 1 if a < itt_ipt_end_age else 0     (70 base cell -> t <= 215)
 
 At the first month where `I(t) = 0`, **at BOM and before any transition**, all `l_itt` and
 `l_ipt` mass moves into `l_h`: cover has ended, benefit stops, and those lives remain alive,
@@ -321,9 +332,9 @@ death-covered and premium-paying [S13]. `ι` is zero from that month.
 
 ### Premium
 
-    prem(t) = prem_pp(y) x l_h(t - 1)                                       (BOM)
+    prem(t) = prem_pp(y) x l_h(t)                                           (BOM)
 
-re-read at each policy anniversary (`t ≡ 1 mod 12`), lives in `itt`/`ipt` paying nothing
+re-read at each policy anniversary (`t ≡ 0 mod 12`), lives in `itt`/`ipt` paying nothing
 (waiver [S5] [S11]) and `prem_pp` never falling when `P(t)` or `I(t)` does [S13]:
 
     premium_basis = capital_initial    : prem_pp(y) = capital_initial x Q x premium_rate_annual / 12
@@ -333,43 +344,43 @@ re-read at each policy anniversary (`t ≡ 1 mod 12`), lives in `itt`/`ipt` payi
 
 Out of `healthy`, in the order death, PTIA, *résiliation*, ITT inception **[std]**:
 
-    dth_h(t)  = l_h(t-1) x q_h
-    ptia_h(t) = l_h(t-1) x (1 - q_h) x q_ptia x P(t)
-    lapses(t) = l_h(t-1) x (1 - q_h) x (1 - q_ptia x P(t)) x w
-    n_itt(t)  = l_h(t-1) x (1 - q_h) x (1 - q_ptia x P(t)) x (1 - w) x i_rate,  i_rate = ι x I(t)
-    h_stay(t) = l_h(t-1) x (1 - q_h) x (1 - q_ptia x P(t)) x (1 - w) x (1 - i_rate)
+    dth_h(t)  = l_h(t) x q_h
+    ptia_h(t) = l_h(t) x (1 - q_h) x q_ptia x P(t)
+    lapses(t) = l_h(t) x (1 - q_h) x (1 - q_ptia x P(t)) x w
+    n_itt(t)  = l_h(t) x (1 - q_h) x (1 - q_ptia x P(t)) x (1 - w) x i_rate,  i_rate = ι x I(t)
+    h_stay(t) = l_h(t) x (1 - q_h) x (1 - q_ptia x P(t)) x (1 - w) x (1 - i_rate)
 
 Out of ITT, in the order recovery, transition to IPT, death in claim **[std]**, for each
 duration cohort `z`:
 
-    rec_itt(t, z) = l_itt(t-1, z) x rho(z)
-    trn_ipt(t, z) = l_itt(t-1, z) x (1 - rho(z)) x tau(z)
-    dth_itt(t, z) = l_itt(t-1, z) x (1 - rho(z)) x (1 - tau(z)) x q_s(z)
-    stay(t, z)    = l_itt(t-1, z) x s_itt(z)
+    rec_itt(t, z) = l_itt(t, z) x rho(z)
+    trn_ipt(t, z) = l_itt(t, z) x (1 - rho(z)) x tau(z)
+    dth_itt(t, z) = l_itt(t, z) x (1 - rho(z)) x (1 - tau(z)) x q_s(z)
+    stay(t, z)    = l_itt(t, z) x s_itt(z)
 
-For `z < itt_max_months` the survivors advance, `l_itt(t, z+1) = stay(t, z)`. For
+For `z < itt_max_months` the survivors advance, `l_itt(t+1, z+1) = stay(t, z)`. For
 `z = itt_max_months` (36, the 1 095-day cap) they are **assessed** instead of advanced:
 `cap_itt(t) = stay(t, itt_max_months)`, of which `ipt_share_at_cap` passes to IPT and the
 remainder returns to `healthy`. Out of IPT there is no recovery — the only exits are death
-and the age limit: `dth_ipt(t) = l_ipt(t-1) × q_ipt`, `ipt_stay(t) = l_ipt(t-1) − dth_ipt(t)`.
-State update:
+and the age limit: `dth_ipt(t) = l_ipt(t) × q_ipt`, `ipt_stay(t) = l_ipt(t) − dth_ipt(t)`.
+State update, from the states opening month `t` to those closing it:
 
-    l_h(t)     = h_stay(t) + SUM_z rec_itt(t, z) + (1 - ipt_share_at_cap) x cap_itt(t)
-    l_itt(t,1) = n_itt(t);  l_itt(t, z+1) = stay(t, z)  for z < itt_max_months
-    l_ipt(t)   = ipt_stay(t) + SUM_z trn_ipt(t, z) + ipt_share_at_cap x cap_itt(t)
+    l_h(t+1)     = h_stay(t) + SUM_z rec_itt(t, z) + (1 - ipt_share_at_cap) x cap_itt(t)
+    l_itt(t+1,1) = n_itt(t);  l_itt(t+1, z+1) = stay(t, z)  for z < itt_max_months
+    l_ipt(t+1)   = ipt_stay(t) + SUM_z trn_ipt(t, z) + ipt_share_at_cap x cap_itt(t)
 
 Recovered lives return to `healthy` and are again exposed to inception **[std]**. When
 `ipt_benefit_basis = crd`, IPT is not a state at all: the mass that would enter IPT instead
-triggers a single payment `crd(t) × Q` and leaves the model, exactly as a death does
+triggers a single payment `crd(t + 1) × Q` and leaves the model, exactly as a death does
 [S1] [S2] [S7].
 
 ### Benefit outgo, expenses and net cash flow (EOM)
 
-    ben_deces(t) = crd(t) x Q x (dth_h(t) + SUM_z dth_itt(t,z) + dth_ipt(t)) x D(t)
-    ben_ptia(t)  = crd(t) x Q x ptia_h(t)
+    ben_deces(t) = crd(t+1) x Q x (dth_h(t) + SUM_z dth_itt(t,z) + dth_ipt(t)) x D(t)
+    ben_ptia(t)  = crd(t+1) x Q x ptia_h(t)
     ben_itt(t)   = ech x Q x IR x SUM_z stay(t, z)
     ben_ipt(t)   = ech x Q x IR x (ipt_stay(t) + SUM_z trn_ipt(t, z))
-    expenses(t)  = e_m(y) x (l_h + l_itt + l_ipt)(t-1) + ec_m(y) x (l_itt + l_ipt)(t-1)
+    expenses(t)  = e_m(y) x (l_h + l_itt + l_ipt)(t) + ec_m(y) x (l_itt + l_ipt)(t)
 
     liability_cf(t) = ben_deces + ben_ptia + ben_itt + ben_ipt + expenses - prem
     net_cf(t)       = -liability_cf(t)
@@ -382,22 +393,22 @@ unpaid month. New inceptions `n_itt(t)` are **not** paid for month `t`. Death, P
 
 ### Monthly processing order [std]
 
-At month `t = 1..T` (nothing survives `t > T`; at `t = T` all cover and any claim in payment
-terminate without value [S1] [S9]):
+At month `t = 0..T − 1` (nothing survives the frame; at `t = T − 1`, the last month, all
+cover and any claim in payment terminate without value [S1] [S9]):
 
-1. **Anniversary (BOM, `t = 1, 13, 25, …`):** advance `y` and `a`; set `D(t)`, `P(t)`,
+1. **Anniversary (BOM, `t = 0, 12, 24, …`):** advance `y` and `a`; set `D(t)`, `P(t)`,
    `I(t)`; re-read `prem_pp(y)` on the CRD basis, leave it unchanged on the
    *capital initial* basis.
 2. **Guarantee-cessation transfer (BOM):** if `I(t) = 0` and any `l_itt`/`l_ipt` mass
    remains, move all of it into `l_h` and zero those states.
-3. **Premium income (BOM):** `prem(t) = prem_pp(y) × l_h(t−1)`.
-4. **Loan instalment (EOM):** `crd(t)` from the schedule — deterministic, unaffected by any
-   decrement.
+3. **Premium income (BOM):** `prem(t) = prem_pp(y) × l_h(t)`.
+4. **Loan instalment (EOM):** the schedule carries `crd(t)` to `crd(t + 1)` —
+   deterministic, unaffected by any decrement.
 5. **Transitions out of `healthy` (EOM):** death, PTIA, *résiliation*, ITT inception.
 6. **Transitions out of ITT (EOM):** recovery, IPT transition, death in claim, per duration
    cohort; then the 1 095-day assessment on cohort `z = itt_max_months`.
 7. **Transitions out of IPT (EOM):** death.
-8. **State update** for `l_h`, `l_itt(·, z)`, `l_ipt`.
+8. **State update** to time `t + 1` for `l_h`, `l_itt(·, z)`, `l_ipt`.
 9. **Benefit outgo (EOM):** `ben_deces`, `ben_ptia`, `ben_itt`, `ben_ipt`.
 10. **Expenses (EOM)**, then discount at `v(t)` and accumulate.
 
@@ -408,12 +419,14 @@ Each of these produces a model that looks right and is wrong. They are the test 
 - **Reading the CRD from a table instead of computing it.** The whole product hangs off
   `crd`; a pasted schedule will not satisfy `crd(k) = crd(k−1) × (1 + i) − ech` at every `k`
   and `crd(T)` will not be zero. Assert both.
-- **Using the wrong CRD, or the wrong rate conversion.** `crd(t−1)` (before the month-`t`
-  instalment) and `crd(t)` (after it) differ by the month's capital repayment — EUR 609.20 at
-  `t` = 1 in the base cell; the convention here is `crd(t)` and whichever is chosen must be
-  used everywhere. Separately, French loans quote a *taux nominal annuel* whose monthly rate
-  is nominal ÷ 12, not `(1 + nominal)^(1/12) − 1`; the effective conversion changes `ech`,
-  and therefore every benefit and the TAEA.
+- **Using the wrong CRD, or the wrong rate conversion.** `crd(t)` (opening month `t`, before
+  its instalment) and `crd(t + 1)` (closing it, after the instalment) differ by the month's
+  capital repayment — EUR 609.20 over month `t` = 0 in the base cell; the convention here is
+  the **closing** balance `crd(t + 1)` and whichever is chosen must be used everywhere. A
+  model that indexes `crd` on the month rather than on the time point pays a whole month's
+  capital too much or too little. Separately, French loans quote a *taux nominal annuel*
+  whose monthly rate is nominal ÷ 12, not `(1 + nominal)^(1/12) − 1`; the effective
+  conversion changes `ech`, and therefore every benefit and the TAEA.
 - **Collapsing Décès and PTIA into one decrement.** They pay the identical benefit, so the
   temptation is strong — and it is wrong, because `deces_end_age` (85) and `ptia_end_age`
   (70) differ. A collapsed decrement either pays PTIA after 70 or stops paying death
@@ -434,15 +447,14 @@ Each of these produces a model that looks right and is wrong. They are the test 
   the base cell that is 35 % of the 0.198077 of each inception still in ITT at three years.
 - **Paying the ITT → IPT movers twice, or not at all.** A life moving from ITT to IPT at EOM
   `t` must be paid exactly once for month `t`. Assert
-  `ben_itt(t) + ben_ipt(t) = ech × Q × IR × (l_itt(t) − n_itt(t) + l_ipt(t) + (1 −
+  `ben_itt(t) + ben_ipt(t) = ech × Q × IR × (l_itt(t+1) − n_itt(t) + l_ipt(t+1) + (1 −
   ipt_share_at_cap) × cap_itt(t))` — the paying mass equals the closing disabled mass, less
   the month's new inceptions, plus the share of the capped cohort sent back to `healthy`:
   those lives were in ITT throughout month `t` and are paid for it, but they end the month
   in neither disabled state, so an identity written without that term is short by
   `ech × Q × IR × (1 − ipt_share_at_cap) × cap_itt(t)` — up to EUR 0.13 a month in the base
-  cell. Relatedly, benefit
-  is monthly in arrears: including `n_itt(t)` in `ben_itt(t)` pays a full month at the
-  instant of inception.
+  cell. Relatedly, benefit is monthly in arrears: including `n_itt(t)` in `ben_itt(t)` pays
+  a full month at the instant of inception.
 - **Charging premium to lives in claim, or lapsing them.** Premiums come from `l_h` only
   [S5] [S11]; `prem_pp × (l_h + l_itt + l_ipt)` overstates premium income and is easy to
   write by accident when the model also tracks total lives in force. Symmetrically, applying
@@ -538,25 +550,29 @@ annual rates 0.00392, 0.000392, 0.01080, 0.04 and 0.12. Duration-year-1 terminat
 `ρ` = 0.064376669, `τ` = `q_s` = 0.001682143, so `s_itt` = 0.932478274. At `a` = 53,
 `q_h` = 0.000357368 and `ι` = 0.000980268.
 
-| t | crd(t) | l_h(t) | l_itt(t) | l_ipt(t) | prem(t) | ben_deces(t) | ben_ptia(t) | ben_itt(t) | ben_ipt(t) |
-|---|---|---|---|---|---|---|---|---|---|
-| 1 | 199,390.80 | 0.995344 | 0.000901 | 0.000000 | 140.00 | 65.25 | 6.51 | 0.00 | 0.00 |
-| 2 | 198,780.09 | 0.990768 | 0.001737 | 0.000001 | 139.35 | 65.03 | 6.46 | 0.93 | 0.00 |
-| 3 | 198,167.84 | 0.986267 | 0.002513 | 0.000004 | 138.71 | 64.79 | 6.41 | 1.80 | 0.00 |
-| 4 | 197,554.07 | 0.981837 | 0.003232 | 0.000008 | 138.08 | 64.54 | 6.36 | 2.60 | 0.01 |
-| 5 | 196,938.76 | 0.977474 | 0.003898 | 0.000013 | 137.46 | 64.28 | 6.32 | 3.34 | 0.01 |
-| 6 | 196,321.91 | 0.973174 | 0.004516 | 0.000019 | 136.85 | 64.01 | 6.27 | 4.03 | 0.02 |
-| 7 | 195,703.52 | 0.968933 | 0.005088 | 0.000026 | 136.24 | 63.72 | 6.22 | 4.67 | 0.03 |
-| 8 | 195,083.58 | 0.964750 | 0.005617 | 0.000034 | 135.65 | 63.42 | 6.17 | 5.26 | 0.04 |
-| 9 | 194,462.09 | 0.960620 | 0.006107 | 0.000043 | 135.06 | 63.12 | 6.13 | 5.81 | 0.05 |
-| 10 | 193,839.05 | 0.956540 | 0.006561 | 0.000053 | 134.49 | 62.81 | 6.08 | 6.32 | 0.06 |
-| 11 | 193,214.46 | 0.952509 | 0.006980 | 0.000063 | 133.92 | 62.48 | 6.04 | 6.79 | 0.07 |
-| 12 | 192,588.30 | 0.948524 | 0.007367 | 0.000074 | 133.35 | 62.16 | 5.99 | 7.22 | 0.08 |
-| 13 | 191,960.57 | 0.937659 | 0.007789 | 0.000085 | 132.79 | 67.31 | 6.49 | 7.62 | 0.09 |
-| 14 | 191,331.28 | 0.926937 | 0.008184 | 0.000099 | 131.27 | 66.54 | 6.40 | 8.07 | 0.11 |
-| 15 | 190,700.41 | 0.916356 | 0.008553 | 0.000114 | 129.77 | 65.77 | 6.30 | 8.49 | 0.13 |
+Months are 0-based, so the first row is `t` = 0 (policy year `y` = 1 throughout the first
+twelve). The CRD and state columns are the **closing** quantities of month `t`, i.e. the
+values at time `t + 1`; the cash flow columns are the flows of month `t`.
 
-Column sums over `t` = 1..15: `prem` 2 032.99, `ben_deces` 965.23, `ben_ptia` 94.16,
+| t | crd(t+1) | l_h(t+1) | l_itt(t+1) | l_ipt(t+1) | prem(t) | ben_deces(t) | ben_ptia(t) | ben_itt(t) | ben_ipt(t) |
+|---|---|---|---|---|---|---|---|---|---|
+| 0 | 199,390.80 | 0.995344 | 0.000901 | 0.000000 | 140.00 | 65.25 | 6.51 | 0.00 | 0.00 |
+| 1 | 198,780.09 | 0.990768 | 0.001737 | 0.000001 | 139.35 | 65.03 | 6.46 | 0.93 | 0.00 |
+| 2 | 198,167.84 | 0.986267 | 0.002513 | 0.000004 | 138.71 | 64.79 | 6.41 | 1.80 | 0.00 |
+| 3 | 197,554.07 | 0.981837 | 0.003232 | 0.000008 | 138.08 | 64.54 | 6.36 | 2.60 | 0.01 |
+| 4 | 196,938.76 | 0.977474 | 0.003898 | 0.000013 | 137.46 | 64.28 | 6.32 | 3.34 | 0.01 |
+| 5 | 196,321.91 | 0.973174 | 0.004516 | 0.000019 | 136.85 | 64.01 | 6.27 | 4.03 | 0.02 |
+| 6 | 195,703.52 | 0.968933 | 0.005088 | 0.000026 | 136.24 | 63.72 | 6.22 | 4.67 | 0.03 |
+| 7 | 195,083.58 | 0.964750 | 0.005617 | 0.000034 | 135.65 | 63.42 | 6.17 | 5.26 | 0.04 |
+| 8 | 194,462.09 | 0.960620 | 0.006107 | 0.000043 | 135.06 | 63.12 | 6.13 | 5.81 | 0.05 |
+| 9 | 193,839.05 | 0.956540 | 0.006561 | 0.000053 | 134.49 | 62.81 | 6.08 | 6.32 | 0.06 |
+| 10 | 193,214.46 | 0.952509 | 0.006980 | 0.000063 | 133.92 | 62.48 | 6.04 | 6.79 | 0.07 |
+| 11 | 192,588.30 | 0.948524 | 0.007367 | 0.000074 | 133.35 | 62.16 | 5.99 | 7.22 | 0.08 |
+| 12 | 191,960.57 | 0.937659 | 0.007789 | 0.000085 | 132.79 | 67.31 | 6.49 | 7.62 | 0.09 |
+| 13 | 191,331.28 | 0.926937 | 0.008184 | 0.000099 | 131.27 | 66.54 | 6.40 | 8.07 | 0.11 |
+| 14 | 190,700.41 | 0.916356 | 0.008553 | 0.000114 | 129.77 | 65.77 | 6.30 | 8.49 | 0.13 |
+
+Column sums over `t` = 0..14: `prem` 2 032.99, `ben_deces` 965.23, `ben_ptia` 94.16,
 `ben_itt` 72.95, `ben_ipt` 0.71, `expenses` 38.10.
 
 **Supplementary — one ITT cohort through the 1 095-day cap.** `S(z)` is the probability that
@@ -587,26 +603,28 @@ At the far end `crd(239)` = 1 106.4291 and `crd(239) × 1.0025` = 1 109.1952 = `
 `crd(240)` = 0 exactly. Total instalments 240 × 1 109.1952 = 266 206.85, of which 66 206.85
 is interest.
 
-*The state recursion, from the four decrements.* `l_h(1)` should be
+*The state recursion, from the four decrements.* `l_h(1)`, the state at the end of month
+`t` = 0, should be
 (1 − 0.000327255)(1 − 0.000032673)(1 − 0.003396053)(1 − 0.000904486) = **0.995344**, which is
-the table. The residual mass is the four exits — `dth_h(1)` = 0.000327255,
-`ptia_h(1)` = 0.000032662, `lapses(1)` = 0.003394831, `n_itt(1)` = 0.000901090 — and
-0.995344 plus those four is 1.000000. Over the whole 15 months `l_h + l_itt + l_ipt` =
+the table's first row. The residual mass is the four exits of that month — `dth_h(0)` =
+0.000327255, `ptia_h(0)` = 0.000032662, `lapses(0)` = 0.003394831, `n_itt(0)` = 0.000901090
+— and 0.995344 plus those four is 1.000000. Over the whole 15 months `l_h + l_itt + l_ipt` =
 0.925024 and cumulative exits = 0.074976, summing to 1.000000000000: `check_states()`.
 `l_h` then falls 0.4598 % per month through policy year 1 (0.995344 → 0.990768) and 1.1455 %
 per month in year 2 (0.948524 → 0.937659) — the loi Lemoine substitution assumption
 arriving, monthly `w` going from 0.003396053 to 0.010596241, a factor of 3.12 diluted by the
-unchanged mortality and inception decrements. The mortality step at `t` = 13 shows
-separately in `ben_deces`, which rises 62.16 → 67.31 as `a` goes 52 → 53 (`mort_rate`
-0.00392 → 0.00428) on a CRD that is still falling.
+unchanged mortality and inception decrements. The mortality step at `t` = 12, the first
+month of policy year 2, shows separately in `ben_deces`, which rises 62.16 → 67.31 as `a`
+goes 52 → 53 (`mort_rate` 0.00392 → 0.00428) on a CRD that is still falling.
 
-*The in-arrears benefit rule.* `ben_itt(1)` = 0.00 because the only ITT mass at EOM 1 is the
-month's own inception. `ben_itt(2)` = `ech × s_itt(1) × n_itt(1)` = 1 109.1952 × 0.932478274
-× 0.000901090 = **0.93** — the month-1 inceptions, one month later, net of one month's
-terminations. `ben_deces(1)` = `crd(1) × q_h` = 199 390.8048 × 0.000327255 = **65.25**, and
-`ben_ptia(1) / ben_deces(1)` = 6.512472 / 65.251648 = 0.0998, the `ptia_rate` ratio of 0.10
-less the month of death exposure that precedes PTIA in the decrement order — the ordering is
-visible in the arithmetic.
+*The in-arrears benefit rule.* `ben_itt(0)` = 0.00 because the only ITT mass at the end of
+month 0 is that month's own inception. `ben_itt(1)` = `ech × s_itt(1) × n_itt(0)` =
+1 109.1952 × 0.932478274 × 0.000901090 = **0.93** — the month-0 inceptions, one month later,
+net of one month's terminations (`s_itt` is on the claim-duration clock `z`, where the first
+month in payment is `z` = 1). `ben_deces(0)` = `crd(1) × q_h` = 199 390.8048 × 0.000327255 =
+**65.25**, and `ben_ptia(0) / ben_deces(0)` = 6.512472 / 65.251648 = 0.0998, the
+`ptia_rate` ratio of 0.10 less the month of death exposure that precedes PTIA in the
+decrement order — the ordering is visible in the arithmetic.
 
 *Aggregates over the full 240 months, at 2.5 % flat.* PV of premium income is
 **EUR 12 602.19** on the level 0.84 % *capital initial* basis and **EUR 12 588.82** on the
@@ -617,10 +635,11 @@ EUR 31.65 in year 20. PV of outgo is `ben_deces` 7 170.56 + `ben_ptia` 635.87 + 
 premium, with death and PTIA **70.8 %** of the benefit PV and ITT plus IPT **29.2 %** against
 the market's published premium split of **69 % / 30 %** [REG-R37] — a coincidence of
 calibration rather than evidence, but the only external check available on the shape of the
-basis. Finally `I(t)` = 0 from `t` = 217 (`a` = 70): `crd(216)` = **EUR 25 806.51** is still
-owed, 0.009266 + 0.013982 of mass in ITT and IPT moves to `l_h`, `ben_itt` and `ben_ipt` are
-exactly zero for `t` = 217..240, and premium income continues — **EUR 3 360.00 nominal per
-surviving policy** (24 × EUR 140.00), EUR 638.67 survivorship-weighted.
+basis. Finally `I(t)` = 0 from `t` = 216 (`a` = 70): `crd(216)` = **EUR 25 806.51** is still
+owed as that month opens, 0.009266 + 0.013982 of mass in ITT and IPT moves to `l_h`,
+`ben_itt` and `ben_ipt` are exactly zero for `t` = 216..239, and premium income continues
+— **EUR 3 360.00 nominal per surviving policy** (24 × EUR 140.00), EUR 638.67
+survivorship-weighted.
 
 ---
 
@@ -666,7 +685,7 @@ them and are NOT reproduced here.
    small change in `itt_recovery_rate` compounds over 36 months and again through the 0.35
    split at the cap. Both proxy tables are **[std]** placeholders.
 3. **Mortality level and the CRD profile together.** Death is 70.8 % of the benefit PV and
-   its cost is `crd(t) × q_h(a)`, a falling schedule times a rising rate; the peak of that
+   its cost is `crd(t + 1) × q_h(a)`, a falling schedule times a rising rate; the peak of that
    product, not either factor alone, is where the death cost sits, and the loan term moves it.
 4. **The premium basis, and the age limits.** Level on *capital initial* against annually
    re-read on the CRD is a different cash flow shape for the same cover, and the difference is

@@ -120,6 +120,8 @@ Cells Descriptions
 
 .. autofunction:: fund_return_net_mth
 
+.. autofunction:: unit_price_open
+
 .. autofunction:: unit_price
 
 .. autofunction:: units_pp

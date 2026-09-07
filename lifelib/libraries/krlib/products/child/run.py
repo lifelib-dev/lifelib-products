@@ -47,9 +47,10 @@ waiver_txt = " + ".join(waivers) if waivers else "none"
 print("Child_KR_S - eorini boheom (children's insurance), monthly grid, boheom nai")
 print("model point {}: {} - sex {}, {}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(), issue))
-print("term to boheom nai {} (t = {}), premium term {} years (t = 0 .. {}), monthly"
-      .format(proj.term_age(), proj.proj_len(), proj.prem_period_years(),
-              proj.prem_end()))
+print("term to boheom nai {} (t = 0 .. {}, {} rows), premium term {} years"
+      " (t = 0 .. {}), monthly"
+      .format(proj.term_age(), proj.proj_len() - 1, proj.proj_len(),
+              proj.prem_period_years(), proj.prem_end()))
 print("form: {}".format(form))
 if proj.foetal():
     print("premium: KRW {:,.0f} core + KRW {:,.0f} taea module to t = {}, so KRW {:,.0f}"
@@ -86,7 +87,7 @@ print("acquisition cost = KRW {:,.2f} ({:.2f} months of premium) of which first-
 print()
 
 df = proj.result_cf()
-n = proj.proj_len()
+n = proj.proj_len() - 1          # the last index of the frame, the terminal gyeyak haedangil
 m = proj.prem_period_mths()
 b = proj.birth_month()
 rows = [t for t in (0, 1, b - 1, b, b + 1, b + 11, b + 12) if 0 <= t <= n]

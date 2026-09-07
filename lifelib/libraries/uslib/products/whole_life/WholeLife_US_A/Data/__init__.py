@@ -52,8 +52,9 @@ collapses to ``NNLP = 1000 d NSP_45 / (1 - NSP_45)``, so the worked example's
 ``NNLP = 13.00`` forces ``NSP_45 = 0.252616`` and hence ``NSP_55 <= 0.252616 x 1.04^10
 = 0.373933`` — short of the worked example's ``NSP_55 = 0.42``, whatever mortality is
 assumed. Each shipped table is therefore pinned to its own worked-example anchor
-independently: ``q^g_54 = 0.00320``, ``NSP_55 = 0.42``, ``NP_g = 13.00``,
-``CV_9 = 95.00`` and ``CV_10 = 112.00``. Reconciling ``nsp_table.csv`` with
+independently: ``q^g_54 = 0.00320``, ``NSP_55 = 0.42``, ``NP_g = 13.00``, and 95.00 and
+112.00 per $1,000 on the policy-year 9 and 10 rows of the cash value schedule — the
+worked example's ``CV_8`` and ``CV_9`` under the model's 0-based period index. Reconciling ``nsp_table.csv`` with
 ``mort_table.csv`` would need a guarantee interest rate falling from 5.99% at age 45
 to 0.02% at age 99. The model README and the ``Projection`` docstring carry the
 arithmetic; a test pins the mismatch by age so it cannot quietly close.
@@ -61,7 +62,9 @@ arithmetic; a test pins the mismatch by age so it cannot quietly close.
 What *is* guaranteed, because the two consequences the pitfall names would otherwise
 bite, is the pair of endpoints: ``nsp = 1.000000`` at attained age 100, so the
 paid-up-additions cash value reaches paid-up-additions face at maturity, and
-``cv_per_1000 = 1000.00`` in the final policy year, so the base block endows at face.
+``cv_per_1000 = 1000.00`` on the last policy year of each cell — the schedule's
+``policy_year = 100 - issue_age`` row, read by the model at ``t = proj_len() - 1`` — so
+the base block endows at face.
 Both are asserted by the tests. Every rate is also **sex-distinct**, as the notes
 require — including the pay-to-100 cash value schedule.
 

@@ -48,11 +48,32 @@ model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the anchor cell of the notes' worked
-example. `result_cf()` returns a `DataFrame` indexed by policy year `t` with `pols_if` first
-and `net_cf` last. `result_pols()` publishes the decrement and value runs beside it — the
+example. `result_cf()` returns a `DataFrame` indexed by the time index `t` with `pols_if`
+first and `net_cf` last. `result_pols()` publishes the decrement and value runs beside it — the
 two in-force measures, the decrements that move them, and the fund, death benefit and
 surrender value that price them — because on this product the relationship between those
 three values *is* the product, and printing them only inside a cash flow is not enough.
+
+## The time index
+
+`t` is **0-based**, the library-wide convention: `t = 0` is the first projected policy
+year, the year of issue, and period `t` runs from time `t` to time `t + 1`. `proj_len()` is
+the **number** of projected years and the exclusive end of the frame, so both result frames
+run `t = 0 … proj_len() - 1` and have `proj_len()` rows — 45 on the anchor cell, `n + k` =
+35 + 10, with the last 年金支払日 on the last row `t = 44`. Every sweep in the model is
+`for t in range(proj_len())`. `age(t)` is `x + t`, so `age(0)` is the 契約年齢; `pols_if(0)`
+is 1. A **contractual policy year is the 1-based label `t + 1`** and is derived where the
+prose needs it, never indexed by: no cells here takes a 1-based year, and there is no
+`policy_year` or `y` cells to confuse with `t`.
+
+Two shapes of time-indexed quantity live in the model, and each cells docstring says which
+it is. `av_pp`, `db_pp`, `cv_pp`, `surr_charge_pp`, `apl_bal`, `loan_pp` and `div_acc_pp`
+are **time-point** values — `X(t)` is the amount *at time* `t`, with `t = 0` at issue — so
+period `t` opens on `X(t)` and closes on `X(t + 1)`, which is why the death and surrender
+claims of year `t` are struck on `db_pp_net(t + 1)` and `cv_pp_net(t + 1)`. Everything else
+indexed by `t` is a **period** quantity belonging to that row. On the 保証期間付終身年金 form
+`proj_len()` is `ω − x + 1`: a count, not an off-by-one, whose last row `t = ω − x` is the
+year the annuitant attains the payout table's terminal age.
 
 ## The product is two contracts joined at one date
 
@@ -99,8 +120,8 @@ V(t+1) = [ (V(t) + NP(t)) (1 + i_d) - q'(x+t) DB(t+1) ] / (1 - q'(x+t))
 
 divides by `(1 - q')` because the premiums of those who die are released to the survivors
 net of the death benefit paid. Since `DB` is capped at cumulative premiums and `V` is not,
-that release turns positive from the duration at which `V` first exceeds `DB` — policy year
-13 at the anchor cell — and the excess of `av_pp` over `db_pp`, ¥791,563.274447 by `t = 34`,
+that release turns positive from the duration at which `V` first exceeds `DB` — `t` = 13 at
+the anchor cell — and the excess of `av_pp` over `db_pp`, ¥791,563.274447 by `t = 34`,
 is precisely the survival benefit the design buys. It is what pays for the annuity.
 
 So the ceiling is applied to `cv_pp` and never to `av_pp`. Clipping the fund instead would
@@ -191,6 +212,23 @@ fails on first evaluation.
 | `expense_table.csv` | Best-estimate cash expenses and commission | **[std, new here]** throughout |
 | `commute_factor_table.csv` | The 年金の一括払 factors for 1–14 remaining instalments | One carrier's published table, verbatim [S2] |
 
+**How each time-like input column is read.** The model's `t` is 0-based, so a column that
+carries a point on its time axis must be 0-based too, and one that carries an elapsed count
+or a contractual label must not be confused with it. Every such column in the input set:
+
+| File | Column | Read as | Values |
+|---|---|---|---|
+| `lapse_table.csv` | `from_year` | The model's own 0-based `t`, the first year each rate applies from — `lapse_rate_base(t)` steps on it | 0, 1, 2, 3, 10 on `premium_paying`; a single row keyed 0 on each of `defer_gap` and `pre_annuitisation`, which the segment and not the duration selects |
+| `pricing_table.csv` | `loan_draw_year` | A value of `t`: the row the 契約者貸付 is drawn on | 20, so `loan_pp(19)` is zero and `loan_pp(20)` is the drawdown |
+| `pricing_table.csv` | `surr_charge_years` | An **elapsed count** of years, the length of the 解約控除 run-off, not a point on the frame | 10, giving `SC(t) = P (10 − t)/10` for `t` < 10 |
+| `commute_factor_table.csv` | `remaining_years` | A **count** of remaining instalments `j`, not a time index; `commute_factor(j)` is keyed by it | 1 … 14, the published table's own range |
+| `mort_table.csv`, `mort_anchor_table.csv` | `age` | An attained age, reached through `age(t) = x + t` | the tables' own age ranges |
+| `model_point_table.csv` | `premium_term_y`, `defer_gap_y`, `payout_term_y`, `guar_term_y` | **Elapsed counts** of years — `m`, `d`, `k`, `g` — not points on the frame | as issued |
+| `model_point_table.csv` | `annuity_start_age` | An age, from which `n = annuity_start_age − x` is derived | as issued |
+
+No input column is a 1-based policy-year label, and no input column needed re-keying: the
+model has been 0-based since it was written and every file was already keyed to that `t`.
+
 Every assumption row carries a `provenance` column tagging it `[std] …` or with the source
 it came from. The readers and every `*_file` Reference live on the `Data` Space, which takes
 no parameters, so each file is read **once per model** however many model points are
@@ -253,7 +291,7 @@ the choice, not infer it.
    `premiums(t)` is zero: the insurer lends the premium rather than collecting it
    **[std]**. And the 保険料積立金 recursion still credits `NP(t)` in the year the facility
    fails, which is an annual-grid artefact worth one year of fund accretion.
-2. **The 契約者貸付 drawdown rule.** Half the 解約返戻金 drawn at policy year 20 **[std]**,
+2. **The 契約者貸付 drawdown rule.** Half the 解約返戻金 drawn at `t` = 20 **[std]**,
    compounding at the sourced 2.40% [S11] [S8] and capped at the 解約返戻金. Both parameters
    are rows in `pricing_table.csv` and neither is sourced as a behaviour.
 3. **The 契約者配当 declaration rule.** The composite is a 5年ごと利差配当 design [S4]; the model
@@ -348,7 +386,10 @@ Every quantitative parameter is either source-tagged in a CSV `provenance` colum
 the folder layout, the `Data` / `Projection` split, the read-once property, the docstring
 contract, the naming rules, `result_cf()`'s column conventions, that every model point
 projects without NaN, and that `read → write → re-read` reproduces the same file set and the
-same numbers.
+same numbers. It also asserts the library-wide **frame rule** on every model point: the
+index is named `t`, opens at a non-negative index, runs contiguously to `proj_len() - 1`
+inclusive, and `len(result_cf()) == proj_len()` for a point projected from issue — which is
+every point of this model.
 
 `tests/test_individual_annuity_jp.py` asserts what this product owes on top of that. The
 notes' worked example is hard-coded there — the annuitisation quantities (`F` =
@@ -366,7 +407,8 @@ modules is asserted in **both** positions, off and on, and the structural facts 
 states, a horizon that is the payout table's terminal age on the life form, a zero 据置期間, the
 0.70 tontine ratio, the payout table's female setback, and the model points the model rejects
 by name — are
-asserted too.
+asserted too. The frame itself is pinned there as well: `result_cf()` is indexed by `t`,
+runs `list(range(proj_len()))` = 0 … 44 on the anchor cell, and ends on `proj_len() - 1`.
 
 Seven `check_*()` cells assert the identities the notes imply, each taking no argument and
 returning a `bool` over all `t`, with the signed per-period residual at `check_*_resid(t)`.

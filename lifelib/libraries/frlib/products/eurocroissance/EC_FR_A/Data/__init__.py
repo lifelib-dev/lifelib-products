@@ -41,7 +41,8 @@ Two of these are **scenario** files rather than assumption files, and that is a 
 statement. The A. 134-1 discount rate is 90% of the *taux de l'échéance constante* at the
 remaining maturity, so the level *and the slope* of the TEC curve drive the *provision
 mathématique* directly: in the notes' worked example a 150 bp fall in the TEC adds 587.44
-to ``pm(6)``, more than twice the year's time effect. A model that carried a flat TEC
+to the *provision mathématique* at the end of policy year 6 — ``pm(5)`` on the model's
+0-based period index — more than twice the year's time effect. A model that carried a flat TEC
 assumption in a Reference would not be modelling this product's dominant risk, so the
 curve is a table with a maturity dimension and ``Projection.tec_rate`` interpolates
 across it exactly as the article requires.
@@ -102,9 +103,12 @@ def mort_table():
 def lapse_table():
     """The base annual *rachat* rates by policy year, from *lapse_table.csv*.
 
+    Keyed by the contractual **policy year**, 1-based and running from 1 to 40, so the
+    projection's 0-based period ``t`` reads row ``t + 1``.
+
     Two columns: ``lapse_rate``, the full surrender (*rachat total*), level at 2.5% p.a.;
     and ``wd_rate``, the partial surrender (*rachat partiel*), 6% of the provision in
-    years 1-2 and 3% thereafter.  Both are **[std]** — the published *mémoire* observes
+    policy years 1-2 and 3% thereafter.  Both are **[std]** — the published *mémoire* observes
     2%-3% and 6% then 2%-4%, and no eurocroissance lapse experience exists beyond it,
     because the product is too small and too young to have any.  The dynamic overlays
     layered on the full-surrender rate in ``Projection.lapse_rate`` matter more than the
@@ -118,9 +122,15 @@ def lapse_table():
 def scenario_table():
     """The gross asset return by scenario and projection year, from *scenario_table.csv*.
 
+    Keyed by the elapsed **year end** at which the return is credited: row ``k`` is the
+    return earned over the year ending ``k`` years after issue, so the projection's
+    0-based period ``t``, which ends at time ``t + 1``, reads row ``t + 1``.  Row 0 is the
+    inception placeholder and is never read.
+
     Net of asset management fees (0.20% equities, 0.10% bonds), which is the basis the
-    notes quote ``r(t)`` on.  Five paths: ``shock`` is the worked example's — 4.00% to
-    ``t`` = 5, **-25.00%** at ``t`` = 6 and 6.00% after — and the others are the flat and
+    notes quote ``r(t)`` on.  Five paths: ``shock`` is the worked example's — 4.00%
+    through policy year 5, **-25.00%** in policy year 6 and 6.00% after — and the others
+    are the flat and
     stressed paths the remaining model points run on.  A **scenario** rather than a best
     estimate: the maturity guarantee is a put on the auxiliary account and its cost is
     convex in the asset shock, so a deterministic run understates it and the *mémoire*
@@ -133,6 +143,10 @@ def scenario_table():
 
 def tec_curve():
     """The TEC term structure by scenario, projection year and maturity, from *tec_curve.csv*.
+
+    Keyed by the elapsed year since issue — a **time point** ``k``, ``k`` = 0 at issue —
+    which is how ``Projection.tec_rate`` is indexed: a period ``t`` splits a
+    start-of-period *versement* at row ``t`` and strikes its provisions at row ``t + 1``.
 
     The *taux de l'échéance constante* at maturities 1, 2, 5, 10, 20 and 30 years.
     ``Projection.i_pm`` takes 90% of the rate at the *remaining* maturity, interpolating

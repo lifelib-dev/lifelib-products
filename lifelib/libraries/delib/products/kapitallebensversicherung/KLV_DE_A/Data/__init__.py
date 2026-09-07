@@ -88,10 +88,13 @@ on a surrender. Both are **[std]**: the only German lapse data are market aggreg
 are neither endowment-specific nor by duration, and the headline one counts conversions to
 *beitragsfrei* alongside surrenders, so calibrating a surrender decrement to it
 double-counts. The shape — suppressed approaching policy year 12 and spiking at it — is
-what the twelve-year income-tax threshold supports; the levels are not sourced.
+what the twelve-year income-tax threshold supports; the levels are not sourced. Its key
+column ``policy_year`` is the **contractual, 1-based** label and is left that way: the
+projection's own index ``t`` is 0-based, and ``Projection.policy_year(t) = t + 1`` maps
+between them.
 
 ``surplus_rate_table.csv`` carries three declared-rate paths keyed by ``scenario_id`` and
-policy year. ``base`` is one carrier's 2026 *laufende Verzinsung* for its classic endowment
+the same 1-based ``policy_year``. ``base`` is one carrier's 2026 *laufende Verzinsung* for its classic endowment
 book, held level for the whole projection — a modelling choice, not a forecast; ``low`` and
 ``nil`` exist so that the sensitivity is exercisable rather than argued, ``nil`` resting on
 the sourced statement that the surplus may be zero euros.
@@ -157,6 +160,8 @@ def lapse_table():
 
     ``lapse_rate`` is the decrement; ``storno_rate`` is the deduction the surrender value
     suffers.  Both **[std]**, and they are different quantities — see the Space docstring.
+    The ``policy_year`` key is the **contractual, 1-based** label, read through
+    ``Projection.policy_year(t) = t + 1`` rather than by the 0-based ``t`` directly.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_file, index_col="policy_year")           # noqa: F821
@@ -168,7 +173,9 @@ def surplus_rate_table():
     ``decl_rate`` is the *laufende Verzinsung* — the **total** declared rate, from which
     the interest surplus is *derived* by subtracting the guarantee, never added on top of
     it.  ``term_rate`` is the *Schlussüberschussanteilsatz* and ``ans_rate`` the
-    *Ansammlungszinssatz*.  Three scenarios ship: ``base``, ``low`` and ``nil``.
+    *Ansammlungszinssatz*.  Three scenarios ship: ``base``, ``low`` and ``nil``.  The
+    ``policy_year`` key is the **contractual, 1-based** label, read through
+    ``Projection.policy_year(t) = t + 1``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / surplus_rate_file,                             # noqa: F821

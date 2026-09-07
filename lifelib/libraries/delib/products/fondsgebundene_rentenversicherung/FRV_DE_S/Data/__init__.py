@@ -57,8 +57,8 @@ death table::
     qx_tariff(x) = 0.00080 x 1.10^(x - 37),        ages 18 to 100
 
 **anchored so that ``qx_tariff(37) = 0.00080`` exactly.** That single value is what the
-notes' worked example rests on — it produces ``mort_rate_tariff_mth(1) = 0.00080/12`` and,
-through ``mort_be_factor = 0.75``, ``mort_rate(1) = 0.00060`` — so a substitute table must
+notes' worked example rests on — it produces ``mort_rate_tariff_mth(0) = 0.00080/12`` and,
+through ``mort_be_factor = 0.75``, ``mort_rate(0) = 0.00060`` — so a substitute table must
 reproduce it at the anchor cell's entry age if the example is to close. What else a
 replacement must preserve is the *direction* of the two bases: DAV 2008 T is a **death**
 table with a first-order margin **above** best estimate, which is the opposite direction
@@ -142,6 +142,10 @@ def mort_table():
 def lapse_table():
     """The annual lapse rates by policy year, read from *lapse_table.csv*.
 
+    The ``policy_year`` key is the **contractual 1-based label**, not the model's ``t``:
+    ``Projection.lapse_rate_base(t)`` maps through ``policy_year(t) = t // 12 + 1``, so the
+    file's values did not move when the frame became 0-based.
+
     **[std]** throughout: no German unit-linked *Stornoquote* was established anywhere.
     The front-loading in years 1 to 5 is a structural inference from the exit terms — the
     acquisition charge is being taken and the value is furthest below the premiums paid —
@@ -171,6 +175,8 @@ def fund_scenario_table():
     """The gross fund return and TER by scenario and policy year, from *fund_scenario_table.csv*.
 
     Four **[std]** deterministic paths — ``base``, ``etf``, ``zero``, ``stress``.  The
+    ``policy_year`` half of the key is the contractual 1-based label, reached through
+    ``policy_year(t) = t // 12 + 1``, so it is unaffected by the 0-based frame.  The
     **TER is a return item, never a policy charge**: it is borne inside the *Anteilspreis*
     and never appears in the ledger, so the projection nets it off the gross return.
     Charging it explicitly double-counts; ignoring it overstates the policyholder's return.

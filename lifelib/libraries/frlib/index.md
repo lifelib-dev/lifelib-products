@@ -134,17 +134,20 @@ here, in uslib, in uklib and in lifelib. The
 [shared vocabulary table](#uslib-shared-vocabulary) is the settled ruling
 across the libraries.
 
-One ruling is this library's own. **`proj_len()` is the last projected period index**, so
-`result_cf()` ends at `proj_len()` whether the frame is 0-based or 1-based, and the
-conventions suite asserts it. That is stronger than what the sister libraries settled on —
-jplib's models make `proj_len()` a row count and uslib's 0-based models publish
-`proj_len() + 1` rows, so neither can assert where the frame ends — and it is worth having
-because two of the nine here are 0-based and seven are 1-based, and the split does not
-follow the annual/monthly grid: `EC_FR_A` is annual and 0-based while `Euro_FR_A` is annual
-and 1-based. Where the frame *starts* is not asserted, because it is not even fixed per
-model: `EC_FR_A`'s in-force model points open partway through the term, at the duration the
-policy has already run. Contiguity is asserted instead, which is the property that
-actually matters.
+The time index is the one every library shares, and the conventions suite asserts it for
+every model point. **The time index `t` is 0-based**: `t = 0` is the first period of a
+policy projected from issue (the issue year on an annual grid, the issue month on a monthly
+one), period `t` runs from time `t` to time `t + 1`, and the attained age is
+`age_at_entry + t` on an annual grid (`age_at_entry + duration(t)`, `duration(t) = t // 12`,
+on a monthly one). **`proj_len()` is the number of periods from `t = 0`**, i.e. the
+exclusive end of the frame: `result_cf()` covers `t = t_first, ..., proj_len() - 1`, where
+`t_first` is 0 for a point projected from issue and the elapsed periods for an in-force
+point — `EC_FR_A`'s in-force model points open partway through the term, at the duration the
+policy has already run, which is why the frame's start is asserted as contiguity from
+`t_first` rather than pinned to 0. This is lifelib's own convention
+(`basiclife/BasicTerm_S`, `savings/CashValue_SE`: `for t in range(proj_len())`). A
+contractual policy year is the 1-based label `t + 1` (`duration(t) + 1` on a monthly grid)
+and is derived, never indexed by.
 
 (frlib-france-specific)=
 

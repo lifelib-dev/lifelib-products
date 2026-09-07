@@ -10,9 +10,9 @@
 library. It projects gross best-estimate liability cash flows for a single-policy model
 point of a German **unit-linked deferred private annuity** — Schicht 3, single life,
 one fund, no *Beitragsgarantie* — over the ***Aufschubzeit* only**, on a **monthly**
-grid. At the end of month ``proj_len()`` the units are cancelled, the *Fondsguthaben* is
-converted at the *Rentenfaktor*, and the contract leaves this model: the payout phase
-belongs to ``products/sofortrente/``.
+grid. At the end of month ``proj_len() - 1``, the frame's last, the units are cancelled,
+the *Fondsguthaben* is converted at the *Rentenfaktor*, and the contract leaves this
+model: the payout phase belongs to ``products/sofortrente/``.
 
 Three things make this the unit-linked model rather than a translated general-account
 one.
@@ -70,10 +70,13 @@ choosing: the dominant premium frequency is monthly, the *kapitalbezogenen
 Verwaltungskosten* and the *Risikobeitrag* are levied monthly by unit cancellation, and
 the *Abschluss- und Vertriebskosten* instalment runs for exactly **60 months**. An
 annual grid cannot place the month-60 cliff, and that cliff is the characteristic shape
-of a German unit-linked contract's early values. ``t`` is the policy month counted from
-the contract's own inception, so ``t = 61`` means the same thing on every model point;
-the frame runs ``proj_start() = duration_init_m + 1`` to ``proj_len() = 12 x
-(annuity_age - entry_age)``, and an in-force model point simply opens partway through it.
+of a German unit-linked contract's early values. ``t`` is the **0-based** policy month
+counted from the contract's own inception — ``t = 0`` is the inception month — so
+``t = 60`` means the same thing on every model point. The frame is
+``range(proj_start(), proj_len())`` with ``proj_start() = duration_init_m`` and
+``proj_len() = 12 x (annuity_age - entry_age)``, the **number** of policy months and so
+the frame's exclusive end; an in-force model point simply opens partway through it. The
+contractual policy year is the 1-based label ``t // 12 + 1``.
 
 **What is sourced and what is not.** The mechanics are common ground in German practice:
 the *Beitragsverrechnung* order, the five-year spreading of the acquisition charge, the

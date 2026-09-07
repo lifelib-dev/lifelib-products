@@ -91,7 +91,12 @@ def select_factor_table():
 
 
 def lapse_table():
-    """The lapse rates by policy year, read from *lapse_table.csv*."""
+    """The lapse rates by policy year, read from *lapse_table.csv*.
+
+    The ``policy_year`` key is the contractual 1-based label (1, 2, ..., 6+), not the
+    projection's 0-based ``t``; ``Projection.lapse_rate_base`` reads the row
+    ``policy_year(t) = t + 1``.
+    """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821
 

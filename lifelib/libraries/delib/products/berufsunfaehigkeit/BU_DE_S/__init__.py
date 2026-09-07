@@ -11,7 +11,7 @@ projects gross best-estimate liability cash flows, undiscounted, for a single-po
 model point of a German standalone occupational-disability contract — a monthly
 *BU-Rente* while the insured is *berufsunfaehig*, a *Beitragsbefreiung* for the same
 period, and nothing at all otherwise — on a **monthly** grid over ``t = 0 ...
-proj_len()``.
+proj_len() - 1``.
 
 Three things make this the German BU model rather than a translated disability rider.
 
@@ -68,8 +68,9 @@ must travel together, and a diff of the model shows logic changes only.
 **Projection basis.** Monthly steps, matching the *BU-Rente* paid monthly in advance and
 the retail monthly premium. ``t`` is the policy month, **0-based**: ``t = 0`` is the
 first projected month — the month of inception for a new-business point, the valuation
-month for an in-force one — and ``proj_len()`` is the **last** projected index, so
-``result_cf()`` runs ``t = 0 ... proj_len()`` and ends there. Premium, the surplus
+month for an in-force one — and ``proj_len()`` is the **number** of projected months, the
+exclusive end of the frame, so ``result_cf()`` runs ``t = 0 ... proj_len() - 1`` and ends
+there — 444 rows on the anchor cell. Premium, the surplus
 credit, administration expense, the *BU-Rente* and the claim-maintenance cost fall at
 the **start** of the month; every state transition and the claim-assessment cost at the
 **end** of it.

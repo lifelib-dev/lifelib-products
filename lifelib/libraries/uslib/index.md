@@ -114,6 +114,7 @@ and the ruling is asserted, not merely documented:
 
 | Convention | Settled as |
 |---|---|
+| Time index | `t` is **0-based**: `t = 0` is the first period of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `t + 1` (`duration(t) + 1` monthly), never the index |
 | In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` |
 | Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly |
 | Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` |
@@ -175,6 +176,19 @@ or read it and take the cash flow statement:
 
 `Projection` takes a `point_id`; `Projection[1]` is each model's worked-example anchor cell.
 `result_cf()` returns a tidy `DataFrame` indexed by `t` with one column per cash flow line.
+
+The time index `t` is 0-based: `t = 0` is the first period of a policy projected from issue
+(the issue year on an annual grid, the issue month on a monthly one), period `t` runs from
+time `t` to time `t + 1`, and the attained age is `age_at_entry + t` on an annual grid
+(`age_at_entry + duration(t)`, `duration(t) = t // 12`, on a monthly one). `proj_len()` is
+the number of periods from `t = 0`, i.e. the exclusive end of the frame: `result_cf()`
+covers `t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from
+issue and the elapsed periods for an in-force point (`WholeLife_US_A`'s `proj_start()`).
+This is lifelib's own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
+`for t in range(proj_len())`). A contractual policy year is the 1-based label `t + 1`
+(`duration(t) + 1` on a monthly grid) and is derived, never indexed by. The same rule holds
+in all twelve models, annual or monthly, and `tests/test_model_conventions.py` asserts it
+for every model point.
 
 The tests ship inside the library and run against *your* copy:
 

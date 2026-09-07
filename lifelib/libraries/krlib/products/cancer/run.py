@@ -39,9 +39,9 @@ print("model point {}: {} - {}{}, {}".format(
     point_id, proj.policy_id(), proj.sex(), proj.issue_age(), chassis))
 print("  cover to man nai {}, {}, {}, sum insured KRW {:,.0f}".format(
     proj.expiry_age(), pay, form, proj.sum_assured()))
-print("  premium = KRW {:,.0f}/month   horizon = {} months   "
+print("  premium = KRW {:,.0f}/month   frame = {} rows (t = 0 .. {})   "
       "myeonchaek = {} m   gamaek = {} m".format(
-          proj.premium_mth_pp(), proj.proj_len(),
+          proj.premium_mth_pp(), proj.proj_len(), proj.proj_len() - 1,
           proj.tier_wait_months("general"), proj.reduction_months()))
 print("  tiers: gohaek {:.0%} top-up / ilban {:.0%} / soaek {:.0%} / yusa {:.0%}"
       " of the sum insured".format(
@@ -60,7 +60,8 @@ cols = ["pols_if", "pols_healthy", "pols_minor", "pols_waived", "premiums",
         "claim_expenses", "commissions", "net_cf"]
 print(df[cols].head(12).round(4).to_string())
 if len(df) > 12:
-    print("... {} further months to t = {}".format(len(df) - 12, proj.proj_len()))
+    print("... {} further months to t = {}".format(
+        len(df) - 12, proj.proj_len() - 1))
 print()
 
 claim_cols = [c for c in df.columns if c.startswith("claims_")]

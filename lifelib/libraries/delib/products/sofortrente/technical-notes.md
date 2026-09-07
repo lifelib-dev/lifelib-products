@@ -43,12 +43,15 @@ repeated in prose.
   [R1] [R2] [R5] [REG-R28]. The only decrement is death; where a *Hinterbliebenenrente* is in force
   there are two lives and the liability runs to the second death. **There is no lapse machinery
   anywhere in this model, and that is a cited product feature rather than an omission.**
-- **Projection frequency and origin.** **Monthly grid**, `t = t_start() … proj_len()`, counted in
-  complete months from *Vertragsbeginn*. Month `t` is the civil month beginning at the `t`-th
-  month-start after inception. The frame is **0-based**: a new-business model point opens at
-  `t = 0`, which is both the month the *Einmalbeitrag* is received and — under the representative
-  *vorschüssig* convention — the month the first instalment is paid. An in-force model point opens
-  at `t = duration_mth_init()`, the number of months the contract has already run.
+- **Projection frequency and origin.** **Monthly grid**, `t = t_start() … proj_len() − 1`, counted
+  in complete months from *Vertragsbeginn*. Month `t` is the civil month beginning at the `t`-th
+  month-start after inception. The index is **0-based**, which is the library-wide convention: the
+  first month of a new-business point is `t = 0`, `policy year = t // 12 + 1`, and `proj_len()` is
+  the **exclusive end** of the frame, so the frame is `range(t_start(), proj_len())`, its last month
+  index is `proj_len() − 1` and it carries `proj_len() − t_start()` rows. `t = 0` is both the month
+  the *Einmalbeitrag* is received and — under the representative *vorschüssig* convention — the
+  month the first instalment is paid. An in-force model point opens at `t = duration_mth_init()`,
+  the number of months the contract has already run.
 - **The model carries duration, not the calendar.** Every step in this product falls on a **policy
   anniversary**: the *Überschussrente* increase [S15], the expense inflation index, the attained-age
   step. Nothing happens on 31 December, so — unlike `frlib`'s `Rente_FR_S`, where revalorisation is
@@ -156,15 +159,16 @@ the in-force annuity is a round figure of the right order for a 2012 tariff at 1
 | Variable | Description | Updated |
 |---|---|---|
 | `t_start()` | First projected month = `duration_mth_init()`; 0 for new business | once |
-| `proj_len()` | **Last** projected month index, so `result_cf().index[-1] == proj_len()` | once |
+| `proj_len()` | **Exclusive end** of the frame, so `result_cf().index[-1] == proj_len() − 1` | once |
 | `horizon_mths(life)` | `12 × (omega_age − entry_age(life))`, the month at which that life's survival reaches zero | once |
 | `age(t, life)` | Attained age = `entry_age(life) + t // 12` | monthly |
-| `policy_year(t)` | Completed policy years = `t // 12` | monthly |
+| `duration(t)` | Completed policy years = `t // 12`; 0 through the first policy year | monthly |
+| `policy_year(t)` | Contractual, 1-based policy year = `t // 12 + 1` | monthly |
 | `calendar_year(t)` | `entry_year() + t // 12`; reporting and the cohort cross-check | monthly |
 | `mort_rate(t, life)` | **Annual** second-order rate at `age(t, life)` for that life's cohort and sex | monthly |
 | `mort_rate_mth(t, life)` | `1 − (1 − mort_rate)^(1/12)` **[std]** | monthly |
 | `mort_rate_tariff(t, life)` | **Annual** first-order rate on the **unisex** blend, used only for pricing | monthly |
-| `lives_if(t, life)` | Second-order probability alive at the **start** of month `t`; `lives_if(0) = 1` | recursion |
+| `lives_if(t, life)` | Second-order probability alive at the **start** of month `t`; `lives_if(t₀) = 1` | recursion |
 | `lives_death(t, life)` | `lives_if(t) − lives_if(t + 1)`, deaths **during** month `t` | monthly |
 | `tariff_lives(k, life)` | First-order survival to the start of month `k`, used only inside the pricing sums | recursion |
 | `first_pay_mth()` | `defer_mths()` under `advance`, `defer_mths() + pay_period_mths()` under `arrears` | once |
@@ -389,8 +393,8 @@ the tables above.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | month index from *Vertragsbeginn*, `t = t₀ … n` |
-| `t₀`, `n` | `t_start`, `proj_len` | first and last projected month index |
+| `t` | — | month index from *Vertragsbeginn*, 0-based, `t = t₀ … n − 1` |
+| `t₀`, `n` | `t_start`, `proj_len` | first projected month index; **exclusive end** of the frame |
 | `m`, `p` | `payment_freq`, `pay_period_mths` | instalments per year; months between them, `p = 12/m` |
 | `D`, `G` | `defer_mths`, `guar_years` | deferment in months; guarantee period in years |
 | `SP`, `SP_net` | `single_prem`, `net_single_prem` | *Einmalbeitrag*; `SP(1 − α)` |
@@ -423,17 +427,19 @@ the tables above.
 
     horizon_mths(life) = 12 × ( omega_age − entry_age(life) )
     t_start()          = duration_mth_init()
-    proj_len()         = max( horizon_mths(1) − 1,
-                              first_pay_mth() + 12 × guar_years() − 1,
-                              horizon_mths(2) − 1   if surv_pct > 0 )
+    proj_len()         = max( horizon_mths(1),
+                              first_pay_mth() + 12 × guar_years(),
+                              horizon_mths(2)   if surv_pct > 0 )
 
-`proj_len()` is the **last projected month index**, so `result_cf()` is indexed `t₀ … n` inclusive and
-`result_cf().index[-1] == proj_len()` — the library's ruling, asserted for every model point. The
-three terms are the annuitant's survival horizon, the guarantee period's own end, and the second
-life's horizon where a *Hinterbliebenenrente* is in force. **All three are needed.** Stopping on the
-annuitant's horizon alone truncates a younger survivor's tail (pitfall 18); stopping on the
-guarantee alone truncates the life annuity. On the anchor cell `horizon_mths(1) = 12 × (121 − 65) =
-672`, the guarantee ends at month 120, and `proj_len() = 671`, so the frame carries **672 rows**.
+`proj_len()` is the **exclusive end** of the frame, counted in months from *Vertragsbeginn*, so
+`result_cf()` is indexed `range(t₀, n)`, `result_cf().index[-1] == proj_len() − 1` and the frame
+carries `proj_len() − t₀` rows — the library's 0-based `range(proj_len())` ruling, asserted for
+every model point. The three terms are the annuitant's survival horizon, the guarantee period's own
+end, and the second life's horizon where a *Hinterbliebenenrente* is in force. **All three are
+needed.** Stopping on the annuitant's horizon alone truncates a younger survivor's tail
+(pitfall 18); stopping on the guarantee alone truncates the life annuity. On the anchor cell
+`horizon_mths(1) = 12 × (121 − 65) = 672`, the guarantee ends at month 120, and `proj_len() = 672`,
+so the frame carries **672 rows**, `t = 0 … 671`.
 
 The frame **starts** at `t₀`, which is a product fact and is not asserted by the conventions suite:
 a new-business point opens at 0 and an in-force point at the duration it has already run. What is
@@ -449,7 +455,7 @@ would catch it.
     mort_rate(t, life)          = q( x(t, life), sex(life), g(life), "SECOND" )        — projection
     mort_rate_tariff(t, life)   = q( x(t, life), "U",       g(life), "FIRST"  )        — pricing
     mort_rate_mth(t, life)      = 1 − (1 − mort_rate(t, life))^(1/12)                  **[std]**
-    lives_if(t, life)           = lives_if(t − 1, life) × (1 − mort_rate_mth(t − 1, life)),  lives_if(0) = 1
+    lives_if(t, life)           = lives_if(t − 1, life) × (1 − mort_rate_mth(t − 1, life)),  lives_if(t₀) = 1
     lives_death(t, life)        = lives_if(t, life) − lives_if(t + 1, life)
     tariff_lives(k, life)       = tariff_lives(k − 1, life) × (1 − mort_rate_tariff_mth(k − 1, life)),  = 1 at k = 0
 
@@ -465,7 +471,7 @@ every `t` (pitfall 9).
 Because `q(120) = 1` in every series and `λ(120) = 0`, `lives_if` reaches zero **at or before**
 `horizon_mths(life)` — the monthly conversion of `q = 1` is 1, so the path in fact goes to zero in
 the first month of attained age 120, eleven months inside the horizon — and the decrements close:
-`Σ_t lives_death(t, life) = lives_if(t₀, life)` with `lives_if(n + 1, life) = 0`. That is
+`Σ_t lives_death(t, life) = lives_if(t₀, life)` with `lives_if(n, life) = 0`. That is
 `check_lives_roll_fwd()`. The horizon is an upper bound and no cash flow depends on which of the
 two it is.
 
@@ -527,8 +533,14 @@ inequality.
 
 Where `refund_form == "full"`, the death benefit at a death during month `t` is
 
-    C(t) = C(t − 1) + ( R  if is_payment_mth(t) else 0 ),   C(−1) = 0
+    C(t) = C(t − 1) + ( R  if is_payment_mth(t) else 0 ),   for t > t₀
+    C(t₀) = R · ( (t₀ − first_pay_mth()) // p + 1 )  if t₀ ≥ first_pay_mth() else 0
     K(t) = max( SP − C(t), 0 )
+
+The recursion opens at the frame's first month `t₀` rather than one month before it: on a
+new-business point `t₀ = 0`, `first_pay_mth() = 0` under *vorschüssig* and the opening value is the
+single instalment paid at `t = 0`; on an in-force point it is the instalments the contract has
+already been paid by the valuation date. Nothing is ever indexed at `t = −1`.
 
 — the *Einmalbeitrag* less the **guaranteed** instalments already paid, floored at zero **[std]**
 (research gap 10). `C(t)` includes the instalment due at `t` itself, because that instalment was paid
@@ -557,7 +569,7 @@ those who die is forfeited to the survivors.
 
 ### The *Überschussrente*
 
-    U(t) = R · u₀ · (1 + ψ)^( policy_year(t) − defer_years() )      for t ≥ first_pay_mth()
+    U(t) = R · u₀ · (1 + ψ)^( duration(t) − D / 12 )                for t ≥ first_pay_mth()
          = 0                                                        otherwise
     A(t) = R + U(t)
 
@@ -633,7 +645,7 @@ product's own roll-forward and pricing identities.
 | Check | Identity |
 |---|---|
 | `check_net_cf` | `net_cf(t) == premiums(t) − 1{payment month}·pols_if_init·A(t)·payment_factor(t) − claims(t,"REFUND") − expenses(t)`. The instalment term carries the payment-month indicator, because `payment_factor(t)` is defined at every `t` and only some `t` carry an instalment on a quarterly, half-yearly or annual point. **Not a restatement of the definition**: it rebuilds the annuity outgo through the `max()` payment factor rather than through the two published legs, so it asserts that the split into `annuity_payments` and `claims_guarantee` is exhaustive and non-overlapping |
-| `check_lives_roll_fwd` | `lives_if(t + 1, life) == lives_if(t, life)·(1 − mort_rate_mth(t, life))`, and `Σ_t lives_death(t, life) + lives_if(n + 1, life) == lives_if(t₀, life)` for each life in scope |
+| `check_lives_roll_fwd` | `lives_if(t + 1, life) == lives_if(t, life)·(1 − mort_rate_mth(t, life))`, and `Σ_t lives_death(t, life) + lives_if(n, life) == lives_if(t₀, life)` for each life in scope |
 | `check_annuity_roll_fwd` | `annuity_surp_pp(t) == annuity_surp_pp(t − 1) · (1 + ψ)^{1 if t % 12 == 0 else 0}` inside the payment phase, and `annuity_pp(t) ≥ annuity_pp(t − 1)` at every `t` — the *Bonusrente* ratchet |
 | `check_refund_run_off` | `refund_pp(t) == max(refund_pp(t − 1) − R·1{payment month}, 0)`, non-increasing and reaching zero at `⌈SP / R⌉` instalments; identically zero where `refund_form == "none"` |
 | `check_payment_factor` | `annuity_payments(t) + claims(t,"GUARANTEE") == pols_if_init · A(t) · payment_factor(t)` at every payment month, and zero at every other |
@@ -644,7 +656,7 @@ product's own roll-forward and pricing identities.
 
 ### Monthly processing order
 
-For `t = t₀ … n`, in this order:
+For `t = t₀ … n − 1`, in this order:
 
 1. **Once, before the loop:** read the model point; check `tariff_int_rate()` against the vintage cap
    [REG-R15]; compute `first_pay_mth()`, `guar_end_mth()` and `pay_period_mths()`; build the tariff
@@ -655,7 +667,7 @@ For `t = t₀ … n`, in this order:
    generational surface at each life's own cohort and sex.
 3. Advance the second-order survival: `l_a(t)`, `l_s(t)` from `l(t − 1)` and `mort_rate_mth(t − 1)`.
 4. Set `γ(t)` and `is_payment_mth(t)`.
-5. Set the instalment: `U(t)` from the surplus form and the completed policy year, then
+5. Set the instalment: `U(t)` from the surplus form and the completed policy year `duration(t)`, then
    `A(t) = R + U(t)`. Accumulate `C(t)` and set `K(t) = max(SP − C(t), 0)`.
 6. Compute `payment_factor(t)` at the payment instant `t`.
 7. **Start of month — premium.** At `t = 0` only, `premiums(0) = SP · pols_if_init`.
@@ -667,7 +679,7 @@ For `t = t₀ … n`, in this order:
     `payment_factor(t)` where step 4 found a payment month.
 11. Form `liability_cf(t)` and `net_cf(t)`; roll `l`, `C` and `U` forward to `t + 1`.
 
-At `t = n` the projection ends with no maturity payment and no tail state: `l_a(n + 1) = 0` and the
+At `t = n − 1` the projection ends with no maturity payment and no tail state: `l_a(n) = 0` and the
 guarantee has expired, so nothing remains to be paid.
 
 ---
@@ -737,12 +749,12 @@ becomes a test.
     invariant to `tariff_int_rate`, which isolates the one legitimate channel.
 17. **Inventing a lapse, a surrender value or a paid-up state.** There are none [R1] [R2] [R5]
     [REG-R28]. Assert that no `lapse_rate`, `lapse_rate_mth`, `av_pp_at`, `cv_pp` or surrender cells
-    exists, and that the decrements close: `Σ_t lives_death(t, life) + lives_if(n + 1, life) ==
+    exists, and that the decrements close: `Σ_t lives_death(t, life) + lives_if(n, life) ==
     lives_if(t₀, life)` for each life in scope.
 18. **Running the projection past the annuitant but not past the second life.** `proj_len()` takes the
     **maximum** of the two horizons and the guarantee's end. Assert that on model point 4 — annuitant
-    65, second life 62 — `proj_len() == 12 × (omega_age − surv_age) − 1`, the survivor's horizon and
-    not the annuitant's, and that `annuity_payments(proj_len())` is finite and non-negative there.
+    65, second life 62 — `proj_len() == 12 × (omega_age − surv_age)`, the survivor's horizon and
+    not the annuitant's, and that `annuity_payments(proj_len() − 1)` is finite and non-negative there.
 
 ---
 
@@ -798,7 +810,7 @@ first 120 monthly instalments are certain; `refund_form = none`; `surv_pct = 0.0
 `tariff_int_rate = 0.0100`, the *Höchstrechnungszins* in force for 2025 business [REG-R15];
 `surplus_form = teildynamisch`; `annuity_pp_init = 0.00`, so the guaranteed annuity is **derived by
 equivalence**; `duration_mth_init = 0`, so the frame opens at `t = 0`; and `pols_if_init = 1.0`.
-Hence `horizon_mths(1) = 12 × (121 − 65) = 672`, `proj_len() = 671`, and the frame runs
+Hence `horizon_mths(1) = 12 × (121 − 65) = 672`, `proj_len() = 672`, and the frame runs
 `t = 0 … 671` — **672 monthly rows**, the whole of the projection.
 
 **Assumptions, each tagged.** *Tariff.* Acquisition loading `α = 2,5 %` of the *Einmalbeitrag*
@@ -856,8 +868,9 @@ pitfall 8 rather than a simplification.
 
 ### The frame
 
-672 monthly rows, `t = 0 … 671`. The table shows the first policy year in full, then the two
-months either side of the guarantee's expiry and one row every ten years to the horizon. Money
+672 monthly rows, `t = 0 … 671`. The table shows the first policy year in full and the first
+month of the second, where the *Überschussrente* steps, then the two months either side of the
+guarantee's expiry and one row every ten years to the horizon. Money
 to the cent, `pols_if` to six decimals; the **Total** row is summed over all 672 rows at full
 precision and then rounded.
 
@@ -934,7 +947,7 @@ Each rebuilds a cell of the table a **different way** from the way the model bui
 and in the market's own unit, `100,000 x 0.975 / (12 x 21.9642595019 x 1.02) = 362.67 €`. The
 opening total instalment is then `362.6658241684 x 1.10 = 398.9324065852`, the 1.10 being
 `1 + u₀` with the *teildynamisch* opening share of 10 % and the growth exponent still zero in
-policy year 0.
+the first policy year (`duration(0) − D / 12 = 0`).
 
 **2. Month 1, rebuilt from the mortality table.** The annuitant is 65 and born in 1960, so the
 cohort exponent is `1960 + 65 − 2025 = 0` and the generational surface returns the shipped rate

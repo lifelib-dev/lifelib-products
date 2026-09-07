@@ -38,10 +38,18 @@ explicitly defers it, or because it is a modeling construct with no contractual 
   policy year, in advance; maintenance expense and commission at the start of the year;
   death benefits and surrender payments at the **end** of the policy year; deaths before
   lapses. Acquisition expense and first-year commission at `t = 0`.
-- **Time index.** `t` is completed policy years since issue, **0-based**, matching
-  `product-spec.md`: premiums fall at `t = 0 … m − 1`, the fund accumulates over
+- **Time index.** `t` is completed policy years since issue and is **0-based**, matching
+  `product-spec.md` and the library-wide convention: `t = 0` is the **first** projected
+  policy year, the year of issue, and period `t` runs from time `t` to time `t + 1`.
+  `proj_len` is the **number** of projected years — the exclusive end of the frame — so
+  `result_cf()` runs `t = 0 … proj_len − 1` and has `proj_len` rows. The contractual
+  **policy year is the 1-based label `t + 1`**; it is derived where the prose needs it and
+  never indexed by. Premiums fall at `t = 0 … m − 1`, the fund accumulates over
   `t = 0 … n`, and the annuity is paid at `t = n … n + k − 1`. `pols_if(t)` is the in-force
-  count at the **start** of year `t` and weights that same `result_cf()` row.
+  count at the **start** of year `t` — so `pols_if(0) = 1` — and weights that same
+  `result_cf()` row. Amounts written `V(t)`, `DB(t)`, `CV(t)`, `SC(t)` are values **at
+  time** `t`, `t = 0` being issue, so period `t` opens on them and closes on their `t + 1`
+  value; everything else indexed by `t` belongs to the period.
 - **Age basis.** Insurance age — age nearest birthday (*hoken-nenrei*, 保険年齢). Attained age
   in year `t` is `x + t`, where `x` is the 契約年齢. This is the basis 標準生命表2018 is built for
   [REG-R20]; a model that ages its points on age last birthday (*man-nenrei*, 満年齢) must say so and
@@ -51,11 +59,14 @@ explicitly defers it, or because it is a modeling construct with no contractual 
   different standard-reserve regime besides [REG-R12].
 - **Model points.** Single-policy, projected on an expected (probability-weighted) basis;
   survivorship and persistency factors multiply per-policy amounts. No aggregation logic.
-- **Termination.** The projection ends at `t = n + k`, the year after the last 年金支払日. There
-  are no tail states: the 確定年金 pays exactly `k` instalments and the contract ends [S2] [S4].
-  With the life annuity with a guarantee period (*hoshō-kikan-tsuki shūshin nenkin*,
-  保証期間付終身年金) module on, `proj_len` runs instead to the terminal age of the payout table — 122
-  for a male, 126 for a female [R3] [REG-R19].
+- **Termination.** The last projected year is `t = n + k − 1`, the year of the last 年金支払日,
+  and `proj_len = n + k` is the count of projected years: the frame is `t = 0 … n + k − 1`.
+  There are no tail states: the 確定年金 pays exactly `k` instalments and the contract ends
+  [S2] [S4], so `pols_if(n + k) = 0` is the terminal state the roll-forward closes on and
+  not a row. With the life annuity with a guarantee period (*hoshō-kikan-tsuki shūshin
+  nenkin*, 保証期間付終身年金) module on, `proj_len` runs instead to the terminal age of the payout
+  table — 122 for a male, 126 for a female [R3] [REG-R19] — that is, `proj_len = ω − x + 1`,
+  whose last row `t = ω − x` is the year the annuitant attains the terminal age.
 - **Contract boundary.** Premiums are level and guaranteed for the whole 保険料払込期間 with no
   review right [S2] [S4] [S5] [S6], so the insurer has no unilateral repricing lever and all
   `m` premiums are projected. The FSA's 第1の柱告示 was not opened in this research pass
@@ -277,7 +288,7 @@ calibrated so that its **count-weighted** mean over the deferral phase of the an
 `sum of l(t) w(t)` over `sum of l(t)`, for `t` = 0 … `n` − 1 — is **3.4160%**, against the
 published 3.4%:
 
-| Policy year `t` | 0 | 1 | 2 | 3–9 | 10 … m−1 | m … n−2 | n−1 and later |
+| Year `t` (0-based) | 0 | 1 | 2 | 3–9 | 10 … m−1 | m … n−2 | n−1 and later |
 |---|---|---|---|---|---|---|---|
 | `lapse_rate(t)` **[std]** | 6.0% | 5.0% | 4.5% | 4.0% | 3.0% | 1.0% | 0% |
 
@@ -319,9 +330,9 @@ and 復活 are not exercised in the base run **[std scope]** [S1] [S2] [S4].
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy year, 0-based; attained 保険年齢 in year `t` is `x + t` |
+| `t` | time index, **0-based**: `t = 0, 1, …, proj_len − 1`, period `t` running from time `t` to `t + 1`; the contractual policy year is `t + 1`; attained 保険年齢 in year `t` is `x + t` |
 | `x`, `m`, `d` | 契約年齢; 保険料払込期間 in years; 据置期間 in years |
-| `n`, `k` | `n = m + d`, the year of the 年金支払開始日; `k`, the payment period in years |
+| `n`, `k` | `n = m + d`, the index `t` of the 年金支払開始日 (the first payout year); `k`, the payment period in years |
 | `g` | guarantee period in years, life form only |
 | `P` | level office annual premium (`premium_pp`) |
 | `β`, `θ` | 予定事業費率 on premium; 年金支払開始時費用 on the 年金原資 |
@@ -418,7 +429,9 @@ obligation does not depend on survival, so
 
     pols_if(t+1) = pols_if(t)   for n <= t < n + k - 1,   and   pols_if(n+k) = 0
 
-while `lives_if` continues to run down on the payout table. On death inside the period the
+while `lives_if` continues to run down on the payout table. The last projected row is
+`t = n + k − 1`, where the last instalment falls; `pols_if(n+k)` is the terminal state one
+step past the frame and not a row of `result_cf()`. On death inside the period the
 PV of the unpaid instalments is paid, or the recipient elects continuation to the end of the
 term [S2] [R16]; the base run assumes **continuation at 100% [std]**, under which the two
 elections produce the same instalment stream and the payout cash flow is deterministic.
@@ -575,7 +588,9 @@ identical model point — 年金原資 approximately ¥6,260,000, 一括受取�
 ¥638,300, 年金受取総額 ¥6,383,000, 年金受取率 approximately 118.2% [S6] — the model reproduces the
 基本年金額 to within 0.04% (¥638,100 against ¥638,300, −0.031%) and the 年金原資 to within 0.03%.
 
-**Deferral phase, first four years.** `expenses` is acquisition plus maintenance only;
+**Deferral phase, first four years.** Every row label below is the 0-based `t` of
+`result_cf()`, so the row `t` = 0 is the first policy year and the frame runs to
+`t` = `proj_len` − 1 = 44. `expenses` is acquisition plus maintenance only;
 `claim_expenses` is its own column, as in `result_cf()`.
 
 | `t` | `pols_if(t)` | `lives_if(t)` | premiums | claims_death | claims_lapse | expenses | claim_expenses | commissions | `net_cf(t)` |
@@ -614,7 +629,7 @@ renewal commission of 1,226.85.
 
 ### Trace
 
-**Year 0.** `q'(30)` = 0.00068, a sourced anchor [REG-R18], so `q(0)` = 0.85 × 0.00068 =
+**Year `t` = 0.** `q'(30)` = 0.00068, a sourced anchor [REG-R18], so `q(0)` = 0.85 × 0.00068 =
 **0.000578**; `w(0)` = 0.06. Premium = 180,000 × 1 = 180,000.00. `D(0)` = 1 × 0.000578 =
 0.000578, and `DB(1)` = 1.00 × 180,000 × min(1, 30) = 180,000, so death outgo = 180,000 ×
 0.000578 = **104.04** and claim expense = 5,000 × 0.000578 = 2.89. `W(0)` = 1 × (1 −
@@ -628,7 +643,7 @@ its own column; commission = 0.40 × 180,000 = **72,000.00**. `CF(0)` = 180,000.
 0.000578) × (1 − 0.06) = **0.93945668**; `lives_if(1)` = 1 × (1 − 0.000578) =
 **0.99942200**.
 
-**Year 1.** `q'(31)` = 0.00069, also a sourced anchor [REG-R18], so `q(1)` = 0.85 × 0.00069 =
+**Year `t` = 1.** `q'(31)` = 0.00069, also a sourced anchor [REG-R18], so `q(1)` = 0.85 × 0.00069 =
 0.0005865; `w(1)` = 0.05. Premium = 180,000 × 0.93945668 = **169,102.20**. `D(1)` =
 0.93945668 × 0.0005865 = 0.0005509913, and `DB(2)` = 360,000, so death outgo = **198.36** and
 claim expense = 2.75. `W(1)` = 0.93945668 × (1 − 0.0005865) × 0.05 = 0.0469452844. `V(2)` =
@@ -648,7 +663,7 @@ the death benefit are the same number, which is what 「一定期間経過後は
 and the excess of `av_pp` over `db_pp` — ¥791,563.274447 by `t` = 34 — is precisely the
 survival benefit the design buys.
 
-**Year 34, the last deferral year.** No premium (`t` ≥ 30) and no lapse (`w(34)` = 0,
+**Year `t` = 34, the last deferral year.** No premium (`t` ≥ 30) and no lapse (`w(34)` = 0,
 because the year ends on the 年金支払開始日). `q'(64)` = 0.00929, log-linear between the sourced
 anchors at 60 and 65 [REG-R18], so `q(34)` = 0.85 × 0.00929 = 0.0078965 and `D(34)` =
 0.30795821 × 0.0078965 = 0.0024317920; death outgo = 5,400,000 × 0.0024317920 =
@@ -657,7 +672,7 @@ anchors at 60 and 65 [REG-R18], so `q(34)` = 0.85 × 0.00929 = 0.0078965 and `D(
 0.0078965) = **0.30552641**. Fund: `V(35)` = [6,191,563.274447 × 1.01 − 0.00929 × 5,400,000]
 ÷ (1 − 0.00929) = (6,253,478.907191 − 50,166.000000) ÷ 0.99071 = **6,261,482.075674** = `F`.
 
-**Year 35, the first 年金支払日.** `B` = 638,100, paid in advance to every contract with an
+**Year `t` = 35, the first 年金支払日.** `B` = 638,100, paid in advance to every contract with an
 obligation open: claims_annuity = 638,100 × 0.30552641 = **194,956.41**. No premium, no
 death benefit and no surrender: the 確定年金 obligation is unconditional, so `pols_if(36)` =
 `pols_if(35)` = 0.30552641 even though `lives_if` falls from 0.91268274 to 0.90303627 on
@@ -665,9 +680,9 @@ death benefit and no surrender: the 確定年金 obligation is unconditional, so
 Maintenance = 2,000 × 1.01^35 × 0.30552641 = 865.62. `CF(35)` = −194,956.4052 − 865.6191 =
 **−195,822.02**.
 
-**Years 36 to 44.** Identical instalments; `net_cf` drifts from −195,830.68 to −195,903.12
-on expense inflation alone. At `t` = 44 the tenth and last instalment is paid and
-`pols_if(45)` =
+**Years `t` = 36 to 44.** Identical instalments; `net_cf` drifts from −195,830.68 to −195,903.12
+on expense inflation alone. At `t` = 44 — the last row of the frame, `proj_len` − 1 = 45 − 1
+— the tenth and last instalment is paid, and `pols_if(45)` =
 0. `lives_if(45)` = 0.77848987: of the annuitants alive at age 65, 14.70% died over the ten
    payout years, and not one of those deaths changed a single yen of projected cash flow.
 

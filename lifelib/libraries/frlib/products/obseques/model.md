@@ -47,7 +47,7 @@ rather than a switch.
 | Premium, entry 50, 5000 € | 336.03 €/year for life [S14] | 651.26 €/year for 10 years [S14] | 4274.04 € once [S5] |
 | Revalorisation | 1.00 % p.a. guaranteed [S14] | 1.00 % p.a. [S14] | 0.00 % **[std]** |
 | Premium-stop decrement | to the end | to the end of the term | **none** |
-| Crossover | month 169 / 205 | month 85, then it stops | never |
+| Crossover | `t` = 168 / 204 | `t` = 84, then it stops | never (`-1`) |
 | Anchor | **model point 1** | model point 2 | model point 3 |
 
 The *prime unique* cell takes a zero revalorisation rate because its rate card presents
@@ -60,24 +60,52 @@ Two structural features separate this product from
 over-50s cell that is otherwise almost the same contract: **the capital is a state
 variable**, and **lapse pays money**. Both are first-order, and both are asserted.
 
+## The time index
+
+`t` is the **0-based policy month**, the library-wide convention. `t = 0` is the first
+projected month, month `t` runs from time `t` to time `t + 1`, and the frame is
+
+```
+t = 0, 1, ..., proj_len() - 1        len(result_cf()) == proj_len()
+```
+
+so `proj_len()` is the **number** of projected months — `12 × (omega_age − entry_age + 1)`,
+756 on the anchor cell and 516 on the entry-70 one — and the last projected month is
+`proj_len() - 1`. Every model point here is new business, so every frame starts at 0.
+
+The **policy year** is the contractual, 1-based label derived from it,
+`policy_year(t) = duration(t) + 1 = t // 12 + 1`, and it is what the premium, lapse and
+select schedules are keyed by. `duration(t) = t // 12` is 0-based, as in lifelib, and
+`duration_mth(t) = t` is the months elapsed at the **start** of month `t`; `t + 1` months
+have elapsed by the end of it, which is where deaths, surrenders and *réductions* fall.
+
+Three consequences worth naming, because each is a place an off-by-one hides:
+
+- the twelve *carence* months are `t = 0 … 11`, so `in_carence(t)` is `t < carence_months`
+  and the signature discontinuity falls between `t = 11` and `t = 12`;
+- the counts line up with the notes with **no offset**: `pols_if(t)` is the notes' `l(t)`,
+  the in-force at time `t` months from issue, and `pols_if(0) == pols_if_init()`;
+- `crossover_mth` returns a month on this frame, so `0` is a real answer and the "never
+  crosses" sentinel is **`-1`**.
+
 ## The délai de carence is two benefits, not one
 
 For twelve months [S1] [S8] [S9] [S11] [S12] [S13]:
 
 - a **non-accidental** death refunds the premiums **collected** — `refund_pp(t)`, which
   under an annual premium in advance is a **step function**, constant at 336.03 € through
-  months 1 to 12, not a monthly accrual;
+  months `t` = 0 to 11, not a monthly accrual;
 - an **accidental** death pays the **full guaranteed capital from day one** [S1] [S8]
   [S9] [S11] [S13].
 
-From month 13 any death pays the capital. Expected death outgo steps by a factor of
-**7.8080** between months 12 and 13, and the step decomposes exactly into three
+From `t = 12` any death pays the capital. Expected death outgo steps by a factor of
+**7.8080** between `t = 11` and `t = 12`, and the step decomposes exactly into three
 independent moves — in-force 0.994191, monthly mortality 0.885251, benefit 8.871657.
 That discontinuity is the reason the grid must be monthly.
 
 Three ways to get it wrong, all of them large, all of them tested:
 
-| Error | Month 1 | Policy year 1 |
+| Error | First month (`t` = 0) | Policy year 1 |
 |---|---|---|
 | Correct | 0.380884 | 4.4274 |
 | Pay the **capital** inside the *carence* | 3.345618 (×8.78) | 38.8893 |
@@ -106,7 +134,7 @@ overstates outgo. `accident_mult()` is used in exactly one place,
 `capital_pp(t)` is `C_0 × (1 + r)^(y−1)`, uprated out of the *participation aux bénéfices*
 [S1] [S2] [S15] [S16] [REG-R14] [REG-R15]. The uprating starts at the **first
 anniversary**, not at issue, because PB is allocated to contracts in force at least a year
-[S1] [S9] — so `capital_pp(t) == capital_0()` for `t ≤ 12`, which `check_capital_reval()`
+[S1] [S9] — so `capital_pp(t) == capital_0()` for `t < 12`, which `check_capital_reval()`
 asserts. Uprating at issue would make it 5050.00 € in the first year and overstate the
 year-1 accidental leg.
 
@@ -132,7 +160,7 @@ refuse neither *rachat* nor *réduction*. The article withholds them from a clos
 temporary death assurance and immediate or in-payment annuities may carry neither, and
 survivorship capitals, pure endowments and deferred annuities without return of premium may
 carry no *rachat* [R10]. So
-`claims(t, "LAPSE")` is **non-zero from month 1** and worth 1005.89 € over the anchor
+`claims(t, "LAPSE")` is **non-zero from `t` = 0** and worth 1005.89 € over the anchor
 cell's horizon. This is where the UK sibling's model is actively misleading: there a lapse
 pays nothing, every lapse extinguishes a liability for free, and raising lapse always
 lowers the liability. Here it does not.
@@ -162,8 +190,8 @@ It is carried as a **second population strand**:
 
 | Cells | What it holds |
 |---|---|
-| `pols_if(t)` | policies still paying premiums, measured at the **start** of month t — the notes' `l(t−1)`, since the notes carry `l` at end of month, and the column the worked example prints |
-| `pols_paid_up(t)` | paid-up (*réduit*) policies at the start of month t — the notes' `l_r(t−1)`, same offset |
+| `pols_if(t)` | policies still paying premiums, measured at the **start** of month t — the notes' `l(t)`, since the notes carry `l` at time t months from issue and the start of month t is time t, and the column the worked example prints |
+| `pols_paid_up(t)` | paid-up (*réduit*) policies at the start of month t — the notes' `l_r(t)`, same alignment |
 | `capital_paid_up(t)` | the **aggregate paid-up capital** in force |
 | `pols_all(t)` | the sum, which is what the maintenance expense is carried on |
 
@@ -187,15 +215,15 @@ finds **two**:
 
 | Basis | Anchor cell | Notes |
 |---|---|---|
-| `"ISSUE"` | month **169**, policy year 15 | against `capital_0`, 5040.45 € against 5000 € |
-| `"CURRENT"` | month **205**, policy year 18 | against the revalorised capital, 6048.54 € against 5921.52 € |
+| `"ISSUE"` | `t` = **168**, policy year 15 | against `capital_0`, 5040.45 € against 5000 € |
+| `"CURRENT"` | `t` = **204**, policy year 18 | against the revalorised capital, 6048.54 € against 5921.52 € |
 
 Three years apart, and publishing one without saying which is how a stated crossover moves
 by years. The standardised tables add a second convention on top: they date their columns
 by the age at the **end** of the year, so their "age 65" column is this model's attained
 age 64 during policy year 15. Model point 7 reproduces the notes' subsidiary table exactly
 on that reading — 2467.80 / 4113.00 / 5758.20 / 7403.40 € of cumulative premiums at the
-tables' ages 65 / 75 / 85 / 95 [S5] — and crosses at month 361, policy year 31, attained
+tables' ages 65 / 75 / 85 / 95 [S5] — and crosses at `t` = 360, policy year 31, attained
 age 80.
 
 Letting lifetime premiums stop by accident removes the overrun and with it the product's
@@ -217,8 +245,12 @@ with TH 00-02 [S8]) and one rate alone (0 % [S1]).
 
 What every insurer *does* publish, since 1 July 2025, is a standardised table of surrender
 values by duration for a 5000 € capital [R13] [R15]. The model reads that, interpolates it
-linearly in policy months between the published quinquennial anchors **[std]** and holds
-it flat beyond the last one. The anchors already embed that insurer's own revalorisation,
+linearly in **elapsed months from issue** between the published quinquennial anchors
+**[std]** and holds
+it flat beyond the last one. Because a *rachat* resolves at the **end** of month `t`, the
+lookup key is `duration_mth(t) + 1 = t + 1`: `surr_value_pp(0)` is the one-month value,
+13.07 € on the anchor cell, and the published five-year anchor of 784.01 € is
+`surr_scale_pp(59)`. The anchors already embed that insurer's own revalorisation,
 which is why `surr_value_pp` is **not** additionally scaled by `capital_pp` — it is
 pro-rated to the policy's own `capital_0` and netted of any penalty, and nothing else.
 
@@ -280,6 +312,19 @@ This follows lifelib's `annuallife/TradLife_A`. `Projection` is parameterized by
 `point_id`, so the CSV readers live in an unparameterized **`Data`** Space and each file is
 read once per model rather than once per model point; a test counts the reads.
 
+**No CSV column is the model's `t`,** so none of them moved when the frame became 0-based:
+
+| File | Time-like column | Decision |
+|---|---|---|
+| `lapse_table.csv` | `policy_year`, values 1–6 | **Unchanged.** A contractual, 1-based policy-year label; `lapse_rate_base` looks it up through `policy_year(t) = t // 12 + 1`, clamped to the last row |
+| `select_table.csv` | `policy_year`, values 1–4 | **Unchanged**, same reason, through `select_uplift(t)` |
+| `surr_scale_table.csv` | `month`, values 0, 60, 120 … 540 | **Unchanged.** An **elapsed count** from issue — the published quinquennial anniversaries, 0 meaning "at issue" — not the frame's index. `surr_scale_pp(t)` reads it at `duration_mth(t) + 1`, the months elapsed at the end of month `t` |
+| `mort_table.csv` | `age` (with `sex`) | **Unchanged.** Attained age, reached through `mort_rate_base(age(t))`; not a time key |
+| `single_prem_table.csv` | `age` | **Unchanged.** Attained age, through `single_prem_rate(age(t))` |
+| `model_point_table.csv` | `prem_term_y`, `carence_months`, `surr_penalty_years` | **Unchanged.** Durations — counts of years or months, 0-based by nature. What changed is the comparison at the boundary: `t < 12 × prem_term_y`, `t < carence_months`, `t < 12 × surr_penalty_years`, each having been `<=` on the 1-based frame |
+| `model_point_table.csv` | `prem_cease_age`, `entry_age` | **Unchanged.** Attained ages, compared against `age(t)` |
+| `model_point_table.csv` | `issue_month` | **Unchanged.** A *calendar* month, 1–12, and not on the frame's axis at all — it flags the age-basis approximation and enters no formula |
+
 | Reference | Cells | File |
 |---|---|---|
 | `model_point_file` | `model_point_table()` | `model_point_table.csv` |
@@ -295,7 +340,7 @@ read once per model rather than once per model point; a test counts the reads.
 | `mort_table.csv` | Annual base mortality by sex × attained age 18–112, capped at 1, with a `provenance` column | **[std]** throughout. An INSEE-shaped Gompertz proxy [REG-R24] anchored at `q(M, 50) = 0.0040` with 9 % p.a. age progression — the notes' walk-through basis *exactly*, so `q(M,50) × 1.25 × 1.60 = 0.008000` — and female rates a flat 0.60 factor on it. **Not** TH 00-02 / TF 00-02 [REG-R22] [REG-R23], which are cited and never shipped |
 | `select_table.csv` | Select uplift by policy year: 1.60 / 1.30 / 1.15 / 1.00 | **[std]**; the *direction* is defensible on a guaranteed-issue book [S1] [S11] [S12] [S13] [R21], the magnitude has no public calibration of any kind |
 | `lapse_table.csv` | Annual premium-stop rate by policy year: 6 / 5 / 3.5 / 3.5 / 3.5 / 2.5 % | **[std]**; no public French source gives any lapse, surrender or paid-up rate for this product. The declining shape follows from a surrender value worth a fraction of the premiums paid [S14] |
-| `surr_scale_table.csv` | Six surrender-value grids in € per 5000 € of capital, by policy month; each carries **all nine** published quinquennial anchors, at 60 to 540 months in steps of 60 | Transcribed anchors: AXA Serenova *viagère* and *temporaire* 10 ans at entry 50 [S14], CNP *viagère* and *prime unique* at 50 [S5], Sogecap *viagère* at 70 [S15], Mutex *temporaire* 25 ans at 50 [S2]. **This file is the source of truth for the provenance of every anchor** — its `provenance` column names the insurer, entry age, premium form and source id row by row. Month-0 anchors are **[std]**: zero on a periodic-premium form, a linear back-extrapolation on the single-premium one |
+| `surr_scale_table.csv` | Six surrender-value grids in € per 5000 € of capital, by **elapsed months from issue**; each carries **all nine** published quinquennial anchors, at 60 to 540 months in steps of 60 | Transcribed anchors: AXA Serenova *viagère* and *temporaire* 10 ans at entry 50 [S14], CNP *viagère* and *prime unique* at 50 [S5], Sogecap *viagère* at 70 [S15], Mutex *temporaire* 25 ans at 50 [S2]. **This file is the source of truth for the provenance of every anchor** — its `provenance` column names the insurer, entry age, premium form and source id row by row. Month-0 anchors are **[std]**: zero on a periodic-premium form, a linear back-extrapolation on the single-premium one |
 | `single_prem_table.csv` | u(x), the single premium per 1 € of whole-life capital, by attained age 18–112 | Anchored at 0.854808 / 0.909720 / 0.963912 at ages 50 / 60 / 70 [S5]; interpolated and extrapolated **[std]**, clipped to [0.30, 1.00] |
 
 ## Sign convention
@@ -327,7 +372,7 @@ docstring. Five cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `l(t)`, `l_r(t)` | `pols_if` / `pols_paid_up` / `pols_all` | Two population strands, because *réduction* keeps a liability rather than ending one; on every point where `reduction_share` is 0 the three coincide. **And a one-month offset:** the notes measure `l` at the end of month t, the library at the start, so `pols_if(t)` = `l(t−1)` — the worked example's column is headed `pols_if(t−1)` for exactly that reason |
+| `l(t)`, `l_r(t)` | `pols_if` / `pols_paid_up` / `pols_all` | Two population strands, because *réduction* keeps a liability rather than ending one; on every point where `reduction_share` is 0 the three coincide. **And no offset:** the notes measure `l` at time t months from issue, the library at the start of month t, which is the same instant, so `pols_if(t)` = `l(t)` — the worked example's column is headed `pols_if(t)` for exactly that reason |
 | `C_red(t)` | `reduced_capital_pp` / `capital_paid_up` | The per-policy paid-up capital, and the **aggregate** in force — which is what removes the need for a per-conversion cohort dimension |
 | `surr_scale(t)` | `surr_scale` / `surr_scale_pp` | The model point's **choice** of published grid, and the interpolated amount off it. Separate cells because mixing one insurer's premium with another's grid is the easiest wrong answer on this product |
 | `claims_death` | `claims_death` + `claims_death_paid_up` | The notes' single column is the sum of the two strands; the library publishes one column per `kind` |
@@ -344,7 +389,7 @@ as the variations; the monthly conversion `q_m = 1 − (1 − q)^(1/12)`; the li
 `omega_age = 112` and mortality forced to 1 there; the anniversary age step in place of the
 1 January *millésime* step, with `issue_month = 1` on every shipped point so that the
 approximation is exact where the data says it is; linear interpolation of both external
-scales in policy months and the month-0 anchors; compounding rather than simple revalorisation; annual premiums in
+scales in elapsed months and the month-0 anchors; compounding rather than simple revalorisation; annual premiums in
 advance with the instalment options carried as a 2.2 % loading [S11] rather than a
 re-tariffing; acquisition 150 € at issue and maintenance 24 €/year inflating at 1.8 %;
 death-before-premium-stop as the processing order; and the overrun lapse stress dial.
@@ -367,10 +412,11 @@ is no maturity, and a test asserts that none of the account-value chassis exists
 ## Tests
 
 `tests/test_obseques_fr.py` asserts all fifteen rows of the notes' worked example to the
-cent and the in-force column to five decimals, the undiscounted totals over the full
-756-month horizon, the month-12/13 *carence* step and its three-factor decomposition, the
+cent and the in-force column to five decimals — re-keyed to the 0-based frame, values
+unchanged — the undiscounted totals over the full 756-month horizon `t = 0 … 755`, the
+`t = 11` / `t = 12` *carence* step and its three-factor decomposition, the
 notes' own closed-form survivorship checks at the first two anniversaries, the capital and
-the surrender value at month 205 two ways, and then one test for each of the twelve
+the surrender value at `t = 204` two ways, and then one test for each of the twelve
 modelling pitfalls the notes list — each named for the failure it catches. A further test
 pins **all nine** published quinquennial anchors on **all six** shipped surrender grids,
 against the model as well as against the CSV, because an anchor silently replaced by an

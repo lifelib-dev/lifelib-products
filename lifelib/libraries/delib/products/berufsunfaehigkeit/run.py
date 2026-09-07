@@ -28,8 +28,8 @@ print("Bruttobeitrag {:,.4f} EUR p.a.   instalment {:,.4f} EUR   "
       "Zahlbeitrag {:,.4f} EUR   Beitragssumme {:,.2f} EUR".format(
           proj.prem_gross_level_pp(), proj.prem_gross_pp(0), proj.prem_zahl_pp(0),
           proj.prem_gross_level_pp() * proj.beitragssumme_unit()))
-print("proj_len = {} ({} monthly rows), ages {} to {}".format(
-    proj.proj_len(), proj.proj_len() + 1, proj.age(0), proj.age(proj.proj_len())))
+print("proj_len = {} monthly rows (t = 0 .. {}), ages {} to {}".format(
+    proj.proj_len(), proj.proj_len() - 1, proj.age(0), proj.age(proj.proj_len() - 1)))
 print()
 
 df = proj.result_cf()
@@ -37,7 +37,7 @@ print(df.head(14).round(6).to_string())
 print()
 print("totals over {} months: premiums {:,.2f}  surplus_credit {:,.2f}  "
       "claims_bu_rente {:,.2f}".format(
-          proj.proj_len() + 1, df["premiums"].sum(),
+          proj.proj_len(), df["premiums"].sum(),
           df["surplus_credit"].sum(), df["claims_bu_rente"].sum()))
 print("                       claims_reintegration {:,.2f}  expenses {:,.2f}  "
       "claim_expenses {:,.2f}  net_cf {:,.2f}".format(

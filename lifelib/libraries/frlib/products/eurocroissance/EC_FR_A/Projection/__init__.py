@@ -11,12 +11,24 @@ projecting model point 1::
     >>> Projection[1].result_provisions()   # the worked example, Chassis A
     >>> Projection.point_id = 2             # Chassis B, same asset path
 
-``t`` counts **policy years** from issue and is **0-based**: ``t = 0`` is the issue
-point, where the initial *versement* net of the entry charge creates the rights and the
-two provisions are first struck. A new-business cell therefore starts at
-``proj_start() = 0``; an in-force cell at ``duration_ifo``, where the extract's assets,
-parts and guaranteed amount are seeded and the *provision mathématique* is re-derived
-rather than read. The projection ends at ``proj_len() = policy_term()``, the *échéance*.
+``t`` counts **policy years** from issue and is **0-based**: period ``t`` is the policy
+year running from time ``t`` to time ``t + 1``, ``t = 0`` is the first policy year, and
+the contractual **policy year is ``t + 1``**. A new-business cell opens at
+``proj_start() = 0``, where the initial *versement* net of the entry charge creates the
+rights and the two provisions are first struck — that is the **opening state** of period
+0, reached as ``own_assets_at(0, "BOY")`` and its siblings, and not a row of its own. An
+in-force cell opens at ``duration_ifo``, the completed policy years at the valuation
+date, where the extract's assets, parts and guaranteed amount are seeded and the
+*provision mathématique* is re-derived rather than read. ``proj_len() = policy_term()``
+is the **number** of policy years projected, so the frame is
+``range(proj_start(), proj_len())`` and its last row, ``proj_len() - 1``, is the year
+that ends at the *échéance*.
+
+A handful of cells are indexed by a **time point** ``k`` rather than by a period: ``k``
+is the elapsed years since issue, ``k = 0`` at issue and ``k = n`` at the *échéance*.
+:func:`age`, :func:`tec_rate`, :func:`i_pm` and :func:`disc_factor` are of that kind, so
+period ``t`` reads them at ``t`` for its opening and at ``t + 1`` for its year-end
+striking.
 
 .. rubric:: Input data
 
@@ -58,14 +70,17 @@ Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 engagement_modality        chassis()                       euro_and_parts or parts_only
 (the 1° test)              is_euro_leg()                   True on Chassis A
-t                          (the cells argument)            Policy year, 0-based
+t                          (the cells argument)            Period index, 0-based
+k                          (the cells argument)            Time point, k years after issue
 x                          issue_age()                     Entry age (âge atteint)
-x + t                      age(t)                          Attained age
+x + k                      age(k)                          Attained age at time k
 duration_ifo               duration_inforce()              Completed years at valuation
-(none)                     proj_start()                    First projected policy year
+(none)                     proj_start()                    First projected period
 n                          policy_term()                   Years to the échéance
-(none)                     proj_len()                      Last projected policy year, = n
+(none)                     proj_len()                      Periods projected, = n
 g                          guarantee_rate()                Share of net versements guaranteed
+P_0                        premium_initial_pp(t)           Initial versement, opening state
+P_net,0                    prem_init_after_charge()        Net of the R. 134-3 1° charge
 P(t)                       premium_gross_pp(t)             Scheduled versement, BOY
 P_net(t)                   prem_after_charge_pp(t)               Net of the R. 134-3 1° charge
 (free versement)           premium_top_up_gross_pp(t)      Free versement, EOY
@@ -76,24 +91,26 @@ f_perf                     perf_charge_rate()              Performance levy, bas
 f_x                        exit_charge_rate()              Exit charge, base 6°
 (indemnity)                surrender_indemnity(t)          R. 132-5-3 indemnity, capped
 mg(t)                      mg(t)                           Guaranteed amount at n
+(the steps)                mg_at(t, timing)                mg inside period t
 (cumulative net premiums)  cum_prem_net(t)                 Death-floor base
-TEC(n-t)                   tec_rate(t)                     Interpolated TEC
-i_pm(t)                    i_pm(t)                         90% of TEC, floored at zero
-(discount factor)          disc_factor(t)                  (1 + i_pm(t))^-(n-t)
-r(t)                       asset_return(t)                 Gross asset return in year t
+(opening)                  cum_prem_net_at(t, "BOY")       Its opening value
+TEC(n-k)                   tec_rate(k)                     Interpolated TEC at time k
+i_pm(k)                    i_pm(k)                         90% of TEC, floored at zero
+(discount factor)          disc_factor(k)                  (1 + i_pm(k))^-(n-k)
+r(t)                       asset_return(t)                 Gross asset return in period t
 A(t)                       own_assets(t)                   Account assets, excluding C(t)
-(the steps)                own_assets_at(t, timing)        The asset roll inside year t
+(the steps)                own_assets_at(t, timing)        The asset roll inside period t
 pm(t)                      pm(t)                           Provision mathématique
-(pre-versement)            pm_at(t, timing)                PM at the striking, before a top-up
+(opening, pre-versement)   pm_at(t, timing)                PM opening and at the striking
 pd(t)                      prov_div(t)                     Provision de diversification
-(pre-versement)            prov_div_at(t, timing)          PD at the striking
+(opening, pre-versement)   prov_div_at(t, timing)          PD opening and at the striking
 N(t)                       parts(t)                        Number of parts
-(the steps)                parts_at(t, timing)             Parts inside year t
+(the steps)                parts_at(t, timing)             Parts inside period t
 u(t)                       part_value(t)                   Valeur de la part
-(pre-versement)            part_value_at(t, timing)        Part value at the striking
+(opening, pre-versement)   part_value_at(t, timing)        u opening and at the striking
 u_min                      min_part_value()                Contractual floor on u
 L(t)                       parts_levy(t)                   BOY levy, base 4°
-I(t)                       invest_income(t)                Financial performance in year t
+I(t)                       invest_income(t)                Financial performance in period t
 F(t)                       perf_levy(t)                    EOY levy, base 5°
 (entry)                    entry_charge(t)                 Base 1° charge on a versement
 C(t)                       insurer_contribution(t)         L. 134-3 outstanding contribution
@@ -103,23 +120,24 @@ D(t)                       pcdd(t)                         Provision collective 
 (A. 134-3 tests)           gate_revalue_ok(t)              Whether a revaluation is permitted
 (A. 134-4 headroom)        conversion_headroom(t)          Parts convertible into PM
 (surrender base)           provision_value(t)              pm(t) + pd(t)
+(opening)                  provision_value_at(t, "BOY")    Its opening value
 surrender_value(t)         surrender_value(t)              R. 134-5 value
 death_value(t)             death_value(t)                  The current provision value
 death_payout(t)            death_payout(t)                 After any garantie décès plancher
 rider_claim(t)             rider_claim_pp(t)               The floor's cost, outside the account
 maturity_value(n)          maturity_value(t)               R. 134-6 amount
 (payouts)                  claim_pp(t, kind)               Payout per claim by kind
-q(x+t)                     mort_rate(t)                    Annual mortality rate
+q(x+t+1)                   mort_rate(t)                    Annual mortality rate
 w(t)                       lapse_rate(t)                   Full surrender rate, all overlays
 (table)                    lapse_rate_base(t)              Table full surrender rate
 (partial rachat)           wd_rate(t)                      Partial surrender rate
 (partial rachat)           wd_pp(t)                        Partial surrender paid
 (partial rachat, gross)    wd_gross_pp(t)                  Taken from the provision
-(none)                     pols_if(t)                      In force at the **start** of year t
-l(t)                       pols_if_at(t, "AFT_DECR")       In force at the **end** of year t
+(none)                     pols_if(t)                      In force at the **start** of period t
+l(t)                       pols_if_at(t, "AFT_DECR")       In force at the **end** of period t
 (none)                     pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
-(none)                     pols_death(t)                   Deaths in year t
-(none)                     pols_lapse(t)                   Full surrenders in year t
+(none)                     pols_death(t)                   Deaths in period t
+(none)                     pols_lapse(t)                   Full surrenders in period t
 (none)                     pols_maturity(t)                Survivors reaching the échéance
 (cash flows)               premiums, claims, withdrawals   Probability-weighted flows
 E(t)                       expenses(t)                     Acquisition and maintenance
@@ -131,7 +149,7 @@ CF(t)                      liability_cf(t)                 The notes' outgo-posi
 
 Six names needed care.
 
-``pols_if`` is the count at the **start** of policy year t — the exposure every cash flow
+``pols_if`` is the count at the **start** of period t — the exposure every cash flow
 on that same :func:`result_cf` row is weighted by — so ``result_cf()["pols_if"].iloc[0]``
 is ``pols_if_init()`` on every model point.  This model first published the notes' own
 ``l(t)``, the count at the **end** of the year, under that name, which put the exposure
@@ -181,53 +199,61 @@ library's account value would assert something false about the contract.
 
 ::
 
-    pm(t) = mg(t) (1 + i_pm(t))^-(n-t)          Chassis A
+    pm(t) = mg(t) (1 + i_pm(t+1))^-(n-t-1)      Chassis A
     pm(t) = 0                                    Chassis B
 
-``i_pm(t)`` is 90% of the TEC, floored at zero (A. 134-1), read here at the **remaining**
-maturity ``n - t`` — a **[std]** reading of the article's index maturity, which
-:func:`tec_rate` sets out. It is **not** the A. 132-1 maximum technical rate and not the
+``pm(t)`` is the closing PM of period t, struck at its year end — time ``t + 1``, where
+the remaining term is ``n - t - 1``. ``i_pm(k)`` is 90% of the TEC, floored at zero
+(A. 134-1), read here at the **remaining** maturity ``n - k`` — a **[std]** reading of the
+article's index maturity, which :func:`tec_rate` sets out. It is **not** the A. 132-1
+maximum technical rate and not the
 A. 132-3 guaranteed rate ceiling, which are different and stricter objects. Rolling ``pm(t-1)`` forward at
 last year's rate would silently remove the **rate effect**: in the notes' worked example
-that is +587.44 of the +824.18 move in year 6, against a time effect of only +236.74.
+that is +587.44 of the +824.18 move in policy year 6, ``t`` = 5, against a time effect of
+only +236.74.
 
-At ``t = n`` the discount factor is 1, so ``pm(n) = mg(n)`` identically and the Chassis A
-guarantee is pre-funded by construction. :func:`check_guarantee_funding` asserts it at
-every ``t``, and it is the model's headline check.
+At the *échéance* the discount factor is 1, so ``pm(n-1) = mg(n-1)`` identically and the
+Chassis A guarantee is pre-funded by construction. :func:`check_guarantee_funding` asserts
+it at every ``t``, and it is the model's headline check.
 
 .. rubric:: The annual rebalancing
 
 ::
 
-    L(t) = f_p pd(t-1)                    A_a = A(t-1) - L(t) - W(t) + P_net(t)
+    L(t) = f_p pd_open(t)                 A_a = A_open(t) - L(t) - W(t) + P_net(t)
     I(t) = A_a r(t)                       F(t) = f_perf max(I(t), 0)
-    A(t) = A_a + I(t) - F(t)              N(t) = N(t-1)(1 - f_p)(1 - w_partial) + ...
+    A(t) = A_a + I(t) - F(t)              N(t) = N_open(t)(1 - f_p)(1 - w_partial) + ...
     pd(t) = max(A(t) - pm(t), N(t) u_min)  u(t) = pd(t)/N(t)
     C(t)  = max(pm(t) + pd(t) - A(t), 0)
+
+``A_open(t)`` is ``own_assets_at(t, "BOY")`` and its siblings: ``A(t-1)`` in every period
+but the first, and in the first the state the initial *versement* — or the in-force
+extract — creates. That is where the issue instant lives; it is not a row of the frame.
 
 The diversification provision takes the **residual** and stops at the parts' contractual
 floor. Where the floor binds, the two provisions together exceed the assets, and the
 excess is exactly ``C(t)`` — the contribution the insurer must make under L. 134-3 to
 complete the representation. The **surrender value therefore exceeds the account's own
-assets by exactly ``C(t)``** while the contribution is outstanding: on the notes' year-6
-shock, 12,384.73 paid against assets of 10,250.65.
+assets by exactly ``C(t)``** while the contribution is outstanding: on the notes'
+policy-year-6 shock, period ``t`` = 5, 12,384.73 paid against assets of 10,250.65.
 
 ``C(t)`` carries **no return to the savers**: :func:`own_assets` rolls forward from
 ``A(t-1)``, not from ``pm(t-1) + prov_div(t-1)``. Rolling the topped-up balance forward would
 manufacture investment return out of the insurer's capital, and the shipped worked
-example is the case that catches it — the year-7 asset roll starts from 10,250.65 and not
-from 12,384.73.
+example is the case that catches it — the policy-year-7 asset roll, period ``t`` = 6,
+starts from 10,250.65 and not from 12,384.73.
 
 .. rubric:: The Chassis B surrender value is not guaranteed
 
 This is the single most important product fact. Before the *échéance* a 2° engagement
 pays ``parts × part value`` and **nothing else** (R. 134-5). The guarantee bites only at
-``t = n``, and only there does :func:`maturity_value` take ``max(parts × u, mg)``. On the
-notes' year-6 shock, Chassis B surrenders for **9,899.22** — 84.18% of net *versements*
-against a guarantee of 11,760.00. An implementation that floors the surrender value at
-the guarantee, or at the discounted guarantee, is modelling a contract that does not
-exist. :func:`check_own_funds_not_paid` asserts that no benefit before the term exceeds
-the two provisions.
+the *échéance* — the end of the last projected period, ``t = proj_len() - 1`` — and only
+there does :func:`maturity_value` take ``max(parts × u, mg)``. On the notes'
+policy-year-6 shock, period ``t`` = 5, Chassis B surrenders for **9,899.22** — 84.18% of
+net *versements* against a guarantee of 11,760.00. An implementation that floors the
+surrender value at the guarantee, or at the discounted guarantee, is modelling a contract
+that does not exist. :func:`check_own_funds_not_paid` asserts that no benefit before the
+term exceeds the two provisions.
 
 The shortfall against the guarantee is carried instead as the *provision pour garantie à
 terme*, :func:`pgt` — the insurer's own funds, computed per auxiliary account on the
@@ -245,7 +271,7 @@ is the **current provision value**, and any *garantie décès plancher* is a com
 guarantee provisioned **outside** the auxiliary account (R. 134-7). :func:`death_payout`
 therefore floors the payout at cumulative net *versements* where the model point elects
 the rider, and :func:`rider_claim_pp` reports the difference separately — 1,860.78 on the
-notes' year-6 Chassis B death, which is not the account's money.
+notes' policy-year-6 Chassis B death, period ``t`` = 5, which is not the account's money.
 
 .. rubric:: The charge bases are not interchangeable
 
@@ -253,9 +279,10 @@ R. 134-3 permits six bases and no others, and base 3° — a levy on the *encour
 diversification provision — is available only in an auxiliary account holding **no** 1°
 engagements. No base permits a levy on the *provision mathématique* at all. The recurring
 charge here is therefore base 4°, a levy **in number of parts**: :func:`parts_levy` is
-``f_p × prov_div(t-1)`` and :func:`parts_at` cancels ``f_p`` of the parts. On the worked
-example's Chassis A that is **15.64** in year 1. An *encours* levy on ``pm + pd`` would
-have been 78.40 — five times as much, and unlawful in a 1° account.
+``f_p × prov_div_at(t, "BOY")`` and :func:`parts_at` cancels ``f_p`` of the parts. On the
+worked example's Chassis A that is **15.64** in policy year 1, ``t`` = 0. An *encours*
+levy on ``pm + pd`` would have been 78.40 — five times as much, and unlawful in a 1°
+account.
 
 .. rubric:: Behaviour, and what is not modelled
 
@@ -445,8 +472,9 @@ def parts_charge_rate():
 def perf_charge_rate():
     """f_perf: the levy on positive financial performance, R. 134-3 base 5° **[std]**.
 
-    10% of the year's positive financial-management performance and nothing at all on a
-    negative one, which is why the worked example's year-6 performance levy is zero.
+    10% of the period's positive financial-management performance and nothing at all on a
+    negative one, which is why the worked example's policy-year-6 performance levy —
+    period ``t`` = 5 — is zero.
     """
     return float(model_point()["perf_charge_rate"])
 
@@ -489,7 +517,7 @@ def min_part_value():
     limit of its minimum** (R. 134-4), so this level sets the floor of the diversification
     provision — and therefore both the Chassis A maturity payout and the point at which
     the insurer must start contributing assets.  Without it the worked example's Chassis A
-    ``prov_div`` would go to **-1,095.35** in year 6.
+    ``prov_div`` would go to **-1,095.35** in policy year 6, ``t`` = 5.
     """
     return float(model_point()["min_part_value"])
 
@@ -572,10 +600,10 @@ def scenario():
     """The asset-return path and TEC curve the model point runs on.
 
     Both the return and the discount curve are drawn from the same scenario name, because
-    the two move together: the year-6 double shock in the worked example — equities down
-    and rates down at once — is what makes the rebalancing visible, and pairing an equity
-    fall with an unchanged curve would understate the *provision mathématique* by the
-    whole rate effect.
+    the two move together: the policy-year-6 double shock in the worked example — period
+    ``t`` = 5, equities down and rates down at once — is what makes the rebalancing
+    visible, and pairing an equity fall with an unchanged curve would understate the
+    *provision mathématique* by the whole rate effect.
     """
     return model_point()["scenario"]
 
@@ -622,65 +650,83 @@ def pols_if_init():
 
 
 def proj_start():
-    """The first projected policy year: ``duration_inforce()``.
+    """The first projected period: ``duration_inforce()``.
 
-    Zero on a new-business cell, where ``t = 0`` is the issue point at which the initial
-    *versement* creates the rights and both provisions are first struck.
+    Zero on a new-business cell, where period ``t = 0`` is the first policy year and opens
+    on the initial *versement*, which creates the rights and strikes both provisions.  On
+    an in-force cell it is the completed policy years at the valuation date — an elapsed
+    count, and therefore already 0-based.
     """
     return duration_inforce()
 
 
 def proj_len():
-    """The last projected policy year: the *échéance* at ``policy_term()``.
+    """The **number** of policy years projected: ``policy_term()``.
 
-    The projection stops there because that is where the contract's guarantee is
-    discharged.  A model point electing the *rente viagère* option would have to run past
-    it, which is why :func:`annuity_option_flag` rejects one.
+    The exclusive end of the frame, so the frame is ``range(proj_start(), proj_len())``
+    and the last projected period is ``proj_len() - 1``, the year that ends at the
+    *échéance*.  The projection stops there because that is where the contract's guarantee
+    is discharged.  A model point electing the *rente viagère* option would have to run
+    past it, which is why :func:`annuity_option_flag` rejects one.
     """
     return policy_term()
 
 
-def age(t):
-    """The attained age (*âge atteint*) at the end of policy year t: ``x + t``."""
-    return issue_age() + t
+def age(k):
+    """x + k: the attained age (*âge atteint*) at time k, k years after issue.
+
+    A **time point** rather than a period: ``age(t)`` is the age at the start of period t
+    and ``age(t + 1)`` the age attained at its end, which is the age :func:`mort_rate`
+    reads that period's decrement at.
+    """
+    return issue_age() + k
 
 
 def asset_return(t):
-    """r(t): the gross asset return of the auxiliary account in policy year t **[std]**.
+    """r(t): the gross asset return of the auxiliary account in period t **[std]**.
 
     Net of asset management fees, which is the basis the notes quote it on.  A **scenario**
     level rather than a best estimate: the guarantee is a put on the account and its cost
     is convex in this number, so a deterministic run understates it.
+
+    ``scenario_table.csv`` is keyed by the elapsed **year end** at which the return is
+    credited, so period t, which ends at time ``t + 1``, reads row ``t + 1``; its row 0 is
+    the inception placeholder and is never read.  The last row is held beyond the table.
     """
     tbl = data.scenario_table()                                      # noqa: F821
-    y = min(t, int(tbl.index.get_level_values("year").max()))
+    y = min(t + 1, int(tbl.index.get_level_values("year").max()))
     return float(tbl.loc[(scenario(), y), "asset_return"])
 
 
-def tec_rate(t):
-    """The *taux de l'échéance constante* at the remaining maturity ``n - t``.
+def tec_rate(k):
+    """The *taux de l'échéance constante* at time k, at the remaining maturity ``n - k``.
+
+    A **time point**: ``k`` is the elapsed years since issue, ``k = 0`` at issue and
+    ``k = n`` at the *échéance*, and ``tec_curve.csv`` is keyed by that same elapsed year.
+    Period t reads ``tec_rate(t)`` for its opening and ``tec_rate(t + 1)`` for its year-end
+    striking.
 
     From A. 134-1: linear interpolation between the two bracketing maturities of the
     published curve, the longest rate held beyond the end of the curve, and the shortest
-    held below its start — which is what ``t = n`` reaches, where the discount factor is 1
+    held below its start — which is what ``k = n`` reaches, where the discount factor is 1
     and the rate is immaterial.  The method choice is irreversible per auxiliary account
     under the article; this model uses method 1°, the per-engagement one, throughout.
 
     **The index maturity is [std].**  The article as retrieved fixes it as the holder's
     guarantee maturity (method 1°) or the auxiliary account's 1°-engagement duration
     (method 2°), and says nothing about how that maturity is re-read at valuation dates
-    after inception.  This model takes the **remaining** term ``n - t``, the horizon the
+    after inception.  This model takes the **remaining** term ``n - k``, the horizon the
     guarantee is actually discounted over; holding ``n`` fixed at the original term would
-    discount a one-year promise at a ten-year constant-maturity rate on the *échéance* row.
+    discount a one-year promise at a ten-year constant-maturity rate on the *échéance*.
     ``technical-notes.md`` states the reading and is the source of truth for it;
     ``product-spec.md`` states the article as retrieved.  The two readings differ only on a
     sloped curve, which is what shipped model point 10 exercises.
     """
     tbl = data.tec_curve()                                           # noqa: F821
-    y = min(t, int(tbl.index.get_level_values("year").max()))
+    y = min(k, int(tbl.index.get_level_values("year").max()))
     curve = tbl.loc[(scenario(), y), "tec_rate"]
     ms = [int(m) for m in curve.index]
-    m = proj_len() - t
+    m = proj_len() - k
     if m <= ms[0]:
         return float(curve.iloc[0])
     if m >= ms[-1]:
@@ -692,11 +738,12 @@ def tec_rate(t):
     raise ValueError("no bracketing maturity for " + str(m))
 
 
-def i_pm(t):
+def i_pm(k):
     """The A. 134-1 discount rate for the *provision mathématique*: 90% of the TEC, floored.
 
-    ``max(0, 0.90 x TEC(n - t))``, the 90% haircut and the zero floor from the article and
-    the remaining-maturity reading of ``n`` **[std]** — see :func:`tec_rate`.  This is
+    ``max(0, 0.90 x TEC(n - k))`` at time k, the 90% haircut and the zero floor from the
+    article and the remaining-maturity reading of ``n`` **[std]** — see :func:`tec_rate`.
+    A **time point**, like the curve it reads: period t is struck at ``i_pm(t + 1)``.  This is
     **not** the A. 132-1 maximum technical rate and
     **not** the A. 132-3 guaranteed-rate ceiling; those are different and stricter objects
     that apply to a tariff, while this one is a valuation ceiling for a provision the saver
@@ -704,34 +751,63 @@ def i_pm(t):
     model that let ``i_pm`` go negative would report a *provision mathématique* larger than
     the guarantee it discounts.
     """
-    return max(0.0, tec_haircut * tec_rate(t))                       # noqa: F821
+    return max(0.0, tec_haircut * tec_rate(k))                       # noqa: F821
 
 
-def disc_factor(t):
-    """``(1 + i_pm(t))^-(n - t)``: the factor that turns the guarantee into the PM.
+def disc_factor(k):
+    """``(1 + i_pm(k))^-(n - k)``: the factor that turns the guarantee into the PM at time k.
 
-    One at ``t = n`` by construction, which is the whole point — see
-    :func:`check_guarantee_funding`.
+    A **time point**, like the rate it is built from: a start-of-period *versement* splits
+    at ``disc_factor(t)`` and the year-end striking of period t discounts at
+    ``disc_factor(t + 1)``.  It is one at ``k = n``, the *échéance*, by construction, which
+    is the whole point — see :func:`check_guarantee_funding`.
     """
-    return (1.0 + i_pm(t)) ** -(proj_len() - t)
+    return (1.0 + i_pm(k)) ** -(proj_len() - k)
+
+
+def premium_initial_pp(t):
+    """The initial gross *versement*, paid at the contract's inception.
+
+    It falls at the very start of the first projected period on a new-business cell, where
+    it creates the rights, and is nil on an in-force cell, whose *versement* was paid
+    before the valuation date.
+
+    It is the first period's **opening state** rather than a step in its roll forward:
+    ``own_assets_at(t, "BOY")``, ``mg_at(t, "BOY")`` and their siblings already carry it
+    net of the entry charge, which is why ``own_assets_at(t, "AFT_PREM")`` adds only the
+    *scheduled* *versement*.  It is nonetheless a cash flow of period t, so it is in
+    :func:`total_premium_pp` and reaches :func:`premiums`, :func:`entry_charge` and
+    :func:`expenses` from there.
+    """
+    if t == proj_start() and duration_inforce() == 0:
+        return premium_gross_init()
+    return 0.0
+
+
+def prem_init_after_charge():
+    """The initial *versement* net of the R. 134-3 1° entry charge.
+
+    The account's opening balance on a new-business cell, and ``g`` times it is the
+    opening guaranteed amount — see :func:`mg`.
+    """
+    return premium_gross_init() * (1.0 - entry_charge_rate())
 
 
 def premium_gross_pp(t):
-    """P(t): the gross *versement* received at the start of policy year t.
+    """P(t): the scheduled gross *versement* received at the start of period t.
 
-    The initial *versement* at ``t = proj_start()`` on a new-business cell, and the
-    scheduled annual one while it is payable.  Nil on an in-force cell's opening row,
-    whose premium was paid before the valuation date.
+    The annual *versement* while it is payable — ``premium_regular_years()`` periods from
+    the first projected one, so the last is period
+    ``proj_start() + premium_regular_years() - 1``.  The initial *versement* is **not**
+    here: it is the first period's opening state, :func:`premium_initial_pp`.
     """
-    if t == proj_start():
-        return premium_gross_init() if duration_inforce() == 0 else 0.0
-    if t <= proj_start() + premium_regular_years():
+    if t < proj_start() + premium_regular_years():
         return premium_regular_pp()
     return 0.0
 
 
 def prem_after_charge_pp(t):
-    """P_net(t): the start-of-year *versement* net of the R. 134-3 1° entry charge.
+    """P_net(t): the start-of-period scheduled *versement* net of the R. 134-3 1° charge.
 
     **This is the base of the guarantee.**  The guarantee is a percentage of *versements*
     net of the entry charge, so a 2.00% charge on €12 000.00 of gross *versements* leaves
@@ -741,8 +817,13 @@ def prem_after_charge_pp(t):
 
 
 def premium_top_up_gross_pp(t):
-    """The free additional gross *versement* paid at the **end** of policy year t."""
-    if t > proj_start() and t == premium_top_up_year():
+    """The free additional gross *versement* paid at the **end** of period t.
+
+    ``premium_top_up_t`` is the contractual **policy year** at whose end it falls, and
+    policy year k is period ``k - 1``, so the test is ``t + 1 == premium_top_up_year()``.
+    Zero is the "no top-up" sentinel and matches no period.
+    """
+    if t >= proj_start() and t + 1 == premium_top_up_year():
         return premium_top_up_pp()
     return 0.0
 
@@ -753,8 +834,9 @@ def premium_top_up_net_pp(t):
 
 
 def total_premium_pp(t):
-    """Every gross *versement* of policy year t, scheduled and free."""
-    return premium_gross_pp(t) + premium_top_up_gross_pp(t)
+    """Every gross *versement* of period t: the initial one, the scheduled one and any free one."""
+    return (premium_initial_pp(t) + premium_gross_pp(t)
+            + premium_top_up_gross_pp(t))
 
 
 def entry_charge(t):
@@ -763,31 +845,33 @@ def entry_charge(t):
 
 
 def parts_added_boy(t):
-    """The parts a start-of-year *versement* buys, at the **last struck** part value.
+    """The parts a start-of-period *versement* buys, at the **opening** part value.
 
     The *versement* splits under R. 134-2: ``g P_net`` discounted at the last struck
-    ``i_pm`` goes to the *provision mathématique* and the remainder buys parts at the last
-    struck part value.  On Chassis B nothing goes to the PM, so the whole net *versement*
-    buys parts.
+    ``i_pm`` — the time-``t`` one, since period t opens at time t — goes to the *provision
+    mathématique* and the remainder buys parts at the opening part value.  On Chassis B
+    nothing goes to the PM, so the whole net *versement* buys parts.
     """
     p = prem_after_charge_pp(t)
-    if p <= 0.0 or t <= proj_start():
+    if p <= 0.0 or t < proj_start():
         return 0.0
-    u = part_value(t - 1)
+    u = part_value_at(t, "BOY")
     if u <= 0.0:
         return 0.0
-    pm_add = guarantee_rate() * p * disc_factor(t - 1) if is_euro_leg() else 0.0
+    pm_add = guarantee_rate() * p * disc_factor(t) if is_euro_leg() else 0.0
     return (p - pm_add) / u
 
 
 def parts_added_eoy(t):
-    """The parts a free year-end *versement* buys, at the part value **just struck**.
+    """The parts a free end-of-period *versement* buys, at the part value **just struck**.
 
-    Paid immediately after the year's striking, so it is priced on ``u(t)`` before the
-    top-up rather than on last year's value.  In the worked example the year-3 top-up of
-    1 960.00 net splits into ``1 960.00 x 1.0225^-7 = 1,677.31`` of PM and 282.69 of
-    diversification provision, buying ``282.69 / 12.8688 = 21.9672`` parts on Chassis A —
-    and the whole 1 960.00 buying ``1 960.00 / 11.1193 = 176.2694`` parts on Chassis B.
+    Paid immediately after the period's striking, so it is priced on ``u(t)`` before the
+    top-up rather than on the opening value, and split at the striking's own
+    ``disc_factor(t + 1)``.  In the worked example the top-up at the end of policy year 3
+    — period ``t`` = 2 — pays 1 960.00 net, which splits into
+    ``1 960.00 x 1.0225^-7 = 1,677.31`` of PM and 282.69 of diversification provision,
+    buying ``282.69 / 12.8688 = 21.9672`` parts on Chassis A — and the whole 1 960.00
+    buying ``1 960.00 / 11.1193 = 176.2694`` parts on Chassis B.
     """
     p = premium_top_up_net_pp(t)
     if p <= 0.0:
@@ -795,42 +879,48 @@ def parts_added_eoy(t):
     u = part_value_at(t, "AFT_STRIKE")
     if u <= 0.0:
         return 0.0
-    pm_add = guarantee_rate() * p * disc_factor(t) if is_euro_leg() else 0.0
+    pm_add = guarantee_rate() * p * disc_factor(t + 1) if is_euro_leg() else 0.0
     return (p - pm_add) / u
 
 
 def wd_rate_base(t):
-    """The table annual partial-surrender rate in policy year t **[std]**.
+    """The table annual partial-surrender rate in period t **[std]**.
 
-    6% of the provision in years 1-2 and 3% thereafter; the *mémoire* observes 6% then
-    2%-4%.  Policy years beyond the table take its last row.
+    6% of the provision in policy years 1-2 and 3% thereafter; the *mémoire* observes 6%
+    then 2%-4%.  ``lapse_table.csv`` is keyed by the contractual **policy year**, which is
+    ``t + 1``; policy years beyond the table take its last row.
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    y = min(max(t, int(tbl.index.min())), int(tbl.index.max()))
+    y = min(t + 1, int(tbl.index.max()))
     return float(tbl.loc[y, "wd_rate"])
 
 
 def wd_rate(t):
-    """The fraction of the provision taken as a *rachat partiel* at the start of year t.
+    """The fraction of the provision taken as a *rachat partiel* at the start of period t.
 
-    Nil while the decrements are switched off, inside a non-surrender period, and in the
-    *échéance* year itself, where the contract is discharged in full instead.  Expressed
-    as a fraction of the provision rather than as a cash amount, because a partial
-    surrender takes the same proportion of every element of the engagement — the parts,
-    the guaranteed amount and the death-floor base all run down pro rata with it.
+    Nil while the decrements are switched off, inside a non-surrender period — policy
+    years 1 to ``lock_up_years``, so periods ``t < lock_up_years()`` — and in the last
+    projected period, which ends at the *échéance*, where the contract is discharged in
+    full instead.  Expressed as a fraction of the provision rather than as a cash amount,
+    because a partial surrender takes the same proportion of every element of the
+    engagement — the parts, the guaranteed amount and the death-floor base all run down
+    pro rata with it.
     """
     if decrement_basis() == "none" or wd_factor() <= 0.0:
         return 0.0
-    if t <= proj_start() or t <= lock_up_years() or t >= proj_len():
+    if t < proj_start() or t < lock_up_years() or t >= proj_len() - 1:
         return 0.0
     return min(1.0, wd_factor() * wd_rate_base(t))
 
 
 def wd_gross_pp(t):
-    """W(t): the amount a *rachat partiel* takes out of the provision, before the exit charge."""
-    if t <= proj_start():
+    """W(t): the amount a *rachat partiel* takes out of the provision, before the exit charge.
+
+    Taken at the start of period t, so it is a fraction of the **opening** provisions.
+    """
+    if t < proj_start():
         return 0.0
-    return wd_rate(t) * provision_value(t - 1)
+    return wd_rate(t) * provision_value_at(t, "BOY")
 
 
 def wd_pp(t):
@@ -844,21 +934,33 @@ def wd_pp(t):
 
 
 def mg_at(t, timing):
-    """mg at a point inside policy year t.
+    """mg at a point inside period t.
+
+    ``"BOY"``
+        the opening guaranteed amount: ``mg(t - 1)`` in every period but
+        the first, and in the first ``g`` times the initial net
+        *versement* on a new-business cell or the extract's ``mg_ifo`` on
+        an in-force one.  This is where the issue instant lives.
 
     ``"AFT_EXIT"``
         after a *rachat partiel* has run the guarantee down pro rata.
 
     ``"AFT_PREM"``
-        after the start-of-year *versement* has raised it by ``g P_net``.
-        This is the amount the year-end striking discounts.
+        after the start-of-period scheduled *versement* has raised it by
+        ``g P_net``.  This is the amount the year-end striking discounts.
 
     ``"AFT_TOP_UP"``
-        after any free year-end *versement*; the year-end guaranteed amount,
-        and the same number as :func:`mg`.
+        after any free end-of-period *versement*; the closing guaranteed
+        amount, and the same number as :func:`mg`.
     """
+    if timing == "BOY":
+        if t > proj_start():
+            return mg(t - 1)
+        if duration_inforce() > 0:
+            return mg_init()
+        return guarantee_rate() * prem_init_after_charge()
     if timing == "AFT_EXIT":
-        return mg(t - 1) * (1.0 - wd_rate(t))
+        return mg_at(t, "BOY") * (1.0 - wd_rate(t))
     if timing == "AFT_PREM":
         return mg_at(t, "AFT_EXIT") + guarantee_rate() * prem_after_charge_pp(t)
     if timing == "AFT_TOP_UP":
@@ -868,7 +970,7 @@ def mg_at(t, timing):
 
 
 def mg(t):
-    """mg(t): the amount guaranteed at the *échéance*, as at the end of policy year t.
+    """mg(t): the amount guaranteed at the *échéance*, as at the end of period t.
 
     ``g`` times cumulative *versements* **net of the R. 134-3 1° entry charge**, run down
     pro rata to any *rachat partiel*.  It is constant between *versements* in a
@@ -877,15 +979,29 @@ def mg(t):
     """
     if t < proj_start():
         return 0.0
-    if t == proj_start():
-        if duration_inforce() > 0:
-            return mg_init()
-        return guarantee_rate() * prem_after_charge_pp(t)
     return mg_at(t, "AFT_TOP_UP")
 
 
+def cum_prem_net_at(t, timing):
+    """The cumulative net *versements* at a point inside period t.
+
+    ``"BOY"``
+        the opening base: ``cum_prem_net(t - 1)`` in every period but the
+        first, and in the first the initial net *versement* on a
+        new-business cell or the extract's ``cum_prem_net_ifo`` on an
+        in-force one.
+    """
+    if timing == "BOY":
+        if t > proj_start():
+            return cum_prem_net(t - 1)
+        if duration_inforce() > 0:
+            return cum_prem_net_init()
+        return prem_init_after_charge()
+    raise ValueError("invalid timing: " + str(timing))
+
+
 def cum_prem_net(t):
-    """The cumulative net *versements* at the end of policy year t: the death-floor base.
+    """The cumulative net *versements* at the end of period t: the death-floor base.
 
     Equal to ``mg(t) / g`` here, and kept separate because they are different objects: the
     guaranteed amount is a contractual promise at a stated term and this is the base of a
@@ -894,30 +1010,28 @@ def cum_prem_net(t):
     """
     if t < proj_start():
         return 0.0
-    if t == proj_start():
-        if duration_inforce() > 0:
-            return cum_prem_net_init()
-        return prem_after_charge_pp(t)
-    return (cum_prem_net(t - 1) * (1.0 - wd_rate(t))
+    return (cum_prem_net_at(t, "BOY") * (1.0 - wd_rate(t))
             + prem_after_charge_pp(t) + premium_top_up_net_pp(t))
 
 
 def parts_levy(t):
-    """L(t): the R. 134-3 base 4° levy, taken at the start of policy year t.
+    """L(t): the R. 134-3 base 4° levy, taken at the start of period t.
 
-    ``f_p x prov_div(t-1)`` — a levy **in number of parts**, valued at the opening part value.
+    ``f_p x prov_div_at(t, "BOY")`` — a levy **in number of parts**, valued at the opening
+    part value.
     Base 3°, a levy on the *encours* of the diversification provision, is available only
     in an auxiliary account holding **no** 1° engagements, and no base permits a levy on
-    the *provision mathématique* at all.  On the worked example's Chassis A the year-1
-    levy is 15.64; an encours levy on ``pm + pd`` would have been 78.40.
+    the *provision mathématique* at all.  On the worked example's Chassis A the levy in
+    policy year 1 — period ``t`` = 0 — is 15.64; an encours levy on ``pm + pd`` would have
+    been 78.40.
     """
-    if t <= proj_start():
+    if t < proj_start():
         return 0.0
-    return parts_charge_rate() * prov_div(t - 1)
+    return parts_charge_rate() * prov_div_at(t, "BOY")
 
 
 def invest_income(t):
-    """I(t): the year's financial performance, on the balance after the start-of-year steps."""
+    """I(t): the period's financial performance, on the balance after its opening steps."""
     return own_assets_at(t, "AFT_PREM") * asset_return(t)
 
 
@@ -925,26 +1039,33 @@ def perf_levy(t):
     """F(t): the R. 134-3 base 5° levy on **positive** financial performance.
 
     ``f_perf x max(I(t), 0)`` — nothing at all in a year of negative performance, which is
-    why the worked example's year-6 performance levy is zero on both chassis.
+    why the worked example's performance levy in policy year 6, period ``t`` = 5, is zero
+    on both chassis.
     """
-    if t <= proj_start():
+    if t < proj_start():
         return 0.0
     return perf_charge_rate() * max(invest_income(t), 0.0)
 
 
 def own_assets_at(t, timing):
-    """The account assets at a point inside policy year t.
+    """The account assets at a point inside period t.
+
+    ``"BOY"``
+        the opening assets: ``A(t-1)`` in every period but the first, and
+        in the first the initial *versement* net of the entry charge on a
+        new-business cell or ``own_assets_ifo`` on an in-force one.  This
+        is where the issue instant lives — it is not a row of the frame.
 
     ``"AFT_LEVY"``
-        ``A(t-1)`` less the base 4° parts levy.
+        less the base 4° parts levy.
 
     ``"AFT_EXIT"``
         less any *rachat partiel*, taken gross of the exit charge because
         the charge stays in the account.
 
     ``"AFT_PREM"``
-        plus the start-of-year *versement* net of the entry charge.
-        **This is the balance the year's return accrues on.**
+        plus the start-of-period scheduled *versement* net of the entry
+        charge.  **This is the balance the year's return accrues on.**
 
     ``"AFT_RETURN"``
         after the year's asset return.
@@ -954,16 +1075,22 @@ def own_assets_at(t, timing):
         provisions are struck against.
 
     ``"AFT_TOP_UP"``
-        plus any free year-end *versement*; the year-end assets, and the
-        same number as :func:`own_assets`.
+        plus any free end-of-period *versement*; the closing assets, and
+        the same number as :func:`own_assets`.
 
     The steps are exposed individually because their order is fixed by R. 134-4 and
     R. 134-12 III — asset affectations completing the representation are made on the dates
     the participation account is struck, after its balance has been allocated — rather
     than being arithmetic convenience.
     """
+    if timing == "BOY":
+        if t > proj_start():
+            return own_assets(t - 1)
+        if duration_inforce() > 0:
+            return own_assets_init()
+        return prem_init_after_charge()
     if timing == "AFT_LEVY":
-        return own_assets(t - 1) - parts_levy(t)
+        return own_assets_at(t, "BOY") - parts_levy(t)
     if timing == "AFT_EXIT":
         return own_assets_at(t, "AFT_LEVY") - wd_gross_pp(t)
     if timing == "AFT_PREM":
@@ -978,45 +1105,54 @@ def own_assets_at(t, timing):
 
 
 def own_assets(t):
-    """A(t): the auxiliary-account assets attributable to the policy at the end of year t.
+    """A(t): the auxiliary-account assets attributable to the policy at the end of period t.
 
     At realisation value (R. 134-8) and **excluding** any outstanding L. 134-3
     contribution, which is the insurer's capital and not the savers' money.  That
     exclusion is the point of the cells: :func:`own_assets_at` rolls forward from ``A(t-1)``
     and never from ``pm(t-1) + prov_div(t-1)``, so the contribution earns nothing for the savers.
-    In the worked example the year-7 roll starts from 10,250.65, not from the 12,384.73 the
-    contract would have surrendered for.
+    In the worked example the policy-year-7 roll — period ``t`` = 6 — starts from
+    10,250.65, not from the 12,384.73 the contract would have surrendered for.
     """
     if t < proj_start():
         return 0.0
-    if t == proj_start():
-        if duration_inforce() > 0:
-            return own_assets_init()
-        return prem_after_charge_pp(t)
     return own_assets_at(t, "AFT_TOP_UP")
 
 
 def parts_at(t, timing):
-    """The number of parts at a point inside policy year t.
+    """The number of parts at a point inside period t.
+
+    ``"BOY"``
+        the opening count: ``N(t-1)`` in every period but the first, and
+        in the first the parts the initial net *versement* buys at
+        ``part_value_init()`` on a new-business cell, or ``parts_ifo`` on
+        an in-force one.
 
     ``"AFT_LEVY"``
-        ``N(t-1)(1 - f_p)`` after the base 4° levy, which cancels parts
+        ``N_open(t)(1 - f_p)`` after the base 4° levy, which cancels parts
         rather than reducing their value.
 
     ``"AFT_EXIT"``
         after a *rachat partiel* has cancelled its pro-rata share.
 
     ``"AFT_PREM"``
-        plus the parts a start-of-year *versement* bought.
+        plus the parts a start-of-period *versement* bought.
         **This is the count the year-end striking divides by.**
 
     ``"AFT_TOP_UP"``
-        plus the parts a free year-end *versement* bought at the just
-        struck part value; the year-end count, and the same number as
+        plus the parts a free end-of-period *versement* bought at the just
+        struck part value; the closing count, and the same number as
         :func:`parts`.
     """
+    if timing == "BOY":
+        if t > proj_start():
+            return parts(t - 1)
+        if duration_inforce() > 0:
+            return parts_init()
+        u = part_value_init()
+        return prov_div_at(t, "BOY") / u if u > 0.0 else 0.0
     if timing == "AFT_LEVY":
-        return parts(t - 1) * (1.0 - parts_charge_rate())
+        return parts_at(t, "BOY") * (1.0 - parts_charge_rate())
     if timing == "AFT_EXIT":
         return parts_at(t, "AFT_LEVY") * (1.0 - wd_rate(t))
     if timing == "AFT_PREM":
@@ -1027,7 +1163,7 @@ def parts_at(t, timing):
 
 
 def parts(t):
-    """N(t): the number of *parts de provision de diversification* at the end of year t.
+    """N(t): the number of *parts de provision de diversification* at the end of period t.
 
     The saver's rights are expressed in a **number of parts**, and R. 134-2 makes the
     insurer's commitment the number and not the value.  On the worked example the count
@@ -1036,63 +1172,80 @@ def parts(t):
     """
     if t < proj_start():
         return 0.0
-    if t == proj_start():
-        if duration_inforce() > 0:
-            return parts_init()
-        u = part_value_init()
-        return max(own_assets(t) - pm(t), 0.0) / u if u > 0.0 else 0.0
     return parts_at(t, "AFT_TOP_UP")
 
 
 def pm_at(t, timing):
-    """The *provision mathématique* at the year-end striking, before and after a top-up.
+    """The *provision mathématique* inside period t: opening, and at the year-end striking.
+
+    ``"BOY"``
+        the opening PM: ``pm(t-1)`` in every period but the first, and in
+        the first the opening guaranteed amount discounted at the
+        time-``t`` rate.  On an in-force cell this is the number
+        :func:`check_pm_restruck` compares against the extract's ``pm_ifo``.
 
     ``"AFT_STRIKE"``
-        the guaranteed amount as it stands after the start-of-year steps,
-        discounted at the current ``i_pm``.
+        the guaranteed amount as it stands after the start-of-period
+        steps, discounted at the rate of the year-end striking,
+        ``i_pm(t + 1)``.
 
     ``"AFT_TOP_UP"``
-        the same after any free year-end *versement*; the year-end PM, and
-        the same number as :func:`pm`.
+        the same after any free end-of-period *versement*; the closing PM,
+        and the same number as :func:`pm`.
 
     Identically zero on Chassis B, where the guarantee is not provisioned inside the
     account at all.
     """
     if not is_euro_leg():
         return 0.0
+    if timing == "BOY":
+        if t > proj_start():
+            return pm(t - 1)
+        return mg_at(t, "BOY") * disc_factor(t)
     if timing == "AFT_STRIKE":
-        return mg_at(t, "AFT_PREM") * disc_factor(t)
+        return mg_at(t, "AFT_PREM") * disc_factor(t + 1)
     if timing == "AFT_TOP_UP":
-        return mg_at(t, "AFT_TOP_UP") * disc_factor(t)
+        return mg_at(t, "AFT_TOP_UP") * disc_factor(t + 1)
     raise ValueError("invalid timing: " + str(timing))
 
 
 def pm(t):
-    """pm(t): the *provision mathématique* at the end of policy year t.
+    """pm(t): the *provision mathématique* at the end of period t.
 
-    ``mg(t) (1 + i_pm(t))^-(n-t)`` on Chassis A and identically zero on Chassis B
-    (R. 134-2).  **Re-struck every year, never accumulated.**  Rolling ``pm(t-1)`` forward
-    at last year's rate removes the rate effect: in the worked example that is +587.44 of
-    the +824.18 year-6 move, against a time effect of +236.74.
+    ``mg(t) (1 + i_pm(t+1))^-(n-t-1)`` on Chassis A and identically zero on Chassis B
+    (R. 134-2) — the closing guaranteed amount discounted from the *échéance* back to the
+    period's year end, time ``t + 1``.  **Re-struck every year, never accumulated.**
+    Rolling ``pm(t-1)`` forward at last year's rate removes the rate effect: in the worked
+    example that is +587.44 of the +824.18 move in policy year 6, ``t`` = 5, against a
+    time effect of +236.74.
 
-    At ``t = n`` the discount factor is 1, so ``pm(n) = mg(n)`` identically and the
-    Chassis A guarantee is pre-funded by construction.
+    In the last projected period the discount factor is 1, so ``pm`` equals ``mg``
+    identically and the Chassis A guarantee is pre-funded by construction.
     """
     if t < proj_start() or not is_euro_leg():
         return 0.0
-    if t == proj_start():
-        return mg(t) * disc_factor(t)
     return pm_at(t, "AFT_TOP_UP")
 
 
 def prov_div_at(t, timing):
-    """The *provision de diversification* at the year-end striking, before and after a top-up.
+    """The *provision de diversification* inside period t: opening, and at the striking.
 
     The **residual** of the account's assets over the *provision mathématique*, floored at
     the parts' minimum value: R. 134-4 permits a debit balance to reduce the part value
     only within the limit of its minimum.  Where the floor binds the two provisions
     together exceed the assets, and the excess is exactly the L. 134-3 contribution.
+
+    ``"BOY"`` is the opening provision — ``prov_div(t-1)`` in every period but the first,
+    and in the first the residual the initial *versement*, or the in-force extract, leaves
+    over the opening PM.  It is the base of the start-of-period parts levy.
     """
+    if timing == "BOY":
+        if t > proj_start():
+            return prov_div(t - 1)
+        if duration_inforce() > 0:
+            return max(own_assets_at(t, "BOY") - pm_at(t, "BOY"),
+                       parts_init() * min_part_value())
+        return max(own_assets_at(t, "BOY") - pm_at(t, "BOY"), 0.0)
     if timing == "AFT_STRIKE":
         return max(own_assets_at(t, "AFT_PERF") - pm_at(t, "AFT_STRIKE"),
                    parts_at(t, "AFT_PREM") * min_part_value())
@@ -1103,27 +1256,32 @@ def prov_div_at(t, timing):
 
 
 def prov_div(t):
-    """prov_div(t): the *provision de diversification* at the end of policy year t.
+    """prov_div(t): the *provision de diversification* at the end of period t.
 
     The savers' individualised rights (R. 343-3 9°), and the only part of the engagement
-    that bears investment risk.  On the worked example's year-6 shock the raw residual on
-    Chassis A is ``10,250.65 - 11,346.00 = -1,095.35`` and the floor binds instead at
-    ``207.7460 x 5.0000 = 1,038.73``.
+    that bears investment risk.  On the worked example's policy-year-6 shock, period
+    ``t`` = 5, the raw residual on Chassis A is ``10,250.65 - 11,346.00 = -1,095.35`` and
+    the floor binds instead at ``207.7460 x 5.0000 = 1,038.73``.
     """
     if t < proj_start():
         return 0.0
-    if t == proj_start():
-        if duration_inforce() > 0:
-            return max(own_assets(t) - pm(t), parts(t) * min_part_value())
-        return max(own_assets(t) - pm(t), 0.0)
     return prov_div_at(t, "AFT_TOP_UP")
 
 
 def part_value_at(t, timing):
-    """The *valeur de la part* at the year-end striking, before and after a top-up.
+    """The *valeur de la part* inside period t: opening, and at the year-end striking.
 
-    ``"AFT_STRIKE"`` is what a free year-end *versement* buys parts at.
+    ``"BOY"`` is the opening value — ``u(t-1)`` in every period but the first, and in the
+    first ``part_value_init()`` on a new-business cell (the initial *versement* buys parts
+    at it) or the extract's ``pd / N`` on an in-force one.  It is what a start-of-period
+    *versement* buys parts at.  ``"AFT_STRIKE"`` is what a free end-of-period *versement*
+    buys parts at.
     """
+    if timing == "BOY":
+        if t > proj_start():
+            return part_value(t - 1)
+        n_t = parts_at(t, "BOY")
+        return prov_div_at(t, "BOY") / n_t if n_t > 0.0 else part_value_init()
     if timing == "AFT_STRIKE":
         n_t = parts_at(t, "AFT_PREM")
         return prov_div_at(t, "AFT_STRIKE") / n_t if n_t > 0.0 else 0.0
@@ -1134,7 +1292,7 @@ def part_value_at(t, timing):
 
 
 def part_value(t):
-    """u(t): the *valeur de la part* at the end of policy year t, ``prov_div(t) / N(t)``.
+    """u(t): the *valeur de la part* at the end of period t, ``prov_div(t) / N(t)``.
 
     **Common to every engagement of the auxiliary account** (R. 134-2), so savers with
     different maturities and different guarantee levels in one account earn the same rate;
@@ -1145,9 +1303,6 @@ def part_value(t):
     """
     if t < proj_start():
         return 0.0
-    if t == proj_start():
-        n_t = parts(t)
-        return prov_div(t) / n_t if n_t > 0.0 else part_value_init()
     return part_value_at(t, "AFT_TOP_UP")
 
 
@@ -1160,6 +1315,19 @@ def provision_value(t):
     return pm(t) + prov_div(t)
 
 
+def provision_value_at(t, timing):
+    """``pm + prov_div`` at a point inside period t.
+
+    ``"BOY"``
+        the opening provisions — the base a start-of-period *rachat
+        partiel* takes its pro-rata share of, and the balance the
+        maintenance expense of the opening striking is charged on.
+    """
+    if timing == "BOY":
+        return pm_at(t, "BOY") + prov_div_at(t, "BOY")
+    raise ValueError("invalid timing: " + str(timing))
+
+
 def insurer_contribution(t):
     """C(t): the outstanding L. 134-3 contribution completing the representation.
 
@@ -1167,7 +1335,8 @@ def insurer_contribution(t):
     guarantee is carried as a PGT instead.  It is the insurer's capital: it carries **no
     return to the savers** and is releasable as soon as the account's own assets cover the
     two provisions.  The surrender value exceeds the account's own assets by exactly this
-    amount while it is outstanding — 2,134.08 on the worked example's year-6 shock.
+    amount while it is outstanding — 2,134.08 on the worked example's policy-year-6
+    shock, period ``t`` = 5.
     """
     if not is_euro_leg():
         return 0.0
@@ -1175,15 +1344,17 @@ def insurer_contribution(t):
 
 
 def apport(t):
-    """The R. 134-12 *apport d'actifs* made at the end of policy year t.
+    """The R. 134-12 *apport d'actifs* made at the end of period t.
 
     Capped at 10% of the diversification provision by the article.  It enters the account
     at realisation value and **endows the PCDD**; it is never credited to ``prov_div``, so it
-    changes no policyholder value by one cent.  On the worked example's Chassis B a
-    statutory-maximum *apport* at ``t = 6`` is 989.92 and cuts the PGT from 1,446.78 to
-    456.86.
+    changes no policyholder value by one cent.  ``apport_t`` is the contractual **policy
+    year** at whose end it falls, and policy year k is period ``k - 1``, so the test is
+    ``t + 1 == apport_year()``; zero is the "no *apport*" sentinel and matches no period.
+    On the worked example's Chassis B a statutory-maximum *apport* at the end of policy
+    year 6 — period ``t`` = 5 — is 989.92 and cuts the PGT from 1,446.78 to 456.86.
     """
-    if t <= proj_start() or t != apport_year():
+    if t < proj_start() or t + 1 != apport_year():
         return 0.0
     return min(apport_rate(), apport_cap) * prov_div(t)                    # noqa: F821
 
@@ -1202,14 +1373,14 @@ def pcdd(t):
     if t < proj_start():
         return 0.0
     if t == proj_start():
-        return 0.0
+        return apport(t)
     return pcdd(t - 1) + apport(t)
 
 
 def pgt(t):
     """G(t): the *provision pour garantie à terme* (A. 134-2, R. 343-3 11°).
 
-    ``max(mg(t) (1 + i_pm(t))^-(n-t) - prov_div(t) - D(t), 0)`` on Chassis B and nil on Chassis A.
+    ``max(mg(t) (1 + i_pm(t+1))^-(n-t-1) - prov_div(t) - D(t), 0)`` on Chassis B and nil on Chassis A.
     Funded from the **insurer's own funds** and held **outside** the participation account,
     on a deliberately narrow basis: the A. 132-18 mortality tables at a rate at most 90% of
     the TEC, counting **no cash flows other than guarantee maturities and mortality**.  A
@@ -1220,7 +1391,8 @@ def pgt(t):
     present value above applies no survival factor, so it is the amount for a guarantee
     certain to be reached: prudent, since it overstates the provision, and invisible on the
     worked example, where ``mort_rate`` is zero.  It is live on the decrement-bearing cells —
-    on model point 6 at ``t`` = 7 this returns 2,739.35 against 2,477.36 with the five-year
+    on model point 6 at the end of policy year 7, period ``t`` = 6, this returns 2,739.35
+    against 2,477.36 with the five-year
     survival factor 0.972660 the shipped table gives.  In a single-policy model the decrement
     reaches the projection through ``pols_if`` in :func:`result_cf` instead; a fund-level
     implementation should carry the survival factor inside the present value, summed over the
@@ -1228,7 +1400,7 @@ def pgt(t):
     """
     if is_euro_leg():
         return 0.0
-    return max(mg(t) * disc_factor(t) - prov_div(t) - pcdd(t), 0.0)
+    return max(mg(t) * disc_factor(t + 1) - prov_div(t) - pcdd(t), 0.0)
 
 
 def gate_revalue_ok(t):
@@ -1240,8 +1412,8 @@ def gate_revalue_ok(t):
     must pass.  Informational here — the reference credit-balance route raises the part
     value instead — but computed, because a model that revalued guarantees without testing
     the gates would be exercising a discretion the article does not allow.  On the worked
-    example both pass at ``t`` = 5 and the second fails at ``t`` = 6, where the part-value
-    floor has taken the headroom to nil.
+    example both pass at ``t`` = 4, the end of policy year 5, and the second fails at
+    ``t`` = 5, where the part-value floor has taken the headroom to nil.
     """
     if not is_euro_leg():
         return False
@@ -1257,7 +1429,7 @@ def conversion_headroom(t):
     The article requires the diversification provision, net of the conversion and of the
     parts at their minimum value, to remain at least 15% of the resulting PM, and imposes
     a five-year cooling period besides.  Solving ``pd - C - N u_min = 0.15 (pm + C)`` gives
-    ``C = (pd - N u_min - 0.15 pm) / 1.15`` — 474.52 on the worked example at ``t`` = 5.
+    ``C = (pd - N u_min - 0.15 pm) / 1.15`` — 474.52 on the worked example at ``t`` = 4.
     Computed, never exercised: the conversion is out of scope, and the 0.50% *frais de
     conversion* the market shows would take 2.37 of that.
     """
@@ -1269,29 +1441,31 @@ def conversion_headroom(t):
 
 
 def surrender_indemnity(t):
-    """The R. 132-5-3 *indemnité de rachat* applying to a full surrender in year t.
+    """The R. 132-5-3 *indemnité de rachat* applying to a full surrender in period t.
 
     The article caps the indemnity at 5% of the present value of the mutual engagements
     (20% or 10% in narrow unlisted-asset cases) and **permits** the contract to provide for
     no indemnity at all once it has been in force more than ten years.  That is a
     permission, not a prohibition: the article does not forbid an indemnity beyond ten
     years.  The reference contract charges none at any duration, and this model returns zero
-    beyond ``indemnity_max_years`` unconditionally, which is the permission taken up **[std]**
-    rather than the article applied.
+    once ``indemnity_max_years`` policy years have elapsed — from period
+    ``t = indemnity_max_years`` on, the eleventh policy year — unconditionally, which is the
+    permission taken up **[std]** rather than the article applied.
     """
-    if t > indemnity_max_years:                                      # noqa: F821
+    if t >= indemnity_max_years:                                     # noqa: F821
         return 0.0
     return min(surrender_indemnity_rate(), indemnity_cap)            # noqa: F821
 
 
 def surrender_value(t):
-    """The R. 134-5 *valeur de rachat* at the end of policy year t.
+    """The R. 134-5 *valeur de rachat* at the end of period t.
 
     ``pm(t) + N(t) u(t)`` on Chassis A and ``N(t) u(t)`` on Chassis B, less the base 6°
     exit charge and any surrender indemnity.
 
-    **There is no guarantee in it before the *échéance*.**  On the worked example's year-6
-    shock Chassis A surrenders for 12,384.73 — 105.31% of net *versements*, because its
+    **There is no guarantee in it before the *échéance*.**  On the worked example's
+    policy-year-6 shock, period ``t`` = 5,
+    Chassis A surrenders for 12,384.73 — 105.31% of net *versements*, because its
     *provision mathématique* has already been marked up by the fall in rates — while
     Chassis B surrenders for 9,899.22, **84.18%**, against a guarantee of 11,760.00 that
     does not apply.  A model that floors this at ``g`` times premiums, or at the discounted
@@ -1331,9 +1505,9 @@ def death_payout(t):
 def rider_claim_pp(t):
     """The part of the death benefit the *garantie décès plancher* funds, per claim.
 
-    ``death_payout(t) - death_value(t)`` — 1,860.78 on the worked example's year-6 Chassis B
-    death.  Reported apart from the auxiliary-account columns because it is not the
-    account's money: R. 134-7 puts complementary guarantees outside it.
+    ``death_payout(t) - death_value(t)`` — 1,860.78 on the worked example's policy-year-6
+    Chassis B death, period ``t`` = 5.  Reported apart from the auxiliary-account columns
+    because it is not the account's money: R. 134-7 puts complementary guarantees outside it.
     """
     return death_payout(t) - death_value(t)
 
@@ -1341,9 +1515,10 @@ def rider_claim_pp(t):
 def maturity_value(t):
     """The R. 134-6 amount payable at the *échéance*; nil at every other t.
 
-    ``pm(n) + N(n) u(n)`` on Chassis A — **more** than the guarantee whenever the parts
+    The *échéance* is the end of the **last projected period**, ``t = proj_len() - 1``.
+    ``pm + N u`` there on Chassis A — **more** than the guarantee whenever the parts
     retain any value, 12,765.89 against 11,760.00 in the worked example — and
-    ``max(N(n) u(n), mg(n))`` on Chassis B.  The ``max`` exists **only at ``t = n``** and
+    ``max(N u, mg)`` on Chassis B.  The ``max`` exists **only in that last period** and
     **only on Chassis B**; applying it earlier, or on Chassis A at all, invents a guarantee
     the contract does not give.
 
@@ -1351,7 +1526,7 @@ def maturity_value(t):
     support unless the holder decides otherwise (A. 134-6); this model pays the amount out
     and stops, and a "roll into a low-risk support" variant is the natural extension.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     if is_euro_leg():
         return provision_value(t)
@@ -1359,7 +1534,7 @@ def maturity_value(t):
 
 
 def claim_pp(t, kind):
-    """The payout per claim in policy year t, by kind.
+    """The payout per claim in period t, by kind.
 
     ``"DEATH"``
         :func:`death_payout` — the current provision value, floored at
@@ -1370,7 +1545,8 @@ def claim_pp(t, kind):
         guarantee before the *échéance*.
 
     ``"MATURITY"``
-        :func:`maturity_value` at ``t = n`` and nil elsewhere.
+        :func:`maturity_value` in the last projected period and nil
+        elsewhere.
     """
     if kind == "DEATH":
         return death_payout(t)
@@ -1382,35 +1558,42 @@ def claim_pp(t, kind):
 
 
 def mort_rate(t):
-    """q(x+t): the annual best-estimate mortality rate for policy year t **[std]**.
+    """q(x+t+1): the annual best-estimate mortality rate for period t **[std]**.
 
-    The shipped table rate times ``mort_be_factor``.  Both are placeholders: the
+    Read at ``age(t + 1)``, the *âge atteint* at the **end** of the policy year, since the
+    decrement is applied there.  The shipped table rate times ``mort_be_factor``.  Both are
+    placeholders: the
     homologated tables TH 00-02 / TF 00-02 are cited by arrêté and never shipped, A. 132-18
     permits an insurer's own certified table besides, and the proxy is INSEE-shaped
     population mortality with a factor for insured lives being lighter than the population.
     Nil where the model point switches the decrements off, which is the worked example's
     configuration.
     """
-    if decrement_basis() == "none" or t <= proj_start():
+    if decrement_basis() == "none" or t < proj_start():
         return 0.0
-    x = min(age(t), omega_age)                                       # noqa: F821
+    x = min(age(t + 1), omega_age)                                   # noqa: F821
     return min(1.0, float(data.mort_table().loc[                     # noqa: F821
         (sex(), x), "mort_rate"]) * mort_be_factor)                  # noqa: F821
 
 
 def lapse_rate_base(t):
-    """The table annual full-surrender (*rachat total*) rate in policy year t **[std]**.
+    """The table annual full-surrender (*rachat total*) rate in period t **[std]**.
 
-    2.5% p.a. level; the *mémoire* observes 2%-3%.  Policy years beyond the table take its
+    2.5% p.a. level; the *mémoire* observes 2%-3%.  ``lapse_table.csv`` is keyed by the
+    contractual **policy year**, which is ``t + 1``; policy years beyond the table take its
     last row.
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    y = min(max(t, int(tbl.index.min())), int(tbl.index.max()))
+    y = min(t + 1, int(tbl.index.max()))
     return float(tbl.loc[y, "lapse_rate"])
 
 
 def guarantee_imminent(t):
-    """0.5 in the two years before the *échéance* on Chassis B, while the guarantee bites.
+    """0.5 in the two policy years before the *échéance* on Chassis B, while the guarantee bites.
+
+    Period t ends at time ``t + 1``, so the years still to run at its close are
+    ``n - t - 1`` and the suppression applies where that is at most
+    ``guarantee_imminent_years``.
 
     The gate matters.  A saver who surrenders a 2° engagement gives up the **entire**
     guarantee (R. 134-5), so the deterrent exists precisely while ``N u < mg`` and is worth
@@ -1418,7 +1601,8 @@ def guarantee_imminent(t):
     none.  This is the strongest exit deterrent the product creates, and it is **[std]** —
     no eurocroissance lapse experience is public.
     """
-    if is_euro_leg() or proj_len() - t > guarantee_imminent_years:    # noqa: F821
+    if (is_euro_leg()
+            or proj_len() - (t + 1) > guarantee_imminent_years):      # noqa: F821
         return 1.0
     if parts(t) * part_value(t) < mg(t):
         return guarantee_imminent_factor                             # noqa: F821
@@ -1426,47 +1610,49 @@ def guarantee_imminent(t):
 
 
 def duration8_spike(t):
-    """1.5 in policy year 8 where ``n > 8`` **[std]**.
+    """1.5 in policy year 8 — period ``t = duration8_year - 1`` — where ``n > 8`` **[std]**.
 
     The assurance-vie annual *abattement* becomes available at eight years, so surrender
     incentive spikes there — and only where the contract still has years to run, since a
     contract maturing at eight has no such choice to make.
     """
-    if t == duration8_year and proj_len() > duration8_year:          # noqa: F821
+    if t + 1 == duration8_year and proj_len() > duration8_year:      # noqa: F821
         return duration8_factor                                      # noqa: F821
     return 1.0
 
 
 def lapse_rate(t):
-    """w(t): the annual full-surrender rate applied at the end of policy year t.
+    """w(t): the annual full-surrender rate applied at the end of period t.
 
     The table rate times both behavioural overlays, capped at 1.  Nil while the decrements
-    are switched off, inside a non-surrender period, and in the *échéance* year, where the
+    are switched off, inside a non-surrender period — policy years 1 to
+    ``lock_up_years``, so periods ``t < lock_up_years()`` — and in the last projected
+    period, which ends at the *échéance*, where the
     survivors take the maturity amount instead — the base run assumes 100% of them do,
     as the *mémoire* also assumes.
     """
     if decrement_basis() == "none":
         return 0.0
-    if t <= proj_start() or t <= lock_up_years() or t >= proj_len():
+    if t < proj_start() or t < lock_up_years() or t >= proj_len() - 1:
         return 0.0
     return min(1.0, lapse_rate_base(t) * guarantee_imminent(t)
                * duration8_spike(t))
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     ``"BEF_DECR"``
-        the start of the year, before any decrement — and the exposure
-        every cash flow of the year is weighted by; :func:`pols_if`.
+        the start of the period, before any decrement — and the exposure
+        every cash flow of the period is weighted by; :func:`pols_if`.
 
     ``"BEF_LAPSE"``
         after deaths, before surrenders: the processing order is death
         before surrender **[std]**.
 
     ``"AFT_DECR"``
-        the notes' ``l(t)``: the end-of-year count, and zero in the
-        *échéance* year, where the survivors mature.  This is the timing
+        the notes' ``l(t)``: the end-of-period count, and zero in the last
+        projected period, where the survivors mature.  This is the timing
         the end-of-period quantity is reached through, because the bare
         name ``pols_if`` belongs to the start-of-period count.
     """
@@ -1479,60 +1665,61 @@ def pols_if_at(t, timing):
     if timing == "BEF_LAPSE":
         return pols_if_at(t, "BEF_DECR") * (1.0 - mort_rate(t))
     if timing == "AFT_DECR":
-        if t >= proj_len():
+        if t >= proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
     raise ValueError("invalid timing: " + str(timing))
 
 
 def pols_if(t):
-    """The number of policies in force at the **start** of policy year t.
+    """The number of policies in force at the **start** of period t.
 
     This is the library's shared vocabulary: ``pols_if(t)`` is the exposure at the start of
     period t and the weight on that same :func:`result_cf` row's cash flows, so the opening
-    row is ``pols_if_init()`` exactly — no decrement has been applied when a year opens.
+    row is ``pols_if_init()`` exactly — no decrement has been applied when a period opens.
 
-    The notes' ``l(t)`` is the **end**-of-year count, with ``l(0) = 1`` and nil on the
-    *échéance* row because everyone has matured by the end of it.  That quantity is
+    The notes' ``l(t)`` is the **end**-of-period count, nil on the last projected row
+    because everyone has matured by the end of it.  That quantity is
     unchanged and is reached as ``pols_if_at(t, "AFT_DECR")``; it is no longer published
     under this name, because doing so put the exposure column one year ahead of the flows
     printed beside it.
     """
-    if t < proj_start() or t > proj_len():
+    if t < proj_start() or t >= proj_len():
         return 0.0
     return pols_if_at(t, "BEF_DECR")
 
 
 def pols_death(t):
-    """Deaths in policy year t, against the start-of-year in force."""
-    if t <= proj_start():
+    """Deaths in period t, against the start-of-period in force."""
+    if t < proj_start():
         return 0.0
     return pols_if_at(t, "BEF_DECR") * mort_rate(t)
 
 
 def pols_lapse(t):
-    """Full surrenders at the end of policy year t, from the survivors of mortality."""
-    if t <= proj_start():
+    """Full surrenders at the end of period t, from the survivors of mortality."""
+    if t < proj_start():
         return 0.0
     return pols_if_at(t, "BEF_LAPSE") * lapse_rate(t)
 
 
 def pols_maturity(t):
-    """Survivors reaching the *échéance*; nil at every other t.
+    """Survivors reaching the *échéance*; nil outside the last projected period.
 
     The base run assumes 100% of them take the maturity amount **[std]**, as the *mémoire*
     also assumes; it notes that modelling annuitisation or reinvestment instead could
     amplify or damp its results.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "BEF_LAPSE")
 
 
 def premiums(t):
-    """*Versement* income in policy year t, an inflow.
+    """*Versement* income in period t, an inflow.
 
-    Both the scheduled start-of-year *versement* and any free year-end one, gross of the
+    The initial *versement* where the period is the first projected one, the scheduled
+    start-of-period one and any free end-of-period one, gross of the
     entry charge — the charge is reported as insurer income in :func:`charges_taken`
     rather than netted out of the premium line.
     """
@@ -1540,7 +1727,7 @@ def premiums(t):
 
 
 def withdrawals(t):
-    """*Rachats partiels* paid at the start of policy year t.
+    """*Rachats partiels* paid at the start of period t.
 
     An **owner election** rather than a claim, which is why it has its own name and column:
     the contract stays in force and continues on the reduced parts and reduced guarantee.
@@ -1549,7 +1736,7 @@ def withdrawals(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``, ``"LAPSE"`` and ``"MATURITY"`` weight :func:`claim_pp` by the
     corresponding decrement.  The death line **includes** the *garantie décès plancher*'s
@@ -1568,7 +1755,7 @@ def claims(t, kind=None):
 
 
 def rider_claims(t):
-    """The *garantie décès plancher*'s share of the year's death outgo.
+    """The *garantie décès plancher*'s share of the period's death outgo.
 
     A memo line: it is **already inside** ``claims_death``, and it is published apart
     because R. 134-7 puts complementary guarantees outside the auxiliary account, so it is
@@ -1578,7 +1765,7 @@ def rider_claims(t):
 
 
 def expenses(t):
-    """E(t): the insurer's own expenses in policy year t **[std]**.
+    """E(t): the insurer's own expenses in period t **[std]**.
 
     Acquisition at 5% of *versements* plus an acquisition commission of 2% of the initial
     one, and maintenance at 0.20% p.a. of the two provisions.  All three levels come from
@@ -1586,20 +1773,27 @@ def expenses(t):
     product.  They are the insurer's costs, not charges to the saver: the charges the
     contract permits are the six R. 134-3 bases, reported in :func:`charges_taken`.
 
-    The two acquisition components are weighted by the start-of-year exposure like every
-    other flow; the maintenance component is weighted by ``pols_if_at(t, "AFT_DECR")``,
-    the survivors still on the books when the provisions are struck at year end.
+    The two acquisition components are weighted by the start-of-period exposure like every
+    other flow.  The maintenance component is charged **at each striking of the two
+    provisions** and weighted by the count on the books at it: the period's own year-end
+    striking, at ``pols_if_at(t, "AFT_DECR")``, and — in the first projected period only —
+    the striking the frame opens on, at ``pols_if(t)``.  The first period carries two,
+    because the provisions are struck when the initial *versement* creates them (or, on an
+    in-force cell, at the valuation date) as well as at that period's year end.
     """
     acq = expense_acq_rate * total_premium_pp(t)                     # noqa: F821
     if t == proj_start() and duration_inforce() == 0:
         acq += expense_comm_rate * premium_gross_init()              # noqa: F821
-    return (acq * pols_if_at(t, "BEF_DECR")
-            + expense_maint_rate * provision_value(t)                # noqa: F821
-            * pols_if_at(t, "AFT_DECR"))
+    maint = (expense_maint_rate * provision_value(t)                 # noqa: F821
+             * pols_if_at(t, "AFT_DECR"))
+    if t == proj_start():
+        maint += (expense_maint_rate                                 # noqa: F821
+                  * provision_value_at(t, "BOY") * pols_if(t))
+    return acq * pols_if_at(t, "BEF_DECR") + maint
 
 
 def charges_taken(t):
-    """The R. 134-3 charges the insurer takes in policy year t: income, reported apart.
+    """The R. 134-3 charges the insurer takes in period t: income, reported apart.
 
     The base 4° parts levy, the base 5° performance levy, the base 1° entry charge and the
     base 6° exit charge together with any surrender indemnity.  They are **not** in
@@ -1614,7 +1808,7 @@ def charges_taken(t):
 
 
 def liability_cf(t):
-    """CF(t): the year's liability cash flow, **outgo positive**, as the notes print it.
+    """CF(t): the period's liability cash flow, **outgo positive**, as the notes print it.
 
     Claims and *rachats partiels* and expenses out, *versements* in.  The two provisions
     appear nowhere in it — they are state variables, not cash flows — and neither do the
@@ -1624,7 +1818,7 @@ def liability_cf(t):
 
 
 def net_cf(t):
-    """The net cash flow of policy year t, **income positive**: ``-liability_cf(t)``.
+    """The net cash flow of period t, **income positive**: ``-liability_cf(t)``.
 
     The library's sign convention, so that ``result_cf()["net_cf"]`` can be compared and
     summed across products without checking which one it came from.
@@ -1633,18 +1827,22 @@ def net_cf(t):
 
 
 def check_assets_roll_fwd_resid(t):
-    """The account-asset recursion residual in policy year t; zero everywhere.
+    """The account-asset recursion residual in period t; zero everywhere.
 
-    ``A(t) - {[A(t-1) - f_p prov_div(t-1) - W(t) + P_net(t)](1 + r) - f_perf max(I, 0) + top-up}``,
+    ``A(t) - {[A_open(t) - f_p pd_open(t) - W(t) + P_net(t)](1 + r) - f_perf max(I, 0) + top-up}``,
     rebuilt in **one expression** rather than through :func:`own_assets_at`, so that a
     mis-ordered step shows up here: a parts levy taken after the return instead of before
-    it, a *versement* credited after the return rather than at the start of the year, or a
-    performance levy struck on the wrong balance.
+    it, a *versement* credited after the return rather than at the start of the period, or
+    a performance levy struck on the wrong balance.  The opening quantities are the
+    ``"BOY"`` timings, so the check is live in the first projected period too, where they
+    carry the initial *versement* or the in-force extract.
     """
-    if t <= proj_start():
+    if t < proj_start():
         return 0.0
-    base = (own_assets(t - 1) - parts_charge_rate() * prov_div(t - 1)
-            - wd_rate(t) * provision_value(t - 1) + prem_after_charge_pp(t))
+    base = (own_assets_at(t, "BOY")
+            - parts_charge_rate() * prov_div_at(t, "BOY")
+            - wd_rate(t) * provision_value_at(t, "BOY")
+            + prem_after_charge_pp(t))
     built = (base * (1.0 + asset_return(t))
              - perf_charge_rate() * max(base * asset_return(t), 0.0)
              + premium_top_up_net_pp(t))
@@ -1652,61 +1850,61 @@ def check_assets_roll_fwd_resid(t):
 
 
 def check_assets_roll_fwd():
-    """True when the account-asset recursion closes in every projected year."""
+    """True when the account-asset recursion closes in every projected period."""
     return all(abs(check_assets_roll_fwd_resid(t)) <= roll_fwd_tol   # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_parts_roll_fwd_resid(t):
-    """The parts recursion residual in policy year t; zero everywhere.
+    """The parts recursion residual in period t; zero everywhere.
 
-    ``N(t) - {N(t-1)(1 - f_p)(1 - w_partial) + parts bought at BOY + parts bought at EOY}``,
+    ``N(t) - {N_open(t)(1 - f_p)(1 - w_partial) + parts bought at BOY + parts bought at EOY}``,
     rebuilt in one expression.  The base 4° levy cancels parts rather than reducing their
     value, so a levy applied to the part value instead of to the count would leave the
     count unchanged and show up here; so would a *versement* priced at the wrong striking.
     On the worked example the count closes on ``212.8127 x 0.992^7 = 201.1774``.
     """
-    if t <= proj_start():
+    if t < proj_start():
         return 0.0
-    built = (parts(t - 1) * (1.0 - parts_charge_rate()) * (1.0 - wd_rate(t))
+    built = (parts_at(t, "BOY") * (1.0 - parts_charge_rate()) * (1.0 - wd_rate(t))
              + parts_added_boy(t) + parts_added_eoy(t))
     return parts(t) - built
 
 
 def check_parts_roll_fwd():
-    """True when the parts recursion closes in every projected year."""
+    """True when the parts recursion closes in every projected period."""
     return all(abs(check_parts_roll_fwd_resid(t)) <= roll_fwd_tol    # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_guarantee_roll_fwd_resid(t):
-    """The guaranteed-amount recursion residual in policy year t; zero everywhere.
+    """The guaranteed-amount recursion residual in period t; zero everywhere.
 
-    ``mg(t) - {mg(t-1)(1 - w_partial) + g x net versements of the year}``, rebuilt in one
-    expression.  It is the check that catches the guarantee being computed on **gross**
-    *versements*: with a 2.00% entry charge, ``mg`` after the worked example's year-3
-    top-up is 11,760.00 and not 12,000.00, and a model that used the gross figure would
-    fail here in the year the top-up is paid rather than silently over-guaranteeing for
-    seven years.
+    ``mg(t) - {mg_open(t)(1 - w_partial) + g x net versements of the period}``, rebuilt in
+    one expression.  It is the check that catches the guarantee being computed on **gross**
+    *versements*: with a 2.00% entry charge, ``mg`` after the worked example's top-up at
+    the end of policy year 3 is 11,760.00 and not 12,000.00, and a model that used the
+    gross figure would fail here in the period the top-up is paid rather than silently
+    over-guaranteeing for seven years.
     """
-    if t <= proj_start():
+    if t < proj_start():
         return 0.0
-    built = (mg(t - 1) * (1.0 - wd_rate(t))
+    built = (mg_at(t, "BOY") * (1.0 - wd_rate(t))
              + guarantee_rate() * (prem_after_charge_pp(t) + premium_top_up_net_pp(t)))
     return mg(t) - built
 
 
 def check_guarantee_roll_fwd():
-    """True when the guaranteed-amount recursion closes in every projected year."""
+    """True when the guaranteed-amount recursion closes in every projected period."""
     return all(abs(check_guarantee_roll_fwd_resid(t)) <= roll_fwd_tol  # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in period t; zero everywhere.
 
-    The year opens at ``pols_if(t)`` and closes at ``pols_if_at(t, "AFT_DECR")``, the
-    notes' ``l(t)``; the difference is the year's deaths, full surrenders and maturities.
+    The period opens at ``pols_if(t)`` and closes at ``pols_if_at(t, "AFT_DECR")``, the
+    notes' ``l(t)``; the difference is the period's deaths, full surrenders and maturities.
     """
     if t < proj_start():
         return 0.0
@@ -1715,10 +1913,10 @@ def check_pols_roll_fwd_resid(t):
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected year."""
+    """True when the in-force roll-forward closes in every projected period."""
     return all(abs(check_pols_roll_fwd_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_guarantee_funding_resid(t):
@@ -1726,12 +1924,14 @@ def check_guarantee_funding_resid(t):
 
     This is the model's headline identity: the *provision mathématique* accumulated at the
     regulated rate reaches the guarantee **exactly** at the *échéance*, so
-    ``pm(t)(1 + i_pm(t))^(n-t) = mg(t)`` at every t and ``pm(n) = mg(n)``.
+    ``pm(t)(1 + i_pm(t+1))^(n-t-1) = mg(t)`` at every t — period t closes at time
+    ``t + 1``, which is ``n - t - 1`` years short of the *échéance* — and the two coincide
+    in the last projected period.
 
     It is zero by construction under R. 134-2's re-strike rule, and that is the point of
     publishing it: an implementation that **accumulates** the PM instead — rolling
     ``pm(t-1)`` forward at last year's rate — breaks it the first year the rate moves.  On
-    the worked example's path ``pm(5) x 1.0225 = 10,758.56`` against the 11,346.00 the
+    the worked example's path ``pm(4) x 1.0225 = 10,758.56`` against the 11,346.00 the
     re-strike gives, and the 587.44 difference is the rate effect it has silently dropped.
 
     Identically zero on Chassis B, where **both sides are nil**: a 2° engagement funds
@@ -1741,13 +1941,13 @@ def check_guarantee_funding_resid(t):
     """
     if not is_euro_leg():
         return 0.0
-    return pm(t) * (1.0 + i_pm(t)) ** (proj_len() - t) - mg(t)
+    return pm(t) * (1.0 + i_pm(t + 1)) ** (proj_len() - t - 1) - mg(t)
 
 
 def check_guarantee_funding():
     """True when the *provision mathématique* funds the guarantee exactly, at every t."""
     return all(abs(check_guarantee_funding_resid(t)) <= funding_tol  # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_pgt_covers_guarantee_resid(t):
@@ -1765,13 +1965,13 @@ def check_pgt_covers_guarantee_resid(t):
     """
     if is_euro_leg():
         return 0.0
-    return prov_div(t) + pgt(t) + pcdd(t) - mg(t) * disc_factor(t)
+    return prov_div(t) + pgt(t) + pcdd(t) - mg(t) * disc_factor(t + 1)
 
 
 def check_pgt_covers_guarantee():
     """True when the diversification provision and the own-funds provisions cover the guarantee."""
     return all(check_pgt_covers_guarantee_resid(t) >= -funding_tol   # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_part_value_floor_resid(t):
@@ -1780,20 +1980,21 @@ def check_part_value_floor_resid(t):
     Non-negative everywhere.  R. 134-4 permits a debit balance on the participation account
     to reduce the part value only **within the limit of its minimum**, and an implementation
     that omits the floor takes the worked example's Chassis A diversification provision to
-    **-1,095.35** in year 6 — a negative provision, and with it a negative surrender value
-    that every downstream number stays plausible enough to read past.
+    **-1,095.35** in policy year 6, ``t`` = 5 — a negative provision, and with it a
+    negative surrender value that every downstream number stays plausible enough to read
+    past.
     """
     return part_value(t) - min_part_value()
 
 
 def check_part_value_floor():
-    """True when the part value stays at or above its contractual minimum, every year."""
+    """True when the part value stays at or above its contractual minimum, every period."""
     return all(check_part_value_floor_resid(t) >= -floor_tol         # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_own_funds_not_paid_resid(t):
-    """The excess of the year's largest benefit over the two provisions; non-positive.
+    """The excess of the period's largest benefit over the two provisions; non-positive.
 
     Before the *échéance* every benefit is bounded by ``pm(t) + prov_div(t)``: the surrender value
     is that less charges and the death value is exactly it, the *garantie décès plancher*
@@ -1803,11 +2004,12 @@ def check_own_funds_not_paid_resid(t):
     implementation that floored the Chassis B surrender value at the guarantee would pay
     11,760.00 against a bound of 9,899.22 and fail here.
 
-    The residual is zero **at** ``t = n``, and that is not a gap.  The maturity guarantee on
+    The residual is zero in the **last projected period**, the one that ends at the
+    *échéance*, and that is not a gap.  The maturity guarantee on
     Chassis B legitimately exceeds the account's provisions, and paying it out of the PGT
     is precisely what the PGT was constituted for.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     return max(surrender_value(t), death_value(t)) - provision_value(t)
 
@@ -1815,7 +2017,7 @@ def check_own_funds_not_paid_resid(t):
 def check_own_funds_not_paid():
     """True when no benefit before the *échéance* exceeds the savers' two provisions."""
     return all(check_own_funds_not_paid_resid(t) <= funding_tol      # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def check_pm_restruck_resid(t):
@@ -1830,28 +2032,36 @@ def check_pm_restruck_resid(t):
     what it catches is an extract built by **accumulating** the PM from issue rather than
     re-striking it — the same error :func:`check_guarantee_funding` catches inside the
     projection, arriving from the data side instead.
+
+    The comparison is against ``pm_at(t, "BOY")``, the **opening** PM of the first
+    projected period — the extract's own valuation date — and not against the period's
+    closing PM, which is a year later.
     """
     if (t != proj_start() or duration_inforce() == 0 or not is_euro_leg()):
         return 0.0
-    return pm(t) - pm_init()
+    return pm_at(t, "BOY") - pm_init()
 
 
 def check_pm_restruck():
     """True when a shipped in-force *provision mathématique* agrees with R. 134-2."""
     return all(abs(check_pm_restruck_resid(t)) <= inforce_tol        # noqa: F821
-               for t in range(proj_start(), proj_len() + 1))
+               for t in range(proj_start(), proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year t.
+    """Result table of cashflows, indexed by the 0-based period index t.
 
-    ``pols_if`` is the **start**-of-year count, which is the exposure the flows on that same
-    row are weighted by; the notes' end-of-year ``l(t)`` is ``pols_if_at(t, "AFT_DECR")``
+    The frame is ``range(proj_start(), proj_len())``: one row per projected policy year,
+    the first of which carries the initial *versement* and the acquisition costs it draws.
+
+    ``pols_if`` is the **start**-of-period count, which is the exposure the flows on that
+    same row are weighted by; the notes' end-of-period ``l(t)`` is
+    ``pols_if_at(t, "AFT_DECR")``
     and is not published here.  ``charges_taken`` and ``rider_claims`` are
     memo lines outside ``net_cf`` — the first is a transfer inside the account from the
     savers to the insurer, and the second is already inside ``claims_death``.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1871,16 +2081,21 @@ def result_cf():
 
 
 def result_provisions():
-    """Result table of the provision machinery, indexed by policy year t.
+    """Result table of the provision machinery, indexed by the 0-based period index t.
 
-    The account's assets against the two provisions, the parts and their value, and the
+    Every column is a **closing** value of period t, or a rate applied within it.  The
+    account's assets against the two provisions, the parts and their value, and the
     insurer's own-funds items beside them — reported, and never in a benefit.  This is the
-    table the notes' two worked-example tables print.
+    table the notes' two worked-example tables print, whose opening state is
+    ``own_assets_at(t, "BOY")`` and its siblings rather than a row of the frame.
+
+    ``i_pm`` is the rate the period's provisions are **struck at**: ``i_pm(t + 1)``, the
+    A. 134-1 rate at the year end, since :func:`i_pm` is indexed by a time point.
     """
-    ts = list(range(proj_start(), proj_len() + 1))
+    ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
-            "i_pm": [i_pm(t) for t in ts],
+            "i_pm": [i_pm(t + 1) for t in ts],
             "asset_return": [asset_return(t) for t in ts],
             "parts_levy": [parts_levy(t) for t in ts],
             "perf_levy": [perf_levy(t) for t in ts],

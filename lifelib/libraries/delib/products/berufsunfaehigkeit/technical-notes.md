@@ -52,14 +52,16 @@ German ones, and each now carries a document that was read.
   genuine multi-state model rather than a decrement model**, and it is the structural difference
   from delib's `risikolebensversicherung` [R3] [R16] [REG-R50].
 - **Projection frequency.** **Monthly**, matching the *BU-Rente* paid monthly in advance and the
-  retail monthly premium [S1]. `t` is the **policy month**, `t = 0, 1, …, proj_len()`, **0-based**:
-  `t = 0` is the first projected month — the month of inception for a new-business point, the
-  valuation month for an in-force one.
-- **Projection horizon.** `proj_len() = 12 × (cover_end_age − entry_age) − 1 − duration_init_months`,
-  the **last projected month index**, so `result_cf()` is indexed `t = 0 … proj_len()` and
-  `result_cf().index[-1] == proj_len()`. On the anchor cell that is `12 × (67 − 30) − 1 = 443`, i.e.
-  444 monthly rows. Cover ceases at attained age `cover_end_age`; the last projected month is the
-  last month of attained age `cover_end_age − 1`.
+  retail monthly premium [S1]. `t` is the **policy month**, `t = 0, 1, …, proj_len() − 1`,
+  **0-based**: `t = 0` is the first projected month — the month of inception for a new-business
+  point, the valuation month for an in-force one — and the contractual, 1-based *policy year* is
+  derived from it, `policy_year(t) = duration_mth(t) // 12 + 1`, never indexed by.
+- **Projection horizon.** `proj_len() = 12 × (cover_end_age − entry_age) − duration_init_months`,
+  the **number of projected months** and so the **exclusive end** of the frame: `result_cf()` is
+  indexed `t = 0 … proj_len() − 1` and `result_cf().index[-1] == proj_len() − 1`. On the anchor
+  cell that is `12 × (67 − 30) = 444` monthly rows, the last of them `t = 443`. Cover ceases at
+  attained age `cover_end_age`; the last projected month is the last month of attained age
+  `cover_end_age − 1`.
 - **Timing conventions [std].** *Bruttobeitrag* and the *Beitragsverrechnung* credit at the
   **start** of the month, and only from the premium-paying population; administration expense at
   the start of the month; the *BU-Rente* and the claim-maintenance cost at the **start** of the
@@ -181,7 +183,7 @@ anniversary, before any claim: different quantities, different clocks.
 | `rente_pay_pp(t, z)` | The monthly *BU-Rente* **in payment** for the duration-`z` cohort | at claim anniversaries |
 | `prem_gross_level_pp()` | The level annual *Bruttobeitrag* — derived by equivalence or overridden | once per model point |
 | `prem_gross_pp(t)`, `prem_zahl_pp(t)` | The *Bruttobeitrag* and *Zahlbeitrag* **instalments due** at month `t`; both zero in a month that is not a payment month | monthly |
-| **First-order shadow** | `pols_actv_first(t)`, `pols_dis_dur_first(t, z)`, `pols_runoff_first(t)`, `pols_prem_first(t)` — the same chain on *Rechnungsgrundlagen erster Ordnung* **without lapse**, used only to fix `prem_gross_level_pp()` | monthly |
+| **First-order shadow** | `pols_actv_first(s)`, `pols_dis_dur_first(s, z)`, `pols_runoff_first(s)`, `pols_prem_first(s)` — the same chain on *Rechnungsgrundlagen erster Ordnung* **without lapse**, indexed by `s` **from inception**, `s = 0 … first_len() − 1`, used only to fix `prem_gross_level_pp()` | monthly |
 
 **Four absences are product facts, not gaps.** There is **no account value and no surrender value**
 [R9] [R5], so no `av_pp_at` exists and a lapse carries no cash flow. There is **no death benefit**
@@ -359,7 +361,7 @@ Space (the `annuallife/TradLife_A` layout). Every one but `model_point_table.csv
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0 … n`, `n = proj_len()` |
+| `t` | policy month, 0-based, `t = 0 … n − 1`, `n = proj_len()` (the number of projected months) |
 | `u(t)` | `duration_mth(t) = duration_init_months + t`, elapsed policy months at the start of `t` |
 | `x(t)` | `age(t) = entry_age + u(t) // 12` |
 | `y(t)` | `policy_year(t) = u(t) // 12 + 1` |
@@ -498,7 +500,7 @@ the active ledger**: a life that recovers in month `t` is still paid in months `
 
     L(t+1) = L(t) - pols_death(t) - pols_lapse(t)
 
-and over the whole projection `Σ_t [pols_death(t) + pols_lapse(t)] + pols_if_at(n, "END") = 1`.
+and over the whole projection `Σ_t [pols_death(t) + pols_lapse(t)] + pols_if_at(n − 1, "END") = 1`.
 Inception, recovery and reactivation are **internal transfers** and must not appear in that
 identity — putting them there is how a multi-state model silently loses mass.
 
@@ -560,7 +562,7 @@ Seven `check_*()` cells, each returning a single `bool` over all `t` with a per-
 
 ### Monthly processing order
 
-For `t = 0, 1, …, proj_len()`, in this order:
+For `t = 0, 1, …, proj_len() − 1`, in this order:
 
 1. **Anniversary (start of month, `u(t) mod 12 = 0` and `u(t) > 0`).** Advance `y(t)` and `x(t)`.
    On the `dynamik` form, escalate the insured *BU-Rente* and the annual *Bruttobeitrag* by
@@ -583,7 +585,7 @@ For `t = 0, 1, …, proj_len()`, in this order:
    the survivors; the terminations enter run-off slot 1 carrying their *BU-Rente* as a value.
 9. **End of month — run-off:** deaths at active-lives mortality; slot 1 → 2, slot 2 → 3; slot-3
    survivors return to the active ledger and are paid the *Wiedereingliederungshilfe*.
-10. **Roll every ledger to `t + 1`.** At `t = proj_len()` the projection ends: no maturity payment,
+10. **Roll every ledger to `t + 1`.** At `t = proj_len() − 1` the projection ends: no maturity payment,
     no residual value, and any claim still in payment simply stops [S1].
 
 ### Known modeling pitfalls
@@ -717,9 +719,9 @@ for any of them, and the two that would matter most are the two no source suppli
 `freq_load = 1,05`), `gross_prem_ann = 0` so the *Bruttobeitrag* is **derived by equivalence**,
 `beitragsverrechnung = 0,70`, `risk_factor = 1,00`, `au_klausel = false`, `au_uplift = 1,00`,
 `wiedereingliederung_months = 6`, `duration_init_months = 0`, `claim_duration_init = 0`. Hence
-`pols_if_init() = 1,0`, `proj_len() = 12 × (67 − 30) − 1 = 443`, and the projection runs over
-attained ages 30 to 66 inclusive — 444 monthly rows, of which the table below shows a selection and
-the totals cover all of them.
+`pols_if_init() = 1,0`, `proj_len() = 12 × (67 − 30) = 444`, and the projection runs over
+attained ages 30 to 66 inclusive — 444 monthly rows, `t = 0 … 443`, of which the table below shows
+a selection and the totals cover all of them.
 
 **Assumptions, each tagged.** Inception `i(x) = 0,00110 × 1,06^(min(x,45) − 30) ×
 1,13^(max(x,45) − 45)` **[std]**, unisex, gross of declinature, anchored at `i(30) = 0,001100`;
@@ -902,8 +904,9 @@ only one of the two premium streams would have no way to show it.
 **The *Beitragsdynamik* variant.** Model point 4 is the second premium form: `entry_age = 25`,
 `berufsgruppe = BG2` (`occ_factor` 1,40), `bu_rente_mth = 1 200,00 €`, `premium_form = dynamik`
 with `beitragsdyn_rate = 0,03`, and **annual** payment (`prem_mode_months = 12`,
-`freq_load = 1,00`). Everything else is the anchor's. Hence `proj_len() = 12 × (67 − 25) − 1 =
-503`, `BS_unit = Σ_{y=1..42} 1,03^(y−1) = 82.0231964511`, and the equivalence gives
+`freq_load = 1,00`). Everything else is the anchor's. Hence `proj_len() = 12 × (67 − 25) = 504`,
+so the frame is `t = 0 … 503`; `BS_unit = Σ_{y=1..42} 1,03^(y−1) = 82.0231964511`, and the
+equivalence gives
 `P = 1 162,07 €` — the *Bruttobeitrag* of the **first** year, not of the contract.
 
 Two things this table shows that the anchor's cannot. **The premium falls in months 0, 12, 24, …

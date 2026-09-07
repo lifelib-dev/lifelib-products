@@ -11,24 +11,27 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 6            # or switch the default
 
-``t`` counts **policy years** from inception, 1-based: policy year ``t`` runs from the
-anniversary at attained age ``issue_age + t - 1`` to the next, and the calendar year of the
-row is ``issue_year + t - 1``. A new-business model point opens at ``t = 1``; an in-force
-point that has already run ``duration_init`` complete policy years opens at
-``t = duration_init + 1``, carrying its opening balances on the model point. That is what
-lets one generational mortality surface and one declared-rate path serve a book of mixed
+``t`` counts **policy years** from inception and is **0-based**: ``t = 0`` is the first
+policy year, running from issue to the first anniversary, so the attained age at the start
+of the row is ``issue_age + t``, the calendar year of the row is ``issue_year + t`` and the
+contractual policy year is ``t + 1``. A new-business model point opens at ``t = 0``; an
+in-force point that has already run ``duration_init`` complete policy years opens at
+``t = duration_init``, carrying its opening balances on the model point. That is what lets
+one generational mortality surface and one declared-rate path serve a book of mixed
 vintages.
 
-``proj_len() = omega_age() - issue_age`` is the **last** projected policy year, so
-``result_cf().index[-1] == proj_len()``. A life annuity has no term, so the projection ends
-where the annuitant cannot survive further rather than at a fixed horizon: on the anchor
-cell, ``t = 1 ... 71``, running to attained age 120.
+``proj_len() = omega_age() - issue_age`` is the **number** of projected policy years and the
+**exclusive** end of the frame, so ``result_cf().index[-1] == proj_len() - 1``. A life
+annuity has no term, so the projection ends where the annuitant cannot survive further
+rather than at a fixed horizon: on the anchor cell, ``t = 0 ... 70``, running to attained
+age 120.
 
-The *Rentenbeginn* falls at the **end of policy year** ``n = aufschub_y``, which is the same
-instant as the start of policy year ``n + 1``. Accumulation rows are ``t <= n``; payout rows
-are ``t > n``. The *Kapitalabfindung* is paid in row ``n``; the first annuity instalment
-falls in row ``n + 1``. On the anchor cell ``n = 17``, the *Rentengarantiezeit* covers
-``t = 18 ... 27`` and the survivor-weighted annuity runs from ``t = 28`` to ``t = 71``.
+The *Rentenbeginn* falls at the **end of the deferment period** of ``n = aufschub_y`` years,
+which is the end of row ``t = n - 1`` and the same instant as the start of row ``t = n``.
+Accumulation rows are ``t < n``; payout rows are ``t >= n``. The *Kapitalabfindung* is paid
+in row ``n - 1``; the first annuity instalment falls in row ``n``. On the anchor cell
+``n = 17``, the *Rentengarantiezeit* covers ``t = 17 ... 26`` and the survivor-weighted
+annuity runs from ``t = 27`` to ``t = 70``.
 
 .. rubric:: Input data
 
@@ -72,8 +75,8 @@ actuarial symbols instead. The mapping is:
 Notes symbol                Cells                           Meaning
 ==========================  ==============================  ==========================
 (none)                      model_point()                   The selected model point row
-N = omega - issue_age       proj_len()                      Last policy year
-t0 = duration_init + 1      (frame start)                   First projected policy year
+N = omega - issue_age       proj_len()                      Number of policy years
+t0 = duration_init          (frame start)                   First projected policy year
 x(t)                        age(t)                          Attained age in year t
 tau(t)                      calendar_year(t)                Calendar year of year t
 omega                       omega_age()                     Terminal age of the proxy
@@ -192,7 +195,7 @@ Premium in advance, then the charges, then the *Rechnungszins* on what is left::
 **This ordering is a standardization.** No document in this product's corpus fixes the
 sequence of premium credit, charge deduction and interest accrual, and it is the single most
 consequential such choice in the model: crediting interest on the opening balance alone
-changes year-one interest by the whole of ``i x (prem_to_av_pp(1) - charge_from_av_pp(1))``.
+changes year-one interest by the whole of ``i x (prem_to_av_pp(0) - charge_from_av_pp(0))``.
 
 Two further conventions inside the decomposition are [std] and are worth naming.
 ``charge_risk_pp`` and ``charge_admin_pp`` are struck on **start-of-year** balances, or the
@@ -211,8 +214,8 @@ recursion::
 
 with ``gamma`` and ``rho`` taken at the same euro amount in both accounts **[std]**, which
 is what makes the difference exact. Two consequences are not obvious. The difference is
-**large in the first five years** — on the anchor cell the whole 25 ‰ is taken in year 1
-against one fifth of it — and it **never returns to zero**, because the spread account earns
+**large in the first five years** — on the anchor cell the whole 25 ‰ is taken in the first
+year against one fifth of it — and it **never returns to zero**, because the spread account earns
 the *Rechnungszins* on the amounts not yet deducted. So on a zillmered tariff with a positive
 *Rechnungszins* the floor sits above the tariff *Deckungskapital* at every duration.
 
@@ -220,18 +223,18 @@ The floor is the § 169 Abs. 3 *Deckungskapital* **alone**: profit shares sit on
 statutory minimum rather than inside it. That reading lets the floor bind early and stop
 binding once the *Ansammlungsguthaben* has outgrown the interest residual and the
 *Stornoabzug*, so both branches of ``cv_pp(t) = max(cv_tariff_pp, cv_floor_pp)`` are
-exercised on the anchor cell alone — it binds through ``t = 4`` and not after. The
+exercised on the anchor cell alone — it binds through ``t = 3`` and not after. The
 alternative reading, in which the floor also carries the *Ansammlungsguthaben*, is **not
 implemented** and would make the floor bind at every duration.
 
 .. rubric:: Beitragsfreistellung is an election, not a decrement
 
-*Beitragsfreistellung* is a **deterministic election** at ``pup_year`` rather than a rate: a
-scalar per-policy account cannot carry two sub-populations with different *Deckungskapital*,
-and no source establishes a rate. Both statutory branches are implemented and both are
-exercised:
+*Beitragsfreistellung* is a **deterministic election** in the contractual policy year
+``pup_year`` — row ``t = pup_year - 1`` — rather than a rate: a scalar per-policy account
+cannot carry two sub-populations with different *Deckungskapital*, and no source establishes
+a rate. Both statutory branches are implemented and both are exercised:
 
-- **Conversion** (model point 7). ``prem_pp(t) = 0`` from ``pup_year``, the *Deckungskapital*
+- **Conversion** (model point 7). ``prem_pp(t) = 0`` from the paid-up row, the *Deckungskapital*
   is **reset to** ``pup_value_pp()`` — the § 165 rule that the paid-up benefit is computed on
   the § 169 Abs. 3–5 value — the *Ansammlungsguthaben* is untouched, ``spread_diff_pp`` is set
   to zero because the two accounts have merged, and ``charge_admin_pp`` switches to
@@ -241,25 +244,30 @@ exercised:
 - **Cash-out** (model point 8). Where the paid-up annuity would fall below the
   *Mindestversicherungsleistung*, § 165 has the contract cashed out at the surrender value
   including profit shares instead of made paid-up. The whole surviving cohort then leaves at
-  the end of year ``pup_year - 1`` through the surrender decrement, at ``cv_pp``.
+  the end of row ``t = pup_year - 2`` through the surrender decrement, at ``cv_pp``.
 
-``pup_uplift(t)`` is booked in the **transition** year ``t = pup_year - 1``, weighted by
-``pols_if(pup_year)``, because that is the row whose roll-forward needs it: the uplift is the
-step between ``av_pp_at(pup_year - 1, "AFT_INT")`` and the reset ``av_pp(pup_year)``, and
-``check_av_roll_fwd()`` closes at every ``t`` only if it is credited there. The technical
-notes describe the same amount from the receiving year's point of view.
+``pup_year`` is the **contractual policy year** of the election, so the contract is paid up
+from row ``t = pup_year - 1``. ``pup_uplift(t)`` is booked in the **transition** row
+``t = pup_year - 2``, weighted by ``pols_if(pup_year - 1)``, because that is the row whose
+roll-forward needs it: the uplift is the step between ``av_pp_at(pup_year - 2, "AFT_INT")``
+and the reset ``av_pp(pup_year - 1)``, and ``check_av_roll_fwd()`` closes at every ``t``
+only if it is credited there. The technical notes describe the same amount from the
+receiving row's point of view.
 
 A *Beitragsfreistellung* is not a lapse. The paid-up contract keeps its guarantee vintage and
 its guaranteed *Rentenfaktor* and pays a reduced benefit; the surrendered one is gone for
-cash. On point 7 ``pols_if`` is unbroken through ``pup_year`` and ``claims_lapse(pup_year)``
-is zero.
+cash. On point 7 ``pols_if`` is unbroken through the paid-up row and the conversion itself
+moves no policy: ``pols_lapse(pup_year - 2)`` is the ordinary duration-9 table rate of 3,5 %
+and not 1. What is **not** true is that surrender ceases: a *beitragsfrei* contract keeps its
+§ 168 VVG *Kündigung* right, so ``claims_lapse(pup_year - 1)`` is 764,12 € on point 7 and
+stays positive from the paid-up row on.
 
 .. rubric:: The Rentenbeginn
 
-Everything happens at the end of policy year ``n``, on the survivors of that year's
-decrements::
+Everything happens at the end of the last accumulation row ``t = n - 1``, on the survivors
+of that year's decrements::
 
-    capital_gross_pp = av_pp_at(n, "AFT_INT") + av_sur_pp_at(n, "AFT_INT")
+    capital_gross_pp = av_pp_at(n - 1, "AFT_INT") + av_sur_pp_at(n - 1, "AFT_INT")
     capital_conv_pp  = max(guar_capital_pp, capital_gross_pp + val_reserve_pp)
     annuity_rate_appl = max(annuity_rate_guar, annuity_rate_curr)
     annuity_guar_mth_pp = capital_conv_pp / 10 000 * annuity_rate_appl
@@ -269,7 +277,7 @@ decrements::
 placeholder. The commuting policyholders receive ``capital_conv_pp`` — the same capital the
 annuitants convert, *Bewertungsreserven* included: the corpus gives no basis for paying them
 less, and inventing one would be a charge no source supports. Both account balances go to
-zero from ``t = n + 1``.
+zero from ``t = n``.
 
 The applied factor is ``max(garantierter, aktueller)``, guaranteed for the whole payment
 period, and it is a **written option on the insurer's own future annuity tariff**. Both
@@ -281,14 +289,14 @@ the guarantee binds on point 13, whose ``guar_capital_pp`` floor binds at the sa
 Inside the guarantee window the instalment is due whether or not the annuitant is alive, so
 it is weighted by the **annuitised** count and not by survivors::
 
-    pols_annuity(t) = pols_annuitization(n)   for n < t <= n + m
-                    = pols_if(t)              for t > n + m
+    pols_annuity(t) = pols_annuitization(n - 1)   for n <= t < n + m
+                    = pols_if(t)                  for t >= n + m
 
-Because ``pols_if(t) <= pols_annuitization(n)`` throughout the payout phase this is
-``max(pols_if(t), 1{n < t <= n+m} pols_annuitization(n))``, which is how
+Because ``pols_if(t) <= pols_annuitization(n - 1)`` throughout the payout phase this is
+``max(pols_if(t), 1{n <= t < n+m} pols_annuitization(n - 1))``, which is how
 :func:`check_annuity_guarantee` states it — and stating it that way is what makes the check
 independent of the definition it is checking. On the anchor cell the two differ at
-``t = 18 ... 27`` and coincide from ``t = 28``.
+``t = 17 ... 26`` and coincide from ``t = 27``.
 
 .. rubric:: Modules that are recorded and not applied
 
@@ -307,7 +315,7 @@ independent of the definition it is checking. On the anchor cell the two differ 
   and no tax. Each is named in the technical notes where it belongs.
 - **No death benefit after the *Rentenbeginn***. *Beitragsrückgewähr in der Rentenbezugsphase*
   was not established by any source in this product's corpus and is not asserted:
-  ``claims(t, "DEATH")`` is zero for every ``t > n`` on every model point. What the corpus
+  ``claims(t, "DEATH")`` is zero for every ``t >= n`` on every model point. What the corpus
   does establish for post-*Rentenbeginn* death is the *Rentengarantiezeit*, which is modelled.
 
 .. rubric:: Sign convention
@@ -361,32 +369,39 @@ def omega_age():
 
 
 def proj_len():
-    """The **last** projected policy year index: ``omega_age() - issue_age``.
+    """The **number** of projected policy years: ``omega_age() - issue_age``.
 
-    This library's reading of ``proj_len()``, asserted in
-    ``tests/test_model_conventions_de.py``: ``result_cf().index[-1] == proj_len()``, whether
-    the frame is 0-based or 1-based.  A life annuity has no term, so the horizon is the age
-    at which the annuitant cannot survive further rather than a fixed number of years —
+    The library-wide reading of ``proj_len()``, asserted in
+    ``tests/test_model_conventions_de.py``: it is the **exclusive** end of the 0-based frame,
+    so ``result_cf()`` covers ``t = t0 ... proj_len() - 1`` and
+    ``result_cf().index[-1] == proj_len() - 1``.  This is lifelib's own
+    ``for t in range(proj_len())``.  A life annuity has no term, so the horizon is the age at
+    which the annuitant cannot survive further rather than a fixed number of years —
     truncating one at, say, 40 years silently drops the tail the *Rentenfaktor* was priced
-    for.  71 on the anchor cell.
+    for.  71 on the anchor cell, whose last row is ``t = 70`` at attained age 120.
     """
     return omega_age() - int(model_point()["issue_age"])
 
 
 def age(t):
-    """x(t): the attained age at the start of policy year t, ``issue_age + t - 1``."""
-    return int(model_point()["issue_age"]) + t - 1
+    """x(t): the attained age at the start of period t, ``issue_age + t``.
+
+    ``t`` is 0-based, so ``age(0)`` is the age at issue and the contractual policy year of
+    the row is ``t + 1``.
+    """
+    return int(model_point()["issue_age"]) + t
 
 
 def calendar_year(t):
-    """tau(t): the calendar year of policy year t, ``issue_year + t - 1``.
+    """tau(t): the calendar year of period t, ``issue_year + t``.
 
     The second index of the generational mortality surface and of the declared-rate path.
     Because it is derived from the model point's own ``issue_year``, one surface and one
-    declared path serve a book of mixed vintages: policy year 1 of a 2005 contract and policy
-    year 1 of a 2026 contract read different calendar years from the same table.
+    declared path serve a book of mixed vintages: the first year (``t = 0``) of a 2005
+    contract and the first year of a 2026 contract read different calendar years from the
+    same table.
     """
-    return int(model_point()["issue_year"]) + t - 1
+    return int(model_point()["issue_year"]) + t
 
 
 def pols_if_init():
@@ -444,8 +459,9 @@ def freq_load():
 def prem_pp_sched(t):
     """P_sched(t): the premium schedule **as written at inception**, per policy.
 
-    Zero after the *Rentenbeginn* and after the paying term; the *Einmalbeitrag* in policy
-    year 1 on the ``einmal`` form; otherwise the loaded gross premium grown by the *Dynamik*.
+    Zero after the *Rentenbeginn* and after the paying term; the *Einmalbeitrag* in the
+    first year (``t = 0``) on the ``einmal`` form; otherwise the loaded gross premium grown
+    by the *Dynamik*.
 
     It ignores any later *Beitragsfreistellung* on purpose.  The § 4 DeckRV zillmer base is
     the sum of all premiums payable under the contract **as written**, and a later election
@@ -453,19 +469,19 @@ def prem_pp_sched(t):
     this cells and not :func:`prem_pp`.
     """
     mp = model_point()
-    if t < 1 or t > int(mp["aufschub_y"]) or t > int(mp["prem_term_y"]):
+    if t < 0 or t >= int(mp["aufschub_y"]) or t >= int(mp["prem_term_y"]):
         return 0.0
     if mp["premium_form"] == "einmal":
-        return float(mp["premium_single_pp"]) if t == 1 else 0.0
+        return float(mp["premium_single_pp"]) if t == 0 else 0.0
     return (float(mp["prem_gross_pp"]) * freq_load()
-            * (1.0 + float(mp["dynamik_rate"])) ** (t - 1))
+            * (1.0 + float(mp["dynamik_rate"])) ** t)
 
 
 def prem_pp(t):
     """P(t): the gross premium actually charged per policy in year t, at the **start** of it.
 
-    The schedule, switched off from ``pup_year`` where the contract has been made premium
-    free.  Not further multiplied by a survival factor: deaths and surrenders fall at the end
+    The schedule, switched off from the paid-up row where the contract has been made
+    premium free.  Not further multiplied by a survival factor: deaths and surrenders fall at the end
     of the year, so a claimant has already paid the year's premium.
     """
     return 0.0 if paid_up(t) else prem_pp_sched(t)
@@ -474,14 +490,14 @@ def prem_pp(t):
 def beitragssumme_pp():
     """The *Beitragssumme*: the sum of the premiums payable under the contract as written.
 
-    ``sum of P_sched(u) for u = 1 .. min(prem_term_y, aufschub_y)``, so the frequency loading
+    ``sum of P_sched(u) for u = 0 .. min(prem_term_y, aufschub_y) - 1``, so the frequency loading
     is inside it.  51 000,00 € on the anchor cell.  This is the § 4 DeckRV base on which the
     acquisition charge is struck, and it is fixed at inception: a later
     *Beitragsfreistellung* does not shrink it.
     """
     mp = model_point()
     last = min(int(mp["prem_term_y"]), int(mp["aufschub_y"]))
-    return sum(prem_pp_sched(u) for u in range(1, last + 1))
+    return sum(prem_pp_sched(u) for u in range(last))
 
 
 def alpha_total_pp():
@@ -498,34 +514,34 @@ def alpha_total_pp():
 
 
 def alpha_cum_pp(t):
-    """The acquisition charge already amortised at the **start** of policy year t.
+    """The acquisition charge already amortised at the **start** of period t.
 
     ``alpha_amort_pp_init`` at the frame's start, then a running total of
     :func:`charge_acq_pp`.  It never exceeds :func:`alpha_total_pp`, which is what the
     ``max(0, .)`` in :func:`charge_acq_pp` guarantees.
     """
-    t0 = int(model_point()["duration_init"]) + 1
+    t0 = int(model_point()["duration_init"])
     if t <= t0:
         return float(model_point()["alpha_amort_pp_init"])
     return alpha_cum_pp(t - 1) + charge_acq_pp(t - 1)
 
 
 def prem_cum_pp(t):
-    """The premiums paid per policy before the **start** of policy year t.
+    """The premiums paid per policy before the **start** of period t.
 
     ``prem_cum_pp_init`` at the frame's start, then a running total of :func:`prem_pp`.  The
     *Beitragsrückgewähr* base: on the ``prem_refund`` death-benefit form the benefit is
     ``prem_cum_pp(t) + prem_pp(t)``, the premiums paid including the year of death, because
     the year's premium fell due at the start of it.
     """
-    t0 = int(model_point()["duration_init"]) + 1
+    t0 = int(model_point()["duration_init"])
     if t <= t0:
         return float(model_point()["prem_cum_pp_init"])
     return prem_cum_pp(t - 1) + prem_pp(t - 1)
 
 
 def premiums(t):
-    """Premium income in policy year t, an inflow: ``prem_pp(t) x pols_if(t)``."""
+    """Premium income in period t, an inflow: ``prem_pp(t) x pols_if(t)``."""
     return prem_pp(t) * pols_if(t)
 
 
@@ -534,12 +550,12 @@ def premiums(t):
 
 
 def charge_acq_pp(t):
-    """alpha(t): the **zillmered** acquisition charge taken in policy year t.
+    """alpha(t): the **zillmered** acquisition charge taken in period t.
 
     ``min(P(t), max(0, alpha_total_pp() - alpha_cum_pp(t)))`` — as much of the outstanding
     acquisition charge as the year's premium can meet, and no more.  On the anchor cell the
-    whole 1 275,00 € comes out of the year-1 premium and nothing thereafter, which is what
-    *Zillmerung* means and why the year-1 *Sparbeitrag* is thin.
+    whole 1 275,00 € comes out of the first year's premium (``t = 0``) and nothing
+    thereafter, which is what *Zillmerung* means and why that year's *Sparbeitrag* is thin.
     """
     return min(prem_pp(t), max(0.0, alpha_total_pp() - alpha_cum_pp(t)))
 
@@ -547,14 +563,14 @@ def charge_acq_pp(t):
 def charge_acq_spread_pp(t):
     """alpha~(t): the same charge spread **evenly over the first five contract years**.
 
-    ``alpha_total_pp() / alpha_spread_years`` for ``t = 1 .. 5``, zero after.  This is the
+    ``alpha_total_pp() / alpha_spread_years`` for ``t = 0 .. 4``, zero after.  This is the
     § 169 Abs. 3 VVG treatment, and it enters no account of its own: it drives
     :func:`spread_diff_pp`, the difference between the tariff *Deckungskapital* and the
     statutory surrender floor.  255,00 € on the anchor cell.
     """
     years = int(data.charge_table().at[                              # noqa: F821
         (model_point()["charge_id"], "alpha_spread_years"), "value"])
-    return alpha_total_pp() / years if 1 <= t <= years else 0.0
+    return alpha_total_pp() / years if 0 <= t < years else 0.0
 
 
 def charge_prem_pp(t):
@@ -582,7 +598,7 @@ def charge_admin_pp(t):
 
 
 def nar_pp(t):
-    """The net amount at risk at the start of policy year t: ``max(0, db_base_pp - av_pp)``.
+    """The net amount at risk at the start of period t: ``max(0, db_base_pp - av_pp)``.
 
     What the insurer would have to find out of its own funds if the policyholder died: the
     death benefit less the reserve already held against it.  On the ``deckungskapital``
@@ -602,13 +618,13 @@ def charge_risk_pp(t):
     projection's decrements.  Using one basis for both is a listed pitfall.  Zero after the
     *Rentenbeginn*, where no death benefit is payable.
     """
-    if t > int(model_point()["aufschub_y"]):
+    if t >= int(model_point()["aufschub_y"]):
         return 0.0
     return mort_rate_guar(t) * nar_pp(t)
 
 
 def charge_due_pp(t):
-    """The total charge falling due in policy year t: ``alpha + beta + gamma + rho``.
+    """The total charge falling due in period t: ``alpha + beta + gamma + rho``.
 
     What the tariff deducts, before asking where it comes from.  :func:`charge_from_prem_pp`
     and :func:`charge_from_av_pp` split it between the premium and the *Deckungskapital*.
@@ -657,27 +673,28 @@ def prem_to_av(t):
 
 
 def av_pp(t):
-    """V(t): the *Deckungskapital* per policy at the **start** of policy year t.
+    """V(t): the *Deckungskapital* per policy at the **start** of period t.
 
     ``av_pp_init`` at the frame's start, then :func:`av_pp_at` at ``"AFT_INT"`` of the
-    previous year — with two exceptions.  At ``t = pup_year`` on a converting contract the
-    balance is **reset** to :func:`pup_value_pp`, the § 165 paid-up value computed on the
-    § 169 Abs. 3–5 basis.  And from ``t = n + 1`` it is **zero**: at the *Rentenbeginn* the
-    whole balance is converted into the annuity or paid out as the *Kapitalabfindung*.
+    previous year — with two exceptions.  In the paid-up row ``t = pup_year - 1`` on a
+    converting contract the balance is **reset** to :func:`pup_value_pp`, the § 165 paid-up
+    value computed on the § 169 Abs. 3–5 basis.  And from ``t = n`` it is **zero**: at the
+    *Rentenbeginn* the whole balance is converted into the annuity or paid out as the
+    *Kapitalabfindung*.
     """
     mp = model_point()
-    t0 = int(mp["duration_init"]) + 1
+    t0 = int(mp["duration_init"])
     if t <= t0:
         return float(mp["av_pp_init"])
-    if t > int(mp["aufschub_y"]):
+    if t >= int(mp["aufschub_y"]):
         return 0.0
-    if int(mp["pup_year"]) > 0 and t == int(mp["pup_year"]) and not pup_cashout():
+    if int(mp["pup_year"]) > 0 and t == int(mp["pup_year"]) - 1 and not pup_cashout():
         return pup_value_pp()
     return av_pp_at(t - 1, "AFT_INT")
 
 
 def av_pp_at(t, timing):
-    """The *Deckungskapital* per policy at a point inside policy year t.
+    """The *Deckungskapital* per policy at a point inside period t.
 
     ``"BEF_PREM"``
         V(t), the opening balance; the same number as :func:`av_pp`.
@@ -690,7 +707,7 @@ def av_pp_at(t, timing):
     ``"AFT_INT"``
         the end-of-year balance, after the *Rechnungszins*.  It is the balance a death claim
         and a surrender are measured on, the balance that rolls into V(t+1), and — at
-        ``t = n`` — half of the conversion capital.
+        ``t = n - 1`` — half of the conversion capital.
 
     The order premium, then charges, then interest on what is left is a **standardization**:
     no document in this product's corpus fixes it, and it is the most consequential such
@@ -731,18 +748,18 @@ def av_at(t, timing):
 
 
 def av_release(t):
-    """The *Deckungskapital* leaving the fund at the end of policy year t.
+    """The *Deckungskapital* leaving the fund at the end of period t.
 
     The end-of-year balance carried out by the policies that leave — deaths and surrenders
-    before the *Rentenbeginn*, and at ``t = n`` **the whole balance**, because the annuitants'
-    account is converted into the annuity and the commuters' is paid out.  Zero in the payout
-    phase, where there is no account left.  Read by :func:`check_av_roll_fwd` and by nothing
-    else.
+    before the *Rentenbeginn*, and in the last accumulation row ``t = n - 1`` **the whole
+    balance**, because the annuitants' account is converted into the annuity and the
+    commuters' is paid out.  Zero in the payout phase, where there is no account left.  Read
+    by :func:`check_av_roll_fwd` and by nothing else.
     """
     n = int(model_point()["aufschub_y"])
-    if t > n:
+    if t >= n:
         return 0.0
-    if t == n:
+    if t == n - 1:
         return av_pp_at(t, "AFT_INT") * pols_if(t)
     return av_pp_at(t, "AFT_INT") * (pols_if(t) - pols_if(t + 1))
 
@@ -752,24 +769,24 @@ def av_release(t):
 
 
 def av_sur_pp(t):
-    """A(t): the *Ansammlungsguthaben* per policy at the **start** of policy year t.
+    """A(t): the *Ansammlungsguthaben* per policy at the **start** of period t.
 
     The *verzinsliche Ansammlung* side account: a **second, parallel** balance holding the
     declared surplus, with its own credited rate, settling at year end and on exit.  Zero
-    from ``t = n + 1``, the balance having gone into the conversion capital.  It is untouched
+    from ``t = n``, the balance having gone into the conversion capital.  It is untouched
     by a *Beitragsfreistellung*.
     """
     mp = model_point()
-    t0 = int(mp["duration_init"]) + 1
+    t0 = int(mp["duration_init"])
     if t <= t0:
         return float(mp["av_sur_pp_init"])
-    if t > int(mp["aufschub_y"]):
+    if t >= int(mp["aufschub_y"]):
         return 0.0
     return av_sur_pp_at(t - 1, "AFT_INT")
 
 
 def av_sur_pp_at(t, timing):
-    """The *Ansammlungsguthaben* per policy at a point inside policy year t.
+    """The *Ansammlungsguthaben* per policy at a point inside period t.
 
     ``"BEF_PREM"`` and ``"AFT_PREM"`` are both the opening balance — no premium is credited
     to this account — and ``"AFT_INT"`` is the balance after the year's surplus credit, which
@@ -783,7 +800,7 @@ def av_sur_pp_at(t, timing):
 
 
 def bonus_credited_pp(t):
-    """The surplus credited per policy at the end of policy year t.
+    """The surplus credited per policy at the end of period t.
 
     ``bonus_rate(t) x av_pp_at(t, "AFT_PREM") + decl_rate(t) x av_sur_pp(t)``: the interest
     surplus on the *Deckungskapital*'s post-premium base, plus the **full declared rate** on
@@ -795,7 +812,7 @@ def bonus_credited_pp(t):
     and never more.  On a 2,75 % vintage against a 2,55 % declaration the term is zero at
     every t, and that is the correct answer rather than a missing credit.
     """
-    if t > int(model_point()["aufschub_y"]):
+    if t >= int(model_point()["aufschub_y"]):
         return 0.0
     return bonus_rate(t) * av_pp_at(t, "AFT_PREM") + decl_rate(t) * av_sur_pp(t)
 
@@ -816,15 +833,15 @@ def av_sur_at(t, timing):
 
 
 def av_sur_release(t):
-    """The *Ansammlungsguthaben* leaving the fund at the end of policy year t.
+    """The *Ansammlungsguthaben* leaving the fund at the end of period t.
 
     The same shape as :func:`av_release`: the balance carried out by the policies that leave,
-    and the whole balance at ``t = n``.  Read by :func:`check_av_sur_roll_fwd` alone.
+    and the whole balance at ``t = n - 1``.  Read by :func:`check_av_sur_roll_fwd` alone.
     """
     n = int(model_point()["aufschub_y"])
-    if t > n:
+    if t >= n:
         return 0.0
-    if t == n:
+    if t == n - 1:
         return av_sur_pp_at(t, "AFT_INT") * pols_if(t)
     return av_sur_pp_at(t, "AFT_INT") * (pols_if(t) - pols_if(t + 1))
 
@@ -834,7 +851,7 @@ def av_sur_release(t):
 
 
 def spread_diff_pp(t):
-    """Delta(t): ``av_spread_pp(t) - av_pp(t)`` at the start of policy year t.
+    """Delta(t): ``av_spread_pp(t) - av_pp(t)`` at the start of period t.
 
     The two accounts differ **only** in the acquisition charge, so the model carries the
     difference rather than a second full recursion — with ``gamma`` and ``rho`` taken at the
@@ -844,22 +861,22 @@ def spread_diff_pp(t):
     an in-force point**, where the interest the spread account earned on the amounts not yet
     deducted is discarded; every in-force model point therefore opens at
     ``duration_init >= alpha_spread_years``, once the charge is fully amortised under both
-    treatments.  Zero again from ``t = pup_year`` on a converting contract, the two accounts
-    having merged at the paid-up value.
+    treatments.  Zero again from the paid-up row ``t = pup_year - 1`` on a converting
+    contract, the two accounts having merged at the paid-up value.
     """
     mp = model_point()
-    t0 = int(mp["duration_init"]) + 1
+    t0 = int(mp["duration_init"])
     if t <= t0:
         return 0.0
-    if t > int(mp["aufschub_y"]):
+    if t >= int(mp["aufschub_y"]):
         return 0.0
-    if int(mp["pup_year"]) > 0 and t == int(mp["pup_year"]) and not pup_cashout():
+    if int(mp["pup_year"]) > 0 and t == int(mp["pup_year"]) - 1 and not pup_cashout():
         return 0.0
     return spread_diff_pp_at(t - 1, "AFT_INT")
 
 
 def spread_diff_pp_at(t, timing):
-    """The difference recursion inside policy year t.
+    """The difference recursion inside period t.
 
     ``"AFT_INT"`` is ``(Delta(t) + alpha(t) - alpha~(t)) x (1 + i)``: the year's excess of the
     zillmered charge over the evenly spread one, added to the running difference and rolled
@@ -867,8 +884,8 @@ def spread_diff_pp_at(t, timing):
     difference.
 
     The difference is large in the first five years — on the anchor cell the whole 25 ‰ is
-    taken in year 1 against one fifth of it — and it **never returns to zero**, because the
-    spread account earns interest on what has not yet been deducted.
+    taken in the first year against one fifth of it — and it **never returns to zero**,
+    because the spread account earns interest on what has not yet been deducted.
     """
     if timing in ("BEF_PREM", "AFT_PREM"):
         return spread_diff_pp(t)
@@ -976,27 +993,30 @@ def bonus_rate(t):
 
 
 def lapse_rate(t):
-    """w(t): the annual surrender rate in policy year t.
+    """w(t): the annual surrender rate in period t.
 
-    From *lapse_table.csv* by policy duration, holding the last row for durations beyond the
-    table.  **Zero from the *Rentenbeginn***: there is no surrender in the payout phase.
+    From *lapse_table.csv*, holding the last row for durations beyond the table.  **Zero from
+    the *Rentenbeginn***: there is no surrender in the payout phase.
 
-    Every level is **[std]**; the one shaped feature is the **duration-12 step**, at the
-    twelve-year threshold § 20 Abs. 1 Nr. 6 EStG puts on the halving of the taxable gain, so
-    German Schicht-3 surrenders are suppressed approaching duration 12 and spike at it.
+    The table's ``duration`` column is the **contractual policy year**, 1-based, so the
+    lookup is at ``t + 1``: the frame's first row ``t = 0`` reads duration 1.  Every level is
+    **[std]**; the one shaped feature is the **duration-12 step**, at the twelve-year
+    threshold § 20 Abs. 1 Nr. 6 EStG puts on the halving of the taxable gain, so German
+    Schicht-3 surrenders are suppressed approaching duration 12 and spike at it — which is
+    the row ``t = 11``.
 
     It also carries the § 165 cash-out branch: where a *Beitragsfreistellung* would leave a
-    paid-up annuity below the *Mindestversicherungsleistung*, the rate is 1 in the year
-    before ``pup_year`` and the whole surviving cohort leaves at the surrender value.
+    paid-up annuity below the *Mindestversicherungsleistung*, the rate is 1 in the row before
+    the paid-up row and the whole surviving cohort leaves at the surrender value.
     """
     mp = model_point()
-    if t > int(mp["aufschub_y"]):
+    if t >= int(mp["aufschub_y"]):
         return 0.0
     pup = int(mp["pup_year"])
-    if pup > 0 and t == pup - 1 and pup_cashout():
+    if pup > 0 and t == pup - 2 and pup_cashout():
         return 1.0
     tbl = data.lapse_table()                                         # noqa: F821
-    return float(tbl.at[min(int(t), int(tbl.index.max())), "lapse_rate"])
+    return float(tbl.at[min(int(t) + 1, int(tbl.index.max())), "lapse_rate"])
 
 
 # ----------------------------------------
@@ -1025,7 +1045,7 @@ def db_base_pp(t):
 
 
 def db_pp(t):
-    """D(t): the death benefit per policy actually paid on a death in policy year t.
+    """D(t): the death benefit per policy actually paid on a death in period t.
 
     Three documented designs, on **end-of-year** balances: *Beitragsrückgewähr* (the premiums
     paid, including the year's), the accumulated *Deckungskapital*, or the larger of the two;
@@ -1037,7 +1057,7 @@ def db_pp(t):
     modelled in :func:`pols_annuity`.
     """
     mp = model_point()
-    if t > int(mp["aufschub_y"]):
+    if t >= int(mp["aufschub_y"]):
         return 0.0
     form = mp["death_benefit_form"]
     paid = prem_cum_pp(t) + prem_pp(t)
@@ -1090,7 +1110,7 @@ def cv_floor_pp(t):
 def cv_pp(t):
     """R(t): the surrender value per policy, ``max(cv_tariff_pp(t), cv_floor_pp(t))``.
 
-    On the anchor cell the **floor binds through t = 4** — the zillmered account has not yet
+    On the anchor cell the **floor binds through t = 3** — the zillmered account has not yet
     caught up with the evenly spread one — and stops binding once the *Ansammlungsguthaben*
     has outgrown the interest residual and the *Stornoabzug*.  Both branches are therefore
     exercised on the anchor cell alone, which is why the floor is not merely present but
@@ -1102,17 +1122,21 @@ def cv_pp(t):
 def paid_up(t):
     """True where the contract has been made premium-free by ``pup_year``.
 
+    ``pup_year`` is the **contractual policy year** of the *Beitragsfreistellung*, 1-based,
+    with 0 meaning "never", so the paid-up row is ``t = pup_year - 1`` and the contract is
+    premium-free from there on.
+
     A **deterministic election** on the model point, not a decrement rate: a scalar
     per-policy account cannot carry two sub-populations with different *Deckungskapital*, and
     no source establishes a rate.  A portfolio model needs the sub-population split this one
     does not have.
     """
     pup = int(model_point()["pup_year"])
-    return bool(pup > 0 and t >= pup)
+    return bool(pup > 0 and t >= pup - 1)
 
 
 def pup_value_pp():
-    """The § 165 paid-up value: the § 169 Abs. 3–5 value at the end of year ``pup_year - 1``.
+    """The § 165 paid-up value: the § 169 Abs. 3–5 value at the end of row ``pup_year - 2``.
 
     ``max(av_pp_at, av_spread_pp_at)`` at ``"AFT_INT"`` of that year — the § 165 rule that the
     premium-free benefit is calculated on the calculation basis of the premium calculation,
@@ -1123,7 +1147,7 @@ def pup_value_pp():
     pup = int(model_point()["pup_year"])
     if pup <= 0:
         return 0.0
-    return max(av_pp_at(pup - 1, "AFT_INT"), av_spread_pp_at(pup - 1, "AFT_INT"))
+    return max(av_pp_at(pup - 2, "AFT_INT"), av_spread_pp_at(pup - 2, "AFT_INT"))
 
 
 def pup_cashout():
@@ -1147,17 +1171,19 @@ def pup_cashout():
 def pup_uplift(t):
     """The *Deckungskapital* credited by the paid-up reset, booked in the transition year.
 
-    ``(pup_value_pp() - av_pp_at(t, "AFT_INT")) x pols_if(t + 1)`` at ``t = pup_year - 1``,
-    and zero everywhere else and on every point that never converts.  It is the step between
-    the zillmered end-of-year balance and the § 169 Abs. 3–5 paid-up value the contract
-    restarts from, and it is **real money** rather than a bookkeeping entry: without it the
-    fund-level roll-forward of :func:`check_av_roll_fwd` would not close at that ``t``.
+    ``(pup_value_pp() - av_pp_at(t, "AFT_INT")) x pols_if(t + 1)`` in the transition row
+    ``t = pup_year - 2``, and zero everywhere else and on every point that never converts.
+    It is the step between the zillmered end-of-year balance and the § 169 Abs. 3–5 paid-up
+    value the contract restarts from, and it is **real money** rather than a bookkeeping
+    entry: without it the fund-level roll-forward of :func:`check_av_roll_fwd` would not
+    close at that ``t``.
 
-    Booked in year ``pup_year - 1`` because that is the row whose roll-forward needs it; the
-    technical notes describe the same amount from the receiving year's point of view.
+    Booked in the row **before** the paid-up row ``t = pup_year - 1`` because that is the row
+    whose roll-forward needs it; the technical notes describe the same amount from the
+    receiving row's point of view.
     """
     pup = int(model_point()["pup_year"])
-    if pup <= 0 or t != pup - 1 or pup_cashout():
+    if pup <= 0 or t != pup - 2 or pup_cashout():
         return 0.0
     return (pup_value_pp() - av_pp_at(t, "AFT_INT")) * pols_if(t + 1)
 
@@ -1167,20 +1193,21 @@ def pup_uplift(t):
 
 
 def pols_if(t):
-    """l(t): the number of policies in force at the **start** of policy year t.
+    """l(t): the number of policies in force at the **start** of period t.
 
-    ``pols_if_init()`` at the frame's start — ``t = 1`` for new business and
-    ``t = duration_init + 1`` for an in-force point — then
+    ``pols_if_init()`` at the frame's start — ``t = 0`` for new business and
+    ``t = duration_init`` for an in-force point — then
     ``l(t+1) = l(t) - deaths - surrenders - commutations``.  This is the weight on every
     accumulation-phase cash flow of the same :func:`result_cf` row; the annuity is weighted by
     :func:`pols_annuity` instead, which differs inside the *Rentengarantiezeit*.
 
-    ``pols_if(proj_len() + 1)`` is defined and is **zero**, because ``mort_rate`` is 1 at
-    attained age ``omega_age() - 1``.  It is read by :func:`check_decrement_closure` and by
-    nothing else, and :func:`result_cf` stops at ``proj_len()``.
+    ``pols_if(proj_len())`` — one past the frame's last row — is defined and is **zero**,
+    because ``mort_rate`` is 1 at attained age ``omega_age() - 1``.  It is read by
+    :func:`check_decrement_closure` and by nothing else, and :func:`result_cf` stops at
+    ``proj_len() - 1``.
     """
-    t0 = int(model_point()["duration_init"]) + 1
-    if t < t0 or t > proj_len() + 1:
+    t0 = int(model_point()["duration_init"])
+    if t < t0 or t > proj_len():
         return 0.0
     if t == t0:
         return pols_if_init()
@@ -1188,7 +1215,7 @@ def pols_if(t):
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     ``"BEF_DECR"``
         l(t), the start of the year, before any decrement; the same number as
@@ -1200,7 +1227,7 @@ def pols_if_at(t, timing):
         are taken from.
 
     ``"AFT_DECR"``
-        l(t+1), the end-of-year state, after deaths, surrenders and — at ``t = n`` — the
+        l(t+1), the end-of-year state, after deaths, surrenders and — at ``t = n - 1`` — the
         commutation split.
     """
     if timing == "BEF_DECR":
@@ -1214,7 +1241,7 @@ def pols_if_at(t, timing):
 
 
 def pols_death(t):
-    """l(t) q(t): expected deaths in policy year t, at the end of the year.
+    """l(t) q(t): expected deaths in period t, at the end of the year.
 
     On the **second-order** basis.  The claimant has already paid the year's premium, which
     fell due in advance at the start of it, so :func:`premiums` is not further multiplied by a
@@ -1225,7 +1252,7 @@ def pols_death(t):
 
 
 def pols_lapse(t):
-    """Surrenders at the end of policy year t, taken from the survivors of the year's deaths.
+    """Surrenders at the end of period t, taken from the survivors of the year's deaths.
 
     Zero in the payout phase, where :func:`lapse_rate` is zero.  A *Beitragsfreistellung* is
     **not** counted here: it is an election that keeps the contract alive, not a decrement.
@@ -1236,26 +1263,25 @@ def pols_lapse(t):
 
 
 def pols_surv_rb():
-    """The policies surviving to the *Rentenbeginn*: ``l(n) - deaths(n) - surrenders(n)``.
+    """The policies surviving to the *Rentenbeginn*: ``l - deaths - surrenders`` at ``n - 1``.
 
-    The population the *Kapitalwahlrecht* splits.  Struck at the end of policy year ``n``,
-    after that year's decrements and before the commutation.
+    The population the *Kapitalwahlrecht* splits.  Struck at the end of the last
+    accumulation row ``t = n - 1``, after that year's decrements and before the commutation.
     """
-    n = int(model_point()["aufschub_y"])
-    return pols_if(n) - pols_death(n) - pols_lapse(n)
+    t_rb = int(model_point()["aufschub_y"]) - 1
+    return pols_if(t_rb) - pols_death(t_rb) - pols_lapse(t_rb)
 
 
 def pols_commutation(t):
     """The policies taking the *Kapitalabfindung* at the *Rentenbeginn*.
 
-    ``kapitalwahl_rate x pols_surv_rb()`` at ``t = n`` and zero at every other t.  The rate is
+    ``kapitalwahl_rate x pols_surv_rb()`` at ``t = n - 1`` and zero at every other t.  The rate is
     a **model-point attribute, not a behavioural formula**: the annuitise-or-commute decision
     is a tax comparison — the *Ertragsanteil* on each instalment against half the
     *Unterschiedsbetrag* taxed once — and this model computes no tax, so the rate stands in
     for a calculation it does not perform.
     """
-    n = int(model_point()["aufschub_y"])
-    if t != n:
+    if t != int(model_point()["aufschub_y"]) - 1:
         return 0.0
     return float(model_point()["kapitalwahl_rate"]) * pols_surv_rb()
 
@@ -1263,31 +1289,30 @@ def pols_commutation(t):
 def pols_annuitization(t):
     """The policies converting to the annuity at the *Rentenbeginn*.
 
-    ``(1 - kapitalwahl_rate) x pols_surv_rb()`` at ``t = n`` and zero elsewhere.  It is
-    ``pols_if(n + 1)`` by construction, and it is the count the *Rentengarantiezeit*
+    ``(1 - kapitalwahl_rate) x pols_surv_rb()`` at ``t = n - 1`` and zero elsewhere.  It is
+    ``pols_if(n)`` by construction, and it is the count the *Rentengarantiezeit*
     instalments are paid on however many annuitants are still alive.
     """
-    n = int(model_point()["aufschub_y"])
-    if t != n:
+    if t != int(model_point()["aufschub_y"]) - 1:
         return 0.0
     return (1.0 - float(model_point()["kapitalwahl_rate"])) * pols_surv_rb()
 
 
 def pols_annuity(t):
-    """a(t): the count the annuity instalment is **paid on** in policy year t.
+    """a(t): the count the annuity instalment is **paid on** in period t.
 
     Zero before the *Rentenbeginn*; the **annuitised** count inside the *Rentengarantiezeit*,
-    ``n < t <= n + m``, because there the instalment is due whether or not the annuitant is
+    ``n <= t < n + m``, because there the instalment is due whether or not the annuitant is
     alive; the survivors after it.  Weighting the guaranteed years by survivors is a listed
-    pitfall, and on the anchor cell the two differ over ``t = 18 ... 27`` and coincide from
-    ``t = 28``.
+    pitfall, and on the anchor cell the two differ over ``t = 17 ... 26`` and coincide from
+    ``t = 27``.
     """
     mp = model_point()
     n = int(mp["aufschub_y"])
-    if t <= n:
+    if t < n:
         return 0.0
-    if t <= n + int(mp["rgz_years"]):
-        return pols_annuitization(n)
+    if t < n + int(mp["rgz_years"]):
+        return pols_annuitization(n - 1)
     return pols_if(t)
 
 
@@ -1298,12 +1323,12 @@ def pols_annuity(t):
 def capital_gross_pp():
     """The accumulated value per policy at the *Rentenbeginn*, before the *Bewertungsreserven*.
 
-    ``av_pp_at(n, "AFT_INT") + av_sur_pp_at(n, "AFT_INT")``: both accounts, at the end of
-    policy year ``n``, after that year's crediting.  The contract value used for
-    annuitisation includes the *Überschussbeteiligung*.
+    ``av_pp_at(n - 1, "AFT_INT") + av_sur_pp_at(n - 1, "AFT_INT")``: both accounts, at the
+    end of the last accumulation row ``t = n - 1``, after that year's crediting.  The contract
+    value used for annuitisation includes the *Überschussbeteiligung*.
     """
-    n = int(model_point()["aufschub_y"])
-    return av_pp_at(n, "AFT_INT") + av_sur_pp_at(n, "AFT_INT")
+    t_rb = int(model_point()["aufschub_y"]) - 1
+    return av_pp_at(t_rb, "AFT_INT") + av_sur_pp_at(t_rb, "AFT_INT")
 
 
 def val_reserve_pp():
@@ -1395,7 +1420,7 @@ def annuity_sur_mth_pp(t):
         falling if the insurer earns less.
 
     ``volldynamisch``
-        ``G x ((1 + sur_ann_growth)^k - 1)`` with ``k = t - n - 1``: nil in the first payout
+        ``G x ((1 + sur_ann_growth)^k - 1)`` with ``k = t - n``: nil in the first payout
         year and rising with actual surplus development thereafter.
 
     ``teildynamisch``
@@ -1407,13 +1432,13 @@ def annuity_sur_mth_pp(t):
     """
     mp = model_point()
     n = int(mp["aufschub_y"])
-    if t <= n:
+    if t < n:
         return 0.0
     par = data.param_table()                                         # noqa: F821
     rate = float(par.at["sur_ann_rate", "value"])
     growth = float(par.at["sur_ann_growth", "value"])
     theta = float(par.at["sur_ann_theta", "value"])
-    k = t - n - 1
+    k = t - n
     system = mp["payout_system"]
     guar = annuity_guar_mth_pp()
     if system == "konstant":
@@ -1438,13 +1463,13 @@ def annuity_pp(t):
     1,5 % and is **not applied**: the *Rentenfaktor* is exogenous here and already carries the
     tariff's payout loading, so deducting again would charge it twice.
     """
-    if t <= int(model_point()["aufschub_y"]):
+    if t < int(model_point()["aufschub_y"]):
         return 0.0
     return 12.0 * (annuity_guar_mth_pp() + annuity_sur_mth_pp(t))
 
 
 def annuity_payments(t):
-    """The annuity outgo in policy year t: ``annuity_pp(t) x pols_annuity(t)``.
+    """The annuity outgo in period t: ``annuity_pp(t) x pols_annuity(t)``.
 
     Weighted by the count the instalment is *paid on*, which inside the *Rentengarantiezeit*
     is the annuitised count and not the survivors.
@@ -1471,8 +1496,8 @@ def annuity_due_factor():
     disc = 1.0 / (1.0 + int_rate_guar())
     surv = 1.0
     total = 0.0
-    for s in range(n + 1, proj_len() + 1):
-        total = total + surv * disc ** (s - n - 1)
+    for s in range(n, proj_len()):
+        total = total + surv * disc ** (s - n)
         surv = surv * (1.0 - mort_rate(s))
     return total
 
@@ -1482,7 +1507,7 @@ def annuity_due_factor():
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
         ``db_pp(t) x pols_death(t)``, paid at the end of the year of death.  **Zero after the
@@ -1494,8 +1519,8 @@ def claims(t, kind=None):
 
     ``"COMMUTATION"``
         ``capital_conv_pp() x pols_commutation(t)``, the *Kapitalabfindung* under the
-        *Kapitalwahlrecht*, paid in row ``n`` and in no other row.  The commuters receive the
-        same capital the annuitants convert, *Bewertungsreserven* included.
+        *Kapitalwahlrecht*, paid in row ``n - 1`` and in no other row.  The commuters receive
+        the same capital the annuitants convert, *Bewertungsreserven* included.
 
     The annuity itself is **not** a claim kind: it is a recurring benefit with its own
     weighting rule and is published as :func:`annuity_payments`.
@@ -1537,20 +1562,20 @@ def expense_infl():
 
 
 def expenses_pp(t):
-    """The per-policy administration expense in policy year t, inflated.
+    """The per-policy administration expense in period t, inflated.
 
     ``expense_maint_pp()`` in the accumulation phase and ``expense_annuity_pp()`` in the
-    payout phase, each times ``(1 + expense_infl())^(t - 1)`` so inflation compounds from
-    inception rather than from the start of the frame — which matters for the in-force points,
-    whose frames open partway through the contract.
+    payout phase, each times ``(1 + expense_infl())^t`` so inflation compounds from inception
+    — ``t`` is the elapsed policy years — rather than from the start of the frame, which
+    matters for the in-force points, whose frames open partway through the contract.
     """
-    level = (expense_maint_pp() if t <= int(model_point()["aufschub_y"])
+    level = (expense_maint_pp() if t < int(model_point()["aufschub_y"])
              else expense_annuity_pp())
-    return level * (1.0 + expense_infl()) ** (t - 1)
+    return level * (1.0 + expense_infl()) ** t
 
 
 def expenses(t):
-    """The insurer's own outgo in policy year t: acquisition, administration and settlement.
+    """The insurer's own outgo in period t: acquisition, administration and settlement.
 
     Acquisition falls once, in the frame's first year and only for new business — an in-force
     model point's acquisition cost was incurred before the valuation date.  Administration is
@@ -1567,18 +1592,18 @@ def expenses(t):
     """
     mp = model_point()
     n = int(mp["aufschub_y"])
-    t0 = int(mp["duration_init"]) + 1
+    t0 = int(mp["duration_init"])
     out = 0.0
     if t == t0 and int(mp["duration_init"]) == 0:
         out = out + expense_acq_pp() * pols_if(t)
-    out = out + expenses_pp(t) * (pols_if(t) if t <= n else pols_annuity(t))
+    out = out + expenses_pp(t) * (pols_if(t) if t < n else pols_annuity(t))
     out = out + expense_claim_pp() * (pols_death(t) + pols_lapse(t)
                                       + pols_commutation(t))
     return out
 
 
 def net_cf(t):
-    """The net liability cash flow of policy year t, **income positive**.
+    """The net liability cash flow of period t, **income positive**.
 
     ``premiums - claims_death - claims_lapse - claims_commutation - annuity_payments -
     expenses``.  The six components are exactly the six that cross the contract boundary; the
@@ -1586,7 +1611,7 @@ def net_cf(t):
     ``bonus_credited`` — are internal and are reported, not summed.
 
     The shape to expect on the anchor cell is strongly positive through the accumulation
-    phase, a large negative spike in year 17 where the *Kapitalabfindung* falls, and a long
+    phase, a large negative spike at ``t = 16`` where the *Kapitalabfindung* falls, and a long
     negative annuity tail thereafter.
     """
     return (premiums(t) - claims(t, "DEATH") - claims(t, "LAPSE")
@@ -1609,7 +1634,7 @@ def liability_cf(t):
 
 
 def check_net_cf_resid(t):
-    """The cash-flow-statement residual in policy year t; zero everywhere.
+    """The cash-flow-statement residual in period t; zero everywhere.
 
     ``net_cf`` as published in :func:`result_cf`, less the same frame's own
     ``premiums - claims_death - claims_lapse - claims_commutation - annuity_payments -
@@ -1643,7 +1668,7 @@ def check_net_cf():
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in period t; zero everywhere.
 
     ``pols_if(t) - pols_if(t+1) - pols_death(t) - pols_lapse(t) - pols_commutation(t)``.  The
     recursion and the three exits are formed separately, so they agree by algebra when — and
@@ -1667,7 +1692,7 @@ def check_pols_roll_fwd():
 
 
 def check_decrement_closure_resid(t):
-    """The cumulative decrement-closure residual at the end of policy year t; zero.
+    """The cumulative decrement-closure residual at the end of period t; zero.
 
     The deaths, surrenders and commutations up to and including ``t``, plus ``pols_if(t+1)``,
     less the original cohort.  Built by **direct summation over the exit cells**, with no
@@ -1676,12 +1701,13 @@ def check_decrement_closure_resid(t):
     counted in two places, and a policy that commutes at the *Rentenbeginn* and reappears in
     the annuity — the arithmetic form of paying the capital twice.
 
-    At ``t = proj_len()`` it closes on ``pols_if_init()`` exactly with ``pols_if(N+1) = 0``,
-    because ``mort_rate`` is 1 at attained age ``omega_age() - 1``.  A projection truncated
-    before then would fail here rather than silently drop the annuity tail.
+    At the last row ``t = proj_len() - 1`` it closes on ``pols_if_init()`` exactly with
+    ``pols_if(N) = 0``, because ``mort_rate`` is 1 at attained age ``omega_age() - 1``.  A
+    projection truncated before then would fail here rather than silently drop the annuity
+    tail.
     """
     exits = sum(pols_death(s) + pols_lapse(s) + pols_commutation(s)
-                for s in range(int(model_point()["duration_init"]) + 1, t + 1))
+                for s in range(int(model_point()["duration_init"]), t + 1))
     return exits + pols_if(t + 1) - pols_if_init()
 
 
@@ -1693,7 +1719,7 @@ def check_decrement_closure():
 
 
 def check_av_roll_fwd_resid(t):
-    """The *Deckungskapital* roll-forward residual in policy year t; zero everywhere.
+    """The *Deckungskapital* roll-forward residual in period t; zero everywhere.
 
     ``av(t) + prem_to_av(t) - charge_from_av(t) + int_credited(t) + pup_uplift(t) -
     av_release(t) - av(t+1)``, at fund level.
@@ -1718,7 +1744,7 @@ def check_av_roll_fwd():
 
 
 def check_av_sur_roll_fwd_resid(t):
-    """The *Ansammlungsguthaben* roll-forward residual in policy year t; zero everywhere.
+    """The *Ansammlungsguthaben* roll-forward residual in period t; zero everywhere.
 
     ``av_sur(t) + bonus_credited(t) - av_sur_release(t) - av_sur(t+1)``.  Nothing else touches
     the side account: no premium is credited to it, no charge is taken from it, and it is
@@ -1739,7 +1765,7 @@ def check_av_sur_roll_fwd():
 
 
 def check_prem_split_resid(t):
-    """The premium-decomposition residual in policy year t; zero everywhere.
+    """The premium-decomposition residual in period t; zero everywhere.
 
     Two identities in one number, the larger in absolute value being returned:
     ``prem_pp = prem_to_av_pp + charge_from_prem_pp`` — every euro of premium is either saved
@@ -1762,7 +1788,7 @@ def check_prem_split():
 
 
 def check_cv_floor_resid(t):
-    """The surrender-value residual in policy year t: ``cv_pp - max(cv_tariff_pp, cv_floor_pp)``.
+    """The surrender-value residual in period t: ``cv_pp - max(cv_tariff_pp, cv_floor_pp)``.
 
     Zero everywhere by construction; what the companion :func:`check_cv_floor` adds is the
     one-sided assertion that the value never falls below the § 169 Abs. 3 floor however large
@@ -1815,21 +1841,21 @@ def check_annuity_conv():
 
 
 def check_annuity_guarantee_resid(t):
-    """The *Rentengarantiezeit* weighting residual in policy year t; zero everywhere.
+    """The *Rentengarantiezeit* weighting residual in period t; zero everywhere.
 
-    ``pols_annuity(t)`` less ``max(pols_if(t), 1{n < t <= n+m} x pols_annuitization(n))``,
+    ``pols_annuity(t)`` less ``max(pols_if(t), 1{n <= t < n+m} x pols_annuitization(n - 1))``,
     which is zero before the *Rentenbeginn*.  Stating the identity with the ``max`` is what
     makes it independent of the definition it checks: it holds because
-    ``pols_if(t) <= pols_annuitization(n)`` throughout the payout phase, so a model that
+    ``pols_if(t) <= pols_annuitization(n - 1)`` throughout the payout phase, so a model that
     weighted the guaranteed years by survivors would fail here at every ``t`` inside the
     window where a death has occurred.
     """
     mp = model_point()
     n = int(mp["aufschub_y"])
-    if t <= n:
+    if t < n:
         return pols_annuity(t)
-    guaranteed = (pols_annuitization(n)
-                  if t <= n + int(mp["rgz_years"]) else 0.0)
+    guaranteed = (pols_annuitization(n - 1)
+                  if t < n + int(mp["rgz_years"]) else 0.0)
     return pols_annuity(t) - max(pols_if(t), guaranteed)
 
 
@@ -1845,10 +1871,11 @@ def check_annuity_guarantee():
 
 
 def result_cf():
-    """Result table of cash flows and account balances, indexed by policy year t.
+    """Result table of cash flows and account balances, indexed by the 0-based period t.
 
-    The frame runs from the model point's first projected year — ``t = 1`` for new business,
-    ``t = duration_init + 1`` for an in-force point — to ``proj_len()``, contiguously.
+    The frame runs from the model point's first projected year — ``t = 0`` for new business,
+    ``t = duration_init`` for an in-force point — to ``proj_len() - 1``, contiguously;
+    ``proj_len()`` is the exclusive end, as in lifelib's ``range(proj_len())``.
 
     ``pols_if`` is the start-of-year count and the weight on the accumulation-phase cash flows
     of the same row; ``pols_annuity`` is the count the annuity instalment is paid on, which
@@ -1859,7 +1886,7 @@ def result_cf():
     those six are exactly what :func:`check_net_cf` reconciles.  ``liability_cf`` is ``net_cf``
     outgo-positive.
     """
-    ts = list(range(int(model_point()["duration_init"]) + 1, proj_len() + 1))
+    ts = list(range(int(model_point()["duration_init"]), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1889,7 +1916,7 @@ def result_pols():
     surrender rate, the premium and its decomposition, the three account balances and the
     surrender value with its two branches.  Nothing here is a cash flow.
     """
-    ts = list(range(int(model_point()["duration_init"]) + 1, proj_len() + 1))
+    ts = list(range(int(model_point()["duration_init"]), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

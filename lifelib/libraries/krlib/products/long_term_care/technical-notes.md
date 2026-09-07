@@ -138,15 +138,19 @@ reached about 100% in the life sector at August 2024 against 18.7% two years ear
   card in the file [S1] [S2]; the 90-day 보장개시일 lands on the grid boundary `t = 3`;
   the one-year 감액기간 lands on `t = 12`; and — the mechanic that forces the grid — the
   **간병연금 instalment is monthly** while its survival test is annual, so a model on an
-  annual grid cannot represent the twelve-month guarantee at all. `t` is the **policy
-  month**, `t = 0, 1, …, proj_len`; month `t` is the interval from `t` to `t + 1` months
-  after the 보험계약일.
-- **`proj_len()` is the last projected index, not a row count.** `proj_len = 12 ×
-  (term_age − issue_age)`, so **600** on the anchor cell and **601 rows** in
-  `result_cf()`. Month `t = proj_len` is the 90세 계약해당일 itself: it carries the
-  surviving in-force count, `pols_maturity` records the cover ending, and **every cash
-  flow on that row is zero** — 「이 상품은 순수보장성보험으로 보험계약 만기시 지급받는
-  금액(만기환급금)이 없습니다」 [S3].
+  annual grid cannot represent the twelve-month guarantee at all. **`t` is the policy
+  month and it is 0-based**: `t = 0` is the first projected month, `t = 0, 1, …, n − 1`
+  with `n = proj_len()`; month `t` is the interval from `t` to `t + 1` months after the
+  보험계약일; and the contractual policy year is the derived 1-based label
+  `y(t) = floor(t / 12) + 1`.
+- **`proj_len()` is the number of projected months, the frame's exclusive end — not the
+  last index.** `proj_len = 12 × (term_age − issue_age) + 1`, so **601** on the anchor cell
+  and **601 rows** in `result_cf()`, indexed `t = 0 … 600`; the frame is
+  `range(proj_len())` and the last index is `proj_len − 1`. The `+ 1` is the terminal row:
+  the 600 months of cover are `t = 0 … proj_len − 2`, and month `t = proj_len − 1` is the
+  90세 계약해당일 itself, which carries the surviving in-force count, `pols_maturity`
+  records the cover ending, and **every cash flow on that row is zero** — 「이 상품은
+  순수보장성보험으로 보험계약 만기시 지급받는 금액(만기환급금)이 없습니다」 [S3].
 - **The waiting period lands on a grid boundary.** The 장기요양상태 보장개시일 is
   「계약일(부활(효력회복)계약의 경우 부활(효력회복)일)부터 그 날을 포함하여 90일이 지난날의
   다음 날」 [S2]. On a monthly grid that is three whole months, `t = 3` **[std]**, and the
@@ -191,7 +195,7 @@ reached about 100% in the life sector at August 2024 against 18.7% two years ear
 - **Model points.** One policy at a time, projected on an expected (probability-weighted)
   basis. `Projection` is parameterized by `point_id`; no aggregation logic is specified
   here. **Nine** points are shipped and every one satisfies every `check_*()` cells.
-- **Termination.** Cover to the **90세 계약해당일**, `t = proj_len`. The decrements are
+- **Termination.** Cover to the **90세 계약해당일**, `t = proj_len − 1`. The decrements are
   death, lapse, the voided cover of the waiting-period window, and maturity — and **nothing
   else**. There is no benefit-driven termination: payment of the 진단급여금 extinguishes
   that benefit line and leaves the contract, the annuity and the dementia rider running
@@ -242,7 +246,7 @@ reached about 100% in the life sector at August 2024 against 18.7% two years ear
 | `uw_loading` | float — the 간편심사 premium multiplier | 1.0 (일반심사) |
 | `premium` (`P`) | KRW per month, office premium, **model-point input** | 5,600 **[std]** |
 
-Derived scalars on the anchor cell, all read off the model: `proj_len() = 600`,
+Derived scalars on the anchor cell, all read off the model: `proj_len() = 601`,
 `prem_period_mths() = 240`, `premium_mth_pp() = 5,600.0`, `pols_if_init() = 1.0`,
 `net_prem_ratio() = 0.7931662309087683`, `comm_init_pp() = 43,680.0` and
 `sub65_gradient() = 0.12221178050285361`.
@@ -295,7 +299,7 @@ one** in *Key sensitivities* below.
 | `pols_if(t)` (`l`) | `pols_act + pols_care` — total in force at the start of `t` | derived |
 | `pols_healthy_mid(t)`, `pols_light_mid(t)`, `pols_care_mid(t)` | The three counts after the month's certifications, before mortality | derived |
 | `pols_dem(t)` | In force and already paid the 치매진단급여금; a **first-event counter**, not a compartment | monthly recursion |
-| `av_pp(t)` (`AV`) | **계약자적립액** per policy | two-branch recursion |
+| `av_pp(t)` (`AV`) | **계약자적립액** per policy at the **start** of month `t` | two-branch recursion |
 | `cv_pp(t)` (`CV`) | **해약환급금** per policy paid on a lapse in month `t` | derived |
 | `age(t)` | Attained **만나이** = `x + floor(t / 12)` | annually |
 | `mort_rate(t)`, `mort_rate_light(t)`, `mort_rate_care(t)` | Annual mortality of the three compartments at `age(t)` | lookup / derived |
@@ -348,7 +352,7 @@ a 1·2등급 certification.
 보험계약대출 and no automatic premium loan** during the 납입기간 on the 미지급형 form,
 because there is no surrender value to lend against [REG-R25 제33조](#krlib-reg-r25) [REG-R28] — a missed
 premium really does lapse the contract at the end of the 14-day 납입최고. And there is **no
-만기환급금**: `claims(proj_len, "MATURITY")` is zero and the column exists only so that the
+만기환급금**: `claims(proj_len − 1, "MATURITY")` is zero and the column exists only so that the
 statement's shape matches the rest of the library.
 
 ---
@@ -828,10 +832,11 @@ with the risk cost.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | policy month, `t = 0, 1, …, n` where `n = proj_len()` |
+| `t` | — | policy month, **0-based**: `t = 0, 1, …, n − 1` where `n = proj_len()` |
+| `n` | `proj_len` | the **number** of projected months, the frame's exclusive end; the last index is `n − 1` and the maturity month is `t = n − 1` |
 | `x`, `age(t)` | `issue_age`, `age` | 만나이 at the 계약일; attained 만나이 `x + floor(t/12)` |
-| `y(t)` | `policy_year` | policy year, `floor(t/12) + 1` |
-| `n_Y`, `n_P` | `prem_period_years`, `prem_period_mths` | 납입기간 in years and in months, `n_P = 12 n_Y`. **`n` is the projection horizon and never the paying period** |
+| `y(t)` | `policy_year` | policy year, the derived 1-based label `floor(t/12) + 1` |
+| `n_Y`, `n_P` | `prem_period_years`, `prem_period_mths` | 납입기간 in years and in months, `n_P = 12 n_Y`. **`n` is the length of the projection frame — the horizon is `n − 1` months — and never the paying period** |
 | `P` | `premium_mth_pp` | level monthly office premium, `uw_loading × premium` |
 | `A_B` | `lump_amount` | 장기요양진단급여금 sum insured |
 | `A_1`, `A_2` | `annuity_high`, `annuity_low` | 간병연금 monthly amount at 1등급 / other grades in the gate |
@@ -867,8 +872,9 @@ frequency.**
 
 ### The four-compartment chain and its processing order
 
-For `t = 0, 1, …, n − 1`, with the state at the **start** of the month being `h(t)`,
-`l_L(t)`, `l_C(t)`:
+For `t = 0, 1, …, n − 2` — the months of cover; the terminal month `t = n − 1` is the
+maturity row and carries no cash flow — with the state at the **start** of the month being
+`h(t)`, `l_L(t)`, `l_C(t)`:
 
 **1. Start of month — premium, maintenance expense, renewal commission.**
 
@@ -933,9 +939,10 @@ distinction and not bookkeeping.
     l_C(t+1) = l_C_mid(t) × (1 − q_C(t))
     l(t+1)   = h(t+1) + l_L(t+1) + l_C(t+1)
 
-**7. Maturity** at `t = n`: `pols_maturity(n) = pols_if(n)`, paying nothing.
+**7. Maturity** on the frame's last row `t = n − 1`: `pols_maturity(n − 1) = pols_if(n − 1)`,
+paying nothing.
 
-`check_pols_roll_fwd()` asserts, over `t = 0 … n`,
+`check_pols_roll_fwd()` asserts, over `t = 0 … n − 1`,
 
     l(t) − l(t+1) = pols_death(t) + pols_lapse(t) + void(t) + pols_maturity(t)
 
@@ -992,9 +999,9 @@ Three properties of this ledger deserve to be in front of a reader.
   — `3 × q(108) = 1.0714` — and from **112** on the female one, so a cumulative product
   underflows to zero from there on and the ratio form divides by zero exactly where the tail
   of a 종신 variant of this liability would live.
-- **The cap and the maturity truncation bind jointly.** Nothing is paid at or after
-  `t = n`, so a life certified at 만나이 85 on a 90세만기 contract gets five years of
-  annuity and not ten. That is the **conservative reading** of a question no retrieved
+- **The cap and the maturity truncation bind jointly.** Nothing is paid on the maturity row
+  `t = n − 1` or after it, so a life certified at 만나이 85 on a 90세만기 contract gets five
+  years of annuity and not ten. That is the **conservative reading** of a question no retrieved
   document resolves **[std]**, and it materially understates the benefit for a late
   entrant.
 
@@ -1011,9 +1018,9 @@ that ran past the cap, that lost the twelve-month guarantee, or that used a rati
     net_prem_ratio()    = av_ratio_at(0) × n_P / prem_accum_factor(n_P)
 
     AV(t) = net_prem_ratio() × P × prem_accum_factor(t)             for t ≤ n_P
-          = av_ratio_at( (t − n_P) / (n − n_P) ) × P × n_P          for t > n_P
+          = av_ratio_at( (t − n_P) / (n − 1 − n_P) ) × P × n_P      for t > n_P
 
-    surr_chg_pp(t) = surr_chg_ratio × P × ( 1 − t / n_chg ),  n_chg = 12 min(7, n)
+    surr_chg_pp(t) = surr_chg_ratio × P × ( 1 − t / n_chg ),  n_chg = 12 min(7, n_Y)
                    = 0 for t ≥ n_chg
 
     CV(t) | mijigeup     = 0                for t < n_P ;  0.5 × AV(t) otherwise
@@ -1142,7 +1149,8 @@ are [unverified].
 `A_B` = ₩10,000,000; 간병연금 **on** at `A_1` = ₩500,000 / `A_2` = ₩300,000 a month with a
 12-month guarantee and a 120-month cap; 치매 rider **off**; 보장개시일 `W` = 3 months;
 감액기간 `G` = 12 months; `lapse_form = mujihae`; office premium `P` = ₩5,600 a month.
-`proj_len() = 12 × (90 − 40) = 600`, so `result_cf()` carries **601 rows**.
+`proj_len() = 12 × (90 − 40) + 1 = 601`, so `result_cf()` carries **601 rows**, indexed
+`t = 0 … 600`.
 
 ### Every assumption value the first rows use
 
@@ -1834,10 +1842,14 @@ stated so that it can be checked.
   below 65 and its sex ratio**, and `disclosed_inc_ratio_at` publishes the gap rather than
   hiding it. Substituting it as the model's incidence would multiply benefit outgo by
   roughly four and contradict the premium it was quoted alongside.
-- **`proj_len()` is the last index, not a row count.** `result_cf()` has **601** rows and
-  the last is the 90세 계약해당일: an in-force count of 0.2102 and **every cash flow zero**.
-  A loop to `range(proj_len())` silently drops the maturity row and breaks
-  `check_pols_roll_fwd()` at the last step.
+- **`proj_len()` is a row count, not the last index.** `result_cf()` has `proj_len() = 601`
+  rows indexed `t = 0 … 600`, and the last of them is the 90세 계약해당일: an in-force count
+  of 0.2102 and **every cash flow zero**. The frame is `range(proj_len())` and the maturity
+  row is `t = proj_len() − 1`, which is why the cash-flow cells guard on
+  `t >= proj_len() - 1` while the in-force counts guard on `t >= proj_len()`. Writing the
+  cash-flow guard as `t >= proj_len()` would put outgo on the maturity row; writing the
+  count guard as `t >= proj_len() - 1` would drop the row the roll-forward closes on and
+  break `check_pols_roll_fwd()` at the last step.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R10]: #krlib-long_term_care-r10

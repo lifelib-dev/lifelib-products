@@ -12,9 +12,11 @@ projecting model point 1::
     >>> Projection[1].result_state()       # the glide path and the two supports
     >>> Projection.point_id = 6            # the cell whose annuity is not commuted
 
-``t`` counts **plan years** from the valuation date, 1-based. ``proj_len()`` is the
-declared horizon, ``retirement_age - age(0)``, and the projection stops there: the plan
-is liquidated at the horizon and nothing this model projects happens after it.
+``t`` counts **plan years** from the valuation date, **0-based**: ``t = 0`` is the first
+projected plan year and the frame is ``t = 0 … proj_len() - 1``. ``proj_len()`` is the
+**number** of projected plan years — the declared horizon ``retirement_age - age(0)`` —
+and the projection stops there: the plan is liquidated in the last projected year and
+nothing this model projects happens after it.
 
 .. rubric:: Input data
 
@@ -56,22 +58,25 @@ technical notes use compact symbols instead. The mapping is:
 Notes symbol               Cells                               Meaning
 =========================  ==================================  ==========================
 (the row of the table)     model_point()                       The selected model point
-t                          (the cells argument)                Plan year, 1-based
-n                          proj_len()                          The declared horizon
+t                          (the cells argument)                Plan year index, 0-based
+n                          proj_len()                          Number of plan years projected
 k(t)                       years_to_horizon(t)                 Years to the horizon at BOY
 a(t)                       alloc_euro(t)                       Target euro share for year t
 1 - a(t)                   alloc_uc(t)                         Target UC share, from the file
 (profile)                  allocation_profile()                Which ladder of the grid
 x                          age_init()                          Attained age at t = 0
-x + t                      age(t)                              Attained age at the end of t
+x + t                      age(t)                              Attained age at the start of t
 duration_ifo               duration_ifo()                      Completed years at t = 0
-duration(t)                duration(t)                         Completed years since V(1)
+duration(t)                duration(t)                         Completed years at the BOY of t
+y(t) = duration(t) + 1     plan_year(t)                        Plan year of the plan, 1-based
 V                          premium_pp(t)                       Gross versement at BOY
 V_net                      prem_to_av_pp(t)                    Versement net of the loading
 load                       load_rate                           Entry loading, 2.50%
 m(t)                       switch_pp(t)                        Amount switched at the BOY
 arb(t)                     arbitrage_charge_pp(t)              Charge on the switch
 arb_rate                   arb_rate                            0.30% of the amount switched
+E_eu-(t)                   av_euro_pp_at(t, "BEF_REBAL")       Euro balance carried into t
+E_uc-(t)                   av_uc_pp_at(t, "BEF_REBAL")         UC balance carried into t
 E_eu(t)                    av_euro_pp_at(t, "BOY")             Euro balance after the BOY steps
 E_uc(t)                    av_uc_pp_at(t, "BOY")               UC balance after the BOY steps
 r_eu, r_uc                 return_euro, return_uc              Gross asset returns
@@ -79,28 +84,29 @@ c_eu, c_uc                 charge_euro, charge_uc              Management charge
 (gross return credited)    inv_income_pp(t)                    Investment return in year t
 (charges levied)           mgmt_charge_pp(t)                   Management charge in year t
 A(t)                       av_pp(t)                            Account value at EOY t
-A-(t) = A(t-1)             av_pp(t - 1)                        Value carried into year t
-(the steps)                av_pp_at(t, timing)                 BOY / EOY inside year t
+A-(t)                      av_pp_at(t, "BEF_REBAL")            Value carried into year t
+(the steps)                av_pp_at(t, timing)                 BEF_REBAL / BOY / EOY in year t
 l(t) x A(t)                av_at(t, timing)                    In-force weighted account
 g(t)                       death_floor_pp(t)                   Garantie plancher base
+g-(t)                      death_floor_pp_at(t, "BEF_REBAL")   Base carried into year t
 (cover in force)           floor_in_force(t)                   False from the 70th birthday
 max(A(t), g(t))            death_benefit_pp(t)                 Death benefit, floored
 q(t)                       mort_rate(t)                        Annual mortality rate
 w_e(t)                     early_release_rate(t)               Deblocage anticipe decrement
 w_r(t)                     transfer_out_rate(t)                Transfer-out decrement
-iota(t)                    transfer_indemnity_rate(t)          1% while duration < 5
-l(t-1)                     pols_if(t)                          In force at the START of year t
+iota(t)                    transfer_indemnity_rate(t)          1% while y(t) < 5
+l-(t)                      pols_if(t)                          In force at the START of year t
 l(t)                       pols_if_at(t, "AFT_DECR")           In force at the END of year t
 (intra-year l)             pols_if_at(t, timing)               BEF_DECR / BEF_RELEASE /
                                                                BEF_TRANSFER / AFT_DECR
 d_death(t)                 pols_death(t)                       Deaths in year t
 d_release(t)               pols_release(t)                     Early releases in year t
 d_transfer(t)              pols_transfer(t)                    Transfers out in year t
-l(n)                       pols_maturity(t)                    Survivors settling at t = n
+l(n-1)                     pols_maturity(t)                    Survivors settling at t = n - 1
 theta                      annuity_share()                     Share converted to a rente
 a_x                        annuity_factor()                    Conversion factor, undiscounted
-capital_leg                capital_leg_pp()                    (1 - theta) A(n)
-annuity_cap                annuity_cap_pp()                    theta A(n)
+capital_leg                capital_leg_pp()                    (1 - theta) A(n-1)
+annuity_cap                annuity_cap_pp()                    theta A(n-1)
 rente_gross                rente_gross_pp()                    annuity_cap / a_x
 rente_net                  rente_net_pp()                      After the frais d'arrerages
 c_arr                      arrear_charge_rate                  1.50% of each instalment
@@ -134,9 +140,9 @@ with the money, and it pays a transfer value that differs from the release amoun
 lapse, silently attaches the wrong payment formula to half the exits.
 
 ``pols_if(t)`` is the in force at the **start** of plan year ``t``, with
-``pols_if(1) = pols_if_init()``, and it is the weight on that same ``result_cf()`` row's
+``pols_if(0) = pols_if_init()``, and it is the weight on that same ``result_cf()`` row's
 cash flows. This is the library's settled convention, shared with ``MYGA_US_S``,
-``WP_UK_A`` and every other model in the four country libraries: divide a flow by its own
+``WP_UK_A`` and every other model in the country libraries: divide a flow by its own
 row's ``pols_if`` and you get a per-policy amount for the same period.
 
 **The end-of-year count was renamed.** The technical notes index the in-force probability
@@ -150,8 +156,8 @@ survives unchanged as ``pols_if_at(t, "AFT_DECR")``, in the house ``BEF_*`` / ``
 timing vocabulary of ``savings.CashValue_SE``, and :func:`result_state` publishes it as
 the ``pols_if_eoy`` column so that the notes' table can still be read off the model. The
 two series are one period apart: ``pols_if_at(t, "AFT_DECR") == pols_if(t + 1)``. No cash
-flow changed: the maturity settlement is taken at ``pols_if_at(n, "AFT_DECR")`` and the
-*versement* and the expense at ``pols_if(t)``, exactly the counts they were taken at
+flow changed: the maturity settlement is taken at ``pols_if_at(n - 1, "AFT_DECR")`` and
+the *versement* and the expense at ``pols_if(t)``, exactly the counts they were taken at
 before.
 
 ``switch_pp`` is signed, and the sign decides which balance bears the arbitrage charge,
@@ -181,7 +187,7 @@ are mutually exclusive by construction and only one of them is ever non-zero on 
 
 ::
 
-    k(t) = n - t + 1
+    k(t) = n - t
     a(t) = allocation_grid[allocation_profile, k(t)].euro_share
 
 The *équilibré* ladder is 0% for ``k > 10``, 20% for ``10 >= k > 5``, 50% for
@@ -204,19 +210,25 @@ conservative reading of both and keeps the model to two supports.
 
 ::
 
-    m(t)   = a(t) A(t-1) - av_euro_pp(t-1)
+    m(t)   = a(t) A-(t) - E_eu-(t)
     arb(t) = arb_rate |m(t)|
-    E_eu   = av_euro_pp(t-1) + m(t)          + a(t) V_net           (m >= 0)
-    E_uc   = av_uc_pp(t-1)   - m(t) - arb(t) + (1 - a(t)) V_net
+    E_eu   = E_eu-(t) + m(t)          + a(t) V_net                  (m >= 0)
+    E_uc   = E_uc-(t) - m(t) - arb(t) + (1 - a(t)) V_net
 
 with the roles of the two supports exchanged when ``m(t) < 0``. Two conventions, both
 **[std]** and both load-bearing.
 
+A trailing ``-`` marks a balance **carried into** year ``t``: the model point's opening
+state at ``t = 0`` and the previous year's closing balance at every later ``t``. That is
+the ``"BEF_REBAL"`` timing of :func:`av_euro_pp_at`, :func:`av_uc_pp_at`,
+:func:`av_pp_at` and :func:`death_floor_pp_at`, and it is the one place the frame's
+opening state enters. Nothing in this model is indexed at ``t = -1``.
+
 The arbitrage charge is taken from the **source** support, so the destination receives
 the full switch and, on a de-risking switch, the post-rebalancing euro share lands at or
-just above the regulatory minimum rather than just below it. On the anchor cell's year-8
-band crossing the BOY euro share is 50.04% against a 50% target, and taking the charge
-from the destination instead would put it under, at every crossing, by the charge.
+just above the regulatory minimum rather than just below it. On the anchor cell's band
+crossing at ``t = 7`` the BOY euro share is 50.04% against a 50% target, and taking the
+charge from the destination instead would put it under, at every crossing, by the charge.
 
 The two halves of that sentence come apart on a **reverse** switch, and the notes do not
 say which half wins. Where the euro support is the source, charging the source leaves the
@@ -230,19 +242,20 @@ nothing else.
 
 The *versement* is allocated **directly at the target mix** and bears no arbitrage
 charge: new money is not a switch. :func:`arbitrage_charge_pp` is therefore nil in a year
-where the account opens exactly on target even though a *versement* was paid — years 1
-and 2 of the anchor cell, where the *équilibré* grid asks for no euro support at all.
+where the account opens exactly on target even though a *versement* was paid — the first
+two years of the anchor cell, ``t = 0`` and ``t = 1``, where the *équilibré* grid asks
+for no euro support at all.
 
 The minimum binds **at the rebalancing date**, not continuously. Between dates the mix
-drifts with relative performance: the anchor cell is at 70.00% euro after its year-12
-rebalancing and 69.67% at the year end. Re-imposing the target continuously would invent
-a rebalancing frequency the annual grid does not have.
+drifts with relative performance: the anchor cell is at 70.00% euro after the rebalancing
+of its last year, ``t = 11``, and 69.67% at that year's end. Re-imposing the target
+continuously would invent a rebalancing frequency the annual grid does not have.
 
 .. rubric:: The garantie plancher is not a floor at gross premiums
 
 ::
 
-    g(t) = g(t-1) + V_net - arb(t) - mgmt_charge_pp(t)
+    g(t) = g-(t) + V_net - arb(t) - mgmt_charge_pp(t)
 
 *Versements* net of entry loading, less the management charges levied over the plan's
 life, less benefits already paid. That is **one of two contractual draftings in the
@@ -254,7 +267,7 @@ the technical notes carry the comparison. It follows that
 
 ::
 
-    A(t) - g(t) = [A(0) - g(0)] + sum of gross investment return credited to date
+    A(t) - g(t) = [A-(0) - g-(0)] + sum of gross investment return credited to date
 
 so the floor bites only where cumulative investment return is negative.
 :func:`check_floor_identity` asserts that, and it is the check that catches the wrong
@@ -272,11 +285,11 @@ taxed as life insurance and enters the inheritance-duty base in its entirety.
 
 .. rubric:: Settlement: a capital leg, and a rente that usually is not one
 
-At ``t = n`` the survivors settle. The capital leg bears **no exit charge**. The annuity
-leg is converted at :func:`annuity_factor`, charged the *frais d'arrérages*, and then
-tested against the €110 monthly *quittance* threshold — remembering that €110 is a
-**monthly** figure scaled by the months in the payment period, so an annual frequency
-tests against €1 320.
+At ``t = n - 1``, the last projected year, the survivors settle. The capital leg bears
+**no exit charge**. The annuity leg is converted at :func:`annuity_factor`, charged the
+*frais d'arrérages*, and then tested against the €110 monthly *quittance* threshold —
+remembering that €110 is a **monthly** figure scaled by the months in the payment period,
+so an annual frequency tests against €1 320.
 
 Commuting at the conversion basis returns the converted capital less the *arrérage*
 charge exactly::
@@ -303,7 +316,7 @@ would give the library two of them to keep in step.
 **Staged capital is settled at the horizon.** The *capital fractionné* option changes
 *when* the capital leg is paid, not how much: there is no exit charge, and the technical
 notes fix ``proj_len`` at the declared horizon. The model therefore records the whole
-capital leg at ``t = n``, publishes the instalment size as
+capital leg at ``t = n - 1``, publishes the instalment size as
 :func:`capital_instalment_pp`, and credits nothing to the unpaid balance — a **[std]**
 simplification that is exact on an undiscounted gross-cash-flow basis and is not exact
 for anything that discounts. A discounting layer consuming these flows needs the
@@ -451,7 +464,7 @@ def av_uc_init():
 
 
 def death_floor_init():
-    """g(0): the *garantie plancher* base carried into the projection.
+    """g-(0): the *garantie plancher* base carried into the projection.
 
     On the anchor cell it is €16 000 against a €16 600 balance, and the €600 gap is the
     investment return accumulated before the valuation date.  A cell whose accumulated
@@ -563,17 +576,18 @@ def mort_rate_flat():
 
 
 def pols_if_init():
-    """l(0): the in-force probability carried in; 1.0 on a single-policy model point."""
+    """l-(0): the in-force probability carried in; 1.0 on a single-policy model point."""
     return float(model_point()["pols_if_init"])
 
 
 def proj_len():
-    """n: the last projected plan year — the declared horizon.
+    """n: the **number** of projected plan years — the declared horizon.
 
-    ``retirement_age - age(0)``.  The plan is liquidated there and nothing this model
-    projects happens afterwards: no *versement* arrives, ``years_to_horizon`` does not go
-    negative, and a staged capital settlement is still recorded at ``t = n``.
-    :func:`check_horizon` asserts it.
+    ``retirement_age - age(0)``.  The frame is ``t = 0 … proj_len() - 1``, so ``n`` is a
+    row count and not a row label: the last projected year is ``t = n - 1``.  The plan is
+    liquidated there and nothing this model projects happens afterwards: no *versement*
+    arrives, ``years_to_horizon`` does not go negative, and a staged capital settlement is
+    still recorded at ``t = n - 1``.  :func:`check_horizon` asserts it.
     """
     n = retirement_age() - age_init()
     if n < 1:
@@ -582,31 +596,47 @@ def proj_len():
 
 
 def age(t):
-    """The attained age at the **end** of plan year t: ``x + t``.
+    """The attained age at the **start** of plan year t: ``x + t``.
 
-    The mortality rate for year ``t`` is read at ``age(t - 1)``, the age at the start of
-    the year, and the *garantie plancher* ceases when ``age(t)`` reaches 70.
+    The mortality rate for year ``t`` is read at ``age(t)``, the age the year opens with,
+    and the *garantie plancher* ceases when the member turns 70 — which on this annual
+    grid is tested at the end-of-year age ``age(t) + 1``.
     """
     return age_init() + t
 
 
 def duration(t):
-    """Completed years since the first *versement* at the end of plan year t.
+    """Completed years since the first *versement* at the **start** of plan year t.
 
-    ``duration_ifo + t``.  It keys the exit decrements and, through
-    :func:`transfer_indemnity_rate`, the five-year transfer indemnity window.
+    ``duration_ifo + t``, 0-based in lifelib's sense: nil through the plan's first year.
+    Through :func:`plan_year` it keys the exit decrements and the five-year transfer
+    indemnity window.
     """
     return duration_ifo() + t
+
+
+def plan_year(t):
+    """y(t): the plan's own year, 1-based — ``duration(t) + 1``.
+
+    The contractual label the *ancienneté* schedules are written in: the plan is in its
+    first year while ``duration(t) = 0``.  It is **not** the projection index ``t``, and
+    on an in-force cell it is ahead of it by ``duration_ifo``.
+
+    It is what ``exit_table.csv`` is keyed by — that file's ``duration`` column runs
+    ``1, 2, …`` and its first row is the plan's first year — and what the transfer
+    indemnity window is measured in.
+    """
+    return duration(t) + 1
 
 
 def years_to_horizon(t):
     """k(t): the years remaining to the declared horizon at the **start** of year t.
 
-    ``n - t + 1``, so ``k(1) = n`` and ``k(n) = 1``.  Floored at zero rather than
+    ``n - t``, so ``k(0) = n`` and ``k(n - 1) = 1``.  Floored at zero rather than
     allowed to go negative, because a plan does not run past its own horizon and a
     negative key into the glide path is a symptom rather than a value.
     """
-    return max(0, proj_len() - t + 1)
+    return max(0, proj_len() - t)
 
 
 def alloc_euro(t):
@@ -645,7 +675,7 @@ def premium_pp(t):
     contributions, and from 1 January 2026 contributions after the holder's 70th birthday
     stop being deductible in any case.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     return premium_init()
 
@@ -665,8 +695,9 @@ def prem_to_av_pp(t):
 def switch_pp(t):
     """m(t): the gross amount switched between supports at the BOY rebalancing.
 
-    ``a(t) A(t-1) - av_euro_pp(t-1)``: what it takes to bring the balance carried into
-    the year onto the year's target mix.  **Signed** — positive on the ordinary
+    ``a(t) A-(t) - E_eu-(t)``: what it takes to bring the balance carried into the year
+    — the model point's opening state at ``t = 0``, last year's closing balance
+    afterwards — onto the year's target mix.  **Signed** — positive on the ordinary
     de-risking switch from UC to euro, negative if the euro support has run above target
     — and the sign decides which support bears :func:`arbitrage_charge_pp`.
 
@@ -675,7 +706,8 @@ def switch_pp(t):
     which is why a year that opens exactly on target carries no arbitrage charge however
     large the contribution.
     """
-    return alloc_euro(t) * av_pp(t - 1) - av_euro_pp(t - 1)
+    return (alloc_euro(t) * av_pp_at(t, "BEF_REBAL")
+            - av_euro_pp_at(t, "BEF_REBAL"))
 
 
 def arbitrage_charge_pp(t):
@@ -692,6 +724,13 @@ def arbitrage_charge_pp(t):
 
 def av_euro_pp_at(t, timing):
     """The per-policy euro-support balance at a point inside plan year t.
+
+    ``"BEF_REBAL"``
+        the balance **carried into** the year, before the rebalancing and
+        before the year's *versement*: :func:`av_euro_init` in the first
+        projected year, ``av_euro_pp(t - 1)`` afterwards.  This is where
+        the frame's opening state enters, so that nothing is indexed at
+        ``t = -1``.
 
     ``"BOY"``
         after the rebalancing and the allocation of the year's *versement*.
@@ -713,9 +752,14 @@ def av_euro_pp_at(t, timing):
     clears that comfortably, so the euro support does rise every year; at a credited rate
     of 0% it would fall by the 0.70% charge.
     """
+    if timing == "BEF_REBAL":
+        if t <= 0:
+            return av_euro_init()
+        return av_euro_pp(t - 1)
     if timing == "BOY":
         m = switch_pp(t)
-        boy = av_euro_pp(t - 1) + m + alloc_euro(t) * prem_to_av_pp(t)
+        boy = (av_euro_pp_at(t, "BEF_REBAL") + m
+               + alloc_euro(t) * prem_to_av_pp(t))
         if m < 0.0:
             boy -= arbitrage_charge_pp(t)
         return boy
@@ -728,16 +772,23 @@ def av_euro_pp_at(t, timing):
 def av_uc_pp_at(t, timing):
     """The per-policy *unités de compte* balance at a point inside plan year t.
 
-    Same two timings as :func:`av_euro_pp_at`, and the mirror image of it: the UC bucket
+    Same three timings as :func:`av_euro_pp_at`, and the mirror image of it: the UC bucket
     bears the arbitrage charge on the ordinary de-risking switch, where it is the source.
+    ``"BEF_REBAL"`` is :func:`av_uc_init` in the first projected year and
+    ``av_uc_pp(t - 1)`` afterwards.
 
     There is no guarantee on this bucket at all.  The insurer commits to the **number**
     of units, not to their value, and ``return_uc`` is stated net of the fund-level
     charges inside the units, which are large relative to the wrapper charge.
     """
+    if timing == "BEF_REBAL":
+        if t <= 0:
+            return av_uc_init()
+        return av_uc_pp(t - 1)
     if timing == "BOY":
         m = switch_pp(t)
-        boy = av_uc_pp(t - 1) - m + alloc_uc(t) * prem_to_av_pp(t)
+        boy = (av_uc_pp_at(t, "BEF_REBAL") - m
+               + alloc_uc(t) * prem_to_av_pp(t))
         if m >= 0.0:
             boy -= arbitrage_charge_pp(t)
         return boy
@@ -750,25 +801,29 @@ def av_uc_pp_at(t, timing):
 def av_pp_at(t, timing):
     """A(t) at a point inside plan year t: the two supports added together.
 
-    ``"BOY"`` is the balance the year invests and ``"EOY"`` the balance the year's
-    decrements are valued on.  The BOY split is what
-    :func:`check_euro_share_min` measures the regulatory minimum against, because the
-    minimum binds at the rebalancing date and not continuously.
+    ``"BEF_REBAL"`` is the balance ``A-(t)`` carried into the year, ``"BOY"`` the balance
+    the year invests and ``"EOY"`` the balance the year's decrements are valued on.  The
+    BOY split is what :func:`check_euro_share_min` measures the regulatory minimum
+    against, because the minimum binds at the rebalancing date and not continuously.
     """
     return av_euro_pp_at(t, timing) + av_uc_pp_at(t, timing)
 
 
 def av_euro_pp(t):
-    """The per-policy euro-support balance at the end of plan year t."""
-    if t <= 0:
-        return av_euro_init()
+    """The per-policy euro-support balance at the end of plan year t.
+
+    The balance the year *opens* with is ``av_euro_pp_at(t, "BEF_REBAL")``, which is
+    :func:`av_euro_init` at ``t = 0``.
+    """
     return av_euro_pp_at(t, "EOY")
 
 
 def av_uc_pp(t):
-    """The per-policy *unités de compte* balance at the end of plan year t."""
-    if t <= 0:
-        return av_uc_init()
+    """The per-policy *unités de compte* balance at the end of plan year t.
+
+    The balance the year *opens* with is ``av_uc_pp_at(t, "BEF_REBAL")``, which is
+    :func:`av_uc_init` at ``t = 0``.
+    """
     return av_uc_pp_at(t, "EOY")
 
 
@@ -780,9 +835,10 @@ def av_pp(t):
     claims column by ``pols_if`` again understates every benefit by the square of the
     survival factor, which is the quietest way to get this product wrong.
     :func:`av_at` is the in-force weighted quantity where one is wanted.
+
+    The balance the year *opens* with is ``av_pp_at(t, "BEF_REBAL")``, which at ``t = 0``
+    is the model point's opening state ``av_euro_init() + av_uc_init()``.
     """
-    if t <= 0:
-        return av_euro_init() + av_uc_init()
     return av_pp_at(t, "EOY")
 
 
@@ -830,10 +886,33 @@ def mgmt_charge_pp(t):
             * charge_uc)                                             # noqa: F821
 
 
+def death_floor_pp_at(t, timing):
+    """The *garantie plancher* base at a point inside plan year t.
+
+    ``"BEF_REBAL"``
+        the base ``g-(t)`` **carried into** the year: :func:`death_floor_init`
+        in the first projected year, ``death_floor_pp(t - 1)`` afterwards.
+        This is where the frame's opening base enters, so that nothing is
+        indexed at ``t = -1``.
+
+    ``"EOY"``
+        the base after the year's *versement* net of loading and the year's
+        charges; the same number as :func:`death_floor_pp`.
+    """
+    if timing == "BEF_REBAL":
+        if t <= 0:
+            return death_floor_init()
+        return death_floor_pp(t - 1)
+    if timing == "EOY":
+        return (death_floor_pp_at(t, "BEF_REBAL") + prem_to_av_pp(t)
+                - arbitrage_charge_pp(t) - mgmt_charge_pp(t))
+    raise ValueError("invalid timing")
+
+
 def death_floor_pp(t):
     """g(t): the *garantie plancher* base at the end of plan year t.
 
-    ``g(t-1) + V_net - arb(t) - mgmt_charge_pp(t)``: *versements* net of entry loading,
+    ``g-(t) + V_net - arb(t) - mgmt_charge_pp(t)``: *versements* net of entry loading,
     less the charges levied over the plan's life.  **Not a floor at gross premiums** —
     one contract says so expressly — and not a floor at the account value either.  It is
     the anchor contract's drafting; a second contract in the sample adds the euro fund's
@@ -844,23 +923,25 @@ def death_floor_pp(t):
     and the €762 245 cap to it.  The recursion itself keeps running past both, because
     the cover can be reinstated by a model point that carries the flag while the base
     cannot be reconstructed once it has stopped being accumulated.
+
+    The base the year *opens* with is ``death_floor_pp_at(t, "BEF_REBAL")``, which at
+    ``t = 0`` is :func:`death_floor_init`.
     """
-    if t <= 0:
-        return death_floor_init()
-    return (death_floor_pp(t - 1) + prem_to_av_pp(t)
-            - arbitrage_charge_pp(t) - mgmt_charge_pp(t))
+    return death_floor_pp_at(t, "EOY")
 
 
 def floor_in_force(t):
     """Whether the *garantie plancher* covers a death in plan year t.
 
     The cell must carry the cover, and the member must still be under 70 at the end of
-    the year: the guarantee **ceases at the 70th birthday**.  That is the same birthday
+    the year — the year opens at ``age(t)`` and closes at ``age(t) + 1``: the guarantee
+    **ceases at the 70th birthday**.  That is the same birthday
     at which a PER death benefit stops being taxed as life insurance and enters the
     inheritance-duty base in its entirety, and from 2026 the same one at which
     contributions stop being deductible — one cliff edge, three consequences.
     """
-    return bool(death_floor_flag() and age(t) < floor_cease_age)     # noqa: F821
+    return bool(death_floor_flag()
+                and age(t) + 1 < floor_cease_age)                    # noqa: F821
 
 
 def death_benefit_pp(t):
@@ -879,7 +960,7 @@ def mort_rate(t):
     """q(t): the annual mortality rate applied in plan year t.
 
     On a ``flat`` cell the model point's own placeholder; on a ``table`` cell the shipped
-    **[std]** proxy at ``age(t - 1)`` — the attained age at the **start** of the year —
+    **[std]** proxy at ``age(t)`` — the attained age at the **start** of the year —
     times ``mort_be_factor``.
 
     Both are placeholders.  TH 00-02 and TF 00-02 govern the death benefit during
@@ -888,7 +969,7 @@ def mort_rate(t):
     """
     if mort_basis() == "flat":
         return mort_rate_flat()
-    x = min(age(t - 1), omega_age)                                   # noqa: F821
+    x = min(age(t), omega_age)                                       # noqa: F821
     return min(1.0, float(data.mort_table().loc[                     # noqa: F821
         (sex(), x), "mort_rate"]) * mort_be_factor)                  # noqa: F821
 
@@ -905,11 +986,12 @@ def early_release_rate(t):
     Only the last of the seven cases is discretionary and none of them responds to
     investment performance, so a dynamic moneyness multiplier would be a category error
     on this decrement.  It is read from ``exit_table.csv`` at (``compartment``,
-    ``duration``), and compartment 3 carries a lower rate because the main-residence
-    limb is closed to it.
+    ``duration``) — a 1-based *ancienneté* label, so the key is :func:`plan_year` and not
+    the 0-based :func:`duration` — and compartment 3 carries a lower rate because the
+    main-residence limb is closed to it.
     """
     tbl = data.exit_table().loc[compartment()]                       # noqa: F821
-    d = max(1, min(duration(t), int(tbl.index.max())))
+    d = max(1, min(plan_year(t), int(tbl.index.max())))
     return float(tbl.loc[d, "early_release_rate"])
 
 
@@ -932,7 +1014,7 @@ def transfer_out_rate(t):
     calibration that spans one would have to rescale.
     """
     tbl = data.exit_table().loc[compartment()]                       # noqa: F821
-    d = max(1, min(duration(t), int(tbl.index.max())))
+    d = max(1, min(plan_year(t), int(tbl.index.max())))
     return float(tbl.loc[d, "transfer_out_rate"])
 
 
@@ -941,15 +1023,16 @@ def transfer_indemnity_rate(t):
 
     The fee "ne peuvent excéder 1 % des droits acquis" and is nil **five years after the
     first *versement* in the plan** — not five years after the projection starts.  That
-    is what :func:`duration` is for, and the anchor cell shows the difference: it carries
-    ``duration_ifo = 2``, so its window closes at the end of projected year 2.
+    is what :func:`plan_year` is for, and the anchor cell shows the difference: it carries
+    ``duration_ifo = 2``, so it is already in its third plan year at ``t = 0`` and the
+    window covers only ``t = 0`` and ``t = 1``.
 
     The separate 15% reduction of euro-denominated transfer values, available where the
     transfer value exceeds the asset share backing it, is **off** in the base run: it is
     a management action conditional on a market state the base scenario does not produce,
     and in a rising-rate scenario it dominates this 1% by an order of magnitude.
     """
-    if duration(t) < transfer_indemnity_years:                       # noqa: F821
+    if plan_year(t) < transfer_indemnity_years:                      # noqa: F821
         return transfer_indemnity                                    # noqa: F821
     return 0.0
 
@@ -957,7 +1040,7 @@ def transfer_indemnity_rate(t):
 def pols_if(t):
     """The in-force probability at the **start** of plan year t, before any decrement.
 
-    ``pols_if(1) = pols_if_init()``, and this is the weight on plan year ``t``'s own cash
+    ``pols_if(0) = pols_if_init()``, and this is the weight on plan year ``t``'s own cash
     flows — the *versement*, the expense, and the exposure every decrement of the year is
     taken against.  It is the library's settled convention: ``pols_if(t)`` is the count
     the row opens with, so a ``result_cf()`` flow divided by that row's ``pols_if``
@@ -967,7 +1050,7 @@ def pols_if(t):
     further on.  It is :func:`pols_if_at` at ``"AFT_DECR"``; see the Space docstring on
     why it no longer carries this name.
     """
-    if t <= 1:
+    if t <= 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
@@ -1026,14 +1109,14 @@ def pols_transfer(t):
 
 
 def pols_maturity(t):
-    """l(n): the survivors settling at the declared horizon; nil in every other year.
+    """l(n-1): the survivors settling at the declared horizon; nil in every other year.
 
-    ``pols_if_at(n, "AFT_DECR")`` — the count the final plan year **ends** with, after
-    that year's own decrements, not the count it opened with.  A real contractual event
-    rather than a modelling truncation: the plan reaches its L. 224-1 maturity and the
-    rights are liquidated, so the survivors are paid.
+    ``pols_if_at(n - 1, "AFT_DECR")`` — the count the final plan year, ``t = n - 1``,
+    **ends** with, after that year's own decrements, not the count it opened with.  A real
+    contractual event rather than a modelling truncation: the plan reaches its L. 224-1
+    maturity and the rights are liquidated, so the survivors are paid.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "AFT_DECR")
 
@@ -1059,28 +1142,29 @@ def annuity_factor():
 
 
 def capital_leg_pp():
-    """The capital settled at the horizon, per surviving policy: ``(1 - theta) A(n)``.
+    """The capital settled at the horizon, per surviving policy: ``(1 - theta) A(n-1)``.
 
     **No exit charge.**  Every sampled contract settles capital at 0%, so this is the
-    account value itself and not a surrender value.
+    account value itself and not a surrender value.  ``A(n-1)`` is the account value at
+    the end of the last projected year.
     """
-    return (1.0 - annuity_share()) * av_pp(proj_len())
+    return (1.0 - annuity_share()) * av_pp(proj_len() - 1)
 
 
 def capital_instalment_pp():
     """The size of one instalment of the capital leg under a *fractionné* settlement.
 
     ``capital_leg_pp() / capital_instalments()``.  Published rather than paid: the model
-    records the whole capital leg at ``t = n``, because the option changes *when* the leg
-    is paid and not how much, and the technical notes fix ``proj_len`` at the horizon.
+    records the whole capital leg at ``t = n - 1``, because the option changes *when* the
+    leg is paid and not how much, and the technical notes fix ``proj_len`` at the horizon.
     See the Space docstring for what that simplification costs.
     """
     return capital_leg_pp() / capital_instalments()
 
 
 def annuity_cap_pp():
-    """The capital converted to a *rente viagère*, per surviving policy: ``theta A(n)``."""
-    return annuity_share() * av_pp(proj_len())
+    """The capital converted to a *rente viagère*, per policy: ``theta A(n-1)``."""
+    return annuity_share() * av_pp(proj_len() - 1)
 
 
 def rente_gross_pp():
@@ -1167,8 +1251,8 @@ def claim_pp(t, kind):
         itself afterwards.
 
     ``"MATURITY"``
-        the capital leg plus any commutation lump sum, at ``t = n`` only.
-        Where the annuity is *not* commuted its capital leaves as
+        the capital leg plus any commutation lump sum, at ``t = n - 1``
+        only.  Where the annuity is *not* commuted its capital leaves as
         :func:`annuity_conversion` instead, so the two never overlap.
     """
     if kind == "DEATH":
@@ -1178,7 +1262,7 @@ def claim_pp(t, kind):
     if kind == "TRANSFER":
         return av_pp(t) * (1.0 - transfer_indemnity_rate(t))
     if kind == "MATURITY":
-        if t != proj_len():
+        if t != proj_len() - 1:
             return 0.0
         return capital_leg_pp() + commuted_pp()
     raise ValueError("invalid kind")
@@ -1209,16 +1293,16 @@ def claims(t, kind=None):
 def annuity_conversion(t):
     """The capital converted to a *rente* and handed to ``Rente_FR_S`` in plan year t.
 
-    Non-zero at ``t = n`` only, and only on a cell whose annuity is not commuted.  It is
-    an **outgo** of this model: the money leaves the accumulation projection, and a
+    Non-zero at ``t = n - 1`` only, and only on a cell whose annuity is not commuted.  It
+    is an **outgo** of this model: the money leaves the accumulation projection, and a
     reader who nets it out would be double-counting the annuity against itself.
     """
     return annuity_conversion_pp() * pols_maturity(t)
 
 
 def inflation_factor(t):
-    """The expense inflation factor in plan year t: ``(1 + pi)^(t-1)`` at 1.80% **[std]**."""
-    return (1.0 + inflation_rate) ** (t - 1)                         # noqa: F821
+    """The expense inflation factor in plan year t: ``(1 + pi)^t`` at 1.80% **[std]**."""
+    return (1.0 + inflation_rate) ** t                               # noqa: F821
 
 
 def premiums(t):
@@ -1262,7 +1346,7 @@ def net_cf(t):
 def check_pols_roll_fwd_resid(t):
     """The in-force roll-forward residual in plan year t; zero everywhere.
 
-    ``l(t-1) - d_death(t) - d_release(t) - d_transfer(t) - l(t)``, which in cells names is
+    ``l-(t) - d_death(t) - d_release(t) - d_transfer(t) - l(t)``, which in cells names is
     ``pols_if(t)`` less the three decrement flows less ``pols_if_at(t, "AFT_DECR")``.
     Rebuilt from the three decrement flows rather than from the chain of survival factors
     that defines the timings, so an exit counted twice — the classic error when two
@@ -1277,13 +1361,13 @@ def check_pols_roll_fwd():
     """True when the in-force roll-forward closes in every projected year."""
     return bool(all(
         abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol * max(pols_if_init(), 1.0)  # noqa: F821
-        for t in range(1, proj_len() + 1)))
+        for t in range(proj_len())))
 
 
 def check_av_roll_fwd_resid(t):
     """The account value roll-forward residual in plan year t; zero everywhere.
 
-    ``A(t) - [A(t-1) + V_net - arb(t) + inv_income_pp(t) - mgmt_charge_pp(t)]``.
+    ``A(t) - [A-(t) + V_net - arb(t) + inv_income_pp(t) - mgmt_charge_pp(t)]``.
 
     This is a **conservation** statement, not the recursion restated: the switch does not
     appear in it, because a switch moves money between the two supports rather than into
@@ -1294,7 +1378,8 @@ def check_av_roll_fwd_resid(t):
     a different balance from the one it is taken off, all break it — and all of them
     leave every printed number looking plausible.
     """
-    built = (av_pp(t - 1) + prem_to_av_pp(t) - arbitrage_charge_pp(t)
+    built = (av_pp_at(t, "BEF_REBAL") + prem_to_av_pp(t)
+             - arbitrage_charge_pp(t)
              + inv_income_pp(t) - mgmt_charge_pp(t))
     return av_pp(t) - built
 
@@ -1302,13 +1387,13 @@ def check_av_roll_fwd_resid(t):
 def check_av_roll_fwd():
     """True when the account value roll-forward closes in every projected year."""
     return bool(all(abs(check_av_roll_fwd_resid(t)) <= 1e-8
-                    for t in range(1, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_floor_identity_resid(t):
     """The *garantie plancher* identity residual in plan year t; zero everywhere.
 
-    ``[A(t) - g(t)] - [A(t-1) - g(t-1)] - inv_income_pp(t)``: the gap between the account
+    ``[A(t) - g(t)] - [A-(t) - g-(t)] - inv_income_pp(t)``: the gap between the account
     value and the guarantee base widens by the gross investment return credited and by
     nothing else, because the *versement* net of loading, the arbitrage charge and the
     management charge all enter both sides.
@@ -1322,13 +1407,14 @@ def check_floor_identity_resid(t):
     first year in which it is wrong.
     """
     return ((av_pp(t) - death_floor_pp(t))
-            - (av_pp(t - 1) - death_floor_pp(t - 1)) - inv_income_pp(t))
+            - (av_pp_at(t, "BEF_REBAL")
+               - death_floor_pp_at(t, "BEF_REBAL")) - inv_income_pp(t))
 
 
 def check_floor_identity():
     """True when the *garantie plancher* identity closes in every projected year."""
     return bool(all(abs(check_floor_identity_resid(t)) <= 1e-8
-                    for t in range(1, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_euro_share_min_resid(t):
@@ -1343,8 +1429,9 @@ def check_euro_share_min_resid(t):
     Note where it is measured.  The minimum binds at the **rebalancing date**; between
     dates the mix drifts with relative performance, and re-imposing the target at the
     year end would invent a rebalancing frequency the annual grid does not have.  The
-    anchor cell is at 70.00% euro after its year-12 rebalancing and 69.67% at the year
-    end, and only the first of those two numbers is a compliance statement.
+    anchor cell is at 70.00% euro after the rebalancing of its last year, ``t = 11``, and
+    69.67% at that year's end, and only the first of those two numbers is a compliance
+    statement.
     """
     return av_euro_pp_at(t, "BOY") - alloc_euro(t) * av_pp_at(t, "BOY")
 
@@ -1375,7 +1462,7 @@ def check_euro_share_min():
     """
     return bool(all(
         check_euro_share_min_resid(t) >= euro_share_min_bound(t) - 1e-8
-        for t in range(1, proj_len() + 1)))
+        for t in range(proj_len())))
 
 
 def check_glide_path_closes():
@@ -1386,7 +1473,7 @@ def check_glide_path_closes():
     not close would silently invest a fraction of each *versement* nowhere, or twice.
     """
     return bool(all(abs(alloc_euro(t) + alloc_uc(t) - 1.0) <= 1e-12
-                    for t in range(1, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_commutation_identity():
@@ -1408,19 +1495,21 @@ def check_horizon():
     """True when the projection stops at the declared horizon.
 
     No *versement* arrives after settlement, ``years_to_horizon`` does not go negative,
-    and the maturity claim falls in exactly one year.  A plan run past its own horizon
-    keeps compounding a balance that has already been paid out, and every number after
-    the horizon then looks like a projection rather than like the error it is.
+    and the maturity claim falls in exactly one year — the last one, ``t = n - 1``.  Both
+    probes are taken at ``t = n``, the first index past the frame.  A plan run past its
+    own horizon keeps compounding a balance that has already been paid out, and every
+    number after the horizon then looks like a projection rather than like the error it
+    is.
     """
     n = proj_len()
-    if premium_pp(n + 1) != 0.0 or years_to_horizon(n + 1) != 0:
+    if premium_pp(n) != 0.0 or years_to_horizon(n) != 0:
         return False
-    maturity_years = [t for t in range(1, n + 1) if pols_maturity(t) > 0.0]
-    return bool(maturity_years == [n])
+    maturity_years = [t for t in range(n) if pols_maturity(t) > 0.0]
+    return bool(maturity_years == [n - 1])
 
 
 def result_cf():
-    """Result table of cash flows, indexed by plan year t.
+    """Result table of cash flows, indexed by plan year ``t = 0 … proj_len() - 1``.
 
     ``pols_if`` is the in force at the **start** of the year, which is the weight the
     flows on that same row carry: dividing a flow by the row's ``pols_if`` returns a
@@ -1433,7 +1522,7 @@ def result_cf():
     part of ``net_cf``.  Multiplying it by ``pols_if`` and comparing that to a claims
     column is the mistake this layout is arranged to make visible.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))                                     # t = 0 .. n - 1
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1453,7 +1542,7 @@ def result_cf():
 
 
 def result_state():
-    """Result table of the glide path and the two supports, indexed by plan year t.
+    """The glide path and the two supports, indexed by ``t = 0 … proj_len() - 1``.
 
     The technical notes' worked-example table: years to horizon, the target euro share,
     the *versement* net of loading, the arbitrage charge, the two support balances, the
@@ -1466,7 +1555,7 @@ def result_state():
     one period apart: ``result_state()["pols_if_eoy"].loc[t]`` equals
     ``result_cf()["pols_if"].loc[t + 1]``.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))                                     # t = 0 .. n - 1
     return pd.DataFrame(                                             # noqa: F821
         {
             "years_to_horizon": [years_to_horizon(t) for t in ts],
@@ -1491,11 +1580,13 @@ def result_settlement():
     capital converted, the gross and net *rente*, its monthly equivalent, the commutation
     test and its outcome, and the two mutually exclusive ways the annuity leg leaves —
     ``commuted_pp`` if the test passes and ``annuity_conversion_pp`` if it does not.
+
+    Everything here is read at the **last projected year**, ``t_last = proj_len() - 1``.
     """
-    n = proj_len()
+    t_last = proj_len() - 1
     return pd.Series(                                                # noqa: F821
         {
-            "av_pp": av_pp(n),
+            "av_pp": av_pp(t_last),
             "annuity_factor": annuity_factor(),
             "annuity_share": annuity_share(),
             "capital_leg_pp": capital_leg_pp(),
@@ -1507,8 +1598,8 @@ def result_settlement():
             "is_commuted": float(is_commuted()),
             "commuted_pp": commuted_pp(),
             "annuity_conversion_pp": annuity_conversion_pp(),
-            "death_floor_pp": death_floor_pp(n),
-            "pols_if_eoy": pols_if_at(n, "AFT_DECR"),
+            "death_floor_pp": death_floor_pp(t_last),
+            "pols_if_eoy": pols_if_at(t_last, "AFT_DECR"),
         },
         name="settlement",
     )

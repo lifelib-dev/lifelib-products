@@ -11,8 +11,11 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 3            # or switch the default
 
-``t`` counts **policy years**, 1-based: ``t = 1`` is the first policy year and
-``t = proj_len()`` the last. On the representative 순수보장형 there is nothing after it —
+``t`` counts **policy years** and is **0-based**: ``t = 0`` is the first policy year, period
+``t`` runs from time ``t`` to time ``t + 1``, the contractual policy year is the derived
+1-based label ``t + 1``, and ``proj_len()`` is the *number* of projected periods, so the
+frame is ``t = 0, 1, ..., proj_len() - 1`` — lifelib's own ``for t in range(proj_len())``.
+On the representative 순수보장형 there is nothing after it —
 no 만기보험금, no 해약환급금 at any duration, no run-off and no tail state of any kind
 [S1] [S2 제33조제2항] [S12]. On the 만기환급형 variant the last year pays 100% of the
 premiums paid and the contract ends there [S1] [S12].
@@ -86,9 +89,10 @@ use compact actuarial symbols instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ============================
 (row label)                model_point()                   The selected model point row
-t                          (the index of result_cf)        Policy year, 1-based
+t                          (the index of result_cf)        Period index, 0-based
+t + 1                      (derived)                       Contractual policy year label
 x                          age_at_entry()                  가입나이, 보험나이
-x + t - 1                  age(t)                          Attained 보험나이 in year t
+x + t                      age(t)                          Attained 보험나이 at time t
 (none)                     sex()                           Rating factor, M or F
 (none)                     renewal_type()                  gaengsin or bi_gaengsin
 (none)                     rate_class()                    표준체 / 비흡연자 / 건강체 ...
@@ -96,8 +100,9 @@ x + t - 1                  age(t)                          Attained 보험나이
 n                          policy_term()                   보험기간, in years
 n_p                        pay_term()                      납입기간, in years
 w_r                        renew_ceiling()                 보험나이 renewal stops
-N                          horizon_ceiling()               Years from entry to w_r
-t = 1..N                   proj_len()                      Last projected policy year
+(horizon)                  horizon_ceiling()               Years from entry to w_r
+N                          proj_len()                      Number of projected periods;
+                                                           the frame is t = 0..N-1
 (none)                     contract_boundary()             ceiling or current_term
 k                          term_index(t)                   Renewal index, 1 in the first
 x_k                        term_start_age(k)               보험나이 at cycle k start
@@ -116,15 +121,15 @@ P_a(k)                     prem_pp(t)                      Annualized premium, 1
 (table)                    acc_mort_rate_at_age(x)         예정 재해사망률 at an age
 (class)                    class_mort_ratio()              Rate-class mortality ratio
 (class)                    class_prem_ratio()              Rate-class premium ratio
-(basis)                    mort_rate_base(t)               Class table rate in year t
+(basis)                    mort_rate_base(t)               Class table rate in period t
 (margin removal)           mort_be_factor                  Best-estimate factor, 0.85
-q(t)                       mort_rate(t)                    Death decrement in year t
+q(t)                       mort_rate(t)                    Death decrement in period t
 a_q(t)                     acc_mort_share(t)               Accidental share of q(t)
 w(t)                       lapse_rate(t)                   Ordinary lapse rate
 d(t)                       renewal_decline_rate(t)         Renewal-decline rate
 d_0                        renewal_decline_base            Flat decline rate, 20%
 beta, d_max                renewal_decline_beta, _max      Decline elasticity module
-l(t)                       pols_if(t)                      In force at start of year t
+l(t)                       pols_if(t)                      In force at time t, l(0) = 1
 (within-year)              pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / ...
 D(t)                       pols_death(t)                   Expected death claims
 (none)                     pols_lapse(t)                   Ordinary lapses
@@ -168,7 +173,7 @@ averages :func:`mort_rate_at_age`, which reads the table unadjusted. Feeding the
 best-estimate rate into the premium extension would move a premium scale by an assumption
 that has nothing to do with pricing.
 
-``P_m(k)`` is indexed by the *renewal cycle* in the notes and by the policy year here.
+``P_m(k)`` is indexed by the *renewal cycle* in the notes and by the period index here.
 :func:`premium_mth_pp` takes ``t`` and resolves the cycle through :func:`term_index`,
 which keeps every cash flow line indexed the same way. The premium is nonetheless level
 within a 보험기간, and :func:`check_prem_level` asserts it.
@@ -192,7 +197,7 @@ Korean answer is mixed:
   적용하지 않고, 보험료를 계속 납입하여야 합니다」 [S6]. A disabled life resumes paying.
   This is a material cash-flow rule with no ``jplib`` counterpart, and it is the sharpest
   single piece of evidence that a Korean renewal really is a fresh contract.
-  :func:`wop_waived_frac` therefore resets to zero in the first year of every renewed
+  :func:`wop_waived_frac` therefore resets to zero in the first period of every renewed
   cycle, and :func:`check_waiver_reset` asserts it.
 - **The suicide and contestability clocks do not restart.** They run from the original
   보장개시일 and restart only on 부활 [S2 제6조·제28조]. Neither is monetized in the base
@@ -599,7 +604,7 @@ def reinstatement():
 
 
 def horizon_ceiling():
-    """N: policy years from entry to the renewal ceiling.
+    """N: the number of policy years from entry to the renewal ceiling.
 
     ``renew_ceiling() - age_at_entry()`` on a 갱신형 point, because the contract renews
     until it gets there [S6]; the term itself on a 비갱신형 point, which never renews
@@ -611,7 +616,10 @@ def horizon_ceiling():
 
 
 def proj_len():
-    """The last projected policy year: :func:`horizon_ceiling`, or the current cycle.
+    """The **number** of projected policy years: :func:`horizon_ceiling`, or the cycle.
+
+    The exclusive end of the frame: the projection covers ``t = 0, 1, ..., proj_len() - 1``
+    and ``result_cf()`` has ``proj_len()`` rows.
 
     ``contract_boundary = current_term`` truncates at the end of the 보험기간 in force,
     which for a policy projected from issue is ``policy_term()``.  On a 비갱신형 point
@@ -624,19 +632,20 @@ def proj_len():
 
 
 def age(t):
-    """x + t - 1: the attained **보험나이** at the start of policy year t.
+    """x + t: the attained **보험나이** at the start of period t (policy year ``t + 1``).
 
     보험나이 increments on the policy anniversary and not on the birthday [S2 제22조], so
     on an annual policy-year grid the attained age advances by exactly one each year and
-    the alignment is exact rather than approximate.
+    the alignment is exact rather than approximate.  ``t`` is 0-based, so ``age(0)`` is
+    the 가입나이 itself.
     """
-    return age_at_entry() + t - 1
+    return age_at_entry() + t
 
 
 def term_index(t):
     """k: the renewal index — 1 in the original 보험기간, 2 after the first 갱신.
 
-    ``1 + floor((t - 1) / n)`` on a 갱신형 point; always 1 on a 비갱신형 one, which never
+    ``1 + floor(t / n)`` on a 갱신형 point; always 1 on a 비갱신형 one, which never
     renews [S1] [S12].  **The premium is a function of k and not of t**, which is the
     state variable a Korean protection model needs: a model that indexes the premium by
     policy year cannot represent a 갱신형, and one that carries a single level premium
@@ -645,11 +654,15 @@ def term_index(t):
     """
     if renewal_type() != "gaengsin":
         return 1
-    return 1 + (t - 1) // policy_term()
+    return 1 + t // policy_term()
 
 
 def term_start_age(k):
-    """x_k: the attained 보험나이 at which cycle k starts, ``x + (k - 1) n``."""
+    """x_k: the attained 보험나이 at which cycle k starts, ``x + (k - 1) n``.
+
+    ``k`` is the contractual 1-based cycle label, not the 0-based time index: cycle 1 is
+    the original 보험기간 and starts at ``t = 0``, cycle ``k`` starts at ``t = (k - 1) n``.
+    """
     if renewal_type() != "gaengsin":
         return age_at_entry()
     return age_at_entry() + (k - 1) * policy_term()
@@ -748,7 +761,7 @@ def mort_table_mean(x, m):
 
 
 def mort_rate_base(t):
-    """The class-adjusted **table** rate at the attained age of policy year t.
+    """The class-adjusted **table** rate at the attained age of period t.
 
     ``mort_rate_at_age(age(t)) * class_mort_ratio()``.  Still a pricing rate; the
     best-estimate factor is applied by :func:`mort_rate`.  No age-basis shift is applied
@@ -759,7 +772,7 @@ def mort_rate_base(t):
 
 
 def mort_rate(t):
-    """q(t): the best-estimate death decrement in policy year t.
+    """q(t): the best-estimate death decrement in period t (policy year ``t + 1``).
 
     ``mort_be_factor`` times the class-adjusted table rate, capped at 1.  **One decrement
     carrying one benefit**: a Korean term policy pays the 보험가입금액 on death and
@@ -782,7 +795,7 @@ def mort_rate(t):
 
 
 def acc_mort_share(t):
-    """a_q(t): the accidental share of the year's death decrement [S6] [S10].
+    """a_q(t): the accidental share of period t's death decrement [S6] [S10].
 
     ``acc_mort_rate_at_age / mort_rate_at_age`` on the **표준체 table** basis, so that
     the ratio is not disturbed by the class relativity or the best-estimate factor —
@@ -796,7 +809,7 @@ def acc_mort_share(t):
 
 
 def lapse_rate(t):
-    """w(t): the ordinary lapse rate applied at the end of policy year t.
+    """w(t): the ordinary lapse rate applied at the end of period t.
 
     The **shape is supervisory and not chosen**: the 2024 IFRS17 계리가정 가이드라인 makes
     a **로그-선형 model converging to 0.1%** the 원칙모형 for 무·저해지 business, permits
@@ -806,10 +819,12 @@ def lapse_rate(t):
     연 0.7%~1.6%」 at the anchor carrier [S12] and 「연 0.1%~8.4%, 납입기간 이후 연 0.8%」
     at another [S1].  So::
 
-        w(t) = 0.046 * (0.001 / 0.046) ** ((t - 1) / (n_p - 1))   for t <= n_p
-        w(t) = 0.008                                              for t >  n_p
+        w(t) = 0.046 * (0.001 / 0.046) ** (t / (n_p - 1))   for t <  n_p
+        w(t) = 0.008                                        for t >= n_p
 
-    times ``lapse_be_factor``.  Two **[std]** steps remain and both are recorded rather
+    times ``lapse_be_factor``, with ``t`` 0-based: the 4.6% upper endpoint falls in the
+    first projected year ``t = 0`` and the 0.1% convergence point in the last paying year
+    ``t = n_p - 1``.  Two **[std]** steps remain and both are recorded rather
     than absorbed.  Both disclosed ranges are on a **10년납** basis and the composite is
     전기납 over twenty years, so the same endpoints are **stretched over the
     representative's own 납입기간** — which flattens the curve and is why model point 5,
@@ -831,17 +846,22 @@ def lapse_rate(t):
     end = float(tbl.loc["in_payment_end", "lapse_rate"])
     post = float(tbl.loc["post_payment", "lapse_rate"])
     n_p = pay_term()
-    if t > n_p:
+    if t >= n_p:
         rate = post
     elif n_p <= 1:
         rate = end
     else:
-        rate = start * (end / start) ** ((t - 1.0) / (n_p - 1.0))
+        rate = start * (end / start) ** (t / (n_p - 1.0))
     return lapse_be_factor * rate                                    # noqa: F821
 
 
 def renewal_decline_rate(t):
-    """d(t): the renewal-decline rate — non-zero **only** in a boundary year **[std]**.
+    """d(t): the renewal-decline rate — non-zero **only** in a boundary period **[std]**.
+
+    A boundary period is the **last** period of a cycle that is not the last of the
+    projection: with ``t`` 0-based that is ``(t + 1) % n == 0`` and ``t < proj_len() - 1``,
+    so a ten-year cycle declines at ``t = 9, 19, 29`` and the repriced premium takes
+    effect at ``t = 10, 20, 30``.
 
     At each 갱신 date a fraction of the surviving in-force leaves rather than accept the
     repriced contract.  It is **not** ordinary lapse: ordinary lapse is continuous,
@@ -864,7 +884,7 @@ def renewal_decline_rate(t):
     """
     if renewal_type() != "gaengsin":
         return 0.0
-    if t % policy_term() != 0 or t >= proj_len():
+    if (t + 1) % policy_term() != 0 or t >= proj_len() - 1:
         return 0.0
     jump = prem_pp(t + 1) / prem_pp(t)
     return min(renewal_decline_max,                                  # noqa: F821
@@ -927,7 +947,7 @@ def prem_rate_mth(t):
 
 
 def premium_mth_pp(t):
-    """P_m: the monthly 영업보험료 (office premium) per policy in policy year t.
+    """P_m: the monthly 영업보험료 (office premium) per policy in period t.
 
     ``r * c_p * g * SA / 100,000,000``, rounded half up to the nearest **10 won**, which
     is the granularity the anchor carrier quotes [S12].  Level within the 보험기간 and
@@ -952,7 +972,7 @@ def premium_mth_pp(t):
 
 
 def prem_pp(t):
-    """P_a: the annualized 영업보험료 per policy in policy year t, ``12 P_m``.
+    """P_a: the annualized 영업보험료 per policy in period t, ``12 P_m``.
 
     The annualization is **[std]**: 월납 is the base frequency and the only one on seven of
     the retrieved products, from five carriers [S1] [S6] [S8] [S9] [S12] [S17] [S18], and no
@@ -967,29 +987,30 @@ def prem_pp(t):
 
 
 def prem_payable(t):
-    """1 while policy year t falls inside the 납입기간, 0 after 납입완료.
+    """1 while period t falls inside the 납입기간, 0 after 납입완료.
 
-    On a 전기납 contract this is 1 for the whole projection, which is why the
-    representative form has no post-완납 period at all and hence no surrender-value
-    step-up [S2 제33조제2항].
+    With ``t`` 0-based the 납입기간 of ``n_p`` years is ``t < n_p``, the last paying
+    period being ``t = n_p - 1``.  On a 전기납 contract this is 1 for the whole
+    projection, which is why the representative form has no post-완납 period at all and
+    hence no surrender-value step-up [S2 제33조제2항].
     """
-    return 1.0 if t <= pay_term() else 0.0
+    return 1.0 if t < pay_term() else 0.0
 
 
 def cum_prem_pp(t):
-    """Scheduled premiums paid per policy to the end of policy year t.
+    """Scheduled premiums paid per policy to the end of period t, ``t + 1`` years' worth.
 
     The 만기환급형's maturity benefit is 100% of 「이미 납입한 주계약 보험료」 computed
     **as if any waived premiums had been paid** [S1] [S12], so this is the scheduled
     premium and not the collected one, and :func:`wop_waived_frac` does not enter it.
     That is exactly why the waived state is a real state and not a cash-flow adjustment.
     """
-    n = min(int(t), pay_term())
-    return sum(prem_pp(s) for s in range(1, n + 1))
+    n = min(int(t) + 1, pay_term())
+    return sum(prem_pp(s) for s in range(n))
 
 
 def pols_if_init():
-    """l(1) = 1: the model point is one policy, projected on an expected basis.
+    """l(0) = 1: the model point is one policy, projected on an expected basis.
 
     Survivorship multiplies the per-policy cash flows; no aggregation logic is specified
     in the technical notes and none is implemented.
@@ -998,46 +1019,47 @@ def pols_if_init():
 
 
 def pols_if(t):
-    """l(t): the in-force probability at the **start** of policy year t.
+    """l(t): the in-force probability at time t, the **start** of period t.
 
-    ``pols_if_init()`` in year 1, then the roll-forward
+    ``pols_if_init()`` at ``t = 0``, then the roll-forward
     ``l(t+1) = l(t)(1 - q)(1 - w)(1 - d) + reinstatements - maturities``.  This is the
     weight on every cash flow of the same ``result_cf()`` row.
 
     It is **continuous across a renewal boundary**: a 갱신 reprices the contract, it does
     not re-issue it [S6] [S9] [S15], so there is no reset to 1 and no new cohort — even
     though the renewal is issued on a new product code, which is one of the facts that
-    pulls the other way on the contract-boundary question.  Zero at
-    ``proj_len() + 1``: everything still in force at the horizon leaves through
-    :func:`pols_maturity`, whether or not anything is paid for it.
+    pulls the other way on the contract-boundary question.  Defined one step beyond the
+    frame and zero at ``proj_len()``, the time at which the horizon is reached:
+    everything still in force there leaves through :func:`pols_maturity`, whether or not
+    anything is paid for it.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return (pols_if_at(t - 1, "AFT_DECR") + pols_reinstate(t - 1)
             - pols_maturity(t - 1))
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     The processing order is death, then ordinary lapse, then the renewal decline, and
     each timing reads the population the next decrement is taken from:
 
     ``"BEF_DECR"``
-        l(t), the start of the year, before any decrement; the same number as
-        :func:`pols_if` and the weight on that year's cash flows.
+        l(t), the start of the period, before any decrement; the same number as
+        :func:`pols_if` and the weight on that period's cash flows.
 
     ``"BEF_LAPSE"``
         after deaths, before ordinary lapse.
 
     ``"BEF_DECLINE"``
         after ordinary lapse, before the renewal decline.  Equal to ``"AFT_DECR"`` in
-        every year that is not a renewal boundary.
+        every period that is not a renewal boundary.
 
     ``"AFT_DECR"``
-        after all three decrements — the end-of-year state, before any 부활
+        after all three decrements — the end-of-period state, before any 부활
         reinstatement is added back and before the horizon's :func:`pols_maturity`
         removes the remainder.
 
@@ -1045,9 +1067,9 @@ def pols_if_at(t, timing):
     renewal decline before mortality and ordinary lapse would apply it to lives that died
     or lapsed during the boundary year and overstate the exposure of the renewed cohort.
 
-    Zero outside ``1 .. proj_len()``: the cover has not started or has ended.
+    Zero outside ``0 .. proj_len() - 1``: the cover has not started or has ended.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -1061,7 +1083,7 @@ def pols_if_at(t, timing):
 
 
 def pols_death(t):
-    """D(t) = l(t) q(t): expected death claims in policy year t.
+    """D(t) = l(t) q(t): expected death claims in period t.
 
     One decrement carrying one benefit.  A court 실종선고 and a 관공서 disaster
     notification count as death and are inside this rate [S2 제5조제2항]; a withdrawal of
@@ -1075,7 +1097,7 @@ def pols_death(t):
 
 
 def pols_lapse(t):
-    """Ordinary lapses at the end of policy year t, from the survivors of mortality.
+    """Ordinary lapses at the end of period t, from the survivors of mortality.
 
     Pays nothing on this form [S1] [S2 제33조제2항] [S12], so this moves :func:`pols_if`
     and nothing else.  With the 부활 module on, these lives flow into
@@ -1088,9 +1110,9 @@ def pols_lapse(t):
 
 
 def pols_decline(t):
-    """Renewal declines at the end of a boundary year, after ordinary lapse.
+    """Renewal declines at the end of a boundary period, after ordinary lapse.
 
-    Zero in every year that is not a 갱신 boundary and zero on a 비갱신형 point.  Nothing
+    Zero in every period that is not a 갱신 boundary and zero on a 비갱신형 point.  Nothing
     is paid: the policyholder who declines simply lets the cover end, and on the 갱신형
     the reserve has already unwound to zero within the cycle — 흥국생명's ten-year
     renewable shows 환급률 0.0% at 10년 [S6].
@@ -1099,16 +1121,16 @@ def pols_decline(t):
 
 
 def pols_maturity(t):
-    """Policies whose cover ends at the horizon, in the final projected year only.
+    """Policies whose cover ends at the horizon, in the last period ``proj_len() - 1`` only.
 
     The count whose cover ends at the scheduled end of the contract, whether or not
     anything is paid for it — nothing on the 순수보장형, which expires with no maturity
     value and a surrender value that has already run to zero [S1] [S8] [S12], and 100% of
     the premiums paid on the 만기환급형 [S1] [S12].  Reinstatements arriving in the final
-    year are inside it, so that a contract revived under 부활 and then reaching maturity
+    period are inside it, so that a contract revived under 부활 and then reaching maturity
     is treated consistently.
     """
-    if t != proj_len():
+    if t != proj_len() - 1:
         return 0.0
     return pols_if_at(t, "AFT_DECR") + pols_reinstate(t)
 
@@ -1125,7 +1147,7 @@ def reinstate_rate_eff():
 
 
 def pols_lapse_pool(t):
-    """lap(t): lapsed lives still inside the three-year 부활 window at the start of t.
+    """lap(t): lapsed lives still inside the three-year 부활 window at time t.
 
     A **stock**, where :func:`pols_lapse` is the flow into it.  Tracked by vintage rather
     than as one blanket balance, because the window runs from each life's own 해지 and a
@@ -1138,7 +1160,7 @@ def pols_lapse_pool(t):
     """
     rho = reinstate_rate_eff()
     return sum(pols_lapse(s) * (1.0 - rho) ** (t - 1 - s)
-               for s in range(max(1, t - reinstate_window), t))      # noqa: F821
+               for s in range(max(0, t - reinstate_window), t))      # noqa: F821
 
 
 def pols_reinstate(t):
@@ -1157,25 +1179,26 @@ def pols_reinstate(t):
 
 
 def pols_lapse_expire(t):
-    """Lives leaving the pool in year t because their three-year window has run out.
+    """Lives leaving the pool in period t because their three-year window has run out.
 
-    The vintage that lapsed in year ``t - W``, net of the reinstatements taken out of it
+    The vintage that lapsed in period ``t - W``, net of the reinstatements taken out of it
     along the way.  They are gone for good: after the window there is no 부활
     [S2 제28조].
     """
     s = t - reinstate_window                                         # noqa: F821
-    if s < 1:
+    if s < 0:
         return 0.0
     return pols_lapse(s) * (1.0 - reinstate_rate_eff()) ** reinstate_window  # noqa: F821
 
 
 def wop_waived_frac(t):
-    """u(t): the fraction of in-force policies with premiums waived at the start of t.
+    """u(t): the fraction of in-force policies with premiums waived at time t.
 
     A two-state incidence chain **[std]**, ``u(t+1) = u(t)(1 - rec) + (1 - u(t)) inc``,
-    starting from ``u(1) = 0``.  Two Korean rules shape it and both are sourced.
+    starting from ``u(0) = 0``.  Two Korean rules shape it and both are sourced.
 
-    **It resets at every 갱신.** 흥국생명, verbatim: 「다만, 새로이 갱신되는 계약에서는
+    **It resets at every 갱신**, so it is zero again at ``t = (k - 1) n``, the first
+    period of cycle k.  흥국생명, verbatim: 「다만, 새로이 갱신되는 계약에서는
     갱신 전 보험료 납입면제 사유로 인한 보험료 납입면제를 적용하지 않고, 보험료를 계속
     납입하여야 합니다」 [S6].  A disabled life must resume paying at the renewal date.
     :func:`check_waiver_reset` asserts it, and model points 3 and 4 exercise it.
@@ -1195,7 +1218,7 @@ def wop_waived_frac(t):
     [S2 제33조제2항 단서] [S12] — a value effect this model does not carry, the 표준형
     계약자적립액 belonging to ``WholeLife_KR_A``.
     """
-    if not waiver() or t <= 1 or t > pay_term():
+    if not waiver() or t <= 0 or t >= pay_term():
         return 0.0
     if term_index(t) != term_index(t - 1):
         return 0.0
@@ -1204,7 +1227,7 @@ def wop_waived_frac(t):
 
 
 def pols_waived(t):
-    """In-force policies whose premiums are waived in policy year t; zero in the base run.
+    """In-force policies whose premiums are waived in period t; zero in the base run.
 
     Mortality and lapse are assumed independent of the waiver state **[std]**, which is
     what lets the waived population be carried as a fraction of the in-force rather than
@@ -1216,7 +1239,7 @@ def pols_waived(t):
 
 
 def pols_payer(t):
-    """In-force policies actually paying premium in policy year t.
+    """In-force policies actually paying premium in period t.
 
     ``l(t)`` inside the 납입기간, less the waived fraction; zero after 납입완료.  Equal to
     :func:`pols_if` while premiums are payable unless the 납입면제 module is on.
@@ -1257,19 +1280,19 @@ def accel_amount():
 
 
 def accel_available(t):
-    """Whether an acceleration can be claimed in policy year t.
+    """Whether an acceleration can be claimed in period t.
 
-    True in **every** projected year where the module is on.  Unlike Japan's rider, which
+    True in **every** projected period where the module is on.  Unlike Japan's rider, which
     is barred within a year of a non-renewable expiry, the Korean 선지급서비스특약 has no
     bar near expiry in any retrieved 약관 [S2 제3조·제4조] [S10] [S12] [S17].  The one
     observed narrowing is a carrier that shortens the prognosis to six months
     specifically for 정기보험 [S17].
     """
-    return accel() and 1 <= t <= proj_len()
+    return accel() and 0 <= t < proj_len()
 
 
 def accel_share(t):
-    """a(t): the share of the year's decrement arriving as an acceleration **[std]**.
+    """a(t): the share of period t's decrement arriving as an acceleration **[std]**.
 
     Modelled as a **split of the existing death decrement** rather than as an additional
     incidence: an acceleration is a re-timing and re-pricing of the death benefit, not a
@@ -1286,7 +1309,7 @@ def accel_share(t):
 
 
 def accel_payout_pp(t):
-    """The 선지급 payment per accelerated claim in policy year t.
+    """The 선지급 payment per accelerated claim in period t.
 
     The accelerated amount **discounted over the remaining life expectancy at the
     평균공시이율**, less the similarly discounted premiums that would have fallen due on
@@ -1317,7 +1340,7 @@ def accel_payout_pp(t):
 
 
 def premiums(t):
-    """Premium income at the start of policy year t, an inflow.
+    """Premium income at the start of period t (at time t), an inflow.
 
     ``P_a(k(t))`` on the policies actually paying — :func:`pols_payer`, which is
     :func:`pols_if` inside the 납입기간 unless the 납입면제 module is on, and zero after
@@ -1330,10 +1353,10 @@ def premiums(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
-        the 보험가입금액 on the year's death claims, net of the share arriving as an
+        the 보험가입금액 on the period's death claims, net of the share arriving as an
         acceleration: ``SA (1 - a(t)) D(t)`` [S2 제4조].
 
     ``"ACC_DEATH"``
@@ -1385,7 +1408,7 @@ def claims(t, kind=None):
 
 
 def claim_expenses(t):
-    """ec D(t): the claim handling expense on the year's death claims **[std]**.
+    """ec D(t): the claim handling expense on period t's death claims **[std]**.
 
     300,000 won per claim, uninflated, on the whole death decrement whether the benefit
     is paid as a death claim or accelerated.  No Korean document publishes a claim
@@ -1399,19 +1422,20 @@ def claim_expenses(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^(t-1)`` **[std]**.
+    """The expense inflation factor in period t: ``(1 + pi)^t`` **[std]**, 1.0 at ``t = 0``.
 
     ``inflation_rate = 0.02``.  No Korean insurer publishes an expense inflation
     assumption; 2% is a round central choice and the notes carry it as a standardization.
     """
-    return (1.0 + inflation_rate) ** (t - 1)                         # noqa: F821
+    return (1.0 + inflation_rate) ** t                               # noqa: F821
 
 
 def expenses(t):
-    """E0 and e(t): acquisition and inflating maintenance expense in year t **[std]**.
+    """E0 and e(t): acquisition and inflating maintenance expense in period t **[std]**.
 
-    120,000 won per policy at issue, then 24,000 won per policy per year inflating at
-    2.0%, both at the start of the year.  **No Korean carrier publishes either level**:
+    120,000 won per policy at issue — that is, in the first projected period ``t = 0`` —
+    then 24,000 won per policy per year inflating at
+    2.0%, both at the start of the period.  **No Korean carrier publishes either level**:
     every 상품요약서 defines 계약체결비용 and 계약관리비용 in the same words — 「보험회사가
     보험계약의 체결, 유지 및 관리 등에 필요한 경비로 사용하기 위하여 보험료 중 일정비율을
     책정한 것」 — and not one publishes a rate [S1] [S6] [S8] [S10] [S11] [S12].
@@ -1432,22 +1456,23 @@ def expenses(t):
     a Korean renewal is issued on a new product code [S9] [S15], which is an argument the
     other way, and ``comm_new_term_rate`` is the switch that carries it.
     """
-    acq = expense_acq * pols_if_at(t, "BEF_DECR") if t == 1 else 0.0  # noqa: F821
+    acq = expense_acq * pols_if_at(t, "BEF_DECR") if t == 0 else 0.0  # noqa: F821
     return acq + (expense_maint * inflation_factor(t)                # noqa: F821
                   * pols_if_at(t, "BEF_DECR"))
 
 
 def comm_init_pp():
-    """c0: initial commission per policy issued **[std]**, 60% of the first year's P_a.
+    """c0: initial commission per policy issued **[std]**, 60% of ``P_a`` at ``t = 0``.
 
-    Paid upfront at issue.  With the acquisition expense this is 228,576 won of year-1
-    outgo against 180,960 won of year-1 premium on the anchor cell, which is the deep new
-    business strain the protection shape starts from.  No Korean document in the source
+    Paid upfront at issue, in the first projected period ``t = 0``.  With the acquisition
+    expense this is 228,576 won of first-period
+    outgo against 180,960 won of first-period premium on the anchor cell, which is the deep
+    new business strain the protection shape starts from.  No Korean document in the source
     set discloses a commission scale — the 모집수수료 reforms bound the *first-year*
     share of premium rather than publishing a level [REG-R29] — so both this and
     ``comm_renewal_rate`` are levels chosen for the reference implementation.
     """
-    return comm_init_rate * prem_pp(1)                               # noqa: F821
+    return comm_init_rate * prem_pp(0)                               # noqa: F821
 
 
 def comm_new_term(t):
@@ -1459,34 +1484,36 @@ def comm_new_term(t):
     the renewal is issued on a **new product code** — 푸본현대생명 prints 주계약 최초계약
     ``LO01011`` and 갱신계약 ``LO01012`` separately [S15], and 삼성생명 states 「갱신형특약은
     매 갱신시마다 갱신시점의 상품코드를 적용합니다」 [S9] — which is an argument that it
-    is.  Set ``comm_new_term_rate`` to switch it on; it then falls in the first year of
-    each cycle after the first, and on the shipped 갱신형 anchor at a first-year rate it
+    is.  Set ``comm_new_term_rate`` to switch it on; it then falls in the first period of
+    each cycle after the first — ``t = (k - 1) n`` for cycle ``k > 1`` — and on the shipped
+    갱신형 anchor at a first-year rate it
     turns the first two repriced years negative and leaves the third barely positive.
     """
     if comm_new_term_rate <= 0.0 or term_index(t) <= 1:              # noqa: F821
         return 0.0
-    if t != (term_index(t) - 1) * policy_term() + 1:
+    if t != (term_index(t) - 1) * policy_term():
         return 0.0
     return comm_new_term_rate * prem_pp(t) * pols_if_at(              # noqa: F821
         t, "BEF_DECR")
 
 
 def commissions(t):
-    """Commission outgo in policy year t **[std]**.
+    """Commission outgo in period t **[std]**.
 
-    The initial commission in policy year 1, then 3% of premium income from policy year 2
+    The initial commission in the first period ``t = 0``, then 3% of premium income from
+    ``t = 1`` on
     while premiums are payable, plus any commission at a 갱신 (off in the base run).  No
     clawback on early lapse is modelled: no Korean clawback rule appears in the retrieved
     set, so a clawback would be an invention rather than a standardization of something
     observed.
     """
-    init = comm_init_pp() * pols_if_at(1, "BEF_DECR") if t == 1 else 0.0
-    renew = comm_renewal_rate * premiums(t) if t >= 2 else 0.0       # noqa: F821
+    init = comm_init_pp() * pols_if_at(0, "BEF_DECR") if t == 0 else 0.0
+    renew = comm_renewal_rate * premiums(t) if t >= 1 else 0.0       # noqa: F821
     return init + renew + comm_new_term(t)
 
 
 def net_cf(t):
-    """CF(t): the net cash flow of policy year t, **income positive**.
+    """CF(t): the net cash flow of period t, **income positive**.
 
     Premiums less claims, claim expense, maintenance and acquisition expense and
     commission.  This is the library-wide sign, so there is no outgo-positive
@@ -1494,17 +1521,17 @@ def net_cf(t):
 
     Lapse and the renewal decline contribute no term: they act only through
     :func:`pols_if`, there being no surrender value to pay [S2 제33조제2항].  The shape to
-    expect on the anchor cell is a deep first-year strain, then thin positive margins that
+    expect on the anchor cell is a deep strain at ``t = 0``, then thin positive margins that
     decay as the level premium falls behind the rising mortality cost, and on a 갱신형
-    point a saw-tooth: a negative year immediately before each renewal and a jump back
-    into surplus the year after, as the premium resets to attained age.
+    point a saw-tooth: a negative period immediately before each renewal and a jump back
+    into surplus the period after, as the premium resets to attained age.
     """
     return (premiums(t) - claims(t) - claim_expenses(t)
             - expenses(t) - commissions(t))
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in period t; zero everywhere.
 
     ``l(t) - l(t+1) - D(t) - lapses - declines - maturities + reinstatements``, with the
     부활 inflow and the horizon's maturity outflow carried as their own terms so that the
@@ -1518,18 +1545,19 @@ def check_pols_roll_fwd_resid(t):
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected policy year.
+    """True when the in-force roll-forward closes in every projected period.
 
-    The library-wide form of a roll-forward check: no argument, one bool over all t, so
+    The library-wide form of a roll-forward check: no argument, one bool over
+    ``t = 0 .. proj_len() - 1``, so
     one test can call it across every model.  :func:`check_pols_roll_fwd_resid` gives the
-    signed residual of the year that failed.
+    signed residual of the period that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_lapse_pool_resid(t):
-    """The 부활 pool roll-forward residual in policy year t; zero everywhere.
+    """The 부활 pool roll-forward residual in period t; zero everywhere.
 
     ``lap(t) - lap(t+1) - reinstatements - window expiries + lapses``.  The pool is a
     stock with one inflow (:func:`pols_lapse`) and two outflows (:func:`pols_reinstate`
@@ -1542,13 +1570,13 @@ def check_lapse_pool_resid(t):
 
 
 def check_lapse_pool():
-    """True when the 부활 pool ledger closes in every projected policy year."""
+    """True when the 부활 pool ledger closes in every projected period."""
     return all(abs(check_lapse_pool_resid(t)) <= roll_fwd_tol        # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pols_payer_resid(t):
-    """The premium-paying population residual in policy year t; zero everywhere.
+    """The premium-paying population residual in period t; zero everywhere.
 
     ``l(t) x prem_payable(t) - payers - waived``.  The 납입면제 module carries the waived
     lives as a fraction of the in-force rather than as a separate decrement, which is only
@@ -1563,13 +1591,13 @@ def check_pols_payer_resid(t):
 def check_pols_payer():
     """True when payers and waived lives partition the premium-owing in-force."""
     return all(abs(check_pols_payer_resid(t)) <= roll_fwd_tol        # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_prem_level_resid(t):
-    """The premium-level residual in policy year t; zero everywhere.
+    """The premium-level residual in period t; zero everywhere.
 
-    ``P_a(t) - P_a(t-1)`` inside a 보험기간, and zero by definition in the first year of
+    ``P_a(t) - P_a(t-1)`` inside a 보험기간, and zero by definition in the first period of
     a cycle.  The premium is level within the 보험기간 and changes **only** at a 갱신 [S1]
     [S9] [S12] [S15]; there is no premium review within a term and no insurer discretion
     over the level.  A residual here means the premium is drifting with the policy year,
@@ -1577,7 +1605,7 @@ def check_prem_level_resid(t):
     cycle's entry age — the single most likely way to convert a 갱신형 into something that
     is neither form.
     """
-    if t <= 1 or term_index(t) != term_index(t - 1):
+    if t <= 0 or term_index(t) != term_index(t - 1):
         return 0.0
     return prem_pp(t) - prem_pp(t - 1)
 
@@ -1585,22 +1613,24 @@ def check_prem_level_resid(t):
 def check_prem_level():
     """True when the premium is level within every 보험기간 of the projection."""
     return all(abs(check_prem_level_resid(t)) <= roll_fwd_tol        # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_decline_timing():
     """True when the renewal decline falls on renewal boundaries and nowhere else.
 
-    The decline rate must be non-zero in exactly those years that end a 갱신 cycle short
-    of the horizon, and zero in every other year — including the final year, where cover
-    ends at the ceiling rather than renewing, and every year of a 비갱신형 point, which
+    The decline rate must be non-zero in exactly those periods that end a 갱신 cycle short
+    of the horizon — ``(t + 1) % n == 0`` with ``t < proj_len() - 1`` on the 0-based index
+    — and zero in every other period, including the last one ``t = proj_len() - 1``, where
+    cover
+    ends at the ceiling rather than renewing, and every period of a 비갱신형 point, which
     never renews [S1] [S12].  This is the check that catches the decline being modelled
-    as a lapse loading: a rate that is non-zero in a non-boundary year has stopped being
+    as a lapse loading: a rate that is non-zero in a non-boundary period has stopped being
     a renewal decline whatever it is called.
     """
-    for t in range(1, proj_len() + 1):
+    for t in range(proj_len()):
         boundary = (renewal_type() == "gaengsin"
-                    and t % policy_term() == 0 and t < proj_len())
+                    and (t + 1) % policy_term() == 0 and t < proj_len() - 1)
         if boundary != (renewal_decline_rate(t) > 0.0):
             return False
     return True
@@ -1611,21 +1641,21 @@ def check_waiver_reset():
 
     「다만, 새로이 갱신되는 계약에서는 갱신 전 보험료 납입면제 사유로 인한 보험료 납입면제를
     적용하지 않고, 보험료를 계속 납입하여야 합니다」 [S6].  The waived fraction must
-    therefore be zero in the first year of every cycle, not merely in policy year 1.  On a
-    비갱신형 point the check reduces to ``u(1) = 0`` and on a point with the module off it
+    therefore be zero in the first period of every cycle, not merely at ``t = 0``.  On a
+    비갱신형 point the check reduces to ``u(0) = 0`` and on a point with the module off it
     is vacuous; model points 3 and 4 are where it bites, and where a model that carried
     the waiver across the boundary would be caught collecting no premium from a population
     the contract says must resume paying.
     """
-    for t in range(1, proj_len() + 1):
-        if t == 1 or term_index(t) != term_index(t - 1):
+    for t in range(proj_len()):
+        if t == 0 or term_index(t) != term_index(t - 1):
             if abs(wop_waived_frac(t)) > roll_fwd_tol:               # noqa: F821
                 return False
     return True
 
 
 def check_net_cf_resid(t):
-    """The published cash flow statement's ledger residual in policy year t; zero.
+    """The published cash flow statement's ledger residual in period t; zero.
 
     :func:`net_cf` less the sum of the **columns of** ``result_cf()``, so a reader adding
     up the printed statement gets the printed total.  It is the check that catches a
@@ -1640,7 +1670,7 @@ def check_net_cf_resid(t):
 
 
 def check_net_cf():
-    """True when the published cash flow statement adds up in every projected year.
+    """True when the published cash flow statement adds up in every projected period.
 
     Tested against ``cash_tol``, not the ``roll_fwd_tol`` the decrement checks use.  The
     wider tolerance is a property of what is compared: the other checks close an identity
@@ -1652,18 +1682,21 @@ def check_net_cf():
     statement could observe.
     """
     return all(abs(check_net_cf_resid(t)) <= cash_tol                # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year t.
+    """Result table of cashflows, indexed by the 0-based period index t.
 
-    ``pols_if`` is the start-of-year count, which is the weight applied to every cash flow
+    ``t = 0`` is the first policy year and the frame runs to ``proj_len() - 1``, so the
+    table has ``proj_len()`` rows and the contractual policy year of row ``t`` is
+    ``t + 1``.
+    ``pols_if`` is the start-of-period count, which is the weight applied to every cash flow
     on the same row.  ``net_cf`` is income positive.  ``claims_lapse`` is a column of
     zeros by product design — there is no 해약환급금 at any duration on the representative
     form — and is published rather than dropped; see :func:`claims`.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1685,12 +1718,13 @@ def result_cf():
 def result_pols():
     """Result table of policy counts, decrement rates and the premium, indexed by t.
 
+    Same 0-based frame as :func:`result_cf`: ``t = 0 .. proj_len() - 1``.
     The renewal machinery is only legible next to the decrements it drives, so
     ``term_index`` and ``prem_pp`` are printed here with ``renewal_decline_rate``: a
-    boundary year is the row where the decline rate is non-zero and the premium changes on
-    the next row.
+    boundary period is the row where the decline rate is non-zero and the premium changes
+    on the next row.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

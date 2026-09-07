@@ -39,7 +39,7 @@ and be wrong:
 * the guaranteed instalment is owed to every contract that annuitised, alive or not;
 * both the death and the surrender streams stop dead at 연금개시;
 * the deferral and the payout are priced on **two** mortality tables;
-* ``proj_len()`` is the last row index and not a row count;
+* ``proj_len()`` is the number of projected months and not the last row index;
 * death is decremented before 해지;
 * the asset-based charges are struck **after** the premium goes in;
 * the mandatory 채권형 ladder is by 연금개시 전 보험기간, not by fund choice;
@@ -85,7 +85,7 @@ def near(x):
 #
 # "The anchor cell and every assumption it uses" — the derived quantities.
 
-PROJ_LEN = 959
+PROJ_LEN = 960  # the month *count*, the frame's exclusive end; the last row is t = 959
 SURR_CHG_CAP_PP = 1643940.00
 
 # "The charge stack in month 0, per contract": five lines, three deduction points,
@@ -245,7 +245,7 @@ def test_the_derived_quantities_of_the_anchor_cell(kr_va_anchor):
     assert a.pay_months() == 120
     assert a.t_ann() == 240 == (a.annuity_age() - a.age_at_entry()) * 12
     assert a.defer_years() == 20
-    assert a.proj_len() == PROJ_LEN == (a.omega_age - a.age_at_entry()) * 12 - 1
+    assert a.proj_len() == PROJ_LEN == (a.omega_age - a.age_at_entry()) * 12
     assert a.prem_ann_pp() == near(3600000.0)
     assert a.prem_total_pp() == near(36000000.0)
     assert a.loading_rate() == near(0.0867)
@@ -718,7 +718,7 @@ def test_worked_example_guarantee_memo_totals(kr_va_anchor):
     valuation: on one path this is intrinsic value, a **lower bound** on expected cost.
     """
     a = kr_va_anchor
-    ts = range(0, a.proj_len() + 1)
+    ts = range(0, a.proj_len())
     got = {"gmdb_charges": sum(a.gmdb_charges(t) for t in ts),
            "gmdb_claims": sum(a.gmdb_claims(t) for t in ts),
            "gmab_charges": sum(a.gmab_charges(t) for t in ts),
@@ -835,7 +835,7 @@ def test_the_in_force_roll_forward_closes_and_every_contract_leaves(kr_va_anchor
     assert a.check_pols_roll_fwd() is True
     for t in (0, 3, 120, 239, 240, 958, 959):
         assert abs(a.check_pols_roll_fwd_resid(t)) < 1e-10
-    ts = range(0, a.proj_len() + 1)
+    ts = range(0, a.proj_len())
     deaths = sum(a.pols_death(t) for t in ts)
     lapses = sum(a.pols_lapse(t) for t in ts)
     horizon = sum(a.pols_maturity(t) for t in ts)
@@ -843,8 +843,8 @@ def test_the_in_force_roll_forward_closes_and_every_contract_leaves(kr_va_anchor
     assert lapses == pytest.approx(0.8958970712349685, abs=INFORCE)
     assert horizon == pytest.approx(8.245005547570906e-08, abs=INFORCE)
     assert deaths + lapses + horizon == pytest.approx(1.0, abs=1e-10)
-    assert a.pols_if(a.proj_len() + 1) == 0.0
-    assert a.pols_maturity(a.proj_len() - 1) == 0.0
+    assert a.pols_if(a.proj_len()) == 0.0
+    assert a.pols_maturity(a.proj_len() - 2) == 0.0   # the month before the horizon, t = 958
 
 
 def test_the_account_recursion_closes_at_every_month(kr_va_anchor):
@@ -853,13 +853,17 @@ def test_the_account_recursion_closes_at_every_month(kr_va_anchor):
     The de-risking does not appear in the identity because it conserves the total: it moves
     money between funds and not out of the account, so a de-risking written as a net
     transfer rather than a reallocation breaks this and nothing else.
+
+    ``t = 0`` is included: its opening balance is nil, and it is the row that carries the
+    single premium, the 계약체결비용 and the whole first month's charge stack.
     """
     a = kr_va_anchor
     assert a.check_av_roll_fwd() is True
-    for t in (1, 3, 84, 120, 204, 216, 239, 240):
+    for t in (0, 1, 3, 84, 120, 204, 216, 239, 240):
         assert abs(a.check_av_roll_fwd_resid(t)) <= 1e-8 * max(1.0, abs(a.av_pp(t)))
-    for t in (1, 3, 120, 204):
-        expected = (a.av_pp(t - 1) + a.prem_to_av_pp(t) - a.mth_deduct_pp(t)
+    for t in (0, 1, 3, 120, 204):
+        opening = a.av_pp(t - 1) if t > 0 else 0.0
+        expected = (opening + a.prem_to_av_pp(t) - a.mth_deduct_pp(t)
                     - a.wd_pp(t) + a.inv_income_pp(t) - a.mgmt_fee_pp(t))
         assert a.av_pp(t) == pytest.approx(expected, abs=1e-6)
     assert a.av_pp(240) == 0.0
@@ -937,7 +941,7 @@ def test_the_published_columns_sum_to_net_cf_on_every_shipped_point(variable_ann
         df = p.result_cf()
         assert list(df.columns)[0] == "pols_if"
         assert df.index.name == "t"
-        assert len(df) == p.proj_len() + 1
+        assert len(df) == p.proj_len()
         assert df.notna().all().all()
         outgo = df[outgo_cols].sum(axis=1)
         assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
@@ -1188,7 +1192,7 @@ def test_pitfall_the_gmab_is_a_european_option_not_a_floor(kr_va_anchor):
     a = kr_va_anchor
     assert a.pols_annuitised() == near(POLS_ANNUITISED)
     assert all(a.gmab_claims(t) == 0.0
-               for t in range(0, a.proj_len() + 1) if t != a.t_ann())
+               for t in range(0, a.proj_len()) if t != a.t_ann())
     assert a.gmab_claims(a.t_ann()) == near(a.gmab_claim_pp() * a.pols_annuitised())
     # The account is never floored at the strike before T: it is free to sit below it.
     assert a.av_pp(0) < a.gmab_base_pp()
@@ -1208,9 +1212,9 @@ def test_pitfall_the_gmab_residual_is_not_profit(variable_annuity):
     """
     base, low = variable_annuity.Projection[1], variable_annuity.Projection[4]
     assert base.gmab_claim_pp() == 0.0
-    assert sum(base.gmab_charges(t) for t in range(0, base.proj_len() + 1)) == (
+    assert sum(base.gmab_charges(t) for t in range(0, base.proj_len())) == (
         pytest.approx(657417.59, abs=WON))
-    assert sum(base.gmab_claims(t) for t in range(0, base.proj_len() + 1)) == 0.0
+    assert sum(base.gmab_claims(t) for t in range(0, base.proj_len())) == 0.0
 
     assert low.scenario_id() == "low"
     # −1.00% net of the 0.50% blended 운용보수 is a −0.50% gross asset return.
@@ -1218,8 +1222,8 @@ def test_pitfall_the_gmab_residual_is_not_profit(variable_annuity):
     assert low.gmab_claim_pp() == pytest.approx(10041179.61262558, abs=5e-6)
     assert low.av_ann_pp() == pytest.approx(25958820.38737442, abs=5e-6)
     assert low.gmab_claim_pp() == near(low.gmab_base_pp() - low.av_ann_pp())
-    charge = sum(low.gmab_charges(t) for t in range(0, low.proj_len() + 1))
-    cost = sum(low.gmab_claims(t) for t in range(0, low.proj_len() + 1))
+    charge = sum(low.gmab_charges(t) for t in range(0, low.proj_len()))
+    cost = sum(low.gmab_claims(t) for t in range(0, low.proj_len()))
     assert charge == pytest.approx(603909.13, abs=WON)
     assert cost == pytest.approx(929653.88, abs=WON)
     assert cost > charge
@@ -1388,24 +1392,28 @@ def test_pitfall_two_mortality_bases_across_the_join(kr_va_anchor):
     assert a.ann_surv(1) == near(1.0 - a.ann_mort_rate_at_age(60))
 
 
-def test_pitfall_proj_len_is_the_last_row_index(variable_annuity):
-    """Pitfall 15: reading ``proj_len()`` as a row count.
+def test_pitfall_proj_len_is_the_month_count_not_the_last_index(variable_annuity):
+    """Pitfall 15: reading ``proj_len()`` as the last row index.
 
-    It is the **last row index**.  The anchor has 960 rows, 0 … 959, and
-    (120 − 40) × 12 − 1 = 959.  An off-by-one drops the horizon month, in which
-    ``pols_maturity`` carries out the survivors and the roll-forward closes.
+    It is the **number of projected months**, the frame's exclusive end: the frame is
+    ``range(proj_len())`` and the last row is ``proj_len() − 1``.  The anchor has 960
+    rows, 0 … 959, and (120 − 40) × 12 = 960.  An off-by-one either drops the horizon
+    month, in which ``pols_maturity`` carries out the survivors and the roll-forward
+    closes, or adds a phantom row past it.
     """
     for point_id in variable_annuity.Data.model_point_table().index:
         p = variable_annuity.Projection[point_id]
-        assert p.proj_len() == (p.omega_age - p.age_at_entry()) * 12 - 1
-        assert len(p.result_cf()) == p.proj_len() + 1
-        assert p.result_cf().index[-1] == p.proj_len()
+        assert p.proj_len() == (p.omega_age - p.age_at_entry()) * 12
+        assert len(p.result_cf()) == p.proj_len()
+        assert p.result_cf().index[0] == 0
+        assert p.result_cf().index[-1] == p.proj_len() - 1
         assert p.check_pols_roll_fwd() is True
-        assert p.pols_maturity(p.proj_len()) > 0.0
-        assert p.pols_if(p.proj_len() + 1) == 0.0
+        assert p.pols_maturity(p.proj_len() - 1) > 0.0
+        assert p.pols_if(p.proj_len()) == 0.0
     anchor = variable_annuity.Projection[1]
-    assert anchor.proj_len() == 959 and len(anchor.result_cf()) == 960
-    assert anchor.age(anchor.proj_len()) == anchor.omega_age - 1
+    assert anchor.proj_len() == 960 and len(anchor.result_cf()) == 960
+    assert anchor.result_cf().index[-1] == 959
+    assert anchor.age(anchor.proj_len() - 1) == anchor.omega_age - 1
 
 
 def test_pitfall_death_is_decremented_before_lapse(kr_va_anchor):

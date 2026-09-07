@@ -11,10 +11,15 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 5            # or switch the default
 
-``t`` counts **policy years**, 1-based: ``t = 1`` is the first policy year and
-``t = proj_len() = cover_end_age() - issue_age()`` the last. There is nothing after it —
-cover ceases at the *échéance* following ``cover_end_age``, nothing is payable there,
-and there is no maturity value, no renewal and no conversion.
+``t`` is the **0-based** annual time index, the library-wide convention: ``t = 0`` is the
+first projected year, period ``t`` runs from time ``t`` to time ``t + 1``, the attained
+age is ``issue_age() + t``, and ``proj_len() = cover_end_age() - issue_age()`` is the
+**number** of projected years — the exclusive end of the frame, so ``result_cf()`` runs
+``t = 0 ... proj_len() - 1`` and the loop is lifelib's ``for t in range(proj_len())``.
+The contractual **policy year** is the 1-based label ``policy_year(t) = t + 1``; it is
+derived and never indexed by, and only the two policy-year-keyed CSVs read it. There is
+nothing after the frame — cover ceases at the *échéance* following ``cover_end_age``,
+nothing is payable there, and there is no maturity value, no renewal and no conversion.
 
 .. rubric:: Input data
 
@@ -56,8 +61,9 @@ notes use compact actuarial symbols instead. The mapping is:
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 (none)                     model_point()                   The selected model point row
-n = cover - issue          proj_len()                      Last policy year
-x(t)                       age(t)                          Attained age in year t
+n = cover - issue          proj_len()                      Number of projected years
+(none)                     policy_year(t)                  Contractual label, ``t + 1``
+x(t)                       age(t)                          Attained age in period t
 SA                         sum_assured()                   Guaranteed capital
 r(x)                       prem_rate(t)                    Tariff rate at that age
 (table)                    mort_rate_base(t)               Table death rate at that age
@@ -67,12 +73,12 @@ F                          prem_freq_fee()                 Fixed annual frais d'
 P_tar(t) = SA r(x) f phi   prem_tariff_pp(t)               Tariff cotisation, before F
 P_lev                      prem_level_pp()                 Level cotisation, constante
 P(t) = P_tar(t) + F        prem_pp(t)                      Cotisation per in-force policy
-v                          disc_factor(t)                  (1 + tech_rate)^-(t-1)
+v                          disc_factor(t)                  (1 + tech_rate)^-t
 p_tau(t)                   pols_tariff(t)                  Tariff survivorship, no lapse
-(denominator)              tariff_annuity()                Sum of v^(t-1) p_tau(t)
+(denominator)              tariff_annuity()                Sum of v^t p_tau(t)
 (numerator)                tariff_prem_pv()                PV of the revisable stream
 (schedule)                 benefit_factor(t)               Benefit schedule factor
-B(t)                       benefit_pp(t)                   Contractual capital in year t
+B(t)                       benefit_pp(t)                   Contractual capital in period t
 (none)                     benefit_death_pp(t)             What a death claim pays
 (none)                     benefit_ptia_pp(t)              What a PTIA claim pays
 (none)                     prem_refund_pp(t)               Cotisations returned in the
@@ -84,16 +90,16 @@ q_p(t)                     ptia_rate(t)                    Annual dependent PTIA
 (tariff basis)             ptia_rate_base(t)               PTIA rate before the loading
 (table)                    lapse_rate_base(t)              Table lapse rate
 M_shock(t)                 shock_lapse_factor(t)           Premium-shock multiplier
-w(t)                       lapse_rate(t)                   Lapse rate applied in year t
+w(t)                       lapse_rate(t)                   Lapse rate applied in period t
 w_cum(t)                   lapse_cum(t)                    Cumulative lapse proportion
 lambda                     sel_lapse_lambda                Selective-lapsation loading
 w_ref                      sel_lapse_ref                   Selective-lapsation threshold
 (none)                     sel_lapse_factor(t)             Mortality loading on persisters
-l(t)                       pols_if(t)                      In force at the start of year t
+l(t)                       pols_if(t)                      In force at the start of period t
 l(t)(1-q), l(t+1)          pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
-pols_death(t)              pols_death(t)                   Expected deaths in year t
-pols_ptia(t)               pols_ptia(t)                     Expected PTIA claims in year t
-pols_lapse(t)              pols_lapse(t)                   Expected lapses in year t
+pols_death(t)              pols_death(t)                   Expected deaths in period t
+pols_ptia(t)               pols_ptia(t)                     Expected PTIA claims in period t
+pols_lapse(t)              pols_lapse(t)                   Expected lapses in period t
 premiums(t)                premiums(t)                     Cotisation income
 claims_death, claims_ptia  claims(t, kind)                 Benefit outgo by kind
 ec x (D + P)               claim_expenses(t)               Claim handling expense
@@ -116,8 +122,8 @@ is about applying the fractionation *loading* and the fee both as percentages.
 ``q_d(t)`` and ``q_p(t)`` are **dependent** rates of a two-decrement table, not
 independent single-decrement rates, so they are additive: ``l(t+1) = l(t)(1 - q_d -
 q_p)(1 - w)``. An implementation using ``1 - (1 - q_d)(1 - q_p)`` gets 0.00479680
-against 0.00480000 in year 1 of the worked configuration — immaterial there, material at
-older ages. :func:`mort_rate_base` is the table rate and :func:`mort_rate` the rate
+against 0.00480000 in the first year of the worked configuration — immaterial there,
+material at older ages. :func:`mort_rate_base` is the table rate and :func:`mort_rate` the rate
 applied after the selective-lapsation loading; :func:`ptia_rate_base` is the tariff-basis
 PTIA rate that the ``constante`` equivalence is struck on, and :func:`ptia_rate` the one
 the projection applies. Keeping the two pairs apart is also what keeps the level-premium
@@ -126,7 +132,8 @@ a behavioural loading that depends on the lapse path that depends on the premium
 
 ``B(t)`` is the *contractual* capital. What a claim actually pays is not always ``B(t)``:
 inside a *délai d'attente* an illness-caused death pays back the cotisations collected
-and PTIA pays nothing, and in policy year 1 the death cover is void for suicide. So
+and PTIA pays nothing, and in policy year 1 (``t = 0``) the death cover is void for
+suicide. So
 :func:`benefit_pp` is ``B(t)``, :func:`benefit_death_pp` and :func:`benefit_ptia_pp` are
 what is payable, and :func:`suicide_factor` is applied on top of the first of them alone.
 
@@ -140,7 +147,7 @@ not lapses.
 :func:`commissions` beside it because the notes' worked-example table does. The
 commission is therefore a *part* of the expense column, not a further line: subtracting
 both from :func:`premiums` charges the commission twice. The notes' worked example fixes
-the reading — ``expenses(1) = 905.72`` is ``250 + 25 + 0.72 + 630``, and the last of
+the reading — ``expenses(0) = 905.72`` is ``250 + 25 + 0.72 + 630``, and the last of
 those four is the 40 % initial commission.
 
 .. rubric:: The cotisation rises with attained age
@@ -150,7 +157,7 @@ parameter. On the ``revisable`` form — the default of every retrieved French c
 the cotisation is recomputed at *every* annual renewal from the tariff rate at the new
 attained age, so ``prem_pp(t)`` moves every year:
 
-    prem_pp(3) / prem_pp(2) = 1.56 / 1.13 = 1.380531
+    prem_pp(2) / prem_pp(1) = 1.56 / 1.13 = 1.380531
 
 a 38 % step from age 59 to 60 against a trend of about 8 % a year. That step is in the
 published grid and a fitted curve would smooth it away, so :func:`prem_rate` is a table
@@ -163,7 +170,7 @@ French standalone contract in the corpus writes one. With ``level_premium = 0`` 
 derived by actuarial equivalence with the revisable stream over the whole cover period,
 on **tariff survivorship** — insured decrements only, no lapse — at ``tech_rate``:
 
-    P_lev = sum v^(t-1) p_tau(t) SA r(x(t)) f phi / sum v^(t-1) p_tau(t)
+    P_lev = sum v^t p_tau(t) SA r(x(t)) f phi / sum v^t p_tau(t)
 
 which on the worked configuration is ``60,476.2476 / 15.449728 = 3,914.3891``. With
 ``level_premium > 0`` that figure is supplied instead and no equivalence is struck.
@@ -188,12 +195,12 @@ counted twice, fails there.
 PTIA cover also **stops earlier than death cover**, at ``ptia_end_age``, and the switch
 is a hard gate on the attained age rather than a taper: ``ptia_rate(t)`` is exactly zero
 from the first ``t`` with ``age(t) >= ptia_end_age()``. On the worked configuration that
-is ``t = 8 ... 17``, and model point 11 enters at exactly ``ptia_end_age`` so its PTIA
+is ``t = 7 ... 16``, and model point 11 enters at exactly ``ptia_end_age`` so its PTIA
 cover never attaches at all. :func:`check_ptia_gate` asserts both.
 
 The suicide exclusion never touches PTIA. Art. L. 132-7 voids the **death** cover for
 suicide in the first year, and PTIA is not death, so :func:`suicide_factor` multiplies
-:func:`benefit_death_pp` alone and only at ``t = 1``. Nor does the model carry the
+:func:`benefit_death_pp` alone and only at ``t = 0``. Nor does the model carry the
 art. R. 132-5 immediate-cover ceiling of 120 000 €: that alinéa belongs to
 principal-residence loan cover and does not apply to a standalone temporaire décès.
 
@@ -212,21 +219,21 @@ The same statutory fact is why the whole of the exit machinery is lapse. The 30-
 *renonciation* window sits inside the year-1 lapse rate **[std]**; there is no surrender
 charge, no dynamic surrender behaviour and no paid-up election to model.
 
-.. rubric:: The last policy year has no lapse, and why
+.. rubric:: The last projected year has no lapse, and why
 
-The notes' processing order puts lapses at the **end** of the policy year, after both
-insured decrements. In the final policy year the end of the year is also the moment the
+The notes' processing order puts lapses at the **end** of the year, after both
+insured decrements. In the final projected year the end of the year is also the moment the
 cover expires, and a lapse and an expiry are then the same event paying the same nothing.
-So :func:`lapse_rate` returns 0 at ``t = proj_len()`` and the whole surviving population
-leaves as an expiry: ``pols_if(proj_len() + 1)`` is that cohort. The notes set out the same
-convention, ``w(n) = 0`` **[std]**, under *Lapse* and in step 7 of their processing order — and
+So :func:`lapse_rate` returns 0 at ``t = proj_len() - 1`` and the whole surviving population
+leaves as an expiry: ``pols_if(proj_len())`` is that cohort. The notes set out the same
+convention, ``w(n - 1) = 0`` **[std]**, under *Lapse* and in step 7 of their processing order — and
 it is what reproduces their own split of the closure identity, 6,939 % deaths, 0,536 % PTIA,
 64,638 % lapses and 27,887 % survivors on the worked configuration. No cash flow depends on
 the split: at the table's 6 % the last two would read 66,311 % and 26,214 %.
 
-``pols_if(proj_len() + 1)`` is read by :func:`check_decrement_closure` and by nothing
+``pols_if(proj_len())`` is read by :func:`check_decrement_closure` and by nothing
 else. It is never a weight on a cash flow, and :func:`result_cf` stops at
-``t = proj_len()``.
+``t = proj_len() - 1``.
 
 .. rubric:: The délai d'attente
 
@@ -257,7 +264,7 @@ worked example while the machinery stays visible and testable:
 - **Premium-shock lapse**, ``shock_lapse_beta = 0``, with ``shock_lapse_g0 = 0.10``.
   ``M_shock = 1 + beta max(0, P(t)/P(t-1) - 1 - g0)``. The revisable form hands the
   policyholder a rising bill, and the grid's own +38 % step at age 60 is exactly where an
-  affordability response would show. Switched on it would bite at ``t = 3`` on the worked
+  affordability response would show. Switched on it would bite at ``t = 2`` on the worked
   configuration and nowhere else.
 - **Selective lapsation**, ``sel_lapse_lambda = 0``, with ``sel_lapse_ref = 0.30``.
   ``q_d_eff = q_d (1 + lambda max(0, w_cum - w_ref))``. Lapsers are healthier, so
@@ -284,11 +291,12 @@ best-estimate liability is ``sum v(t) liability_cf(t)`` over whatever discount c
 valuation layer supplies. Both are columns of :func:`result_cf`, so the identity is
 verifiable in the frame rather than only in prose.
 
-The shape to expect on the ``revisable`` form is almost no new-business strain — year 1
-``net_cf`` is -38,72 € on the worked configuration, because the year's cotisation very
-nearly pays the year's acquisition cost — and thin positive margins thereafter that grow
-as the tariff climbs. The ``constante`` form inverts it: strongly positive in year 1,
-+1 364,91 €, and it would carry a real *provision mathématique* against the later years.
+The shape to expect on the ``revisable`` form is almost no new-business strain —
+``net_cf(0)``, the first year, is -38,72 € on the worked configuration, because the
+year's cotisation very nearly pays the year's acquisition cost — and thin positive
+margins thereafter that grow as the tariff climbs. The ``constante`` form inverts it:
+strongly positive in the first year, +1 364,91 €, and it would carry a real *provision
+mathématique* against the later years.
 
 .. rubric:: What a sibling may inherit
 
@@ -399,7 +407,7 @@ def issue_age():
 
     Not age nearest birthday and not age last birthday — an integer age that steps on
     1 January irrespective of birth month, and the single most important convention to get
-    right in a French annual-step model.  A one-year shift moves ``prem_pp(1)`` on the
+    right in a French annual-step model.  A one-year shift moves ``prem_pp(0)`` on the
     worked configuration from 1 575,00 € to 1 695,00 €, a 7,6 % error in year one that
     compounds through the whole projection.  On this annual grid the age steps at the
     policy anniversary instead, so an implementation on real dates carries a fractional
@@ -519,34 +527,50 @@ def pols_if_init():
 
 
 def proj_len():
-    """n: the projection length in policy years, ``cover_end_age() - issue_age()``.
+    """n: the **number** of projected years, ``cover_end_age() - issue_age()``.
 
-    Policy year ``t`` covers attained age ``issue_age() + t - 1``, so the last covered
-    year is the one at attained age ``cover_end_age() - 1``.  There is no benefit, no
-    cotisation and no maturity value at ``t = proj_len() + 1``, and ``pols_if`` there is
-    the expiring cohort rather than a cash-flow weight; see the Space docstring.
+    The exclusive end of the frame, counted from ``t = 0``: the projection runs
+    ``t = 0 ... proj_len() - 1`` and :func:`result_cf` has ``proj_len()`` rows.  Period
+    ``t`` covers attained age ``issue_age() + t``, so the last covered year is the one at
+    attained age ``cover_end_age() - 1``.  There is no benefit, no cotisation and no
+    maturity value at ``t = proj_len()``, and ``pols_if`` there is the expiring cohort
+    rather than a cash-flow weight; see the Space docstring.
     """
     return cover_end_age() - issue_age()
 
 
-def age(t):
-    """x(t): the attained age in policy year t, ``issue_age() + t - 1``.
+def policy_year(t):
+    """The contractual **1-based** policy year label of period t: ``t + 1``.
 
-    On the *différence de millésime* basis — see :func:`issue_age` for why that matters
-    more here than the choice would in a UK or US model.
+    ``t`` is the model's 0-based time index, so the first projected year, ``t = 0``, is
+    policy year 1.  Derived rather than indexed by: it exists because two shipped inputs
+    are keyed by a contractual policy year — *lapse_table.csv* (years 1-4) and
+    *benefit_schedule.csv* (years 1-57) — and those lookups must map through this cells
+    rather than pass ``t`` raw.  See :func:`lapse_rate_base`, :func:`benefit_factor` and
+    :func:`in_waiting`.
     """
-    return issue_age() + t - 1
+    return t + 1
+
+
+def age(t):
+    """x(t): the attained age in period t, ``issue_age() + t``.
+
+    The library-wide 0-based form: ``age(0) = issue_age()`` is the age in the first
+    projected year.  On the *différence de millésime* basis — see :func:`issue_age` for
+    why that matters more here than the choice would in a UK or US model.
+    """
+    return issue_age() + t
 
 
 def prem_rate(t):
-    """r(x): the tariff rate at the attained age in policy year t, as a fraction of SA.
+    """r(x): the tariff rate at the attained age in period t, as a fraction of SA.
 
     A **table lookup and nothing else**.  The published grid steps +38 % from age 59 to 60
     against a trend of about +8 % a year, and a fitted curve smooths that step away — so
-    ``prem_rate(3)/prem_rate(2) = 1.56/1.13 = 1.380531`` on the worked configuration is a
+    ``prem_rate(2)/prem_rate(1) = 1.56/1.13 = 1.380531`` on the worked configuration is a
     test of the premium engine, not a coincidence.
 
-    ``tariff_drift`` multiplies the card by ``(1 + drift)^(t-1)`` and is 0 in the base
+    ``tariff_drift`` multiplies the card by ``(1 + drift)^t`` and is 0 in the base
     run: two of the eight retrieved carriers reserve an express right to reprice the class
     for experience, but freezing the card at its vintage is what keeps the base run reproducible
     from cited data alone.  The grid itself is a 2019-2021 edition — use it for shape, not
@@ -554,7 +578,7 @@ def prem_rate(t):
     """
     base = float(data.premium_rate_table().loc[                      # noqa: F821
         (premium_rate_id(), age(t)), "prem_rate"])
-    return base * (1.0 + tariff_drift) ** (t - 1)                    # noqa: F821
+    return base * (1.0 + tariff_drift) ** t                          # noqa: F821
 
 
 def prem_freq_load():
@@ -581,7 +605,7 @@ def prem_freq_fee():
 
 
 def prem_tariff_pp(t):
-    """SA r(x(t)) f phi: the tariff cotisation per policy in year t, before the fee.
+    """SA r(x(t)) f phi: the tariff cotisation per policy in period t, before the fee.
 
     The rule the source states in its own worked examples: 20 000 € at attained age 34
     gives 20 000 x 0,15/100 = 30 € for one year, and 150 000 € at attained age 49 gives
@@ -591,34 +615,34 @@ def prem_tariff_pp(t):
 
 
 def disc_factor(t):
-    """v^(t-1): the discount factor at ``tech_rate``, used **only** by the equivalence.
+    """v^t: the discount factor at ``tech_rate``, used **only** by the equivalence.
 
     The published cash flows are undiscounted; this rate exists to strike the
     ``constante`` level cotisation and for nothing else.  0,5 % p.a. **[std]**, which is
     what the Institut des actuaires' own illustrations for a death cover use and is well
     inside the art. A. 132-1 cap of min(3,5 %, 60 % TME).
     """
-    return (1.0 + tech_rate) ** (-(t - 1))                           # noqa: F821
+    return (1.0 + tech_rate) ** (-t)                                 # noqa: F821
 
 
 def pols_tariff(t):
-    """p_tau(t): tariff survivorship at the start of year t — insured decrements, no lapse.
+    """p_tau(t): tariff survivorship at the start of period t — insured decrements, no lapse.
 
-    ``p_tau(1) = 1``, ``p_tau(t+1) = p_tau(t) (1 - q_d(t) - q_p(t))`` on the **table**
+    ``p_tau(0) = 1``, ``p_tau(t+1) = p_tau(t) (1 - q_d(t) - q_p(t))`` on the **table**
     rates :func:`mort_rate_base` and :func:`ptia_rate_base`, not on the behaviourally
     loaded ones.  That is both the actuarially right basis for a tariff equivalence and
     what keeps the derivation acyclic — the loaded death rate depends on the lapse path,
     which on the ``constante`` form would depend on the premium the equivalence is about
     to produce.
     """
-    if t <= 1:
+    if t <= 0:
         return 1.0
     return pols_tariff(t - 1) * (
         1.0 - mort_rate_base(t - 1) - ptia_rate_base(t - 1))
 
 
 def tariff_annuity():
-    """The annuity-due factor of the equivalence: ``sum v^(t-1) p_tau(t)`` over the cover.
+    """The annuity-due factor of the equivalence: ``sum v^t p_tau(t)`` over the cover.
 
     15,449728 on the worked configuration, and ``P_lev x 15,449728 = 60 476,25 €`` is the
     present value of the revisable stream on the same basis — the identity that *does*
@@ -626,18 +650,18 @@ def tariff_annuity():
     not.
     """
     return sum(disc_factor(t) * pols_tariff(t)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def tariff_prem_pv():
     """The present value of the revisable cotisation stream on tariff survivorship.
 
-    ``sum v^(t-1) p_tau(t) SA r(x(t)) f phi``; 60 476,2476 € on the worked configuration.
+    ``sum v^t p_tau(t) SA r(x(t)) f phi``; 60 476,2476 € on the worked configuration.
     The fixed *frais d'échéance* is deliberately outside it: the fee is the same amount
     under either premium form, so it neither belongs in the equivalence nor changes it.
     """
     return sum(disc_factor(t) * pols_tariff(t) * prem_tariff_pp(t)
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def prem_level_pp():
@@ -646,7 +670,7 @@ def prem_level_pp():
     ``level_premium()`` where the model point supplies one, otherwise
     ``tariff_prem_pv() / tariff_annuity()`` — a survivorship-and-discount-weighted average
     of the same grid rates, 3 914,3891 € on the worked configuration.  Read another way,
-    ``P_lev / SA`` is the ``v^(t-1) p_tau(t)``-weighted mean of the seventeen grid rates,
+    ``P_lev / SA`` is the ``v^t p_tau(t)``-weighted mean of the seventeen grid rates,
     2,60959276 %, which reaches the same figure without ever forming the premium stream.
 
     Not read at all on the ``revisable`` form.
@@ -657,7 +681,7 @@ def prem_level_pp():
 
 
 def prem_pp(t):
-    """P(t): the cotisation per in-force policy in policy year t, in euros.
+    """P(t): the cotisation per in-force policy in period t, in euros.
 
     The tariff amount on the ``revisable`` form and ``P_lev`` on the ``constante`` form,
     **plus the fixed frais d'échéance once**.  The two fractionation charges are of
@@ -677,7 +701,7 @@ def prem_pp(t):
 
 
 def mort_rate_base(t):
-    """The table death rate at the attained age in policy year t.
+    """The table death rate at the attained age in period t.
 
     A **[std]** Gompertz-form proxy, ``0.00400 x 1.09^(age - 58)``, not a homologated or
     fitted table: the regulatory TH 00-02 / TF 00-02 tables are annexed to an *arrêté* and
@@ -692,7 +716,7 @@ def mort_rate_base(t):
 
 
 def sel_lapse_factor(t):
-    """The selective-lapsation loading on mortality in policy year t **[std]**.
+    """The selective-lapsation loading on mortality in period t **[std]**.
 
     ``1 + lambda max(0, w_cum(t) - w_ref)``.  Lapsers are healthier than persisters, so a
     block that has already shed a large proportion of its lives carries impaired mortality
@@ -711,13 +735,13 @@ def sel_lapse_factor(t):
 
 
 def mort_rate(t):
-    """q_d(t): the annual **dependent** rate of the death decrement in policy year t.
+    """q_d(t): the annual **dependent** rate of the death decrement in period t.
 
     The table rate times the selective-lapsation loading, capped at 1.  Dependent means a
     rate of decrement in a two-decrement table rather than an independent single-decrement
     rate, so it **adds** to :func:`ptia_rate` rather than compounding with it: an
     implementation using ``1 - (1 - q_d)(1 - q_p)`` gets 0.00479680 against 0.00480000 in
-    year 1 of the worked configuration.  Annual, as the library-wide convention requires;
+    the first year of the worked configuration.  Annual, as the library-wide convention requires;
     this model has no monthly rate because its grid is the contract's own annual one.
     """
     return min(1.0, mort_rate_base(t) * sel_lapse_factor(t))
@@ -727,7 +751,7 @@ def ptia_rate_base(t):
     """The PTIA decrement rate on the tariff basis, before any behavioural loading.
 
     ``ptia_ratio x mort_rate_base(t)`` while the cover is on, and **exactly zero** from
-    the first policy year with ``age(t) >= ptia_end_age()``.  Used by :func:`pols_tariff`,
+    the first period with ``age(t) >= ptia_end_age()``.  Used by :func:`pols_tariff`,
     so that the ``constante`` equivalence is struck on the tariff decrements alone.
     """
     if age(t) >= ptia_end_age():
@@ -736,10 +760,10 @@ def ptia_rate_base(t):
 
 
 def ptia_rate(t):
-    """q_p(t): the annual **dependent** rate of the PTIA decrement in policy year t.
+    """q_p(t): the annual **dependent** rate of the PTIA decrement in period t.
 
     ``ptia_ratio x mort_rate(t)`` while the cover is on, and **exactly zero** from the
-    first policy year with ``age(t) >= ptia_end_age()`` — a hard gate on the attained age,
+    first period with ``age(t) >= ptia_end_age()`` — a hard gate on the attained age,
     not a taper, because "the PTIA capital is an anticipated payment of the death capital
     and its payment ends the contract" means the life is gone from ``pols_if``, and the
     cover either attaches at that age or does not.
@@ -756,17 +780,21 @@ def ptia_rate(t):
 
 
 def lapse_rate_base(t):
-    """The table lapse rate in policy year t **[std]**, before any shock multiplier.
+    """The table lapse rate in period t **[std]**, before any shock multiplier.
 
     12 / 10 / 8 / 6 per cent, elevated in the first three years to absorb the 30-day
-    *renonciation* window and early-duration attrition, then flat.  Policy years beyond
-    the table take its last row.  **No observed range exists**: not one of the eight
-    retrieved contracts and neither secondary guide publishes a lapse rate, so the shape
-    is a modeler's construction and the levels are unsourced.  What the contracts do tell
-    us is that voluntary exit is easy and cheap, because there is nothing to forfeit.
+    *renonciation* window and early-duration attrition, then flat.  *lapse_table.csv* is
+    keyed by the **contractual policy year**, 1 to 4, so the lookup maps through
+    :func:`policy_year` — period ``t = 0`` reads the file's policy year 1 — and policy
+    years beyond the table take its last row.  **No observed range exists**: not one of
+    the eight retrieved contracts and neither secondary guide publishes a lapse rate, so
+    the shape is a modeler's construction and the levels are unsourced.  What the
+    contracts do tell us is that voluntary exit is easy and cheap, because there is
+    nothing to forfeit.
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    return float(tbl.loc[min(t, int(tbl.index.max())), "lapse_rate"])
+    return float(tbl.loc[
+        min(policy_year(t), int(tbl.index.max())), "lapse_rate"])
 
 
 def shock_lapse_factor(t):
@@ -774,66 +802,66 @@ def shock_lapse_factor(t):
 
     ``1 + beta max(0, P(t)/P(t-1) - 1 - g0)``.  The revisable form hands the policyholder
     a rising bill, and the published grid's own +38 % step at age 60 is exactly where an
-    affordability response would show; switched on it would bite at ``t = 3`` on the
+    affordability response would show; switched on it would bite at ``t = 2`` on the
     worked configuration and nowhere else.  Off by default (``shock_lapse_beta = 0``), and
-    1 in the first policy year, which has no previous cotisation to compare with.
+    1 in the first period, ``t = 0``, which has no previous cotisation to compare with.
     """
-    if shock_lapse_beta == 0.0 or t <= 1:                            # noqa: F821
+    if shock_lapse_beta == 0.0 or t <= 0:                            # noqa: F821
         return 1.0
     return 1.0 + shock_lapse_beta * max(                             # noqa: F821
         0.0, prem_pp(t) / prem_pp(t - 1) - 1.0 - shock_lapse_g0)     # noqa: F821
 
 
 def lapse_rate(t):
-    """w(t): the annual lapse rate applied at the **end** of policy year t.
+    """w(t): the annual lapse rate applied at the **end** of period t.
 
     The table rate times the shock multiplier, capped at 1, and **zero in the final
-    policy year**: the end of that year is also the moment the cover expires, so a lapse
-    and an expiry are the same event paying the same nothing, and the whole surviving
-    population leaves as an expiry.  That is the notes' ``w(n) = 0`` **[std]** — stated
-    under *Lapse* and in step 7 of their processing order — and it is what reproduces
-    their split of the closure identity.  It moves no cash flow, only the split.  A lapse
-    pays nothing at any duration; see :func:`claims`.
+    projected year**, ``t = proj_len() - 1``: the end of that year is also the moment the
+    cover expires, so a lapse and an expiry are the same event paying the same nothing,
+    and the whole surviving population leaves as an expiry.  That is the notes'
+    ``w(n - 1) = 0`` **[std]** — stated under *Lapse* and in step 7 of their processing
+    order — and it is what reproduces their split of the closure identity.  It moves no
+    cash flow, only the split.  A lapse pays nothing at any duration; see :func:`claims`.
     """
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     return min(1.0, lapse_rate_base(t) * shock_lapse_factor(t))
 
 
 def lapse_cum(t):
-    """w_cum(t): the cumulative lapse proportion of the original cohort before year t.
+    """w_cum(t): the cumulative lapse proportion of the original cohort before period t.
 
     A proportion of :func:`pols_if_init`, **not** a running total of :func:`lapse_rate`,
-    and it drives a loading on *mortality* rather than on lapse.  Zero in the first policy
-    year.
+    and it drives a loading on *mortality* rather than on lapse.  Zero in the first
+    period, ``t = 0``.
     """
-    if t <= 1:
+    if t <= 0:
         return 0.0
     return lapse_cum(t - 1) + pols_lapse(t - 1) / pols_if_init()
 
 
 def pols_if(t):
-    """l(t): the number of policies in force at the **start** of policy year t.
+    """l(t): the number of policies in force at the **start** of period t, at time t.
 
-    ``pols_if_init()`` in year 1, then the notes' recursion
+    ``pols_if(0) = pols_if_init()``, then the notes' recursion
     ``l(t+1) = l(t)(1 - q_d(t) - q_p(t))(1 - w(t))``.  This is the weight on every cash
     flow of the same :func:`result_cf` row.
 
-    ``pols_if(proj_len() + 1)`` is defined and is the **expiring cohort** — the survivors
+    ``pols_if(proj_len())`` is defined and is the **expiring cohort** — the survivors
     whose cover simply runs out — because the notes' closure identity needs it.  It is
     read by :func:`check_decrement_closure` and by nothing else: it is never a weight on a
-    cash flow, and :func:`result_cf` stops at ``t = proj_len()``.  Zero outside
-    ``1 .. proj_len() + 1``.
+    cash flow, and :func:`result_cf` stops at ``t = proj_len() - 1``.  Zero outside
+    ``0 .. proj_len()``.
     """
-    if t < 1 or t > proj_len() + 1:
+    if t < 0 or t > proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside policy year t.
+    """The number of policies in force at a point inside period t.
 
     ``"BEF_DECR"``
         l(t), the start of the year, before any decrement; the same number
@@ -847,22 +875,23 @@ def pols_if_at(t, timing):
         compounded, because they are dependent rates of one table.
 
     ``"AFT_DECR"``
-        l(t+1), the end-of-year state.  In the final policy year
-        :func:`lapse_rate` is zero, so this is the expiring cohort.
+        l(t+1), the end-of-year state.  In the final projected year,
+        ``t = proj_len() - 1``, :func:`lapse_rate` is zero, so this is the
+        expiring cohort.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
         return pols_if(t) * (1.0 - mort_rate(t) - ptia_rate(t))
     if timing == "AFT_DECR":
-        if t < 1 or t > proj_len():
+        if t < 0 or t > proj_len() - 1:
             return 0.0
         return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
     raise ValueError("invalid timing")
 
 
 def pols_death(t):
-    """l(t) q_d(t): expected deaths in policy year t, claimed at the end of the year.
+    """l(t) q_d(t): expected deaths in period t, claimed at the end of the year.
 
     The claimant has already paid the year's cotisation, which fell due in advance at the
     start of it; that is this model's reading of "premium payment ceases on death" on an
@@ -873,7 +902,7 @@ def pols_death(t):
 
 
 def pols_ptia(t):
-    """l(t) q_p(t): expected PTIA claims in policy year t.
+    """l(t) q_p(t): expected PTIA claims in period t.
 
     A **second exit from the same table**, not a second cover: the capital is the death
     capital paid early to the insured, and its payment ends the contract.  A life counted
@@ -883,29 +912,33 @@ def pols_ptia(t):
 
 
 def pols_lapse(t):
-    """Lapses at the end of policy year t, taken from the survivors of both decrements.
+    """Lapses at the end of period t, taken from the survivors of both decrements.
 
     Pays nothing — art. L. 132-23 forbids both *rachat* and *réduction* on a temporaire
-    décès — so this moves :func:`pols_if` and nothing else.  Zero in the final policy
-    year, where the survivors leave as an expiry instead; see :func:`lapse_rate`.
+    décès — so this moves :func:`pols_if` and nothing else.  Zero in the final projected
+    year, ``t = proj_len() - 1``, where the survivors leave as an expiry instead; see
+    :func:`lapse_rate`.
     """
     return pols_if_at(t, "BEF_LAPSE") * lapse_rate(t)
 
 
 def benefit_factor(t):
-    """The benefit schedule factor in policy year t, from *benefit_schedule.csv*.
+    """The benefit schedule factor in period t, from *benefit_schedule.csv*.
 
-    1.0 in every year on the ``constant`` schedule, the only one shipped.  Policy years
-    beyond the table take its last row.  A model point naming a schedule the file does not
-    carry fails here, which is the honest failure: the schedule is missing, not the
-    formula.
+    1.0 in every year on the ``constant`` schedule, the only one shipped.  The file is
+    keyed by the **contractual policy year**, 1 to 57, so the lookup maps through
+    :func:`policy_year` — period ``t = 0`` reads the file's policy year 1 — and policy
+    years beyond the table take its last row.  A model point naming a schedule the file
+    does not carry fails here, which is the honest failure: the schedule is missing, not
+    the formula.
     """
     rows = data.benefit_schedule().loc[benefit_schedule_id()]        # noqa: F821
-    return float(rows.loc[min(t, int(rows.index.max())), "benefit_factor"])
+    return float(rows.loc[
+        min(policy_year(t), int(rows.index.max())), "benefit_factor"])
 
 
 def benefit_pp(t):
-    """B(t): the **contractual** capital payable on a policy-year-t claim, in euros.
+    """B(t): the **contractual** capital payable on a period-t claim, in euros.
 
     ``sum_assured() x benefit_factor(t)``.  It is invariant to :func:`rating_factor`: a
     *surprime* scales the cotisation only, never the capital.  What a claim actually pays
@@ -916,29 +949,31 @@ def benefit_pp(t):
 
 
 def in_waiting(t):
-    """Whether policy year t falls inside the *délai d'attente*.
+    """Whether period t falls inside the *délai d'attente*.
 
-    ``t <= waiting_period_y()``, so False everywhere when the window is not elected —
-    which is the base run and eleven of the twelve model points.
+    ``waiting_period_y`` is a length in **contractual policy years**, so the test is
+    ``policy_year(t) <= waiting_period_y()`` — a one-year window covers period ``t = 0``
+    alone.  False everywhere when the window is not elected, which is the base run and
+    eleven of the twelve model points.
     """
-    return t <= waiting_period_y()
+    return policy_year(t) <= waiting_period_y()
 
 
 def prem_refund_pp(t):
-    """The cotisations collected up to and including policy year t, per policy.
+    """The cotisations collected up to and including period t, per policy.
 
     Paid back to the heirs on a death inside the *délai d'attente*, in place of the
-    capital.  Cotisations fall in advance, so a claimant in year t has paid t of them.
-    Accumulated at nil interest **[std]**: no source gives a rate, and the window is one
-    year on the model point that uses it.
+    capital.  Cotisations fall in advance, so a claimant in period t has paid
+    ``policy_year(t) = t + 1`` of them.  Accumulated at nil interest **[std]**: no source
+    gives a rate, and the window is one year on the model point that uses it.
     """
-    if t < 1:
-        return 0.0
+    if t <= 0:
+        return prem_pp(0)
     return prem_refund_pp(t - 1) + prem_pp(t)
 
 
 def benefit_death_pp(t):
-    """What a death claim in policy year t actually pays, per claim, in euros.
+    """What a death claim in period t actually pays, per claim, in euros.
 
     ``B(t)`` outside the *délai d'attente*; inside it, the cotisations collected, because
     an illness-caused death inside the window is not covered and the contract returns what
@@ -951,7 +986,7 @@ def benefit_death_pp(t):
 
 
 def benefit_ptia_pp(t):
-    """What a PTIA claim in policy year t actually pays, per claim, in euros.
+    """What a PTIA claim in period t actually pays, per claim, in euros.
 
     ``B(t)`` — the same capital as a death claim, which is what "acceleration" means —
     and **zero** inside a *délai d'attente*, where the PTIA cover has not yet attached.
@@ -964,7 +999,7 @@ def benefit_ptia_pp(t):
 
 
 def accident_extra_pp(t):
-    """The additional accidental capital per claim in policy year t **[std]**.
+    """The additional accidental capital per claim in period t **[std]**.
 
     ``(accident_multiplier() - 1) x acc_share x B(t)``.  The option pays an *additional*
     capital on the **accidental share** of claims, not a uniform uplift on every claim, so
@@ -979,24 +1014,25 @@ def accident_extra_pp(t):
 
 
 def suicide_factor(t):
-    """sigma(t): the death-benefit exclusion factor; below 1 in policy year 1 only.
+    """sigma(t): the death-benefit exclusion factor; below 1 at ``t = 0`` only.
 
-    Art. L. 132-7 makes the death cover "de nul effet" for suicide in the first year and
-    covered from the second.  0.98 **[std]** stands for "about 2 % of first-year deaths
-    are excluded suicides" — no retrieved source gives a suicide share of deaths at any
-    age, and setting it to 1.000 is a defensible variant.  What is not defensible is
-    applying it to PTIA, or beyond year 1, or importing the art. R. 132-5 immediate-cover
-    ceiling of 120 000 €, which belongs to principal-residence loan cover.
+    Art. L. 132-7 makes the death cover "de nul effet" for suicide in the first year —
+    policy year 1, which is period ``t = 0`` — and covered from the second.  0.98
+    **[std]** stands for "about 2 % of first-year deaths are excluded suicides" — no
+    retrieved source gives a suicide share of deaths at any age, and setting it to 1.000
+    is a defensible variant.  What is not defensible is applying it to PTIA, or beyond
+    the first year, or importing the art. R. 132-5 immediate-cover ceiling of 120 000 €,
+    which belongs to principal-residence loan cover.
 
     It is worth 12,00 € on the worked configuration — immaterial to the result, material
     to correctness, because it is the *only* thing standing between expected claim events
     and expected claim amounts there.
     """
-    return suicide_year1_factor if t == 1 else 1.0                   # noqa: F821
+    return suicide_year1_factor if t == 0 else 1.0                   # noqa: F821
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in period t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
         the capital paid at the end of the year of death,
@@ -1006,7 +1042,7 @@ def claims(t, kind=None):
 
     ``"PTIA"``
         the **same** capital paid early on a PTIA claim, with no suicide
-        factor.  Zero from the first policy year at or beyond
+        factor.  Zero from the first period at or beyond
         ``ptia_end_age()``, and zero inside a *délai d'attente*.
 
     ``"LAPSE"``
@@ -1029,19 +1065,19 @@ def claims(t, kind=None):
 
 
 def premiums(t):
-    """Cotisation income at the start of policy year t, an inflow.
+    """Cotisation income at the start of period t, an inflow.
 
     ``P(t) l(t)``, annual in advance — the contracts' base mode.  Not further multiplied
     by ``(1 - q_d - q_p)``: claims fall at the end of the year, so a claimant has already
     paid the year's cotisation, and applying the premium-cessation rule again here
-    understates year-t income by about 0,5 % at the anchor age.
+    understates period-t income by about 0,5 % at the anchor age.
     """
     return prem_pp(t) * pols_if(t)
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + expense_infl)^(t-1)`` **[std]**."""
-    return (1.0 + expense_infl) ** (t - 1)                           # noqa: F821
+    """The expense inflation factor in period t: ``(1 + expense_infl)^t`` **[std]**."""
+    return (1.0 + expense_infl) ** t                                 # noqa: F821
 
 
 def claim_expenses(t):
@@ -1057,22 +1093,23 @@ def claim_expenses(t):
 
 
 def commissions(t):
-    """Commission outgo in policy year t **[std]**, on the cotisation of that year.
+    """Commission outgo in period t **[std]**, on the cotisation of that year.
 
-    40 % of the first-year cotisation, then 5 % from year 2 — levels chosen so that the
-    year-one acquisition cost is of the same order as the year-one cotisation at the
-    anchor age.  No French insurer publishes a commission scale for this product.
+    40 % of the first-year cotisation at ``t = 0``, then 5 % from ``t = 1`` (policy
+    year 2) — levels chosen so that the year-one acquisition cost is of the same order as
+    the year-one cotisation at the anchor age.  No French insurer publishes a commission
+    scale for this product.
 
     This is a **part of** :func:`expenses`, not a further line beside it: the notes' own
     expense column includes it, and subtracting both from :func:`premiums` charges the
     commission twice.
     """
-    rate = comm_rate_init if t == 1 else comm_rate_renew             # noqa: F821
+    rate = comm_rate_init if t == 0 else comm_rate_renew             # noqa: F821
     return rate * prem_pp(t) * pols_if(t)
 
 
 def expenses(t):
-    """Total expense outgo in policy year t, **including commission** **[std]**.
+    """Total expense outgo in period t, **including commission** **[std]**.
 
     Acquisition 250 € per policy at issue, maintenance 25 € per in-force policy per year
     inflating at 2 %, the claim expense, and the commission.  All four are round-number
@@ -1081,17 +1118,17 @@ def expenses(t):
     corpus are the fractionation loadings, the *frais d'échéance* and a 1,30 € association
     subscription — none of which is an expense assumption.
 
-    On the worked configuration ``expenses(1) = 905.72`` is ``250 + 25 + 0.72 + 630``.
+    On the worked configuration ``expenses(0) = 905.72`` is ``250 + 25 + 0.72 + 630``.
     That last term is the initial commission, which is why :func:`net_cf` subtracts this
     cells and not :func:`commissions` as well.
     """
-    acq = acq_expense * pols_if(t) if t == 1 else 0.0                # noqa: F821
+    acq = acq_expense * pols_if(t) if t == 0 else 0.0                # noqa: F821
     maint = maint_expense * inflation_factor(t) * pols_if(t)         # noqa: F821
     return acq + maint + claim_expenses(t) + commissions(t)
 
 
 def net_cf(t):
-    """The net liability cash flow of policy year t, **income positive**.
+    """The net liability cash flow of period t, **income positive**.
 
     Cotisations less death claims, PTIA claims and total expense — and total expense
     already carries the commission, so it is subtracted once.  The notes' own sign, and
@@ -1100,8 +1137,8 @@ def net_cf(t):
     On the ``revisable`` form the shape to expect is almost no new-business strain, the
     year's cotisation very nearly paying the year's acquisition cost, then thin positive
     margins that grow as the tariff climbs.  The ``constante`` form inverts it: strongly
-    positive in year 1 and carrying a real *provision mathématique* against the later
-    years.
+    positive in the first year and carrying a real *provision mathématique* against the
+    later years.
     """
     return premiums(t) - claims(t) - expenses(t)
 
@@ -1118,7 +1155,7 @@ def liability_cf(t):
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in period t; zero everywhere.
 
     ``pols_if(t) - pols_if(t+1) - pols_death(t) - pols_ptia(t) - pols_lapse(t)``.  The
     recursion multiplies ``(1 - q_d - q_p)(1 - w)`` while the three exits are formed
@@ -1126,15 +1163,15 @@ def check_pols_roll_fwd_resid(t):
     read at the same ``t``.  What it catches is therefore a **misindexed recursion**:
     rolling forward with ``w(t-1)`` or ``q_d(t+1)``, or dropping the PTIA decrement from
     the recursion while still paying PTIA claims, all leave a residual here.  In the final
-    policy year ``pols_lapse`` is zero and ``pols_if(t+1)`` is the expiring cohort, so the
-    identity closes there too.
+    projected year ``pols_lapse`` is zero and ``pols_if(t+1) = pols_if(proj_len())`` is
+    the expiring cohort, so the identity closes there too.
     """
     return (pols_if(t) - pols_if(t + 1)
             - pols_death(t) - pols_ptia(t) - pols_lapse(t))
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected policy year.
+    """True when the in-force roll-forward closes in every projected year.
 
     The library-wide form of a roll-forward check: no argument, one bool over all t, so
     one test can call it across every model.  :func:`check_pols_roll_fwd_resid` gives the
@@ -1142,11 +1179,11 @@ def check_pols_roll_fwd():
     """
     return all(abs(check_pols_roll_fwd_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_decrement_closure_resid(t):
-    """The cumulative decrement-closure residual at the end of policy year t; zero.
+    """The cumulative decrement-closure residual at the end of period t; zero.
 
     ``sum of (deaths + PTIA claims + lapses) up to t, plus pols_if(t+1), less the original
     policy``.  It is the notes' own closure identity — ``0.06939268 + 0.00536169 +
@@ -1161,7 +1198,7 @@ def check_decrement_closure_resid(t):
     product's first-order failure mode and which the cash flows alone would not reveal.
     """
     exits = sum(pols_death(s) + pols_ptia(s) + pols_lapse(s)
-                for s in range(1, t + 1))
+                for s in range(t + 1))
     return exits + pols_if(t + 1) - pols_if_init()
 
 
@@ -1174,13 +1211,13 @@ def check_decrement_closure():
     """
     return all(abs(check_decrement_closure_resid(t))
                <= roll_fwd_tol * max(pols_if_init(), 1.0)            # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_ptia_gate_resid(t):
-    """The PTIA cessation residual in policy year t; zero everywhere.
+    """The PTIA cessation residual in period t; zero everywhere.
 
-    ``ptia_rate(t) + pols_ptia(t) + claims(t, "PTIA")`` in every policy year whose
+    ``ptia_rate(t) + pols_ptia(t) + claims(t, "PTIA")`` in every period whose
     attained age has reached ``ptia_end_age()``, and zero before that.
 
     **Trivially zero by construction** when the gate in :func:`ptia_rate` is right, since
@@ -1190,7 +1227,7 @@ def check_ptia_gate_resid(t):
     hard cut-off, ``>`` where ``>=`` belongs (which would keep PTIA cover for the whole of
     the year at the cessation age), a gate read off ``cover_end_age`` instead of
     ``ptia_end_age``, and a gate applied to the death decrement instead of the PTIA one.
-    On the worked configuration it is exercised at ``t = 8 ... 17``, and on model point 11,
+    On the worked configuration it is exercised at ``t = 7 ... 16``, and on model point 11,
     which enters at exactly ``ptia_end_age``, at every ``t``.
     """
     if age(t) < ptia_end_age():
@@ -1205,11 +1242,11 @@ def check_ptia_gate():
     residual of the year that failed.
     """
     return all(abs(check_ptia_gate_resid(t)) <= roll_fwd_tol         # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_no_cash_value_resid(t):
-    """The lapse-benefit residual in policy year t: ``claims(t, "LAPSE")``; zero everywhere.
+    """The lapse-benefit residual in period t: ``claims(t, "LAPSE")``; zero everywhere.
 
     **Trivially zero by construction**, because ``claims(t, "LAPSE")`` returns a literal
     zero.  It is published because the zero is a statutory fact rather than a modelling
@@ -1223,17 +1260,17 @@ def check_no_cash_value_resid(t):
 
 
 def check_no_cash_value():
-    """True when a lapse pays nothing in every projected policy year.
+    """True when a lapse pays nothing in every projected year.
 
     No argument, one bool over all t;  :func:`check_no_cash_value_resid` gives the signed
     residual of the year that failed.
     """
     return all(abs(check_no_cash_value_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy year t.
+    """Result table of cashflows, indexed by the 0-based time index t.
 
     ``pols_if`` is the start-of-year count, which is the weight applied to every cash flow
     on the same row.  ``expenses`` is the notes' total and **includes** ``commissions``,
@@ -1242,10 +1279,10 @@ def result_cf():
     statute — there is no surrender value — and is published rather than dropped.
     ``liability_cf`` is ``net_cf`` outgo-positive.
 
-    The frame runs ``t = 1 ... proj_len()`` and stops: cover ceases at the *échéance*
-    following ``cover_end_age`` with nothing payable.
+    The frame runs ``t = 0 ... proj_len() - 1`` — ``proj_len()`` rows — and stops: cover
+    ceases at the *échéance* following ``cover_end_age`` with nothing payable.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1263,8 +1300,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts, decrement rates and per-policy amounts, indexed by t."""
-    ts = list(range(1, proj_len() + 1))
+    """Result table of policy counts, decrement rates and per-policy amounts, indexed by t.
+
+    The same frame as :func:`result_cf`: ``t = 0 ... proj_len() - 1``.
+    """
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

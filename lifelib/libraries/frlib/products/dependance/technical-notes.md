@@ -57,7 +57,10 @@ BCAC-style published reference table for *dépendance* was located [R12 §3.1.3]
   omission, and its direction of error is stated under *Known modeling pitfalls*.
 - **Projection frequency.** Monthly, matching the *rente mensuelle à terme échu*
   [S1 §4.3.1.2] [S5 art. 16] [S6 art. 26] [S7 §4.2.1] and the monthly premium
-  [S1 §1.2.2] [S2]. `t` is the policy month, `t = 0, 1, …, proj_len`.
+  [S1 §1.2.2] [S2]. `t` is the policy month and it is **0-based**: `t = 0` is the first
+  projected month, the frame is `t = 0, 1, …, proj_len − 1`, `proj_len` is the **number**
+  of projected months, and the policy year is the derived label `y(t) = floor(t/12) + 1`,
+  so policy year 1 is `t = 0…11`.
 - **Timing conventions [std].** Premium received at the **start** of month `t`, and only
   from lives in `pols_auto`; maintenance and assistance expense at the start of month `t`;
   all benefits, refunds and claim expenses at the **end** of month `t`; state transitions
@@ -75,8 +78,9 @@ BCAC-style published reference table for *dépendance* was located [R12 §3.1.3]
   month following the opening of the right without mentioning a new *franchise*.
 - **Currency and horizon.** EUR; *rente*, *capital* and premium in € per month or per
   event. Cover is *viagère* with no age limit [S1 §1.1.5] [S5 art. 8], so the projection
-  runs to a terminal age of **110 [std]**: the last projected month is
-  `proj_len = 12 × (110 − entry_age) − 1`, 479 and so 480 months for the base cell.
+  runs to a terminal age of **110 [std]**: it is
+  `proj_len = 12 × (110 − entry_age)` months long, 480 for the base cell, so the last
+  projected month is `t = proj_len − 1 = 479`.
 - **Contract boundary.** The premium is *viagère* and the tariff is revisable for the
   portfolio [S1 §1.2.3] [S5 art. 22] [S7 §4.4]. The model projects all future premiums and
   benefits inside the boundary; whether a revisable-tariff contract has a Solvabilité II
@@ -350,7 +354,8 @@ dropping `mu_T · pi_T` understates `i_T`. **`i_A` and `i_T` are not independent
 raising the aggravation force lowers the direct-to-*totale* incidence, because the stock of
 *totale* lives is pinned by the assumed prevalence. And **`i_P` can go negative at extreme
 ages**, where the prevalence slope flattens while excess mortality does not; the model
-floors both rates at zero **[std]**, which binds only above age 110 on this basis.
+floors both rates at zero **[std]**, which does not bind on the female basis inside the
+projection and binds at attained age 109 on the male one.
 
 Resulting annual forces on the [std] basis, and the monthly probabilities
 `i_m = 1 − exp(−i/12)`:
@@ -420,7 +425,7 @@ magnitude above the per-instalment one.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month, `t = 0, 1, …, proj_len`; `y(t) = floor(t/12) + 1`; `age(t) = entry_age + floor(t/12)` |
+| `t` | policy month, 0-based: `t = 0, 1, …, proj_len − 1`; `y(t) = floor(t/12) + 1`; `age(t) = entry_age + floor(t/12)` |
 | `G(y)`, `CAP(y)`, `P(y)` | guaranteed *rente totale*, *capital*, monthly premium in policy year `y`; `G(1) = 1,000`, `CAP(1) = 3,500`, `P(1) = 75` |
 | `g_G`, `g_S`, `r(y)` | *revalorisation* of guarantees, of *rentes en service*, tariff revision: 0.010 / 0.015 / 0 then 0.015 **[std]** |
 | `rho` | partial/total *rente* ratio, 0.50 |
@@ -463,12 +468,16 @@ premiums have been paid):
 
     surv_r(t) = red(t) x (1 - q_H(t))
     n_Tr(t)   = surv_r(t) x i_Tm(t)
-    red(t+1)  = surv_r(t) - n_Tr(t) + lapse(t) x 1{t >= 12 x reduction_qualifying_years - 1}
+    red(t+1)  = surv_r(t) - n_Tr(t) + lapse(t) x 1{(t + 1) >= 12 x reduction_qualifying_years}
 
 with the entering *rente* frozen at `G(y) × c(n)` at the reduction date and never revalued
 before claim [S7 §4.6]. Implementations that cannot carry a per-reduction-cohort amount may
 track `red` and the probability-weighted mean frozen *rente* instead; that is exact in
 expectation because incidence does not depend on the amount.
+
+The indicator counts the instalments already paid: with `t` 0-based, the lapse at the end of
+month `t` becomes a *mise en réduction* once `t + 1` premiums are behind it, so the first
+such month is `t = 12 × 8 − 1 = 95` on the base cell.
 
 From the two dependent states, per duration cohort `z`, with the aggravated lives paid the
 **partial** *rente* for the month in which they aggravate — the higher amount takes effect
@@ -496,7 +505,7 @@ The *capital* is paid on entry from `pols_auto` only — reduced memberships los
 
 ### Monthly processing order [std]
 
-For `t = 0, 1, …, proj_len`:
+For `t = 0, 1, …, proj_len − 1`:
 
 1. **Anniversary (start of month, `t = 12, 24, …`).** `G(y) = G(y−1) × (1 + g_G)`;
    `CAP(y) = CAP(y−1) × (1 + g_G)`; `P(y) = P(y−1) × (1 + g_G) × (1 + r(y))`; every *rente*
@@ -630,7 +639,7 @@ policyholder-behaviour study was retrieved.
 Totale et Partielle on the 5-act AVQ grid [S1 §2.2]; `rente_total_monthly` = 1,000 €,
 `partial_ratio` = 0.50, `capital_amount` = 3,500 €, `premium_monthly` = 75 € [R8 §2.2](#frlib-dependance-r8);
 *carence* 0 / 12 / 36 months by cause; *franchise* 3 months; reduction from 8 years;
-`proj_len = 12 × (110 − 70) − 1 = 479`, the last projected month, so 480 months.
+`proj_len = 12 × (110 − 70) = 480` months, so the last projected month is `t = 479`.
 Undiscounted. All sixteen rows below sit in policy years 1 and 2, so two sets of rates
 drive them.
 

@@ -27,12 +27,23 @@ print("revalorisation = {:.2%} p.a. {}   premiums linked = {}   reduction share 
     proj.reval_rate(), "simple" if proj.reval_simple() else "compound",
     proj.reval_prem_linked(), proj.reduction_share()))
 xi, xc = proj.crossover_mth("ISSUE"), proj.crossover_mth("CURRENT")
+
+
+def crossover_label(x):
+    """Label a crossover month, or "none" for the -1 never-crosses sentinel.
+
+    ``t`` is the 0-based policy month, so the policy year is ``t // 12 + 1``.
+    """
+    if x < 0:
+        return "none"
+    return "t = {} (policy year {})".format(x, x // 12 + 1)
+
+
 print("surrender scale = {}   crossover: vs capital at issue {}, vs revalorised {}".format(
-    proj.surr_scale(),
-    "month {} (year {})".format(xi, (xi - 1) // 12 + 1) if xi else "none",
-    "month {} (year {})".format(xc, (xc - 1) // 12 + 1) if xc else "none"))
+    proj.surr_scale(), crossover_label(xi), crossover_label(xc)))
 print()
-rows = [1, 6, 12, 13, 24, 60, 120, 240]
-print(proj.result_cf().loc[[t for t in rows if t <= proj.proj_len()]].round(2).to_string())
+# Policy months are 0-based: t = 0 is the first month, t = 12 the first anniversary.
+rows = [0, 5, 11, 12, 23, 59, 119, 239]
+print(proj.result_cf().loc[[t for t in rows if t < proj.proj_len()]].round(2).to_string())
 
 model.close()

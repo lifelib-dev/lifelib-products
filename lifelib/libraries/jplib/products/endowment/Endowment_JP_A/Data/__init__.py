@@ -122,6 +122,10 @@ def mort_table():
 def lapse_table():
     """Surrender and premium-default rates by policy year, from *lapse_table.csv*.
 
+    The index column is ``policy_year``, the **contractual 1-based label**: rows 1, 2 and
+    3, which the projection's 0-based period index reaches as ``t + 1``.  It is not the
+    frame's ``t`` and its values are left alone by the 0-based time-index convention.
+
     Two columns.  ``lapse_rate`` is the voluntary surrender rate, 4 / 3 / 2 percent with
     the last row applying to every later year **[std]**; ``default_rate`` is the
     premium-default rate that feeds the automatic premium loan module, which is off in
@@ -134,8 +138,12 @@ def lapse_table():
 def benefit_schedule_table():
     """The staged 学資金 schedules, read from *benefit_schedule_table.csv*.
 
-    Indexed by ``schedule_id``, one row per payment, each row giving the policy year and
-    the payment as a fraction of 基準保険金額.  The schedule is **data, not formula**:
+    Indexed by ``schedule_id``, one row per payment, each row giving the **anniversary**
+    ``k`` the payment falls on — ``k = 0`` at issue, so a payment at ``k`` falls at the
+    end of period ``k - 1`` — and the payment as a fraction of 基準保険金額.  The ``k``
+    column is a time *point* and is already 0-based; it is not the projection's period
+    index ``t`` and its values are left alone by the 0-based time-index convention.
+    The schedule is **data, not formula**:
     observed designs run from a single payment of 100% to four payments of 100% each, so
     an implementation that hard-codes a shape is modelling one carrier.  The maturity
     benefit is not a row here — it is always present on both cells and is held

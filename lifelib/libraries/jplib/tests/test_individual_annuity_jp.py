@@ -11,6 +11,16 @@ than pickled so that a reviewer can compare them against the notes by eye.
 Tolerances follow the precision the notes display: money to the yen-cent, in-force and
 survivorship to eight decimals, the fund to six.
 
+**The time index is 0-based**, as everywhere in the library: ``t = 0`` is the first
+projected policy year, the year of issue, period ``t`` runs from time ``t`` to time
+``t + 1``, ``age(t) = x + t`` and ``pols_if(0) = 1``.  ``proj_len()`` is the *number* of
+projected years and the exclusive end of the frame, so ``result_cf()`` covers
+``t = 0 ... proj_len() - 1`` in ``proj_len()`` rows — 45 on the anchor cell.  Every golden
+dictionary below is keyed by that ``t``, every literal argument is that ``t``, and a
+contractual policy year, where the prose uses one, is the 1-based label ``t + 1``.
+``av_pp``, ``db_pp``, ``cv_pp`` and ``surr_charge_pp`` are time-point values *at time*
+``t``, which is why the claims of year ``t`` are struck on their ``t + 1`` value.
+
 This product is the library's **payout chassis**, and it is really two contracts joined at
 one date, so the module carries far more than a cash-flow comparison.  Every product fact
 the notes list under **Known modeling pitfalls** earns its own test, named after the
@@ -489,8 +499,9 @@ def test_worked_example_totals_and_shape(jp_annuity_anchor):
 def test_worked_example_lapse_curve(jp_annuity_anchor):
     """The [std] duration curve, segment by segment, including its two zeros.
 
-    6.0 / 5.0 / 4.5 / 4.0 percent over the first ten policy years, 3.0% for the rest of
-    the 保険料払込期間, 1.0% through the 据置期間 where no premium is due, and zero from
+    6.0 / 5.0 / 4.5 / 4.0 percent over the first ten policy years — t = 0, 1, 2 and
+    3 ... 9, the CSV's ``from_year`` keys being the model's own 0-based t — 3.0% for the
+    rest of the 保険料払込期間, 1.0% through the 据置期間 where no premium is due, and zero from
     t = n - 1.
     """
     a = jp_annuity_anchor
@@ -1038,6 +1049,10 @@ def test_the_life_annuity_election_off_and_on(individual_annuity, jp_annuity_anc
     With the module on the instalments are unconditional for g years and life-contingent
     after, the horizon runs to the payout table's terminal age instead of n + k, and the
     in-force runs off on the best-estimate payout basis once the guarantee expires.
+
+    ``proj_len()`` is a **count** of projected years there too: ``omega - x + 1`` rows,
+    whose last one, ``t = proj_len() - 1 = omega - x``, is the year the annuitant attains
+    the terminal age.  The ``+ 1`` is the count, not an off-by-one in the index.
     """
     a = jp_annuity_anchor
     assert a.payout_form() == "certain"
@@ -1047,6 +1062,8 @@ def test_the_life_annuity_election_off_and_on(individual_annuity, jp_annuity_anc
     n, g = p.annuitisation_t(), p.guar_term_y()
     assert p.payout_form() == "life_guar"
     assert p.proj_len() == p.omega_age("annuity_payout_2007") - p.issue_age() + 1 == 93
+    assert len(p.result_cf()) == p.proj_len()
+    assert p.age(p.proj_len() - 1) == p.omega_age("annuity_payout_2007")
     for t in range(n, n + g):
         assert p.pols_if(t) == p.pols_if(n)          # unconditional over the guarantee
         assert p.annuity_pp(t) == LIFE_ANNUITY_AMOUNT
@@ -1126,7 +1143,9 @@ def test_the_apl_module_off_and_on(individual_annuity, jp_annuity_anchor):
 def test_the_policy_loan_module_off_and_on(individual_annuity, jp_annuity_anchor):
     """契約者貸付 off at the anchor cell and on at model point 8.
 
-    A loan of half the 解約返戻金 drawn at policy year 20 **[std]**, compounding at 2.40%
+    A loan of half the 解約返戻金 drawn at ``t`` = 20 **[std]** — ``loan_draw_year`` in
+    ``pricing_table.csv`` is a value of the 0-based ``t``, so the drawdown is the
+    twenty-first policy year and ``loan_pp(19)`` is still zero — compounding at 2.40%
     p.a. [S11] [S8] and capped at the 解約返戻金 [S4] [REG-R14].  Only the drawdown is a cash
     flow; the balance is recovered by deduction from the 死亡給付金, the 解約返戻金 and the
     年金原資, so it never touches the fund itself.
@@ -1401,14 +1420,23 @@ def test_invalid_arguments_are_rejected_by_name(individual_annuity, jp_annuity_a
 
 
 def test_result_cf_shape(jp_annuity_anchor):
-    """The published statement's columns and their order, which readers depend on.
+    """The published statement's frame, columns and their order, which readers depend on.
+
+    The frame is the library-wide 0-based one: indexed by ``t``, opening at ``t = 0`` — the
+    year of issue — and running contiguously to ``proj_len() - 1``, so it has exactly
+    ``proj_len()`` rows.
 
     ``claims_commutation`` and ``policy_loans`` are columns of zeros in the base run and are
     published rather than dropped, because a zero states that a module is off where a
     missing column would only hide it.
     """
-    df = jp_annuity_anchor.result_cf()
+    a = jp_annuity_anchor
+    df = a.result_cf()
     assert df.index.name == "t"
+    assert df.index[0] == 0
+    assert df.index[-1] == a.proj_len() - 1
+    assert len(df) == a.proj_len()
+    assert list(df.index) == list(range(a.proj_len()))
     assert list(df.index) == list(range(0, 45))
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_annuity", "claims_death", "claims_lapse",
@@ -1428,6 +1456,7 @@ def test_result_pols_reads_the_crossover(jp_annuity_anchor):
     """
     df = jp_annuity_anchor.result_pols()
     assert df.index.name == "t"
+    assert list(df.index) == list(range(jp_annuity_anchor.proj_len()))
     assert list(df.columns) == [
         "pols_if", "lives_if", "pols_death", "pols_lapse", "pols_commute",
         "pols_maturity", "mort_rate", "lapse_rate", "av_pp", "db_pp", "cv_pp",

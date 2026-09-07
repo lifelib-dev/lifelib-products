@@ -64,7 +64,9 @@ art. A132-16 clock counts financial years. `Versements` and `rachats partiels` a
 evenly through the year and enter the crediting base at weight 0.5; the revalorisation
 and the management charge land at 31 December; decrements act at 31 December **after**
 crediting, so an exiting policy takes the full year's `taux servi`. Age is age last
-birthday. ``t`` counts policy years from the valuation date, 1-based.
+birthday. ``t`` counts policy years from the valuation date and is **0-based**: ``t = 0``
+is the first projected year, year ``t`` runs from time ``t`` to time ``t + 1``, the frame
+is ``t = 0 … proj_len() − 1``, and the contractual policy year is ``t + 1``.
 
 **`Prélèvements sociaux` are inside the account and outside ``net_cf``.** The 17.2% levy
 is withheld as the interest is credited, every year, because the rights are expressed in
@@ -87,7 +89,7 @@ or reserving result.**
 
 **Verification.** ``tests/test_assurance_vie_euro_fr.py`` asserts the notes' worked
 example row by row to the cent — the `taux servi` and PPB table, the `épargne acquise`
-roll-forward, the year-6 trace at full precision, the twelve-year levy and account
+roll-forward, the ``t = 5`` trace at full precision, the twelve-year levy and account
 identities, and the PPB clock closing exactly at its last date — and then one test per
 modelling pitfall the notes list.
 

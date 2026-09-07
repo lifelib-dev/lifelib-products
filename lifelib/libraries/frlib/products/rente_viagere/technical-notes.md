@@ -29,9 +29,15 @@ keeps its original comma.
   value [R8], no account value and no policyholder option of any kind [S1] [S2] [S3] [S4]
   [S5] [S6] [S8]. The only decrements are deaths. There is **no lapse machinery anywhere
   in this model** and that is a cited product feature, not an omission.
-- **Projection frequency and origin.** Monthly grid, t = 1, 2, … months from the effective
-  date, which is always the 1st day of a civil month [S2] [S3] [S6]; month t is the whole
-  civil month beginning at the (t − 1)-th month-start after it.
+- **Projection frequency and origin.** Monthly grid, **0-based**: t = 0, 1, …, proj_len − 1
+  months from the effective date, which is always the 1st day of a civil month
+  [S2] [S3] [S6]; month t is the whole civil month beginning at the t-th month-start after
+  it, so t = 0 is the civil month of the effective date itself and month t runs from time t
+  to time t + 1. proj_len is the **number** of months projected, the policy year containing
+  month t is t ÷ 12 + 1 (integer division), and the attained ages step at each 12-month
+  multiple of t. Survival is carried at the **time points** t = 0, 1, …: l(t) is the
+  probability of being alive at time t, l(0) = 1, so month t opens at l(t) and closes at
+  l(t + 1), and no quantity is ever indexed before time 0.
 - **The model carries the calendar, not just the duration.** Revalorisation is credited at
   **31 December** [S2 pt 10.f], so the model point carries the effective date's calendar
   year and civil month. Nothing in this product happens on a policy anniversary.
@@ -81,7 +87,7 @@ keeps its original comma.
 | `arrerage_charge_rate` f | float, *frais d'arrérages* per *quittance* | 0.03 [S5] [S7 Art. 17.3] |
 | `technical_rate` i | float, *taux technique* priced at conversion | 0.0000 [S2 pt 10.d] [S3] |
 | `mort_basis` | enum {`table`, `scenario`}; the scenario switch is **[std]** (see Worked example) | `scenario` |
-| `death_mth` | int, month of death on the `scenario` basis; 0 = survives | 26 (annuitant), 0 (reversionary) |
+| `death_mth` | int, month of death on the `scenario` basis, on the 0-based clock; blank or negative = survives | 25 (annuitant), −1 (reversionary) |
 
 Every **[std]** in the Example column is a choice of the worked configuration, not a
 product feature; each is restated and tagged in the Worked example section below, and the
@@ -104,15 +110,15 @@ attribute: both are insurer-discretionary, set portfolio-wide, and live in class
 
 | Variable | Description | Updated |
 |---|---|---|
-| `cal_year_index(t)` k(t) | Number of 31 Decembers between the effective date and the end of month t | monthly |
+| `cal_year_index(t)` k(t) | Number of 31 Decembers strictly before the start of month t | monthly |
 | `revalo_factor(t)` R(t) | Cumulative revalorisation index; R = 1 until the first 1 January | at each 1 January |
 | `palier_factor(t)` Π(t) | Step multiplier of the *rente par paliers* schedule; 1 when none | at palier boundaries |
 | `annual_income(t)` A(t) | Gross annualised *rente* in force = A₀ R(t) Π(t) | monthly |
-| `lives_if(t, life)` l(t, ·) | Survival probability to the end of month t; l(0) = 1 | monthly |
-| `lives_death(t, life)` d(t, ·) | l(t − 1, ·) − l(t, ·) | monthly |
+| `lives_if(t, life)` l(t, ·) | Survival probability to **time** t, t = 0 at the effective date; l(0) = 1 | monthly |
+| `lives_death(t, life)` d(t, ·) | l(t, ·) − l(t + 1, ·), the deaths of month t | monthly |
 | `certain_floor(t)` γ(t) | 1 while the *annuités garanties* run, else 0 | monthly |
 | `payment_factor(t)` | max(γ(t), l_a at the payment point) — the annuitant stream's factor | payment months |
-| `reversion_factor(t)` | δ (1 − l_a(t − 1)) l_r at the payment point | payment months |
+| `reversion_factor(t)` | δ (1 − l_a(t)) l_r at the payment point | payment months |
 | `cum_annuity_pp(t, kind)` G(t) | Cumulative gross *arrérages*, as-if-alive (`"ANNUITANT"`) or expected across both streams (`"ALL"`) | payment months |
 | `pols_if(t)` | Probability any payment obligation remains | monthly |
 | `inflation_factor(t)` | Expense inflation index, stepping at each 1 January | at each 1 January |
@@ -260,12 +266,12 @@ and no source publishes a suspension frequency.
 
 | Symbol | Meaning |
 |---|---|
-| t | month index from the effective date, t = 1, 2, … |
+| t | month index from the effective date, 0-based: t = 0, 1, …, proj_len − 1 |
 | Y0, M0 | calendar year and civil month of the effective date (M0 = 1 for January) |
-| k(t) | completed 31 Decembers between the effective date and the end of month t |
+| k(t) | completed 31 Decembers strictly before the start of month t |
 | g_a, g_r | *millésimes* (birth years) of annuitant and reversionary |
-| x_a(t), x_r(t) | attained ages, x(t) = x(0) + floor((t − 1)/12) **[std]** (Model scope, "Age basis and generation") |
-| m | payments per year; payment months T = {t : t mod (12/m) = 0} (arrears) |
+| x_a(t), x_r(t) | attained ages, x(t) = x(0) + floor(t/12) **[std]** (Model scope, "Age basis and generation") |
+| m | payments per year; payment months T = {t : (t + 1) mod (12/m) = 0} (arrears) |
 | C, ρ, κ | *capital constitutif*, *taux de rente*, option coefficient |
 | A₀, A(t) | gross annual *rente* at conversion and in force in month t |
 | ν, R(t) | annual revalorisation rate and its cumulative index |
@@ -273,8 +279,8 @@ and no source publishes a suspension frequency.
 | δ, n | *taux de réversion*; *annuités garanties* in months |
 | f, φ | *frais d'arrérages* rate; *frais sur encours de rentes* rate |
 | q(s, g, x) | annual mortality from the generational table, sex s, generation g, age x |
-| l_a, l_r, d_a, d_r | survival probabilities and death densities of the two lives |
-| γ(t) | certain-period indicator, 1{t ≤ n}; C alone is always the capital |
+| l_a, l_r, d_a, d_r | survival probabilities of the two lives, at time points, and their death densities over month t |
+| γ(t) | certain-period indicator, 1{t < n}; C alone is always the capital |
 | h(t) | complete months elapsed since the last payment date, measured at the start of month t |
 | θ | portfolio male share **[std]** (assumption (vi)) |
 | c_e, π | maintenance expense p.a. and expense inflation |
@@ -285,10 +291,11 @@ per month.
 
 ### Calendar index and the revalorisation recursion
 
-The annuity is in service for 13 − M0 months of its first calendar year, so
+The annuity is in service for 13 − M0 months of its first calendar year — months
+t = 0 … 12 − M0 — so
 
-    k(t) = 0                                     for t ≤ 13 − M0
-    k(t) = 1 + floor((t − (13 − M0) − 1) / 12)   otherwise
+    k(t) = 0                                 for t < 13 − M0
+    k(t) = 1 + floor((t − (13 − M0)) / 12)   otherwise
 
     R(t) = 1                                                     for k(t) = 0
     R(t) = (1 + ν · (13 − M0)/12) · (1 + ν)^(k(t) − 1)           for k(t) ≥ 1
@@ -337,8 +344,8 @@ forced out. **Where this product deviates**, in four places:
 ### Palier factor
 
     palier_scheme = none                Π(t) = 1
-    two-step (inc1, dec1)               Π(t) = π₁ for t ≤ 12S,  π₂ for t > 12S
-    three-step (inc2, dec2)             Π(t) = π₁ for t ≤ 12S,  π₂ for 12S < t ≤ 24S,  π₃ after
+    two-step (inc1, dec1)               Π(t) = π₁ for t < 12S,  π₂ for t ≥ 12S
+    three-step (inc2, dec2)             Π(t) = π₁ for t < 12S,  π₂ for 12S ≤ t < 24S,  π₃ after
 
 with (π₁, π₂, π₃) from the scheme table of assumption (a) and S ∈ {5, 10} years; the
 second step is "d'une durée égale" to the first [S2] [S3]. Π is a step function of
@@ -355,7 +362,7 @@ options are not cumulative [S2] [S3], so exactly one of δ > 0 and n > 0 may hol
 **Admission test, not a cash flow.** A model point is projectable only if its gross
 *quittance d'arrérages* exceeds the statutory threshold:
 
-    A₀ · Π(1) / m  >  110 · (12/m)                                [R10 art. A. 160-2]
+    A₀ · Π(0) / m  >  110 · (12/m)                                [R10 art. A. 160-2]
 
 Below it the insurer may, with the annuitant's agreement, pay a capital instead
 [R9] [R10] [S2] [S3] [S5], so there is no annuity to project. `check_commutation_floor()`
@@ -365,8 +372,12 @@ must fail such a point rather than project it.
 
     q(t, life)     = qtab(basis(life), g(life), x(life, t))       — pure table lookup
     q_mth(t, life) = 1 − (1 − q(t, life))^(1/12)                  **[std]**
-    l(t, life)     = l(t − 1, life) · (1 − q_mth(t, life)),   l(0, ·) = 1
-    d(t, life)     = l(t − 1, life) − l(t, life)
+    l(t, life)     = l(t − 1, life) · (1 − q_mth(t − 1, life)),   l(0, ·) = 1
+    d(t, life)     = l(t, life) − l(t + 1, life)
+
+l is indexed by **time** and q by the **month** it applies over: survival to time t takes
+the rates of months 0 … t − 1, and the deaths of month t are the difference between its
+opening and closing survivals.
 
 with
 
@@ -379,8 +390,10 @@ single line is the largest structural difference from `PA_UK_S`, whose period ba
 requires a separate improvement projection to become a cohort view.
 
 On the `scenario` basis **[std]** the survival path is the step function
-l(t, life) = 1{t < `death_mth`(life)}, with `death_mth` = 0 meaning the life survives the
-projection — the device `PA_UK_S` uses, and the basis the worked example runs on.
+l(t, life) = 1{t ≤ `death_mth`(life)} — survival to time t, so a life dying in month d is
+alive at time d, the start of that month, and gone from time d + 1 — with a blank or
+negative `death_mth` meaning the life survives the projection; the device `PA_UK_S` uses,
+and the basis the worked example runs on.
 
 **The tariff table and the best-estimate table are different objects.** ρ is struck on
 TGF05 for every life [R3, verbatim](#frlib-rente_viagere-r3) while the projection decrements on `basis(life)`; for
@@ -390,18 +403,20 @@ here it does, through ν. Collapsing them destroys both halves of the mechanic (
 
 ### Payment factors
 
-    payment_surv_mth(t) = t                     arrears (*terme échu*)
-                        = t − 1                 advance (*terme à échoir*, unobserved in France)
+    payment_surv_mth(t) = t + 1                 arrears (*terme échu*): the end of month t
+                        = t                     advance (*terme à échoir*, unobserved in France):
+                                                its start
 
-    certain_floor(t)    = 1 if t ≤ n else 0
+    certain_floor(t)    = 1 if t < n else 0
     payment_factor(t)   = max(certain_floor(t), l_a(payment_surv_mth(t)))
-    reversion_factor(t) = δ · (1 − l_a(t − 1)) · l_r(payment_surv_mth(t))
+    reversion_factor(t) = δ · (1 − l_a(t)) · l_r(payment_surv_mth(t))
 
 The `max` makes the *annuités garanties* an annuity-**certain floor** rather than a second
 stream: while the guarantee runs the full instalment is payable regardless of survival
 [S2] [S3] [S4], and an additive form would pay 1 + l_a.
 
-The reversion gate is `(1 − l_a(t − 1))`, **not** `(1 − l_a(t))`: the survivor's first
+The reversion gate is `(1 − l_a(t))`, the annuitant's survival to the **start** of month t,
+**not** `(1 − l_a(t + 1))`, its survival to the end: the survivor's first
 instalment falls in the month *after* the month of death, immediately after the *prorata
 d'arrérages* has settled it. What [S6] states for the *réversion* is that it is payable
 "from the 1st day of the **month or quarter** following death"; the annuitant's own
@@ -424,6 +439,9 @@ m < 12.
                                      + annuity_pp(t) · (payment_factor(t) + reversion_factor(t))
                                      + prorata_pp(t) · prorata_factor(t)
 
+for t ≥ 1; month 0 is the first projected month, so the accumulation opens there — G(0) is
+what month 0 itself pays, and there is no month-zero row to carry.
+
 `"ANNUITANT"` is the deterministic as-if-alive schedule; `"ALL"` is the expected total
 paid across both streams. On a probability-weighted run `"ALL"` is an expectation rather
 than a path; in a scenario run the two coincide for a surviving annuitant.
@@ -435,11 +453,11 @@ than a path; in a scenario run the two coincide for a surviving annuitant.
     E[ANN(t)] = pols_if_init · annuity_pp(t) · (payment_factor(t) + reversion_factor(t))
 
 **Prorata d'arrérages** — the accrued instalment settled on death [S1 Art. C17.2] [S6]
-[S7 Art. 7.3]. With h(t) = (t − 1) mod (12/m) complete months since the last payment date,
+[S7 Art. 7.3]. With h(t) = t mod (12/m) complete months since the last payment date,
 
     prorata_pp(t)     = ((h(t) + 1)/(12/m)) · A(t)/m     *terme échu*
                       = 0                                *terme à échoir* **[std]**
-    prorata_factor(t) = d_a(t) · (1 − γ(t))  +  δ · (1 − l_a(t − 1)) · d_r(t)
+    prorata_factor(t) = d_a(t) · (1 − γ(t))  +  δ · (1 − l_a(t)) · d_r(t)
     E[PRO(t)]         = pols_if_init · prorata_pp(t) · prorata_factor(t)
 
 The second branch is the unobserved *terme à échoir* switch (spec footnote 9): the
@@ -459,7 +477,7 @@ the second term is the symmetric settlement on the reversionary's own death. The
 
 **Maintenance expense**:
 
-    pols_if(t) = min(1, max(γ(t), l_a(t)) + 1{δ > 0} · (1 − l_a(t − 1)) · l_r(t))
+    pols_if(t) = min(1, max(γ(t), l_a(t + 1)) + 1{δ > 0} · (1 − l_a(t)) · l_r(t + 1))
     E[EXP(t)]  = (c_e/12) · (1 + π)^k(t) · pols_if(t)                       **[std]**
 
 **Total gross liability cash flow**:
@@ -467,7 +485,7 @@ the second term is the symmetric settlement on the reversionary's own death. The
     liability_cf(t) = E[ANN(t)] + E[PRO(t)] − E[FRA(t)] + E[EXP(t)]
     net_cf(t)       = − liability_cf(t)
 
-There is no premium income (C is a pricing input at t = 0), no surrender outgo [R8] and no
+There is no premium income (C is a pricing input at the effective date), no surrender outgo [R8] and no
 death capital — the representative design is *capital aliéné*. The *frais sur encours de
 rentes* appear nowhere in this recursion by design: they reduce the profit-sharing base,
 hence ν, and never an instalment.
@@ -475,19 +493,21 @@ hence ν, and never an instalment.
 ### Monthly processing order
 
 1. Advance the calendar: compute k(t). If k(t) > k(t − 1), step the revalorisation index
-   R (pro-rated when k = 1) and the expense inflation index [S2 pt 10.f] [S3].
-2. Update the *palier* factor Π(t) if t crosses 12S or 24S [S2] [S3].
+   R (pro-rated when k = 1) and the expense inflation index [S2 pt 10.f] [S3]. At t = 0,
+   k = 0 and R = 1 by construction, so there is no earlier month to read.
+2. Update the *palier* factor Π(t) if t reaches 12S or 24S [S2] [S3].
 3. Set A(t) = A₀ R(t) Π(t). If t ∈ T, record `annuity_pp(t)`.
 4. Decrement mortality: attained ages from the effective-date ages, rates from the
    generational table at each life's own *millésime*; update l_a, l_r, d_a, d_r.
 5. Compute `certain_floor(t)`, `payment_factor(t)` at `payment_surv_mth(t)`, and
-   `reversion_factor(t)` using l_a(t − 1).
+   `reversion_factor(t)` using l_a(t), the annuitant's survival to the start of month t.
 6. Compute E[ANN(t)], then E[PRO(t)] (gated off while the guarantee runs), then
    E[FRA(t)] on the sum of the two. Update `cum_annuity_pp`.
 7. Accrue E[EXP(t)] on `pols_if(t)`.
-8. Stop when both lives have passed ω = 120 and the guarantee has run
-   (t > n and t/12 + x_a0 > ω and, where δ > 0, t/12 + x_r0 > ω) — stopping on the
-   annuitant's age alone truncates a younger reversionary's tail.
+8. Stop once both lives have passed ω = 120 and the guarantee has run: the projected
+   months are t = 0 … max(n, 12(ω − min x_i)) − 1, so the last of them is the last month
+   of age ω − 1 of the **youngest** covered life — stopping on the annuitant's age alone
+   truncates a younger reversionary's tail.
 
 ### Known modeling pitfalls
 
@@ -521,10 +541,12 @@ wrong. Each is a test.
 6. **Losing the arrérage of the month of death.** The UK sibling's default pays nothing
    for the final partial period; the French rule settles the accrued arrears to the heirs
    [S1 Art. C17.2] [S6] [S7 Art. 7.3], which at m = 12 is a whole instalment. Test: on the
-   scenario basis the number of instalments paid equals the month of death.
-7. **Starting the reversion in the month of death.** The gate is (1 − l_a(t − 1)) [S6];
-   using (1 − l_a(t)) pays the reversion and the *prorata d'arrérages* in the same month,
-   so the month of death is paid 1 + δ times.
+   scenario basis the number of instalments paid equals `death_mth` + 1, the months of
+   service through the month of death, the index being 0-based.
+7. **Starting the reversion in the month of death.** The gate is (1 − l_a(t)), the
+   annuitant's survival to the start of month t [S6]; using (1 − l_a(t + 1)), its survival
+   to the end, pays the reversion and the *prorata d'arrérages* in the same month, so the
+   month of death is paid 1 + δ times.
 8. **Paying a prorata during the guarantee period, or adding the certain floor instead of
    taking a max.** While the *annuités garanties* run the full instalment is already
    payable regardless of survival [S2] [S3], so the prorata on top double-pays the month
@@ -613,9 +635,9 @@ by 4–7 years / 60%" cell of the published table [S6 Art. 5.4.3]. **Monthly, *t
 Revalorisation ν = **1.50%** a year **[std]**, credited at 31 December, pro-rated
 9/12 in 2026 [S3]. Maintenance expense €30 a year inflating at 1.50% **[std]**. No
 *annuités garanties* and no *paliers* — the options are not cumulative [S2] [S3].
-Mortality basis **`scenario`** **[std]**: the annuitant dies in month 26 (May 2028), the
-reversionary survives throughout. All amounts in euros, unrounded in the model and
-displayed to the cent.
+Mortality basis **`scenario`** **[std]**: the annuitant dies in month 25 (May 2028) — the
+26th month of service, the index being 0-based — and the reversionary survives throughout.
+All amounts in euros, unrounded in the model and displayed to the cent.
 
 Conversion: A₀ = C ρ κ = 200,000 × 0.0330 × 0.76 = **€5,016.00** a year, so the gross
 monthly *quittance* is 5,016.00 / 12 = **€418.00**. Admission test: 418.00 > 110
@@ -624,19 +646,19 @@ point projects.
 
 | t | Civil month | Event | R(t) | Gross arrérage | Frais (3%) | Net to payee |
 |---|---|---|---|---|---|---|
-| 1 | Apr 2026 | first arrérage, *terme échu* | 1.000000 | 418.00 | 12.54 | 405.46 |
-| 9 | Dec 2026 | last instalment at the initial level | 1.000000 | 418.00 | 12.54 | 405.46 |
-| 10 | Jan 2027 | 31 Dec 2026 uplift, pro-rated 9/12 → 1.125% | 1.011250 | 422.70 | 12.68 | 410.02 |
-| 12 | Mar 2027 | — | 1.011250 | 422.70 | 12.68 | 410.02 |
-| 21 | Dec 2027 | — | 1.011250 | 422.70 | 12.68 | 410.02 |
-| 22 | Jan 2028 | 31 Dec 2027 uplift, full 1.50% | 1.026419 | 429.04 | 12.87 | 416.17 |
-| 25 | Apr 2028 | last instalment to the annuitant | 1.026419 | 429.04 | 12.87 | 416.17 |
-| 26 | May 2028 | annuitant dies; *prorata d'arrérages* to the heirs — one whole month | 1.026419 | 429.04 | 12.87 | 416.17 |
-| 27 | Jun 2028 | *réversion* begins at 60% of the *rente atteinte* | 1.026419 | 257.43 | 7.72 | 249.70 |
-| 30 | Sep 2028 | — | 1.026419 | 257.43 | 7.72 | 249.70 |
-| 33 | Dec 2028 | — | 1.026419 | 257.43 | 7.72 | 249.70 |
-| 34 | Jan 2029 | 31 Dec 2028 uplift reaches the reversion stream | 1.041815 | 261.29 | 7.84 | 253.45 |
-| 36 | Mar 2029 | — | 1.041815 | 261.29 | 7.84 | 253.45 |
+| 0 | Apr 2026 | first arrérage, *terme échu* | 1.000000 | 418.00 | 12.54 | 405.46 |
+| 8 | Dec 2026 | last instalment at the initial level | 1.000000 | 418.00 | 12.54 | 405.46 |
+| 9 | Jan 2027 | 31 Dec 2026 uplift, pro-rated 9/12 → 1.125% | 1.011250 | 422.70 | 12.68 | 410.02 |
+| 11 | Mar 2027 | — | 1.011250 | 422.70 | 12.68 | 410.02 |
+| 20 | Dec 2027 | — | 1.011250 | 422.70 | 12.68 | 410.02 |
+| 21 | Jan 2028 | 31 Dec 2027 uplift, full 1.50% | 1.026419 | 429.04 | 12.87 | 416.17 |
+| 24 | Apr 2028 | last instalment to the annuitant | 1.026419 | 429.04 | 12.87 | 416.17 |
+| 25 | May 2028 | annuitant dies; *prorata d'arrérages* to the heirs — one whole month | 1.026419 | 429.04 | 12.87 | 416.17 |
+| 26 | Jun 2028 | *réversion* begins at 60% of the *rente atteinte* | 1.026419 | 257.43 | 7.72 | 249.70 |
+| 29 | Sep 2028 | — | 1.026419 | 257.43 | 7.72 | 249.70 |
+| 32 | Dec 2028 | — | 1.026419 | 257.43 | 7.72 | 249.70 |
+| 33 | Jan 2029 | 31 Dec 2028 uplift reaches the reversion stream | 1.041815 | 261.29 | 7.84 | 253.45 |
+| 35 | Mar 2029 | — | 1.041815 | 261.29 | 7.84 | 253.45 |
 
 **Checks.** *Conversion, a different way.* The unisex tariff is struck on TGF05 for every
 life [R3]; 1/ρ = 1/0.0330 = 30.30 years, against the annuity factor of about 29.63 implied
@@ -648,29 +670,29 @@ A₀ = 200,000 × 0.0373 × 0.76 = €5,669.60 and a monthly *quittance* of **�
 price of the unisex rule, and it is the surplus that must flow back to policyholders
 within eight years [R17] [REG-R16], which in this model it does through ν.
 
-*The month-10 instalment, a different way.* k(10) = 1, and the first uplift is
+*The month-9 instalment, a different way.* k(9) = 1, and the first uplift is
 ν(13 − M0)/12 = 0.015 × 9/12 = 1.125%, so the instalment is 418.00 × 1.01125 = 422.7025,
 displayed 422.70 — identical to 5,016.00 × 1.011250 / 12. On a policy-anniversary
-convention the uplift would not arrive until t = 13 and the March 2027 row would still
+convention the uplift would not arrive until t = 12 and the March 2027 row would still
 read 418.00 (pitfall 4).
 
 *The reversion instalment, a different way.* The survivor receives 60% of the *rente
 atteinte* at death, i.e. 0.60 × 429.043038 = 257.4258, displayed **257.43** — the same as
-0.60 × A(26)/12 with A(26) = 5,016.00 × 1.026419 = 5,148.5165. Note that a lower reversion
+0.60 × A(25)/12 with A(25) = 5,016.00 × 1.026419 = 5,148.5165. Note that a lower reversion
 rate would engage the commutation rule: at δ = 20% the survivor's *quittance* would be
 0.20 × 429.043038 = **€85.81**, below the €110 threshold, and CNP applies the rule to the
 reversion annuity with the *réversataire*'s agreement [S5] [R10].
 
 *Cumulative arrérages and total charge.* 26 monthly amounts are paid over 26 months of
-service — nine at 418.00, twelve at 422.7025 and five at 429.043038, the last of those
-five being the *prorata* settled at t = 26 — so
-`cum_annuity_pp(26, "ALL")` = 9 × 418.00 + 12 × 422.7025 + 5 × 429.043038 =
+service, t = 0 … 25 — nine at 418.00, twelve at 422.7025 and five at 429.043038, the last
+of those five being the *prorata* settled at t = 25 — so
+`cum_annuity_pp(25, "ALL")` = 9 × 418.00 + 12 × 422.7025 + 5 × 429.043038 =
 **€10,979.65**, of which the insurer retains 3% = **€329.39** and the annuitant and his
 heirs receive **€10,650.26**. Losing the month-of-death instalment (pitfall 6) would leave
 25 amounts and understate the outgo by €429.04.
 
-*Full liability cash flow, two months.* liability_cf(10) = 422.7025 × 0.97 + (30/12) ×
-1.015 = 410.021425 + 2.5375 = **€412.56**; liability_cf(27) = 257.425822 × 0.97 +
+*Full liability cash flow, two months.* liability_cf(9) = 422.7025 × 0.97 + (30/12) ×
+1.015 = 410.021425 + 2.5375 = **€412.56**; liability_cf(26) = 257.425822 × 0.97 +
 (30/12) × 1.015² = 249.703048 + 2.575563 = **€252.28**. `net_cf` is the negative of each.
 
 **The annuités garanties variant.** Replace the *réversion* with *annuités garanties* of
@@ -678,13 +700,14 @@ heirs receive **€10,650.26**. Losing the month-of-death instalment (pitfall 6)
 [S2] [S3] [S4] [S9]) and the coefficient κ = 0.9820 **[std]** (assumption (iv)); the
 options are not cumulative, so δ = 0 [S2] [S3]. Then A₀ = 200,000 × 0.0330 × 0.982002 =
 €6,481.21 a year, an instalment of **€540.10** at the initial level, **€546.18** from
-t = 10 and **€554.37** from t = 22. The death in month 26 now changes **nothing**:
-`certain_floor(t)` is 1 through t = 180, so the full instalment continues to the
-designated beneficiaries at
+t = 9 and **€554.37** from t = 21. The death in month 25 now changes **nothing**:
+`certain_floor(t)` is 1 through t = 179 — the guarantee covers the 180 months t = 0 … 179
+— so the full instalment continues to the designated beneficiaries at
 the same amount and rises with the same revalorisation index [S2] [S3]; no *prorata* is
-due, because the full instalment is already payable (pitfall 8); and from t = 181 the
+due, because the full instalment is already payable (pitfall 8); and from t = 180 the
 stream stops, there being no reversion in that configuration [S2] [S3]. In expectation the
-same flows come out of `payment_factor(t) = max(certain_floor(t), l_a(t))` with n = 180.
+same flows come out of
+`payment_factor(t) = max(certain_floor(t), l_a(payment_surv_mth(t)))` with n = 180.
 
 ---
 

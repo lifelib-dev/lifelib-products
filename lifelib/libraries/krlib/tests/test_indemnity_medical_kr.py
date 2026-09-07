@@ -425,7 +425,8 @@ def test_worked_example_row_is_the_published_frame(kr_medical_anchor, t):
 def test_worked_example_anchor_cell_attributes(kr_medical_anchor):
     """The anchor's own model point row, and the horizon it implies.
 
-    ``proj_len() = 119`` is two five-year 보장내용 변경주기 — ten policy years — and it is
+    ``proj_len() = 120`` is two five-year 보장내용 변경주기 — ten policy years, and the
+    **number** of projected months, so the frame runs ``t = 0 … 119`` — and it is
     a **stated** horizon rather than a contractual one, which is the distinction the whole
     document turns on: at the fifth 계약해당일 the contract re-enters whatever generation
     the supervisor is then prescribing.
@@ -441,8 +442,9 @@ def test_worked_example_anchor_cell_attributes(kr_medical_anchor):
     assert a.trend_mult() == 1.0 and a.util_mult() == 1.0
     assert a.reld_on() is True and a.noclaim_on() is True
     assert a.suspend_rate() == 0.0
-    assert a.proj_len() == 119
+    assert a.proj_len() == 120
     assert len(a.result_cf()) == 120
+    assert list(a.result_cf().index) == list(range(120))
     assert a.pols_if_init() == 1.0
     assert a.age(0) == 40 and a.age(119) == 49
     assert a.policy_year(0) == 1 and a.policy_year(59) == 5 and a.policy_year(119) == 10
@@ -893,7 +895,8 @@ def test_the_horizon_absorbs_the_whole_remaining_in_force_and_pays_nothing(
         kr_medical_anchor):
     """``t = 119``: the renewal decline and the maturity count together take everything.
 
-    ``pols_maturity`` is non-zero only in the last projected month and pays **nothing** —
+    ``pols_maturity`` is non-zero only in the last projected month, ``t = proj_len() - 1``
+    — 119 on this cell, the frame being ``range(proj_len())`` — and pays **nothing** —
     there is no 만기보험금 on a 순수보장성 contract — but the count is needed for the
     roll-forward to close.  What ends there is the *stated horizon*, not the cover.
     """
@@ -977,7 +980,7 @@ def test_which_checks_this_model_publishes(indemnity_medical, kr_medical_anchor)
         assert value is True and isinstance(value, bool), name
     for name in sorted(CHECKS_PER_T):
         residual = getattr(a, name + "_resid")
-        for t in range(a.proj_len() + 1):
+        for t in range(a.proj_len()):
             assert residual(t) == pytest.approx(0.0, abs=1e-8), f"{name}_resid({t})"
     for name in sorted(CHECKS_PER_Y):
         residual = getattr(a, name + "_resid")
@@ -1003,10 +1006,10 @@ def test_the_check_tolerances_are_named_references(indemnity_medical, kr_medical
     assert refs["shape_tol"] == 1e-9
     assert refs["roll_fwd_tol"] < refs["cash_tol"] < 1.0
     a = kr_medical_anchor
-    worst = max(abs(a.check_net_cf_resid(t)) for t in range(a.proj_len() + 1))
+    worst = max(abs(a.check_net_cf_resid(t)) for t in range(a.proj_len()))
     assert worst < refs["cash_tol"] / 100.0
     worst_roll = max(abs(a.check_pols_roll_fwd_resid(t))
-                     for t in range(a.proj_len() + 1))
+                     for t in range(a.proj_len()))
     assert worst_roll < refs["roll_fwd_tol"] / 100.0
 
 
@@ -1021,7 +1024,7 @@ def test_the_inforce_rollforward_is_the_notes_identity(indemnity_medical):
     """
     for point_id in indemnity_medical.Data.model_point_table().index:
         p = indemnity_medical.Projection[point_id]
-        for t in range(p.proj_len() + 1):
+        for t in range(p.proj_len()):
             out = (p.pols_death(t) + p.pols_lapse(t) + p.pols_suspend(t)
                    + p.pols_renewal_decline(t) + p.pols_maturity(t))
             assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(out, abs=1e-12), \
@@ -1075,11 +1078,11 @@ def test_the_published_statement_adds_up(indemnity_medical):
         outgo = df[claim_cols + ["expenses", "claim_expenses", "commissions"]].sum(axis=1)
         assert (df["premiums"] - outgo - df["net_cf"]).abs().max() == pytest.approx(
             0.0, abs=1e-9)
-        for t in (0, 11, 60, p.proj_len()):
+        for t in (0, 11, 60, p.proj_len() - 1):
             assert df.loc[t, claim_cols].sum() == pytest.approx(p.claims(t), abs=1e-9)
         assert df.index.name == "t" and list(df.columns)[0] == "pols_if"
         assert "net_cf" in df.columns and not df.isna().any().any()
-        assert len(df) == p.proj_len() + 1
+        assert len(df) == p.proj_len()
 
 
 def test_the_premium_recursion_reproduces_the_wordings_own_illustration(
@@ -1624,15 +1627,15 @@ def test_pitfall_the_renewal_decline_is_not_lapse(kr_medical_anchor):
     assert a.pols_lapse(11) == pytest.approx(0.0079263524, abs=INFORCE)
     assert a.pols_renewal_decline(23) == pytest.approx(0.0083529502, abs=INFORCE)
     assert a.pols_lapse(23) == pytest.approx(0.0043181413, abs=INFORCE)
-    for t in range(a.proj_len() + 1):
+    for t in range(a.proj_len()):
         if (t + 1) % 12:
             assert a.pols_renewal_decline(t) == 0.0, t
         else:
             assert a.pols_renewal_decline(t) > a.pols_lapse(t), t
     assert a.renewal_decline_rate == 0.01
-    total_decline = sum(a.pols_renewal_decline(t) for t in range(a.proj_len() + 1))
-    total_lapse = sum(a.pols_lapse(t) for t in range(a.proj_len() + 1))
-    total_death = sum(a.pols_death(t) for t in range(a.proj_len() + 1))
+    total_decline = sum(a.pols_renewal_decline(t) for t in range(a.proj_len()))
+    total_lapse = sum(a.pols_lapse(t) for t in range(a.proj_len()))
+    total_death = sum(a.pols_death(t) for t in range(a.proj_len()))
     assert total_decline == pytest.approx(0.072409, abs=5e-7)
     assert total_lapse == pytest.approx(0.315540, abs=5e-7)
     assert total_death == pytest.approx(0.011647, abs=5e-7)
@@ -1770,7 +1773,7 @@ def test_pitfall_no_claims_subtotal_column_beside_the_splits(indemnity_medical):
             "claims_ge_in", "claims_ge_out", "claims_np_in", "claims_np_out",
             "claims_np_three"]
         assert "claim_expenses" in df.columns
-        for t in (0, 60, p.proj_len()):
+        for t in (0, 60, p.proj_len() - 1):
             assert p.claims(t) == pytest.approx(
                 sum(p.claims(t, k) for k in ("GE_IN", "GE_OUT", "NP_IN", "NP_OUT",
                                              "NP_THREE")), rel=1e-14)
@@ -2025,7 +2028,7 @@ def test_the_model_point_table_exercises_the_product(indemnity_medical):
     assert table.loc[1, "label"].startswith("anchor")
     for point_id in table.index:
         p = indemnity_medical.Projection[point_id]
-        assert p.proj_len() == 119
+        assert p.proj_len() == 120
         df = p.result_cf()
         assert len(df) == 120 and not df.isna().any().any()
 
@@ -2058,7 +2061,7 @@ def test_the_elections_do_what_the_notes_say_they_do(indemnity_medical):
     assert p9.suspend_rate() == 0.03
     assert p9.suspend_rate_mth(0) == pytest.approx(
         1.0 - 0.97 ** (1.0 / 12.0), rel=1e-14)
-    assert sum(p9.pols_suspend(t) for t in range(p9.proj_len() + 1)) > 0.0
+    assert sum(p9.pols_suspend(t) for t in range(p9.proj_len())) > 0.0
     assert p9.reld_on() is False and p9.noclaim_on() is False
     assert p9.check_pols_roll_fwd() is True
 

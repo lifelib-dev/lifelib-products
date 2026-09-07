@@ -49,8 +49,9 @@ and its inputs must travel together.
 **Projection basis.** Annual steps, on 보험나이 (*boheom nai*, insurance age). ``t``
 counts completed policy years since issue, 0-based: premiums fall at ``t = 0 .. m - 1``,
 the 계약자적립액 accumulates over ``t = 0 .. n`` where ``n = m + d``, the annuity is paid
-from ``t = n``, and :func:`~.Pension_KR_A.Projection.proj_len` is the **last** projected
-period index, so ``result_cf()`` ends at ``proj_len()``.
+from ``t = n``, and :func:`~.Pension_KR_A.Projection.proj_len` is the **number** of
+projected periods — the exclusive end of the frame — so ``result_cf()`` runs
+``t = 0 .. proj_len() - 1``. The contractual policy year is the 1-based label ``t + 1``.
 
 **The tax layer is carried but is not a cash flow.** 연금저축 relief is a **세액공제** —
 a tax credit of 16.5% or 13.2% of contributions up to ₩6,000,000 a year — and a

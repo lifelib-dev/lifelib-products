@@ -3,12 +3,16 @@
 The golden values are the worked example in
 products/assurance_vie_euro/technical-notes.md ("Worked example"): an in-force
 euro-support cell with EUR 100,000 of `epargne acquise` at duration 5, male aged 60,
-EUR 2,400 a year of `versements` and EUR 3,000 a year of `rachats partiels` from projection
-year 6, a 0.60% management charge, a nil TMG, a 2.30% target `taux servi`, a 17.2% social
-levy, and an opening PPB of EUR 4,000 in eight equal vintages falling due in projection
-years 1 to 8.  Model point 1 is that cell.  They are hard-coded here rather than pickled so
-that a reviewer can compare them against the notes by eye, to the precision the notes
-display: money to the cent, rates to the fourth decimal of a percentage.
+EUR 2,400 a year of `versements` and EUR 3,000 a year of `rachats partiels` from ``t = 5``,
+a 0.60% management charge, a nil TMG, a 2.30% target `taux servi`, a 17.2% social levy, and
+an opening PPB of EUR 4,000 in eight equal vintages falling due at ``t = 0`` to ``t = 7``.
+Model point 1 is that cell.  They are hard-coded here rather than pickled so that a reviewer
+can compare them against the notes by eye, to the precision the notes display: money to the
+cent, rates to the fourth decimal of a percentage.
+
+``t`` is **0-based** throughout: ``t = 0`` is the first projected year and the frame is
+``t = 0 ... proj_len() - 1``, so the golden dictionaries below are keyed from 0 and the
+notes' twelve displayed rows are ``t = 0`` to ``t = 11``.
 
 Beyond the worked example this module asserts the product facts the notes list as modelling
 pitfalls, one test each and each named for the failure it catches, because every one of
@@ -44,44 +48,44 @@ CHECKS = ("check_av_roll_fwd", "check_ppb_roll_fwd", "check_ppb_clock",
 # t: (r_fin, pm_avg_pp, 0.85 x fin_acct_pp, policyholder technical share, pb_min_pp,
 #     ts_stat, PPB release less dotation, ppb_pp(t+1), ts_net)
 TABLE_1 = {
-    1: (0.0330, 101200.00, 2950.86, 121.00, 3071.86, 0.024354, 362.94, 3637.06, 0.027941),
-    2: (0.0325, 105941.25, 3027.10, 132.49, 3159.59, 0.023824, 412.70, 3224.36, 0.027720),
-    3: (0.0320, 110772.80, 3100.72, 144.21, 3244.93, 0.023294, 467.48, 2756.88, 0.027514),
-    4: (0.0310, 115696.36, 3121.24, 156.14, 3277.39, 0.022327, 500.00, 2256.88, 0.026649),
-    5: (0.0295, 120649.25, 3081.87, 168.15, 3250.02, 0.020938, 500.00, 1756.88, 0.025082),
-    6: (0.0280, 124054.88, 2994.32, 176.28, 3170.60, 0.019558, 500.00, 1256.88, 0.023589),
-    7: (0.0265, 125877.84, 2863.71, 180.45, 3044.16, 0.018183, 606.30, 650.58, 0.023000),
-    8: (0.0255, 127675.06, 2781.46, 184.55, 2966.01, 0.017231, 650.58, 0.00, 0.022327),
-    9: (0.0245, 129435.30, 2695.49, 188.55, 2884.04, 0.016282, 0.00, 0.00, 0.016282),
-    10: (0.0240, 130580.26, 2663.84, 191.01, 2854.85, 0.015863, 0.00, 0.00, 0.015863),
-    11: (0.0235, 131695.35, 2630.61, 193.39, 2824.00, 0.015443, 0.00, 0.00, 0.015443),
-    12: (0.0230, 132779.35, 2595.84, 195.68, 2791.51, 0.015024, 0.00, 0.00, 0.015024),
+    0: (0.0330, 101200.00, 2950.86, 121.00, 3071.86, 0.024354, 362.94, 3637.06, 0.027941),
+    1: (0.0325, 105941.25, 3027.10, 132.49, 3159.59, 0.023824, 412.70, 3224.36, 0.027720),
+    2: (0.0320, 110772.80, 3100.72, 144.21, 3244.93, 0.023294, 467.48, 2756.88, 0.027514),
+    3: (0.0310, 115696.36, 3121.24, 156.14, 3277.39, 0.022327, 500.00, 2256.88, 0.026649),
+    4: (0.0295, 120649.25, 3081.87, 168.15, 3250.02, 0.020938, 500.00, 1756.88, 0.025082),
+    5: (0.0280, 124054.88, 2994.32, 176.28, 3170.60, 0.019558, 500.00, 1256.88, 0.023589),
+    6: (0.0265, 125877.84, 2863.71, 180.45, 3044.16, 0.018183, 606.30, 650.58, 0.023000),
+    7: (0.0255, 127675.06, 2781.46, 184.55, 2966.01, 0.017231, 650.58, 0.00, 0.022327),
+    8: (0.0245, 129435.30, 2695.49, 188.55, 2884.04, 0.016282, 0.00, 0.00, 0.016282),
+    9: (0.0240, 130580.26, 2663.84, 191.01, 2854.85, 0.015863, 0.00, 0.00, 0.015863),
+    10: (0.0235, 131695.35, 2630.61, 193.39, 2824.00, 0.015443, 0.00, 0.00, 0.015443),
+    11: (0.0230, 132779.35, 2595.84, 195.68, 2791.51, 0.015024, 0.00, 0.00, 0.015024),
 }
 
 # Table 2 -- the epargne acquise roll-forward.
 # t: (av_pp(t), prem_to_av_pp, withdrawals_pp, int_credited_pp, soc_levy_pp, av_pp(t+1))
 TABLE_2 = {
-    1: (100000.00, 2400.00, 0.00, 2827.60, 486.35, 104741.25),
-    2: (104741.25, 2400.00, 0.00, 2936.65, 505.10, 109572.80),
-    3: (109572.80, 2400.00, 0.00, 3047.77, 524.22, 114496.36),
-    4: (114496.36, 2400.00, 0.00, 3083.21, 530.31, 119449.25),
-    5: (119449.25, 2400.00, 0.00, 3026.13, 520.49, 124354.88),
-    6: (124354.88, 2400.00, 3000.00, 2926.27, 503.32, 126177.84),
-    7: (126177.84, 2400.00, 3000.00, 2895.19, 497.97, 127975.06),
-    8: (127975.06, 2400.00, 3000.00, 2850.54, 490.29, 129735.30),
-    9: (129735.30, 2400.00, 3000.00, 2107.43, 362.48, 130880.26),
-    10: (130880.26, 2400.00, 3000.00, 2071.36, 356.27, 131995.35),
-    11: (131995.35, 2400.00, 3000.00, 2033.83, 349.82, 133079.35),
-    12: (133079.35, 2400.00, 3000.00, 1994.84, 343.11, 134131.08),
+    0: (100000.00, 2400.00, 0.00, 2827.60, 486.35, 104741.25),
+    1: (104741.25, 2400.00, 0.00, 2936.65, 505.10, 109572.80),
+    2: (109572.80, 2400.00, 0.00, 3047.77, 524.22, 114496.36),
+    3: (114496.36, 2400.00, 0.00, 3083.21, 530.31, 119449.25),
+    4: (119449.25, 2400.00, 0.00, 3026.13, 520.49, 124354.88),
+    5: (124354.88, 2400.00, 3000.00, 2926.27, 503.32, 126177.84),
+    6: (126177.84, 2400.00, 3000.00, 2895.19, 497.97, 127975.06),
+    7: (127975.06, 2400.00, 3000.00, 2850.54, 490.29, 129735.30),
+    8: (129735.30, 2400.00, 3000.00, 2107.43, 362.48, 130880.26),
+    9: (130880.26, 2400.00, 3000.00, 2071.36, 356.27, 131995.35),
+    10: (131995.35, 2400.00, 3000.00, 2033.83, 349.82, 133079.35),
+    11: (133079.35, 2400.00, 3000.00, 1994.84, 343.11, 134131.08),
 }
 
 # The decrement and cash-flow extract.
 # t: (lapse_rate, pols_if, claims_death, claims_lapse, expenses, liability_cf)
 DECREMENTS = {
-    1: (0.040000, 1.000000, 628.45, 4164.51, 378.20, 2771.16),
-    3: (0.080000, 0.910080, 743.00, 8276.62, 375.34, 7210.78),
-    6: (0.050000, 0.738099, 862.56, 4613.46, 339.56, 6258.43),
-    9: (0.062873, 0.613775, 968.78, 4989.75, 294.65, 6621.44),
+    0: (0.040000, 1.000000, 628.45, 4164.51, 378.20, 2771.16),
+    2: (0.080000, 0.910080, 743.00, 8276.62, 375.34, 7210.78),
+    5: (0.050000, 0.738099, 862.56, 4613.46, 339.56, 6258.43),
+    8: (0.062873, 0.613775, 968.78, 4989.75, 294.65, 6621.44),
 }
 
 
@@ -123,7 +127,7 @@ def test_the_worked_example_row(fr_euro_anchor, t):
 
 @pytest.mark.parametrize("t", sorted(DECREMENTS))
 def test_the_decrement_and_cash_flow_extract(fr_euro_anchor, t):
-    """The notes' decrement extract, including the duration-8 surrender step at t = 3."""
+    """The notes' decrement extract, including the duration-8 surrender step at t = 2."""
     lapse, pols, death, lapse_cl, exp, liab = DECREMENTS[t]
     p = fr_euro_anchor
     assert p.lapse_rate(t) == pytest.approx(lapse, abs=RATE)
@@ -135,35 +139,35 @@ def test_the_decrement_and_cash_flow_extract(fr_euro_anchor, t):
     assert p.net_cf(t) == pytest.approx(-liab, abs=CENT)
 
 
-def test_the_year_six_trace_at_full_precision(fr_euro_anchor):
-    """Year 6 is the year in which every lever is active at once.
+def test_the_trace_at_t_five_at_full_precision(fr_euro_anchor):
+    """``t = 5`` is the year in which every lever is active at once.
 
     The discretionary release the target wants is EUR 426.99, the vintage falling due is
     EUR 500.00, and the forced release wins - so the rate lands *above* target.
     """
     p = fr_euro_anchor
-    assert p.pm_avg_pp(6) == pytest.approx(124054.884701, abs=1e-6)
-    assert p.fee_pp(6) == pytest.approx(744.329308, abs=1e-6)
-    assert p.expenses_pp(6) == pytest.approx(460.046913, abs=1e-6)
-    assert p.fin_acct_pp(6) == pytest.approx(3522.729293, abs=1e-6)
-    assert 0.85 * p.fin_acct_pp(6) == pytest.approx(2994.319899, abs=1e-6)
-    assert p.tech_acct_pp(6) == pytest.approx(284.282396, abs=1e-6)
-    assert p.insurer_tech_share_pp(6) == pytest.approx(108.000000, abs=1e-6)
-    assert p.pb_acct_pp(6) == pytest.approx(3170.602295, abs=1e-6)
-    assert p.pb_min_pp(6) == pytest.approx(p.pb_acct_pp(6), abs=1e-9)
-    assert p.ts_stat(6) == pytest.approx(0.01955806, abs=1e-8)
-    assert p.pb_target_pp(6) == pytest.approx(3597.591656, abs=1e-6)
-    assert p.ppb_discr_rel_pp(6) == pytest.approx(426.989361, abs=1e-6)
-    assert p.ppb_forced_pp(6) == pytest.approx(500.000000, abs=1e-6)
-    assert p.ppb_release_pp(6) == pytest.approx(500.000000, abs=1e-6)
-    assert p.pb_credited_pp(6) == pytest.approx(3670.602295, abs=1e-6)
-    assert p.ts_net(6) == pytest.approx(0.02358853, abs=1e-8)
-    assert p.int_credited_pp(6) == pytest.approx(2926.272987, abs=1e-6)
-    assert p.soc_levy_pp(6) == pytest.approx(503.318954, abs=1e-6)
-    assert p.av_pp(7) == pytest.approx(126177.838734, abs=1e-6)
+    assert p.pm_avg_pp(5) == pytest.approx(124054.884701, abs=1e-6)
+    assert p.fee_pp(5) == pytest.approx(744.329308, abs=1e-6)
+    assert p.expenses_pp(5) == pytest.approx(460.046913, abs=1e-6)
+    assert p.fin_acct_pp(5) == pytest.approx(3522.729293, abs=1e-6)
+    assert 0.85 * p.fin_acct_pp(5) == pytest.approx(2994.319899, abs=1e-6)
+    assert p.tech_acct_pp(5) == pytest.approx(284.282396, abs=1e-6)
+    assert p.insurer_tech_share_pp(5) == pytest.approx(108.000000, abs=1e-6)
+    assert p.pb_acct_pp(5) == pytest.approx(3170.602295, abs=1e-6)
+    assert p.pb_min_pp(5) == pytest.approx(p.pb_acct_pp(5), abs=1e-9)
+    assert p.ts_stat(5) == pytest.approx(0.01955806, abs=1e-8)
+    assert p.pb_target_pp(5) == pytest.approx(3597.591656, abs=1e-6)
+    assert p.ppb_discr_rel_pp(5) == pytest.approx(426.989361, abs=1e-6)
+    assert p.ppb_forced_pp(5) == pytest.approx(500.000000, abs=1e-6)
+    assert p.ppb_release_pp(5) == pytest.approx(500.000000, abs=1e-6)
+    assert p.pb_credited_pp(5) == pytest.approx(3670.602295, abs=1e-6)
+    assert p.ts_net(5) == pytest.approx(0.02358853, abs=1e-8)
+    assert p.int_credited_pp(5) == pytest.approx(2926.272987, abs=1e-6)
+    assert p.soc_levy_pp(5) == pytest.approx(503.318954, abs=1e-6)
+    assert p.av_pp(6) == pytest.approx(126177.838734, abs=1e-6)
     # And the same rate from a different direction: 0.85 x financial + technical share
-    # - the charge + the PPB flow, all over the base.  Year 9 has the PPB exhausted.
-    for t, expected in ((6, 0.02358853), (9, 0.01628173)):
+    # - the charge + the PPB flow, all over the base.  ``t = 8`` has the PPB exhausted.
+    for t, expected in ((5, 0.02358853), (8, 0.01628173)):
         base = p.pm_avg_pp(t)
         built = (0.85 * p.fin_acct_pp(t) / base
                  + (p.tech_acct_pp(t) - p.insurer_tech_share_pp(t)) / base
@@ -177,14 +181,14 @@ def test_the_twelve_year_identities_close(fr_euro_anchor):
     """Interest EUR 31,800.82 and levies EUR 5,469.74, reaching EUR 134,131.08.
 
     The same total the other way: PB credited gross of the charge is EUR 40,538.97 less
-    `frais de gestion` of EUR 8,738.15.  Then year 1 at fund level:
+    `frais de gestion` of EUR 8,738.15.  Then ``t = 0`` at fund level:
     100,000 + 2,400 + 2,827.60 - 486.35 - 628.45 - 4,164.51 = 99,948.29.
     """
     p = fr_euro_anchor
-    interest = sum(p.int_credited_pp(t) for t in range(1, 13))
-    levies = sum(p.soc_levy_pp(t) for t in range(1, 13))
-    credited = sum(p.pb_credited_pp(t) for t in range(1, 13))
-    fees = sum(p.fee_pp(t) for t in range(1, 13))
+    interest = sum(p.int_credited_pp(t) for t in range(12))
+    levies = sum(p.soc_levy_pp(t) for t in range(12))
+    credited = sum(p.pb_credited_pp(t) for t in range(12))
+    fees = sum(p.fee_pp(t) for t in range(12))
     assert interest == pytest.approx(31800.82, abs=CENT)
     assert levies == pytest.approx(5469.74, abs=CENT)
     assert levies / interest == pytest.approx(0.172000, abs=1e-9)
@@ -193,24 +197,24 @@ def test_the_twelve_year_identities_close(fr_euro_anchor):
     assert credited - fees == pytest.approx(interest, abs=1e-9)
     assert 100000.00 + 28800.00 - 21000.00 + interest - levies == pytest.approx(
         134131.08, abs=CENT)
-    assert p.av_pp(13) == pytest.approx(134131.08, abs=CENT)
-    assert p.pols_if(2) == pytest.approx(0.954240, abs=1e-6)
-    assert p.av(2) == pytest.approx(99948.29, abs=CENT)
+    assert p.av_pp(12) == pytest.approx(134131.08, abs=CENT)
+    assert p.pols_if(1) == pytest.approx(0.954240, abs=1e-6)
+    assert p.av(1) == pytest.approx(99948.29, abs=CENT)
     assert p.check_av_roll_fwd() is True
 
 
 def test_the_guarantee_floor_never_binds_on_this_path(fr_euro_anchor):
-    """G(13) = 100,000 + 28,800 - 21,000 - 8,738.15 = 99,061.85 against 139,600.82.
+    """G(12) = 100,000 + 28,800 - 21,000 - 8,738.15 = 99,061.85 against 139,600.82.
 
     Compared to the account **before** cumulative social levies, because the published
     minimum surrender-value tables are stated before social and tax levies.
     """
     p = fr_euro_anchor
     assert p.guarantee_form() == "net"
-    assert p.guar_floor_pp(13) == pytest.approx(99061.85, abs=CENT)
-    assert p.av_pp(13) + p.soc_levy_cum_pp(13) == pytest.approx(139600.82, abs=CENT)
+    assert p.guar_floor_pp(12) == pytest.approx(99061.85, abs=CENT)
+    assert p.av_pp(12) + p.soc_levy_cum_pp(12) == pytest.approx(139600.82, abs=CENT)
     assert p.check_guar_floor() is True
-    assert all(p.check_guar_floor_resid(t) == 0.0 for t in range(1, 13))
+    assert all(p.check_guar_floor_resid(t) == 0.0 for t in range(12))
 
 
 # ---------------------------------------------------------------------------
@@ -220,7 +224,7 @@ def test_the_guarantee_floor_never_binds_on_this_path(fr_euro_anchor):
 def test_the_management_charge_is_not_deducted_twice(fr_euro_anchor):
     """`ts_net` is already net of the charge; `av x (1 + ts_net) x (1 - c)` takes it twice."""
     p = fr_euro_anchor
-    for t in (1, 6, 9, 12):
+    for t in (0, 5, 8, 11):
         assert p.pb_credited_pp(t) - p.fee_pp(t) == pytest.approx(
             p.int_credited_pp(t), abs=1e-9)
         assert p.av_pp_at(t, "AFT_INT") == pytest.approx(
@@ -239,15 +243,15 @@ def test_the_crediting_base_is_pro_rata_temporis(assurance_vie_euro, fr_euro_anc
     a December payment - and coincide where nothing moves, which is the paid-up cell.
     """
     p = fr_euro_anchor
-    for t in (1, 6, 12):
+    for t in (0, 5, 11):
         closing = p.av_pp(t) + p.prem_to_av_pp(t) - p.withdrawals_pp(t)
         assert closing - p.pm_avg_pp(t) == pytest.approx(
             0.5 * (p.prem_to_av_pp(t) - p.withdrawals_pp(t)), abs=1e-9)
         assert p.ts_net(t) * closing - p.int_credited_pp(t) == pytest.approx(
             0.5 * p.ts_net(t) * (p.prem_to_av_pp(t) - p.withdrawals_pp(t)), abs=1e-9)
     paid_up = assurance_vie_euro.Projection[4]
-    assert paid_up.prem_gross_pp(3) == 0.0 and paid_up.withdrawals_pp(3) == 0.0
-    assert paid_up.pm_avg_pp(3) == pytest.approx(paid_up.av_pp(3), rel=1e-15)
+    assert paid_up.prem_gross_pp(2) == 0.0 and paid_up.withdrawals_pp(2) == 0.0
+    assert paid_up.pm_avg_pp(2) == pytest.approx(paid_up.av_pp(2), rel=1e-15)
 
 
 # ---------------------------------------------------------------------------
@@ -257,35 +261,35 @@ def test_the_crediting_base_is_pro_rata_temporis(assurance_vie_euro, fr_euro_anc
 def test_the_eighty_five_percent_attaches_to_the_financial_account(fr_euro_anchor):
     """Not "90% of the financial account and 85% of the technical result".
 
-    The popular form gives EUR 3,319.09 in year 1 against the correct EUR 3,071.86.
+    The popular form gives EUR 3,319.09 at ``t = 0`` against the correct EUR 3,071.86.
     """
     p = fr_euro_anchor
-    for t in (1, 6, 12):
+    for t in (0, 5, 11):
         ph_tech = p.tech_acct_pp(t) - p.insurer_tech_share_pp(t)
         assert p.pb_acct_pp(t) - ph_tech == pytest.approx(
             0.85 * p.fin_acct_pp(t), abs=1e-9)
-    assert 0.90 * p.fin_acct_pp(1) + 0.85 * p.tech_acct_pp(1) == pytest.approx(
+    assert 0.90 * p.fin_acct_pp(0) + 0.85 * p.tech_acct_pp(0) == pytest.approx(
         3319.09, abs=CENT)
-    assert p.pb_acct_pp(1) == pytest.approx(3071.86, abs=CENT)
+    assert p.pb_acct_pp(0) == pytest.approx(3071.86, abs=CENT)
 
 
 def test_the_four_and_a_half_percent_of_premiums_limb_binds(
         assurance_vie_euro, fr_euro_anchor):
-    """EUR 108.00 against EUR 28.43 for the 10% limb in year 6; nil on a paid-up cell.
+    """EUR 108.00 against EUR 28.43 for the 10% limb at ``t = 5``; nil on a paid-up cell.
 
     Two cells identical but for their premium stream credit different rates, which is the
     article working as written.
     """
     p = fr_euro_anchor
-    assert p.insurer_tech_share_pp(6) == pytest.approx(108.00, abs=CENT)
-    assert 0.10 * p.tech_acct_pp(6) == pytest.approx(28.43, abs=CENT)
-    assert p.insurer_tech_share_pp(6) == pytest.approx(
-        0.045 * p.prem_gross_pp(6), abs=1e-9)
+    assert p.insurer_tech_share_pp(5) == pytest.approx(108.00, abs=CENT)
+    assert 0.10 * p.tech_acct_pp(5) == pytest.approx(28.43, abs=CENT)
+    assert p.insurer_tech_share_pp(5) == pytest.approx(
+        0.045 * p.prem_gross_pp(5), abs=1e-9)
     paid_up = assurance_vie_euro.Projection[4]
-    assert paid_up.prem_gross_pp(3) == 0.0
-    assert paid_up.insurer_tech_share_pp(3) == pytest.approx(
-        0.10 * paid_up.tech_acct_pp(3), abs=1e-12)
-    assert paid_up.ts_stat(1) > p.ts_stat(1)
+    assert paid_up.prem_gross_pp(2) == 0.0
+    assert paid_up.insurer_tech_share_pp(2) == pytest.approx(
+        0.10 * paid_up.tech_acct_pp(2), abs=1e-12)
+    assert paid_up.ts_stat(0) > p.ts_stat(0)
 
 
 # ---------------------------------------------------------------------------
@@ -293,64 +297,64 @@ def test_the_four_and_a_half_percent_of_premiums_limb_binds(
 
 
 def test_the_ppb_is_inside_the_financial_base_and_does_not_accrete(fr_euro_anchor):
-    """Struck on ``pm_avg_pp + ppb_pp``; omitting it costs EUR 41.81 in year 6.
+    """Struck on ``pm_avg_pp + ppb_pp``; omitting it costs EUR 41.81 at ``t = 5``.
 
     The mirror error is accreting the vintages, which pays the PPB's own return twice.
     """
     p = fr_euro_anchor
-    assert p.fin_acct_pp(6) == pytest.approx(
-        p.r_fin(6) * (p.pm_avg_pp(6) + p.ppb_pp(6)), abs=1e-9)
-    assert 0.85 * p.r_fin(6) * p.ppb_pp(6) == pytest.approx(41.81, abs=CENT)
-    for t in range(1, 12):
+    assert p.fin_acct_pp(5) == pytest.approx(
+        p.r_fin(5) * (p.pm_avg_pp(5) + p.ppb_pp(5)), abs=1e-9)
+    assert 0.85 * p.r_fin(5) * p.ppb_pp(5) == pytest.approx(41.81, abs=CENT)
+    for t in range(11):
         for v in range(p.ppb_vintage_first(), t):
             assert p.ppb_vintage_pp(t + 1, v) == pytest.approx(
                 p.ppb_vintage_pp(t, v) - p.ppb_vintage_release_pp(t, v), abs=1e-9)
 
 
 def test_the_ppb_is_released_fifo_oldest_vintage_first(fr_euro_anchor):
-    """The year-7 release of EUR 606.30 clears the last EUR 500 vintage first.
+    """The release of EUR 606.30 at ``t = 6`` clears the last EUR 500 vintage first.
 
-    It then takes EUR 106.30 from the year-0 vintage, leaving EUR 393.70 to be forced out
-    in year 8 - which the year-8 discretionary need of EUR 650.58 more than covers, so the
-    PPB reaches zero exactly at the clock's last date.
+    It then takes EUR 106.30 from the vintage carried in year -1, leaving EUR 393.70 to be
+    forced out at ``t = 7`` - which the ``t = 7`` discretionary need of EUR 650.58 more
+    than covers, so the PPB reaches zero exactly at the clock's last date.
     """
     p = fr_euro_anchor
-    assert p.ppb_release_pp(7) == pytest.approx(606.30, abs=CENT)
-    assert p.ppb_vintage_release_pp(7, -1) == pytest.approx(500.00, abs=CENT)
-    assert p.ppb_vintage_release_pp(7, 0) == pytest.approx(106.30, abs=CENT)
-    assert p.ppb_vintage_release_pp(7, 1) == 0.0
-    assert p.ppb_vintage_pp(8, -1) == pytest.approx(0.0, abs=1e-9)
-    assert p.ppb_vintage_pp(8, 0) == pytest.approx(393.70, abs=CENT)
-    assert p.ppb_forced_pp(8) == pytest.approx(393.70, abs=CENT)
-    assert p.ppb_release_pp(8) == pytest.approx(650.58, abs=CENT)
-    assert p.ppb_pp(9) == pytest.approx(0.0, abs=CENT)
+    assert p.ppb_release_pp(6) == pytest.approx(606.30, abs=CENT)
+    assert p.ppb_vintage_release_pp(6, -2) == pytest.approx(500.00, abs=CENT)
+    assert p.ppb_vintage_release_pp(6, -1) == pytest.approx(106.30, abs=CENT)
+    assert p.ppb_vintage_release_pp(6, 0) == 0.0
+    assert p.ppb_vintage_pp(7, -2) == pytest.approx(0.0, abs=1e-9)
+    assert p.ppb_vintage_pp(7, -1) == pytest.approx(393.70, abs=CENT)
+    assert p.ppb_forced_pp(7) == pytest.approx(393.70, abs=CENT)
+    assert p.ppb_release_pp(7) == pytest.approx(650.58, abs=CENT)
+    assert p.ppb_pp(8) == pytest.approx(0.0, abs=CENT)
 
 
 def test_the_vintage_ledger_table_in_model_md(fr_euro_anchor):
     """model.md's PPB ledger table, every cell of it.
 
     The table has an uncapped-want column and a capped-discretionary column because the
-    two separate twice and for different reasons - a negative want in years 1 to 3, which
-    is what a dotation year is, and a binding balance from year 8 - and a release column
-    because neither want column is the release wherever the clock outranks the target.
-    Nothing else in this module asserts the years 9 onward row, which is how a figure the
-    model does not produce once stood in it.
+    two separate twice and for different reasons - a negative want at ``t = 0`` to
+    ``t = 2``, which is what a dotation year is, and a binding balance from ``t = 7`` - and
+    a release column because neither want column is the release wherever the clock outranks
+    the target.  Nothing else in this module asserts the ``t = 8`` onward row, which is how
+    a figure the model does not produce once stood in it.
     """
     p = fr_euro_anchor
     # t: (forced, want uncapped, discretionary, released)
     ledger = {
-        1: (500.00, -137.06, 0.00, 500.00),
-        2: (500.00, -87.30, 0.00, 500.00),
-        3: (500.00, -32.52, 0.00, 500.00),
-        4: (500.00, 77.81, 77.81, 500.00),
-        5: (500.00, 248.81, 248.81, 500.00),
-        6: (500.00, 426.99, 426.99, 500.00),
-        7: (500.00, 606.30, 606.30, 606.30),
-        8: (393.70, 736.57, 650.58, 650.58),
-        9: (0.00, 869.58, 0.00, 0.00),
-        10: (0.00, 931.98, 0.00, 0.00),
-        11: (0.00, 995.17, 0.00, 0.00),
-        12: (0.00, 1059.09, 0.00, 0.00),
+        0: (500.00, -137.06, 0.00, 500.00),
+        1: (500.00, -87.30, 0.00, 500.00),
+        2: (500.00, -32.52, 0.00, 500.00),
+        3: (500.00, 77.81, 77.81, 500.00),
+        4: (500.00, 248.81, 248.81, 500.00),
+        5: (500.00, 426.99, 426.99, 500.00),
+        6: (500.00, 606.30, 606.30, 606.30),
+        7: (393.70, 736.57, 650.58, 650.58),
+        8: (0.00, 869.58, 0.00, 0.00),
+        9: (0.00, 931.98, 0.00, 0.00),
+        10: (0.00, 995.17, 0.00, 0.00),
+        11: (0.00, 1059.09, 0.00, 0.00),
     }
     for t, (forced, want, discr, released) in ledger.items():
         assert p.ppb_forced_pp(t) == pytest.approx(forced, abs=CENT), t
@@ -358,11 +362,11 @@ def test_the_vintage_ledger_table_in_model_md(fr_euro_anchor):
         assert p.ppb_discr_rel_pp(t) == pytest.approx(discr, abs=CENT), t
         assert p.ppb_release_pp(t) == pytest.approx(released, abs=CENT), t
     # The want column is the dotation's mirror image while it is negative.
-    for t in (1, 2, 3):
+    for t in (0, 1, 2):
         assert p.ppb_dotation_pp(t) == pytest.approx(
             p.pb_min_pp(t) - p.pb_target_pp(t), abs=1e-9)
-    # From year 9 the balance is nil, so the want rises and nothing is released.
-    assert p.ppb_pp(9) == pytest.approx(0.0, abs=CENT)
+    # From ``t = 8`` the balance is nil, so the want rises and nothing is released.
+    assert p.ppb_pp(8) == pytest.approx(0.0, abs=CENT)
 
 
 def test_no_ppb_vintage_outlives_its_eight_year_clock(assurance_vie_euro):
@@ -375,7 +379,7 @@ def test_no_ppb_vintage_outlives_its_eight_year_clock(assurance_vie_euro):
         p = assurance_vie_euro.Projection[point_id]
         assert p.check_ppb_clock() is True, point_id
         assert p.check_ppb_roll_fwd() is True, point_id
-        for t in range(1, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             assert p.ppb_pp(t) >= -1e-9
             assert p.ppb_ledger_pp(t) == pytest.approx(p.ppb_pp(t), abs=1e-8)
             for v in range(p.ppb_vintage_first(), t - 8):
@@ -386,23 +390,23 @@ def test_the_clock_reaches_dotation_vintages_and_a_young_profile_defers_it(
         assurance_vie_euro):
     """Point 8 credits a dotation every year and each comes back out at v + 8.
 
-    Point 6 carries the same EUR 4,000 in four vintages rather than eight, due in years 5
-    to 8, so nothing is forced out before year 5 - which is why the vintage split is a
-    **[std]** worth naming.
+    Point 6 carries the same EUR 4,000 in four vintages rather than eight, due at ``t = 4``
+    to ``t = 7``, so nothing is forced out before ``t = 4`` - which is why the vintage split
+    is a **[std]** worth naming.
     """
     high = assurance_vie_euro.Projection[8]
     assert high.scenario_id() == "high"
-    assert all(high.ppb_dotation_pp(t) > 0.0 for t in range(1, 13))
-    for t in range(9, 15):
+    assert all(high.ppb_dotation_pp(t) > 0.0 for t in range(12))
+    for t in range(8, 14):
         assert high.ppb_forced_pp(t) == pytest.approx(
             high.ppb_dotation_pp(t - 8), abs=CENT)
-    assert high.ppb_pp(41) > 0.0     # a growing PPB, and still no vintage overdue
+    assert high.ppb_pp(40) > 0.0     # a growing PPB, and still no vintage overdue
     young = assurance_vie_euro.Projection[6]
-    assert young.ppb_vintages_init() == 4 and young.ppb_vintage_first() == -3
-    assert young.ppb_vintage_pp(1, -3) == pytest.approx(1000.00, abs=CENT)
-    assert all(young.ppb_forced_pp(t) == 0.0 for t in range(1, 5))
-    assert young.ppb_forced_pp(5) > 0.0
-    assert young.ts_net(1) == pytest.approx(young.ts_target(), abs=1e-12)
+    assert young.ppb_vintages_init() == 4 and young.ppb_vintage_first() == -4
+    assert young.ppb_vintage_pp(0, -4) == pytest.approx(1000.00, abs=CENT)
+    assert all(young.ppb_forced_pp(t) == 0.0 for t in range(4))
+    assert young.ppb_forced_pp(4) > 0.0
+    assert young.ts_net(0) == pytest.approx(young.ts_target(), abs=1e-12)
 
 
 def test_the_statutory_minimum_is_allocated_in_full_not_credited_in_full(
@@ -411,19 +415,19 @@ def test_the_statutory_minimum_is_allocated_in_full_not_credited_in_full(
 
     The balance goes to the PPB, not to the insurer, so the invariant is an allocation
     identity rather than a rate inequality.  Model point 5 opens with no PPB and credits
-    below the statutory floor rate in year 1; the anchor cell never does, only because its
-    forced release always exceeds its dotation.
+    below the statutory floor rate at ``t = 0``; the anchor cell never does, only because
+    its forced release always exceeds its dotation.
     """
     p = fr_euro_anchor
     assert p.check_pb_allocation() is True
-    for t in (1, 6, 9):
+    for t in (0, 5, 8):
         assert p.check_pb_allocation_resid(t) == pytest.approx(0.0, abs=1e-7)
         assert p.int_credited_pp(t) + p.fee_pp(t) + p.ppb_dotation_pp(t) == pytest.approx(
             p.pb_min_pp(t) + p.ppb_release_pp(t) + p.insurer_topup_pp(t), abs=1e-7)
     no_ppb = assurance_vie_euro.Projection[5]
-    assert no_ppb.ppb_pp(1) == 0.0 and no_ppb.ppb_dotation_pp(1) > 0.0
-    assert no_ppb.ts_net(1) < no_ppb.ts_stat(1)
-    assert no_ppb.ts_net(1) == pytest.approx(no_ppb.ts_target(), abs=1e-12)
+    assert no_ppb.ppb_pp(0) == 0.0 and no_ppb.ppb_dotation_pp(0) > 0.0
+    assert no_ppb.ts_net(0) < no_ppb.ts_stat(0)
+    assert no_ppb.ts_net(0) == pytest.approx(no_ppb.ts_target(), abs=1e-12)
     assert no_ppb.check_pb_allocation() is True
 
 
@@ -438,15 +442,15 @@ def test_the_social_levy_is_annual_not_deferred_to_surrender(fr_euro_anchor):
     overstates the account and every benefit measured on it.
     """
     p = fr_euro_anchor
-    for t in range(1, 13):
+    for t in range(12):
         assert p.soc_levy_pp(t) > 0.0
         assert p.soc_levy_pp(t) == pytest.approx(
             p.soc_levy_rate() * max(p.int_credited_pp(t), 0.0), abs=1e-12)
-    total_levy = sum(p.soc_levy_pp(t) for t in range(1, 13))
-    total_int = sum(p.int_credited_pp(t) for t in range(1, 13))
+    total_levy = sum(p.soc_levy_pp(t) for t in range(12))
+    total_int = sum(p.int_credited_pp(t) for t in range(12))
     assert total_levy == pytest.approx(0.172 * total_int, abs=1e-9)
-    assert p.av_pp(2) == pytest.approx(
-        p.av_pp_at(1, "AFT_INT") - p.soc_levy_pp(1), abs=1e-12)
+    assert p.av_pp(1) == pytest.approx(
+        p.av_pp_at(0, "AFT_INT") - p.soc_levy_pp(0), abs=1e-12)
     df = p.result_cf()
     outgo = df[["claims_death", "claims_lapse", "withdrawals", "expenses"]].sum(axis=1)
     assert (outgo - df["premiums"] - df["liability_cf"]).abs().max() == pytest.approx(
@@ -455,13 +459,13 @@ def test_the_social_levy_is_annual_not_deferred_to_surrender(fr_euro_anchor):
 
 
 def test_the_social_levy_base_is_the_years_interest_not_the_account(fr_euro_anchor):
-    """17.2% of EUR 100,000 is EUR 17,200; of year 1's EUR 2,827.60 it is EUR 486.35."""
+    """17.2% of EUR 100,000 is EUR 17,200; of ``t = 0``'s EUR 2,827.60 it is EUR 486.35."""
     p = fr_euro_anchor
-    assert 0.172 * p.av_pp(1) == pytest.approx(17200.00, abs=CENT)
-    assert p.soc_levy_pp(1) == pytest.approx(486.35, abs=CENT)
-    assert p.int_credited_pp(1) == pytest.approx(2827.60, abs=CENT)
-    assert p.soc_levy_cum_pp(1) == 0.0
-    assert p.soc_levy_cum_pp(13) == pytest.approx(5469.74, abs=CENT)
+    assert 0.172 * p.av_pp(0) == pytest.approx(17200.00, abs=CENT)
+    assert p.soc_levy_pp(0) == pytest.approx(486.35, abs=CENT)
+    assert p.int_credited_pp(0) == pytest.approx(2827.60, abs=CENT)
+    assert p.soc_levy_cum_pp(0) == 0.0
+    assert p.soc_levy_cum_pp(12) == pytest.approx(5469.74, abs=CENT)
 
 
 # ---------------------------------------------------------------------------
@@ -472,31 +476,31 @@ def test_the_cliquet_ratchets_credited_pb_not_the_account_balance(
         assurance_vie_euro, fr_euro_anchor):
     """Credited PB is definitively acquired; the balance is not.
 
-    Model point 10, a drawdown cell, falls every year from year 4 while its ratchet holds
-    throughout.  Testing the cliquet as "``av_pp`` never falls" is the pitfall.
+    Model point 10, a drawdown cell, falls every year from ``t = 3`` while its ratchet
+    holds throughout.  Testing the cliquet as "``av_pp`` never falls" is the pitfall.
     """
     p = fr_euro_anchor
-    assert p.check_cliquet() is True and p.pb_cum_pp(1) == 0.0
-    for t in range(1, 13):
+    assert p.check_cliquet() is True and p.pb_cum_pp(0) == 0.0
+    for t in range(12):
         assert p.int_credited_pp(t) >= 0.0
         assert p.ts_net(t) >= p.tmg_rate()
         assert p.pb_cum_pp(t + 1) == pytest.approx(
             p.pb_cum_pp(t) + p.pb_credited_pp(t), abs=1e-9)
     drawdown = assurance_vie_euro.Projection[10]
-    assert drawdown.av_pp(5) < drawdown.av_pp(4)
+    assert drawdown.av_pp(4) < drawdown.av_pp(3)
     assert drawdown.check_cliquet() is True
-    assert drawdown.pb_cum_pp(20) > drawdown.pb_cum_pp(10)
+    assert drawdown.pb_cum_pp(19) > drawdown.pb_cum_pp(9)
 
 
 def test_the_death_benefit_is_the_account_value_with_no_uplift(fr_euro_anchor):
     """DB = CV = av_pp(t+1), no uplift and no surrender penalty; and no maturity kind."""
     p = fr_euro_anchor
-    for t in (1, 6, 12, 30):
+    for t in (0, 5, 11, 29):
         assert p.db_pp(t) == pytest.approx(p.av_pp(t + 1), rel=1e-15)
         assert p.cv_pp(t) == pytest.approx(p.av_pp(t + 1), rel=1e-15)
         assert p.claim_pp(t, "DEATH") == pytest.approx(p.claim_pp(t, "LAPSE"), rel=1e-15)
     with pytest.raises(FormulaError):
-        p.claim_pp(1, "MATURITY")
+        p.claim_pp(0, "MATURITY")
     assert "claims_maturity" not in p.result_cf().columns
 
 
@@ -508,14 +512,14 @@ def test_mid_year_exits_take_the_full_years_taux_servi(fr_euro_anchor):
     difference is one year's revalorisation net of the levy.
     """
     p = fr_euro_anchor
-    for t in (1, 6, 12):
+    for t in (0, 5, 11):
         strict = p.av_pp_at(t, "AFT_WD")          # the pro rata rule at a nil TMG
         assert p.claim_pp(t, "LAPSE") - strict == pytest.approx(
             p.int_credited_pp(t) - p.soc_levy_pp(t), abs=1e-9)
         assert p.claim_pp(t, "LAPSE") > strict
     assert p.tmg_rate() == 0.0
-    assert p.pols_if_at(6, "AFT_DECR") == pytest.approx(
-        p.pols_if(6) * (1 - p.mort_rate(6)) * (1 - p.lapse_rate(6)), abs=1e-12)
+    assert p.pols_if_at(5, "AFT_DECR") == pytest.approx(
+        p.pols_if(5) * (1 - p.mort_rate(5)) * (1 - p.lapse_rate(5)), abs=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -523,35 +527,36 @@ def test_mid_year_exits_take_the_full_years_taux_servi(fr_euro_anchor):
 
 
 def test_the_duration_eight_surrender_step_is_the_tax_threshold(fr_euro_anchor):
-    """Keyed to the **contract's** eighth anniversary, not to projection year 8.
+    """Keyed to the **contract's** eighth anniversary, not to the eighth projected year.
 
-    The anchor cell is five years in, so duration 8 falls at t = 3.  A model indexing the
-    lapse table by t would put the step five years late.
+    The anchor cell is five years in, so policy year 8 falls at t = 2.  A model indexing
+    the lapse table by t would put the step five years late.  ``policy_year`` is the
+    1-based contractual label; the 0-based elapsed count is ``duration_init() + t``.
     """
     p = fr_euro_anchor
     assert p.duration_init() == 5
-    assert [p.duration(t) for t in (1, 3, 6)] == [6, 8, 11]
-    assert p.lapse_rate_base(3) == pytest.approx(0.08, abs=1e-12)
-    assert p.lapse_rate_base(2) == pytest.approx(0.04, abs=1e-12)
-    assert p.lapse_rate_base(4) == pytest.approx(0.05, abs=1e-12)
-    assert p.ref_rate(1) == pytest.approx(0.0220, abs=1e-12)
+    assert [p.policy_year(t) for t in (0, 2, 5)] == [6, 8, 11]
+    assert p.lapse_rate_base(2) == pytest.approx(0.08, abs=1e-12)
+    assert p.lapse_rate_base(1) == pytest.approx(0.04, abs=1e-12)
+    assert p.lapse_rate_base(3) == pytest.approx(0.05, abs=1e-12)
+    assert p.ref_rate(0) == pytest.approx(0.0220, abs=1e-12)
 
 
 def test_the_dynamic_surrender_term_is_one_sided(assurance_vie_euro, fr_euro_anchor):
     """Additive in the gap, and nil while the `taux servi` beats the reference rate."""
     p = fr_euro_anchor
-    for t in range(1, 9):
+    for t in range(8):
         assert p.ts_net(t) > p.ref_rate(t)
         assert p.lapse_dyn_add(t) == 0.0
         assert p.lapse_rate(t) == pytest.approx(p.lapse_rate_base(t), abs=1e-12)
-    assert p.lapse_dyn_add(9) == pytest.approx(
-        4.0 * (p.ref_rate(9) - p.ts_net(9) - 0.0025), abs=1e-12)
-    assert p.lapse_rate(9) == pytest.approx(0.062873, abs=RATE)
+    assert p.lapse_dyn_add(8) == pytest.approx(
+        4.0 * (p.ref_rate(8) - p.ts_net(8) - 0.0025), abs=1e-12)
+    assert p.lapse_rate(8) == pytest.approx(0.062873, abs=RATE)
     # A 0.73% taux servi against a 2.20% Livret A adds 4.88 points to a 5% base rate.
     low = assurance_vie_euro.Projection[7]
-    assert low.scenario_id() == "low" and low.ts_net(20) < low.ref_rate(20)
-    assert low.lapse_dyn_add(20) == pytest.approx(0.048755, abs=RATE)
-    assert low.lapse_rate(20) == pytest.approx(0.098755, abs=RATE)
+    assert low.scenario_id() == "low" and low.ts_net(19) < low.ref_rate(19)
+    assert low.lapse_dyn_add(19) == pytest.approx(0.048755, abs=RATE)
+    assert low.lapse_rate(19) == pytest.approx(0.098755, abs=RATE)
 
 
 def test_the_dynamic_surrender_cap_binds_when_the_gap_is_wide():
@@ -566,8 +571,8 @@ def test_the_dynamic_surrender_cap_binds_when_the_gap_is_wide():
         model.Projection.lapse_dyn_a = 60.0
         model.Projection.clear_all()
         p = model.Projection[7]
-        assert p.lapse_dyn_add(20) > 0.3
-        assert p.lapse_rate(20) == pytest.approx(0.3, abs=1e-12)
+        assert p.lapse_dyn_add(19) > 0.3
+        assert p.lapse_rate(19) == pytest.approx(0.3, abs=1e-12)
     finally:
         model.close()
 
@@ -580,8 +585,8 @@ def test_the_shipped_variants_behave_as_their_columns_say(assurance_vie_euro):
     """Points 2, 3, 9 and 11 against the anchor cell.
 
     The `garantie brute` (2) leaves the account path untouched and lifts only the floor, by
-    the cumulative charge.  A 2.90% target (3) drains the PPB by year 7 and then credits the
-    statutory floor rate.  The small new-business cell (9) carries a 0.50% entry charge and
+    the cumulative charge.  A 2.90% target (3) drains the PPB by ``t = 6`` and then credits
+    the statutory floor rate.  The small new-business cell (9) carries a 0.50% entry charge and
     a 0.80% management charge, and the fixed part of its expense loading dominates its
     `compte technique`.  The grouped cell (11) scales every flow by 250 and no state at all.
     """
@@ -589,27 +594,27 @@ def test_the_shipped_variants_behave_as_their_columns_say(assurance_vie_euro):
 
     gross = assurance_vie_euro.Projection[2]
     assert gross.guarantee_form() == "gross" and anchor.guarantee_form() == "net"
-    assert gross.av_pp(13) == pytest.approx(anchor.av_pp(13), rel=1e-15)
-    assert gross.guar_floor_pp(13) == pytest.approx(
-        anchor.guar_floor_pp(13) + 8738.15, abs=CENT)
-    assert gross.guar_floor_pp(13) == pytest.approx(107800.00, abs=CENT)
+    assert gross.av_pp(12) == pytest.approx(anchor.av_pp(12), rel=1e-15)
+    assert gross.guar_floor_pp(12) == pytest.approx(
+        anchor.guar_floor_pp(12) + 8738.15, abs=CENT)
+    assert gross.guar_floor_pp(12) == pytest.approx(107800.00, abs=CENT)
 
     eager = assurance_vie_euro.Projection[3]
     assert eager.ts_target() == pytest.approx(0.0290, abs=1e-12)
-    assert eager.ppb_pp(5) < anchor.ppb_pp(5)
-    assert eager.ppb_pp(7) == pytest.approx(0.0, abs=CENT)
-    assert eager.ts_net(10) == pytest.approx(eager.ts_stat(10), abs=1e-12)
+    assert eager.ppb_pp(4) < anchor.ppb_pp(4)
+    assert eager.ppb_pp(6) == pytest.approx(0.0, abs=CENT)
+    assert eager.ts_net(9) == pytest.approx(eager.ts_stat(9), abs=1e-12)
 
     small = assurance_vie_euro.Projection[9]
     assert small.prem_charge_rate() == pytest.approx(0.005, abs=1e-12)
-    assert small.prem_to_av_pp(1) == pytest.approx(1200.0 * 0.995, abs=1e-9)
-    assert small.duration_init() == 0 and small.age(1) == 45
-    assert small.lapse_rate_base(8) == pytest.approx(0.08, abs=1e-12)
-    assert small.ts_stat(1) < anchor.ts_stat(1)
+    assert small.prem_to_av_pp(0) == pytest.approx(1200.0 * 0.995, abs=1e-9)
+    assert small.duration_init() == 0 and small.age(0) == 45
+    assert small.lapse_rate_base(7) == pytest.approx(0.08, abs=1e-12)
+    assert small.ts_stat(0) < anchor.ts_stat(0)
 
     grouped = assurance_vie_euro.Projection[11]
     assert grouped.pols_if_init() == 250.0
-    for t in (1, 9, 20):
+    for t in (0, 8, 19):
         assert grouped.av_pp(t) == pytest.approx(anchor.av_pp(t), rel=1e-15)
         assert grouped.ts_net(t) == pytest.approx(anchor.ts_net(t), rel=1e-15)
         assert grouped.net_cf(t) == pytest.approx(250.0 * anchor.net_cf(t), rel=1e-9)
@@ -628,9 +633,9 @@ def test_no_model_point_elects_an_avance_or_carries_a_positive_tmg(assurance_vie
     assert assurance_vie_euro.Projection[1].avance_on() is False
     for point_id in table.index:
         p = assurance_vie_euro.Projection[point_id]
-        assert p.pb_min_pp(3) == pytest.approx(max(0.0, p.pb_acct_pp(3)), abs=1e-12)
-        assert all(p.insurer_topup_pp(t) == 0.0 for t in (1, 10, 30))
-        assert all(p.ts_net(t) == p.ts_raw(t) for t in (1, 10, 30))
+        assert p.pb_min_pp(2) == pytest.approx(max(0.0, p.pb_acct_pp(2)), abs=1e-12)
+        assert all(p.insurer_topup_pp(t) == 0.0 for t in (0, 9, 29))
+        assert all(p.ts_net(t) == p.ts_raw(t) for t in (0, 9, 29))
 
 
 # ---------------------------------------------------------------------------
@@ -645,7 +650,8 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(fr_euro_anchor):
     the enum accessors validate rather than propagating a typo into a lookup.
     """
     df = fr_euro_anchor.result_cf()
-    assert list(df.index) == list(range(1, 41)) and df.index.name == "t"
+    assert list(df.index) == list(range(fr_euro_anchor.proj_len()))
+    assert list(df.index) == list(range(40)) and df.index.name == "t"
     assert list(df.columns) == [
         "pols_if", "premiums", "withdrawals", "claims_death", "claims_lapse",
         "expenses", "int_credited", "soc_levy", "liability_cf", "net_cf",
@@ -654,9 +660,9 @@ def test_result_cf_shape_and_both_signs_of_the_net_flow(fr_euro_anchor):
         assert absent not in df.columns
     assert (df["net_cf"] + df["liability_cf"]).abs().max() == pytest.approx(0.0, abs=1e-9)
     with pytest.raises(FormulaError):
-        fr_euro_anchor.av_pp_at(1, "AFT_LEVY")
+        fr_euro_anchor.av_pp_at(0, "AFT_LEVY")
     with pytest.raises(FormulaError):
-        fr_euro_anchor.pols_if_at(1, "AFT_SURR")
+        fr_euro_anchor.pols_if_at(0, "AFT_SURR")
 
 
 def test_every_model_point_projects_and_every_check_holds(assurance_vie_euro):
@@ -667,7 +673,8 @@ def test_every_model_point_projects_and_every_check_holds(assurance_vie_euro):
     for point_id in ids:
         p = assurance_vie_euro.Projection[point_id]
         df = p.result_cf()
-        assert len(df) == 40 and df.notna().all().all(), point_id
+        assert len(df) == 40 == p.proj_len() and df.notna().all().all(), point_id
+        assert list(df.index) == list(range(40)), point_id
         if columns is None:
             columns = list(df.columns)
         else:
@@ -722,6 +729,9 @@ def test_the_inputs_live_beside_the_model_and_mark_their_own_provenance():
     assert all(v.startswith("[std]") for v in fin["provenance"])
     assert set(fin["scenario_id"]) == {"base", "low", "high"}
     assert (fin["ref_rate"] == 0.0220).all()
+    # The `t` key is the model's own 0-based time index, so the file starts at 0.
+    for scenario in ("base", "low", "high"):
+        assert list(fin[fin["scenario_id"] == scenario]["t"]) == list(range(40))
 
 
 def test_an_input_can_be_swapped_without_touching_formulas():
@@ -768,7 +778,7 @@ def test_round_trip_is_stable(tmp_path):
             assert p.av_pp(t) == pytest.approx(row[0], abs=CENT)
             assert p.int_credited_pp(t) == pytest.approx(row[3], abs=CENT)
             assert p.soc_levy_pp(t) == pytest.approx(row[4], abs=CENT)
-        assert p.ppb_pp(9) == pytest.approx(0.0, abs=CENT)
+        assert p.ppb_pp(8) == pytest.approx(0.0, abs=CENT)
         assert "Notes symbol" in reread.Projection.doc
     finally:
         reread.close()

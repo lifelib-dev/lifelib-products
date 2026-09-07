@@ -39,10 +39,10 @@ cliff, and two prescribed steps landing in the same row; ``claims_lapse`` identi
 through the 납입기간; a payment on death with no death benefit, and an account floor that
 binds; ``risk_prem_pp`` excluding the two lines paid out of the account; nothing paid at
 expiry; ten ``claims_*`` splits and no ``claims`` column; rounded lines that do not re-add
-and a commission carrying its own floating-point residue; ``proj_len()`` as the last index;
-log-linear incidence against linear tier shares; [std] incidence rows above age 80 that the
-projection reaches; 부활 re-running the 90 days; and the indemnity machinery of
-``Medical_KR_S`` that this chassis must not borrow.
+and a commission carrying its own floating-point residue; ``proj_len()`` as the row count
+rather than the last index; log-linear incidence against linear tier shares; [std]
+incidence rows above age 80 that the projection reaches; 부활 re-running the 90 days; and
+the indemnity machinery of ``Medical_KR_S`` that this chassis must not borrow.
 
 The ten ``check_*`` cells are asserted **by name**, because a generic sweep cannot notice a
 check that has quietly disappeared, and the [std] scalar assumptions are read off the model
@@ -317,16 +317,16 @@ TOTALS = {
 # "The other nine model points": id -> (sex, 만나이, pay_term_y, S, premium, proj_len,
 # PV outgo / PV premiums, sum of net_cf).
 MODEL_POINT_SUMMARY = {
-    1:  ("M", 40, 20, 30000000.0, 45000.0, 720, 1.2352, -7466785.49),
-    2:  ("F", 40, 20, 30000000.0, 54000.0, 720, 1.0202, -5576954.27),
-    3:  ("M", 40, 0, 30000000.0, 62000.0, 720, 0.8769, -4619382.83),
-    4:  ("F", 30, 20, 50000000.0, 65000.0, 840, 1.0271, -9387556.77),
-    5:  ("M", 15, 20, 30000000.0, 39000.0, 1020, 1.0478, -11195873.06),
-    6:  ("M", 65, 10, 50000000.0, 331000.0, 420, 0.9882, -5612192.29),
-    7:  ("F", 55, 0, 30000000.0, 52000.0, 540, 0.9206, -2356283.74),
-    8:  ("M", 45, 20, 30000000.0, 34000.0, 660, 1.0806, -3712985.12),
-    9:  ("F", 50, 20, 100000000.0, 194000.0, 600, 0.9568, -10552299.99),
-    10: ("M", 35, 30, 10000000.0, 23000.0, 780, 1.1010, -4471108.86),
+    1:  ("M", 40, 20, 30000000.0, 45000.0, 721, 1.2352, -7466785.49),
+    2:  ("F", 40, 20, 30000000.0, 54000.0, 721, 1.0202, -5576954.27),
+    3:  ("M", 40, 0, 30000000.0, 62000.0, 721, 0.8769, -4619382.83),
+    4:  ("F", 30, 20, 50000000.0, 65000.0, 841, 1.0271, -9387556.77),
+    5:  ("M", 15, 20, 30000000.0, 39000.0, 1021, 1.0478, -11195873.06),
+    6:  ("M", 65, 10, 50000000.0, 331000.0, 421, 0.9882, -5612192.29),
+    7:  ("F", 55, 0, 30000000.0, 52000.0, 541, 0.9206, -2356283.74),
+    8:  ("M", 45, 20, 30000000.0, 34000.0, 661, 1.0806, -3712985.12),
+    9:  ("F", 50, 20, 100000000.0, 194000.0, 601, 0.9568, -10552299.99),
+    10: ("M", 35, 30, 10000000.0, 23000.0, 781, 1.1010, -4471108.86),
 }
 
 # The male select excess hazards of survival_table.csv, both tiers, and the five-year sums
@@ -408,7 +408,7 @@ def test_worked_example_anchor_cell_configuration(kr_cancer_anchor):
 
 
 def test_worked_example_derived_scalars(kr_cancer_anchor):
-    """proj_len 720 on 721 rows, pay_months 240, 해약공제기간 84 and the 585,000 cap.
+    """proj_len 721 on 721 rows, pay_months 240, 해약공제기간 84 and the 585,000 cap.
 
     ``surr_chg_cap_pp()`` is the one derived scalar with a whole regulatory chain behind it:
     [별표 14]'s formula gives 459,000 + 180,000 = 639,000 and the FSC's 13-months-of-premium
@@ -416,7 +416,7 @@ def test_worked_example_derived_scalars(kr_cancer_anchor):
     without the cap, or the cap without the formula, would be right here by accident.
     """
     a = kr_cancer_anchor
-    assert a.proj_len() == 720 == 12 * (100 - 40)
+    assert a.proj_len() == 721 == 12 * (100 - 40) + 1
     assert len(a.result_cf()) == 721
     assert a.pay_months() == 240 and a.surr_chg_months() == 84
     assert a.pols_if_init() == 1.0
@@ -1192,7 +1192,7 @@ def test_the_shipped_model_point_summary_table(cancer, point_id):
     p = cancer.Projection[point_id]
     assert (p.sex(), p.issue_age(), p.pay_term()) == (sex, age, pay_term)
     assert (p.sum_assured(), p.premium_mth_pp()) == (sa, premium)
-    assert p.proj_len() == proj_len == 12 * (100 - age)
+    assert p.proj_len() == proj_len == 12 * (100 - age) + 1
     df = p.result_cf()
     pv_prem, pv_outgo = _pv(df)
     assert pv_outgo / pv_prem == pytest.approx(ratio, abs=5e-5)
@@ -1229,14 +1229,14 @@ def test_every_check_residual_is_zero_on_the_anchor_cell(kr_cancer_anchor):
     """The signed residuals themselves, month by month, not merely the booleans.
 
     ``check_cancer_roll_fwd_resid`` reads ``pols_cancer(t + 1)`` and so is only defined to
-    ``proj_len() - 1``; its own ``check`` sweeps exactly that range and the test follows it,
+    ``proj_len() - 2``; its own ``check`` sweeps exactly that range and the test follows it,
     because a residual asserted outside the range a check covers proves nothing about the
     check.
     """
     a = kr_cancer_anchor
     n = a.proj_len()
     for name in sorted(CHECKS):
-        stop = n if name == "check_cancer_roll_fwd" else n + 1
+        stop = n - 1 if name == "check_cancer_roll_fwd" else n
         residual = getattr(a, name + "_resid")
         worst = max(abs(residual(t)) for t in range(stop))
         assert worst < 1e-8, f"{name}_resid worst = {worst}"
@@ -1255,8 +1255,8 @@ def test_the_check_tolerance_is_a_named_reference_and_is_scaled(cancer, kr_cance
     assert refs["roll_fwd_tol"] == 1e-10
     a = kr_cancer_anchor
     n = a.proj_len()
-    cash = max(abs(a.check_net_cf_resid(t)) for t in range(n + 1))
-    counts = max(abs(a.check_pols_roll_fwd_resid(t)) for t in range(n + 1))
+    cash = max(abs(a.check_net_cf_resid(t)) for t in range(n))
+    counts = max(abs(a.check_pols_roll_fwd_resid(t)) for t in range(n))
     assert cash < 1e-10 * a.sum_assured() / 100.0
     assert counts < 1e-10 * a.pols_if_init() / 100.0
 
@@ -1271,7 +1271,7 @@ def test_the_inforce_rollforward_is_the_notes_identity(cancer):
     """
     for point_id in cancer.Data.model_point_table().index:
         p = cancer.Projection[point_id]
-        for t in range(0, p.proj_len() + 1):
+        for t in range(0, p.proj_len()):
             out = p.pols_death(t) + p.pols_lapse(t) + p.pols_maturity(t)
             assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(out, abs=1e-12), (
                 point_id, t)
@@ -1355,7 +1355,7 @@ def test_inforce_is_a_decreasing_probability_on_every_model_point(cancer):
     """
     for point_id in cancer.Data.model_point_table().index:
         p = cancer.Projection[point_id]
-        for t in range(0, p.proj_len() + 2):
+        for t in range(0, p.proj_len() + 1):
             assert 0.0 <= p.pols_if(t) <= 1.0
             assert p.pols_if(t + 1) <= p.pols_if(t) + 1e-15
 
@@ -2014,8 +2014,9 @@ def test_pitfall_nothing_is_paid_at_the_hundredth_birthday(cancer, kr_cancer_anc
     assert a.pols_death(720) == a.pols_lapse(720) == 0.0
     for point_id in cancer.Data.model_point_table().index:
         p = cancer.Projection[point_id]
-        assert p.claims(p.proj_len(), "MATURITY") == 0.0
-        assert p.pols_maturity(p.proj_len()) == p.pols_if(p.proj_len()) > 0.0
+        last = p.proj_len() - 1
+        assert p.claims(last, "MATURITY") == 0.0
+        assert p.pols_maturity(last) == p.pols_if(last) > 0.0
     names = set(cancer.Projection.cells) | set(cancer.Projection.refs)
     for absent in ("maturity_benefit", "maturity_ratio", "claims_maturity_pp"):
         assert absent not in names, f"{absent} belongs to a 만기환급형 design"
@@ -2086,23 +2087,30 @@ def test_pitfall_the_initial_commission_carries_its_floating_point_residue(
     assert a.commissions(240) == 0.0                 # no premium, no renewal commission
 
 
-def test_pitfall_proj_len_is_the_last_index_not_a_row_count(cancer, kr_cancer_anchor):
-    """result_cf() has proj_len() + 1 rows, and the extra one is the expiry row.
+def test_pitfall_proj_len_is_a_row_count_not_the_last_index(cancer, kr_cancer_anchor):
+    """result_cf() has proj_len() rows, and the last of them is the expiry row.
 
-    Sizing an array at ``proj_len()`` silently drops the one row where every cash flow is
-    zero and ``pols_maturity`` is not.  The frame is 0-based here because ``t = 0`` is the
-    month beginning at the 보험계약일, which is where the acquisition cost and the first
-    premium both land.
+    ``proj_len()`` is the frame's **exclusive end**, so the last projected month is
+    ``proj_len() - 1``: indexing ``result_cf()`` at ``proj_len()`` is a ``KeyError`` and
+    sweeping ``range(proj_len() + 1)`` runs a month past the end of the contract.  The frame
+    is 0-based because ``t = 0`` is the month beginning at the 보험계약일, which is where the
+    acquisition cost and the first premium both land; the 720 months of cover on the anchor
+    cell are ``t = 0 ... 719`` and ``t = 720`` is the 100세 계약해당일 itself, the one row
+    where every cash flow is zero and ``pols_maturity`` is not.
     """
     a = kr_cancer_anchor
-    assert a.proj_len() == 720
-    assert len(a.result_cf()) == 721 == a.proj_len() + 1
+    assert a.proj_len() == 721
+    assert len(a.result_cf()) == 721 == a.proj_len()
     assert len(a.result_pols()) == 721
     assert a.result_cf().index[0] == 0 and a.result_cf().index[-1] == 720
+    assert a.result_cf().index[-1] == a.proj_len() - 1
+    with pytest.raises(KeyError):
+        a.result_cf().loc[a.proj_len()]
     for point_id in cancer.Data.model_point_table().index:
         p = cancer.Projection[point_id]
-        assert len(p.result_cf()) == p.proj_len() + 1
-        assert p.result_cf().index[-1] == p.proj_len()
+        assert len(p.result_cf()) == p.proj_len()
+        assert p.result_cf().index[0] == 0
+        assert p.result_cf().index[-1] == p.proj_len() - 1
 
 
 # ---------------------------------------------------------------------------
@@ -2478,7 +2486,7 @@ def test_round_trip_is_stable(tmp_path):
     reread = mx.read_model(dest, name="Cancer_KR_S_rt")
     try:
         a = reread.Projection[1]
-        assert a.proj_len() == 720 and a.surr_chg_cap_pp() == 585000.0
+        assert a.proj_len() == 721 and a.surr_chg_cap_pp() == 585000.0
         for t in (0, 3, 4, 12):
             assert a.pols_if(t) == pytest.approx(WE_POLS[t][0], abs=INFORCE)
             assert a.net_cf(t) == pytest.approx(WE_TAIL[t][3], abs=MONEY)

@@ -190,8 +190,11 @@ def lapse_table():
 def surrender_table():
     """The guaranteed *Rückkaufswert* as a fraction of premiums paid to date.
 
-    Read from *surrender_table.csv*, by completed policy year 1 to 40 with year 40's ratio
-    applying thereafter, intermediate years interpolated in the shipped file.  The
+    Read from *surrender_table.csv*, by *Versicherungsjahr* ``y(t) = t // 12 + 1``, 1 to 40:
+    year ``k``'s ratio applies throughout policy year ``k``, ``t = 12(k - 1) … 12k - 1``,
+    and year 40's applies thereafter, intermediate years interpolated in the shipped file.
+    It is the **current** policy year, not the completed one — a surrender at ``t = 24``,
+    two completed years, already takes year 3's ratio.  The
     scale-free form, which is the form a German contract states.  The shape encodes two
     cited facts — the 25 ‰ *Zillmerung* allowance, which is why the first two years are
     zero, and the § 169 Abs. 3 VVG five-year spread floor, which is why it turns positive

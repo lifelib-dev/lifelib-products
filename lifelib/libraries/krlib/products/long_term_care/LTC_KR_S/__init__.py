@@ -58,10 +58,12 @@ rather than stored inside the model. The model folder itself holds no data, so t
 and its inputs must travel together.
 
 **Projection basis.** Monthly steps on **만나이** (*man nai*, age last birthday).  ``t``
-is the policy month; month ``t`` runs from ``t`` to ``t + 1`` months after the 계약일, and
-``t = proj_len()`` is the 계약해당일 on which the contract matures, carrying the surviving
-in-force count and no cash flow. Office premium and maintenance expense fall at the start
-of the month; the lump sum, the annuity instalment, the 계약자적립액 on death, the
+is the policy month, 0-based: month ``t`` runs from ``t`` to ``t + 1`` months after the
+계약일, so ``t = 0`` is the first projected month. ``proj_len()`` is the **number** of
+projected months — the frame's exclusive end, ``range(proj_len())`` — so the last row is
+``t = proj_len() - 1``, the 계약해당일 on which the contract matures, carrying the
+surviving in-force count and no cash flow. Office premium and maintenance expense fall at
+the start of the month; the lump sum, the annuity instalment, the 계약자적립액 on death, the
 해약환급금 on lapse and the claim-handling expense at the end. Within the month the order
 is **certification, then mortality, then lapse** — lapse is taken from the survivors of
 the month's mortality, and the care population is exposed to neither lapse nor premium.

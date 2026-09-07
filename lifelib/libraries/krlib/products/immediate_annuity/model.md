@@ -47,7 +47,7 @@ bojeung jigeup gigan (guaranteed period) = 10 years   lapse 0.00%
 crediting basis decl_2017: gongsi iyul 2.50%, choejeo bojeung iyul 1.25% to 0.75% -> credited 2.50% at t = 0 and 2.50% at t = 50
 expense load 3.50% + wiheom boheomnyo 0.00% -> opening gyeyakja jeongnimaek KRW 96,500,000 (96.50% of premium)
 annuity factor 19.5027 -> yeongeum yeonaek KRW 4,948,039 a year (KRW 412,337 a month equivalent)
-projection runs t = 0 .. 50 (annual, in arrears; row t pays at t + 1)
+projection runs t = 0 .. 50 (51 periods; annual, in arrears; row t pays at t + 1)
 
 Cash flow statement (KRW, income positive in net_cf)
     [ fifteen sampled rows of result_cf(), ten columns, t = 0 .. 50 ]
@@ -86,13 +86,22 @@ model.Projection[6].result_pols()    # the fund, the annuity, the retention, the
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor.
-`result_cf()` returns a `DataFrame` indexed by policy year `t`, one column per cash flow
+`result_cf()` returns a `DataFrame` indexed by the 0-based period index `t`, one column per cash flow
 line, with `pols_if` first and both signs of the net flow published. `result_pols()` is
 its companion — everything the statement is built out of and nothing that is itself a cash
 flow — and it is the frame in which the retention becomes legible, because `annuity_pp`,
 `retention_pp` and `av_pp` sit in adjacent columns. `model.Projection.doc` carries the
 notes' symbols mapped to the cells names and states the age basis; `model.Data.doc` says
 what each input file is and, for the mortality table, what it is **not**.
+
+**The time index is 0-based.** `t = 0` is the first policy year, period `t` runs from time
+`t` to time `t + 1`, the attained age is `age_at_entry() + t`, and `pols_if(0) ==
+pols_if_init()`. `proj_len()` is the **number of projected periods** — the frame's
+exclusive end — so the frame is `range(proj_len())`, `len(result_cf()) == proj_len()` and
+the last row is `t = proj_len() - 1`. Every shipped model point is new business at
+inception, so all ten frames open at `t = 0`. The contractual policy year is the derived
+1-based label `t + 1` and is never the index itself: the 최저보증이율 schedule the 약관
+states as "policy years 1–5" is implemented as the completed-duration band `0 <= t < 5`.
 
 ## The payout phase standing alone: no premium term, no strain
 
@@ -178,9 +187,11 @@ everyone who died inside it exits at once, `pols_exit(9) = 0.046529974860`. An
 implementation that decremented the obligation on every death would show a residual from
 the first period and would then miss the step.
 
-The two guarantee tests are deliberately different and it is easy to conflate them. The
-obligation is open at time `t` for `t < g`; the instalment on row `t` falls at `t + 1` and
-is guaranteed for `t + 1 <= g`. So on the same row `pols_if(10) = l(10) = 0.953470025140`
+The two guarantee weights are deliberately different and it is easy to conflate them. They
+share one guarantee window — the obligation is open at time `t` for `t < g`, which is what
+`payment_factor`'s `t + 1 <= g` says on integers — but they max it against different
+survival terms: `pols_if` against `l(t)`, `payment_factor` against `l(t + 1)`, because the
+instalment on row `t` falls at `t + 1`. So on the same row `pols_if(10) = l(10) = 0.953470025140`
 and `payment_factor(10) = l(11) = 0.946528763357` are different numbers, and either error
 shifts the guarantee cliff by a year.
 
@@ -193,14 +204,15 @@ and none on a rising one, and this model does not price it.
 ## The horizon is the limiting age on one shape and the term on the other two
 
 ```
-proj_len() = max(g − 1, ω − x)      life
-           = n − 1                  inheritance, certain
+proj_len() = max(g, ω − x + 1)      life
+           = n                      inheritance, certain
 ```
 
-`proj_len()` is the **last row index**, not a row count: the anchor has 51 rows, `t = 0`
-to `t = 50`, and `ω − x = 110 − 60 = 50`. Reading it as a count drops the last instalment
-on the two term shapes — on model point 9 that is ₩9,052,841.76 of outgo, 9.1% of the
-annuity total.
+`proj_len()` is the **number of projected periods**, the frame's exclusive end, not the
+last row index: the frame is `range(proj_len())`, the anchor has 51 rows, `t = 0` to
+`t = 50`, and `ω − x + 1 = 110 − 60 + 1 = 51`. Reading it as a last index either drops the
+last instalment on the two term shapes — on model point 9 that is ₩9,052,841.76 of outgo,
+9.1% of the annuity total — or projects a period past the end of the shipped table.
 
 On the life shape the projection runs to the limiting age of the shipped table, where
 `qx = 1`, so the obligation is **exhausted rather than truncated**: `lives_if(51) = 0`, the
@@ -293,7 +305,7 @@ There is deliberately **no `claims` column** beside the three `claims_*` columns
 `claims(t, kind)` cells stays, but a cash flow statement must not publish its own subtotal
 beside its parts, or the columns stop summing to `net_cf`.
 
-`claims_lapse(N) = 0.00` on **every** shape, including the two that permit surrender: the
+`claims_lapse(N − 1) = 0.00` on **every** shape, including the two that permit surrender: the
 lapse rate is suppressed in the final period so that a contract in its last year runs to
 its 만기보험금 or its last instalment. Without it the maturity benefit is diverted into a
 surrender value of a different amount for no reason any contract states.
@@ -331,9 +343,9 @@ not computed.
 
 ## Processing order
 
-Row `t` of `result_cf()` carries period `t`, which runs from time `t` to time `t + 1`.
-Three of the flows depend on the order within a period, so it is stated rather than left to
-be inferred:
+Row `t` of `result_cf()` carries period `t`, which runs from time `t` to time `t + 1`; the
+index is 0-based and the frame is `t = 0 … proj_len() − 1`. Three of the flows depend on the
+order within a period, so it is stated rather than left to be inferred:
 
 1. the single premium, the commission and the acquisition expense, at time `t`, on row 0
    only;
@@ -346,8 +358,9 @@ be inferred:
    — ₩372,321.86 rather than ₩370,755.90 on point 6 at `t = 0`;
 5. **surrenders** are taken after the deaths, at `cv_pp(t + 1)`, and are suppressed in the
    final period;
-6. the 만기보험금 falls at the end of the last period on the inheritance shape, weighted by
-   `pols_if(N + 1)` and not `pols_if(N)` — it is payable on survival **to** maturity, one
+6. the 만기보험금 falls at the end of the last period on the inheritance shape, at
+   `t = N − 1`, weighted by `pols_if(N)` and not `pols_if(N − 1)` — it is payable on
+   survival **to** maturity, one
    further period of decrement away, ₩79,495,349.97 against ₩80,023,013.57.
 
 Steps 4 and 5 are **[std]** end-of-year conventions on an annual grid; a real contract
@@ -468,6 +481,17 @@ the same terms gives ₩1,932,133.95 a year, **₩161,011.16** a month, against
 | `charge_table.csv` | one row per `shape`: `acq_charge_rate`, `admin_charge_rate`, `risk_prem_rate`, `comm_rate`, `acq_expense_rate`, `annuity_charge_rate`, `db_rate` | 계약체결비용 and 계약관리비용 published by shape at 남자 60 [S1 §VIII]; the 3.50% composite **[std]**, corroborated to 1.4% against [S3]'s four 확정기간 terms; 위험보험료 1.4669% published for 상속형 20년만기 [S1 §VIII], rounded and applied unscaled **[std]**; 모집수수료 a round figure inside the published 2.08% / 1.75% pair, not their 1.915% mid-point [S1 §VII] **[std]**; `acq_expense_rate` derived **[std]**; `annuity_charge_rate` 0.80% [S1 §VIII] with its treatment as an insurer expense **[std]**; `db_rate` 10% of the single premium [S1] [S3] [R1 별표1](#krlib-immediate_annuity-r1) |
 | `crediting_table.csv` | two bases × three duration bands: `decl_rate` and the stepped `min_guar_rate` on half-open `[dur_from, dur_to)` bands | 공시이율 2.50% is the rate the anchor carrier declared on this exact product at 2017-04 [S1 §IV-4]; its adoption **[std]**, the rate being underivable [REG-R18] [REG-R24]. 최저보증이율 1.25 / 1.00 / 0.75% is the only three-step schedule published on a contemporaneous 즉시연금 illustration [S3]; adoption **[std]**. That a floor exists at all is compulsory [REG-R16]. The `min_guar` basis is **[std]**, a modelling device |
 | `model_point_table.csv` | ten contracts: both sexes, issue ages 45 / 55 / 60 / 70 / 80, both guarantee lengths, both retention bases, both crediting bases, all three shapes, premiums ₩10,000,000 to ₩5,000,000,000 | a configuration, not an assumption set, so no `provenance` column. Point 1 is the notes' anchor: the premium is the median of the only public dataset [R12 그림3](#krlib-immediate_annuity-r12) and exactly the 소득세법 ten-year exemption cap [REG-R58]; the age is the one the expense, commission and mortality disclosures are all published at [S1]; the ten-year guarantee is the choice 97.3% of life-shape buyers made [R12 표7](#krlib-immediate_annuity-r12). `lapse_rate` is the exception and is **[std]** |
+
+**No shipped CSV is keyed by the model's time index**, so the move to the 0-based frame
+left every input file byte-for-byte unchanged. The four columns that could have been
+time-like were decided as follows:
+
+| File | Column | Decision | Reason |
+|---|---|---|---|
+| `crediting_table.csv` | `dur_from`, `dur_to` | **unchanged** | a half-open band `[dur_from, dur_to)` in *completed* policy years, which is an elapsed duration and therefore already 0-based and already the frame's own `t`. The shipped edges are `0 / 5 / 10` and `5 / 10 / 999`, and `min_guar_rate(t)` tests `dur_from <= t < dur_to` directly. The prose calls the same schedule "policy years 1–5 / to 10 / thereafter", which is the 1-based contractual label `t + 1` of the same bands |
+| `mort_table.csv` | `age` | **unchanged** | attained 보험나이, not a time index; read as `age(t) = age_at_entry() + t` |
+| `model_point_table.csv` | — | **unchanged** | no duration, in-force or time column at all: every shipped point is new business at inception, so `t_first = 0` on all ten |
+| `charge_table.csv` | — | **unchanged** | keyed by `shape`; no time column |
 
 **Substituting a filed basis** means replacing `mort_table.csv` with a same-schema file
 keyed on exactly the same `(sex, age)` in 보험나이, and `charge_table.csv` and
@@ -636,7 +660,7 @@ reviewer can check it by eye rather than by re-running the model:
 
 Each of the notes' twenty-one pitfalls earns a test named after it — that `pols_if` is not
 a survival probability, that the guarantee is a `max` and not a sum, that the two guarantee
-tests differ, that `proj_len()` is a last index, that `q` is read at the age attained at the
+tests differ, that `proj_len()` is a period count and not a last index, that `q` is read at the age attained at the
 *start* of the period, that the model runs on 보험나이 and not 만나이, that the mortality
 table is never presented as the 경험생명표, that the life-shape annuity is not re-struck
 each year, that `av_pp` is not floored at zero, that the retention is re-struck annually,
@@ -644,7 +668,7 @@ that the 최저보증이율 is a rate on the fund and not a floor on the annuity
 duration bands are half-open in completed policy years, that the 0.80% charge is not netted
 off the payment, that no death benefit is paid on the 종신연금형, that the death benefit is
 measured on the fund carried forward, that no lapse decrement touches the life shape, that
-no surrender fires in the final period, that the 만기보험금 is weighted by `pols_if(N + 1)`,
+no surrender fires in the final period, that the 만기보험금 is weighted by `pols_if(N)`,
 that the 100.1% floor is not applied, that no discounted column exists, and that no
 aggregate `claims` column is published. The four optional modules are asserted in **both**
 positions of their switch.
@@ -655,8 +679,9 @@ with no orphan CSV, the `provenance` column on every assumption CSV, the docstri
 their required phrases — including the `payment obligation remains` phrase in the `pols_if`
 docstring, which is how this model earns its exemption from the start-of-period
 policy-count assertion — the `result_cf()` contract (indexed by `t`, first column
-`pols_if`, a `net_cf` column, all names `lower_snake_case`, no NaN, length equal to
-`proj_len() + 1`), the round trip through `mx.write_model`, and that every `check_*()`
+`pols_if`, a `net_cf` column, all names `lower_snake_case`, no NaN, the contiguous frame
+`range(proj_len())` with `index[-1] == proj_len() - 1`), the round trip through
+`mx.write_model`, and that every `check_*()`
 returns `True` on **every** shipped model point.
 
 ```bash

@@ -88,9 +88,14 @@ formula change.
 
 .. rubric:: The other four assumption files
 
+The three schedule files are keyed on ``policy_year``, the **contractual 1-based label**,
+and their values are left as they are: ``Projection`` reads them at ``t + 1``, ``t`` being
+the model's 0-based period index.
+
 ``benefit_schedule.csv`` carries the three German *Versicherungssumme* shapes as factors
 on the initial sum: ``konstant`` (1.0 at every year, the majority form, shipped for forty
-years), ``linear_fallend`` (``f(t) = (21 - t)/20``, shipped for the twenty-year term model
+years), ``linear_fallend`` (``(21 - policy_year)/20``, i.e. ``f(t) = (20 - t)/20``,
+shipped for the twenty-year term model
 point 4 is written on) and ``annuitaet_fallend_3pct`` (the outstanding balance of a
 thirty-year annuity loan at 3,00 % nominal, shipped for model point 5's thirty-year term).
 The falling schedules are **term-specific by construction**: an amortisation shape is
@@ -101,7 +106,8 @@ schedule is a first-class input.
 
 ``nvg_schedule.csv`` carries the cumulative *Nachversicherungsgarantie* multiplier
 ``sum_uplift``: ``keine`` is 1.0 throughout and is the base run, and
-``nvg_zwei_erhoehungen`` steps to 1.2 at policy year 6 and 1.4 at policy year 12. **No
+``nvg_zwei_erhoehungen`` steps to 1.2 at policy year 6 (``t = 5``) and 1.4 at policy
+year 12 (``t = 11``). **No
 event list, cap, exercise window or age limit was established from any document**, so the
 take-up is exogenous — a schedule, not a modelled decision. What the model does with it is
 not exogenous: each increment carries **its own** three-year § 161 window, so
@@ -113,8 +119,8 @@ forfeited by lapsing, exit is frictionless in time because the *Versicherungsper
 follows the *Zahlweise*, and the need that motivated the purchase amortises. The GDV
 whole-market *Stornoquote* is a book average dominated by long-dated savings contracts and
 is deliberately **not** used. The table's own row for the final policy year still reads
-3 %; the model zeroes it, because a lapse and an expiry at the end of year ``n`` are the
-same event paying the same nothing.
+3 %; the model zeroes it, because a lapse and an expiry at the end of the last period
+``t = n - 1`` are the same event paying the same nothing.
 
 ``freq_loading_table.csv`` carries the *Ratenzahlungszuschlag* — 1.000 annual, 1.02
 half-yearly, 1.03 quarterly, 1.05 monthly — a German market convention with no carrier
@@ -175,12 +181,13 @@ def mort_table():
 
 
 def benefit_schedule():
-    """The *Versicherungssumme* factors by schedule id and policy year.
+    """The *Versicherungssumme* factors by schedule id and **1-based** policy year.
 
     Read from *benefit_schedule.csv*.  ``konstant``, ``linear_fallend`` and
     ``annuitaet_fallend_3pct`` are the three German shapes; the two falling ones are
     written for the term of the model point that uses them, an amortisation schedule being
-    agreed at issue for a stated term.
+    agreed at issue for a stated term.  ``policy_year`` is the contractual label and runs
+    from 1; ``Projection.benefit_factor`` reads it at ``t + 1``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / benefit_schedule_file,                         # noqa: F821
@@ -188,12 +195,13 @@ def benefit_schedule():
 
 
 def nvg_schedule():
-    """The cumulative *Nachversicherungsgarantie* multiplier by schedule id and year.
+    """The cumulative *Nachversicherungsgarantie* multiplier by schedule id and **1-based** policy year.
 
     Read from *nvg_schedule.csv*.  ``keine`` is 1.0 throughout — the base run — and
     ``nvg_zwei_erhoehungen`` steps twice.  Take-up is **exogenous**: no event list, cap,
     window or age limit was established from any document, so an increase is supplied as a
-    schedule rather than modelled as a decision.
+    schedule rather than modelled as a decision.  ``policy_year`` is the contractual label
+    and runs from 1; ``Projection.sum_uplift`` reads it at ``t + 1``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / nvg_schedule_file,                             # noqa: F821
@@ -201,7 +209,7 @@ def nvg_schedule():
 
 
 def lapse_table():
-    """The annual lapse rates by policy year, read from *lapse_table.csv*.
+    """The annual lapse rates by **1-based** policy year, read from *lapse_table.csv*.
 
     Entirely **[std]**: no *Risikoversicherung*-specific German rate exists in the source
     corpus, and the whole-market *Stornoquote* is deliberately not used.  The final policy

@@ -25,16 +25,18 @@ print("model point {}: {} - {}{}, {} {}-year term, cover {:,.0f}".format(
     shape, proj.policy_term(), proj.sum_assured()))
 print("premium = {:,.0f}/month ({:,.0f} p.a.)   horizon = {} years to attained age {}"
       "   boundary = {}".format(
-          proj.premium_mth_pp(1), proj.prem_pp(1), proj.proj_len(),
-          proj.age(proj.proj_len()) + 1, proj.contract_boundary()))
+          proj.premium_mth_pp(0), proj.prem_pp(0), proj.proj_len(),
+          proj.age(proj.proj_len()), proj.contract_boundary()))
 print("modules: living_needs = {}   wop = {}   reinstatement = {}".format(
     proj.living_needs(), proj.wop(), proj.reinstatement()))
 print()
 
 df = proj.result_cf()
+print("cash flow statement, t = 0 .. {} (t is 0-based; policy year = t + 1)".format(
+    proj.proj_len() - 1))
 print(df.head(12).round(2).to_string())
 if len(df) > 12:
-    print("... {} further years to t = {}".format(len(df) - 12, proj.proj_len()))
+    print("... {} further years to t = {}".format(len(df) - 12, proj.proj_len() - 1))
 print()
 print("undiscounted totals: premiums {:,.2f}   claims {:,.2f}   net_cf {:+,.2f}".format(
     df["premiums"].sum(),

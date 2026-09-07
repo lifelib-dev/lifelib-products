@@ -41,15 +41,29 @@ file.
   the sum assured is level for life, the premium is level, and the only date that matters
   inside a year is the 払込満了日, which is an anniversary by construction. The composite pays
   annually, so the grace (猶予期間) and the APL both operate on an annual cycle [S1] [S3] [S10].
+- **Time index [0-based].** `t` is the **0-based** policy-year index: `t = 0` is the first
+  policy year, period `t` runs from time `t` to time `t + 1`, and the frame is `t = 0 … T − 1`,
+  where `T` is the **number** of policy years projected (`proj_len()`, the exclusive end of the
+  frame). The contractual **policy year is the 1-based label `t + 1`**, derived and never
+  indexed by: where these notes speak of "policy year `k`" — the 保険料払込期間 `m`, the rows of
+  the lapse table, the 払済保険 election year — the model index is `t = k − 1`. The attained age
+  in period `t` is `x + t`.
+  **Values carry a second index**, the **anniversary** `d = 0 … T` with `d = 0` at issue:
+  `W(d)`, `SC(d)`, `V(d)`, `CV(d)`, `CV*(d)` and `cumprem(d)` are amounts *at a point in time*
+  rather than flows of a period, so period `t` opens on `d = t` and closes on `d = t + 1`, and
+  a surrender in period `t` is paid on `CV(t + 1)`. `L(t)` is the loan balance at time `t`,
+  which is the anniversary `d = t`. The anniversary index is 0-based by construction and none
+  of its numbers moved when the period index became 0-based.
 - **Timing conventions [std].** Premium at the **start** of each policy year, in advance,
-  for years 1 … m; maintenance expense and renewal commission at the start of each year;
-  acquisition expense and initial commission at issue (start of year 1); death claims and
-  claim expenses at the **end** of the policy year of death; surrenders at the **end** of
-  the policy year, **after** deaths, valued on the surrender value at that anniversary.
+  for policy years 1 … m, i.e. periods `t = 0 … m − 1`; maintenance expense and renewal
+  commission at the start of each period; acquisition expense and initial commission at issue,
+  the start of period `t = 0`; death claims and claim expenses at the **end** of the period of
+  death; surrenders at the **end** of the period, **after** deaths, valued on the surrender
+  value at the anniversary that closes it.
 - **Age basis.** 契約年齢 is attained age (*man-nenrei*, 満年齢) with the fractional year discarded
   at 契約日, incrementing on each 年単位の契約応当日 rather than on the birthday [S1] [S3] [S9]. A
   projection stepped on anniversaries therefore steps the rating age correctly by
-  construction, and the attained age in year `t` is `x + t − 1` exactly — no select
+  construction, and the attained age in period `t` is `x + t` exactly — no select
   adjustment, no half-year offset. **The mortality table does not share this basis**:
   生保標準生命表2018（死亡保険用）is built for use on a nearest-birthday insurance age
   (*hoken-nenrei*, 保険年齢) 方式 [REG-R20]. The
@@ -67,10 +81,11 @@ file.
   parameterizes `Projection`; `point_id = 1` is the worked-example anchor cell. No
   aggregation logic is specified here.
 - **Termination.** There is no maturity date and no 満期保険金 [S1] [S3] [S5] [S7] [S9] [S10].
-  The projection runs to the **terminal age of the mortality table**: `T = ω − x + 1`, with
-  ω = **109** for males and **113** for females on 生保標準生命表2018（死亡保険用）, the first age at
-  which `q(ω) = 1.00000` [REG-R18] [R1]. Every remaining life dies in year `T`; nothing is
-  paid at `T` other than the death benefit. There are no tail states.
+  The projection runs to the **terminal age of the mortality table**: `T = ω − x + 1` policy
+  years, with ω = **109** for males and **113** for females on 生保標準生命表2018（死亡保険用）, the
+  first age at which `q(ω) = 1.00000` [REG-R18] [R1]. Every remaining life dies in the **last
+  period**, `t = T − 1`, where the attained age is `x + T − 1 = ω`; nothing is paid there other
+  than the death benefit, and `l(T) = 0`. There are no tail states.
 - **Contract boundary.** The premium is level and guaranteed for the whole of 保険料払込期間 and
   the insurer has no unilateral repricing right [S1] [S3] [S7] [S10], so all `m` years of
   premium and the whole-of-life benefit are inside any defensible boundary. Japan's ESR 柱1
@@ -93,7 +108,7 @@ file.
 | `issue_age` (`x`) | int, 満年齢, 15–80 | 30 |
 | `sum_assured` (`SA`) | JPY, ¥2,000,000–¥50,000,000 in ¥1,000,000 units | 5,000,000 |
 | `prem_term` (`m`) | int years, or 0 for 終身払 | 15 |
-| `premium_annual` (`P`) | JPY, level for years 1 … m | 174,960 |
+| `premium_annual` (`P`) | JPY, level for policy years 1 … m | 174,960 |
 | `low_cv` | bool — 低解約返戻金型 elected | true |
 | `low_cv_rate` (`k`) | 解約払戻金支払割合 | 0.70 |
 | `apl_elected` | bool — 自動振替貸付 elected (default on) | true |
@@ -126,23 +141,23 @@ corrected.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `pols_if(t)` | In-force probability at the **start** of policy year t; `pols_if(1) = 1` | annual recursion |
-| `mort_rate(t)` | Mortality rate (incl. 高度障害) in year t | table lookup at `x + t − 1` |
-| `lapse_rate(t)` | Voluntary surrender rate in year t | assumption table |
-| `default_rate(t)` | Premium-default rate in year t (optional module; 0 in base) | assumption table |
-| `pol_val_pp(t)` | `V(t)` — the ordinary, **unsuppressed** surrender value at anniversary t | closed form |
-| `cv_pp(t)` | The **payable** 解約返戻金 at anniversary t, after the 低解約返戻金型 multiplier | closed form |
-| `surr_charge_pp(t)` | `SC(t)` — the 解約控除 embedded in `pol_val_pp` | closed form |
-| `reserve_pp(t)` | 平準純保険料式 policy reserve, reference quantity only — **never a cash flow** | closed form |
-| `pols_if_pay(t)` | Of `pols_if(t)`, the premium-paying cohort; `pols_pay_bef_decr(t)` is that cohort after the year's defaults, and is the weight on premium and renewal commission | annual recursion |
-| `pols_if_apl(t, s)` | In-force probability on APL at start of year t, having defaulted in year s | annual recursion |
-| `loan_apl_pp(t, s)` | Outstanding APL principal and interest per policy in that cohort; `loan_pp(t)` is the paying cohort's 契約者貸付 balance | annual recursion |
+| `pols_if(t)` | In-force probability at the **start** of period t; `pols_if(0) = 1` | annual recursion |
+| `mort_rate(t)` | Mortality rate (incl. 高度障害) in period t | table lookup at `x + t` |
+| `lapse_rate(t)` | Voluntary surrender rate in period t | assumption table |
+| `default_rate(t)` | Premium-default rate in period t (optional module; 0 in base) | assumption table |
+| `pol_val_pp(d)` | `V(d)` — the ordinary, **unsuppressed** surrender value at anniversary d | closed form |
+| `cv_pp(d)` | The **payable** 解約返戻金 at anniversary d, after the 低解約返戻金型 multiplier | closed form |
+| `surr_charge_pp(d)` | `SC(d)` — the 解約控除 embedded in `pol_val_pp` | closed form |
+| `reserve_pp(d)` | 平準純保険料式 policy reserve, reference quantity only — **never a cash flow** | closed form |
+| `pols_if_pay(t)` | Of `pols_if(t)`, the premium-paying cohort; `pols_pay_bef_decr(t)` is that cohort after the period's defaults, and is the weight on premium and renewal commission | annual recursion |
+| `pols_if_apl(t, s)` | In-force probability on APL at the start of period t, having defaulted in period s | annual recursion |
+| `loan_apl_pp(t, s)` | Outstanding APL principal and interest per policy in that cohort, at time t; `loan_pp(t)` is the paying cohort's 契約者貸付 balance | annual recursion |
 
-`pols_if_apl` and `loan_apl_pp` are indexed by the **entry year `s`** and not collapsed to a
+`pols_if_apl` and `loan_apl_pp` are indexed by the **entry period `s`** and not collapsed to a
 cohort average. That is deliberate: the APL exhausts at a duration that depends on when the
 loan started, so an average balance would let early entrants ride on late entrants' headroom
-and would move the termination year by decades (below, the same policy exhausts at `t = 3`
-or `t = 53` depending only on `s`). The triangle is the honest structure.
+and would move the termination by decades (below, the same policy exhausts at `t = 2`
+or `t = 52` depending only on `s`). The triangle is the honest structure.
 
 The base run carries no loan, no APL cohort and no 契約者貸付: `default_rate ≡ 0` and
 `pol_loan_util = 0`, so `loan_pp ≡ 0`, `loan_apl_pp ≡ 0` and every benefit is gross. Both
@@ -162,7 +177,7 @@ presenting a non-guaranteed element as certain is 断定的判断の提供 under
 |---|---|---|
 | Death benefit | `SA`, level for life, net of `L(t)` | [S1] [S3] [S7] [S9] [S10] |
 | 高度障害保険金 | Same amount, on the 別表 disability state; extinguishes the contract | [S1] [S3] [S7] [S9] |
-| Premium `P` | Level and guaranteed for years 1 … m; none thereafter | [S1] [S3] [S7] [S10] |
+| Premium `P` | Level and guaranteed for policy years 1 … m; none thereafter | [S1] [S3] [S7] [S10] |
 | 保険期間 | 終身 — no expiry, no 満期保険金 | [S1] [S3] [S5] [S7] [S9] [S10] |
 | 解約払戻金支払割合 `k` | 0.70 during 低解約払戻期間; 1.00 thereafter | [S3] [S7] [S9] [S11] |
 | 低解約払戻期間 | Identical to 保険料払込期間, i.e. `m` years | [S3] [S6] [S7] [S11] |
@@ -190,14 +205,14 @@ change.
 | Assumed pricing interest rate (*yotei riritsu*, 予定利率) | 1.75% p.a. — a 2010 disclosure, carried as documentation | [S11]; current value [unverified] |
 | Cash-value basis rate `i_cv` | **1.468% p.a.** — solved from the published surrender table | derived **[std]**, below |
 | Acquisition deduction `α` | **0.0090** of `SA`, grading linearly to zero at `m` | derived **[std]**, below |
-| 契約者配当 | None — the composite is 無配当. Variant: 5年ごと利差配当, off in the base run, declaring `div_spread × div_period × V(t)` at every fifth anniversary with `div_spread` = **0.25% p.a.** over `div_period` = **5** years | [S1] [S3] [S5] [S11]; variant [S7]; legal frame [REG-R9]; spread and period **[std]**, below |
-| 払済保険 conversion basis | The insurer's own single-premium net rate `A(x+t)`; not modelled in the base run | [S1] [S3] [S7] [S9] [S10] |
+| 契約者配当 | None — the composite is 無配当. Variant: 5年ごと利差配当, off in the base run, declaring `div_spread × div_period × V(d)` at every fifth anniversary `d` with `div_spread` = **0.25% p.a.** over `div_period` = **5** years | [S1] [S3] [S5] [S11]; variant [S7]; legal frame [REG-R9]; spread and period **[std]**, below |
+| 払済保険 conversion basis | The insurer's own single-premium net rate `A(x+d)` at the conversion anniversary; not modelled in the base run | [S1] [S3] [S7] [S9] [S10] |
 
 **Why `i_cv` is not 1.75%.** The 予定利率, 予定死亡率, 予定事業費率 and the surrender-value formula all
 live in the 保険料及び責任準備金の算出方法書, a filed but unpublished 基礎書類 [REG-R2] — no amount of further
 research turns them into sourced values. What *is* public is a complete numeric
 surrender-value run for one model point [S4], and a second carrier's matched suppressed and
-ordinary pair [S7]. The library therefore constructs `V(t)` in closed form and **calibrates
+ordinary pair [S7]. The library therefore constructs `V(d)` in closed form and **calibrates
 it to the published table**, and the calibrated rate lands at 1.468%, not at the 1.75%
 disclosed in a 2010 booklet. The gap is informative rather than embarrassing: the published
 table is a 2025 rate page [S4] and the disclosure is fifteen years older [S11]. `i_cv` is
@@ -209,7 +224,7 @@ made every five years from inception where the investment return on 責任準備
 return assumed in pricing, accumulates at a company-set rate as 5年ごと積立配当金 and may be nil
 [S7]. The *rate* is a 三利源 calculation inside the unpublished 算出方法書 [REG-R2] and no carrier
 publishes it, so `div_spread` = **0.25% p.a. [std]**, applied over `div_period` = **5**
-years of `V(t)`. The five-year period is not a standardization — it is in the product name
+years of `V(d)`. The five-year period is not a standardization — it is in the product name
 [S7] [S10]. The only interest-margin figures recovered anywhere in the research pass bracket
 the pick from both sides: a **0.2%** asset-management deduction inside one carrier's 積立利率
 formula [S11], and a **0.05%** 契約者配当金積立利率 at another [S2]. Neither is a 利差 declaration
@@ -230,7 +245,7 @@ adjustment *of* a sourced table.
 
 | Input | Value | Basis |
 |---|---|---|
-| Base table | 生保標準生命表2018（死亡保険用）, sex-distinct, `q` at attained age `x + t − 1` | [REG-R18] [R1] |
+| Base table | 生保標準生命表2018（死亡保険用）, sex-distinct, `q` at attained age `x + t` | [REG-R18] [R1] |
 | `mort_be_factor` | **1.00** in the base run | **[std]** |
 | Terminal age ω | 109 (M) / 113 (F) | [REG-R18] [R1] |
 | Improvement overlay | None | **[std]** |
@@ -280,15 +295,20 @@ surrendered-and-lapsed **sum assured** over opening in-force sum assured, indust
 across all product types — an amount-weighted, all-product bound, not a per-policy
 whole-life rate. It is used here as a sanity ceiling and nothing more.
 
-| Policy year `t` | 1 | 2 | 3 … m−1 | **m** | m+1 … |
+The rows of `lapse_table.csv` are keyed by the **contractual policy year**, the 1-based label
+`t + 1`, so the first projected period `t = 0` reads the `policy_year = 1` row:
+
+| Policy year (`t + 1`) | 1 | 2 | 3 … m−1 | **m** | m+1 … |
 |---|---|---|---|---|---|
+| Period `t` | 0 | 1 | 2 … m−2 | **m−1** | m … |
 | `lapse_rate(t)` **[std]** | 4% | 3% | 2% | **17%** | 2% |
 
 The shape is reasoned, not fitted: a 低解約返戻金型 owner who surrenders during the low period
 takes a 30% haircut on a value that is already below cumulative premiums (70.1% of premiums
 paid at duration 5 on the published table [S4]), so early surrender is strongly suppressed;
-at `t = m` the value steps up by a factor of 1/k and crosses 100% of premiums paid, and the
-product has been sold on exactly that crossing. The `m`-year entry is `2% + s` with the
+at the anniversary `d = m` the value steps up by a factor of 1/k and crosses 100% of premiums
+paid, and the product has been sold on exactly that crossing. The `m`-year entry is `2% + s`
+with the
 **cliff spike `s` = 15% [std]**, held as a separate parameter so that it can be switched off
 and the sensitivity read directly.
 
@@ -296,7 +316,7 @@ and the sensitivity read directly.
 
 | Input | Value | Basis |
 |---|---|---|
-| `default_rate(t)` | **0** in the base run; **1% p.a.** for 1 ≤ t ≤ m in the module | **[std]** |
+| `default_rate(t)` | **0** in the base run; **1% p.a.** in policy years 1 … m, i.e. `0 ≤ t ≤ m − 1`, in the module | **[std]** |
 | APL clawback on the defaulting cohort | On — the suppressed basis persists past `m` | [S3] [S4] [S5] [S9] |
 | Reinstatement (復活) | Not modelled; every exit is terminal | **[std]**, below |
 
@@ -307,7 +327,7 @@ and the sensitivity read directly.
 |---|---|
 | Acquisition expense `E0` | ¥50,000 per policy at issue **[std]** |
 | Initial commission `c0` | 90% of the annual premium at issue **[std]** |
-| Renewal commission `c_r` | 3% of premium, years 2 … m **[std]** |
+| Renewal commission `c_r` | 3% of premium, policy years 2 … m, i.e. `1 ≤ t ≤ m − 1` **[std]** |
 | Maintenance expense `e(t)` | ¥8,000 p.a., **for life**, inflating at 1.0% p.a. **[std]** |
 | Claim expense `ec` | ¥20,000 per death claim **[std]** |
 | Surrender expense | None — folded into maintenance **[std]** |
@@ -326,26 +346,28 @@ obligations do not.
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy year, t = 1 … T; attained age in year t is `x + t − 1` |
-| `x`, `T`, `ω` | 契約年齢 at issue; projection length `T = ω − x + 1`; table terminal age |
+| `t` | **0-based** period index, t = 0 … T − 1; the contractual policy year is `t + 1`; attained age in period t is `x + t` |
+| `d` | **anniversary** index, d = 0 … T, `d = 0` at issue; period t opens on `d = t` and closes on `d = t + 1` |
+| `x`, `T`, `ω` | 契約年齢 at issue; number of policy years projected, `T = ω − x + 1` (the exclusive end of the frame); table terminal age |
 | `m` | 保険料払込期間 in years (∞ for 終身払) |
-| `SA`, `P` | 保険金額; annual premium, payable at the start of years 1 … m |
-| `q(t)`, `w(t)`, `u(t)` | mortality rate; voluntary surrender rate; premium-default rate in year t |
-| `l(t)` | in-force probability at the start of year t; `l(1) = 1` (`pols_if`) |
-| `lp(t)` | of those, the part still **paying premium in cash** in year t, after that year's defaults into the APL state (`pols_pay_bef_decr`); `lp(t) = l(t)` in the base run |
-| `D(t)`, `S(t)` | expected deaths in year t; expected surrenders in year t |
+| `SA`, `P` | 保険金額; annual premium, payable at the start of periods `t = 0 … m − 1` |
+| `q(t)`, `w(t)`, `u(t)` | mortality rate; voluntary surrender rate; premium-default rate in period t |
+| `l(t)` | in-force probability at the start of period t; `l(0) = 1` (`pols_if`) |
+| `lp(t)` | of those, the part still **paying premium in cash** in period t, after that period's defaults into the APL state (`pols_pay_bef_decr`); `lp(t) = l(t)` in the base run |
+| `D(t)`, `S(t)` | expected deaths in period t; expected surrenders in period t |
 | `A(y)`, `ä(y, n)` | whole-life EPV of 1 at age y and n-year annuity-due, on `i_cv` and the table |
 | `π` | net level premium on the cash-value basis, `SA × A(x) / ä(x, m)` |
-| `W(t)` | prospective net level premium policy value at anniversary t |
-| `SC(t)` | 解約控除 — acquisition-cost deduction (`surr_charge_pp`) |
-| `V(t)` | ordinary, unsuppressed surrender value (`pol_val_pp`) |
+| `W(d)` | prospective net level premium policy value at anniversary d |
+| `SC(d)` | 解約控除 — acquisition-cost deduction (`surr_charge_pp`) |
+| `V(d)` | ordinary, unsuppressed surrender value (`pol_val_pp`) |
 | `k` | 解約払戻金支払割合 — 0.70 when 低解約返戻金型 is on, 1.00 otherwise |
-| `CV(t)` | payable 解約返戻金 (`cv_pp`) |
-| `L(t)` | loan + APL principal and interest at the **start** of year t |
+| `CV(d)`, `CV*(d)` | payable 解約返戻金 (`cv_pp`); the value the APL test runs on (`apl_test_val`) |
+| `cumprem(d)` | premiums paid per policy by anniversary d, `P × min(d, m)` |
+| `L(t)` | loan + APL principal and interest at time t, the **start** of period t |
 | `i_cv`, `i_L`, `i_std` | cash-value basis rate; loan rate; reference valuation rate |
 | `α` | acquisition-deduction rate, per unit of `SA` |
 | `E0`, `e(t)`, `c0`, `c_r`, `ec` | acquisition expense; maintenance; initial and renewal commission; claim expense |
-| `CF(t)` | net cash flow of year t, **income-positive** (`net_cf`) |
+| `CF(t)` | net cash flow of period t, **income-positive** (`net_cf`) |
 
 **Dimensional check.** `q`, `w`, `u`, `k`, `α`, `c0`, `c_r`, `l` and `lp` are dimensionless;
 `i_cv`, `i_L`, `i_std` are per annum; `A` and `ä` are pure numbers (`ä` in years of premium,
@@ -364,7 +386,7 @@ adjustment**, on the standard valuation rate (*hyōjun riritsu*, 標準利率) a
 生保標準生命表2018（死亡保険用）[R7] [R8] [REG-R10] [REG-R11]:
 
     π*        = SA × A*(x) / ä*(x, m)                     on (i_std, 標準生命表2018)
-    reserve_pp(t) = SA × A*(x + t) − π* × ä*(x + t, max(m − t, 0))
+    reserve_pp(d) = SA × A*(x + d) − π* × ä*(x + d, max(m − d, 0))
 
 **解約返戻金** is contractual. Its formula is in the unpublished 算出方法書 [REG-R2]; what the 約款
 publish is its argument list — elapsed months and paid months, the elapsed count capped at
@@ -372,40 +394,47 @@ the paid count while premiums are due [S1] [S3] [S10]. The library constructs it
 value of the **same form** on a **different basis**, less a 解約控除 grading to zero **[std]**:
 
     π         = SA × A(x) / ä(x, m)                       on (i_cv, 標準生命表2018)
-    W(t)      = SA × A(x + t) − π × ä(x + t, max(m − t, 0))
-    SC(t)     = α × SA × max(0, m − t) / m
-    V(t)      = max(0, W(t) − SC(t))
+    W(d)      = SA × A(x + d) − π × ä(x + d, max(m − d, 0))
+    SC(d)     = α × SA × max(0, m − d) / m
+    V(d)      = max(0, W(d) − SC(d))
+
+all four **at the anniversary `d`**, `d = 0` at issue: `W(0) = 0` by construction and
+`W(T) = 0` because the table terminates.
 
 The relationship is then exact and testable. **When the two basis rates coincide** (`i_std =
 i_cv`, which is the base-run default so that the identity can be asserted),
 
-    reserve_pp(t) − V(t) = SC(t)          for every t
+    reserve_pp(d) − V(d) = SC(d)          for every anniversary d ≥ 1
 
 — the whole difference is the 解約控除, which is precisely what 平準純保険料式 forbids the reserve to
-carry [REG-R10]. **When they do not coincide the ordering can fail**: with a 標準利率 below the
-pricing basis the statutory reserve exceeds the cash value by far more than `SC(t)`, and in
+carry [REG-R10]. (At `d = 0` both sides are zero: the reserve is nil and the floor in `V`
+absorbs `SC(0)`, which is what `check_reserve_identity_resid` tests.) **When they do not
+coincide the ordering can fail**: with a 標準利率 below the
+pricing basis the statutory reserve exceeds the cash value by far more than `SC(d)`, and in
 a deep negative-spread (逆ざや) configuration the reserve can exceed even the sum assured.
 `reserve_pp ≥ V ≥ CV` is therefore **not** a model invariant and must not be asserted as
 one. `reserve_pp` produces no cash flow; it exists so the identity above can be checked.
 
 ### The 低解約返戻金型 cliff
 
-    CV(t) = k × V(t)     for t <  m       (k = 0.70 when 低解約返戻金型 is on)
-    CV(t) =     V(t)     for t >= m
+    CV(d) = k × V(d)     for d <  m       (k = 0.70 when 低解約返戻金型 is on)
+    CV(d) =     V(d)     for d >= m
 
-and the transition at `t = m` is a **step**, not a ramp. Two carriers' published tables
+and the transition at the anniversary `d = m` is a **step**, not a ramp. Two carriers' published tables
 agree on it to rounding, and one of them settles what the suppression *is*: at duration 40,
 well past 払込満了, the suppressed and ordinary products have **identical** surrender values
-[S7]. So there is **one** `V(t)` and **one** multiplier — not two reserve runs. Everything
+[S7]. So there is **one** `V(d)` and **one** multiplier — not two reserve runs. Everything
 derived from the surrender value is suppressed with it: the 払済保険金額, the 契約者貸付 amount and the
-APL amount are all computed off `CV(t)` [S7] [S9] [S11].
+APL amount are all computed off `CV(d)` [S7] [S9] [S11].
 
-Two quantities coexist at `t = m` and a model must publish both: `k × V(m)`, the value an
-instant before the step (the published ¥2,047,650 figure), and `CV(m) = V(m)`, the value an
-instant after (¥2,928,450) [S4]. **[std] ordering rule:** a surrender occurring in policy
-year `m` is paid at the end of year `m` on `CV(m)`, i.e. on the **full** value; the
-suppressed value applies to surrenders in years 1 … m−1. The ratio `CV(m) / (k × V(m))` must
-equal exactly `1 / k`; anything between is an interpolation the contract does not have.
+Two quantities coexist at the anniversary `d = m` and a model must publish both: `k × V(m)`,
+the value an instant before the step (the published ¥2,047,650 figure), and `CV(m) = V(m)`,
+the value an instant after (¥2,928,450) [S4]. **[std] ordering rule:** a surrender occurring
+in policy year `m` — the period `t = m − 1` — is paid at the end of that period, at the
+anniversary `d = m`, on `CV(m)`, i.e. on the **full** value; the suppressed value applies to
+surrenders in policy years 1 … m−1, which are paid on `CV(1)` … `CV(m − 1)`. The ratio
+`CV(m) / (k × V(m))` must equal exactly `1 / k`; anything between is an interpolation the
+contract does not have.
 
 ### 自動振替貸付 as a state
 
@@ -415,24 +444,25 @@ continues in force [S1] [S3] [S7] [S10] [S11]. Lapse on this chassis is therefor
 event, not a behavioural one**. The trigger, stated the same way at three carriers [S1] [S3]
 [S10], on the annual grid is
 
-    the APL fires in year t  iff   CV*(t) >= L(t) + P × (1 + i_L)
+    the APL fires in period t  iff   CV*(t + 1) >= L(t) + P × (1 + i_L)
 
-where `CV*(t)` is the surrender value computed **as if the premium had been paid** — on the
-annual grid that is `CV(t)`, the value at the end of year `t` **[std]** — and `L(t)` is the
-existing balance at the start of year `t`. The accumulation is compound, with interest
-capitalised into principal at each subsequent grace expiry, annually on a 年払 contract [S3]
-[S7]:
+where `CV*(d)` is the surrender value computed **as if the premium had been paid** — on the
+annual grid that is `CV(d)`, and the anniversary that matters for period `t` is the one that
+**closes** it, `d = t + 1` **[std]** — and `L(t)` is the existing balance at the start of
+period `t`. The accumulation is compound, with interest capitalised into principal at each
+subsequent grace expiry, annually on a 年払 contract [S3] [S7]:
 
-    L(t + 1) = (L(t) + A(t)) × (1 + i_L),      A(t) = P if the APL fires and t <= m, else 0
+    L(t + 1) = (L(t) + A(t)) × (1 + i_L),      A(t) = P if the APL fires and t < m, else 0
 
-Once `t > m` no premium is due, so `A(t) = 0` and the balance rolls up on interest alone
-against a value that is still growing — which is why exhaustion after 払込満了 takes decades
-rather than years.
+Once `t >= m` — policy year m+1 onwards — no premium is due, so `A(t) = 0` and the balance
+rolls up on interest alone against a value that is still growing, which is why exhaustion
+after 払込満了 takes decades rather than years.
 
-**Exhaustion.** If the test fails in year `t`, the contract lapses at that point and the
-policyholder may claim the surrender value net of the loan [S1] [S3] [S10]:
+**Exhaustion.** If the test fails in period `t`, the contract lapses at that point and the
+policyholder may claim the surrender value net of the loan [S1] [S3] [S10] — the value at the
+**opening** anniversary of that period, which is the last one the loan had not yet overtaken:
 
-    benefit on APL failure = max(0, CV(t − 1) − L(t))
+    benefit on APL failure = max(0, CV*(t) − L(t))
 
 floored at zero, because the loan can exceed the value. The same test, with `A(t) = 0`, is
 the **loan-excess termination** the 約款 describe for a 契約者貸付 that outgrows the value [S1]
@@ -441,46 +471,49 @@ the **loan-excess termination** the 約款 describe for a 契約者貸付 that o
 **The clawback.** Where not all premiums falling in the suppressed period were paid, the
 suppressed basis continues to apply after the period ends [S3] [S4] [S5] [S9]. A cohort
 carried through the low period by APL advances has by definition not paid them, so **[std]**
-the APL cohort's value is `k × V(t)` for **all** `t` — it never steps up at `m`. This is not
-a refinement; it moves the exhaustion year by sixteen years on the anchor cell (below).
+the APL cohort's value is `k × V(d)` for **all** `d` — it never steps up at `m`. This is not
+a refinement; it moves the exhaustion by sixteen years on the anchor cell (below).
 
-### Processing order (policy year t = 1 … T)
+### Processing order (period t = 0 … T − 1)
 
-1. **Start of year — premium.** Collect `P × lp(t)` if `t ≤ m`. On the APL cohort the premium
-   is **not** collected in cash: the advance is applied to it, so it produces no `net_cf`
-   entry and appears only as growth in `L`. That is why the weight here is `lp(t)` and not
-   `l(t)` — the APL cohort is in force and not paying.
-2. **Start of year — expenses.** `e(t) × l(t)`; renewal commission `c_r × P × lp(t)` for `2 ≤
-   t ≤ m`. At `t = 1` additionally `E0` and `c0 × P` (per policy issued, `l(1) = lp(1) = 1`).
+1. **Start of period — premium.** Collect `P × lp(t)` if `t < m` (policy year `t + 1 ≤ m`). On
+   the APL cohort the premium is **not** collected in cash: the advance is applied to it, so it
+   produces no `net_cf` entry and appears only as growth in `L`. That is why the weight here is
+   `lp(t)` and not `l(t)` — the APL cohort is in force and not paying.
+2. **Start of period — expenses.** `e(t) × l(t)`; renewal commission `c_r × P × lp(t)` for
+   `1 ≤ t ≤ m − 1`, i.e. policy years 2 … m. At `t = 0` additionally `E0` and `c0 × P` (per
+   policy issued, `l(0) = lp(0) = 1`).
    Maintenance is carried on the whole in-force population `l(t)`, because the APL cohort
    still has to be administered; commission follows the premium **actually collected**, so
    it is carried on `lp(t)` **[std]**.
-3. **Start of year — APL test** (module on). For each entry cohort, apply the trigger above;
+3. **Start of period — APL test** (module on). For each entry cohort, apply the trigger above;
    advance or terminate.
-4. **Cash values.** Compute `W(t)`, `SC(t)`, `V(t)`, `CV(t)` at the year-end anniversary.
-5. **End of year — deaths.** `D(t) = l(t) × q(t)`; outgo `(SA − L(t)) × D(t)`, floored at
+4. **Cash values.** Compute `W(t + 1)`, `SC(t + 1)`, `V(t + 1)`, `CV(t + 1)` at the
+   anniversary that closes the period.
+5. **End of period — deaths.** `D(t) = l(t) × q(t)`; outgo `(SA − L(t)) × D(t)`, floored at
    zero; claim expense `ec × D(t)`.
-6. **End of year — surrenders**, applied to survivors of mortality **[std order: death
-   before lapse]**: `S(t) = l(t) × (1 − q(t)) × w(t)`; outgo `max(0, CV(t) − L(t)) × S(t)`.
-7. **End of year — loan roll-up.** `L(t + 1) = (L(t) + A(t)) × (1 + i_L)`.
+6. **End of period — surrenders**, applied to survivors of mortality **[std order: death
+   before lapse]**: `S(t) = l(t) × (1 − q(t)) × w(t)`; outgo
+   `max(0, CV(t + 1) − L(t)) × S(t)`.
+7. **End of period — loan roll-up.** `L(t + 1) = (L(t) + A(t)) × (1 + i_L)`.
 8. **Update in force.**
 
        l(t + 1) = l(t) × (1 − q(t)) × (1 − w(t))
 
-9. **At `t = T`** the table's terminal rate is 1, so `l(T + 1) = 0` and the projection ends.
-   No maturity payment, no tail states.
+9. **At `t = T − 1`**, the last projected period, the table's terminal rate is 1, so
+   `l(T) = 0` and the projection ends. No maturity payment, no tail states.
 
 ### Net cash flow
 
 Income-positive, per policy issued:
 
-    CF(t) = P × lp(t) × 1{t <= m}                         (premiums)
+    CF(t) = P × lp(t) × 1{t < m}                          (premiums)
           − (SA − L(t)) × D(t)                            (death and 高度障害 claims)
           − ec × D(t)                                     (claim expense)
-          − max(0, CV(t) − L(t)) × S(t)                   (surrender benefits)
+          − max(0, CV(t + 1) − L(t)) × S(t)               (surrender benefits)
           − e(t) × l(t)                                   (maintenance expense)
-          − c_r × P × lp(t) × 1{2 <= t <= m}              (renewal commission)
-          − (E0 + c0 × P) × 1{t = 1}                      (acquisition)
+          − c_r × P × lp(t) × 1{1 <= t <= m − 1}          (renewal commission)
+          − (E0 + c0 × P) × 1{t = 0}                      (acquisition)
 
 **Premium and renewal commission are weighted by `lp(t)`, not `l(t)`.** That is the whole
 content of step 1: an APL advance is a loan asset and not cash income, so a policy sitting
@@ -502,7 +535,7 @@ because the 5年ごと利差配当 variant is a real product in the source set.
 **Roll-forward identity.** Because the table terminates, every policy leaves by one of the
 two decrements, so
 
-    Σ_t D(t) + Σ_t S(t) = 1     and     l(T + 1) = 0
+    Σ_t D(t) + Σ_t S(t) = 1     and     l(T) = 0
 
 `check_decrement_sum()` takes no argument and returns a bool over all `t`; the per-`t`
 signed residual lives at `check_decrement_sum_resid(t)`.
@@ -526,9 +559,10 @@ evidence for any of them on this product.
 - **Dynamic surrender on the 払戻率 [std] (optional module, off in base).** The economically
   natural driver is the ratio of the value to premiums paid:
 
-      w_dyn(t) = w(t) × min(3.0, max(1.0, 1 + β × max(0, CV(t) / cumprem(t) − 1)))
+      w_dyn(t) = w(t) × min(3.0, max(1.0, 1 + β × max(0, CV(t+1) / cumprem(t+1) − 1)))
 
-  with `β` = 2.0 **[std]** and `cumprem(t) = P × min(t, m)`. On the anchor cell the ratio
+  with `β` = 2.0 **[std]** and `cumprem(d) = P × min(d, m)`, both read at the anniversary
+  `d = t + 1` that closes the period, which is where the surrender is paid. On the anchor cell the ratio
   crosses 1 exactly at the cliff, so this module reproduces the spike endogenously instead
   of imposing it — a useful cross-check on the `s` = 15% choice, not a replacement for it.
 - **Premium default and the APL.** Modelled as a decrement `u(t)` out of the premium-paying
@@ -543,11 +577,11 @@ evidence for any of them on this product.
   and claims. The bias is stated rather than corrected because no retrieved source gives a
   reinstatement rate.
 - **契約者貸付 take-up.** Static `pol_loan_util` only, base 0. There is no public take-up data.
-  Where it is non-zero, the loan is drawn at the anniversary to `pol_loan_util × CV(t)`,
+  Where it is non-zero, the loan is drawn at the anniversary `d` to `pol_loan_util × CV(d)`,
   subject to the contractual 9/10 (in payment) and 8/10 (paid-up) caps [S1] [S3] [S7],
   accrues at `i_L`, and nets off every benefit.
-- **払済保険 election.** Modelled as an election at a chosen duration: the contract stops paying
-  premiums, `SA` is replaced by `(CV(t) − L(t)) / A(x + t)` on the insurer's own single-
+- **払済保険 election.** Modelled as an election at a chosen anniversary `d`: the contract stops
+  paying premiums, `SA` is replaced by `(CV(d) − L(d)) / A(x + d)` on the insurer's own single-
   premium basis, and the suppression switches off for the future — but the conversion itself
   is made on the suppressed value, so the resulting 払済保険金額 is permanently smaller [S3] [S7]
   [S9]. Off in the base run.
@@ -565,14 +599,16 @@ evidence for any of them on this product.
 
 **Anchor cell (`point_id = 1`).** Male, 契約年齢 30 (満年齢), 保険金額 ¥5,000,000, 保険期間 終身, 保険料払込期間 15
 years, 低解約返戻金型 **on**, annual premium ¥174,960 (= 12 × the published ¥14,580 monthly premium
-for exactly this cell [S4]). `T = 109 − 30 + 1 = 80` policy years, attained ages 30 to 109.
+for exactly this cell [S4]). `T = 109 − 30 + 1 = 80` policy years, so the frame is
+`t = 0 … 79` and the attained ages are 30 to 109.
 
 Assumption values used, in full: `q` from 生保標準生命表2018（死亡保険用）男 [REG-R18] [R1] with
 `mort_be_factor = 1.00` — **q(30) = 0.00068, q(31) = 0.00069, q(32) = 0.00070, q(33) =
 0.00072, q(34) = 0.00074**, all five **anchor rows** of `mort_table.csv`, read from the
 publisher's PDF and quoted here because the worked example needs them; `lapse_rate` = 4% /
-3% / 2% … 2% / **17%** at t = 15 / 2% **[std]**; `default_rate` = 0 (base run); `E0` =
-¥50,000, `c0` = 0.90, `c_r` = 0.03, `e(t)` = ¥8,000 × 1.01^(t−1), `ec` = ¥20,000, all
+3% / 2% … 2% / **17%** at `t = 14`, the period whose policy year is 15 / 2% **[std]**;
+`default_rate` = 0 (base run); `E0` =
+¥50,000, `c0` = 0.90, `c_r` = 0.03, `e(t)` = ¥8,000 × 1.01^t, `ec` = ¥20,000, all
 **[std]**; `i_cv` = 1.468%, `α` = 0.0090, `k` = 0.70; `i_L` = 2.75%, unused
 in the base run because `loan_pp ≡ 0`.
 
@@ -582,9 +618,10 @@ in the base run because `loan_pp ≡ 0`.
 0.47678817`, `ä(30, 15) = 13.49765934`, so **π = ¥176,618.83**. `i_cv` was solved so that
 `V(15) = SA × A(45)` reproduces the published post-step value, and `α` was set to a round
 0.0090 — an initial deduction `SC(0)` of ¥45,000, 25.7% of one annual premium — grading
-linearly to `SC(15) = 0`. The fit against the eight published points [S4] is then:
+linearly to `SC(15) = 0`. The fit against the eight published points [S4] is then, by
+**anniversary** (`d`, equivalently the duration in completed policy years):
 
-| duration | model `CV(t)` | published 解約払戻金 | difference | model 払戻率 | published 払戻率 |
+| duration `d` | model `CV(d)` | published 解約払戻金 | difference | model 払戻率 | published 払戻率 |
 |---|---|---|---|---|---|
 | 5 | 613,589.14 | 613,850 | −260.86 (−0.042%) | 70.14% | 70.1% |
 | 10 | 1,306,475.85 | 1,309,400 | −2,924.15 (−0.223%) | 74.67% | 74.8% |
@@ -603,74 +640,84 @@ truncate rather than round (2,928,450 / 2,624,400 = 111.586%, printed 111.5%).
 **What this construction is not.** `π` = ¥176,618.83 **exceeds** the gross premium of
 ¥174,960 — a negative expense loading, which no real product carries. The construction uses
 the *valuation* table's margin-loaded `q` as a stand-in for the insurer's unpublished 予定死亡率,
-and `SC(t)` absorbs the difference. It reproduces the contractual **value**; it is not a
+and `SC(d)` absorbs the difference. It reproduces the contractual **value**; it is not a
 pricing model and `π` is not the priced net premium.
 
 ### First periods of the base run
 
-Per policy issued, income-positive, to two decimal places.
+Per policy issued, income-positive, to two decimal places. The index is the 0-based period
+`t`; the contractual policy year is `t + 1`, and the surrender values below are quoted at the
+anniversary `d = t + 1` that closes each period.
 
-| t | age | q(t) | `pols_if(t)` | premiums | claims_death | claims_lapse | claim_expenses | expenses | commissions | net_cf |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 1 | 30 | 0.00068 | 1.000000 | 174,960.00 | 3,400.00 | 3,747.52 | 13.60 | 58,000.00 | 157,464.00 | −47,665.12 |
-| 2 | 31 | 0.00069 | 0.959347 | 167,847.39 | 3,309.75 | 6,352.17 | 13.24 | 7,751.53 | 5,035.42 | 145,385.28 |
-| 3 | 32 | 0.00070 | 0.929925 | 162,699.62 | 3,254.74 | 6,502.46 | 13.02 | 7,588.93 | 4,880.99 | 140,459.49 |
-| 4 | 33 | 0.00072 | 0.910688 | 159,334.02 | 3,278.48 | 8,750.23 | 13.11 | 7,506.26 | 4,780.02 | 135,005.91 |
-| 5 | 34 | 0.00074 | 0.891832 | 156,034.91 | 3,299.78 | 10,936.27 | 13.20 | 7,424.35 | 4,681.05 | 129,680.27 |
-| … | | | | | | | | | | |
-| 14 | 43 | 0.00151 | 0.736765 | 128,904.33 | 5,562.57 | 27,910.33 | 22.25 | 6,708.05 | 3,867.13 | 84,833.99 |
-| **15** | 44 | 0.00163 | 0.720939 | 126,135.49 | 5,875.65 | **358,347.00** | 23.50 | 6,629.61 | 3,784.06 | **−248,524.33** |
-| 16 | 45 | 0.00177 | 0.597404 | 0.00 | 5,287.03 | 35,399.47 | 21.15 | 5,548.54 | 0.00 | −46,256.18 |
+| t | policy year | age | q(t) | `pols_if(t)` | premiums | claims_death | claims_lapse | claim_expenses | expenses | commissions | net_cf |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 0 | 1 | 30 | 0.00068 | 1.000000 | 174,960.00 | 3,400.00 | 3,747.52 | 13.60 | 58,000.00 | 157,464.00 | −47,665.12 |
+| 1 | 2 | 31 | 0.00069 | 0.959347 | 167,847.39 | 3,309.75 | 6,352.17 | 13.24 | 7,751.53 | 5,035.42 | 145,385.28 |
+| 2 | 3 | 32 | 0.00070 | 0.929925 | 162,699.62 | 3,254.74 | 6,502.46 | 13.02 | 7,588.93 | 4,880.99 | 140,459.49 |
+| 3 | 4 | 33 | 0.00072 | 0.910688 | 159,334.02 | 3,278.48 | 8,750.23 | 13.11 | 7,506.26 | 4,780.02 | 135,005.91 |
+| 4 | 5 | 34 | 0.00074 | 0.891832 | 156,034.91 | 3,299.78 | 10,936.27 | 13.20 | 7,424.35 | 4,681.05 | 129,680.27 |
+| … | | | | | | | | | | | |
+| 13 | 14 | 43 | 0.00151 | 0.736765 | 128,904.33 | 5,562.57 | 27,910.33 | 22.25 | 6,708.05 | 3,867.13 | 84,833.99 |
+| **14** | **15** | 44 | 0.00163 | 0.720939 | 126,135.49 | 5,875.65 | **358,347.00** | 23.50 | 6,629.61 | 3,784.06 | **−248,524.33** |
+| 15 | 16 | 45 | 0.00177 | 0.597404 | 0.00 | 5,287.03 | 35,399.47 | 21.15 | 5,548.54 | 0.00 | −46,256.18 |
 
 `expenses` is **acquisition and maintenance only** and the claim handling expense stands
 beside it in its own `claim_expenses` column, which is the settled column vocabulary across
 the three libraries; the `dividends` column is zero throughout on this cell and is omitted.
-Surrender values at the same anniversaries: `CV(1)` = 93,751.86, `CV(2)` =
+Surrender values at the closing anniversaries of those periods: `CV(1)` = 93,751.86, `CV(2)` =
 220,864.08, `CV(3)` = 349,867.80, `CV(4)` = 480,764.69, `CV(5)` = 613,589.14, `CV(14)` =
-1,896,979.14, `CV(15)` = 2,928,631.87, `CV(16)` = 2,968,027.59.
+1,896,979.14, `CV(15)` = 2,928,631.87, `CV(16)` = 2,968,027.59. The anniversary numbers are
+unchanged by the 0-based period index: `CV(d)` is a value at a point in time.
 
-**Trace, year 1.** `D(1) = 1.000000 × 0.00068 = 0.00068`; death claims = 5,000,000 × 0.00068
+**Trace, `t` = 0 (policy year 1).** `D(0) = 1.000000 × 0.00068 = 0.00068`; death claims =
+5,000,000 × 0.00068
 = 3,400.00; claim expense = 20,000 × 0.00068 = 13.60. Survivors of mortality = 1 − 0.00068 =
-0.99932, so `S(1) = 0.99932 × 0.04 = 0.0399728`; `V(1) = W(1) − SC(1) = 175,931.231 − 42,000
+0.99932, so `S(0) = 0.99932 × 0.04 = 0.0399728`; `V(1) = W(1) − SC(1) = 175,931.231 − 42,000
 = 133,931.231`, and `CV(1) = 0.70 × 133,931.231 = 93,751.8620`, so surrender benefits =
 93,751.8620 × 0.0399728 = 3,747.52. Expenses = 50,000.00 + 8,000.00 = 58,000.00;
-commission = 0.90 × 174,960 = 157,464.00. `CF(1) = 174,960.00 − 3,400.00 − 13.60 − 3,747.52
-− 50,000.00 − 8,000.00 − 157,464.00 = −47,665.12`. Update: `l(2) = 1 × 0.99932 × 0.96 =
+commission = 0.90 × 174,960 = 157,464.00. `CF(0) = 174,960.00 − 3,400.00 − 13.60 − 3,747.52
+− 50,000.00 − 8,000.00 − 157,464.00 = −47,665.12`. Update: `l(1) = 1 × 0.99932 × 0.96 =
 0.9593472`.
 
-**Trace, year 2.** Premiums = 174,960 × 0.9593472 = 167,847.39. `D(2) = 0.9593472 × 0.00069
+**Trace, `t` = 1 (policy year 2).** Premiums = 174,960 × 0.9593472 = 167,847.39.
+`D(1) = 0.9593472 × 0.00069
 = 0.00066195`; claims = 5,000,000 × 0.00066195 = 3,309.75; claim expense = 13.24. Survivors
-= 0.9593472 × 0.99931 = 0.9586853, so `S(2) = 0.9586853 × 0.03 = 0.0287606`; `CV(2)` = 0.70
+= 0.9593472 × 0.99931 = 0.9586853, so `S(1) = 0.9586853 × 0.03 = 0.0287606`; `CV(2)` = 0.70
 × 315,520.1189 = 220,864.0832, so surrender benefits = 220,864.0832 × 0.0287606 = 6,352.17.
 Maintenance = 8,000 × 1.01 × 0.9593472 = 7,751.53; renewal commission = 0.03 × 174,960 ×
-0.9593472 = 5,035.42. `CF(2) = 167,847.39 − 3,309.75 − 13.24 − 6,352.17 − 7,751.53 −
-5,035.42 = 145,385.28`. Update: `l(3) = 0.9586853 × 0.97 = 0.9299247`.
+0.9593472 = 5,035.42. `CF(1) = 167,847.39 − 3,309.75 − 13.24 − 6,352.17 − 7,751.53 −
+5,035.42 = 145,385.28`. Update: `l(2) = 0.9586853 × 0.97 = 0.9299247`.
 
-**Trace, year 3.** Premiums = 174,960 × 0.9299247 = 162,699.62. `D(3) = 0.9299247 × 0.00070
+**Trace, `t` = 2 (policy year 3).** Premiums = 174,960 × 0.9299247 = 162,699.62.
+`D(2) = 0.9299247 × 0.00070
 = 0.000650947`; claims = 3,254.74; claim expense = 13.02. Survivors = 0.9299247 × 0.99930 =
-0.929273746, `S(3) = 0.929273746 × 0.02 = 0.018585475`; `CV(3)` = 0.70 × 499,811.1402 =
+0.929273746, `S(2) = 0.929273746 × 0.02 = 0.018585475`; `CV(3)` = 0.70 × 499,811.1402 =
 349,867.7981;
 surrender benefits = 349,867.7981 × 0.018585475 = 6,502.46. Maintenance = 8,000 × 1.01² ×
-0.9299247 = 7,588.93; renewal commission = 5,248.80 × 0.9299247 = 4,880.99. `CF(3) =
-162,699.62 − 3,254.74 − 13.02 − 6,502.46 − 7,588.93 − 4,880.99 = 140,459.49`. Update: `l(4)
+0.9299247 = 7,588.93; renewal commission = 5,248.80 × 0.9299247 = 4,880.99. `CF(2) =
+162,699.62 − 3,254.74 − 13.02 − 6,502.46 − 7,588.93 − 4,880.99 = 140,459.49`. Update: `l(3)
 = 0.929273746 × 0.98 = 0.910688271`.
 
-**Trace, the cliff at t = 15.** `l(15) = 0.720939`, `q(15) = 0.00163`, so survivors of
-mortality = 0.720939036 × (1 − 0.00163) = 0.719763905 and `S(15) = 0.719763905 × 0.17 =
-0.122359864`. The value payable is the **post-step** one: `CV(15) = V(15) = 2,928,631.87`,
+**Trace, the cliff at `t` = 14 (policy year 15).** `l(14) = 0.720939`, `q(14) = 0.00163`, so
+survivors of
+mortality = 0.720939036 × (1 − 0.00163) = 0.719763905 and `S(14) = 0.719763905 × 0.17 =
+0.122359864`. The value payable is the **post-step** one at the closing anniversary
+`d = 15`: `CV(15) = V(15) = 2,928,631.87`,
 not `0.70 × 2,928,631.87 = 2,050,042.31`. Surrender benefits = 2,928,631.87 × 0.122359864 =
-**358,347.00**, and `CF(15) = 126,135.49 − 5,875.65 − 23.50 − 358,347.00 − 6,629.61 −
+**358,347.00**, and `CF(14) = 126,135.49 − 5,875.65 − 23.50 − 358,347.00 − 6,629.61 −
 3,784.06 = −248,524.33`, the 6,629.61 being maintenance alone, 8,000 × 1.01^14 × 0.720939,
-with the 23.50 of claim expense in its own column. One year earlier the same product
+with the 23.50 of claim expense in its own column. One period earlier the same product
 produced +84,833.99. **The cliff is the largest single feature of this cash-flow stream and
 it is one year wide.** A model that
-smooths `CV` across `t = 14 … 16`, or that pays year-15 surrenders on the suppressed basis,
-loses or doubles roughly a quarter of a million yen per policy issued in that one year. The
+smooths `CV` across `d = 14 … 16`, or that pays the surrenders of `t = 14` on the suppressed
+basis, loses or doubles roughly a quarter of a million yen per policy issued in that one
+year. The
 ratio the implementation must reproduce exactly is `CV(15) / (0.70 × V(15)) = 1.4285714286 =
 1 / 0.70`.
 
-**Roll-forward check.** Over the full 80 years, `Σ D(t) = 0.305066391` and `Σ S(t) =
-0.694933609`, summing to **1.000000000**, with `l(81) = 0`. Undiscounted totals per policy
+**Roll-forward check.** Over the full 80 periods, `t = 0 … 79`, `Σ D(t) = 0.305066391` and
+`Σ S(t) =
+0.694933609`, summing to **1.000000000**, with `l(80) = 0`. Undiscounted totals per policy
 issued: premiums 2,212,542.21; death claims 1,525,331.95; claim expenses 6,101.33; surrender
 benefits 1,692,538.36; expenses 329,814.38; commission 218,591.47; `Σ CF(t)` =
 **−1,559,835.29**. Undiscounted, the contract loses money; discounting is out of scope and
@@ -679,20 +726,20 @@ is what makes the sign meaningful.
 ### 自動振替貸付 trace (module on)
 
 The premium plus a year's interest is `P × (1 + i_L) = 174,960 × 1.0275 = ¥179,771.40`. Take
-a policy that stops paying at the start of year `s`, with `L(s) = 0`.
+a policy that stops paying at the start of period `s`, with `L(s) = 0`.
 
-**s = 2, 低解約返戻金型 on (k = 0.70).**
+**s = 1 (policy year 2), 低解約返戻金型 on (k = 0.70).**
 
-    t = 2:  CV(2) = 0.70 × 315,520.1189 = 220,864.08  >=  0 + 179,771.40        -> fires
-            L(3) = (0 + 174,960) × 1.0275 = 179,771.40
-    t = 3:  CV(3) = 0.70 × 499,811.1402 = 349,867.80  <  179,771.40 + 179,771.40
+    t = 1:  CV*(2) = 0.70 × 315,520.1189 = 220,864.08  >=  0 + 179,771.40       -> fires
+            L(2) = (0 + 174,960) × 1.0275 = 179,771.40
+    t = 2:  CV*(3) = 0.70 × 499,811.1402 = 349,867.80  <  179,771.40 + 179,771.40
                                                        = 359,542.80             -> fails
-            lapse; benefit = max(0, CV(2) − L(3)) = 220,864.08 − 179,771.40 = 41,092.68
+            lapse; benefit = max(0, CV*(2) − L(2)) = 220,864.08 − 179,771.40 = 41,092.68
 
-**One advance.** The same default on the **ordinary** form (`k` = 1.00) passes at `t = 3`
+**One advance.** The same default on the **ordinary** form (`k` = 1.00) passes at `t = 2`
 (499,811.14 ≥ 359,542.80) and goes on passing: it takes **thirteen** advances, carrying the
-policy to `t = 14` and failing at `t = 15`, where `L(15) + P × (1 + i_L)` = 2,764,330.63 +
-179,771.40 = 2,944,102.03 finally exceeds `CV(15)` = 2,928,631.87 — reaching the last
+policy to `t = 13` and failing at `t = 14`, where `L(14) + P × (1 + i_L)` = 2,764,330.63 +
+179,771.40 = 2,944,102.03 finally exceeds `CV*(15)` = 2,928,631.87 — reaching the last
 premium year all but intact and then paying nothing, because the loan has consumed the
 value. **One advance against thirteen, from the same default, at the same duration, on the
 same underlying policy value.** That is what running the APL test against 70% of the value
@@ -700,17 +747,18 @@ rather than against the value does, and it is why a 低解約返戻金型 contra
 one with the strongest incentive to persist to 払込満了 and the one with the least headroom to
 get there.
 
-The first year at which the APL can fund a single premium is `t* = 2` on both forms (`CV(1)`
-is 93,751.86 suppressed and 133,931.23 unsuppressed, both under 179,771.40): in year 1 the
-APL cannot carry the policy at all, on either form.
+The first period at which the APL can fund a single premium is `t* = 1` on both forms (`CV(1)`
+is 93,751.86 suppressed and 133,931.23 unsuppressed, both under 179,771.40): in the first
+policy year, `t = 0`, the APL cannot carry the policy at all, on either form.
 
-**The clawback, priced.** A policy defaulting at `s = 10` takes six advances (years 10 … 15;
-after `m` no premium is due and the balance rolls up on interest alone). With the clawback
+**The clawback, priced.** A policy defaulting at `s = 9` (policy year 10) takes six advances,
+`t = 9 … 14`, policy years 10 … 15;
+after `m` no premium is due and the balance rolls up on interest alone. With the clawback
 applied — the correct treatment, since the cohort did not pay its low-period premiums — its
-value stays at `0.70 × V(t)` for ever and the loan overtakes it in year **53** (`L(53)` =
-3,152,972.42 against `CV(53)` = 3,142,190.57). With the clawback wrongly omitted, the value
-steps up at `m` and the same policy survives to year **69**. **Sixteen years of in-force, on
-one boolean.**
+value stays at `0.70 × V(d)` for ever and the loan overtakes it at `t` = **52**, policy year
+53 (`L(52)` = 3,152,972.42 against `CV*(53)` = 3,142,190.57). With the clawback wrongly
+omitted, the value steps up at `m` and the same policy survives to `t` = **68**, policy year
+69. **Sixteen years of in-force, on one boolean.**
 
 ---
 
@@ -781,7 +829,7 @@ In rough order of leverage on this product:
    second complete run. A user with a real 算出方法書 replaces `pol_val_pp` and changes nothing
    else.
 2. **The cliff spike `s`.** 15% **[std]**, with no public data of any kind behind it. It
-   moves year-`m` surrender outgo linearly and it is the assumption a reviewer should
+   moves the surrender outgo of the period `t = m − 1` linearly and it is the assumption a reviewer should
    challenge first. Setting `s = 0` removes it cleanly.
 3. **The APL, and whether it is on.** The mechanic is the difference between a lapse model
    and a funded-termination model. Election varies more than any other feature across the
@@ -796,8 +844,8 @@ In rough order of leverage on this product:
    [REG-R20]. Claims move proportionately with `mort_be_factor`; on an eighty-year
    whole-life run they are the largest single outgo.
 6. **The horizon itself.** ω = 109 (M) / 113 (F). More than three quarters of the expected
-   death claims on the anchor cell fall after `t = 40` — 0.230566 of 0.305066. Any
-   truncation of the projection is a direct understatement.
+   death claims on the anchor cell fall after policy year 40, i.e. at `t ≥ 40` —
+   0.230566 of 0.305066. Any truncation of the projection is a direct understatement.
 7. **Expense inflation over eighty years.** 1.0% **[std]** compounds to a factor of 2.19
    over the run; 3% compounds to 10.33. There is no published Japanese expense basis to
    anchor either.
@@ -807,16 +855,18 @@ In rough order of leverage on this product:
 
 Known modeling pitfalls:
 
-- **The cliff is a step, not a ramp.** `CV(t) = k × V(t)` for `t < m` and `V(t)` for `t >=
+- **The cliff is a step, not a ramp.** `CV(d) = k × V(d)` for `d < m` and `V(d)` for `d >=
   m`, with `CV(m) / (k × V(m))` exactly `1 / k` [S3] [S7] [S9] [S11]. Interpolating, grading
   or smoothing across the boundary is wrong; so is a 終身払 point, for which `m` is infinite
   and the step never happens [S4].
 - **Off-by-one at the boundary.** Surrenders in policy year `m` are paid on the **full**
-  value; the suppressed value applies to years 1 … m−1 **[std]**. Both quantities exist at
-  `t = m` and the published table prints both — ¥2,047,650 an instant before and ¥2,928,450
+  value; the suppressed value applies to policy years 1 … m−1 **[std]**. In the 0-based
+  index policy year `m` is the period `t = m − 1`, and it is paid on the value at the
+  anniversary `d = m` that closes it. Both quantities exist at `d = m`
+  and the published table prints both — ¥2,047,650 an instant before and ¥2,928,450
   an instant after [S4] — so a model must be able to produce both and must not lose either.
 - **One policy value, one multiplier.** The suppression is a pure haircut on a common
-  underlying value: at duration 40 the suppressed and ordinary products have identical
+  underlying value: at the anniversary `d = 40` the suppressed and ordinary products have identical
   surrender values [S7]. Running two reserve bases, or two `pol_val_pp` series, is wrong.
 - **Lapse is a funded event.** Applying a lapse rate to unpaid premiums without first
   running the APL continuation test models a decrement the contract does not have [S1] [S3]
@@ -829,13 +879,14 @@ Known modeling pitfalls:
   `lp(t)` and everything else on `l(t)`. The two are equal in the base run, so an
   implementation that weights premium by `l(t)` reproduces the worked example exactly and
   fails only once the APL module is switched on.
-- **The APL test runs on the suppressed value.** `CV*(t)`, not `V(t)`. On the anchor cell a
-  default at `t = 2` buys **one** advance at `k = 0.70` and **thirteen** at `k = 1.00`;
-  running the test on `V` overstates headroom by more than a decade of in force [S7] [S9]
-  [S11].
+- **The APL test runs on the suppressed value.** `CV*(d)`, not `V(d)`. On the anchor cell a
+  default at `s = 1` — policy year 2 — buys **one** advance at `k = 0.70` and **thirteen** at
+  `k = 1.00`; running the test on `V` overstates headroom by more than a decade of in force
+  [S7] [S9] [S11].
 - **The clawback survives the step.** A cohort carried through the low period by unrepaid
   APL advances keeps the suppressed basis after `m` [S3] [S4] [S5] [S9]. On the anchor cell
-  that is the difference between exhaustion in year 53 and in year 69.
+  that is the difference between exhaustion at `t = 52` and at `t = 68`, policy years 53
+  and 69.
 - **Premiums stop at `m`; nothing else does.** Maintenance expense, death claims, surrender
   benefits and the cash value all continue for life. A projection that ends at 払込満了, or that
   keeps charging renewal commission after it, misses the majority of the liability.
@@ -848,12 +899,13 @@ Known modeling pitfalls:
   includes the severe-disability benefit [REG-R20] [R2], so a separate disability decrement
   double-counts; and the living-needs rider reduces the sum assured by what it pays [S1]
   [S3] [S4] [S7], so treating it as an additional benefit double-counts again.
-- **Everything is floored at zero.** `V(t) = max(0, W(t) − SC(t))` is negative in principle
-  at `t = 0`; the death benefit `SA − L(t)` and the surrender benefit `CV(t) − L(t)` can
+- **Everything is floored at zero.** `V(d) = max(0, W(d) − SC(d))` is negative in principle
+  at the issue anniversary `d = 0`; the death benefit `SA − L(t)` and the surrender benefit
+  `CV(t + 1) − L(t)` can
   both go negative once a loan has outgrown the value [S1] [S3] [S10]. None of them may
   produce a negative payment.
 - **`reserve_pp` is not `cv_pp`.** 平準純保険料式 admits **no Zillmer adjustment** [REG-R10], so
-  the statutory reserve carries no 解約控除; `reserve_pp(t) − V(t) = SC(t)` holds **only** when
+  the statutory reserve carries no 解約控除; `reserve_pp(d) − V(d) = SC(d)` holds **only** when
   the two basis rates coincide, and `reserve_pp ≥ V ≥ CV` is not an invariant under 逆ざや.
   `reserve_pp` must never appear in `net_cf`.
 

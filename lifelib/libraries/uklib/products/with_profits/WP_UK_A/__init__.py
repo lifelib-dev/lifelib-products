@@ -49,10 +49,16 @@ time rather than stored inside the model. The model folder itself holds no data,
 the model and its inputs must travel together.
 
 **Projection basis.** Annual steps, because the bonus declaration — the governing
-discretion — is annual. Premiums and partial withdrawals fall at the start of the year;
-the fund return accrues over it; charges, the bonus declaration, the shareholder
-transfer and the mortality charge fall at the end, in that order; claims and decrements
-follow. Age is age nearest birthday.
+discretion — is annual. The time index ``t`` is **0-based** and counts policy years
+from issue: ``t = 0`` is the first policy year, period ``t`` runs from time ``t`` to
+time ``t + 1``, the contractual policy year is the 1-based label ``t + 1``, and the
+attained age is ``age_at_entry() + t``. An in-force model point opens its frame at its
+elapsed policy years, ``proj_start() = duration_inforce()``, and carries its state in
+as the opening balances of that period; ``proj_len()`` is the number of policy years
+projected from issue, so the frame is ``range(proj_start(), proj_len())``. Premiums and
+partial withdrawals fall at the start of the period; the fund return accrues over it;
+charges, the bonus declaration, the shareholder transfer and the mortality charge fall
+at the end, in that order; claims and decrements follow. Age is age nearest birthday.
 
 **What is deterministic, and what that costs.** This is a deterministic
 single-scenario projection, and the notes are emphatic that a deterministic base run

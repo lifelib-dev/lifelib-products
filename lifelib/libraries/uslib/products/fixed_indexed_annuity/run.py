@@ -20,21 +20,24 @@ print("model point {}: {} - {}{} {} premium {:,.0f}, bonus {:.0%}, {} indexed".f
     proj.premium_pp(), proj.bonus_rate(), "{:.0%}".format(proj.alloc_indexed())))
 print("entered {} at anniversary {}: AV {:,.2f}  BB {:,.2f}  MGV {:,.2f}".format(
     "in force" if entry else "at issue", entry,
-    proj.av_pp(entry), proj.benefit_base_pp(entry), proj.mgsv_pp(entry)))
+    proj.av_pp_at(entry, "BEF_INV"), proj.benefit_base_pp_at(entry, "BEF_ROLLUP"),
+    proj.mgsv_pp_init()))
 print("GLWB {}  basis {}  income from age {}  utilization {:.0%}  "
       "cap {:.2%}  rollup {}  stack {:.2f}x".format(
           "elected" if proj.glwb_elected() else "not elected", proj.glwb_basis(),
           proj.income_start_age(), proj.utilization_intensity(),
           proj.cap_rate_in_force(), proj.rollup_id(), proj.stack_factor()))
 
-exercise = [t for t in range(entry + 1, proj.proj_len() + 1) if proj.is_exercise(t)]
-depleted = [t for t in range(entry + 1, proj.proj_len() + 1)
+exercise = [t for t in range(entry, proj.proj_len()) if proj.is_exercise(t)]
+depleted = [t for t in range(entry, proj.proj_len())
             if proj.phase(t) in ("DEPLETED", "TERMINATED")]
-print("anniversaries {}..{} (to attained age {}); first lifetime withdrawal {}; "
-      "account value runs out {}".format(
-          entry, proj.proj_len(), proj.age(proj.proj_len()),
-          "at t = {}".format(exercise[0]) if exercise else "never",
-          "at t = {} ({})".format(depleted[0], proj.phase(depleted[0]))
+print("periods t = {}..{} (contract years {}..{}, to attained age {}); "
+      "first lifetime withdrawal {}; account value runs out {}".format(
+          entry, proj.proj_len() - 1,
+          proj.policy_year(entry), proj.policy_year(proj.proj_len() - 1),
+          proj.age(proj.proj_len() - 1) + 1,
+          "in t = {}".format(exercise[0]) if exercise else "never",
+          "in t = {} ({})".format(depleted[0], proj.phase(depleted[0]))
           if depleted else "never"))
 print()
 

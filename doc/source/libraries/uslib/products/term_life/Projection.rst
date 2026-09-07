@@ -28,6 +28,8 @@ Cells Descriptions
 
 .. autofunction:: age
 
+.. autofunction:: policy_year
+
 .. autofunction:: premium_pp
 
 .. autofunction:: jump_ratio

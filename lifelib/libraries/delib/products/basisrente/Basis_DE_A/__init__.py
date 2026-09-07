@@ -11,7 +11,7 @@ gross best-estimate liability cash flows, **undiscounted**, for a single model p
 the *Basisrentenvertrag* of § 10 Abs. 1 Nr. 2 Buchst. b EStG — a deferred lifelong
 annuity written on the general account, with an accumulation phase that builds a
 *Deckungskapital* and a payout phase that pays a monthly annuity struck through a
-*Rentenfaktor* — on an **annual** grid, ``t = 1 ... proj_len()``.
+*Rentenfaktor* — on an **annual** grid, ``t = 0 ... proj_len() - 1``.
 
 **The product is defined by prohibitions, and the model is too.** The entitlement is
 *nicht vererblich*, *nicht übertragbar*, *nicht beleihbar*, *nicht veräußerbar* and
@@ -77,9 +77,10 @@ The one genuinely sub-annual mechanic — the annuity is paid monthly — is com
 twelve instalments booked at the start of the payout year, a standardization and the
 twelfth pitfall. Premiums and *Zuzahlungen* are taken at the start of the year, interest
 is credited at the end, deaths fall after crediting and the *Beitragsfreistellung*
-transition after the deaths. ``t`` is 1-based and runs to
-``proj_len() = omega_age() - age(1) + 1``, the end of the mortality table, because the
-annuity is lifelong.
+transition after the deaths. ``t`` is **0-based**: ``t = 0`` is the first projected
+year, the policy year is the contractual label ``duration(t) + 1``, and the frame runs
+``t = 0 ... proj_len() - 1`` with ``proj_len() = omega_age() - age(0) + 1`` the number of
+projected years — the end of the mortality table, because the annuity is lifelong.
 
 **What is sourced and what is not.** The contractual mechanics are cited: the five
 prohibitions and the absence of any surrender value, the confinement of survivor cover

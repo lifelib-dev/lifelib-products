@@ -148,6 +148,11 @@ def annuity_mort_table():
 def lapse_table():
     """Surrender and transfer-out rates by contract duration, from *lapse_table.csv*.
 
+    The ``duration`` key is the **contract year**, 1-based and contractual: row ``k`` is
+    contract year ``k``, and the projection reaches it through
+    ``duration(t) + 1 = duration_init() + t + 1`` rather than through the 0-based ``t``
+    — ``duration(t)`` is itself the 0-based count of completed contract years.
+
     Two rates, not one.  ``lapse_rate`` is a *Kündigung*, which repays every Zulage and
     every § 10a relief and taxes the accumulated growth; ``transfer_rate`` is an
     *Anbieterwechsel* under the statutory *Wechselrecht*, which carries none of those
@@ -159,9 +164,10 @@ def lapse_table():
 
 
 def zulage_schedule():
-    """The Zulage entitlement drivers by schedule id and projection year.
+    """The Zulage entitlement drivers by schedule id and projection period ``t``.
 
-    Read from *zulage_schedule.csv*.  Four drivers per row: ``unmittelbar``, the indicator
+    Read from *zulage_schedule.csv*.  The ``t`` key is the model's own **0-based** time
+    index, running ``0 ... 59``, and is read directly at ``t``.  Four drivers per row: ``unmittelbar``, the indicator
     that the *Grundzulage* is drawn at all; ``n_kinder_pre2008`` and
     ``n_kinder_post2008``, the counts of children for whom *Kindergeld* is drawn at the
     185 € and the 300 € rate — a permanent **birth-cohort** split, not a transition, so a
@@ -175,12 +181,13 @@ def zulage_schedule():
 
 
 def income_schedule():
-    """Contribution-liable earnings by schedule id and projection year.
+    """Contribution-liable earnings by schedule id and projection period ``t``.
 
-    Read from *income_schedule.csv*.  ``income(t)`` is the earnings of the **calendar year
-    of period t**; the § 86 *Mindesteigenbeitrag* of period ``t`` is struck on the
+    Read from *income_schedule.csv*.  The ``t`` key is the model's own **0-based** time
+    index, running ``0 ... 59``.  ``income(t)`` is the earnings of the **calendar year of
+    period t**; the § 86 *Mindesteigenbeitrag* of period ``t`` is struck on the
     **previous** calendar year, so the projection reads ``income(t - 1)`` and takes
-    ``income_init`` from the model point for ``t = 1``.  The ``zero`` path encodes a
+    ``income_init`` from the model point for ``t = 0``.  The ``zero`` path encodes a
     *mittelbar zulageberechtigt* spouse, who has no contribution-liable earnings of their
     own and whose *Mindesteigenbeitrag* is therefore the 60 € *Sockelbeitrag*.
     """
@@ -189,9 +196,10 @@ def income_schedule():
 
 
 def surplus_scenario():
-    """The declared *laufende Verzinsung* by scenario id and projection year.
+    """The declared *laufende Verzinsung* by scenario id and projection period ``t``.
 
-    Read from *surplus_scenario.csv*.  Two paths ship: ``base`` at 2,30 % level and
+    Read from *surplus_scenario.csv*.  The ``t`` key is the model's own **0-based** time
+    index, running ``0 ... 89``, and is read directly at ``t``.  Two paths ship: ``base`` at 2,30 % level and
     ``low`` at 0,50 % level.  The declared rate **includes** the *Rechnungszins* — adding
     the two is the German arithmetic error this model is built to make visible — so
     ``decl_rate - rechnungszins`` is the *laufende Zinsüberschussbeteiligung* and is
