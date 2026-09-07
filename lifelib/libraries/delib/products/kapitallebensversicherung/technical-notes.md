@@ -534,7 +534,8 @@ Then the three *Überschussverwendung* systems:
 ```
 ansammlung:           av_sur_pp(t+1)    = av_sur_pp(t) · (1 + ans_rate(t)) + surplus_credit_pp(t)
 bonus:                bonus_si_pp(t+1)  = bonus_si_pp(t) + surplus_credit_pp(t) / pu_single_prem(t+1)
-beitragsverrechnung:  prem_offset_pp(t) = min( prem_charged_pp(t), surplus_credit_pp(t-1) )
+beitragsverrechnung:  prem_offset_pp(t) = min( prem_charged_pp(t), surplus_credit_pp(t-1) )   for t > t_start
+                                        = 0                                                  at t = t_start
 ```
 
 Under `ansammlung` the surplus compounds at `ans_rate` and raises the maturity benefit; under `bonus`
@@ -611,7 +612,7 @@ per-`t` residual at `check_*_resid(t)`. The conventions suite calls every one on
 | `check_pols_roll_fwd()` | `pols_if(t+1) == pols_if(t) − pols_death(t) − pols_lapse(t)`, and at `t = n − 1` the survivors of mortality are exactly `pols_maturity(n − 1)` |
 | `check_decrement_closure()` | `Σ_t ( pols_death + pols_lapse + pols_maturity ) == pols_if_init()` |
 | `check_res_roll_fwd()` | The Fackler recursion on the guaranteed *Deckungskapital*: `( res_pp(t) + prem_zill_charged(t) ) · (1 + i₁) + bfz_uplift_pp(t) == f · q₁(x(t)) · sum_death + (1 − q₁(x(t))) · res_pp(t+1)`, where `q₁` is the unisex tariff rate and the *Risikozuschlag* `f` loads the death term only. This is the strongest single check in the model: it proves the premium, the first-order mortality, the interest and the prospective formula are mutually consistent |
-| `check_surplus_roll_fwd()` | The active surplus vehicle's ledger closes: `av_sur_pp(t+1) == av_sur_pp(t)·(1 + a(t)) + C(t)` under `ansammlung`, the bonus-purchase identity under `bonus`, and `prem_offset_pp(t) == min(prem_charged_pp(t), C(t−1))` under `beitragsverrechnung` |
+| `check_surplus_roll_fwd()` | The active surplus vehicle's ledger closes: `av_sur_pp(t+1) == av_sur_pp(t)·(1 + a(t)) + C(t)` under `ansammlung`, the bonus-purchase identity under `bonus`, and `prem_offset_pp(t) == min(prem_charged_pp(t), C(t−1))` under `beitragsverrechnung`, with `C(t−1)` read as zero at `t = t_start` |
 | `check_surr_floor()` | § 169 Abs. 3: `res_guar_pp(t) ≥ res_zill_pp(t+1)`, `≥ res_min_pp(t+1)` and `≥ 0` at every `t`, and `surr_value_pp(t) ≥ 0` |
 | `check_equivalence()` | The first-order pricing equivalence closes: `B·(1 − β)·ann_due_prem_1st − α·BS == pv_benefit_1st + γ·SE·ann_due_term_1st` |
 | `check_rechnungszins_cap()`, `check_zillmer_cap()` | The two DeckRV cohort ceilings: `rechnungszins ≤ hoechstrechnungszins(issue_year)` under § 2 [REG-R14] [REG-R15], and `alpha_rate ≤ hoechstzillmersatz(issue_year)` with `alpha_cost ≤ hoechstzillmersatz · beitragssumme` under § 4 [R7] [REG-R16] |
@@ -1028,7 +1029,7 @@ that same amount, so the 25 ‰ *Zillmersatz* buys only 1 081,83 € of zillmere
 | **Total** | **16.648981** | **43,273.05** | **2,983.43** | **35,570.54** | **25,043.35** | **1,327.88** | **1,081.83** | **-22,733.97** |
 
 Three consequences are visible in five rows. **The § 169 floor is slack from the first
-anniversary** — `res_zill_pp(2)` = 39 648,80 € against `res_min_pp(2)` = 38 783,34 €, the reverse
+anniversary** — `res_zill_pp(1)` = 39 648,80 € against `res_min_pp(1)` = 38 783,34 €, the reverse
 of the level-premium ordering, a single premium leaving almost nothing to amortise. **The
 surrender outflow is far larger throughout**, 25 043,35 € in total against 10 104,99 €, every
 surrendering policy carrying a reserve built in the first year; that year alone pays 1 816,26 €.

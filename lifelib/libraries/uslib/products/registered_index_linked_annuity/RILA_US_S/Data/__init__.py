@@ -51,7 +51,10 @@ end until the next row of the same scenario, so the notes' Scenario A is three r
 projection's month index. The two differ by one, because month ``t`` of the projection
 runs from time ``t`` to time ``t + 1``: ``Projection.market_state`` reads the file at the
 month end ``t + 1`` for the state month ``t`` is valued at, and at
-``term_start_month(t)`` for the state locked on a Term Start Date. Keying the file on the
+``term_start_month(t)`` for the state locked on a Term Start Date — a month *start*. The
+name records the commoner of those two uses and not the key's meaning: the key is a general
+time, and the row every scenario opens with, ``month_end = 0``, is the Issue Date, an
+instant no month ends at. Keying the file on the
 month end keeps the scenario anchors on the contract's own dates - the 6-year term ends at
 month end 72, and the worked example's rate move lands at month end 36, the 3-year point.
 

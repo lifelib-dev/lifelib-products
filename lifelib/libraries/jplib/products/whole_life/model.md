@@ -157,7 +157,8 @@ elected fraction of the value at the anniversary `d = t` that opens the period, 
 policy year `pol_loan_year`, capped by
 `loan_cap_rate` at the contractual 9/10 while premiums are due and 8/10 once 払込済 [S1]
 [S3] [S7]; `loan_fail_year()` is the 約款's loan-excess termination. Model point 7 draws
-the maximum at the fortieth anniversary — the start of `t = 39` — and terminates at
+the maximum at the anniversary `d = 39`, which opens policy year 40 — the start of
+`t = 39` — and terminates at
 `t = 52`, policy year 53, with the benefit
 floored at **zero**, the loan having consumed the value. Every payment in this model is
 floored: `pol_val_pp`, the death benefit `SA − L` and the surrender benefit `CV − L` can
@@ -224,7 +225,7 @@ run reproduces the worked example while the machinery stays visible and testable
 | Module | Switch | Off value | Exercised on | What it does |
 |---|---|---|---|---|
 | Premium default and the 自動振替貸付 | `default_rate` | `0.0` | points 5, 6 | Moves policies out of the paying cohort into an APL state at 1% p.a. **[std]**, and terminates them only when the continuation test fails. Points 5 and 6 run it on the suppressed and the ordinary form of the same policy |
-| 契約者貸付 | `pol_loan_util` | `0.0` | point 7 | A single capped drawdown in the policy year `pol_loan_year` **[std]**, at the contractual 9/10 while premiums are due and 8/10 once 払込済. Point 7 draws the maximum at the fortieth anniversary and reaches the loan-excess termination at `t = 52`, policy year 53, with a zero benefit |
+| 契約者貸付 | `pol_loan_util` | `0.0` | point 7 | A single capped drawdown in the policy year `pol_loan_year` **[std]**, at the contractual 9/10 while premiums are due and 8/10 once 払込済. Point 7 draws the maximum at the anniversary `d = 39`, which opens policy year 40, and reaches the loan-excess termination at `t = 52`, policy year 53, with a zero benefit |
 | Dynamic surrender on the 払戻率 | `dyn_lapse` | `False` | point 8 | Multiplies the lapse rate by `min(3, max(1, 1 + β(CV/cumprem − 1)))` with `β = 2` **[std]**. The value-to-premiums ratio crosses 1 exactly at the cliff, so with `lapse_spike` also at zero the surge at 払込満了 is produced endogenously — the factor steps 1.0000 → 1.2318 there — rather than imposed |
 | The cliff spike | `lapse_spike` | `0.15` **[std]**, and `0.0` on point 8 | point 8 (off) | Adds `s` to the surrender rate in policy year `m`, the period `t = m − 1`. The step in `cv_pp` is contractual; the surge in surrenders at the step is behavioural and nothing in any retrieved document quantifies it. The two must not be confused, which is why the spike is a parameter of its own and one point runs without it |
 | 払済保険 conversion | `pua_year` | `0` | point 4 | Stops the premium, re-bases the sum assured to `(CV(d) − L(d)) / A(x + d)` at the conversion anniversary `d = pua_year() − 1` and drops the 解約控除. The conversion is made on the suppressed value, so the 払済保険金額 is permanently smaller: ¥4,700,513 against an original ¥10,000,000 |

@@ -113,10 +113,9 @@ in it:
   index.** `proj_len = 12 × (expiry_age − issue_age) + 1`, so **721** on the anchor cell and
   **721 rows** in `result_cf()`, indexed `t = 0 … 720`. The `+ 1` is the terminal row: the 720
   months of cover are `t = 0 … 719` and month `t = proj_len − 1` is the 100세 계약해당일
-  itself: every cash flow in it is zero, `pols_maturity`
-  records the cover ending, and `claims(t, "MATURITY")` is **0.00** — there is no 만기환급금
-  on the 순수보장형 form and the only retrieved surrender-value illustration shows the value
-  returning to nil at maturity [S8].
+  itself. Every cash flow in it is zero, `pols_maturity` records the cover ending, and
+  `claims(t, "MATURITY")` is **0.00** — there is no 만기환급금 on the 순수보장형 form and the only
+  retrieved surrender-value illustration shows the value returning to nil at maturity [S8].
 - **The waiting period lands on a grid boundary.** The 암보장개시일 is the 91st day counting
   the 보험계약일 as day 1 [S1] [S2] [S3] [S4] [S7], with the 약관's own worked example
   보험계약일 2014-04-10 ⇒ 보장개시일 2014-07-09 [S1]. On a monthly grid that is three

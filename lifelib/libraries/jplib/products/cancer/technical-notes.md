@@ -178,9 +178,9 @@ its being a market rate.
 | `pols_open(t)` | In force, diagnosed, cycle expired, eligible for a repeat payment | monthly recursion |
 | `pols_cancer(t)` | `pols_locked(t) + pols_open(t)` — the diagnosed in-force population | derived |
 | `pols_if(t)` | `pols_healthy(t) + pols_cancer(t)` — total in force at the start of `t` | derived |
-| `insitu_avail(t)` | Probability, per never-invasively-diagnosed policy, that the once-only 上皮内新生物 benefit is still unused; `insitu_avail(0) = 1` | monthly |
-| `treat_months(t)` | Qualifying treatment months already paid, **per diagnosed life**, against the cap `K` | monthly |
-| `adv_paid(t)` | 先進医療 技術料 reimbursed, **per diagnosed life**, against the ¥20,000,000 cap | monthly |
+| `insitu_avail(t)` | Probability **at time `t`** (the opening value of month `t`), per never-invasively-diagnosed policy, that the once-only 上皮内新生物 benefit is still unused; `insitu_avail(0) = 1`, closing value `insitu_avail(t+1)` | monthly |
+| `treat_months(t)` | Qualifying treatment months already paid, **per diagnosed life**, against the cap `K`; the ledger **at time `t`** — the opening value of month `t`, closing value `treat_months(t+1)` | monthly |
+| `adv_paid(t)` | 先進医療 技術料 reimbursed, **per diagnosed life**, against the ¥20,000,000 cap; the ledger **at time `t`** — the opening value of month `t`, closing value `adv_paid(t+1)` | monthly |
 | `age(t)` | Attained 満年齢 = `x + floor(t / 12)` | annually |
 | `mort_rate_mth(t)` | Monthly best-estimate mortality for a never-diagnosed life | lookup |
 | `mort_rate_canc_mth(t)` | Monthly mortality for a diagnosed life = baseline plus excess hazard | derived |

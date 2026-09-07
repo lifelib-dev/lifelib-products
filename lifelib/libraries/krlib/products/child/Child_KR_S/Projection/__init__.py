@@ -72,10 +72,20 @@ omega(t)              ``waiver_rate``               annual 납입면제 rate, bo
 l(t)                  ``pols_if``                   in force at the start of month t
 l_P(t)                ``pols_pay``                  of which still paying premium
 l_W(t)                ``pols_waived``               of which waived
-AV(t)                 ``av_pp``                     계약자적립액 per policy
-CV(t)                 ``cv_pp``                     해약환급금 per policy
+AV(t)                 ``av_pp``                     계약자적립액 per policy, at time t
+CV(t)                 ``cv_pp``                     해약환급금 per policy, at time t
+X(t)                  ``surr_chg_pp``               unamortised 해약공제액, at time t
 CF(t)                 ``net_cf``                    net cash flow, income positive
 ====================  ============================  ==================================
+
+Every state variable in this model is a **time-point** value, at time ``t``, and not a
+closing balance of period ``t``: ``av_pp``, ``cv_pp``, ``cv_std_pp``, ``surr_chg_pp``,
+``refund_ratio``, ``cum_prem_pp`` and ``prem_foetal_paid_pp`` are read at the start of
+month ``t``, before that month's premium, with ``t = 0`` at the 계약일 — hence
+``cum_prem_pp(0) = 0`` and ``av_pp(0) = 0``, and twelve instalments stand at ``t = 12``.
+The counts ``pols_if``, ``pols_pay`` and ``pols_waived`` are likewise at the start of
+month ``t``.  The four exit payments of month ``t`` fall at its **end** and are valued on
+those start-of-month quantities **[std]**.
 
 .. rubric:: The pre-birth period, and what is in force in it
 
@@ -1265,7 +1275,11 @@ def claim_count_pp(t):
 # --- the account, the surrender charge and the surrender value ---
 
 def cum_prem_pp(t):
-    """The cumulative **scheduled** core office premium at policy month t, per policy.
+    """The cumulative **scheduled** core office premium at time t, per policy.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t`` — before that month's premium, so ``cum_prem_pp(0) = 0`` — and
+    the exit payments of month ``t``, which fall at its end, are valued on it **[std]**.
 
     ``premium_mth() x min(t, prem_period_mths())``: the premium is payable monthly in
     advance, so twelve instalments have been paid by ``t = 12``.  It is the *scheduled*
@@ -1331,7 +1345,10 @@ def refund_taper(r):
 
 
 def refund_ratio(t):
-    """The 환급률 of the notional 표준형 at policy month t: build times taper.
+    """The 환급률 of the notional 표준형 at time t: build times taper.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t`` **[std]**, on the same convention as :func:`cum_prem_pp`.
 
     The ratio the product is sold on and the one the supervisor regulates, and the ratio
     against which a suppressed form's 50% is measured [REG-R19 제7-66조제4항제2호].
@@ -1340,7 +1357,10 @@ def refund_ratio(t):
 
 
 def cv_std_pp(t):
-    """The 해약환급금 of the notional 표준형 at policy month t, per policy.
+    """The 해약환급금 of the notional 표준형 at time t, per policy.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t`` **[std]**, on the same convention as :func:`cum_prem_pp`.
 
     ``refund_ratio(t) x cum_prem_pp(t)``.  「금융감독원장이 인가한 산출기준에 따라 계산한
     이 보험의 **순보험료식 계약자적립액에서 해약공제액을 공제한 금액**」 [S2] — so this is
@@ -1365,7 +1385,11 @@ def cv_grade_ratio(t):
 
 
 def cv_pp(t):
-    """CV(t): the 해약환급금 actually payable on surrender at policy month t, per policy.
+    """CV(t): the 해약환급금 actually payable on surrender at time t, per policy.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t``: the lapses of month ``t`` fall at its end and are paid
+    ``cv_pp(t) + unearned_prem_pp(t)`` **[std]**.
 
     On the **표준형** it is :func:`cv_std_pp`.  On the **미지급형** it is nil through the
     entire 납입기간 and ``cv_floor_ratio()`` of the notional 표준형 value afterwards; on the
@@ -1396,7 +1420,7 @@ def risk_prem_ann_pp():
     carries the 태아 module, which is most of it: the module's whole cost falls inside the
     first thirteen months of a hundred-year contract.
     """
-    return sum(benefit_cost_pp(t) for t in range(0, min(12, proj_len())))
+    return sum(benefit_cost_pp(t) for t in range(0, min(12, proj_len() - 1)))
 
 
 def sa_notional_pp():
@@ -1470,7 +1494,11 @@ def surr_chg_period():
 
 
 def surr_chg_pp(t):
-    """The unamortised 해약공제액 at policy month t, per policy.
+    """X(t): the unamortised 해약공제액 at time t, per policy.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t`` **[std]**: full at ``t = 0`` and nil from ``t = 84`` on a
+    20년납 contract.
 
     Released linearly over the 해약공제기간 **[std]**, from the full 표준해약공제액 at
     issue to nil at the end of it.  It is the difference between the amount payable on
@@ -1484,7 +1512,12 @@ def surr_chg_pp(t):
 
 
 def av_pp(t):
-    """AV(t): the 계약자적립액 at policy month t, per policy.
+    """AV(t): the 계약자적립액 at time t, per policy.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t`` — before that month's premium, so ``av_pp(0) = 0`` and twelve
+    instalments stand at ``t = 12`` — and the deaths and maturities of month ``t``, which
+    fall at its end, are valued on it **[std]**.
 
     The quantity 감독규정 제7-63조제1항제1호 makes payable on a death the contract does not
     cover [REG-R17], 표준약관 제22조 implements — 「산출방법서에서 정하는 바에 따라 회사가
@@ -1657,7 +1690,10 @@ def claims(t, kind=None):
 
 
 def prem_foetal_paid_pp(t):
-    """The cumulative 태아 module premium paid by policy month t, per policy.
+    """The cumulative 태아 module premium paid by time t, per policy.
+
+    A **time-point** value, at time ``t`` (``t = 0`` at the 계약일), read as the opening
+    value of period ``t`` **[std]**, on the same convention as :func:`cum_prem_pp`.
 
     Needed only by the ``"VOID"`` claim kind: where the pregnancy does not go to term the
     contract is 무효 and **every** premium paid comes back [S8 제56조], the module's own

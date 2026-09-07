@@ -219,8 +219,9 @@ MORT = {
 def test_worked_example_row(de_sofort_anchor, t):
     """Every cell of every row the notes' table prints, to the displayed precision.
 
-    672 rows is not a table anyone prints in full, so the notes show the first policy year,
-    the two months either side of the guarantee's expiry and one row every ten years; the
+    672 rows is not a table anyone prints in full, so the notes show the first policy year
+    in full and the first month of the second, where the *Überschussrente* steps, then the
+    two months either side of the guarantee's expiry and one row every ten years; the
     totals below cover the 650 rows in between.
     """
     pols_if, prem, ann, guar, refund, exp, liab, net = WORKED_EXAMPLE[t]
@@ -904,7 +905,8 @@ def test_pitfalls_11_and_12_the_in_force_point_neither_collects_nor_reopens(
     assert df["expenses"].max() < 20.0
     assert p.expenses(156) == pytest.approx(
         (60.0 / 12 + 1.50) * p.infl_factor(156), abs=1e-9)
-    assert p.duration_mth(156) == 156 and p.policy_year(156) == 13
+    assert (p.duration_mth(156) == 156 and p.duration(156) == 13
+            and p.policy_year(156) == 14)
 
 
 # Pitfall 13 -- the arrears offset
@@ -1095,7 +1097,7 @@ def test_docstrings_and_the_chassis_vocabulary(sofortrente):
     # must mean the same thing here, and the two of theirs this product deliberately
     # does not carry must stay away.
     shared = {
-        "model_point", "proj_len", "age", "duration_mth", "policy_year",
+        "model_point", "proj_len", "age", "duration_mth", "duration", "policy_year",
         "calendar_year", "horizon_mths", "pols_if", "pols_if_init", "mort_rate",
         "mort_rate_mth", "lives_if", "lives_death", "is_payment_mth", "certain_floor",
         "payment_factor", "annuity_pp", "annuity_payments", "claims", "expenses",

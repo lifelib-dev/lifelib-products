@@ -152,15 +152,17 @@ gamma                      load_prem_rate                  Premium load rate
 W(t)                       wd_pp(t)                        Partial withdrawal
 (withdrawal fee)           wd_fee_pp(t)                    $25 withdrawal fee
 (face cut)                 face_reduction_pp(t)            Option A face reduction
-SA_{i,t}                   sa_pp(t, i)                     Subaccount value, EOM
+SA_{i,t+1}                 sa_pp(t, i)                     Subaccount value, EOM
+SA_{i,t}                   sa_pp_at(t, i, "BEF_PREM")      Subaccount, start of month
 SA'_{i,t}                  sa_pp_at(t, i, "BEF_INV")       Subaccount post-deduction
-FA_t                       fa_pp(t)                        Fixed-option value, EOM
-LA_t                       la_pp(t)                        Loan-account collateral, EOM
-LA_t (BOM)                 la_pp_at(t, "BEF_PREM")         Collateral, start of month
-D_t                        loan_bal_pp(t)                  Outstanding policy debt, EOM
-D_t (BOM)                  loan_bal_pp_at(t, "BEF_PREM")   Policy debt, start of month
-AV_t                       av_pp(t)                        Total account value, EOM
-AV_t (BOM)                 av_pp_at(t, "BEF_PREM")         Account value, start of month
+FA_{t+1}                   fa_pp(t)                        Fixed-option value, EOM
+FA_t                       fa_pp_at(t, "BEF_PREM")         Fixed option, start of month
+LA_{t+1}                   la_pp(t)                        Loan-account collateral, EOM
+LA_t                       la_pp_at(t, "BEF_PREM")         Collateral, start of month
+D_{t+1}                    loan_bal_pp(t)                  Outstanding policy debt, EOM
+D_t                        loan_bal_pp_at(t, "BEF_PREM")   Policy debt, start of month
+AV_{t+1}                   av_pp(t)                        Total account value, EOM
+AV_t                       av_pp_at(t, "BEF_PREM")         Account value, start of month
 (post-premium AV)          av_pp_at(t, "BEF_FEE")          The notes' step-5 balance
 (unloaned AV)              unloaned_av_pp_at(t, timing)    Deduction allocation base
 (aggregate AV)             av_at(t, timing)                Account value in force
@@ -874,7 +876,7 @@ def prem_to_av(t):
 
 
 def premiums(t):
-    """prem_gross: premium income at BOM of policy month t, weighted by the in force.
+    """prem_gross: premium income at BOM of projected month t, weighted by the in force.
 
     The **full** premium, not the load: the net premium is a pass-through into the
     accounts and shows up again as an account release when a claim is paid.
@@ -997,7 +999,7 @@ def corridor_factor_at(a):
 
 
 def corridor_factor(t):
-    """kappa_t: the corridor factor in policy month t, at the **attained** age.
+    """kappa_t: the corridor factor in projected month t, at the **attained** age.
 
     Only the Guideline Premium Test is modeled; CVAT is a documented variation, so any
     other ``qual_test`` raises rather than being treated as GPT.
@@ -1100,7 +1102,7 @@ def coi_rate_guar_at(y):
 
 
 def coi_rate_guar(t):
-    """The guaranteed maximum monthly COI rate in policy month t."""
+    """The guaranteed maximum monthly COI rate in projected month t."""
     return coi_rate_guar_at(policy_year(t))
 
 
@@ -1123,7 +1125,7 @@ def coi_rate_at(y):
 
 
 def coi_rate(t):
-    """c_t: the current monthly COI rate in policy month t.
+    """c_t: the current monthly COI rate in projected month t.
 
     A model point may pin the rate **in the projection's first month** through the
     ``coi_rate_override_m1`` column.  Model point 1 does, at 0.04: that is the year-1
@@ -1243,7 +1245,7 @@ def mth_deduction_fa_pp(t):
 
 
 def sa_pp_at(t, i, timing):
-    """Subaccount i's value per policy at an intra-month point of policy month t.
+    """Subaccount i's value per policy at an intra-month point of projected month t.
 
     The events change the balance in this order, and ``timing`` names the point just
     before each of them:
@@ -1301,7 +1303,7 @@ def sa_pp(t, i):
 
 
 def fa_pp_at(t, timing):
-    """The fixed-option value per policy at an intra-month point of policy month t.
+    """The fixed-option value per policy at an intra-month point of projected month t.
 
     ``timing`` takes the same values as :func:`sa_pp_at` except ``"BEF_ME"``: the
     fixed option is a general-account balance and bears neither fund expenses nor the
@@ -1427,7 +1429,7 @@ def av_pp(t):
 
 
 def av_at(t, timing):
-    """Account value in force at an intra-month point of policy month t.
+    """Account value in force at an intra-month point of projected month t.
 
     :func:`av_pp_at` times the number of policies in force, which is constant through
     the month because decrements are end-of-month events.  ``timing`` takes the same
@@ -1440,7 +1442,7 @@ def av_at(t, timing):
 
 
 def av_change(t):
-    """Change in the account value in force over policy month t.
+    """Change in the account value in force over projected month t.
 
     ``av_at(t + 1, "BEF_PREM") - av_at(t, "BEF_PREM")``, following ``CashValue_SE``.
     """
@@ -1470,7 +1472,7 @@ def me_charge(t):
 
 
 def inv_income_pp(t):
-    """The total investment credit to the accounts per policy over policy month t.
+    """The total investment credit to the accounts per policy over projected month t.
 
     The subaccount growth **net** of fund expenses and the M&E charge, plus the
     fixed-option interest, plus the loan-account interest.  Because it is net, the
@@ -1543,7 +1545,7 @@ def surr_charge_rate(t):
 
 
 def surr_charge_pp(t):
-    """SC_t: the surrender charge scheduled per policy in policy month t.
+    """SC_t: the surrender charge scheduled per policy in projected month t.
 
     Quoted on the **initial** face amount [S1][S2].  This is the schedule; the amount
     actually collected is :func:`surr_charge`, which is capped by the account value.
@@ -1552,23 +1554,24 @@ def surr_charge_pp(t):
 
 
 def csv_pp(t):
-    """``AV_t - SC_t``: the cash value before policy debt, floored at zero **[std]**.
+    """``AV_{t+1} - SC_t``: the end-of-month cash value before debt, floored at zero **[std]**.
 
     The chassis name for this intermediate.  The floor is a standardization -- a
     negative cash value would be a payment *from* the policyholder -- and it binds in
     the early policy years, where the scheduled surrender charge exceeds the account
     value, so the charge actually collected is the whole account value.  The notes'
-    own ``CSV_t`` is net of debt: that is :func:`ncsv_pp`.
+    own ``CSV_t^EOM`` is net of debt: that is :func:`ncsv_pp`.
     """
     return max(0.0, av_pp(t) - surr_charge_pp(t))
 
 
 def ncsv_pp(t):
-    """CSV_t: the cash surrender value, ``AV_t - SC_t - D_t``, floored at zero [S1].
+    """CSV_t^EOM: the cash surrender value at the end of month t, floored at zero [S1].
 
-    What a surrendering policyholder is paid, and the notes' surrender outgo.  Note
-    the notes' indexing: their ``AV_{t+1} - SC_t - D_{t+1}`` is this end-of-month
-    quantity of month ``t``.
+    ``AV_{t+1} - SC_t - D_{t+1}`` in the notes' subscripts -- the end-of-month
+    balances of month ``t``, which is why the surrender charge, a within-month
+    schedule, keeps the plain ``t``.  What a surrendering policyholder is paid, and
+    the notes' surrender outgo.
     """
     return max(0.0, csv_pp(t) - loan_bal_pp(t))
 
@@ -1576,7 +1579,7 @@ def ncsv_pp(t):
 def surr_charge(t):
     """sc_income: surrender charges collected from the policies lapsing in month t.
 
-    ``(AV_t - csv_pp(t)) x pols_lapse(t)``, so it is capped by the account value where
+    ``(AV_{t+1} - csv_pp(t)) x pols_lapse(t)``, so it is capped by the account value where
     the :func:`csv_pp` floor binds.  Insurer income, and part of
     :func:`margin_expense`.
     """
@@ -1584,10 +1587,12 @@ def surr_charge(t):
 
 
 def is_default(t):
-    """The notes' default test: ``AV_t - SC_t - D_t <= 0`` at the end of month t [S1].
+    """The notes' default test, on end-of-month balances: ``AV_{t+1} - SC_t - D_{t+1} <= 0`` [S1].
 
-    The contractual trigger for grace, and the same test as the excess-debt default
-    (debt at or above fund less surrender charge) [S1].  It is a **diagnostic only**:
+    The notes' ``CSV_t^EOM`` -- :func:`ncsv_pp` before its zero floor -- at or below
+    zero: the contractual trigger for grace, and the same test as the excess-debt
+    default (debt at or above fund less surrender charge) [S1].  It is a
+    **diagnostic only**:
     the notes lapse a defaulted policy "at the next monthiversary if not cured" without
     defining the cure test, the in-grace deduction accrual or the death benefit during
     grace, so the grace cascade is not implemented and no policy is terminated for
@@ -1649,7 +1654,7 @@ def class_factor():
 
 
 def mort_rate(t):
-    """q^d,annual: the annual best-estimate mortality rate in policy month t.
+    """q^d,annual: the annual best-estimate mortality rate in projected month t.
 
     Base table times :func:`class_factor` times the A/E factor, 100% in the base run
     **[std]** with no mortality improvement.  The shipped table is a small illustrative
@@ -1752,7 +1757,7 @@ def lapse_rate_mth(t):
 
 
 def pols_if(t):
-    """l_t: the number of policies in force at the beginning of policy month t.
+    """l_t: the number of policies in force at the beginning of projected month t.
 
     Decrements are end-of-month events, so the number in force is constant through the
     month and every BOM cash flow is weighted by it.  ``pols_if(0) = l_0 =
@@ -1779,12 +1784,12 @@ def pols_if_at(t, timing):
 
 
 def pols_death(t):
-    """Number of deaths at the end of policy month t, ``l_t x q^d_t``."""
+    """Number of deaths at the end of projected month t, ``l_t x q^d_t``."""
     return pols_if(t) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
-    """Number of surrenders at the end of policy month t.
+    """Number of surrenders at the end of projected month t.
 
     ``l_t x (1 - q^d_t) x q^w_t``: death is applied before lapse **[std order]**,
     matching the notes' ``l_{t+1} = l_t (1 - q^d_t)(1 - q^w_t)``.
@@ -1862,7 +1867,7 @@ def claims_over_av(t):
 
 
 def claims(t, kind=None):
-    """Claim outgo in policy month t, optionally by ``kind`` -- the **gross view**.
+    """Claim outgo in projected month t, optionally by ``kind`` -- the **gross view**.
 
     ``kind`` is ``"DEATH"`` or ``"LAPSE"``, or ``None`` for the total.  Death claims
     are weighted by :func:`pols_death` and surrenders by :func:`pols_lapse`, both
@@ -1891,7 +1896,7 @@ def claims(t, kind=None):
 
 
 def claims_net(t):
-    """claim_net: the net general-account cost of the deaths in policy month t.
+    """claim_net: the net general-account cost of the deaths in projected month t.
 
     ``l_t x q^d_t x NAAR_t^EOM`` -- the death benefit less the account value seized to
     fund it.  A **derived report**, not a cash flow: it belongs to the net-of-account
@@ -1901,7 +1906,7 @@ def claims_net(t):
 
 
 def withdrawals(t):
-    """Partial withdrawal payments in policy month t, for the policies in force.
+    """Partial withdrawal payments in projected month t, for the policies in force.
 
     ``claim_pp(t, "WITHDRAWAL") x l_t`` -- the withdrawal is taken at the monthiversary
     by policies still in force, so it is weighted by :func:`pols_if` and not by a
@@ -1948,7 +1953,7 @@ def inflation_factor(t):
 
 
 def expenses(t):
-    """The insurer's own maintenance expenses in policy month t **[std]**.
+    """The insurer's own maintenance expenses in projected month t **[std]**.
 
     ``expense_maint / 12`` per policy in force, $75 a year, plus ``expense_acq`` in the
     issue month.  The notes specify no acquisition expense for this product -- the
@@ -2000,7 +2005,7 @@ def margin_mortality(t):
 
 
 def net_cf(t):
-    """NetCF(t): net liability cash flow in policy month t, **undiscounted**.
+    """NetCF(t): net liability cash flow in projected month t, **undiscounted**.
 
     ``premiums - claims (death and surrender) - withdrawals - expenses - premium
     taxes``: the **gross (policyholder) view**, which the notes make the reference
@@ -2019,7 +2024,7 @@ def net_cf(t):
 
 
 def net_cf_ga(t):
-    """The net-of-account (general-account strain) view of policy month t.
+    """The net-of-account (general-account strain) view of projected month t.
 
     ``load_income + md_income + me_income + loan_spread + sc_income - claim_net
     - expense``, the notes' reconciliation identity.  A **derived report** from the

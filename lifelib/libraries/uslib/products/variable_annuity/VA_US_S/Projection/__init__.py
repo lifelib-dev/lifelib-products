@@ -48,15 +48,15 @@ transaction_file           data.transaction_table()        transaction_table.csv
 month, the frame is ``t = 0, 1, ..., proj_len() − 1``, and ``len(result_cf())`` is
 ``proj_len()``. The purchase payment falls at the beginning of month ``t = 0`` — there is
 no separate entry-instant row — and the state carried into the frame is the ``*_init()``
-family, which every recursion reads at ``t = −1``.
+family, which every recursion reads as the opening balance of ``t = 0``.
 
 The *policy* month is ``duration_mth(t) = duration_mth_init() + t``, the number of policy
 months already **elapsed** at the start of month ``t``: 0 in an at-issue cell's first
 month, and ``duration_mth_init()`` in an in-force cell's — the worked example's carried
-state is one, entered with 26 elapsed months. The notes' 1-based policy month label is
-``duration_mth(t) + 1``. Every calendar test (Contract Anniversary, Contract Quarterly
-Anniversary, contract year, attained age) is written on ``duration_mth(t)``, never
-on ``t``.
+state is one, entered with 26 elapsed months. The ordinal policy month — the notes'
+"the 27th policy month" — is ``duration_mth(t) + 1``. Every calendar test (Contract
+Anniversary, Contract Quarterly Anniversary, contract year, attained age) is written on
+``duration_mth(t)``, never on ``t``.
 
 ``policy_year(t) = duration_mth(t) // 12 + 1`` is the contract year ``y``, a 1-based
 contractual label, and ``contract_quarter(t) = duration_mth(t) // 3 + 1`` the contract
@@ -110,11 +110,11 @@ a(t) = x + y - 1                                     age(t)                     
 (a at the anniversary)                               age_at_anniv(t)                              Attained age just after the anniversary
 (none)                                               policy_term                                  Years from issue to omega_age
 (none)                                               proj_len                                     Months projected; last index proj_len - 1
-av_initial                                           av_pp_init()                                 AV carried in, read at t = -1 (in-force cell)
-gwb_initial                                          gwb_pp_init()                                GWB carried in, read at t = -1
-bb_initial                                           bb_pp_init()                                 Bonus Base carried in, read at t = -1
-rb_initial                                           rb_pp_init()                                 GMDB Benefit Base carried in, read at t = -1
-(none)                                               gawa_pp_init()                               GAWA carried in, read at t = -1
+av_initial                                           av_pp_init()                                 AV carried in, the opening balance at t = 0
+gwb_initial                                          gwb_pp_init()                                GWB carried in, opening balance at t = 0
+bb_initial                                           bb_pp_init()                                 Bonus Base carried in, opening at t = 0
+rb_initial                                           rb_pp_init()                                 GMDB Benefit Base carried in, at t = 0
+(none)                                               gawa_pp_init()                               GAWA carried in, opening at t = 0
 (none)                                               gawa_pct_init()                              GAWA% already locked before the frame
 (none)                                               np_pp_init()                                 Cumulative Net Premiums carried in
 (none)                                               rp_pp_init()                                 Remaining Premium carried in
@@ -219,7 +219,7 @@ q^d(t)                                               mort_rate_mth(t)           
 (annual q_x)                                         mort_rate(t)                                 Annual mortality at the attained age
 l(t-1)                                               pols_if(t)                                   In-force at the START of month t
 l(t)                                                 pols_if_at(t, "AFT_DECR")                    In-force at the end of month t
-l(0)                                                 pols_if_init                                 In-force at entry
+l(-1)                                                pols_if_init                                 In-force at entry
 l(t-1), ...                                          pols_if_at(t, timing)                        BEF_DECR / BEF_LAPSE / AFT_DECR
 l(t-1) q^d                                           pols_death(t)                                Deaths
 l(t-1)(1-q^d) q^w                                    pols_lapse(t)                                Full surrenders
@@ -311,11 +311,14 @@ untouched: ``ΔU_i = C · w_i(t) / V_i(t)``, so ``ΔAV = C``.
 Every state variable in this model is a **closing balance of month t**: ``av_pp(t)``,
 ``sa_pp(t, i)``, ``gwb_pp(t)``, ``bb_pp(t)``, ``rb_pp(t)``, ``gawa_pp(t)``, ``np_pp(t)``,
 ``rp_pp(t)`` and ``adj_pp(t)`` are all values at the **end** of month ``t``. Their
-*opening* value is therefore ``S(t - 1)``, and at ``t = 0`` that is ``S(-1)``, which each
-of them defines as its carried-in ``*_init()`` value. That single convention replaces the
-old entry-instant row: the premium, the guarantee-base initialization and the acquisition
-expense are all beginning-of-month flows of ``t = 0``, and ``S(-1)`` is the balance they
-act on. Nothing is ever indexed below ``t = -1``.
+*opening* value is therefore ``S(t - 1)``, and in the first projected month it is the
+carried-in ``S_init()`` instead — read in the opening timing, ``S_init() if t == 0 else
+S(t - 1)``, as ``CashValue_SE`` and :mod:`.MYGA_US_S` write it. That single convention
+replaces the old entry-instant row: the premium, the guarantee-base initialization and
+the acquisition expense are all beginning-of-month flows of ``t = 0``, and ``S_init()``
+is the balance they act on. **No carried-in state is read at a negative index**; the
+only guards below ``t = 0`` left in the module return zero or ``False`` for an
+out-of-range argument.
 
 The model carries the *product* ``SA_i = U_i V_i`` rather than the two factors, because
 with no transfers between subaccounts the two are never needed apart, and every quantity
@@ -449,7 +452,7 @@ def tax_status():
 
 
 def pols_if_init():
-    """l(0): in-force probability at entry, 1 for a single-contract model point."""
+    """l(-1): in-force probability at entry, 1 for a single-contract model point."""
     return float(model_point()["pols_if_init"])
 
 
@@ -685,8 +688,8 @@ def duration_mth(t):
     """Policy months already **elapsed** at the start of month t.
 
     ``duration_mth_init() + t``, 0-based like ``t`` itself: ``duration_mth(t) = 0`` is the
-    first policy month of an at-issue cell. The notes' 1-based policy month label is
-    ``duration_mth(t) + 1``.
+    first policy month of an at-issue cell. The ordinal policy month — the notes' "the
+    27th policy month" — is ``duration_mth(t) + 1``.
     """
     return duration_mth_init() + t
 
@@ -819,14 +822,12 @@ def sa_pp_at(t, i, timing):
     A withdrawal and a unit cancellation both scale the subaccount by
     ``(1 - amount / AV)`` — pro-rata deduction — so neither moves the value weights.
 
-    At ``t = -1`` this is the carried-in split of ``av_pp_init()``, the opening balance of
-    the first projected month; ``sa_pp_at(0, i, "BEF_PREM")`` reads it.
+    ``"BEF_PREM"`` is the opening balance of month t: the carried-in ``av_pp_init()``
+    split by ``alloc(i)`` in the first projected month, and ``sa_pp(t - 1, i)`` after it.
     """
-    if t < 0:
-        return alloc(i) * av_pp_init()
-    if depleted_flag(t - 1) or t >= proj_len():
+    if t < 0 or t >= proj_len() or depleted_flag(t - 1):
         return 0.0
-    sa = sa_pp(t - 1, i)
+    sa = alloc(i) * av_pp_init() if t == 0 else sa_pp(t - 1, i)
     if timing == "BEF_PREM":
         return sa
     sa = sa + alloc(i) * prem_to_av_pp(t)
@@ -995,11 +996,11 @@ def is_wd_taken(t):
 def has_wd_by(t):
     """True when a withdrawal has been taken at or before month t.
 
-    Before the frame starts it is :func:`has_wd_init`, the carried-in flag.
+    The value carried into month t is :func:`has_wd_init` in the first projected month
+    and ``has_wd_by(t - 1)`` after it.
     """
-    if t < 0:
-        return has_wd_init()
-    return has_wd_by(t - 1) or is_wd_taken(t)
+    prior = has_wd_init() if t == 0 else has_wd_by(t - 1)
+    return prior or is_wd_taken(t)
 
 
 def is_first_wd(t):
@@ -1009,7 +1010,7 @@ def is_first_wd(t):
     formed: a first withdrawal tested against ``GAWA = 0`` would score entirely as excess
     and wreck both benefit bases [S1].
     """
-    return is_wd_taken(t) and not has_wd_by(t - 1)
+    return is_wd_taken(t) and not (has_wd_init() if t == 0 else has_wd_by(t - 1))
 
 
 def is_wd_year(t):
@@ -1074,7 +1075,7 @@ def sum_wd_pp(t):
     """SumW_y: cumulative withdrawals in the current contract year, including W(t) [S1]."""
     if t < 0:
         return 0.0
-    prev = 0.0 if is_year_start(t) else sum_wd_pp(t - 1)
+    prev = 0.0 if t == 0 or is_year_start(t) else sum_wd_pp(t - 1)
     return prev + wd_pp(t)
 
 
@@ -1120,7 +1121,7 @@ def free_wd_allow(t):
     is ``max(earnings, 0.10 x RP)`` [S1]. Aged-out premium is free too, which the CDSC
     scale delivers by reaching 0.0% at seven completed years [S2].
     """
-    rp = rp_pp(t - 1) + premium_pp(t)
+    rp = (rp_pp_init() if t == 0 else rp_pp(t - 1)) + premium_pp(t)
     earnings = max(0.0, av_pp_at(t, "BEF_WD") - rp)
     return max(earnings, free_wd_rate * rp)                          # noqa: F821
 
@@ -1129,7 +1130,7 @@ def free_wd_avail(t):
     """The free-withdrawal allowance still unused in the contract year at BOM of month t."""
     if t < 0:
         return 0.0
-    used = 0.0 if is_year_start(t) else free_wd_used_cum_pp(t - 1)
+    used = 0.0 if t == 0 or is_year_start(t) else free_wd_used_cum_pp(t - 1)
     return max(0.0, free_wd_allow(t) - used)
 
 
@@ -1154,7 +1155,7 @@ def free_wd_used_cum_pp(t):
     """
     if t < 0:
         return 0.0
-    prev = 0.0 if is_year_start(t) else free_wd_used_cum_pp(t - 1)
+    prev = 0.0 if t == 0 or is_year_start(t) else free_wd_used_cum_pp(t - 1)
     return prev + wd_free_pp(t)
 
 
@@ -1417,11 +1418,9 @@ def gwb_pp_at(t, timing):
     ``"BEF_PREM"`` is the opening balance of month t: ``gwb_pp_init()`` in the first
     projected month and ``gwb_pp(t - 1)`` afterwards.
     """
-    if t < 0:
-        return gwb_pp_init()
+    g = gwb_pp_init() if t == 0 else gwb_pp(t - 1)
     if depleted_flag(t - 1):
-        return gwb_pp(t - 1)
-    g = gwb_pp(t - 1)
+        return g
     if timing == "BEF_PREM":
         return g
     g = min(gwb_cap, g + prem_to_av_pp(t))                           # noqa: F821
@@ -1444,11 +1443,10 @@ def bb_pp_bef_anniv(t):
     withdrawal, and otherwise unaffected by withdrawals. Applying the bonus does not
     change it.
     """
-    if t < 0:
-        return bb_pp_init()
+    prev = bb_pp_init() if t == 0 else bb_pp(t - 1)
     if depleted_flag(t - 1):
-        return bb_pp(t - 1)
-    b = min(gwb_cap, bb_pp(t - 1) + prem_to_av_pp(t))                # noqa: F821
+        return prev
+    b = min(gwb_cap, prev + prem_to_av_pp(t))                        # noqa: F821
     if wd_pp(t) > 0.0 and sum_wd_pp(t) > wd_limit_pp(t):
         b = min(gwb_pp_at(t, "BEF_ANNIV"), b)
     return b
@@ -1463,7 +1461,11 @@ def bonus_pp(t):
     """
     if not is_anniv(t) or depleted_flag(t - 1):
         return 0.0
-    if policy_year(t) > bonus_end(t - 1) or is_wd_year(t):
+    if t == 0:
+        prev_end = bonus_end_init() if is_inforce() else bonus_period_years  # noqa: F821
+    else:
+        prev_end = bonus_end(t - 1)
+    if policy_year(t) > prev_end or is_wd_year(t):
         return 0.0
     return bonus_pct * bb_pp_bef_anniv(t)                            # noqa: F821
 
@@ -1529,18 +1531,15 @@ def adj_pp_bef_anniv(t):
     "Before the first anniversary after endorsement" is the first twelve policy months,
     ``duration_mth(t) < 12``.
     """
-    if t < 0:
-        return adj_pp_init()
     if has_wd_by(t):
         return 0.0
     rate = gwb_adj_pct if duration_mth(t) < 12 else 1.0              # noqa: F821
-    return adj_pp(t - 1) + rate * prem_to_av_pp(t)
+    prev = adj_pp_init() if t == 0 else adj_pp(t - 1)
+    return prev + rate * prem_to_av_pp(t)
 
 
 def adj_pp(t):
     """ADJ(t): the GWB Adjustment amount at the end of month t; 0 once it terminates."""
-    if t < 0:
-        return adj_pp_init()
     if is_gwb_adj_date(t) or policy_year(t) > gwb_adj_year():
         return 0.0
     return adj_pp_bef_anniv(t)
@@ -1554,10 +1553,8 @@ def gwb_pp(t):
     $10,000,000 cap. In the depleted state the balance is run down by each payment when
     the For Life Guarantee is not in effect, and is left alone when it is.
     """
-    if t < 0:
-        return gwb_pp_init()
     if depleted_flag(t - 1):
-        g = gwb_pp(t - 1)
+        g = gwb_pp_init() if t == 0 else gwb_pp(t - 1)
         return g if forlife_flag() else max(0.0, g - glwb_payment_pp(t))
     g = gwb_pp_aft_stepup(t)
     if is_gwb_adj_date(t) and not has_wd_by(t):
@@ -1571,10 +1568,8 @@ def bb_pp(t):
     A step-up sets it to ``max(GWB_after_step-up, BB_before)``; the bonus itself never
     changes it.
     """
-    if t < 0:
-        return bb_pp_init()
     if depleted_flag(t - 1):
-        return bb_pp(t - 1)
+        return bb_pp_init() if t == 0 else bb_pp(t - 1)
     b = bb_pp_bef_anniv(t)
     if is_stepup(t):
         b = max(gwb_pp_aft_stepup(t), b)
@@ -1589,9 +1584,10 @@ def bonus_end(t):
     Designated Life's 80th birthday. A hard-coded 10-year window from issue materially
     understates the guarantee in rising markets.
     """
-    if t < 0:
-        return bonus_end_init() if is_inforce() else bonus_period_years  # noqa: F821
-    prev = bonus_end(t - 1)
+    if t == 0:
+        prev = bonus_end_init() if is_inforce() else bonus_period_years  # noqa: F821
+    else:
+        prev = bonus_end(t - 1)
     if (is_stepup(t) and age_at_anniv(t) <= bonus_restart_age        # noqa: F821
             and gwb_pp_aft_stepup(t) > bb_pp_bef_anniv(t)):
         return policy_year(t) + bonus_period_years                   # noqa: F821
@@ -1604,9 +1600,7 @@ def gawa_pct_fixed(t):
     If the contract value reaches zero with the percentage not yet fixed, it is fixed at
     the percentage for the attained age at that moment [S1].
     """
-    if t < 0:
-        return gawa_pct_init()
-    prev = gawa_pct_fixed(t - 1)
+    prev = gawa_pct_init() if t == 0 else gawa_pct_fixed(t - 1)
     if prev > 0.0:
         return prev
     if is_first_wd(t) or depleted_flag(t):
@@ -1616,15 +1610,15 @@ def gawa_pct_fixed(t):
 
 def gawa_pp_at(t, timing):
     """GAWA at month t read at ``BEF_PREM``, ``BEF_WD`` or ``BEF_ANNIV`` [S1]."""
-    if t < 0:
-        return gawa_pp_init()
+    g = gawa_pp_init() if t == 0 else gawa_pp(t - 1)
     if depleted_flag(t - 1):
-        return gawa_pp(t - 1)
-    g = gawa_pp(t - 1)
+        return g
     if timing == "BEF_PREM":
         return g
-    if has_wd_by(t - 1) and prem_to_av_pp(t) > 0.0:
-        g = g + gawa_pct_fixed(t - 1) * prem_to_av_pp(t)
+    had_wd = has_wd_init() if t == 0 else has_wd_by(t - 1)
+    if had_wd and prem_to_av_pp(t) > 0.0:
+        pct = gawa_pct_init() if t == 0 else gawa_pct_fixed(t - 1)
+        g = g + pct * prem_to_av_pp(t)
     if timing == "BEF_WD":
         return g
     if is_first_wd(t):
@@ -1643,10 +1637,8 @@ def gawa_pp(t):
     ``max(g x GWB, GAWA)``. If the For Life Guarantee is not in effect and ``GWB < GAWA``
     at a Contract Year end, GAWA is set equal to GWB.
     """
-    if t < 0:
-        return gawa_pp_init()
     if depleted_flag(t - 1):
-        return gawa_pp(t - 1)
+        return gawa_pp_init() if t == 0 else gawa_pp(t - 1)
     g = gawa_pp_at(t, "BEF_ANNIV")
     if is_anniv(t):
         pct = gawa_pct_fixed(t)
@@ -1672,11 +1664,10 @@ def np_pp(t):
     withdrawal — and this cells is not layered over it, or the election would have no
     effect at all. See :func:`gmdb_guarantee_pp`.
     """
-    if t < 0:
-        return np_pp_init()
+    prev = np_pp_init() if t == 0 else np_pp(t - 1)
     if depleted_flag(t - 1):
-        return np_pp(t - 1)
-    return np_pp(t - 1) + prem_to_av_pp(t)
+        return prev
+    return prev + prem_to_av_pp(t)
 
 
 def rp_reduction_pp(t):
@@ -1688,18 +1679,17 @@ def rp_reduction_pp(t):
     """
     if t < 0 or wd_pp(t) <= 0.0:
         return 0.0
-    rp = rp_pp(t - 1) + premium_pp(t)
+    rp = (rp_pp_init() if t == 0 else rp_pp(t - 1)) + premium_pp(t)
     earnings = max(0.0, av_pp_at(t, "BEF_WD") - rp)
     return min(rp, max(0.0, wd_pp(t) - earnings))
 
 
 def rp_pp(t):
     """RP(t): Remaining Premium, the basis the CDSC is charged on [S2]."""
-    if t < 0:
-        return rp_pp_init()
+    prev = rp_pp_init() if t == 0 else rp_pp(t - 1)
     if depleted_flag(t - 1):
-        return rp_pp(t - 1)
-    return max(0.0, rp_pp(t - 1) + premium_pp(t) - rp_reduction_pp(t))
+        return prev
+    return max(0.0, prev + premium_pp(t) - rp_reduction_pp(t))
 
 
 def rb_prior_anniv_pp(t):
@@ -1727,7 +1717,7 @@ def gmdb_wd_dfd_pp(t):
     """The dollar-for-dollar portion of month t's withdrawal against the allowance [S1]."""
     if t < 0 or wd_pp(t) <= 0.0 or gmdb_option() != "rollup":
         return 0.0
-    used = 0.0 if is_year_start(t) else gmdb_dfd_acc_pp(t - 1)
+    used = 0.0 if t == 0 or is_year_start(t) else gmdb_dfd_acc_pp(t - 1)
     return min(wd_pp(t), max(0.0, gmdb_allow_pp(t) - used))
 
 
@@ -1762,7 +1752,7 @@ def gmdb_dfd_acc_pp(t):
     """
     if t < 0:
         return 0.0
-    prev = 0.0 if is_year_start(t) else gmdb_dfd_acc_pp(t - 1)
+    prev = 0.0 if t == 0 or is_year_start(t) else gmdb_dfd_acc_pp(t - 1)
     return prev + gmdb_wd_dfd_pp(t)
 
 
@@ -1770,7 +1760,7 @@ def gmdb_factor_acc(t):
     """The proportional factor accrued so far in the contract year **[std]**."""
     if t < 0:
         return 1.0
-    prev = 1.0 if is_year_start(t) else gmdb_factor_acc(t - 1)
+    prev = 1.0 if t == 0 or is_year_start(t) else gmdb_factor_acc(t - 1)
     return prev * gmdb_wd_factor(t)
 
 
@@ -1781,11 +1771,9 @@ def rb_pp_at(t, timing):
     Year end; the ``HQAV`` and ``basic`` forms reduce the base proportionally at the
     withdrawal itself [S1].
     """
-    if t < 0:
-        return rb_pp_init()
+    r = rb_pp_init() if t == 0 else rb_pp(t - 1)
     if depleted_flag(t - 1):
-        return rb_pp(t - 1)
-    r = rb_pp(t - 1)
+        return r
     if timing == "BEF_PREM":
         return r
     r = r + prem_to_av_pp(t)
@@ -1806,10 +1794,8 @@ def rb_pp(t):
     at the Contract Anniversary preceding the oldest Covered Life's 81st birthday [S1],
     so an issue-age-60 cell gets 20 roll-up credits and an issue-age-75 cell gets 5.
     """
-    if t < 0:
-        return rb_pp_init()
     if depleted_flag(t - 1):
-        return rb_pp(t - 1)
+        return rb_pp_init() if t == 0 else rb_pp(t - 1)
     r = rb_pp_at(t, "BEF_ANNIV")
     if not is_anniv(t):
         return r
@@ -2023,10 +2009,10 @@ def pols_if(t):
     horizon month, where the survivors leave as :func:`pols_maturity` and nothing is in
     force at the start of the month after it.
     """
-    if t <= 0:
-        return pols_if_init()
-    if t >= proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
+    if t == 0:
+        return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
 
@@ -2038,7 +2024,7 @@ def pols_if_at(t, timing):
     ``"AFT_DECR"`` is the notes' ``l(t)``, the end-of-month count.
     """
     if t < 0:
-        return pols_if_init()
+        return 0.0
     pols = pols_if(t)
     if timing == "BEF_DECR":
         return pols
@@ -2274,11 +2260,11 @@ def av_at(t, timing):
     month, where the survivors leave as :func:`pols_maturity` and their contract value
     is released through :func:`claims_from_av`.
 
-    ``av_at(-1, "EOM")`` is the contract value carried into the frame,
-    ``av_pp_init() x pols_if_init()``; it is what makes :func:`check_av_roll_fwd_resid`
-    close in the first projected month.
+    The contract value carried into the frame, ``av_pp_init() x pols_if_init()``, is not
+    a row of this cells: it is the opening value :func:`av_change` uses in the first
+    projected month, which is what makes :func:`check_av_roll_fwd_resid` close there.
     """
-    if t < -1:
+    if t < 0:
         return 0.0
     if timing == "EOM":
         return av_pp(t) * pols_if(t + 1)
@@ -2301,8 +2287,14 @@ def charges_from_av(t):
 
 
 def av_change(t):
-    """The change in the block's contract value over month t."""
-    return av_at(t, "EOM") - av_at(t - 1, "EOM")
+    """The change in the block's contract value over month t.
+
+    The opening value is the carried-in ``av_pp_init() x pols_if_init()`` in the first
+    projected month and ``av_at(t - 1, "EOM")`` after it.
+    """
+    opening = (av_pp_init() * pols_if_init() if t == 0
+               else av_at(t - 1, "EOM"))
+    return av_at(t, "EOM") - opening
 
 
 def check_av_roll_fwd_resid(t):

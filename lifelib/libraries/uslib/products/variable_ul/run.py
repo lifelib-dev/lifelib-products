@@ -35,7 +35,7 @@ print("surrender charge {:,.2f} in policy year {} (t = 0 is {} completed months 
       "after issue)   loan {:.2%} charged / {:.2%} credited on debt {:,.2f}".format(
           proj.surr_charge_pp(0), proj.policy_year(0), proj.duration_mth_init(),
           proj.loan_rate_ann(0), proj.loan_cr_rate_ann(0), proj.loan_bal_init()))
-print("projection = {} policy months, t = 0 .. {}, to attained age {}   "
+print("projection = {} projected months, t = 0 .. {}, to attained age {}   "
       "dynamic behavior module {}".format(
           proj.proj_len(), proj.proj_len() - 1, proj.age(proj.proj_len() - 1),
           "on" if proj.dyn_behavior_on else "off"))

@@ -142,7 +142,7 @@ lapse, silently attaches the wrong payment formula to half the exits.
 ``pols_if(t)`` is the in force at the **start** of plan year ``t``, with
 ``pols_if(0) = pols_if_init()``, and it is the weight on that same ``result_cf()`` row's
 cash flows. This is the library's settled convention, shared with ``MYGA_US_S``,
-``WP_UK_A`` and every other model in the four country libraries: divide a flow by its own
+``WP_UK_A`` and every other model in the country libraries: divide a flow by its own
 row's ``pols_if`` and you get a per-policy amount for the same period.
 
 **The end-of-year count was renamed.** The technical notes index the in-force probability
@@ -464,7 +464,7 @@ def av_uc_init():
 
 
 def death_floor_init():
-    """g(0): the *garantie plancher* base carried into the projection.
+    """g-(0): the *garantie plancher* base carried into the projection.
 
     On the anchor cell it is €16 000 against a €16 600 balance, and the €600 gap is the
     investment return accumulated before the valuation date.  A cell whose accumulated
@@ -576,7 +576,7 @@ def mort_rate_flat():
 
 
 def pols_if_init():
-    """l(0): the in-force probability carried in; 1.0 on a single-policy model point."""
+    """l-(0): the in-force probability carried in; 1.0 on a single-policy model point."""
     return float(model_point()["pols_if_init"])
 
 

@@ -550,9 +550,11 @@ def proj_len():
     780, so the frame runs ``t = 0 … 779``, 780 monthly rows, attained ages 45 to 109.
 
     It depends on the entry age and the terminal age alone, **not** on
-    :func:`duration_mth_init`: an in-force point publishes a shorter frame that ends at the
-    same index.  A point opening at ``duration_mth_init() = d0`` publishes
-    ``proj_len() - d0`` rows.
+    :func:`duration_mth_init`: a point opening at ``duration_mth_init() = d0`` publishes
+    ``proj_len() - d0`` rows and still ends at its own ``proj_len() - 1``, because
+    ``duration_mth_init`` shortens the frame at the front, never at the back.  That last
+    index is the point's own — ``proj_len()`` varies with the entry age — not the anchor's
+    779.
     """
     return 12 * (omega_age() - age_at_entry())
 

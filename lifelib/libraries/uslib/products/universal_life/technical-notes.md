@@ -117,7 +117,7 @@ ASOP 2 [R8]); class (c) is the modeler's view of policyholder/insurer experience
 | Guaranteed max premium load | 9% | [S1]; composite **[std]** |
 | Per-policy charge (guaranteed = current) | $7.50/month to age 121 | [S3]; composite **[std]** |
 | Per-unit charge | $0.26/$1,000/mo yrs 1–10; $0.156 to age 121 | [S3]; composite **[std]** |
-| Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from year 10 | pattern [S1] [S2], mechanics [S3], amount **[std]** |
+| Surrender charge schedule | $9.00/$1,000 initial, linear monthly runoff, 0 from the last month of policy year 9 (`t = 107`) | pattern [S1] [S2], mechanics [S3], amount **[std]** |
 | Corridor factors (GPT) | specimen table 250% (ages 0–40) → 101% (94+) | [S3] [R2] |
 | Loan spread (charged − credited on loaned AV) | 0.75% | [S3]; level **[std]** |
 | Grace | 61 days; required payment 3xMD + load | [S2] [S3] |
@@ -307,8 +307,9 @@ cited where they exist.
   early years [R7].
 - **Base lapse [std].** Annual `w_base(y)` per the table above, converted monthly:
   `w_m = 1 − (1 − w_annual)^(1/12)`.
-- **Surrender-charge-expiry shock [std].** During policy year 10 (the first year with
-  SC = 0): `M_sc = 2.0`; else 1.0. Rationale: the surrender charge suppresses
+- **Surrender-charge-expiry shock [std].** During policy year 10 (the first policy year
+  with no surrender charge in any month; the charge already reaches zero in the last
+  month of policy year 9): `M_sc = 2.0`; else 1.0. Rationale: the surrender charge suppresses
   surrender while it is positive; its expiry is a known industry lapse-shock point
   (product-specific studies are proprietary; shape assumption).
 - **Interest-sensitive (dynamic) lapse [std].**

@@ -57,7 +57,7 @@ right and be wrong:
 * the two modules run in opposite sex directions and the model does not reproduce that;
 * the care state is absorbing because the **contract** makes it so;
 * the disclosed 예정위험률 is not this model's level;
-* and ``proj_len()`` is the **last index**, not a row count.
+* and ``proj_len()`` is a **row count**, not the last index.
 
 The six ``check_*`` cells are asserted **by name**, because a generic sweep cannot notice a
 check that has quietly disappeared, and the [std] scalar assumptions are read off the model
@@ -144,7 +144,11 @@ def variant_table(tmp_path, name, filename, mutate):
 
 
 def lifetime(p):
-    """The lifetime totals the notes' sensitivities are quoted against, undiscounted."""
+    """The lifetime totals the notes' sensitivities are quoted against, undiscounted.
+
+    ``range(p.proj_len())`` is the whole frame, ``t = 0 ... proj_len() - 1``; the last row
+    is the maturity month and contributes nothing to any of these sums.
+    """
     ts = range(p.proj_len())
     lump = sum(p.claims(t, "LUMP") for t in ts)
     annuity = sum(p.claims(t, "ANNUITY") for t in ts)
@@ -167,7 +171,7 @@ def pv_benefit_over_premium(p):
     at the same 2.0% 연단위 복리 the account is accumulated at.
     """
     j = (1.0 + p.prem_int_rate) ** (1.0 / 12.0) - 1.0
-    ts = range(p.proj_len() + 1)
+    ts = range(p.proj_len())
     pv_prem = sum(p.premiums(t) * (1.0 + j) ** -t for t in ts)
     pv_ben = sum((p.claims(t, "LUMP") + p.claims(t, "ANNUITY")) * (1.0 + j) ** -t
                  for t in ts)
@@ -224,8 +228,8 @@ def test_the_anchor_cell_is_the_worked_examples_model_point(kr_ltc_anchor):
     assert p.uw_loading() == 1.0
     assert p.premium_mth_pp() == 5_600.0
     assert p.pols_if_init() == 1.0
-    assert p.proj_len() == 600                       # 12 x (90 - 40)
-    assert len(p.result_cf()) == 601                 # proj_len() + 1, the maturity row
+    assert p.proj_len() == 601                       # 12 x (90 - 40) + 1
+    assert len(p.result_cf()) == 601                 # proj_len() rows, t = 0 .. 600
 
 
 def test_the_worked_examples_assumption_values(kr_ltc_anchor):
@@ -1072,14 +1076,14 @@ def test_the_in_force_roll_forward_names_every_decrement(long_term_care):
     for point_id in long_term_care.Data.model_point_table().index:
         p = long_term_care.Projection[point_id]
         n = p.proj_len()
-        for t in (0, 1, 11, 12, n // 2, n - 1, n):
+        for t in (0, 1, 11, 12, n // 2, n - 2, n - 1):
             assert p.check_pols_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-12)
             assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(
                 p.pols_death(t) + p.pols_lapse(t) + p.pols_void(t)
                 + p.pols_maturity(t), abs=1e-12), (point_id, t)
-        assert p.pols_maturity(n) == p.pols_if(n)
-        assert p.pols_maturity(n - 1) == 0.0
-        assert p.pols_if(n + 1) == 0.0
+        assert p.pols_maturity(n - 1) == p.pols_if(n - 1)
+        assert p.pols_maturity(n - 2) == 0.0
+        assert p.pols_if(n) == 0.0
 
 
 def test_in_force_is_a_decreasing_probability(long_term_care):
@@ -1149,7 +1153,7 @@ def test_the_annuity_ledger_is_a_cohort_sum_with_a_guarantee_and_a_cap(kr_ltc_an
     inside the twelve-month guarantee and ``S_C(s, s + 12 floor(u/12))`` after it, so the
     survival test is **annual** while the instalments are **monthly**.  The first instalment
     falls in the month of certification, so the ``u = 0`` term is ``n_C(t)`` itself, and
-    nothing is paid at or after ``proj_len()``.
+    nothing is paid on the maturity row ``t = proj_len() - 1`` or after it.
     """
     p = kr_ltc_anchor
     n_a, g_a = p.annuity_max_mths(), p.annuity_guar_mths()
@@ -1170,8 +1174,8 @@ def test_the_annuity_ledger_is_a_cohort_sum_with_a_guarantee_and_a_cap(kr_ltc_an
         assert (1.0 if u < g_a else 0.0) == 1.0
     assert p.care_surv(3, 3 + 12) < 1.0
     # The cap and the maturity truncation bind jointly.
-    assert p.ann_count(p.proj_len()) == 0.0
-    assert p.ann_pay(p.proj_len()) == 0.0
+    assert p.ann_count(p.proj_len() - 1) == 0.0
+    assert p.ann_pay(p.proj_len() - 1) == 0.0
     assert p.ann_count(500) == pytest.approx(
         sum(p.pols_entry_care(500 - u)
             * (1.0 if u < g_a else p.care_surv(500 - u, 500 - u + 12 * (u // 12)))
@@ -1200,7 +1204,7 @@ def test_the_account_and_the_surrender_value_have_two_branches_that_meet(kr_ltc_
             p.net_prem_ratio() * p.premium_mth_pp() * p.prem_accum_factor(t), rel=FULL)
     for t in (241, 360, 480, 600):
         assert p.av_pp(t) == pytest.approx(
-            p.av_ratio_at((t - n) / (p.proj_len() - n))
+            p.av_ratio_at((t - n) / (p.proj_len() - 1 - n))
             * p.premium_mth_pp() * n, rel=FULL)
     assert p.av_pp(600) == 0.0                       # av_ratio_at(1) = 0, no 만기환급금
     assert p.prem_accum_factor(0) == 0.0
@@ -1295,20 +1299,20 @@ def test_four_columns_are_zero_on_purpose(kr_ltc_anchor, long_term_care):
 
 
 def test_the_last_row_is_the_maturity_instant_and_pays_nothing(kr_ltc_anchor):
-    """``t = proj_len()`` carries an in-force count and every cash flow zero.
+    """``t = proj_len() - 1`` carries an in-force count and every cash flow zero.
 
     There is no 만기환급금 on a 순수보장성 contract, so the maturity is a decrement with no
     payment attached — and it is still a maturity, which is why the count is published.
     """
     p = kr_ltc_anchor
     n = p.proj_len()
-    row = p.result_cf().loc[n]
+    row = p.result_cf().loc[n - 1]
     assert row["pols_if"] == pytest.approx(0.210156424636, abs=COUNT)
     for column in ("premiums", "claims_lump", "claims_annuity", "claims_dementia",
                    "claims_death", "claims_lapse", "claims_void", "claims_maturity",
                    "expenses", "claim_expenses", "commissions", "net_cf"):
         assert row[column] == 0.0, column
-    assert p.pols_maturity(n) == p.pols_if(n)
+    assert p.pols_maturity(n - 1) == p.pols_if(n - 1)
 
 
 def test_the_model_point_table_covers_the_products_variants(long_term_care):
@@ -1446,7 +1450,9 @@ def test_pitfall_the_gamaek_is_frozen_and_must_not_be_re_tested(long_term_care):
     expected = {1: (64.78, 0.00012), 3: (596.60, 0.00097), 7: (1065.24, 0.00315)}
     for point_id, (excess, relative) in expected.items():
         p = long_term_care.Projection[point_id]
-        n = p.proj_len()
+        # the cash-flow months, t = 0 ... proj_len() - 2; the last row is the maturity
+        # month and pays nothing, so the counterfactual must not reach it either
+        n = p.proj_len() - 1
         correct = sum(p.claims(t, "ANNUITY") for t in range(n))
         re_tested = 0.0
         for t in range(n):
@@ -1482,7 +1488,8 @@ def test_pitfall_the_annuitys_first_instalment_falls_in_the_month_of_certificati
         assert p.ann_count(t) > p.ann_count(t - 1)
     # Deferring the whole schedule by a year - the same 120 instalments, starting at
     # s + 12 - costs about a tenth of the liability and misdates all of it.
-    n, n_a, g_a = p.proj_len(), p.annuity_max_mths(), p.annuity_guar_mths()
+    # the cash-flow months, t = 0 ... proj_len() - 2, the maturity row paying nothing
+    n, n_a, g_a = p.proj_len() - 1, p.annuity_max_mths(), p.annuity_guar_mths()
     deferred = 0.0
     for t in range(n):
         for u in range(0, n_a):
@@ -1883,27 +1890,32 @@ def test_pitfall_the_disclosed_yejeong_wiheomnyul_is_not_this_models_level(kr_lt
     assert math.exp(p.sub65_gradient()) - 1.0 == pytest.approx(0.1300, abs=5e-5)
 
 
-def test_pitfall_proj_len_is_the_last_index_not_a_row_count(kr_ltc_anchor):
-    """``result_cf()`` has 601 rows and the last one is the 90세 계약해당일.
+def test_pitfall_proj_len_is_a_row_count_not_the_last_index(kr_ltc_anchor):
+    """``proj_len()`` counts rows: 601 of them, ``t = 0 ... 600``, the last the 90세 계약해당일.
 
-    A loop to ``range(proj_len())`` silently drops the maturity row and breaks
-    ``check_pols_roll_fwd()`` at the last step, because the maturity is the decrement that
-    closes the roll-forward on that row and nothing else removes the surviving block.
+    The frame is ``range(proj_len())``, so the last index is ``proj_len() - 1`` and the
+    terminal row is the maturity month.  That is why the cash-flow cells guard on
+    ``t >= proj_len() - 1`` while the in-force counts guard on ``t >= proj_len()``: the
+    maturity is the decrement that closes the roll-forward on that row, and nothing else
+    removes the surviving block.  A loop to ``range(proj_len() - 1)`` silently drops it.
     """
     p = kr_ltc_anchor
     n = p.proj_len()
-    assert n == 600
+    assert n == 601
+    assert n == 12 * (p.term_age() - p.issue_age()) + 1
     df = p.result_cf()
-    assert len(df) == n + 1
-    assert df.index[-1] == n
+    assert len(df) == n
+    assert df.index[-1] == n - 1
     assert df.index.name == "t"
-    assert list(df.index) == list(range(n + 1))
-    assert p.pols_if(n) > 0.0
-    assert p.pols_death(n) == 0.0 and p.pols_lapse(n) == 0.0 and p.pols_void(n) == 0.0
-    assert p.pols_maturity(n) == p.pols_if(n)
-    assert p.check_pols_roll_fwd_resid(n) == pytest.approx(0.0, abs=1e-12)
+    assert list(df.index) == list(range(n))
+    assert p.pols_if(n - 1) > 0.0
+    assert (p.pols_death(n - 1) == 0.0 and p.pols_lapse(n - 1) == 0.0
+            and p.pols_void(n - 1) == 0.0)
+    assert p.pols_maturity(n - 1) == p.pols_if(n - 1)
+    assert p.check_pols_roll_fwd_resid(n - 1) == pytest.approx(0.0, abs=1e-12)
     # the residual at the last row is nil only because the maturity term is in it
-    assert p.pols_if(n) - p.pols_if(n + 1) == pytest.approx(p.pols_maturity(n), abs=1e-12)
+    assert p.pols_if(n - 1) - p.pols_if(n) == pytest.approx(
+        p.pols_maturity(n - 1), abs=1e-12)
 
 
 # ---------------------------------------------------------------------------
@@ -1950,7 +1962,7 @@ def test_check_nesting_holds_the_compartments_and_the_dementia_counter(long_term
     for point_id in long_term_care.Data.model_point_table().index:
         p = long_term_care.Projection[point_id]
         assert p.check_nesting() is True, point_id
-        for t in (0, 1, 12, p.proj_len() // 2, p.proj_len()):
+        for t in (0, 1, 12, p.proj_len() // 2, p.proj_len() - 1):
             assert p.check_nesting_resid(t) >= -1e-12, (point_id, t)
             assert min(p.pols_healthy(t), p.pols_light(t), p.pols_care(t)) >= 0.0
             assert p.pols_dem(t) <= p.pols_if(t) + 1e-12
@@ -2019,7 +2031,7 @@ def test_result_pols_publishes_the_decrement_view(kr_ltc_anchor):
     p = kr_ltc_anchor
     df = p.result_pols()
     assert df.index.name == "t"
-    assert len(df) == p.proj_len() + 1
+    assert len(df) == p.proj_len()
     assert list(df.columns) == [
         "pols_if", "pols_healthy", "pols_light", "pols_care", "pols_dem",
         "pols_entry_light", "pols_entry_care", "pols_death", "pols_lapse",
@@ -2172,7 +2184,7 @@ def test_sensitivity_the_boheom_gigan_truncation_at_90(tmp_path):
         try:
             q = model.Projection[1]
             assert q.term_age() == term
-            assert q.proj_len() == 12 * (term - 40)
+            assert q.proj_len() == 12 * (term - 40) + 1
             totals = lifetime(q)
             assert totals["claims_lump"] / 268065.6927 - 1.0 == pytest.approx(
                 lump_move, abs=0.001), term
@@ -2352,7 +2364,7 @@ def test_the_dementia_rider_is_off_at_the_anchor_and_on_at_points_5_and_8(
             q.dementia_amount() * q.pols_entry_dem(15), rel=FULL)
         assert sum(q.claims(t, "DEMENTIA") for t in range(q.proj_len())) > 0.0
         # the first-event counter never outgrows the block it rides on
-        for t in (16, 200, q.proj_len()):
+        for t in (16, 200, q.proj_len() - 1):
             assert 0.0 <= q.pols_dem(t) <= q.pols_if(t) + 1e-12
         assert q.check_nesting() is True
         # driven off the sourced dementia prevalence, not off the certification rate
@@ -2459,9 +2471,9 @@ def test_the_annuity_cap_of_point_7_is_sixty_months(long_term_care):
     """Model point 7 halves the ceiling, and the ledger's window halves with it.
 
     The cap is the composite's protection against a post-onset mortality basis nobody
-    publishes, and it binds jointly with maturity: nothing is paid at or after
-    ``proj_len()``.  Carrying a second ceiling in the shipped table is what stops the
-    120-month window being hard-coded into the ledger.
+    publishes, and it binds jointly with maturity: nothing is paid on the maturity row
+    ``t = proj_len() - 1`` or after it.  Carrying a second ceiling in the shipped table is
+    what stops the 120-month window being hard-coded into the ledger.
     """
     p7 = long_term_care.Projection[7]
     assert p7.annuity_max_mths() == 60

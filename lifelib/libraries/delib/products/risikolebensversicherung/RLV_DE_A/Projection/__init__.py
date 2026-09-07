@@ -696,17 +696,16 @@ def sum_uplift(t):
     """u(t): the cumulative *Nachversicherungsgarantie* multiplier on the sum insured.
 
     From *nvg_schedule.csv*, keyed on the contractual **1-based** ``policy_year``, so the
-    lookup is at ``t + 1``.  It is **0.0 for t < 0** so that the tranche decomposition in
-    :func:`benefit_paid_pp` has ``u(-1) = 0`` and the base cover appears as the first
-    tranche with ``delta u(0) = u(0)``.  1.0 throughout on ``keine``, the base run.
+    lookup is at ``t + 1``.  Defined for ``t >= 0`` only: the tranche decomposition in
+    :func:`benefit_paid_pp` takes the base cover as its first tranche with
+    ``delta u(0) = u(0)`` and never reaches below ``t = 0``.  1.0 throughout on ``keine``,
+    the base run.
 
     Take-up is exogenous: no event list, cap, exercise window or age limit was established
     from any document, so an increase is supplied as a schedule rather than modelled as a
     decision.  What the model does *with* an increase is not exogenous — see
     :func:`benefit_paid_pp`.
     """
-    if t < 0:
-        return 0.0
     return float(data.nvg_schedule().at[                             # noqa: F821
         (nvg_schedule_id(), int(t) + 1), "sum_uplift"])
 
@@ -738,7 +737,8 @@ def benefit_paid_pp(t):
     *Nachversicherungsgarantie* increment granted at the start of period ``t_j``
     carries **its own** window ``t_j <= t < t_j + suicide_years`` [unverified — German AVB
     practice is understood to restart the clock for the increment, and no statutory
-    treatment was established].  With ``delta u(s) = u(s) - u(s - 1)`` and ``u(-1) = 0``::
+    treatment was established].  With ``delta u(s) = u(s) - u(s - 1)`` for ``s > 0`` and
+    ``delta u(0) = u(0)``::
 
         benefit_paid_pp(t) = S0 f(t) sum_s delta u(s) sigma_s(t)
         sigma_s(t) = 1 - suicide_share  if t < s + suicide_years, else 1
@@ -751,7 +751,7 @@ def benefit_paid_pp(t):
     """
     total = 0.0
     for s in range(t + 1):
-        delta = sum_uplift(s) - sum_uplift(s - 1)
+        delta = sum_uplift(s) - (sum_uplift(s - 1) if s > 0 else 0.0)
         if delta == 0.0:
             continue
         sigma = (1.0 - suicide_share) if t < s + suicide_years else 1.0  # noqa: F821
@@ -793,7 +793,8 @@ def lapse_rate_base(t):
 def shock_lapse_factor(t):
     """M_shock(t): the premium-shock lapse multiplier; 1.0 in the base run.
 
-    ``1 + shock_lapse_lambda max(0, prem_paid_pp(t)/prem_paid_pp(t-1) - 1)``.  The
+    ``1 + shock_lapse_lambda max(0, prem_paid_pp(t)/prem_paid_pp(t-1) - 1)``, and 1.0 at
+    ``t = 0``, where there is no preceding bill.  The
     product's distinctive behavioural risk is that the insurer can raise the customer's
     bill without changing a guaranteed term, simply by cutting the *Beitragsverrechnung*:
     no § 163 procedure, no *Treuhänder* and no policyholder remedy, because no guaranteed
@@ -804,7 +805,7 @@ def shock_lapse_factor(t):
     """
     if shock_lapse_lambda == 0.0:                                    # noqa: F821
         return 1.0
-    prev = prem_paid_pp(t - 1)
+    prev = prem_paid_pp(t - 1) if t > 0 else 0.0
     if prev <= 0.0:
         return 1.0
     return 1.0 + shock_lapse_lambda * max(                           # noqa: F821

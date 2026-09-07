@@ -268,7 +268,9 @@ l_H(T) = l_S(T, ·) = 0):
    inception-annuity equivalence in Active-lives valuation.) Whole-month
    convention **[std]**.
 7. **Expenses (EOM):** `EXP(t) = e_m(y) × [l_H(t) + l_S(t)] + ec_m(y) × l_S(t)`.
-8. **Discount** cash flows at v(t), the factor to EOM t, and accumulate.
+8. **Discount** the EOM flows (benefit, expenses) at v(t), the factor to time
+   t + 1, and the BOM premium at v(t − 1) (= 1 at t = 0), and accumulate. The
+   reference implementation discounts benefit outgo only.
 
 Net cash flow (insurer perspective): `CF(t) = PREM(t) − BEN(t) − EXP(t)`. Death and
 lapse generate no payment (no death benefit, no surrender value [S4] [S5] [S7]; the
@@ -346,9 +348,11 @@ policyholder-behavior study was retrieved.
   waived, benefit in payment) **[std]**.
 - **Premium-shock lapse [std].** With escalation on, premiums rise 1.5 × j each
   year; the model multiplies lapse by
-  `M_esc(y) = 1 + 2 × max(0, 1.5 × j(y) − 0.05)` in anniversary years (lapse
-  response to premium increases above 5%; e.g. j at the 10% cap gives 1.5 × 0.10 =
-  15% premium growth and M_esc = 1.2). Contract anchor: sampled insurers let
+  `M_esc(y) = 1 + 2 × max(0, 1.5 × j(y) − 0.05)` (lapse response to premium
+  increases above 5%; e.g. j at the 10% cap gives 1.5 × 0.10 = 15% premium growth
+  and M_esc = 1.2) in **every month** of policy years y ≥ 2, i.e. from t = 12
+  onwards; M_esc = 1 throughout policy year 1 (t = 0 … 11), before the first
+  escalation uplift. Contract anchor: sampled insurers let
   policyholders decline escalation increases, with the option lapsing after
   consecutive refusals — two consecutive cancelled increases end the option in one
   contract [S5]; declining three consecutive increases removes it in another [S11];
@@ -379,21 +383,24 @@ s_S = 0.958325 × 0.997465 = 0.955895; v = 1.03^(−1/12) = 0.997540.
 
 The rows are the first three months of the frame, t = 0, 1, 2; the l_S column is the
 population at BOM t, the benefit is paid at EOM t on the survivors, and v(t) = v^(t+1)
-discounts it from time t + 1.
+discounts it from time t + 1. The survivor column is the step-6 quantity
+`Σ_z l_S(t, z) s_S(z) = l_S(t+1) − n(t)`; on this cell there are no active lives, so
+n(t) = 0 and the column is simply l_S(t+1).
 
 | Month t | l_S(t) at BOM | Recoveries ρ_m × l_S(t) | Deaths (1−ρ_m) q_S_m × l_S(t) | l_S(t+1) = l_S(t) × s_S | Benefit 2,000 × l_S(t+1) | v(t) = v^(t+1) | PV |
 |---|---|---|---|---|---|---|---|
 | 0 | 1.000000 | 0.041675 | 0.002429 | 0.955895 | 1,911.79 | 0.997540 | 1,907.09 |
 | 1 | 0.955895 | 0.039837 | 0.002322 | 0.913735 | 1,827.47 | 0.995086 | 1,818.49 |
-| 2 | 0.913735 | 0.038080 | 0.002220 | 0.873434 | 1,746.87 | 0.992638 | 1,734.01 |
+| 2 | 0.913735 | 0.038080 | 0.002220 | 0.873435 | 1,746.87 | 0.992638 | 1,734.01 |
 
 Three-month PV of benefit outgo: £5,459.59 per claim in payment. Trace, month t = 0:
 survival s_S = (1 − 0.041675) × (1 − 0.002535) = 0.955895; expected benefit paid at
 EOM 0 = 2,000 × 0.955895 = £1,911.79 (in-arrears convention: exits during the month
 receive nothing under the whole-month simplification **[std]**; contractually they
 would receive a daily pro-rated amount [S1] [S3] [S10]); PV = 1,911.79 × 0.997540 =
-£1,907.09. Claim expense follows the same survival column at ec_m = 300/12 = £25.00
-per month **[std]**. On the active-lives side, the same conventions give first-month
+£1,907.09. Claim expense is ec_m = 300/12 = £25.00 per month **[std]** on the BOM
+in-claim population l_S(t) (step 7), not on the survival column: £25.00 in month
+t = 0. On the active-lives side, the same conventions give first-month
 (t = 0) premium income P × l_H(0) = £35.00 and expected new inceptions
 n(0) ≈ ι_m(35) = 1 − (1 − 0.0013)^(1/12) = 0.000108 — each seeding this in-claim
 recursion at z = 1, as l_S(1, 1).

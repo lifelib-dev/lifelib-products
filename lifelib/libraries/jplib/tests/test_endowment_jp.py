@@ -742,7 +742,7 @@ def test_the_policyholder_decrement_stops_at_the_premium_term(endowment):
     The premium-paying periods are ``t = 0 .. m - 1``.  Every waiver trigger is
     conditional on the event falling during 保険料払込期間, so the composite treats the
     contract as continuing through the 契約者's death by succession.  Carrying the
-    decrement through periods 17 to 21 would terminate a further 0.8380% of policies and
+    decrement through periods 17 to 21 would terminate a further 0.8367% of policies and
     delete their maturity benefits — in exactly the years in which 86% of this cell's
     receipts fall.
     """
@@ -1356,7 +1356,9 @@ def test_there_are_no_tail_states(endowment):
         assert p.pols_wv_at(n - 1, "AFT_DECR") == 0.0
         assert p.pols_if_pay(n) == 0.0 and p.pols_wv(n) == 0.0
         assert p.pols_if_pay(0) == 1.0            # the frame opens on one whole policy
-        assert p.pols_if_pay(-1) == 0.0           # and there is nothing before it
+        # The guard, not a row: the frame starts at t = 0, and pols_if_pay is documented
+        # to return zero outside 0 .. proj_len() - 1.  No formula ever reads t = -1.
+        assert p.pols_if_pay(-1) == 0.0
 
 
 def test_the_short_premium_term_point_stops_collecting_at_m(endowment):

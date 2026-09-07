@@ -14,10 +14,12 @@ Two indices run through these assertions and they are not the same index.  ``t``
 **month**, 0-based: ``t = 0`` is the first projected month, month ``t`` runs from time
 ``t`` to time ``t + 1``, and the frame is ``range(proj_len())``.  ``k`` is a **time
 point**, ``k = 0`` at the start date, and it is what the state cells take --
-``lives_if(k, life)``, ``cum_annuity_pp(k, kind)``, ``vp_balance(k)``,
-``rpi_index(k)``.  So the annuitant who dies in month 16 is alive at time 16 and dead at
-time 17, and the closing state of month ``t`` is read at ``k = t + 1``.  Where a test
-loops over time points its loop variable is spelled ``k``.
+``lives_if(k, life)``, ``cum_annuity_pp(k, kind)``, ``vp_balance(k)``.  So the annuitant
+who dies in month 16 is alive at time 16 and dead at time 17, and the closing state of
+month ``t`` is read at ``k = t + 1``.  Where a test loops over time points its loop
+variable is spelled ``k``.  ``rpi_index(a)`` and ``rpi_peak(a)`` take a third index, an
+**anniversary count** with one step per policy year, so ``rpi_index(1)`` is one *year*
+in; that argument is spelled ``a``.
 
 Beyond the worked example this module asserts the product facts the notes call out as
 modelling pitfalls, because each is a way an implementation can look right and be wrong:
@@ -146,7 +148,7 @@ def test_no_annuitant_payment_in_the_death_month_or_after(uk_pa_scenario):
     p = uk_pa_scenario
     assert p.claims(16, "PROP") == 0.0
     assert p.annuity_pp(17) * p.payment_factor(17) == 0.0
-    assert all(p.payment_factor(t) == 0.0 for t in (17, 20, 23, 100))
+    assert all(p.payment_factor(t) == 0.0 for t in (17, 20, 23, 99))
 
 
 def test_the_cumulative_schedule_takes_two_forms(uk_pa_scenario):
@@ -383,16 +385,26 @@ def test_the_advance_value_protection_netting_rule(pension_annuity):
     """
     model = mx.read_model(MODEL_DIR, name="PA_UK_S_advvp")
     try:
-        # Point 5 is single-life monthly in advance; give it value protection.
-        model.Data.model_point_table()            # warm the reader
+        # Point 5 is single-life monthly in advance; it ships without value protection,
+        # so give it some in the in-memory table before anything is evaluated.
+        tbl = model.Data.model_point_table()      # warm the reader, then edit its frame
+        tbl.loc[5, "vp_pct"] = 0.50
         proj = model.Projection[5]
         assert proj.payment_timing() == "advance"
+        assert proj.vp_pct() == 0.50              # the edit reached the projection
+        # The balance is a time-point cells and every month is a payment month at
+        # m = 12, so it strictly decreases: G(30) carries one instalment more than G(29).
+        assert proj.is_payment_mth(29) is True
+        assert proj.vp_balance(30) < proj.vp_balance(29)
         # The rule is expressed in claims(t, "VP"): in an advance payment month the
         # balance is read at time t + 1, after that month's payment, not at time t.
-        # Every month is a payment month at m = 12, so the balance used is always the
-        # post-payment one.
-        assert proj.is_payment_mth(29) is True
-        assert proj.vp_balance(30) <= proj.vp_balance(29)
+        # Reading it at t would overstate the lump sum by one instalment.
+        density = proj.pols_if_init() * proj.lives_death(29, 1)
+        assert density > 0.0
+        assert proj.claims(29, "VP") == pytest.approx(
+            density * proj.vp_balance(30), rel=1e-14)
+        assert proj.claims(29, "VP") != pytest.approx(
+            density * proj.vp_balance(29), rel=1e-14)
     finally:
         model.close()
 

@@ -610,8 +610,8 @@ Income-positive, per policy issued:
           − c_r × P × l_p(t) × 1{1 <= t < m}              (renewal commission)
           − (E0 + c0 × P) × 1{t = 0}                      (acquisition)
 
-`net_cf` is income-positive throughout; where an outgo-positive orientation is printed it
-survives as `liability_cf`, with `net_cf(t) == −liability_cf(t)`. The result columns are
+`net_cf` is income-positive throughout, so there is no outgo-positive `liability_cf`
+companion on this product: one stream, one sign, one name. The result columns are
 `premiums`, `claims_death`, `claims_staged`, `claims_maturity`, `claims_lapse`,
 `claims_ph_death`, `expenses`, `claim_expenses`, `commissions` and `net_cf`, with `pols_if`
 first, then `pols_if_pay` and `pols_wv` beside it. `claims_staged` and `claims_ph_death` are

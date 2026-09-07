@@ -306,7 +306,8 @@ the rate from 0 to 0.20 to 0.40 moves lifetime claims by only +0.54% / 0 / -0.52
 adding it *without* re-deriving the incidence raises them 0.84% and puts the lives in the
 wrong state. And :func:`inc_rate_partial` **can go negative at extreme ages**, where the
 prevalence slope flattens while excess mortality does not; both rates are floored at
-zero **[std]**, which binds only above age 105 on the shipped basis.
+zero **[std]**, which never binds on the female base cell — :func:`inc_rate_partial` is
+still 0.0040 at attained age 109 — and binds at attained age 109 on the male basis.
 
 .. rubric:: Two indexations, two ledgers
 
@@ -829,9 +830,13 @@ def cum_prem_pp(t):
     premium it ever paid refunded, and this is what is refunded.  It is a per-policy
     amount and not a population-weighted one, which is why :func:`refunds_carence`
     multiplies it by the terminating population rather than adding to it.
+
+    The base case sits at ``t = 0``, the first projected month, and nothing is ever
+    indexed below it: :func:`premium_due` is true at ``t = 0`` on every payment mode, so
+    the first instalment always falls on the first row.
     """
-    if t < 0:
-        return 0.0
+    if t <= 0:
+        return premium_mth_pp(0) * premium_months() if t == 0 else 0.0
     paid = premium_mth_pp(t) * premium_months() if premium_due(t) else 0.0
     return cum_prem_pp(t - 1) + paid
 
@@ -1152,8 +1157,9 @@ def inc_rate_partial(t):
     refinements: dropping them understates incidence, because a rising prevalence is
     being fed against a dependent population that is simultaneously draining at its own
     excess mortality.  Floored at zero **[std]** — the identity can go negative at
-    extreme ages, where the prevalence slope flattens while excess mortality does not,
-    which on the shipped basis binds only above age 105.
+    extreme ages, where the prevalence slope flattens while excess mortality does not.
+    The floor never binds on the female base cell — the rate is still 0.0040 at attained
+    age 109 — and binds at attained age 109 on the male basis.
     """
     pi_p, pi_t = prev_partial(t), prev_total(t)
     pi_h = 1.0 - pi_p - pi_t
@@ -1213,6 +1219,12 @@ def pols_auto(t):
     claim terminates the membership rather than deferring it, so the blocked lives leave
     the in-force ledger exactly as the covered ones do and ``auto(t + 1)`` does not
     depend on ``S(t)`` at all.
+
+    The guard lets the ledger answer **one month past the frame**, at ``t = proj_len()``,
+    which is deliberate and not a leftover of a 1-based index: the population identity
+    :func:`check_states` holds at the **start** of a month, and the last projected month,
+    ``t = proj_len() - 1``, has one.  :func:`pols_red` and :func:`red_rente_value` carry
+    the same guard for the same reason.
     """
     if t < 0 or t > proj_len():
         return 0.0
@@ -1368,6 +1380,9 @@ def pols_red(t):
 
     **This is the ledger a naive model omits**, and omitting it turns every lapse from
     the qualifying period into a full release of liability.
+
+    Answers one month past the frame, at ``t = proj_len()``, for the reason given under
+    :func:`pols_auto`.
     """
     if t < 0 or t > proj_len():
         return 0.0
@@ -1392,6 +1407,9 @@ def red_rente_value(t):
     The frozen amount is never revalued **before** claim; it becomes a *rente en service*
     and starts moving at ``reval_rente`` only once it is in payment, which happens on the
     fourth vector of :func:`dep_cohorts`.
+
+    Answers one month past the frame, at ``t = proj_len()``, for the reason given under
+    :func:`pols_auto`.
     """
     if t < 0 or t > proj_len():
         return 0.0

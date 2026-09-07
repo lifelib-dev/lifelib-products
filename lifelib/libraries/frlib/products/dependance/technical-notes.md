@@ -354,7 +354,8 @@ dropping `mu_T · pi_T` understates `i_T`. **`i_A` and `i_T` are not independent
 raising the aggravation force lowers the direct-to-*totale* incidence, because the stock of
 *totale* lives is pinned by the assumed prevalence. And **`i_P` can go negative at extreme
 ages**, where the prevalence slope flattens while excess mortality does not; the model
-floors both rates at zero **[std]**, which binds only above age 110 on this basis.
+floors both rates at zero **[std]**, which does not bind on the female basis inside the
+projection and binds at attained age 109 on the male one.
 
 Resulting annual forces on the [std] basis, and the monthly probabilities
 `i_m = 1 − exp(−i/12)`:
@@ -467,12 +468,16 @@ premiums have been paid):
 
     surv_r(t) = red(t) x (1 - q_H(t))
     n_Tr(t)   = surv_r(t) x i_Tm(t)
-    red(t+1)  = surv_r(t) - n_Tr(t) + lapse(t) x 1{t >= 12 x reduction_qualifying_years - 1}
+    red(t+1)  = surv_r(t) - n_Tr(t) + lapse(t) x 1{(t + 1) >= 12 x reduction_qualifying_years}
 
 with the entering *rente* frozen at `G(y) × c(n)` at the reduction date and never revalued
 before claim [S7 §4.6]. Implementations that cannot carry a per-reduction-cohort amount may
 track `red` and the probability-weighted mean frozen *rente* instead; that is exact in
 expectation because incidence does not depend on the amount.
+
+The indicator counts the instalments already paid: with `t` 0-based, the lapse at the end of
+month `t` becomes a *mise en réduction* once `t + 1` premiums are behind it, so the first
+such month is `t = 12 × 8 − 1 = 95` on the base cell.
 
 From the two dependent states, per duration cohort `z`, with the aggravated lives paid the
 **partial** *rente* for the month in which they aggravate — the higher amount takes effect

@@ -181,7 +181,7 @@ paying cohort into an APL state, and only the failure of the continuation test
 
 terminates them — the value at the anniversary that closes period ``t`` against the
 balance at its start. The test runs on the **suppressed** value, which is the whole
-point: on the anchor cell a default at ``t = 1`` (policy year 2) buys one advance at
+point: on the anchor cell a default at ``s = 1`` (policy year 2) buys one advance at
 ``k = 0.70`` and thirteen at ``k = 1.00``. Running it on ``V`` overstates the headroom by
 more than a decade of in force.
 
@@ -204,8 +204,8 @@ base run reproduces the worked example while the machinery stays visible and tes
   in policy years 1 to ``m`` — ``0 <= t <= m - 1`` — on model points 5 and 6, which run
   it on the suppressed and the ordinary form respectively.
 - **契約者貸付**, ``pol_loan_util`` at 0, with model point 7 drawing the contractual
-  maximum at the fortieth anniversary and reaching the loan-excess termination at
-  ``t = 52``, policy year 53, with the benefit floored at zero. The 9/10-while-paying and
+  maximum at the anniversary ``d = 39``, which opens policy year 40, and reaching the
+  loan-excess termination at ``t = 52``, policy year 53, with the benefit floored at zero. The 9/10-while-paying and
   8/10-once-paid-up caps are contractual and always applied.
 - **Dynamic surrender on the 払戻率**, ``w_dyn = w min(3, max(1, 1 + beta (CV/cumprem -
   1)))`` with ``lapse_beta = 2``, off unless the model point sets ``dyn_lapse``. Model

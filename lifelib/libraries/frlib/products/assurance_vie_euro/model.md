@@ -52,10 +52,20 @@ benefits are struck on — is the balance at its end.
 
 - `age(t) = issue_age + duration_init + t`, so `age(0)` is the attained age at the
   valuation date;
-- `duration(t) = duration_init + t + 1`, the contract's completed years at the **31
-  December** of year `t`, which is the 1-based contractual duration the lapse table and
-  the eight-year tax threshold are keyed to. The contractual policy year, where prose
-  needs one, is `t + 1`.
+- `policy_year(t) = duration_init + t + 1`, the contract's **1-based contractual policy
+  year** — equally its completed policy years at the **31 December** of year `t`, which is
+  when the surrender decrement acts — and the label the lapse table and the eight-year tax
+  threshold are keyed to. This is the library's 1-based `policy_year`, not its 0-based
+  `duration`; the 0-based elapsed count is `duration_init + t`, and for a cell issued at
+  the valuation date `policy_year(t)` is simply `t + 1`.
+
+**One published column is offset by a year, deliberately.** In `result_pb()` the `ppb_pp`
+column is `ppb_pp(t + 1)`, the PPB at the **end** of year `t` — the notes' Table 1 header
+is literally `ppb_pp(t+1)`, because the reader wants the balance the year's dotation and
+release leave behind — while `av_pp` and `guar_floor_pp` on the same row are the
+start-of-year `av_pp(t)` and `guar_floor_pp(t)`. So the anchor cell's `t = 0` row shows
+`ppb_pp` 3,637.06 even though the cells `ppb_pp(0)` is the 4,000.00 carried in. The
+`result_pb()` docstring says the same thing.
 
 The PPB vintage index `v` runs on the same 0-based clock: a dotation in year `t` opens
 vintage `t`, and the opening balance's `ppb_vintages_init` vintages sit at
@@ -66,7 +76,7 @@ eight.
 `fin_rate_table.csv`, which now runs 0 to 39, and `wd_start_year` in
 `model_point_table.csv`, which is a projection-year index (5 on the anchor cell, 98 as
 the "never" sentinel, 0 on the drawdown cell). Two are *not*: `policy_duration` in
-`lapse_table.csv` is the contractual completed duration 1 … 9 that `duration(t)` maps
+`lapse_table.csv` is the contractual 1-based label 1 … 9 that `policy_year(t)` maps
 onto, and `duration_init` in `model_point_table.csv` is an elapsed count, 0-based by
 nature. `mort_table.csv` is keyed by attained age.
 
@@ -211,9 +221,9 @@ lapse_rate(t)    = min(lapse_cap, lapse_rate_base(t) + lapse_dyn_add(t))
 **The duration-8 step** in `lapse_rate_base` is the tax threshold, not a behavioural
 guess: the reduced 7.5% rate and the EUR 4,600 / EUR 9,200 annual allowance both switch on
 at eight years [R10] [R11] [REG-R40]. It is indexed by
-`duration(t) = duration_init + t + 1`, the **contract's** completed years at the year end,
-not by `t` — the anchor cell is five years in, so the step falls at `t = 2`, and a model
-indexing by `t` would put it five years late.
+`policy_year(t) = duration_init + t + 1`, the **contract's** 1-based policy year, not by
+`t` — the anchor cell is five years in, so the step falls at `t = 2`, and a model indexing
+by `t` would put it five years late.
 
 **The dynamic term** is additive in the gap between the market reference rate and the
 `taux servi`, one-sided, and capped. The sign of the relationship is observed rather than
@@ -305,7 +315,7 @@ read once per model rather than once per model point; a test counts the reads.
 |---|---|---|
 | `model_point_table.csv` | Eleven model points. **Point 1 is the notes' worked example** — M55 at duration 5, EUR 100,000, EUR 2,400 p.a. in, EUR 3,000 p.a. out from `t = 5`, 0.60% charge, 2.30% target, EUR 4,000 PPB in eight vintages. Point 2 is the same cell on the `garantie brute`; 3 targets 2.90%; 4 is paid up; 5 opens with no PPB; 6 carries four vintages instead of eight; 7 and 8 are the low and high scenarios; 9 is a small new-business cell with a 0.50% entry charge and a 0.80% management charge; 10 is a drawdown cell, F82, EUR 250,000 with EUR 6,000 a year out; 11 is point 1 carrying 250 policies | anchor cell **[std]**, product-spec "Anchor model cell"; variants from the notes' pitfalls and sensitivities |
 | `mort_table.csv` | Base annual mortality by sex and age 18–120, capped at 1 | **[std]** Makeham proxy shaped like French population mortality [REG-R24], anchored so that the 80% best-estimate factor gives the notes' `q(M, 60) = 0.0060` placeholder exactly — *not* TH00-02/TF00-02 or TGH05/TGF05, which are cited [REG-R23] and not redistributed |
-| `lapse_table.csv` | Base annual surrender by completed policy duration: 4% at 1–7, **8% at 8**, 5% at 9+. `policy_duration` is the contractual 1-based duration `duration(t)` maps onto, not the frame's `t` | levels **[std]**, no public French euro-fund lapse experience [R15]; the duration-8 step is the tax threshold [R10] [R11] [REG-R40] |
+| `lapse_table.csv` | Base annual surrender by completed policy duration: 4% at 1–7, **8% at 8**, 5% at 9+. `policy_duration` is the contractual 1-based label `policy_year(t)` maps onto, not the frame's `t` | levels **[std]**, no public French euro-fund lapse experience [R15]; the duration-8 step is the tax threshold [R10] [R11] [REG-R40] |
 | `fin_rate_table.csv` | Three scenarios × 40 years of `r_fin` and `ref_rate`, keyed by the model's own 0-based `t`, 0 to 39. Base 3.30% → 2.30% over twelve years then level; low 3.00% → 1.40%; high 4.00% level. `ref_rate` 2.20% throughout | **[std]** scenarios anchored to the ACPR's `taux de rendement de l'actif` — 2.8% in 2025, half of undertakings between 2.4% and 3.3% [R14] — and the 2025 average Livret A [R14]. Not forecasts |
 
 Note what is **not** in a file. The crediting rule that actually drives this product — the
@@ -387,7 +397,7 @@ Most names carry across from the notes unchanged; these needed care.
 | `Q_v(t)` | `ppb_vintage_pp(t, v)`, `ppb_vintage_release_pp(t, v)`, `ppb_ledger_pp(t)` | The ledger, the FIFO draw and the ledger's total — the last computed independently of `ppb_pp` so that the check compares two things |
 | `W(t)` | `withdrawals_pp(t)` / `withdrawals(t)` | An owner election; `wd_prog_pp()` is the *elected* amount before the start year and the balance cap apply |
 | `claims(t, "LAPSE")` | `claims_lapse` | Named for the `kind` argument that produces it, and for the library's `pols_lapse` decrement — not `claims_surr` |
-| `d + t + 1` | `duration(t)` | The contract's completed years at the year end, which is what the tax threshold and the lapse table are keyed to — a 1-based contractual duration, distinct from `t`, the 0-based projection year |
+| `d + t + 1` | `policy_year(t)` | The contract's 1-based contractual policy year — equally its completed years at the year end — which is what the tax threshold and the lapse table are keyed to. The library's 1-based `policy_year`, not its 0-based `duration` (`duration_init + t`), and distinct from `t`, the 0-based projection year |
 
 ## Standardizations used
 

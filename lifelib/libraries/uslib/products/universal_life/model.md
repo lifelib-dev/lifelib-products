@@ -57,15 +57,18 @@ and the order of those two inside the month changes the answer. Compare `Term_US
 where `t` counts **years**, because every decrement in that product is on an annual
 cycle and there is no account value requiring monthiversary processing.
 
-State variables are **closing balances** of month `t`, as in `CashValue_SE`: `av_pp(t)`,
-`loan_bal_pp(t)`, `cum_prem_pp(t)` and `sum_assured_at(t)` are the values at the end of
-the month. Their opening values — the notes' `AV(t−1)`, `L(t−1)`, `CumPrem(t−1)` — are
+`av_pp(t)`, `loan_bal_pp(t)` and `cum_prem_pp(t)` are **closing balances** of month `t`,
+as in `CashValue_SE`: the values at the end of the month. Their opening values — the
+notes' `AV(t−1)`, `L(t−1)`, `CumPrem(t−1)` — are
 `av_pp_at(t, "BEF_PREM")`, `loan_bal_pp_bom(t)` and `cum_prem_pp(t − 1)`, which at
 `t = 0` are the model point's `av_pp_init()`, `loan_bal_init()` and zero. So the
 worked example's `AV(0)` is the closing balance of the issue month, $101.80, and the
 opening balance of the issue month is read through the `"BEF_PREM"` timing; nothing is
-indexed at `t = −1`, and `av_pp` itself has no base case. `pols_if(t)` is the count in
-force at the start of month `t`, `pols_if(0) = pols_if_init()`.
+indexed at `t = −1`, and `av_pp` itself has no base case. `sum_assured_at(t)` is not a
+closing balance: it is the face amount in force **during** month `t`, after that month's
+BOM withdrawal reduction — the face that `db_pp(t)`, `net_amt_at_risk(t)` and `units(t)`
+are measured on. `pols_if(t)` is the count in force at the start of month `t`,
+`pols_if(0) = pols_if_init()`.
 
 The processing order inside month `t` is the notes' own:
 

@@ -436,7 +436,7 @@ with a PRIIPs performance scenario**.
 
 ### The *Beitragsverrechnung*
 
-    B(t) = prem_pp_base · d(t)   if t < 12·prem_term_y, t < pup_month, (t − t₀) mod prem_mode_months = 0
+    B(t) = prem_pp_base · d(t)   if t < 12·prem_term_y, (pup_month > 0 ⇒ t < pup_month), (t − t₀) mod prem_mode_months = 0
          = 0                     otherwise
     d(t) = (1 + dynamik_rate)^(y(t) − 1)                        Beitragsdynamik, 1.0 when off
 
@@ -457,6 +457,10 @@ increment cannot be assumed at inception [R12] [REG-R16]. The bias — the acqui
 dynamic contract is understated — is stated rather than hidden. `β` is charged on the regular
 *Beitrag* only; a *Zuzahlung* pays its own charge and no second one.
 
+`pup_month`, `topup_month` and `wd_month` carry **0 as the never / none sentinel** and not as
+the inception month — `t = 0` is a legal index on the 0-based frame, so the guard has to be
+written out, as it is in `B(t)` above and in `W(t)` below.
+
 ### The unit fund
 
     Δu(t) = A(t) / p_open(t)                                   units bought, at the opening price
@@ -467,7 +471,7 @@ dynamic contract is understated — is stated rather than hidden. `β` is charge
     charge_policy_fee_pp(t) = min( SK, F_BEF_CHARGE(t) − charge_admin_fund_pp(t) )
     F_AFT_CHARGE(t) = F_BEF_CHARGE(t) − charge_admin_fund_pp(t) − charge_policy_fee_pp(t)
 
-    W(t)  = min( wd_amount, F_AFT_CHARGE(t) )   if t = wd_month, else 0
+    W(t)  = min( wd_amount, F_AFT_CHARGE(t) )   if wd_month > 0 and t = wd_month, else 0
     F_AFT_WD(t) = F_AFT_CHARGE(t) − W(t)
 
     K(t)  = max( D(t) − F_AFT_WD(t), 0 )
@@ -528,12 +532,12 @@ composite it is the *Fondsguthaben* exactly, and `claims_lapse` is then the whol
     premiums(t)  = ( B(t) + Z(t) ) · l(t)
     prem_to_av(t)= A(t) · l(t)
     charge_*(t)  = charge_*_pp(t) · l(t)                       for the four unit-side charges
-    expenses(t)  = expense_issue · l(0) · 1{t = 0}
+    expenses(t)  = expense_issue · l(t) · 1{t = 0}
                    + expense_maint_pp(t) · l(t)
                    + expense_claim · pols_death(t)
                    + expense_surr  · pols_lapse(t)
                    + expense_annuitisation · pols_maturity(t)
-    commissions(t) = comm_acq_rate · S · l(0) · 1{t = 0}
+    commissions(t) = comm_acq_rate · S · l(t) · 1{t = 0}
                    + comm_renew_rate · B(t) · l(t)
 
     net_cf(t) = charge_acq(t) + charge_admin_prem(t) + charge_admin_fund(t)
@@ -1058,7 +1062,7 @@ charge is the *Zuzahlungskosten* levied **once on receipt**, 2.50 % x 50,000.00 
 Read against the anchor, that is the whole of what the *Beitragsverrechnung* does. The
 charges are taken **once, at the front**, so `t = 0` carries a `net_cf` of **+1,060.45**
 where the anchor's is -1,966.22: the 3,250.00 withheld at inception more than covers the
-2,204.28 of acquisition cost — 2,000.00 of `commissions` and 204.28 of `expenses`, and there is no sixty-month recovery to wait for. From month 2
+2,204.28 of acquisition cost — 2,000.00 of `commissions` and 204.28 of `expenses`, and there is no sixty-month recovery to wait for. From `t = 1`
 the ledger is nothing but the two fund-based charges running down a fund growing faster than
 they take. The *Fondsguthaben* reaches **93,766.43 EUR** and buys **234.42 EUR** a month at
 the same 25.00 *Rentenfaktor*; the reduction in yield is **1.2320 % p.a.**, a little below

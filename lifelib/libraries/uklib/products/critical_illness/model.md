@@ -206,10 +206,10 @@ file, and the `provenance` column marks which cells came from the notes.
 
 `premium_guarantee = reviewable` turns on a 5-yearly review from the fifth anniversary
 [S3] [S4] — the start of month `t = 60`, so the first bites there, in the month that
-opens the sixth policy year (`reviews_passed(t) = t // 60`). Premiums are constant between reviews and
-multiplied by `1 + ρ_review` at each one; the snapshot is `ρ_review = 0`, so model point
-3 runs identically to point 1 until the Reference moves. Two behavioural responses hang
-off the same switch, both **[std]**:
+opens the sixth policy year (`reviews_passed(t) = t // 60`). Premiums are constant
+between reviews and multiplied by `1 + ρ_review` at each one; the snapshot is
+`ρ_review = 0`, so model point 3 runs identically to point 1 until the Reference moves.
+Two behavioural responses hang off the same switch, both **[std]**:
 
 | Response | Formula | Why |
 |---|---|---|
@@ -286,11 +286,11 @@ paying and non-paying parts, so inventing one would be worse than refusing.
 `tests/test_critical_illness_uk.py` asserts the notes' three-month worked example
 (`t = 0, 1, 2`) to the penny and the in-force column to six decimals, the frame
 (`result_cf()` indexed `0 … proj_len() − 1`, expiry in the last month), the
-combined-decrement arithmetic and
-both overlap pitfalls, the standalone split and its bounded artefact, that the
-non-terminating benefits neither deplete `SA` nor decrement the in-force, the pivot
-interpolation against hand-computed values, the reviewable variant in both positions,
-indexation, the joint decrement, and that a lapse pays nothing.
+combined-decrement arithmetic and both overlap pitfalls, the standalone split and its
+bounded artefact, that the non-terminating benefits neither deplete `SA` nor decrement
+the in-force, the pivot interpolation against hand-computed values, the reviewable
+variant in both positions, indexation, the joint decrement, and that a lapse pays
+nothing.
 
 ```bash
 python -m pytest tests -q

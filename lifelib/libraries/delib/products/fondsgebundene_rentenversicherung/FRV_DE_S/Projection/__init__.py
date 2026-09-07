@@ -1500,8 +1500,9 @@ def prem_to_av(t):
 def charge_acq(t):
     """*Abschluss- und Vertriebskosten* collected in month t, in force.
 
-    Zero for ``t >= 60`` on every model point, and zero at every projected month of an
-    in-force cell that opens past the window.
+    Zero for ``t >= 60`` on every model point but 9, where a *Zuzahlung* books its
+    *Zuzahlungskosten* here — ``charge_acq(120) = 312.63``.  Zero at every projected month
+    of an in-force cell that opens past the window.
     """
     return charge_acq_pp(t) * pols_if(t)
 

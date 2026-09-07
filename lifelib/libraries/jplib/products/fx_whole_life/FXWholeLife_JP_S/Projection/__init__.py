@@ -928,7 +928,7 @@ def special_reserve_pp(t):
     terminating earlier.  The **[std]** reconstruction is a share of the fund's excess
     over its 予定利率 benchmark, ``0.24`` at ten years and ``0.16`` at twenty, fitted to
     the four published amounts — 147 and 527 on the 3.50% column, 302 and 1,120 on the
-    4.00% column — with a worst deviation of 3.0%.
+    4.00% column — with a worst deviation of 3.7%.
 
     On the guaranteed run it is **identically zero**, because the fund and its benchmark
     coincide there, and the published 3.00% column shows (0) at both durations.  A
@@ -1571,9 +1571,9 @@ def check_pols_roll_fwd():
     """True when every policy leaves by a named decrement and none is lost.
 
     The per-month roll-forward closes, ``pols_if(proj_len())`` is zero, and the whole-run
-    decrements sum to the cohort: on the anchor cell ``sum D = 0.211608544`` and
-    ``sum S = 0.788391456``, which is 1.000000000 exactly.  Surrenders take 78.8% of the
-    cohort out against mortality's 21.2%, so this is a lapse-driven liability wearing a
+    decrements sum to the cohort: on the anchor cell ``sum D = 0.209118071`` and
+    ``sum S = 0.790881929``, which is 1.000000000 exactly.  Surrenders take 79.1% of the
+    cohort out against mortality's 20.9%, so this is a lapse-driven liability wearing a
     mortality product's clothes.
     """
     tol = roll_fwd_tol * max(pols_if_init, 1.0)                      # noqa: F821

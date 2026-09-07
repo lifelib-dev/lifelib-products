@@ -1257,8 +1257,9 @@ def surplus_base_pp(t):
 def surplus_credit_pp(t):
     """C(t): the surplus allocated to the contract for policy year t, per policy.
 
-    ``zins_ueberschuss_rate(t) * surplus_base_pp(t)``.  Zero before the frame opens, so that
-    the *Beitragsverrechnung* offset in the first projected year has a defined predecessor.
+    ``zins_ueberschuss_rate(t) * surplus_base_pp(t)``.  Zero before the frame opens - a
+    defensive floor only: no cells reads it there, because :func:`prem_offset_pp` returns zero
+    in the first projected year instead of reaching for a predecessor outside the frame.
 
     What it is applied *to* is decided by :func:`surplus_use`, not here: this cells is the
     amount declared, and the three systems differ in what they do with it.
@@ -1373,7 +1374,8 @@ def prem_offset_pp(t):
     ``min(prem_charged_pp(t), surplus_credit_pp(t - 1))`` under ``beitragsverrechnung`` and
     zero otherwise: **last** year's declared surplus reduces **this** year's premium, floored
     at zero so that a surplus larger than the premium never becomes a payment to the
-    policyholder.
+    policyholder.  In the first projected year there is no last year, so the offset is zero
+    outright rather than reaching for a predecessor outside the frame.
 
     What it reduces is a *Zahlbeitrag*, not a *Bruttobeitrag*: the tariff premium is unchanged
     and the offset is a **discretionary** rebate the insurer may withdraw without invoking
@@ -1381,6 +1383,8 @@ def prem_offset_pp(t):
     :func:`prem_charged_pp` and not on :func:`prem_paid_pp`.
     """
     if surplus_use() != "beitragsverrechnung":
+        return 0.0
+    if t <= t_start():
         return 0.0
     return min(prem_charged_pp(t), surplus_credit_pp(t - 1))
 
@@ -1820,7 +1824,7 @@ def check_pols_roll_fwd_resid(t):
     maturity count that is not exactly the cohort that survived to it.
     """
     r = (pols_if(t) - pols_if(t + 1) - pols_death(t) - pols_lapse(t))
-    if t == proj_len():
+    if t == proj_len() - 1:
         r += pols_maturity(t) - pols_if_at(t, "AFT_MORT")
     return r
 
@@ -1914,7 +1918,9 @@ def check_surplus_roll_fwd_resid(t):
         return (bonus_si_pp(t + 1)
                 - (bonus_si_pp(t)
                    + surplus_credit_pp(t) / pu_single_prem(t + 1)))
-    return prem_offset_pp(t) - min(prem_charged_pp(t), surplus_credit_pp(t - 1))
+    return prem_offset_pp(t) - min(
+        prem_charged_pp(t),
+        surplus_credit_pp(t - 1) if t > t_start() else 0.0)
 
 
 def check_surplus_roll_fwd():

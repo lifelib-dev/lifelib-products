@@ -19,9 +19,9 @@ year of issue, and period ``t`` runs from time ``t`` to time ``t + 1``. :func:`p
 the **number** of projected years — the exclusive end of the frame — so :func:`result_cf`
 covers ``t = 0 .. proj_len() - 1`` in ``proj_len()`` rows, and ``proj_len()`` is ``n + k``
 on the 確定年金 form. The attained 保険年齢 is ``age(t) = x + t``, so ``age(0)`` is the
-契約年齢. A **contractual policy year is the 1-based label** ``t + 1`` — the first policy
-year is ``t = 0`` — and it is derived where the prose needs it, never indexed by: no cells
-here takes a 1-based year.
+契約年齢. A **contractual policy year is the 1-based label** ``t + 1`` — policy year 1 is
+the row ``t = 0`` — and it is derived where the prose needs it, never indexed by: no cells
+here takes a 1-based year, and the docstrings below say "year ``t``" for the index.
 
 Premiums fall at ``t = 0 .. m - 1``; the 保険料積立金 accumulates over ``t = 0 .. n`` where
 ``n = m + d``; the annuity is paid at ``t = n .. n + k - 1``. ``pols_if(t)``
@@ -82,7 +82,7 @@ x + t              age(t)                      Attained age in year t
 (none)             sex()                       Rating factor, M or F
 m                  premium_term_y()            保険料払込期間 in years
 d                  defer_gap_y()               据置期間 in years
-n = m + d          annuitisation_t()           Policy year of the 年金支払開始日
+n = m + d          annuitisation_t()           The t of the 年金支払開始日, first payout year
 (none)             annuity_start_age()         保険年齢 at the 年金支払開始日
 k                  payout_term_y()             確定年金 payment period in years
 g                  guar_term_y()               Guarantee period, life form only
@@ -405,7 +405,10 @@ def rate_new():
 # --- Derived model point quantities ----------------------------------------
 
 def annuitisation_t():
-    """n = m + d: the policy year of the 年金支払開始日.
+    """n = m + d: the ``t`` at which the 年金支払開始日 falls, the first payout year.
+
+    An index, not a label: the 年金支払開始日 is at time ``n``, which opens the row ``t = n``;
+    the contractual policy year running from there is ``n + 1``.
 
     The join between the two contracts this product really is.  Everything switches here:
     the mortality table, the sign of the best-estimate factor, the availability of
@@ -440,10 +443,10 @@ def proj_len():
 
 
 def age(t):
-    """The attained 保険年齢 at the start of policy year t: ``x + t``.
+    """The attained 保険年齢 in year t: ``x + t``, the age at time ``t``.
 
-    ``t`` is 0-based, so ``age(0)`` is the 契約年齢 itself and the contract's first policy
-    year is the row ``t = 0``.
+    ``t`` is 0-based, so ``age(0)`` is the 契約年齢 itself and policy year 1 is the row
+    ``t = 0``.
     """
     return issue_age() + t
 
@@ -497,7 +500,7 @@ def annuitisation_charge():
 
 
 def mort_table_name(t):
-    """Which mortality table applies in policy year t.
+    """Which mortality table applies in year t.
 
     ``death_cover_2018`` in the deferral phase and ``annuity_payout_2007`` from ``t = n``.
     For contracts concluded from 2018-04-01 the standard valuation basis is
@@ -509,7 +512,7 @@ def mort_table_name(t):
 
 
 def mort_be_factor(t):
-    """The best-estimate adjustment to the valuation table in policy year t.
+    """The best-estimate adjustment to the valuation table in year t.
 
     0.85 in the deferral phase and 1.10 from ``t = n`` **[std, new here]**.  Both tables
     are valuation bases carrying a prudential margin, and the margin runs opposite ways:
@@ -546,7 +549,7 @@ def mort_rate_at_age(table, x):
 
 
 def mort_rate_base(t):
-    """The table rate applying in policy year t, before the best-estimate factor."""
+    """The table rate applying in year t, before the best-estimate factor."""
     return mort_rate_at_age(mort_table_name(t), age(t))
 
 
@@ -562,7 +565,7 @@ def mort_rate_pricing(t):
 
 
 def mort_rate(t):
-    """q(t): the best-estimate mortality rate applied to the in-force in policy year t.
+    """q(t): the best-estimate mortality rate applied to the in-force in year t.
 
     The table rate of the phase times :func:`mort_be_factor`, capped at 1.  Two tables, two
     factors, and the factors point opposite ways; see the Space docstring.
@@ -571,7 +574,7 @@ def mort_rate(t):
 
 
 def lapse_rate_base(t):
-    """The [std] table 解約・失効 rate in policy year t, before any dynamic multiplier.
+    """The [std] table 解約・失効 rate in year t, before any dynamic multiplier.
 
     6.0 / 5.0 / 4.5 / 4.0 percent over the first ten policy years — ``t`` = 0, 1, 2 and
     3 … 9, the CSV's ``from_year`` keys being 0-based ``t`` — 3.0% for the rest of
@@ -606,7 +609,7 @@ def lapse_dyn_factor(t):
 
 
 def lapse_rate(t):
-    """w(t): the annual 解約・失効 rate applied at the end of policy year t.
+    """w(t): the annual 解約・失効 rate applied at the end of year t.
 
     The table rate times the dynamic multiplier, capped at 1 — except where the 自動振替貸付
     module is carrying the contract, which suppresses the decrement entirely, and except in
@@ -661,7 +664,7 @@ def av_pp(t):
 
 
 def av_pp_at(t, timing):
-    """The 保険料積立金 per policy at a point inside policy year t.
+    """The 保険料積立金 per policy at a point inside year t.
 
     ``"BEF_PREM"``
         V(t), the start of the year before the premium is credited; the same
@@ -760,7 +763,7 @@ def cv_pp_net(t):
 # --- The loan modules ------------------------------------------------------
 
 def apl_engaged(t):
-    """Whether the 自動振替貸付 is carrying the premium in policy year t; false in the base run.
+    """Whether the 自動振替貸付 is carrying the premium in year t; false in the base run.
 
     True while the module is on, a premium is still due, the 解約返戻金 is at least one
     premium, and the outstanding balance has not yet outgrown the 解約返戻金 [S4].  That last
@@ -815,7 +818,7 @@ def loan_pp(t):
 
 
 def policy_loans(t):
-    """The 契約者貸付 advanced in policy year t, an outflow; zero in the base run.
+    """The 契約者貸付 advanced in year t, an outflow; zero in the base run.
 
     Only the drawdown is a cash flow.  The balance is recovered by deduction from the
     死亡給付金, the 解約返戻金 or the 年金原資, which is where :func:`db_pp_net`,
@@ -829,13 +832,17 @@ def policy_loans(t):
 # --- 契約者配当 ---------------------------------------------------------------
 
 def div_credit_pp(t):
-    """The 契約者配当 declared in policy year t per policy **[std]**; zero in the base run.
+    """The 契約者配当 declared in year t per policy **[std]**; zero in the base run.
 
     ``div_rate`` on the fund at the start of the year.  The composite is a
     5年ごと利差配当 design [S4]; declaring annually on the fund is a **[std]** simplification of
     it, and the declared rate rather than the frequency is what moves the answer.
+
+    The credit declared in year ``t`` is carried to time ``t + 1`` by :func:`div_acc_pp`,
+    so the declaration window is the years ``1 .. n - 1``: year ``n - 1``'s credit is the
+    last one that can reach the 年金原資, which is struck at time ``n``.
     """
-    if t <= 0 or t > annuitisation_t():
+    if t <= 0 or t >= annuitisation_t():
         return 0.0
     return div_rate() * av_pp(t)
 
@@ -973,7 +980,7 @@ def commute_value_pp():
 # --- In-force and decrements -----------------------------------------------
 
 def pols_if(t):
-    """l(t): contracts with an obligation open at the **start** of policy year t.
+    """l(t): contracts with an obligation open at the **start** of year t.
 
     1.0 at ``t = 0``, the frame's first row and the issue instant.  Through the deferral
     phase the notes' recursion
@@ -1002,7 +1009,7 @@ def pols_if(t):
 
 
 def pols_if_at(t, timing):
-    """The number of contracts in force at a point inside policy year t.
+    """The number of contracts in force at a point inside year t.
 
     ``"BEF_DECR"``
         l(t), the start of the year before any decrement; the same number as
@@ -1028,7 +1035,7 @@ def pols_if_at(t, timing):
 
 
 def lives_if(t):
-    """L(t): the probability the annuitant is alive at the start of policy year t.
+    """L(t): the probability the annuitant is alive at the start of year t.
 
     ``L(t+1) = L(t)(1 - q(t))`` **throughout**, on whichever table the phase reads.  It is
     carried separately from :func:`pols_if` because the two measure different things: in
@@ -1044,7 +1051,7 @@ def lives_if(t):
 
 
 def pols_death(t):
-    """D(t): expected deaths in policy year t, taken at the **end** of the year.
+    """D(t): expected deaths in year t, taken at the **end** of the year.
 
     ``l(t) q(t)`` in the deferral phase.  **Zero** inside a certain or guaranteed period,
     where the obligation does not depend on survival; on the 保証期間付終身年金 form after the
@@ -1061,7 +1068,7 @@ def pols_death(t):
 
 
 def pols_lapse(t):
-    """W(t): expected lapses at the end of policy year t, from the survivors of mortality.
+    """W(t): expected lapses at the end of year t, from the survivors of mortality.
 
     ``l(t)(1 - q(t)) w(t)``, and zero from ``t = n - 1``: that year ends on the 年金支払開始日,
     where surrender is no longer available [S2] [S4].  A lapse applied there would remove
@@ -1109,7 +1116,7 @@ def pols_maturity(t):
 # --- Cash flows ------------------------------------------------------------
 
 def premiums(t):
-    """P l(t): premium income at the start of policy year t, an inflow.
+    """P l(t): premium income at the start of year t, an inflow.
 
     Level and guaranteed for the whole 保険料払込期間, and **nothing** after 払込満了 — the
     据置期間 and the payout phase carry no premium at all.  Zero as well once the 自動振替貸付
@@ -1125,7 +1132,7 @@ def premiums(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in policy year t, by kind; the total when kind is omitted.
+    """Benefit outgo in year t, by kind; the total when kind is omitted.
 
     ``"ANNUITY"`` — published as ``claims_annuity`` — is a **living** benefit here: it is
     paid on the annuitant *surviving* to a payment date, never on death.  The same column
@@ -1166,7 +1173,7 @@ def claims(t, kind=None):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^t`` **[std]**, pi = 1%."""
+    """The expense inflation factor in year t: ``(1 + pi)^t`` **[std]**, pi = 1%."""
     return (1.0 + expense_basis("inflation_rate")) ** t
 
 
@@ -1200,7 +1207,7 @@ def expenses(t):
 
 
 def commissions(t):
-    """Commission outgo in policy year t **[std]**.
+    """Commission outgo in year t **[std]**.
 
     40% of the annual premium at ``t = 0``, then 2% of premium income for
     ``t = 1 .. m - 1``, and nothing after 払込満了.  Against a ¥180,000 annual premium this
@@ -1216,7 +1223,7 @@ def commissions(t):
 
 
 def net_cf(t):
-    """CF(t): the net cash flow of policy year t, **income positive**.
+    """CF(t): the net cash flow of year t, **income positive**.
 
     Premiums less annuity instalments, death and surrender benefits, commutation lump
     sums, acquisition and maintenance expense, claim expense, commission and any loan
@@ -1236,7 +1243,7 @@ def net_cf(t):
 # --- Roll-forward and ledger checks ----------------------------------------
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in policy year t; zero everywhere.
+    """The in-force roll-forward residual in year t; zero everywhere.
 
     ``l(t) - l(t+1) - deaths - lapses - commutations - expiries``.  Expiries are non-zero
     only in the year the last 確定年金 instalment is paid, where the survivors neither die
@@ -1248,7 +1255,7 @@ def check_pols_roll_fwd_resid(t):
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected policy year.
+    """True when the in-force roll-forward closes in every projected year.
 
     The library-wide form of a roll-forward check: no argument, one bool over all t.
     :func:`check_pols_roll_fwd_resid` gives the signed residual of the year that failed.
@@ -1258,7 +1265,7 @@ def check_pols_roll_fwd():
 
 
 def check_lives_roll_fwd_resid(t):
-    """The survivorship roll-forward residual in policy year t; zero everywhere.
+    """The survivorship roll-forward residual in year t; zero everywhere.
 
     ``L(t) - L(t+1) - L(t) q(t)``.  Carried separately from the in-force check because the
     two measures decrement differently, and a model that has quietly collapsed them would
@@ -1268,13 +1275,13 @@ def check_lives_roll_fwd_resid(t):
 
 
 def check_lives_roll_fwd():
-    """True when the survivorship roll-forward closes in every projected policy year."""
+    """True when the survivorship roll-forward closes in every projected year."""
     return all(abs(check_lives_roll_fwd_resid(t)) <= roll_fwd_tol               # noqa: F821
                for t in range(0, proj_len()))
 
 
 def check_fund_resid(t):
-    """The 保険料積立金 recursion residual in policy year t; zero over the deferral phase.
+    """The 保険料積立金 recursion residual in year t; zero over the deferral phase.
 
     ``(V(t) + NP(t))(1 + i_d) - q' DB(t+1) - (1 - q') V(t+1)``.  Scaled by the fund, so the
     tolerance means the same thing at every duration.  Zero by definition from ``t = n``,
@@ -1324,7 +1331,7 @@ def check_cv_cap():
 
 
 def check_annuity_total_resid(t):
-    """The guaranteed-instalment residual in policy year t; zero everywhere.
+    """The guaranteed-instalment residual in year t; zero everywhere.
 
     The instalment actually payable per contract less ``B``, over the certain period of the
     確定年金 or the guarantee period of the 保証期間付終身年金.  Zero outside that window.
@@ -1355,7 +1362,7 @@ def check_annuity_total():
 
 
 def check_net_cf_resid(t):
-    """The cash flow ledger residual in policy year t; zero everywhere.
+    """The cash flow ledger residual in year t; zero everywhere.
 
     :func:`net_cf` less the sum of the columns ``result_cf()`` publishes.  It is the check
     that the published statement and the projected total are the same object, which is the
@@ -1430,7 +1437,7 @@ def mort_rate_graduated(table, x):
 
 
 def check_mort_graduation_resid(t):
-    """The shipped-rate residual at the attained age of policy year t; zero everywhere.
+    """The shipped-rate residual at the attained age of year t; zero everywhere.
 
     ``mort_table.csv`` rate less the graduation :func:`mort_rate_graduated` rebuilds from
     the anchors in ``mort_anchor_table.csv``.  Non-zero is not a defect once a licensed or
@@ -1459,7 +1466,7 @@ def check_mort_graduation():
 # --- Results ---------------------------------------------------------------
 
 def result_cf():
-    """Result table of cash flows, indexed by the 0-based policy year t.
+    """Result table of cash flows, indexed by the 0-based year index ``t``.
 
     One row per projected year, ``t = 0 .. proj_len() - 1``, so the frame has ``proj_len()``
     rows and opens on the year of issue.

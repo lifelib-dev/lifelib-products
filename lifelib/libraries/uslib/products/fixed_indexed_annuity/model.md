@@ -158,6 +158,16 @@ Two files carry a column literally called `t`, and they do not mean the same thi
 | `model_point_table.csv` | `entry_year` | **unchanged** | An elapsed count — seven *completed* contract years — which is already 0-based and is therefore also the index of the model point's first projected period |
 | `mort_table.csv`, `payout_rate_table.csv` | `age`, `age_lo`/`age_hi` | **unchanged** | Attained ages, not time indices |
 
+The `provenance` column of every shipped CSV is left exactly as it was, so three strings
+still quote the pre-conversion notation: `rate_scenario.csv`'s "`R(8) = 5,450/5,000 − 1 =
+9.00%`" is the model's `R(7)` under the period reading of `R` (the file's own key `t = 8`
+is an anniversary and is correctly unshifted); and `model_point_table.csv`'s "`AV(0) =
+107,000` against `BB(0) = 100,000`" (point 2) and "`BB(7) = 121,000`" (point 3) name what
+are now the *opening* states `AV(0)(0)`, `BB(0)(0)` and `BB(0)(7)` — the values the
+relabelled tests assert as `av_pp_at(0, "BEF_INV")`, `benefit_base_pp_at(0, "BEF_ROLLUP")`
+and `benefit_base_pp_at(7, "BEF_ROLLUP")`. The figures are unchanged and still correct; only
+the symbols are in the old notation.
+
 Mortality is the one table worth a second look. The notes prescribe the 2012 IAM Basic /
 2012 IAR generational family with Projection Scale G2, `q_x^(2012+n) = q_x^(2012) ×
 (1 − G2_x)^n`, with rounding applied from the 2012 period rate each time and never by

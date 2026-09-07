@@ -63,7 +63,7 @@ x + t                      age(t, life)                    Attained age in year 
 (none)                     sex(life), smoker(life)         Rating factors of each life
 n                          policy_term()                   Term in years
 N = 12n                    term_mths()                     Term in months
-t = 0..n-1                 proj_len()                      Number of years; last t is n-1
+(none)                     proj_len()                      Number of years; last t is n-1
 (none)                     proj_start()                    First projected t
 (none)                     duration_inforce()              Years elapsed at projection start
 (none)                     duration(t)                     Completed years since entry, t
@@ -140,10 +140,9 @@ prints the two as separate columns.
 ``pols_maturity`` has no symbol in the notes at all. The notes give the roll-forward as
 ``l(t+1) = l(t)(1-q)(1-w)`` and, separately, terminate everything at the end of
 ``t = n - 1``. Those do not reconcile in the final year: its survivors neither die nor
-lapse — their
-cover simply runs out — so without a term for that the roll-forward appears to lose
-lives with no cause. :func:`pols_maturity` names it, zero in every year but the last,
-so that
+lapse — their cover simply runs out — so without a term for that the roll-forward
+appears to lose lives with no cause. :func:`pols_maturity` names it, zero in every year
+but the last, so that
 
     pols_if(t) - pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 
@@ -157,9 +156,9 @@ paid is nil.
 This is the structural difference from ``Term_US_A``, and the notes list importing a
 U.S.-style post-level-term tail as a modelling pitfall. A UK term policy expires at the
 end of ``t = n - 1``: there is no jump to ART rates, no post-level-term shock lapse, no
-mortality
-deterioration factor and no conversion option, so none of those cells exist here. What
-does exist and has no U.S. analogue is the family income benefit ledger below.
+mortality deterioration factor and no conversion option, so none of those cells exist
+here. What does exist and has no U.S. analogue is the family income benefit ledger
+below.
 
 .. rubric:: Terminal illness is not an extra benefit
 
@@ -190,9 +189,8 @@ twelve in each later year, so
 
 and the whole stream for a death in year ``s`` totals ``6 + 12(n - 1 - s)`` instalments,
 which is exactly ``N - k`` at the mid-year death month ``k = 12s + 6``.
-:func:`check_fib_ledger` rebuilds
-the year's instalment count from the death vector, with no reference to the recursion,
-and asserts the two agree in every projected year.
+:func:`check_fib_ledger` rebuilds the year's instalment count from the death vector,
+with no reference to the recursion, and asserts the two agree in every projected year.
 
 The optional commutation module replaces a proportion :func:`fib_commute_rate` of the
 streams with a lump sum, the present value of the remaining instalments at the
@@ -967,9 +965,9 @@ def net_cf(t):
 
     The shape to expect on guaranteed term is a deep new business strain in the first
     year (``t = 0``), upfront commission and acquisition expense against a single
-    year's premium, then
-    thin positive margins: the level premium prefunds rising mortality cost, so early
-    lapses forfeit margin to the insurer and late ones relieve it.
+    year's premium, then thin positive margins: the level premium prefunds rising
+    mortality cost, so early lapses forfeit margin to the insurer and late ones
+    relieve it.
     """
     return (premiums(t) - claims(t) - claim_expenses(t)
             - expenses(t) - commissions(t))
@@ -980,9 +978,8 @@ def check_pols_roll_fwd_resid(t):
 
     ``pols_if(t) - pols_if(t+1) - deaths - lapses - expiries``.  Expiries are non-zero
     only in the final year ``t = proj_len() - 1``, where the survivors neither die nor
-    lapse: their
-    cover runs out.  Without that term the last year appears to lose lives with no
-    cause.
+    lapse: their cover runs out.  Without that term the last year appears to lose lives
+    with no cause.
     """
     return (pols_if(t) - pols_if(t + 1)
             - pols_death(t) - pols_lapse(t) - pols_maturity(t))

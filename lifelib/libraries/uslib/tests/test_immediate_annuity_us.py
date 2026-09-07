@@ -5,7 +5,8 @@ products/immediate_annuity/technical-notes.md ("Worked example"), which projects
 anchor cell: P = $100,000, B(1) = $6,000 p.a. (inst = $500.00/month), joint form with
 primary male ANB 65 and joint annuitant female ANB 62, monthly (m = 12) in arrears,
 3% compound COLA, survivor percentage 2/3, no certain period, and the scenario "the
-joint (secondary) annuitant dies during month 14; the primary survives throughout".
+joint (secondary) annuitant dies during the fourteenth month, ``t = 13``; the primary
+survives throughout".
 The notes run the two survivor-reduction triggers side by side -- this is the death that
 distinguishes them -- so the table has two cash flow columns, reproduced here by model
 point 1 (trig = either) and model point 2 (trig = primary).
@@ -105,10 +106,10 @@ def test_income_levels_escalate_at_each_anniversary(anchor):
 def test_trigger_split_at_the_month_of_death(anchor, anchor_primary):
     """The notes' trace: L = 0.6667 on `either`, L = 1 on `primary`, at the payment point.
 
-    "The death is decremented at the end of month 14, so the scenario values at the
-    payment point are l1 = 1, l2 = 0."  The death is in the model's month ``t = 13``,
-    whose payment point is the time point 14 -- and ``lives_if`` is indexed by time, so
-    the notes' l(14) is ``lives_if(14, .)`` here.
+    "The death is decremented at the end of month 13, i.e. at time 14, so the scenario
+    values at the payment point ``p = t + 1 = 14`` are l1(14) = 1, l2(14) = 0."  The
+    death is in the model's month ``t = 13``, whose payment point is the time point 14 --
+    and ``lives_if`` is indexed by time, so the notes' l(14) is ``lives_if(14, .)`` here.
     """
     assert anchor.lives_if(14, 1) == 1.0
     assert anchor.lives_if(14, 2) == 0.0
@@ -174,12 +175,12 @@ def test_a_certain_period_defers_the_reduction_to_its_end(immediate_annuity):
         assert p.annuity_payments(t) == pytest.approx(515.00, abs=CENT)
     assert p.annuity_payments(24) == pytest.approx(530.45, abs=CENT)
     # B(10) = 6,000 x 1.03^9 = 7,828.6391 => 652.39 a month, still unreduced at t = 119.
-    full_120 = 6000.0 * 1.03 ** 9 / 12
-    assert p.annuity_payments(119) == pytest.approx(full_120, abs=CENT)
+    full_at_119 = 6000.0 * 1.03 ** 9 / 12
+    assert p.annuity_payments(119) == pytest.approx(full_at_119, abs=CENT)
     # t = 120: the floor is gone, the reduction to delta finally applies.
-    full_121 = 6000.0 * 1.03 ** 10 / 12
+    full_at_120 = 6000.0 * 1.03 ** 10 / 12
     assert p.certain_floor(120) == 0.0
-    assert p.annuity_payments(120) == pytest.approx(full_121 * 2 / 3, abs=CENT)
+    assert p.annuity_payments(120) == pytest.approx(full_at_120 * 2 / 3, abs=CENT)
 
 
 def test_cash_refund_lump_sum(immediate_annuity):
@@ -307,8 +308,9 @@ def test_pitfall_survival_measurement_timing(immediate_annuity):
 def test_advance_survival_is_the_period_start_at_every_frequency(immediate_annuity):
     """The same pitfall away from m = 12, where the notes' two statements disagree.
 
-    The notes put an advance instalment "at the start of month 12(k-1)/m + 1" but write
-    the survival point as ``t - 12/m``.  The second is measured from the *arrears* month
+    The notes put an advance instalment in the months with ``t mod (12/m) = 0``
+    (``t = 0, 3, 6, ...`` at m = 4) but write the survival point as ``t + 1 - 12/m``.
+    The second is measured from the *arrears* month
     of the same instalment, one payment period later; indexed by the month the advance
     instalment falls in, as ``is_payment_mth`` does, the survival point is the **start**
     of that month at every frequency.  The two readings coincide only at m = 12.
@@ -316,8 +318,9 @@ def test_advance_survival_is_the_period_start_at_every_frequency(immediate_annui
     Model point 14 is quarterly in advance, single male 65, dying in the third month,
     ``t = 2``.  The second instalment falls at the start of month 3, by which time the
     life is dead, so the contract pays 1,500.00 in year one and nothing after.  Reading
-    ``t - 12/m`` literally would measure survival at time 0 and pay it in full --
-    3,000.00 in year one, to a life the projection has already recorded as dead.
+    ``t + 1 - 12/m`` literally would measure survival at time 1, two months early, and
+    pay it in full -- 3,000.00 in year one, to a life the projection has already
+    recorded as dead.
     """
     q = immediate_annuity.Projection[14]
     assert q.payment_freq() == 4 and q.payment_timing() == "advance"
@@ -334,12 +337,13 @@ def test_advance_survival_is_the_period_start_at_every_frequency(immediate_annui
 
 
 def test_pitfall_refund_balance_timing(immediate_annuity):
-    """"G must net instalments *paid before death* on arrears (G(t-1)), but an advance
-    instalment paid at the **start** of the death month has been paid -- use G(t) there
-    or the cash refund is overstated by one instalment."
+    """"G must net instalments *paid before death* on arrears (G(t), the balance at the
+    time month t opens), but an advance instalment paid at the **start** of the death
+    month has been paid -- use G(t+1) there or the cash refund is overstated by one
+    instalment."
 
-    With ``G`` indexed by time the same rule reads ``G(t)`` on arrears and ``G(t + 1)``
-    on advance; the death is in month ``t = 13``.
+    ``G`` is indexed by time, so ``cum_annuity_pp(t)`` on arrears and
+    ``cum_annuity_pp(t + 1)`` on advance; the death is in month ``t = 13``.
     """
     arrears, advance = immediate_annuity.Projection[6], immediate_annuity.Projection[11]
     assert arrears.claim_pp(13, "REFUND") == pytest.approx(93485.00, abs=CENT)
@@ -576,7 +580,8 @@ def test_certain_only_expense_stops_with_the_last_payment(immediate_annuity):
     """The maintenance expense runs "while any payment obligation remains".
 
     On ``certain_only`` the notes set L(t) = 0, so the contract's last instalment falls
-    at n_eff and nothing is owed afterwards -- but their IF(t) = max(C, l_alive) formula
+    in month ``n_eff - 1`` and nothing is owed afterwards -- ``n_eff`` is a count of
+    months -- but their IF(t) = max(C, l_alive(t+1)) formula
     is written with the life-contingent forms in mind and ``l_alive`` stays positive for
     the annuitant's remaining lifetime.  Read literally it accrues 1,539.83 of expense
     over the 540 months after the contract ended.  ``pols_if`` follows the prose.

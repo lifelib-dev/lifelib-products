@@ -479,7 +479,8 @@ def test_pitfall_02_two_premium_streams_are_projected_not_one(de_bu_anchor):
     p = de_bu_anchor
     df = p.result_cf()
     assert "premiums" in df.columns and "surplus_credit" in df.columns
-    assert p.check_prem_split() is True and p.check_prem_split_resid(240) == 0.0
+    assert p.check_prem_split() is True
+    assert p.check_prem_split_resid(240) == pytest.approx(0.0, abs=1e-9)
     gross, credit = df["premiums"].sum(), df["surplus_credit"].sum()
     assert credit / gross == pytest.approx(0.30, rel=1e-14)
     assert gross / (gross - credit) - 1.0 == pytest.approx(0.428571428571, abs=5e-12)
@@ -970,7 +971,13 @@ def test_docstrings_describe_the_current_structure(berufsunfaehigkeit):
 
 
 def test_the_multi_state_vocabulary_is_present(berufsunfaehigkeit):
-    """Names Pflege_DE_S and frlib's Dep_FR_S share must mean the same thing here."""
+    """The multi-state chassis names must all be present and mean the chassis thing.
+
+    The cohort-vector half (``pols_dis_dur``, ``rente_pay_pp``, ``pols_runoff_slot``,
+    ``pols_recovery``) is shared with frlib's ``Dep_FR_S``; ``Pflege_DE_S`` shares the
+    surrounding vocabulary (``pols_prem``, ``pols_if_at``, ``check_states``) but indexes
+    its ledgers by *Pflegegrad* rather than by claim duration.
+    """
     shared = {
         "model_point", "proj_len", "age", "pols_if", "pols_if_at", "pols_if_init",
         "pols_actv", "pols_dis", "pols_dis_dur", "pols_runoff", "pols_runoff_slot",

@@ -264,11 +264,12 @@ curve, so the reference table is **[std]** and is reconciled to it explicitly:
 | Annual lapse `w(t)` **[std]** | 9% | 7% | 6% | 5.5% | 5% |
 
 `lapse_table.csv` is keyed by the **contractual, 1-based** policy year, so `lapse_rate(t)`
-reads it at `t + 1` and carries the last row forward. The simple mean over the first ten years is 5.75% and the in-force-weighted mean 5.94%,
-both a little above 5.6% — the expected direction, since the industry figure is dominated
-by long-duration in-force sum assured while this is an early-duration protection curve. The
-level is anchored; the **shape** is a convention with no Japanese published evidence behind
-it. Lapse pays nothing: there is no 解約返戻金 [S1].
+reads it at `t + 1` and carries the last row forward. The simple mean over the first ten
+years is 5.75% and the in-force-weighted mean 5.94%, both a little above 5.6% — the
+expected direction, since the industry figure is dominated by long-duration in-force sum
+assured while this is an early-duration protection curve. The level is anchored; the
+**shape** is a convention with no Japanese published evidence behind it. Lapse pays
+nothing: there is no 解約返戻金 [S1].
 
 **Renewal decline.** At each 更新 boundary a proportion `d` of survivors leave rather than
 accept the repriced contract. This decrement has **no `uklib` analogue** and it is large:
@@ -325,7 +326,7 @@ enters the model only through `P_a`; crediting it against `e(t)` counts it twice
 | `l(t)` | in-force probability at the start of year t; `l(0) = 1` | `pols_if` |
 | `D(t)` | expected claims in year t = `l(t) × q(t)` | `pols_death` |
 | `E0`, `e(t)` | acquisition expense; maintenance `4,000 × 1.01^t` per policy | `expense_acq`, `expenses` |
-| `c0`, `c_r` | initial commission `0.50 × P_a(1)`; renewal rate 0.05 | `commissions` |
+| `c0`, `c_r` | initial commission `0.50 × P_a(k = 1)`, the first term's annualized premium (`prem_pp(0)`); renewal rate 0.05 | `commissions` |
 | `ec` | claim expense per claim, ¥30,000 | `expense_claim` |
 | `CF(t)` | net cash flow of year t (+ inflow) | `net_cf` |
 
@@ -684,9 +685,10 @@ In rough order of leverage:
 5. **Selective lapsation across renewals.** Renewal takes no 告知 [S1] [S4] [S8] [S12], so
    the anti-selection is structural and repeats four times on this cell. Base run
    `lambda = 0` understates late-duration claims by construction.
-6. **Early-duration lapse against front-loaded acquisition cost.** ¥20,844 of outgo at `t = 0`
-   against ¥11,688 of premium on the same `t = 0` row makes the first three lapse rates decide how long the
-   strain takes to recover. No Japanese clawback evidence exists in the sources.
+6. **Early-duration lapse against front-loaded acquisition cost.** ¥20,844 of outgo at
+   `t = 0` against ¥11,688 of premium on the same `t = 0` row makes the first three lapse
+   rates decide how long the strain takes to recover. No Japanese clawback evidence exists
+   in the sources.
 7. **Expense inflation on small premiums, and the age basis.** ¥4,000 p.a. of maintenance
    against ¥11,688 of premium is a third of the first-term load, so the 1.0% **[std]**
    inflation rate is a poor one to leave unexamined; and the 満年齢 / 保険年齢 mismatch [S1]
@@ -734,7 +736,7 @@ Known modeling pitfalls:
 - **A failed first renewal premium is an expiry, not a lapse.** Where the first premium of
   the renewed contract goes unpaid through grace, the renewal is treated as never having
   happened and the contract terminates at the **original** expiry rather than being 解除
-  [S1] [S7]. Those lives must not appear in force in year `t + 1` collecting the renewed
+  [S1] [S7]. Those lives must not appear in force at `t + 1` collecting the renewed
   premium, and must not be counted as a mid-term lapse of a term that never began.
 - **The living-needs cap is per insured, aggregated across contracts** — not per contract
   [S1] [S7] [S8] [S12]. Inside the composite's ¥1,000,000–¥30,000,000 envelope it is

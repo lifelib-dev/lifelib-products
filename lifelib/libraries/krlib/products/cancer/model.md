@@ -41,7 +41,7 @@ Cancer_KR_S - am boheom (cancer insurance), KRW, monthly grid, man nai
 model point 1: KR-CA-0001 - M40, bi-gaengsin (non-renewable)
   cover to man nai 100, 20-year pay, mijigeuphyeong (no surrender value while paying),
   sum insured KRW 30,000,000
-  premium = KRW 45,000/month   frame = 721 months (t = 0 .. 720)   myeonchaek = 3 m   gamaek = 12 m
+  premium = KRW 45,000/month   frame = 721 rows (t = 0 .. 720)   myeonchaek = 3 m   gamaek = 12 m
   tiers: gohaek 100% top-up / ilban 100% / soaek 60% / yusa 20% of the sum insured
   modules: diag=1 hosp=1 surg=1 treat=1   waiver = cancer_diag
   pyojun haeyak gongjeaek (standard surrender charge cap) = KRW 585,000
@@ -724,9 +724,8 @@ with no death benefit and the account floor binding; `risk_prem_pp` excluding th
 LAPSE lines; nothing paid at expiry; the ten `claims_*` splits with no `claims` column;
 rounded lines not re-adding and `commissions(0) = 323,999.9999999999`; `proj_len()` as the
 row count rather than the last index; log-linear against linear interpolation; the [std]
-incidence rows above 80
-carrying 22.6% of the diagnosis benefit; 부활 re-running the 90 days; and not reusing
-`Medical_KR_S`'s machinery.
+incidence rows above 80 carrying 22.6% of the diagnosis benefit; 부활 re-running the 90
+days; and not reusing `Medical_KR_S`'s machinery.
 
 Beyond those: all **ten** `check_*` identities on all **ten** model points, each optional
 module in both positions of its switch, the `result_cf()` column vocabulary, the CSVs'

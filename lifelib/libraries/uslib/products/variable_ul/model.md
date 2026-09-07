@@ -230,7 +230,7 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 | `AV_{t+1}`, `D_{t+1}`, `LA_{t+1}` | `av_pp(t)`, `loan_bal_pp(t)`, `la_pp(t)` | The notes index end-of-month balances with `t+1`; the cells are the closing balances of month `t`. Their death claim `DB_t^EOM − D_{t+1}` is two quantities of the *same* month. The opening values `AV_t`, `D_t`, `LA_t` are `av_pp_at(t, "BEF_PREM")`, `loan_bal_pp_at(t, "BEF_PREM")`, `la_pp_at(t, "BEF_PREM")` |
 | `CSV_t = AV − SC − D` | `ncsv_pp(t)` | The chassis calls the debt-net figure `ncsv_pp`; `csv_pp` is the `AV − SC` intermediate |
 | `m` (M&E rate) and `m` (policy month) | `me_rate_ann` and the pricing path's `m` argument | The notes reuse the letter. The pricing path's `m` is 0-based from issue, `m = duration_mth(t)` |
-| `l_t` | `pols_if(t)` | Both are start-of-month, so they coincide and `pols_if(0) = l_0 = pols_if_init()` — unlike `UL_US_S`, whose notes put `l(t)` at end of month |
+| `l_t` | `pols_if(t)` | Both are start-of-month, so they coincide and `pols_if(0) = l_0 = pols_if_init()` — and, since the 0-based conversion, the same is true of `UL_US_S`, whose `l(t)` is also the start-of-month probability |
 | `c_t` per $1,000 NAAR/month | `coi_rate(t)` | Not comparable with `CashValue_SE.coi_rate`, a rate per unit of account value |
 | `U` | `units()` — **no `t`** | Charges are on `F₀`, not the current face |
 | `MD_t` non-COI part | `maint_fee_pp(t)` | Income. `expenses(t)` is the insurer's own outgo, and the two must never be confused |

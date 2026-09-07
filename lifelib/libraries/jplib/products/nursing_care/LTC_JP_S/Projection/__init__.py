@@ -584,9 +584,11 @@ def policy_year(t):
 
     The **contractual, 1-based label**, derived from the 0-based index and never the
     index itself: month ``t = 0`` sits in policy year 1 and ``t = 12`` opens policy
-    year 2.  It exists because two schedules are written in contractual policy years —
-    the ``policy_year`` key of *lapse_table.csv*, read by :func:`lapse_rate`, and the
-    renewal commission that starts in policy year 2 (:func:`commissions`).
+    year 2.  It exists because one schedule is keyed by that label and must be looked up
+    through it: the ``policy_year`` key of *lapse_table.csv*, read by :func:`lapse_rate`.
+    The contract's other policy-year boundary — the renewal commission that starts in
+    policy year 2 — is written directly on the 0-based index as ``t >= 12``
+    (:func:`commissions`), which is the same condition as ``policy_year(t) >= 2``.
     """
     return t // 12 + 1
 

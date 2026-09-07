@@ -229,10 +229,10 @@ implemented** and would make the floor bind at every duration.
 
 .. rubric:: Beitragsfreistellung is an election, not a decrement
 
-*Beitragsfreistellung* is a **deterministic election** at ``pup_year`` rather than a rate: a
-scalar per-policy account cannot carry two sub-populations with different *Deckungskapital*,
-and no source establishes a rate. Both statutory branches are implemented and both are
-exercised:
+*Beitragsfreistellung* is a **deterministic election** in the contractual policy year
+``pup_year`` — row ``t = pup_year - 1`` — rather than a rate: a scalar per-policy account
+cannot carry two sub-populations with different *Deckungskapital*, and no source establishes
+a rate. Both statutory branches are implemented and both are exercised:
 
 - **Conversion** (model point 7). ``prem_pp(t) = 0`` from the paid-up row, the *Deckungskapital*
   is **reset to** ``pup_value_pp()`` — the § 165 rule that the paid-up benefit is computed on
@@ -256,8 +256,11 @@ receiving row's point of view.
 
 A *Beitragsfreistellung* is not a lapse. The paid-up contract keeps its guarantee vintage and
 its guaranteed *Rentenfaktor* and pays a reduced benefit; the surrendered one is gone for
-cash. On point 7 ``pols_if`` is unbroken through the paid-up row and
-``claims_lapse(pup_year - 1)`` is zero.
+cash. On point 7 ``pols_if`` is unbroken through the paid-up row and the conversion itself
+moves no policy: ``pols_lapse(pup_year - 2)`` is the ordinary duration-9 table rate of 3,5 %
+and not 1. What is **not** true is that surrender ceases: a *beitragsfrei* contract keeps its
+§ 168 VVG *Kündigung* right, so ``claims_lapse(pup_year - 1)`` is 764,12 € on point 7 and
+stays positive from the paid-up row on.
 
 .. rubric:: The Rentenbeginn
 

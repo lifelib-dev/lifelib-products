@@ -1044,7 +1044,8 @@ def pv_benefits():
 def annuity_dis():
     """a_dis: the disabled-life annuity factor per £1 a month of amount payable.
 
-    ``pv_benefits() / AP(1)``, the amount payable at ``t = 0`` (policy year 1), which on
+    ``pv_benefits() / AP(y = 1)`` - i.e. ``amount_payable_pp(0)``, the amount payable in
+    policy year 1, which contains month ``t = 0`` - which on
     an ``in_claim`` cell run on the ``exit`` basis is
     the notes' ``a_dis(a0, z0)`` exactly: the expected present value of the escalating
     benefit until recovery, death or expiry, truncated at the policy end date.  On an

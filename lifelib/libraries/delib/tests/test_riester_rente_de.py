@@ -6,8 +6,8 @@ rather than a scenario: an in-force *klassische Riester-Rentenversicherung* -- a
 Altersvorsorgevertrag under the AltZertG, Schicht 2 -- at the 1 January 2027 valuation
 date.  The saver is female (reporting only: the tariff, the decrements and the
 *Rentenfaktor* are unisex); the contract was concluded at attained age 47 on 1 January 2024
-and has run three complete contract years, so ``age(0) = 50``, ``duration(0) = 4`` and
-``calendar_year(0) = 2027``.  *Rentenbeginn* is 67, the *Rechnungszins* 0,25 %, the
+and has run three complete contract years, so ``age(0) = 50``, ``duration(0) = 3`` -- the
+0-based count, i.e. contract year 4 -- and ``calendar_year(0) = 2027``.  *Rentenbeginn* is 67, the *Rechnungszins* 0,25 %, the
 *Beitragssumme* 33 600,00 EUR; the contribution form is ``mindest`` at
 ``contrib_ratio = 1.00``, with no unsubsidised second pool and no biometric rider; the
 earnings path is ``grow2`` from 42 000,00 EUR and the entitlement path ``k1_2010`` -- one
@@ -888,12 +888,12 @@ def test_the_acquisition_charge_is_spread_over_five_contract_years(riester_rente
     """Equal in contract years 1 to 5 and zero afterwards, on the **contract** clock.
 
     The anchor is in force at duration 3, so the first two projected periods, t = 0 and t = 1,
-    are contract years 4 and 5 and carry 168,00 EUR each.  Model point 2 is the same contract
+    have ``duration(t) = 3`` and ``4`` -- contract years 4 and 5 -- and carry 168,00 EUR each.  Model point 2 is the same contract
     from its own inception and carries the charge at t = 0 to 4 instead.
     """
     p = de_riester_anchor
     assert p.duration_init() == 3
-    assert [p.duration(t) for t in (0, 1, 2)] == [4, 5, 6]
+    assert [p.duration(t) for t in (0, 1, 2)] == [3, 4, 5]
     assert p.acq_charge_pp(0) == p.acq_charge_pp(1) == approx(168.00, abs=CENT)
     assert all(p.acq_charge_pp(t) == 0.0 for t in (2, 3, 9, 16))
     assert p.prem_to_av_pp(2) - p.prem_to_av_pp(1) == approx(488.90, abs=CENT)
@@ -913,7 +913,7 @@ def test_the_acquisition_charge_survives_beitragsfreistellung(riester_rente):
     Stopping the charge would hide the mechanic this model point exists to show.
     """
     p = riester_rente.Projection[10]
-    assert p.bfs_year() == 3 and p.duration(3) == 5
+    assert p.bfs_year() == 3 and p.duration(3) == 4
     assert p.acq_charge_pp(3) == approx(168.00, abs=CENT)
     assert p.eigenbeitrag_pp(3) == 0.0
     assert p.zulage_pp(3) == approx(175.00, abs=CENT)
@@ -1235,7 +1235,7 @@ def test_the_model_point_is_read_and_sex_reaches_no_rate(riester_rente, de_riest
     p = de_riester_anchor
     assert p.sex() == "F"
     assert p.issue_age() == 47 and p.duration_init() == 3
-    assert p.age(0) == 50 and p.calendar_year(0) == 2027 and p.duration(0) == 4
+    assert p.age(0) == 50 and p.calendar_year(0) == 2027 and p.duration(0) == 3
     assert p.rentenbeginn_age() == 67 and p.t_conv() == 17
     assert p.proj_len() == 110 - 50 + 1
     male = riester_rente.Projection[7]

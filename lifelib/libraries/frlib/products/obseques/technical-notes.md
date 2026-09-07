@@ -334,7 +334,7 @@ Footnotes:
 
 ## Cash flow components and recursions
 
-### Notation (defined once, used throughout; shared with `product-spec.md`)
+### Notation (defined once, used throughout; `product-spec.md` states the same mechanics with a 1-based contractual month label, t_spec = t + 1)
 
 | Symbol | Meaning | Cells name |
 |---|---|---|

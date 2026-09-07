@@ -844,7 +844,7 @@ def test_the_in_force_roll_forward_closes_and_every_contract_leaves(kr_va_anchor
     assert horizon == pytest.approx(8.245005547570906e-08, abs=INFORCE)
     assert deaths + lapses + horizon == pytest.approx(1.0, abs=1e-10)
     assert a.pols_if(a.proj_len()) == 0.0
-    assert a.pols_maturity(a.proj_len() - 2) == 0.0
+    assert a.pols_maturity(a.proj_len() - 2) == 0.0   # the month before the horizon, t = 958
 
 
 def test_the_account_recursion_closes_at_every_month(kr_va_anchor):
@@ -853,13 +853,17 @@ def test_the_account_recursion_closes_at_every_month(kr_va_anchor):
     The de-risking does not appear in the identity because it conserves the total: it moves
     money between funds and not out of the account, so a de-risking written as a net
     transfer rather than a reallocation breaks this and nothing else.
+
+    ``t = 0`` is included: its opening balance is nil, and it is the row that carries the
+    single premium, the 계약체결비용 and the whole first month's charge stack.
     """
     a = kr_va_anchor
     assert a.check_av_roll_fwd() is True
-    for t in (1, 3, 84, 120, 204, 216, 239, 240):
+    for t in (0, 1, 3, 84, 120, 204, 216, 239, 240):
         assert abs(a.check_av_roll_fwd_resid(t)) <= 1e-8 * max(1.0, abs(a.av_pp(t)))
-    for t in (1, 3, 120, 204):
-        expected = (a.av_pp(t - 1) + a.prem_to_av_pp(t) - a.mth_deduct_pp(t)
+    for t in (0, 1, 3, 120, 204):
+        opening = a.av_pp(t - 1) if t > 0 else 0.0
+        expected = (opening + a.prem_to_av_pp(t) - a.mth_deduct_pp(t)
                     - a.wd_pp(t) + a.inv_income_pp(t) - a.mgmt_fee_pp(t))
         assert a.av_pp(t) == pytest.approx(expected, abs=1e-6)
     assert a.av_pp(240) == 0.0

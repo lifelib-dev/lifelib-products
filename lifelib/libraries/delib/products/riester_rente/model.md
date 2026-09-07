@@ -313,7 +313,7 @@ placed on one side or the other of that line, and this is where it landed.
 | `zulage_schedule.csv` | `t` | The model's own index; values run **0 … 59** | `zulage_entitlement_pp(t)` reads the row at `t` directly, so the key *is* the frame's `t` |
 | `income_schedule.csv` | `t` | The model's own index; values run **0 … 59** | `income_ref(t)` reads the row at `t − 1`, the previous period, and `income_init` supplies `t = 0`; the key is still the frame's `t`, offset by the calendar lag inside the formula |
 | `surplus_scenario.csv` | `t` | The model's own index; values run **0 … 89** | `decl_rate(t)` reads the row at `t` directly |
-| `lapse_table.csv` | `duration` | **Unchanged, 1 … 60** | It is a contractual **contract-year band**, not the frame's `t`. The projection maps into it with `duration(t) = duration_init() + t + 1`, which is 4 on the anchor's first period exactly as before |
+| `lapse_table.csv` | `duration` | **Unchanged, 1 … 60** | It is a contractual **contract-year band**, not the frame's `t`. The projection maps into it with `duration(t) + 1 = duration_init() + t + 1`, which is 4 on the anchor's first period exactly as before; the cells `duration(t)` is itself the 0-based count of completed contract years, as in `Basis_DE_A` and `KLV_DE_A` |
 | `mort_table_accum.csv`, `annuity_mort_table.csv` | `age` | Unchanged | Attained age, not a time index |
 | `freq_loading.csv` | `prem_freq` | Unchanged | Not a time index |
 | `model_point_table.csv` | `duration_init` | **Unchanged** | An elapsed count of completed contract years, 0-based by nature |

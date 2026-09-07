@@ -143,9 +143,9 @@ either pays PTIA after 70 or stops paying death before 85.
 At the first month where `cover_itt` is 0, any claim in payment is **moved** into healthy
 at the beginning of the month and before any transition. `pols_itt_transfer(t)` and
 `pols_ipt_transfer(t)` are that movement — 0.009266 and 0.013982 of a policy at `t = 216`
-on the anchor cell, the month the insured turns 70. The mass is moved, not deleted: those lives are alive, still death
-covered and still paying, and deleting them would break `check_states()` and destroy cover
-they still hold.
+on the anchor cell, the month the insured turns 70. The mass is moved, not deleted: those
+lives are alive, still death covered and still paying, and deleting them would break
+`check_states()` and destroy cover they still hold.
 
 **The premium does not fall when the cover shrinks.** The rate is *nivelé* [S13]. On the
 anchor cell that is 24 months × EUR 140.00 = EUR 3 360.00 of nominal premium against death

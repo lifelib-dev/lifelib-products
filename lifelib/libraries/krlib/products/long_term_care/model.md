@@ -57,16 +57,16 @@ thirteen-row statement and the policy-year-1 list elided — both are in
 [`technical-notes.md`](technical-notes.md) in full:
 
 ```text
-model point 1: LTC-000001 - ganbyeong boheom, M40 man-nai, to age 90, 20-year pay, 600 months
+model point 1: LTC-000001 - ganbyeong boheom, M40 man-nai, to age 90, 20-year pay, frame = 601 rows (t = 0 .. 600)
 lump 10,000,000 KRW at g2   annuity 500,000 / 300,000 KRW per month x120 months (12 guaranteed), on = True
 premium = 5,600.00 KRW/month (67,200.00 p.a.)   uw loading = 1.00   dementia rider = False   wait = 3 mths   reduction = 12 mths
 cv form = mijigeup   lapse form = mujihae   net premium ratio = 0.7932   care mortality multiple = 3.00
 
-first 13 policy months (columns claims_dementia, claims_void and claims_maturity omitted here; result_cf() carries them):
+first 13 policy months, t = 0 .. 12 (columns claims_dementia, claims_void and claims_maturity omitted here; result_cf() carries them):
 
     [ the t = 0..12 rows of result_cf(), eleven columns ]
 
-policy year 1 totals (unrounded sums):
+policy year 1 totals, t = 0 .. 11 (unrounded sums):
 
     [ the ten policy-year-1 lines, net_cf -10,481.10 ]
 
@@ -258,14 +258,21 @@ over the projection, a factor of fifteen in that expense line.
 
 ## The horizon is the 만기, and the annuity is truncated with it
 
-`proj_len() = 12 × (term_age − issue_age)` is the **last projected index, not a row count**, so
-`result_cf()` carries `proj_len() + 1` rows — **601** on the anchor cell, the last being the
-90세 계약해당일 itself: `pols_if(600) = 0.2102` reaches it, `pols_maturity` records the cover
-ending, and every cash flow on the row is zero. A loop over `range(proj_len())` drops that row
-and breaks `check_pols_roll_fwd()` at the last step.
+`t` is the policy month and it is **0-based**: `t = 0` is the first projected month, the one
+that carries the office premium, the acquisition expense and the initial commission together
+with that month's own decrements. `proj_len() = 12 × (term_age − issue_age) + 1` is the
+**number of projected months, the frame's exclusive end** — not the last index — so
+`result_cf()` carries `proj_len()` rows, **601** on the anchor cell, indexed `t = 0 … 600`, and
+the frame is `range(proj_len())`. The `+ 1` is the terminal row: the 600 months of cover are
+`t = 0 … proj_len() − 2` and `t = proj_len() − 1` is the 90세 계약해당일 itself, where
+`pols_if(600) = 0.2102` reaches maturity, `pols_maturity` records the cover ending, and every
+cash flow on the row is zero. That asymmetry is visible in the guards: the cash-flow cells stop
+at `t >= proj_len() - 1`, the in-force counts run to `t >= proj_len()`, and swapping the two
+either puts outgo on the maturity row or drops the row `check_pols_roll_fwd()` closes on.
 
-The annuity cap and the maturity bind **jointly**: nothing is paid at or after `proj_len()`. An
-insured certified at 85 on a 90세만기 contract has five years of term and ten of annuity, and
+The annuity cap and the maturity bind **jointly**: nothing is paid on the maturity row
+`t = proj_len() − 1` or after it. An insured certified at 85 on a 90세만기 contract has five
+years of term and ten of annuity, and
 **no retrieved document resolves whether the instalments continue past maturity**; the model
 truncates, the conservative reading, and understates the benefit for late entrants [std]. The
 만기 is the first sensitivity a user should run rather than a neutral choice: the same cell to
@@ -450,6 +457,21 @@ without its parent's CSVs produces a model that reads and then fails on first ev
 | `lapse_table.csv` | `lapse_table_file` | `Data.lapse_table()` | four lapse parameters |
 | `av_table.csv` | `av_table_file` | `Data.av_table()` | the 계약자적립액 run-off, four anchors |
 
+**No input file is keyed by the time index `t`**, which is why the move to the 0-based frame
+left every CSV byte-identical. The keys are `point_id`, `(sex, age)`, `(grade, age)`,
+`(sex, param)`, `param` and `runoff_fraction` — attained ages and parameter names, never
+policy months. The time-like *columns* are all inside `model_point_table.csv` and all of them
+are **elapsed counts or contract parameters, not positions on the frame's axis**, so none
+shifted: `term_age` and `prem_period_years` are contract terms; `annuity_max_mths` (120) and
+`annuity_guar_mths` (12) are lengths of the annuity's own ledger measured from each cohort's
+certification month `s`; and `wait_mths` (3) and `red_mths` (12) are window lengths measured
+from `t = 0`, read as `t < wait_mths()` and `t >= red_mths()`, which are already the correct
+0-based boundaries — the 보장개시일 falls at the start of month 3 and the 감액기간 expires at
+the start of month 12 on both the old frame and the new one. `av_table.csv`'s
+`runoff_fraction` is a fraction of the way from 납입완료 to maturity, not a time index; only
+its denominator in `av_pp` moved, from `proj_len() − n_P` to `proj_len() − 1 − n_P`, so that
+the fraction still reaches exactly 1.0 on the maturity row.
+
 ### Read once, in `Data`
 
 `Projection` is parameterized by `point_id`, so every `Projection[N]` is a separate ItemSpace
@@ -558,8 +580,9 @@ no argument returning a `bool` beside its per-`t` residual `check_*_resid(t)`.
 
 | Notes symbol | Cells | Meaning |
 |---|---|---|
-| `t` | the index of `result_cf()` | policy month, 0-based |
-| `n` | `proj_len()` | last projected policy month, `12 × (term_age − issue_age)` |
+| `t` | the index of `result_cf()` | policy month, 0-based; the frame is `t = 0 … n − 1` |
+| `n` | `proj_len()` | the **number** of projected policy months, the frame's exclusive end, `12 × (term_age − issue_age) + 1`; the maturity row is `t = n − 1` |
+| `y(t)` | `policy_year()` | the contractual policy year, the derived 1-based label `t // 12 + 1` |
 | `x`, `x + floor(t/12)` | `issue_age()`, `age(t)` | 만나이 at the 계약일, attained 만나이 |
 | `P`, `n_P` | `premium_mth_pp()`, `prem_period_mths()` | level monthly office premium, paying months |
 | `A_B`, `G_B` | `lump_amount()`, `benefit_grade()` | 진단급여금 sum insured, the 등급 threshold |
@@ -663,7 +686,7 @@ rather than papered over.
 | `lapse_completion`, `lapse_ultimate` | 0.001, 0.008 | **[REG-R27]**, the guidance's own values for a 무·저해지 form | prescribed; the permitted alternatives (선형-로그, 로그-로그) carry quarterly disclosure of the difference |
 | `wait_mths`, `red_mths` | 3, 12 | 90 days and one year on a monthly grid [S2] [S4] | 90 days at three carriers against **180 days** at 우체국, and a one-year 감액 against a **two-year** one — both combinations shipped, the second at model point 9 [S1] |
 | processing order | certification, then mortality, then lapse | a life certified in the month is certified before it can die of the state | fixed by the contract's own sequence, not by a disclosure |
-| annuity truncation at maturity | instalments stop at `proj_len()` | the conservative reading | **no retrieved document resolves it**; understates the benefit for entrants inside the last ten years of term |
+| annuity truncation at maturity | instalments stop on the maturity row `proj_len() − 1` | the conservative reading | **no retrieved document resolves it**; understates the benefit for entrants inside the last ten years of term |
 | `roll_fwd_tol`, `val_tol` | 1e-12, 1e-6 | count identities against won amounts read back out of a `DataFrame` | both far below one won |
 
 Model point premiums are **inputs**, not assumptions: the two anchors are [S2]-derived — ₩5,600
@@ -676,7 +699,8 @@ recorded in [`technical-notes.md`](technical-notes.md).
 `tests/test_long_term_care_kr.py` asserts the notes' worked example **hard-coded**, so a
 reviewer checks it by eye rather than by re-running the model:
 
-- The anchor cell's derived scalars — `proj_len() = 600` and therefore **601** rows,
+- The anchor cell's derived scalars — `proj_len() = 601` and therefore **601** rows, indexed
+  `t = 0 … 600`,
   `prem_period_mths() = 240`, `net_prem_ratio() = 0.7931662309087683`, `comm_init_pp() =
   43,680.0`, `sub65_gradient() = 0.12221178050285361` — and the assumption values the first
   rows use, at the precision the notes print them: `mort_rate(0) = 0.00097601273`,
@@ -711,7 +735,7 @@ that premium rides on `pols_act` (₩414.65); that lapse applied to `pols_care` 
 `claims_annuity` untouched and `check_pols_roll_fwd()` closing while paying ₩489.73 the 약관
 forbids; that a certification inside the 보장개시일 window is a decrement; that widening
 `benefit_grade` from `g2` to `g5` multiplies benefit outgo by 2.43 rather than scaling one
-rate; and that `proj_len()` is the last index and not a row count. The optional modules are
+rate; and that `proj_len()` is a row count and not the last index. The optional modules are
 asserted in **both** positions of their switch, and all nine model points are projected end to
 end with the six `check_*()` cells `True`.
 
@@ -719,7 +743,7 @@ end with the six `check_*()` cells `True`.
 `kr_registry.MODELS` rather than restated here: the two-Space layout, external inputs with no
 orphan CSV, the `provenance` column and its citation tag on every assumption CSV, the
 docstrings and their required phrases, the 만나이 basis registered for this model, the
-`result_cf()` contract — indexed by `t`, contiguous, ending at `proj_len()`, first column
+`result_cf()` contract — indexed by `t`, contiguous, ending at `proj_len() − 1`, first column
 `pols_if`, all names `lower_snake_case` and no NaN — the read-once property, the round trip
 through `mx.write_model`, and that every `check_*()` is `True` on **every** model point.
 

@@ -8,7 +8,7 @@ r = 4.00%, q = 2.00%, sigma = 20.00% and an index normalized to I_s = 100.  They
 hard-coded here rather than pickled so that a reviewer can compare them against the notes
 by eye.
 
-The notes' table has six rows and thirteen columns and every cell of it is asserted
+The notes' table has six rows and fourteen columns and every cell of it is asserted
 below, together with the trace beneath the table: the option budget, the fixed leg's
 opening value and equivalent accretion yield, the cost of the 100 bp rate rise, the
 counterfactual interim values without it, and the proportional-withdrawal arithmetic.
@@ -150,7 +150,8 @@ def _point(rila, point_id):
 
 @pytest.mark.parametrize("label", sorted(WORKED_EXAMPLE))
 def test_worked_example_row(rila, label):
-    """Every cell of the notes' six-row, thirteen-column table."""
+    """Every cell of the five projected rows of the notes' fourteen-column table; row 0 is
+    the term-start instant and is asserted separately."""
     (pid, t, timing, index, perf, fixed, atm, otmc, otmp,
      deriv, tcost, value, notional) = WORKED_EXAMPLE[label]
     p = _point(rila, pid)
@@ -526,8 +527,11 @@ def test_the_amortization_switch_changes_the_middle_and_not_the_ends(rila):
     assert straight.amort_rule() == "straight_line"
     assert updated.amort_rule() == "updated_expiry"
     # identical at both boundaries: at the term-start instant both reduce to beta, and at
-    # term end both are zero
-    assert straight.opt_budget(0) == pytest.approx(updated.opt_budget(0), rel=1e-12)
+    # term end both are zero. The term-start instant is not a row after the merge, so the
+    # updated-expiry rule is evaluated there directly, at tau = T.
+    i_s, term = updated.index_at_term_start(0), float(updated.term_years())
+    assert updated.opt_portfolio(0, i_s, term, "TERM_START") == pytest.approx(
+        straight.opt_budget(0), rel=1e-12)
     assert straight.budget_amort_factor(71) == updated.budget_amort_factor(71) == 0.0
     # and different in between
     assert straight.budget_amort_factor(35) != pytest.approx(

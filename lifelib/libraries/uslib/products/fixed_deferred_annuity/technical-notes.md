@@ -110,8 +110,8 @@ outside Model #805, which reaches only a VA fixed account via Model #250 §7.B
 | `FWB(y)` | Free-withdrawal base fixed at the start of contract year `y` | each anniversary |
 | `FW(t)` | Unused free-withdrawal allowance remaining in contract year `y(t)` | on withdrawal / anniversary |
 | `i_cr(t)` | Declared credited rate in force | at each guarantee-period boundary |
-| `gp_end(t)` | Months remaining in the current guarantee period | monthly |
-| `sc_clock(t)` | Months elapsed in the current surrender-charge schedule | monthly (resets on renewal under `rollover`) |
+| `gp_end(t)` | Months remaining in the current guarantee period at the **end** of month `t`: `12 n k − (t + 1)`, with `k` the 1-based guarantee-period index, so 59 at `t = 0` and 0 at `t = 12n − 1` | monthly |
+| `sc_clock(t)` | Contract year within the current surrender-charge schedule, `1..n`: `y(t) − n(k − 1)`, so 1 at `t = 0` — a 1-based contract-year label, not an elapsed month count | monthly (resets on renewal under `rollover`) |
 | `i0_locked` | MVA reference yield locked at the start of the current guarantee period | each renewal |
 | `basis(t)` | Investment in the contract (IRC §72 tax basis) | on withdrawal [R6] |
 | `l(t)` | In-force probability at end of month `t`; the opening in-force of month 0 is 1 | monthly decrements |

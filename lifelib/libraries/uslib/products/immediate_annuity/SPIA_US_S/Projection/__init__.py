@@ -215,7 +215,7 @@ reduction to ``delta`` begins at ``t = 120`` and not at the death in ``t = 13``.
 
 .. rubric:: ``certain_only``, where the notes' expense formula outlives the contract
 
-The notes carry the maintenance expense on ``IF(t) = max(C(t), l_alive(t))`` and, in the
+The notes carry the maintenance expense on ``IF(t) = max(C(t), l_alive(t+1))`` and, in the
 same table, describe it as paid *"while any payment obligation remains"*. The two agree
 on the four life-contingent forms. They do not agree on ``certain_only``, where the notes
 also set ``L(t) = 0``: the last instalment falls in month ``n_eff - 1`` and nothing is
@@ -223,7 +223,7 @@ owed afterwards, but ``l_alive`` is a survival probability, not a payment factor
 positive for the annuitant's whole remaining lifetime. Read literally the formula keeps
 billing a contract that ended years earlier. :func:`pols_if` follows the prose and drops
 the life-contingent leg on ``certain_only`` — the one form with no life contingency in it
-— so ``IF(t) = C(t)`` there and ``max(C(t), l_alive(t))`` on every other form. Model
+— so ``IF(t) = C(t)`` there and ``max(C(t), l_alive(t+1))`` on every other form. Model
 point 15 exercises it; no other form and no other model point moves.
 
 .. rubric:: Survival-measurement and refund-balance timing
@@ -235,9 +235,10 @@ the same switch, ``timing``:
   ``t + 1``; an **advance** instalment falls at the *start* of month ``t``, which is time
   ``t``, so survival is measured one full month earlier whatever the frequency. That is
   :func:`payment_surv_mth`, which returns a **time point**, not a month. The notes write
-  the advance point as ``t - 12/m``, one full payment period earlier — but that measures
-  from the **arrears** month of the same instalment, which falls one payment period later
-  than the advance month. :func:`is_payment_mth` indexes an advance instalment by the
+  the advance point as ``t + 1 - 12/m``, one full payment period earlier than the arrears
+  point ``t + 1`` — but that measures from the **arrears** month of the same instalment,
+  which falls one payment period later than the advance month. :func:`is_payment_mth`
+  indexes an advance instalment by the
   month it falls *in* (``t = 0, 3, 6, …`` at ``m = 4``), so the start of month ``t`` is
   the reading that holds at every frequency; the two agree at ``m = 12``, the only
   frequency the notes spell out.
@@ -425,9 +426,10 @@ def mort_basis():
     """Whether the run is probability-weighted (*table*) or deterministic (*scenario*).
 
     *table* runs the notes' generational recursion off the shipped tables; *scenario*
-    **[std]** replaces it with the step function ``1{t < death_mth(life)}`` so the notes'
-    worked example - which is a scenario, not an expectation - reproduces exactly.  See
-    the Space docstring.
+    **[std]** replaces it with the step function ``1{k <= death_mth(life)}`` - alive at
+    every time point up to the start of the month of death, dead from its end - so the
+    notes' worked example, which is a scenario and not an expectation, reproduces
+    exactly.  See the Space docstring.
     """
     v = model_point()["mort_basis"]
     if v not in ("table", "scenario"):
@@ -486,8 +488,8 @@ def age(t, life):
 def horizon_mths():
     """Number of months before some covered life passes the limiting age.
 
-    ``12*(omega_age - min x_i)``: the notes stop once ``t/12 + x_i > omega`` for every
-    covered life, and stopping on the primary's age alone would truncate a younger joint
+    ``12*(omega_age - min x_i)``: the notes stop once ``(t + 1)/12 + x_i > omega`` for
+    every covered life, and stopping on the primary's age alone would truncate a younger joint
     annuitant's tail.  Counted from ``t = 0``, so the last month it admits is
     ``horizon_mths() - 1``, in which the youngest life is still ``omega_age - 1`` - see
     :func:`proj_len`.
@@ -505,8 +507,9 @@ def proj_len():
     ``range(proj_len())``, so the last projected month is ``proj_len() - 1``.
 
     :func:`horizon_mths` implements the notes' age stop rule literally - stop once
-    ``t/12 + x_i > omega`` for every covered life - which admits ``12*(omega_age - min
-    x_i)`` months.  Under the ANB age convention, where :func:`age` advances on each
+    ``(t + 1)/12 + x_i > omega`` for every covered life - which admits ``12*(omega_age -
+    min x_i)`` months, ``t = 0 ... 12*(omega_age - min x_i) - 1``.  Under the ANB age
+    convention, where :func:`age` advances on each
     policy anniversary, the youngest life's attained age in the last of them is
     ``omega_age - 1``: the projection stops **one month before** any life attains
     ``omega_age``, and the ``q = 1`` row of the shipped tables is never reached inside it.
@@ -545,13 +548,14 @@ def payment_surv_mth(t):
     end-of-period survival for advance payments understates the liability by about one
     period's mortality per payment.
 
-    The notes put the advance point at ``t - 12/m``, "one full payment period earlier".
-    That measures from the **arrears** month of the same instalment, which falls one
+    The notes put the advance point at ``t + 1 - 12/m``, "one full payment period
+    earlier" than the arrears point ``t + 1``.  That measures from the **arrears** month
+    of the same instalment, which falls one
     payment period *after* the advance month; :func:`is_payment_mth` indexes an advance
     instalment by the month it falls in, so the two readings coincide only at m = 12.
     At m = 4 the second instalment falls at the start of month 3 and requires survival to
-    time 3 - not to time ``t - 12/m`` = 0, three months earlier, which would pay it to a
-    life the projection has already recorded as dead.
+    time 3 - not to time ``t + 1 - 12/m`` = 1, two months earlier, which would pay it to
+    a life the projection has already recorded as dead.
     """
     if payment_timing() == "arrears":
         return t + 1
@@ -841,7 +845,9 @@ def pols_if(t):
     remains, whether that obligation is life-contingent or certain.  The life-contingent
     leg is measured at the **end** of month t (time ``t + 1``), matching the notes' own
     end-of-month decrement, so this is a closing measure of the period rather than an
-    opening count.
+    opening count.  Unlike the library's usual opening ``pols_if``, therefore,
+    ``pols_if(0) != pols_if_init()`` here: :func:`pols_if_init` is the scaling constant
+    the notes' obligation indicator is multiplied by, not the frame's first row.
 
     One divergence from the notes' literal formula, on ``certain_only`` only.  That form
     has ``L(t) = 0``, so the last instalment falls in month ``n_eff - 1`` and nothing is

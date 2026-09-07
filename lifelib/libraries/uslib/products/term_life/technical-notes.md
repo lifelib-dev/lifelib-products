@@ -99,7 +99,7 @@ elements [R2] [REG-R23]).
 | Item | Value | Basis |
 |---|---|---|
 | Guaranteed premium scale | Level `AP` for n years, then guaranteed ART scale to age 95; full schedule printed at issue | [S3] [S6] |
-| Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60, age 95) | [S6] |
+| Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60 — charged at `t = 59`, attained age 94, the final year to expiry at 95) | [S6] |
 | Policy fee | $65/yr, level, inside `AP` | [S6] |
 | Modal factors | SA 0.52 / Q 0.27 / M 0.08333 | [S6] |
 | Death benefit | Level face; proceeds = face + pro-rata unearned premium − due unpaid premium | [S6] |
@@ -453,8 +453,10 @@ Known modeling pitfalls:
   the ANB basis [S2] [S3] [S5] [S6] [R3]; a silent ALB table import shifts mortality by half a
   year of age.
 - **Expiry handling.** The guaranteed schedule ends at attained age 95 [S6]; projecting
-  ART premiums past 95, or terminating at 94 (off-by-one on `x + t ≥ 95` — the last
-  projected period is t = 94 − x, attained age 94), corrupts the tail.
+  ART premiums past 95, or terminating a year early, corrupts the tail. The correct rule
+  is `l(t) = 0 for x + t ≥ 95`: the last projected period is `t = 94 − x`, the year running
+  from attained age 94 to expiry at 95; testing `x + t ≥ 94`, or ending the frame at
+  `proj_len − 2`, drops it.
 - **Banding on face decrease.** A requested face decrease re-scales premium excluding the
   fee (((a − b) × c) + b [S6]) and can cross a band boundary [S3]; implementations that
   re-derive `band` from `face_amount` each period handle this automatically.

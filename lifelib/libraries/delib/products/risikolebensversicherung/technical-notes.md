@@ -214,7 +214,7 @@ anchor cell.**
 | `res_zill_pp_at(t, timing)` | The same reserve less the unamortised Zillmer balance; **negative for much of the term** | prospective |
 | `pols_death(t)` | Expected deaths in period `t` = `pols_if(t) × mort_rate(t)` | annual |
 | `pols_lapse(t)` | Expected lapses in period `t`, on survivors of the death decrement | annual |
-| `pols_maturity(t)` | Expiring survivors; **0** except at `t = proj_len()` | annual |
+| `pols_maturity(t)` | Expiring survivors; **0** except at `t = proj_len() − 1` | annual |
 | `premiums(t)` | `prem_paid_pp(t) × pols_if(t)` — the billed stream, the one inside `net_cf` | annual |
 | `prem_gross(t)` | `prem_gross_pp(t) × pols_if(t)` — the **guaranteed** stream, published beside it | annual |
 | `claims(t, kind)` | `kind ∈ {DEATH, LAPSE, MATURITY}`; the last two are structurally zero | annual |
@@ -412,7 +412,7 @@ rather than buried.
 | `k` | `prem_term`, the *Beitragszahlungsdauer* in years |
 | `S0` | `sum_assured` |
 | `f(t)` | `benefit_factor(t)` from `benefit_schedule.csv`, read at `policy_year = t + 1` |
-| `u(t)` | `sum_uplift(t)` from `nvg_schedule.csv`, read at `policy_year = t + 1`; `u ≡ 1` for `nvg_schedule_id = keine`; `u(−1) = 0` |
+| `u(t)` | `sum_uplift(t)` from `nvg_schedule.csv`, read at `policy_year = t + 1`; `u ≡ 1` for `nvg_schedule_id = keine`; defined on `t ≥ 0` only |
 | `B(t)` | `benefit_pp(t) = S0 · f(t) · u(t)` |
 | `q̃(x)` | `mort_rate_at_age(table_id, sex, smoker, x)`, the shipped second-order table rate |
 | `ω` | `sex_mix_male` = 0.50, the tariff's unisex mix **[std]** |
@@ -485,7 +485,7 @@ struck once, at issue, to return `surplus_share` of it over the premium-paying t
 
     v_d = min( v_max,  decl_scale · surplus_share · (m/(1+m)) · A / (G · ä) )
 
-and is **0** where `surplus_form = keine`. Then, at every `t ≤ k`,
+and is **0** where `surplus_form = keine`. Then, at every `t < k`,
 
     prem_gross_pp(t)  = G · φ
     prem_rebate_pp(t) = v_d · G · φ
@@ -508,7 +508,7 @@ contractual mechanics).
 The base cover's three-year window runs from issue, so it bites at `t < 3`, i.e. policy years 1 to
 3. A *Nachversicherungsgarantie* increment granted at the start of period `t_j` carries **its own**
 three-year window, `t_j ≤ t < t_j + 3` [R1] [S1] [S3] [S4] — **market practice, not a modelling choice** (research gap 9, closed): "Wenn unsere Leistungspflicht durch eine Änderung des Vertrages erweitert wird ..., beginnt die Dreijahresfrist bezüglich des geänderten ... Teils neu". With
-`Δu(t) = u(t) − u(t − 1)` and `u(−1) = 0`, the effective benefit is
+`Δu(t) = u(t) − u(t − 1)` for `t > 0` and `Δu(0) = u(0)`, the effective benefit is
 
     benefit_paid_pp(t) = S0 · f(t) · Σ_{j : t_j ≤ t} Δu(t_j) · σ_j(t)
     σ_j(t) = 1 − suicide_share   if  t < t_j + 3,  else 1        (the base tranche has t_j = 0)
@@ -695,9 +695,9 @@ one becomes a test** in `tests/test_risikolebensversicherung_de.py`.
 5. **Concluding there is no *Deckungskapital*.** A level premium against a rising death rate builds
    one (mechanic 11). Assert `res_pp_at(0,"BEF_PREM") == 0` and `res_pp_at(n,"BEF_PREM") == 0` to
    1e-9, that `res_pp_at(t,"BEF_PREM") > 0` at some interior `t` on the anchor, that
-   `res_zill_pp_at(0,"BEF_PREM") == −z·k·G` to 1e-9 (the two are formed by different summations
-   and agree to about 4e-12 on the anchor, not to the last bit), and that `check_res_roll_fwd()`
-   is `True`.
+   `res_zill_pp_at(0,"BEF_PREM") == −z·k·G` to 1e-9 (the two are formed by different summations,
+   so the tolerance is headroom, even though they agree exactly on the anchor), and that
+   `check_res_roll_fwd()` is `True`.
 6. **Letting `sex` into the price.** Unlawful in Germany for contracts concluded from 21 December
    2012 — AGG § 33 Abs. 5 confines the derogation to *Versicherungsverhältnisse* "die vor dem
    21. Dezember 2012 begründet werden", and § 20 Abs. 2 leaves no actuarial justification open for
@@ -946,7 +946,7 @@ difference between the two premium columns and must not be subtracted again. Tha
 delib requires `check_net_cf()` of every model.
 
 ***And the reserve mechanic 11 says a naive implementation gets wrong.***
-`res_pp_at(0,"BEF_PREM") = −3,6e-12`, `res_pp_at(25,"BEF_PREM") = 0` exactly, and the interior peaks
+`res_pp_at(0,"BEF_PREM") = 0` exactly, `res_pp_at(25,"BEF_PREM") = 0` exactly, and the interior peaks
 at **7 553,29 €** at `t = 15` — **2,52 % of the sum insured**. The Thiele step at the peak:
 `(7 553,290695 + 1 084,800958) × 1,01 = 8 724,472569` against
 `0,00414558817 × 300 000 + (1 − 0,00414558817) × 7 511,937517 = 8 724,472569`. The *gezillmerte*
@@ -1038,7 +1038,8 @@ existed, and in each case the model was right. Nothing in the model was changed 
 5. **The smoker premium ratio is 2,007** on the built model against the research file's 2,04, and the
    *Bruttobeitrag* 1 275,41 € against that scale's 1 316 € — both because the research construction
    used a zero *Rechnungszins* and the model uses the real 1,00 %. Both figures stand.
-6. **Pitfall 5's `res_zill_pp_at(1,"BEF_PREM") == −z·k·G` is a 1e-9 assertion**, not an exact one.
+6. **Pitfall 5's `res_zill_pp_at(0,"BEF_PREM") == −z·k·G` is asserted to 1e-9**, as headroom: on
+   the shipped calibration the two summations agree exactly.
 
 The sensitivity the notes predicted before the model existed came out of it unaltered: moving `m`
 from 1,0 to 1,5 moves the *Bruttobeitrag* 1 146,33 € → 1 404,05 €, **+22,5 %**, and the

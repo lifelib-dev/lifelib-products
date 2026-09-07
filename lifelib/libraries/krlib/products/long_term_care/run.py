@@ -20,9 +20,9 @@ point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
 print("model point {}: {} - ganbyeong boheom, {}{} man-nai, to age {}, {}-year pay, "
-      "{} months".format(
+      "frame = {} rows (t = 0 .. {})".format(
           point_id, proj.policy_id(), proj.sex(), proj.issue_age(), proj.term_age(),
-          proj.prem_period_years(), proj.proj_len()))
+          proj.prem_period_years(), proj.proj_len(), proj.proj_len() - 1))
 print("lump {:,.0f} KRW at {}   annuity {:,.0f} / {:,.0f} KRW per month x{} months "
       "({} guaranteed), on = {}".format(
           proj.lump_amount(), proj.benefit_grade(), proj.annuity_high(),
@@ -42,11 +42,11 @@ df = proj.result_cf()
 cols = ["pols_if", "pols_care", "premiums", "claims_lump", "claims_annuity",
         "claims_death", "claims_lapse", "expenses", "claim_expenses",
         "commissions", "net_cf"]
-print("first 13 policy months (columns claims_dementia, claims_void and claims_maturity "
-      "omitted here; result_cf() carries them):")
+print("first 13 policy months, t = 0 .. 12 (columns claims_dementia, claims_void and "
+      "claims_maturity omitted here; result_cf() carries them):")
 print(df.head(13)[cols].round(2).to_string())
 print()
-print("policy year 1 totals (unrounded sums):")
+print("policy year 1 totals, t = 0 .. 11 (unrounded sums):")
 year1 = df.head(12).sum()
 for col in ("premiums", "claims_lump", "claims_annuity", "claims_death",
             "claims_lapse", "claims_void", "expenses", "claim_expenses",
@@ -67,7 +67,7 @@ print("  expenses + commission "
                           + total["commissions"]))
 print("  net_cf            {:>18,.2f}".format(total["net_cf"]))
 print("  lives ever certified at the benefit grade: {:.5f}".format(
-    sum(proj.pols_entry_care(t) for t in range(proj.proj_len()))))
+    sum(proj.pols_entry_care(t) for t in range(proj.proj_len() - 1))))
 print()
 print("model incidence over the disclosed yejeong-wiheomnyul, first-entry basis:")
 for x in (40, 50, 60):

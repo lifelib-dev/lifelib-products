@@ -212,7 +212,7 @@ change.
 live in the 保険料及び責任準備金の算出方法書, a filed but unpublished 基礎書類 [REG-R2] — no amount of further
 research turns them into sourced values. What *is* public is a complete numeric
 surrender-value run for one model point [S4], and a second carrier's matched suppressed and
-ordinary pair [S7]. The library therefore constructs `V(t)` in closed form and **calibrates
+ordinary pair [S7]. The library therefore constructs `V(d)` in closed form and **calibrates
 it to the published table**, and the calibrated rate lands at 1.468%, not at the 1.75%
 disclosed in a 2010 booklet. The gap is informative rather than embarrassing: the published
 table is a 2025 rate page [S4] and the disclosure is fifteen years older [S11]. `i_cv` is
@@ -640,7 +640,7 @@ truncate rather than round (2,928,450 / 2,624,400 = 111.586%, printed 111.5%).
 **What this construction is not.** `π` = ¥176,618.83 **exceeds** the gross premium of
 ¥174,960 — a negative expense loading, which no real product carries. The construction uses
 the *valuation* table's margin-loaded `q` as a stand-in for the insurer's unpublished 予定死亡率,
-and `SC(t)` absorbs the difference. It reproduces the contractual **value**; it is not a
+and `SC(d)` absorbs the difference. It reproduces the contractual **value**; it is not a
 pricing model and `π` is not the priced net premium.
 
 ### First periods of the base run

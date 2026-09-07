@@ -519,6 +519,8 @@ def prem_cum_pp(t):
     year-one non-accidental claim pays cumulative premiums paid, not the cash sum and
     not an annualized premium.
     """
+    if t < 0:
+        return 0.0
     if t == 0:
         return premium_pp(0)
     return prem_cum_pp(t - 1) + premium_pp(t)

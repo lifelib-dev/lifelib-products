@@ -39,7 +39,7 @@ print("model point {}: {} - {}{}, {}".format(
     point_id, proj.policy_id(), proj.sex(), proj.issue_age(), chassis))
 print("  cover to man nai {}, {}, {}, sum insured KRW {:,.0f}".format(
     proj.expiry_age(), pay, form, proj.sum_assured()))
-print("  premium = KRW {:,.0f}/month   frame = {} months (t = 0 .. {})   "
+print("  premium = KRW {:,.0f}/month   frame = {} rows (t = 0 .. {})   "
       "myeonchaek = {} m   gamaek = {} m".format(
           proj.premium_mth_pp(), proj.proj_len(), proj.proj_len() - 1,
           proj.tier_wait_months("general"), proj.reduction_months()))

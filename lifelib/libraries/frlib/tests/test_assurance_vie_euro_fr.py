@@ -529,12 +529,13 @@ def test_mid_year_exits_take_the_full_years_taux_servi(fr_euro_anchor):
 def test_the_duration_eight_surrender_step_is_the_tax_threshold(fr_euro_anchor):
     """Keyed to the **contract's** eighth anniversary, not to the eighth projected year.
 
-    The anchor cell is five years in, so duration 8 falls at t = 2.  A model indexing the
-    lapse table by t would put the step five years late.
+    The anchor cell is five years in, so policy year 8 falls at t = 2.  A model indexing
+    the lapse table by t would put the step five years late.  ``policy_year`` is the
+    1-based contractual label; the 0-based elapsed count is ``duration_init() + t``.
     """
     p = fr_euro_anchor
     assert p.duration_init() == 5
-    assert [p.duration(t) for t in (0, 2, 5)] == [6, 8, 11]
+    assert [p.policy_year(t) for t in (0, 2, 5)] == [6, 8, 11]
     assert p.lapse_rate_base(2) == pytest.approx(0.08, abs=1e-12)
     assert p.lapse_rate_base(1) == pytest.approx(0.04, abs=1e-12)
     assert p.lapse_rate_base(3) == pytest.approx(0.05, abs=1e-12)

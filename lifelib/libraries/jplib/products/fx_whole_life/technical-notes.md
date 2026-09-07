@@ -205,7 +205,7 @@ the 3.50% and 4.00% columns as three columns and never as an average [S2] [R8].
 | 最低保証積立利率 `i0` | **3.00%** on LEVEL, equal to the contract's own 予定利率, fixed at issue | [S1] [S2] |
 | 最低保証積立利率, SINGLE | **0.01%** | [S3] |
 | 解約返戻金 formula | `AV × (1 − mva − sc) × kl` | [S3]; suppression [S2] |
-| 解約控除率 `sc(t)` | 7.0% in policy year 1, −0.7pp per completed policy year, zero from year 10; constant within the year; base = the 積立金 | [S3] |
+| 解約控除率 `sc(t)` | 7.0% in policy year 1, −0.7pp per completed policy year, zero from ten completed years (`t ≥ 120`, i.e. policy year 11 onward); constant within the year; base = the 積立金 | [S3] |
 | MVA scope | SINGLE only; not on an 積立利率計算基準日 nor inside a 1-year 積立利率適用期間 | [S3] |
 | MVA direction | Symmetric: positive when rates have risen, **negative when they have fallen** | [S3] [R8] |
 | 低解約返戻金割合 `kl` | 70% / 77.5% / 85% / 92.5% by 残余保険料払込年数 (≥4 / 3 / 2 / 1), 1.00 from 払込満了 | [S2] |
@@ -623,7 +623,8 @@ All dynamic forms are **[std]** reference constructions.
 - **The test is on the surrender value, not the account value** [S9]. The worked example
   measures what that costs: thirteen months.
 - **The one-year dead zone is contractual** [S9] and interacts with the surrender charge,
-  which is 7.0% and 6.3% over exactly that window [S3].
+  which is 7.0% over exactly that window and steps to 6.3% in the month the test first
+  becomes live (`t = 12`) [S3].
 - **自動振替貸付.** Inherited unchanged on the LEVEL shape, absent on the SINGLE shape. A policy
   does not lapse while the account value can carry the premium, so applying a lapse rate to
   unpaid premiums without first running the APL test models a decrement the contract does
@@ -788,9 +789,11 @@ the target conversion**, entirely without help from the crediting rate or the cu
 
 On the flat path the target is reached at **month 52** (four years four months), where `AV =
 116,626.82`, `mva = 0.007219`, `sc = 4.2%`, `CV = 110,886.51` and `CV × 158.93 = ¥17,623,193
-≥ ¥17,592,300`. Three counterfactuals measure the mechanics that the trigger is easy to get
-wrong about: testing the **account value** instead of the surrender value hits at month
-**39**, thirteen months early; ignoring the 解約控除 alone hits at month 41; ignoring the MVA
+≥ ¥17,592,300`. The conversion is a *flow* of month 51 and is published on `result_cf()` row
+`t = target_month() − 1 = 51`; `AV(52)` and `CV(52)` are the time-52 state values it is
+measured on, and `pols_if(52) = 0`. Three counterfactuals measure the mechanics that the
+trigger is easy to get wrong about: testing the **account value** instead of the surrender
+value hits at month **39**, thirteen months early; ignoring the 解約控除 alone hits at month 41; ignoring the MVA
 alone hits at month 50. The 解約控除 moves the trigger further than the MVA does because it is
 the larger deduction over exactly this window — `sc` of 4.9% at month 41 then 4.2% at month
 52, against an `mva` of 0.78% and 0.72% at the same two months — so dropping it must

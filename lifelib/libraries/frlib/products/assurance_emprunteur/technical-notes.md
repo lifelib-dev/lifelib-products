@@ -425,9 +425,8 @@ Each of these produces a model that looks right and is wrong. They are the test 
   the **closing** balance `crd(t + 1)` and whichever is chosen must be used everywhere. A
   model that indexes `crd` on the month rather than on the time point pays a whole month's
   capital too much or too little. Separately, French loans quote a *taux nominal annuel*
-  whose monthly rate
-  is nominal ÷ 12, not `(1 + nominal)^(1/12) − 1`; the effective conversion changes `ech`,
-  and therefore every benefit and the TAEA.
+  whose monthly rate is nominal ÷ 12, not `(1 + nominal)^(1/12) − 1`; the effective
+  conversion changes `ech`, and therefore every benefit and the TAEA.
 - **Collapsing Décès and PTIA into one decrement.** They pay the identical benefit, so the
   temptation is strong — and it is wrong, because `deces_end_age` (85) and `ptia_end_age`
   (70) differ. A collapsed decrement either pays PTIA after 70 or stops paying death
@@ -454,9 +453,8 @@ Each of these produces a model that looks right and is wrong. They are the test 
   those lives were in ITT throughout month `t` and are paid for it, but they end the month
   in neither disabled state, so an identity written without that term is short by
   `ech × Q × IR × (1 − ipt_share_at_cap) × cap_itt(t)` — up to EUR 0.13 a month in the base
-  cell. Relatedly, benefit
-  is monthly in arrears: including `n_itt(t)` in `ben_itt(t)` pays a full month at the
-  instant of inception.
+  cell. Relatedly, benefit is monthly in arrears: including `n_itt(t)` in `ben_itt(t)` pays
+  a full month at the instant of inception.
 - **Charging premium to lives in claim, or lapsing them.** Premiums come from `l_h` only
   [S5] [S11]; `prem_pp × (l_h + l_itt + l_ipt)` overstates premium income and is easy to
   write by accident when the model also tracks total lives in force. Symmetrically, applying
@@ -624,10 +622,9 @@ month 0 is that month's own inception. `ben_itt(1)` = `ech × s_itt(1) × n_itt(
 1 109.1952 × 0.932478274 × 0.000901090 = **0.93** — the month-0 inceptions, one month later,
 net of one month's terminations (`s_itt` is on the claim-duration clock `z`, where the first
 month in payment is `z` = 1). `ben_deces(0)` = `crd(1) × q_h` = 199 390.8048 × 0.000327255 =
-**65.25**, and
-`ben_ptia(0) / ben_deces(0)` = 6.512472 / 65.251648 = 0.0998, the `ptia_rate` ratio of 0.10
-less the month of death exposure that precedes PTIA in the decrement order — the ordering is
-visible in the arithmetic.
+**65.25**, and `ben_ptia(0) / ben_deces(0)` = 6.512472 / 65.251648 = 0.0998, the
+`ptia_rate` ratio of 0.10 less the month of death exposure that precedes PTIA in the
+decrement order — the ordering is visible in the arithmetic.
 
 *Aggregates over the full 240 months, at 2.5 % flat.* PV of premium income is
 **EUR 12 602.19** on the level 0.84 % *capital initial* basis and **EUR 12 588.82** on the
@@ -640,9 +637,9 @@ the market's published premium split of **69 % / 30 %** [REG-R37] — a coincide
 calibration rather than evidence, but the only external check available on the shape of the
 basis. Finally `I(t)` = 0 from `t` = 216 (`a` = 70): `crd(216)` = **EUR 25 806.51** is still
 owed as that month opens, 0.009266 + 0.013982 of mass in ITT and IPT moves to `l_h`,
-`ben_itt` and `ben_ipt` are
-exactly zero for `t` = 216..239, and premium income continues — **EUR 3 360.00 nominal per
-surviving policy** (24 × EUR 140.00), EUR 638.67 survivorship-weighted.
+`ben_itt` and `ben_ipt` are exactly zero for `t` = 216..239, and premium income continues
+— **EUR 3 360.00 nominal per surviving policy** (24 × EUR 140.00), EUR 638.67
+survivorship-weighted.
 
 ---
 

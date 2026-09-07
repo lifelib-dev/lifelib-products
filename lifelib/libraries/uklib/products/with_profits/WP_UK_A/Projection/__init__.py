@@ -202,11 +202,13 @@ payout to nil with it. And on a
 *like-for-like* comparison between successive maturity cohorts — this year's payout on a
 25-year endowment against last year's — not a comparison of one policy's own payout
 across its own durations. A regular-premium asset share grows far faster than 10% a year
-in early durations because premiums, not investment return, dominate it, so the cap
-binds throughout and the corridor floor is what actually sets the payout. On the
-endowment cell shipped here that persists to about ``t = 13``, after which the asset
-share is large enough that the cap stops binding and the payout converges to it: 80% of
-the asset share in the first policy year, 100.0% at maturity. The single-premium bond
+in early durations because premiums, not investment return, dominate it, so the cap's
+upper bound binds and the corridor floor is what actually sets the payout: exactly 80% of
+the asset share from the second policy year (``t = 1``) through ``t = 12`` on the
+endowment cell shipped here - ``t = 0`` is the one period where the cap is skipped, so the
+payout there is the asset share itself. From ``t = 13`` the corridor floor no longer binds
+and the ±10% cap alone carries the payout up, reaching 100.0% of the asset share at
+maturity. The single-premium bond
 the worked example uses has no such problem, which is why the notes can state the cap
 plainly.
 
@@ -1060,7 +1062,7 @@ def claim_pp(t, kind):
         chassis has no guarantee dates, so this is informational there.
 
     ``"MATURITY"``
-        ``G(n) + TB(n)`` at the end of the endowment term, the last
+        ``G(n-1) + TB(n-1)`` at the end of the endowment term, the last
         projected period ``proj_len() - 1``.  On the bond
         chassis, which is whole of life, this is zero unless the projection
         ends in a **forced encashment** - the withdrawal election has

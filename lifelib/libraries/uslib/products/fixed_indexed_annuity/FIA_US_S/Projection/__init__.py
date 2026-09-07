@@ -139,7 +139,8 @@ kappa                                             av_int_factor                 
 A(t)                                              av_indexed_pp(t)                  Indexed account balance
 F(t)                                              av_fixed_pp(t)                    Fixed account balance
 AV(t)                                             av_pp(t)                          Account value closing period t
-AV(0), AV(1), AV(2), AV(t)   av_pp_at(t, timing)  BEF_PREM / BEF_INV / BEF_FEE / BEF_WD / EOY
+AV(0), AV(1), AV(2), AV(t)                        av_pp_at(t, timing)               BEF_INV / BEF_FEE / BEF_WD / EOY in
+                                                                                    order; BEF_PREM opens the period
 l(t) x AV(t)                                      av_at(t, timing)                  In-force weighted account value
 (shortfall at exhaustion)                         av_depletion_pp(t)                Withdrawal the AV could not fund
 phi                                               rider_charge_rate                 Rider charge rate (0.95% [S9])
@@ -1582,7 +1583,9 @@ def mva_term(t):
 
     The MVA period is the ten-year surrender charge period [S7][S10], so at the worked
     example's anniversary 8 — the close of period 7, contract year 8 — there are
-    ``n = 24`` months, or two years, remaining.
+    ``n = 24`` months, or two years, remaining.  The remaining term reaches zero at
+    anniversary 10, so a transaction carries a live adjustment in contract years 1-9
+    (periods ``t = 0..8``) and none in contract year 10.
     """
     return max(0.0, float(surr_charge_period - policy_year(t)))      # noqa: F821
 

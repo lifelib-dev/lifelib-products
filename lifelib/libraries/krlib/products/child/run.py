@@ -47,7 +47,7 @@ waiver_txt = " + ".join(waivers) if waivers else "none"
 print("Child_KR_S - eorini boheom (children's insurance), monthly grid, boheom nai")
 print("model point {}: {} - sex {}, {}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(), issue))
-print("term to boheom nai {} (t = 0 .. {}, {} months), premium term {} years"
+print("term to boheom nai {} (t = 0 .. {}, {} rows), premium term {} years"
       " (t = 0 .. {}), monthly"
       .format(proj.term_age(), proj.proj_len() - 1, proj.proj_len(),
               proj.prem_period_years(), proj.prem_end()))

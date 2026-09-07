@@ -190,8 +190,9 @@ force and all three mortality forces. Three properties an implementation must re
   because *partielle* pays half;
 - **`inc_rate_partial` can go negative at extreme ages** — both rates are floored at zero
   **[std]**. On the female base basis the floor never binds below the terminal age; on the
-  male basis it binds at attained age 109, which `test_both_entry_forces_are_floored_at_
-  zero` asserts on model point 10.
+  male basis it binds at attained age 109, which
+  `test_the_identity_carries_its_mortality_terms_and_floors_both_rates` asserts on model
+  point 10.
 
 The gradient from attained age 70 to 90 is a factor of 28 for `i_P` and **81** for `i_T`,
 and `i_T` overtakes `i_P` between 80 and 85 — the severity mix worsening with age, arriving

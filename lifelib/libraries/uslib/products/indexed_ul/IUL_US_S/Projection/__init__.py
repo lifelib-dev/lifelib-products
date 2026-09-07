@@ -130,7 +130,7 @@ Premium mode               premium_mode                    ANNUAL **[std]** or M
 x                          age(t)                          Attained age (ANB)
 (none)                     proj_len                        Number of projected months
 F                          sum_assured                     Initial face amount
-F(t)                       sum_assured_at(t)               Face after reductions
+F_{t+1}                    sum_assured_at(t)               Face after reductions, end of month t
 F/1000                     units(t)                        Face in $1,000 units
 P_t                        premium_pp(t)                   Gross premium per policy
 (planned)                  premium_pp_ann                  Planned annual premium
@@ -208,9 +208,9 @@ SC_t                       surr_charge_pp(t)               Surrender charge sche
 (AV - SC)                  csv_pp(t)                       Cash value before loan
 CSV_t                      ncsv_pp(t)                      Cash surrender value, loan netted
 (SC retained)              surr_charge(t)                  Surrender charge collected
-CumP_t                     cum_prem_net_pp(t)              Premiums less withdrawals and loans
-(GPT/7-pay base)           cum_prem_pp(t)                  Premiums less withdrawals
-CumMNLP_t                  cum_mnlp_pp(t)                  Cumulative no-lapse premium
+CumP_{t+1}                 cum_prem_net_pp(t)              Premiums less withdrawals and loans, end of month t
+(GPT/7-pay base)           cum_prem_pp(t)                  Premiums less withdrawals, end of month t
+CumMNLP_{t+1}              cum_mnlp_pp(t)                  Cumulative no-lapse premium through month t
 (MNLP rate)                mnlp_rate()                     No-lapse premium per $1,000 p.a.
 (MNLP monthly)             mnlp_pp_mth()                   Monthly no-lapse premium
 (no-lapse period)          nlg_period_years()              Length of the no-lapse period
@@ -828,7 +828,7 @@ def wd_pp(t):
     A constant monthly amount from :func:`wd_first_year`, taken from the model point's
     ``wd_pp`` column and **0 in the baseline** [std]: the notes give no withdrawal
     utilization pattern, so the mechanics are implemented and the behaviour is left to
-    the data.  Model point 4 switches it on.
+    the data.  Model point 5 switches it on.
 
     The account is debited ``W_t``; the policyholder receives ``W_t - 25`` and the
     insurer keeps the $25 fee [S3].  This differs from the universal life chassis,
@@ -858,7 +858,7 @@ def loan_new_pp(t):
     The notes' distribution-scenario module borrows a level amount annually from a
     start age [S3]; here that is ``loan_new_pp_ann`` from the first month of policy
     year :func:`loan_first_year`.  **Zero in the baseline** -- the notes set loan
-    utilization to none -- and switched on by model point 4.
+    utilization to none -- and switched on by model point 5.
 
     Participating (indexed) loans are a documented variation, not modeled: the baseline
     uses standard loans only **[std]** (F18), which decouples loan modeling from index
@@ -1600,7 +1600,7 @@ def cum_prem_pp(t):
 
 
 def cum_prem_net_pp(t):
-    """CumP_t: cumulative premiums less withdrawals **and loans**, for the no-lapse test.
+    """CumP_{t+1}: cumulative premiums less withdrawals **and loans**, for the no-lapse test.
 
     The notes define the no-lapse accumulator this way and the guideline premium
     accumulator differently; :func:`cum_prem_pp` is the other one.  Using one for the
@@ -1637,7 +1637,7 @@ def mnlp_pp_mth():
 
 
 def cum_mnlp_pp(t):
-    """CumMNLP_t: the cumulative minimum no-lapse premium through policy month t."""
+    """CumMNLP_{t+1}: the cumulative minimum no-lapse premium through policy month t."""
     return mnlp_pp_mth() * (duration_mth(t) + 1)
 
 

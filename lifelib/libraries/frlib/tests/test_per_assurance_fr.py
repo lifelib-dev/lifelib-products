@@ -461,7 +461,7 @@ def test_compartment_three_carries_a_reduced_release_rate(per_assurance):
 
 
 def test_the_three_decrements_do_not_double_count(per_assurance):
-    """d_death + d_release + d_transfer + l(t) = l(t-1), exactly, in every year.
+    """d_death + d_release + d_transfer + l(t) = l⁻(t), exactly, in every year.
 
     Applying two decrements to the same start-of-year in force instead of in sequence
     removes more of the book than exists, and every downstream number stays plausible.

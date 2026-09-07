@@ -50,7 +50,8 @@ and its inputs must travel together.
 ``t = 0, 1, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``. The purchase
 payment falls at the beginning of month ``t = 0``, not on a separate entry-instant row,
 and the state carried into the frame — ``av_pp_init()``, ``gwb_pp_init()`` and the rest
-of the ``*_init()`` family — is what every recursion reads at ``t = -1``. The *policy*
+of the ``*_init()`` family — is the opening balance every recursion reads at ``t = 0``,
+``S_init() if t == 0 else S(t - 1)``, never at a negative index. The *policy*
 month is ``duration_mth(t) = duration_mth_init() + t``, the months already **elapsed** at
 the start of month ``t``: 0 in an at-issue cell's first month and
 ``duration_mth_init()`` in an in-force cell's. Every calendar test is written on

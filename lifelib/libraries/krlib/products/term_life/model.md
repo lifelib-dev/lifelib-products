@@ -42,8 +42,8 @@ model point 1: KR-TL-0001 - M40, bi-gaengsin (non-renewable)
   premium = KRW 15,080/month (180,960 p.a.)   horizon = 20 years to boheom nai 60   boundary = ceiling
   modules: acc_death = False   waiver = False   accel = False   reinstatement = False
 
-    [ the t = 1..12 rows of result_cf(), eleven columns ]
-... 8 further years to t = 20
+    [ the t = 0..11 rows of result_cf(), eleven columns ]
+... 8 further years to t = 19
 
 undiscounted totals: premiums 2,984,561.04   claims 2,071,060.31   claim exp+expenses+commissions 795,881.03   net_cf +117,619.70
 
@@ -67,7 +67,9 @@ model.Projection[3].result_pols()    # the counts, the decrements and the renewa
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a `DataFrame` indexed by policy year `t`, one column per cash flow
+`result_cf()` returns a `DataFrame` indexed by the **0-based** period index `t` — `t = 0`
+is the first policy year, the frame runs `t = 0 … proj_len() - 1`, and the contractual
+policy year of row `t` is the derived label `t + 1` — one column per cash flow
 line; `result_pols()` prints the counts, decrement rates, renewal index and premium beside
 them, which is where a renewal boundary becomes legible — the row whose
 `renewal_decline_rate` is non-zero and whose `prem_pp` changes on the next row.
@@ -80,7 +82,7 @@ it is **not**.
 Every age in the model is **보험나이** (*boheom nai*, insurance age): 만나이 with fractions
 of six months or more rounded up, incrementing on the **policy anniversary** and not on the
 birthday [S2 제22조] [REG-R25 제21조](#krlib-reg-r25). The model point ages, the premium table and the
-mortality table are all on that one basis, so `age(t) = x + t - 1` is exact rather than
+mortality table are all on that one basis, so `age(t) = x + t` is exact rather than
 approximate and **no age-basis shift is applied anywhere** — which is the opposite of
 `Term_JP_A`, whose 満年齢 model points read a 保険年齢 table and carry an optional
 correction for it. The one place Korean practice uses 만나이 instead is the 상법 제732조
@@ -143,17 +145,18 @@ diffing the two should expect the gap, not treat it as a defect.
 
 ## Renewal decline is its own decrement
 
-`renewal_decline_rate(t)` is non-zero **only** in a boundary year, and the exits it produces
+`renewal_decline_rate(t)` is non-zero **only** in a boundary period — the last period of a
+cycle, `(t + 1) % n == 0` with `t < proj_len() - 1` — and the exits it produces
 are taken **after** mortality and **after** ordinary lapse, on the survivors of both. The
 ordering is not cosmetic: the policy roll-forward is order-invariant, so a model that
 applies the decline first still balances and still books 20% fewer death claims in the
-boundary year — ₩64,223.18 instead of ₩80,278.98 at `t = 10` on model point 3, with
-`l(11) = 0.5805175782` either way. `check_decline_timing()` asserts that the rate is
-non-zero in exactly the boundary years and nowhere else — including the final year, where
-cover ends at the ceiling rather than renewing, and including every year of a 비갱신형 point
+boundary period — ₩64,223.18 instead of ₩80,278.98 at `t = 9` on model point 3, with
+`l(10) = 0.5805175782` either way. `check_decline_timing()` asserts that the rate is
+non-zero in exactly the boundary periods and nowhere else — including the last period, where
+cover ends at the ceiling rather than renewing, and including every period of a 비갱신형 point
 — which is the check that catches the decline being smuggled in as a lapse loading. At that
 boundary row the decline is 0.1451293946 of 0.1599961081 total exits: **90.7% of everyone
-who leaves that year.** Folded into `w(t)` it would be invisible.
+who leaves in that period.** Folded into `w(t)` it would be invisible.
 
 The rate is **[std] 20%** and is published nowhere in Korea for any product: the disclosure
 requires the *price* path and not the *persistency* path [S7] [S16]. The three-way argument
@@ -177,9 +180,9 @@ both are implemented:
 
 - **It does not survive a renewal.** 「다만, 새로이 갱신되는 계약에서는 갱신 전 보험료
   납입면제 사유로 인한 보험료 납입면제를 적용하지 않고, 보험료를 계속 납입하여야
-  합니다」 [S6]. `wop_waived_frac(t)` resets to zero in the first year of every cycle and
+  합니다」 [S6]. `wop_waived_frac(t)` resets to zero in the first period of every cycle and
   `check_waiver_reset()` asserts it. Model points 3 and 4 are where it bites: the waived
-  fraction reaches 0.0071770030 at `t = 10` and is exactly 0.0 at `t = 11`.
+  fraction reaches 0.0071770030 at `t = 9` and is exactly 0.0 at `t = 10`.
 - **On the 만기환급형 the maturity benefit is computed as if the waived premiums had been
   paid** [S1] [S12], so `cum_prem_pp(t)` sums the *scheduled* premium and
   `wop_waived_frac` does not enter it.
@@ -208,7 +211,8 @@ class the way a `uklib` reader could.
 projecting it here would duplicate that machinery in the one product that exists to
 demonstrate the decrement recursion without it. Model point 5 (20년만기 10년납) exercises
 what this chassis *does* carry at 납입완료: the 적용해지율 reaching its 0.1% convergence
-point at `t = 10` and then stepping to the 0.8% ultimate, and the premium ceasing.
+point at `t = 9`, the last paying period, and then stepping to the 0.8% ultimate from
+`t = 10`, and the premium ceasing.
 
 For the same reason the **표준해약공제액** of 별표 14 is not computed. It caps a surrender
 charge, and this product has no surrender value for it to cap; at the anchor its
@@ -286,7 +290,7 @@ point, so the machinery is exercised rather than merely present.
 `renewal_decline_beta = 0` and `comm_new_term_rate = 0` are the two References. The second
 is worth naming: a Korean renewal is issued on a **new product code** [S9] [S15], which is
 an argument that acquisition commission *should* fall at each boundary; setting it to 0.60
-turns year 11 of the 갱신형 anchor from +₩56,307.38 to −₩31,466.88 and the forty-year total
+turns `t = 10` of the 갱신형 anchor from +₩56,307.38 to −₩31,466.88 and the forty-year total
 from +₩2,976,124.30 to +₩2,295,610.86.
 
 At the anchor's ₩100,000,000 of cover the acceleration cap is **exactly reached and reduces
@@ -314,6 +318,18 @@ then fails on first evaluation.
 | `rate_class_table.csv` | `rate_class_file` | `Data.rate_class_table()` | four classes x two sexes, mortality and premium relativities |
 | `prem_rate_table.csv` | `prem_rate_file` | `Data.prem_rate_table()` | twenty published premium cells per ₩100,000,000 |
 | `lapse_table.csv` | `lapse_table_file` | `Data.lapse_table()` | the three disclosed 적용해지율 endpoints |
+
+**No input file is keyed by the time index**, so the move to the 0-based `t` changed no CSV
+value in this product. Column by column: `lapse_table.csv` is keyed by `segment` and holds
+three scalar endpoints, the time dependence being computed in `lapse_rate(t)` rather than
+tabulated; `mort_table.csv` is keyed by `(sex, age)`, an attained 보험나이 that the model
+reaches through `age(t) = x + t`, never by `t`; `prem_rate_table.csv` is keyed by
+`(form, sex, issue_age, term_y)`, where `issue_age` is an age and `term_y` a contract
+**length**, not an index; `rate_class_table.csv` is keyed by `(rate_class, sex)` and carries
+no time at all; and `model_point_table.csv` is keyed by `point_id`, its `term_y`,
+`expiry_age`, `pay_term_y` and `renew_ceiling` columns being lengths and ages rather than
+points on the frame, with no `duration_init` or other elapsed-time column — every shipped
+model point is new business projected from issue, so every frame opens at `t = 0`.
 
 ### Read once, in `Data`
 
@@ -436,20 +452,21 @@ rates, `*_pp` for per-policy amounts, `claims(t, kind)` with an uppercase `kind`
 
 | Notes symbol | Cells | Meaning |
 |---|---|---|
-| `t` | the index of `result_cf()` | policy year, 1-based |
+| `t` | the index of `result_cf()` | period index, **0-based**; policy year = `t + 1` |
 | `x` | `age_at_entry()` | 가입나이, on 보험나이 |
-| `x + t − 1` | `age(t)` | attained 보험나이 in year `t` |
+| `x + t` | `age(t)` | attained 보험나이 at time `t` |
 | `n`, `n_p` | `policy_term()`, `pay_term()` | 보험기간, 납입기간 |
-| `w_r`, `N` | `renew_ceiling()`, `horizon_ceiling()` | ceiling age, years to it |
-| `t = 1..N` | `proj_len()` | last projected policy year |
-| `k` | `term_index(t)` | renewal index, 1 in the first cycle |
+| `w_r` | `renew_ceiling()` | ceiling age |
+| (horizon) | `horizon_ceiling()` | years from entry to the ceiling |
+| `N` | `proj_len()` | number of projected periods (exclusive end); the frame is `t = 0..N−1` |
+| `k` | `term_index(t)` | renewal index, 1-based, 1 in the first cycle |
 | `x_k`, `m_k`, `m_k^p` | `term_start_age(k)`, `term_len(k)`, `term_pay_years(k)` | cycle start age, length, paying years |
 | `SA`, `i_p`, `g` | `sum_assured()`, `prem_int_rate`, `pay_factor(k)` | cover, 적용이율, shortened-pay uplift |
 | `r(sex, x, m)`, `qbar(x, m)` | `prem_rate_mth(t)`, `mort_table_mean(x, m)` | rate per ₩100,000,000, mean **table** rate |
 | `P_m(k)`, `P_a(k)` | `premium_mth_pp(t)`, `prem_pp(t)` | monthly and annualized office premium |
 | `q(t)`, `a_q(t)` | `mort_rate(t)`, `acc_mort_share(t)` | death decrement, accidental share of it |
 | `w(t)`, `d(t)`, `d_0` | `lapse_rate(t)`, `renewal_decline_rate(t)`, `renewal_decline_base` | ordinary lapse, renewal decline |
-| `l(t)`, `D(t)` | `pols_if(t)`, `pols_death(t)` | in force at start of year, expected deaths |
+| `l(t)`, `D(t)` | `pols_if(t)`, `pols_death(t)` | in force at time `t`, `l(0) = 1`; expected deaths |
 | `lap(t)`, `rho` | `pols_lapse_pool(t)`, `reinstate_rate` | reinstatable stock, 부활 rate |
 | `u(t)` | `wop_waived_frac(t)` | fraction premium-waived |
 | `A`, `a(t)`, `i_s` | `accel_amount()`, `accel_share(t)`, `accel_disc_rate` | 선지급 amount, take-up, 평균공시이율 |
@@ -459,7 +476,7 @@ Four of them needed care and the reasons are in the `Projection` docstring: `d(t
 different event at a different time from a different population than `w(t)`; `qbar` averages
 `mort_rate_at_age`, unadjusted, and is not `mort_rate`; `P_m(k)` is indexed by the cycle in
 the notes and by `t` here, with `term_index` resolving between them; and `lap(t)` is a
-**stock** where `pols_lapse` is the year's **flow** into it.
+**stock** where `pols_lapse` is the period's **flow** into it.
 
 ### Three names settled in krlib's cross-model review
 
@@ -473,7 +490,7 @@ Recorded in `RETIRED_NAMES` so no krlib model reintroduces them:
   have at all but `WholeLife_KR_A` does.
 - `pols_maturity`, not `pols_expiry` — the count whose cover ends at the scheduled end of
   the contract, whether or not anything is paid for it. On the 순수보장형 anchor,
-  `pols_maturity(20) = 0.7582424843` and `claims_maturity(20) = 0.00`.
+  `pols_maturity(19) = 0.7582424843` and `claims_maturity(19) = 0.00`.
 
 ## The identity `check_net_cf()` closes
 
@@ -529,7 +546,7 @@ of them bound nothing at all — which is said rather than papered over.
 | `accel_take_up` | 0.10 | **arbitrary placeholder**; module off in the base run | none published, and nothing bounds it |
 | `wop_inc_rate`, `wop_rec_rate` | 0.0008, 0.0 | **arbitrary placeholder**, deliberately *not* scaled off `mort_rate()`, the trigger being cause-neutral [S2 제5조제1항] | none published; the 참조순보험요율 behind it is not public [REG-R4] [R19] |
 | `reinstate_rate` | 0.10 | **arbitrary placeholder**; `reinstate_window = 3` beside it is **sourced** [S2 제28조] | none published |
-| decrement order | death, then ordinary lapse, then renewal decline | the decline is a discrete event on the survivors of the year; reversing it books 20% fewer death claims in a boundary year and still balances | fixed by the contract's own sequence, not by a disclosure |
+| decrement order | death, then ordinary lapse, then renewal decline | the decline is a discrete event on the survivors of the period; reversing it books 20% fewer death claims in a boundary period and still balances | fixed by the contract's own sequence, not by a disclosure |
 | `roll_fwd_tol`, `cash_tol` | 1e-12, 1e-6 | one closes an identity between cells in one expression; the other re-reads won amounts of order 1e7 out of a `DataFrame` | both far below one won |
 
 **Three of these are arbitrary placeholders, and are labelled as such rather than dressed up
@@ -552,24 +569,25 @@ an explicit sensitivity rather than as a point estimate.
 `tests/test_term_life_kr.py` asserts the notes' worked example **hard-coded**, so a reviewer
 can check it by eye rather than by re-running the model:
 
-- The anchor cell's premium chassis — `prem_rate_mth(1) = 15,080`, `premium_mth_pp(1) =
+- The anchor cell's premium chassis — `prem_rate_mth(0) = 15,080`, `premium_mth_pp(0) =
   15,080`, `prem_pp(t) = 180,960` level at every `t` — against the two documents that publish
   it [S12] [S4].
-- The decrement basis year by year: `mort_rate(t)`, `lapse_rate(t)` and `pols_if(t)` to the
-  ten decimals the notes print, including `pols_if(2) = 0.953472915` exactly and
-  `pols_if(20) = 0.7609991050099496`, with `pols_if(21) = 0.0`.
-- The `t = 1..20` cash flow statement to the won, and the four columns that are `0.00` in
+- The decrement basis period by period: `mort_rate(t)`, `lapse_rate(t)` and `pols_if(t)` to
+  the
+  ten decimals the notes print, including `pols_if(1) = 0.953472915` exactly and
+  `pols_if(19) = 0.7609991050099496`, with `pols_if(20) = 0.0` one step past the frame.
+- The `t = 0..19` cash flow statement to the won, and the four columns that are `0.00` in
   every row — `claims_acc_death`, `claims_accel`, `claims_maturity`, `claims_lapse` —
   asserted as zeros rather than left implied.
 - The undiscounted totals: ₩2,984,561.04 of premium, ₩2,071,060.31 of death claims and
   **+₩117,619.70** of net cash flow, with the cohort decomposition 0.0207106031 deaths +
   0.2210469126 lapses + 0.7582424843 maturities summing to 1.
 - The 갱신형 panel: the published ladder ₩9,000 → ₩21,000 → ₩56,000 → ₩201,000 [S6] [S7],
-  the boundary rows at `t = 10 / 11 / 20 / 21 / 30 / 31 / 40`, `wop_waived_frac` exactly 0.0
-  at `t = 1, 11, 21, 31` and 0.0071770030 at each cycle end, and the two boundary readings
+  the boundary rows at `t = 9 / 10 / 19 / 20 / 29 / 30 / 39`, `wop_waived_frac` exactly 0.0
+  at `t = 0, 10, 20, 30` and 0.0071770030 at each cycle end, and the two boundary readings
   **+₩2,976,124.30** against **−₩179,423.24** — together with the fact that model point 3's
   first ten rows sum to −₩170,638.50 and therefore do *not* equal model point 4.
-- The other eight model points' `proj_len`, first-year premium, premium, claims and net cash
+- The other eight model points' `proj_len`, `premium_mth_pp(0)`, premium, claims and net cash
   flow totals, as the notes tabulate them.
 - The three sensitivities the notes quantify: `mort_be_factor` at 0.75 / 0.85 / 1.00
   (+₩361,807.55 / +₩117,619.70 / −₩247,394.11), `renewal_decline_base` at 0 / 5 / 20 / 40%
@@ -587,8 +605,10 @@ cap is exactly reached at the anchor and does **not** bind, and that reading the
 `tests/test_model_conventions_kr.py` adds the house style, parametrized over
 `kr_registry.MODELS` rather than restated here: the two-Space layout, the external inputs
 with no orphan CSV, the `provenance` column on every assumption CSV, the docstrings and
-their required phrases, the `result_cf()` contract — indexed by `t`, first column `pols_if`,
-a `net_cf` column, all names `lower_snake_case`, no NaN, length equal to `proj_len()` — and
+their required phrases, the `result_cf()` contract — indexed by the 0-based `t`, the index
+being exactly `range(0, proj_len())` so the last row is `proj_len() - 1` and the frame has
+`proj_len()` rows, first column `pols_if` opening at `pols_if_init()`,
+a `net_cf` column, all names `lower_snake_case`, no NaN — and
 that every `check_*()` returns `True` on **every** shipped model point.
 
 ```bash

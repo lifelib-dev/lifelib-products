@@ -247,7 +247,7 @@ def prem_anchor_table():
 def lapse_table():
     """The three disclosed 적용해지율 endpoints, read from *lapse_table.csv*.
 
-    Indexed by ``segment``: ``in_payment_start`` (4.6% in the first policy year),
+    Indexed by ``segment``: ``in_payment_start`` (4.6% in the first policy year, ``t = 0``),
     ``in_payment_end`` (0.1% at 납입완료) and ``post_payment`` (0.8% thereafter).  The
     endpoints are disclosed [S12] [S1] and the log-linear shape between them is
     prescribed [REG-R27]; ``Projection.lapse_rate`` builds the curve.

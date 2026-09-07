@@ -54,7 +54,9 @@ notes' symbols and the cells names, and `model.Data.doc` the input arrangement.
 `t` counts **projection months** and is **0-based**: `t = 0` is the first projected
 month and the frame runs to `proj_len() − 1`. The single premium falls at the beginning
 of row 0 — there is no separate issue-instant row — and the state carried into the
-projection, the `*_init()` family, is what every recursion reads at `t = −1`.
+projection, the `*_init()` family, is the opening balance of the first projected month:
+every recursion reads `S_init()` at `t = 0` and `S(t − 1)` after it, never a negative
+index.
 
 The *policy* month is `duration_mth(t) = duration_mth_init() + t`, the policy months
 already **elapsed** at the start of month `t`. For an at-issue cell the two clocks

@@ -175,12 +175,13 @@ cap — all inflation options. See Key sensitivities.
 | Symbol | Meaning |
 |---|---|
 | t | month index from the start date, 0-based: t = 0, 1, ..., proj_len − 1; month t spans time t to t + 1; policy year y(t) = ⌊t/12⌋ + 1 |
-| k | time point from the start date, k = 0 at the start date; the state indices l(k), G(k), VPbal(k), I(k) |
+| k | time point from the start date, k = 0 at the start date; the state indices l(k), G(k), VPbal(k) |
+| a | anniversary count, a = 0 at outset, one step per policy year — a different scale from k, and the index of I(a), peak(a) |
 | s(t) | the payment point of month t: t + 1 (arrears, end of the month) or t (advance, start of it) |
 | m | payments per year (12/4/2/1); the j-th instalment (j = 1, 2, ...) falls in month 12j/m − 1 on arrears, paid at the end of it, or month 12(j−1)/m on advance, paid at the start; T is the set of those months |
 | A(y) | annualized income in policy year y; inst(t) = A(y(t))/m for t ∈ T |
 | g | fixed escalation rate (0.03 **[std]**, ≤ 0.10 [S2 §3.2]) |
-| I(k), peak | RPI reference index at anniversary k and its running maximum (catch-up state) [S2 defs] |
+| I(a), peak(a) | RPI reference index at anniversary a and its running maximum (catch-up state) [S2 defs] |
 | δ | dependant's percentage (0.50 **[std]**, ≤ 1 [S1 p9]) |
 | n | guarantee period in months (0 or 12–360 [S1 p10]) |
 | v | value-protection percentage (0.50 **[std]**, ≤ 1 [S1 p11]); v + δ ≤ 1 on first-death basis [S2 §7.3] |
@@ -205,13 +206,13 @@ below is currency per month.
 RPI catch-up pseudocode (path-dependent ratchet [S2 defs]; a second carrier operates
 the same rule [S9]):
 
-    # I[k] = RPI reference level for anniversary k
+    # I[a] = RPI reference level for anniversary a
     # (index for the 12 months ending six months before the anniversary [S2 defs])
     peak = I[0]                      # reference level at outset
-    for k = 1, 2, ...:               # k-th anniversary
-        if I[k] > peak:
-            A = A * (I[k] / peak)    # increase by the excess over the prior peak
-            peak = I[k]
+    for a = 1, 2, ...:               # a-th anniversary
+        if I[a] > peak:
+            A = A * (I[a] / peak)    # increase by the excess over the prior peak
+            peak = I[a]
         # else: A unchanged (income frozen until the index exceeds its peak)
 
 Equivalently A(y) = A(1) × max(I(0..y−1)) / I(0): income is indexed to the running

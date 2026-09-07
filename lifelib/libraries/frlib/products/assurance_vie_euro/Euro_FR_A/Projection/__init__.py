@@ -14,10 +14,11 @@ projecting model point 1::
 ``t`` counts **policy years from the valuation date**, 0-based, so ``t = 0`` is the
 first projected year whatever the model point's completed duration, and the frame is
 ``t = 0 … proj_len() - 1``. Year ``t`` runs from time ``t`` to time ``t + 1``. The
-attained age in year ``t`` is ``issue_age + duration_init + t`` and the completed policy
-duration at the 31 December of year ``t`` — which is when the surrender decrement acts,
-and which the lapse table is indexed by — is ``duration_init + t + 1``. The contractual
-policy year, where the prose needs one, is ``t + 1``.
+attained age in year ``t`` is ``issue_age + duration_init + t``. The contract's own
+1-based policy year — which the lapse table is indexed by, and which counts the policy
+years completed at the 31 December of year ``t``, when the surrender decrement acts — is
+``policy_year(t) = duration_init + t + 1``. For a cell issued at the valuation date
+(``duration_init = 0``) that is the library's ``t + 1``.
 
 .. rubric:: Input data
 
@@ -61,7 +62,7 @@ t                          (the cells argument)            Projection year, 0-ba
 x                          issue_age()                     Age at `adhésion` (ALB)
 x + d + t                  age(t)                          Attained age in year t
 d                          duration_init()                 Completed years at valuation
-d + t + 1                  duration(t)                     Completed years at 31 Dec
+d + t + 1                  policy_year(t)                  Contractual policy year, 1-based
 (none)                     proj_len()                      Number of projected years
 AV(t)                      av_pp(t)                        `Épargne acquise`, start of t
 (the steps)                av_pp_at(t, timing)             The balance inside year t
@@ -101,7 +102,7 @@ L(t)                       soc_levy_pp(t)                  `Prélèvements socia
 G(t)                       guar_floor_pp(t)                Contractual capital floor
 q(t)                       mort_rate(t)                    Annual mortality rate
 w(t)                       lapse_rate(t)                   Annual surrender rate
-(table)                    lapse_rate_base(t)              Base rate by duration
+(table)                    lapse_rate_base(t)              Base rate by policy year
 (dynamic)                  lapse_dyn_add(t)                The `taux servi` gap term
 l(t)                       pols_if(t)                      In force, start of year t
 (none)                     pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
@@ -498,15 +499,21 @@ def age(t):
     return issue_age() + duration_init() + t
 
 
-def duration(t):
-    """Completed policy years at the 31 December of year t: ``duration_init + t + 1``.
+def policy_year(t):
+    """The contract's 1-based policy year in year t: ``duration_init + t + 1``.
+
+    The **contractual label**, not the frame's index, and the library's 1-based
+    ``policy_year`` rather than its 0-based ``duration``: during projection year ``t`` the
+    contract is in its ``duration_init + t + 1``-th policy year, and that is equally the
+    count of completed policy years at the 31 December of year ``t`` - which is when the
+    surrender decrement acts.  The 0-based elapsed count, the library's ``duration``, is
+    ``duration_init() + t``.
 
     This is the index the lapse table is read by, and the reason is the tax threshold:
     the eight-year clock that switches on the reduced rate and the annual allowance runs
-    from the contract's inception, not from the valuation date, and the surrender
-    decrement acts at the year end.  The ``+ 1`` is that year end: with ``t`` 0-based,
-    year ``t`` closes at time ``t + 1``.  On the anchor cell, at duration 5 in, duration 8
-    falls at ``t = 2``.
+    from the contract's inception, not from the valuation date.  The ``+ 1`` is the year
+    end: with ``t`` 0-based, year ``t`` closes at time ``t + 1``.  On the anchor cell, five
+    completed years in, policy year 8 falls at ``t = 2``.
     """
     return duration_init() + t + 1
 
@@ -717,7 +724,7 @@ def ppb_pp(t):
     the vintage ledger, and :func:`check_ppb_roll_fwd` asserts the two agree - which is
     the point of keeping them separate.
     """
-    if t <= 0:
+    if t == 0:
         return ppb_pp_init()
     return ppb_pp(t - 1) + ppb_dotation_pp(t - 1) - ppb_release_pp(t - 1)
 
@@ -746,7 +753,7 @@ def ppb_vintage_pp(t, v):
     """
     if v < ppb_vintage_first() or v >= t:
         return 0.0
-    if t <= 0:
+    if t == 0:
         return ppb_pp_init() / ppb_vintages_init()
     if v == t - 1:
         return ppb_dotation_pp(t - 1)
@@ -904,7 +911,7 @@ def soc_levy_cum_pp(t):
     the published minimum surrender-value tables are stated **before** social and tax
     levies.
     """
-    if t <= 0:
+    if t == 0:
         return 0.0
     return soc_levy_cum_pp(t - 1) + soc_levy_pp(t - 1)
 
@@ -916,7 +923,7 @@ def pb_cum_pp(t):
     be called back.  What is ratcheted is **this**, not the account balance - see
     :func:`check_cliquet`.
     """
-    if t <= 0:
+    if t == 0:
         return 0.0
     return pb_cum_pp(t - 1) + max(pb_credited_pp(t - 1), 0.0)
 
@@ -961,7 +968,7 @@ def av_pp(t):
     recursion, because it is money that genuinely leaves the contract each year; a model
     that defers it to surrender overstates the account and every benefit measured on it.
     """
-    if t <= 0:
+    if t == 0:
         return av_pp_init()
     return av_pp_at(t - 1, "AFT_INT") - soc_levy_pp(t - 1)
 
@@ -993,7 +1000,7 @@ def guar_floor_pp(t):
     conservative, since the true floor on a five-year-old contract sits below its account
     value by the interest already credited.
     """
-    if t <= 0:
+    if t == 0:
         return av_pp_init()
     prev = (guar_floor_pp(t - 1) + prem_to_av_pp(t - 1)
             - withdrawals_pp(t - 1))
@@ -1022,14 +1029,15 @@ def mort_rate(t):
 
 
 def lapse_rate_base(t):
-    """The table annual surrender rate at the year-end policy duration **[std]**.
+    """The table annual surrender rate at the contractual policy year **[std]**.
 
     4% at durations 1-7, **8% at duration 8**, 5% at durations 9 and beyond; durations
     past the table take its last row.  The duration-8 step is the tax threshold, not a
-    behavioural guess.
+    behavioural guess.  The key is :func:`policy_year`, the 1-based contractual label,
+    which is what ``lapse_table.csv``'s ``policy_duration`` column is stated on.
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    return float(tbl.loc[min(duration(t), int(tbl.index.max())),
+    return float(tbl.loc[min(policy_year(t), int(tbl.index.max())),
                          "lapse_rate_base"])
 
 
@@ -1063,7 +1071,7 @@ def lapse_rate(t):
 
 def pols_if(t):
     """l(t): the number of policies in force at the **start** of policy year t."""
-    if t <= 0:
+    if t == 0:
         return pols_if_init()
     return pols_if_at(t - 1, "AFT_DECR")
 
@@ -1450,6 +1458,13 @@ def result_pb():
     participation aux résultats` and the statutory floor rate it implies, the PPB
     dotation, release and balance, the `taux servi` actually credited, and the
     `épargne acquise` the whole apparatus moves.
+
+    **One column is offset by a year.**  The ``ppb_pp`` column is ``ppb_pp(t + 1)``, the
+    PPB at the **end** of year ``t`` - the notes' Table 1 header, which is literally
+    ``ppb_pp(t+1)``, because the reader wants the balance the year's dotation and release
+    leave behind.  ``av_pp`` and ``guar_floor_pp`` on the same row are the **start**-of-year
+    values ``av_pp(t)`` and ``guar_floor_pp(t)``.  So on the anchor cell the ``t = 0`` row
+    shows ``ppb_pp`` 3 637.06 while the cells ``ppb_pp(0)`` is the 4 000.00 carried in.
     """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
@@ -1463,6 +1478,7 @@ def result_pb():
             "ts_stat": [ts_stat(t) for t in ts],
             "ppb_dotation_pp": [ppb_dotation_pp(t) for t in ts],
             "ppb_release_pp": [ppb_release_pp(t) for t in ts],
+            # End of year t, unlike av_pp / guar_floor_pp below - see the docstring.
             "ppb_pp": [ppb_pp(t + 1) for t in ts],
             "ts_net": [ts_net(t) for t in ts],
             "av_pp": [av_pp(t) for t in ts],

@@ -200,7 +200,7 @@ and no source establishes a rate. Both § 165 VVG branches [R2] are implemented 
 
 A *Beitragsfreistellung* is **not** a lapse: the paid-up contract keeps its guarantee vintage
 and its guaranteed *Rentenfaktor* and pays a reduced benefit, while the surrendered one is
-gone for cash. On point 7 the conversion itself moves no policy — `pols_lapse(9)` is the
+gone for cash. On point 7 the conversion itself moves no policy — `pols_lapse(8)` is the
 ordinary duration-9 table rate of 3,5 %, not 1. What is **not** true is that surrender ceases:
 a *beitragsfrei* contract keeps its § 168 VVG *Kündigung* right, so `claims_lapse` stays
 positive from the paid-up row on, 764,12 € at `t = 9`.
@@ -352,7 +352,7 @@ ever stop being the same arithmetic — the failure it exists to catch.
 
 | Module | Switch | Off value | What it does when switched on |
 |---|---|---|---|
-| *Dynamik* (*Anpassungsversicherung*) | `dynamik_rate` on the model point | `0.0000` | Grows the scheduled premium by `(1 + rate)^(t−1)` and the *Beitragssumme* with it. On at 5 % on model point 12, where it lifts the *Beitragssumme* from 33 000,00 € to 57 757,82 € [S4] |
+| *Dynamik* (*Anpassungsversicherung*) | `dynamik_rate` on the model point | `0.0000` | Grows the scheduled premium by `(1 + rate)^t` and the *Beitragssumme* with it. On at 5 % on model point 12, where it lifts the *Beitragssumme* from 33 000,00 € to 57 757,82 € [S4] |
 | *Beitragsfreistellung* | `pup_year` | `0` | The § 165 election, in both branches — conversion on point 7, cash-out on point 8 [R2] |
 | *Kapitalwahlrecht* | `kapitalwahl_rate` | `0.30` on the anchor | The commutation take-up. `0.00` on points 2 and 10, `1.00` on point 9, which empties the cohort at `t = n − 1` [R6] [R21] |
 | Death benefit including surplus | `db_incl_surplus` | `0` | Adds the *Ansammlungsguthaben* to the death benefit, the "premiums plus the attributable *Überschussbeteiligung*" form. On on points 4 and 12 [R24] |

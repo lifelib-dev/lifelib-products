@@ -98,8 +98,8 @@ benefit in deferral, no COLA. Used identically in `product-spec.md` and in the w
 
 | Variable | Description | Updated |
 |---|---|---|
-| `B(t)` | Guaranteed **annual** income purchased to date, before COLA | on each premium; on adjustment exercise |
-| `CP(t)` | Cumulative premiums paid — the deferral death benefit base and the refund base | on each premium |
+| `B(t)` | Guaranteed **annual** income in force **during** month `t`, before COLA — including any slice bought at its start | on each premium; on adjustment exercise |
+| `CP(t)` | Cumulative premiums paid **through the start of** month `t` — the deferral death benefit base and the refund base | on each premium |
 | `l(t)` | In-force (survival) probability at the **start** of month `t`; `l(0) = 1` | monthly |
 | `phase(t)` | {deferral, payout, terminated} | at `t = T`; on death; on exhaustion of a non-life-contingent form |
 | `T(t)` | Current income start month (mutable once) | on adjustment exercise |
@@ -279,9 +279,19 @@ been made.
 
 ### Deferral-phase recursions
 
-    CP(t)  =  CP(t−1)  +  Σ_{k : t_k = t} P_k,                                        CP(−1) = 0        (7)
-    B(t)   =  B(t−1)   +  Σ_{k : t_k = t} P_k · pr( x(t_k), (T − t_k)/12, f ),        B(−1)  = 0        (8)
+    CP(t)  =  CP(t−1)  +  Σ_{k : t_k = t} P_k,                                        t ≥ 1             (7)
+    B(t)   =  B(t−1)   +  Σ_{k : t_k = t} P_k · pr( x(t_k), (T − t_k)/12, f ),        t ≥ 1             (8)
     l(t+1) =  l(t) · (1 − q(t)),                                                      l(0)   = 1        (9)
+
+All three recursions open **on the first row of the frame**, not on a seed before it — nothing in this model is
+indexed at `t = −1`:
+
+    CP(0)  =  Σ_{k : t_k = 0} P_k
+    B(0)   =  Σ_{k : t_k = 0} P_k · pr( x(0), T/12, f )
+    l(0)   =  1
+
+The `CP(0)` and `B(0)` openers are the premiums received at the **start of month 0**, which is why `CP(t)` and
+`B(t)` are the values in force *during* month `t`, including a slice bought at its start.
 
 Equation (8) is the core of the product: **income is additive across slices**, each priced at the annuitant's
 attained age and the remaining deferral **at its own payment date** [R13 §3.B(1)(b)](#uslib-deferred_income_annuity-r13) [S3]. Nothing

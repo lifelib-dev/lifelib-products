@@ -57,12 +57,14 @@ expect one — ₩100,000,000 (1억원).
   **columns of one projection**. Only the first uses mortality in its annuity: 「옵션 중
   사망(생존) 위험률이 적용되는 것은 종신형에 한정된다 … 확정형과 상속형은 사망률을
   사용하지 않는다」 [R12 §III-1](#krlib-immediate_annuity-r12).
-- **Projection frequency and origin.** Annual steps, 0-based. Period `t` runs from time
-  `t` to time `t + 1`; row `t` of `result_cf()` carries period `t`; the single premium
-  falls at time 0 on row 0; and **the annuity is payable in arrears**, so the payment
-  shown on row `t` falls at time `t + 1`, on the 계약해당일. The last row index is
-  `proj_len()` and it is a **last index, not a row count**: the anchor has 51 rows, 0 to
-  50.
+- **Projection frequency and origin.** Annual steps on a **0-based** time index. `t = 0` is
+  the first policy year; period `t` runs from time `t` to time `t + 1`; row `t` of
+  `result_cf()` carries period `t`; the single premium falls at time 0 on row 0; and **the
+  annuity is payable in arrears**, so the payment shown on row `t` falls at time `t + 1`,
+  on the 계약해당일. The contractual policy year is the derived 1-based label `t + 1`, never
+  the index itself. `N = proj_len()` is the **number of projected periods**, the frame's
+  exclusive end, so the frame is `t = 0 … proj_len() − 1` and `len(result_cf()) ==
+  proj_len()`: the anchor has 51 rows, `t = 0` to `t = 50`.
 - **The annual grid is the contract's own mode, not an approximation of the monthly one.**
   연단위 pays from the first 계약해당일 and 월단위 from one month after the 보장개시일,
   both published side by side by one carrier [S1 주1]. Monthly is the market default; the
@@ -135,16 +137,19 @@ as both the pricing basis of the life shape and the decrement of all three.
 
 | # | shape | sex / age | term | retention | crediting | w | `proj_len()` | premium |
 |---|---|---|---|---|---|---|---|---|
-| 1 | life | M 60 | 10 | — | `decl_2017` | 0.00 | 50 | ₩100,000,000 |
-| 2 | life | F 60 | 10 | — | `decl_2017` | 0.00 | 50 | ₩100,000,000 |
-| 3 | life | M 60 | 20 | — | `decl_2017` | 0.00 | 50 | ₩100,000,000 |
-| 4 | life | M 45 | 10 | — | `decl_2017` | 0.00 | 65 | ₩10,000,000 |
-| 5 | life | F 80 | 10 | — | `decl_2017` | 0.00 | 30 | ₩1,500,000,000 |
-| 6 | inheritance | M 60 | 10 | `as_designed` | `decl_2017` | 0.02 | 9 | ₩100,000,000 |
-| 7 | inheritance | M 60 | 10 | **`as_ordered`** | `decl_2017` | 0.02 | 9 | ₩100,000,000 |
-| 8 | inheritance | F 70 | 20 | `as_designed` | **`min_guar`** | 0.02 | 19 | ₩100,000,000 |
-| 9 | certain | M 60 | 10 | — | `decl_2017` | 0.02 | 9 | ₩100,000,000 |
-| 10 | certain | F 55 | 30 | — | `decl_2017` | 0.00 | 29 | ₩5,000,000,000 |
+| 1 | life | M 60 | 10 | — | `decl_2017` | 0.00 | 51 | ₩100,000,000 |
+| 2 | life | F 60 | 10 | — | `decl_2017` | 0.00 | 51 | ₩100,000,000 |
+| 3 | life | M 60 | 20 | — | `decl_2017` | 0.00 | 51 | ₩100,000,000 |
+| 4 | life | M 45 | 10 | — | `decl_2017` | 0.00 | 66 | ₩10,000,000 |
+| 5 | life | F 80 | 10 | — | `decl_2017` | 0.00 | 31 | ₩1,500,000,000 |
+| 6 | inheritance | M 60 | 10 | `as_designed` | `decl_2017` | 0.02 | 10 | ₩100,000,000 |
+| 7 | inheritance | M 60 | 10 | **`as_ordered`** | `decl_2017` | 0.02 | 10 | ₩100,000,000 |
+| 8 | inheritance | F 70 | 20 | `as_designed` | **`min_guar`** | 0.02 | 20 | ₩100,000,000 |
+| 9 | certain | M 60 | 10 | — | `decl_2017` | 0.02 | 10 | ₩100,000,000 |
+| 10 | certain | F 55 | 30 | — | `decl_2017` | 0.00 | 30 | ₩5,000,000,000 |
+
+The `proj_len()` column is the **number of projected periods**, so point 1's 51 is
+`t = 0 … 50` and point 6's 10 is `t = 0 … 9`.
 
 Both sexes, the issue-age envelope 45 / 55 / 60 / 70 / 80, both guarantee lengths, both
 retention bases, both crediting bases and all three shapes are covered; the premium
@@ -409,8 +414,8 @@ property of the statement rather than a claim in prose.
 
 | Symbol | Meaning |
 |---|---|
-| t | period index from inception, 0-based; period t runs from time t to time t + 1 |
-| N | `proj_len()`, the **last** period index; rows run 0 … N |
+| t | period index from inception, 0-based; period t runs from time t to time t + 1; t = 0, 1, …, N − 1 |
+| N | `proj_len()`, the **number** of projected periods — the frame's exclusive end; rows run 0 … N − 1 |
 | x, x + t | 가입나이 and attained age, both **보험나이** |
 | P | 일시납보험료, the single premium |
 | n | 보험기간 (inheritance) or 연금지급기간 (certain), in years |
@@ -549,7 +554,7 @@ period. `check_lives_roll_fwd()` rebuilds the same probability as an explicit pr
 **Life — struck once, level thereafter.**
 
 ```
-ä(x, g, i) = SUM over t = 0 … N of  v^(t+1) max[ l(t+1)/l(0) , 1{t + 1 <= g} ]
+ä(x, g, i) = SUM over t = 0 … N − 1 of  v^(t+1) max[ l(t+1)/l(0) , 1{t + 1 <= g} ]
 A(t)       = V(0) / ä(x, g, i(0)),   the same value at every t
 ```
 
@@ -630,7 +635,7 @@ tolerance, with `check_annuity_basis()` holding the shape to its basis instead.
 
 ```
 σ(0) = pols_if_init,        σ(t) = σ(t − 1) (1 − w(t − 1))
-w(t) = 0                    on the life shape, and at t = N on every shape
+w(t) = 0                    on the life shape, and at t = N − 1 on every shape
      = the model point's lapse_rate otherwise
 
 d(t)         = l(t) σ(t) q(x + t)                             deaths in period t
@@ -656,9 +661,11 @@ F(t)  = max( l(t+1) , 1{t+1 <= g} )   life
 ```
 
 Four things to notice. **IF and F are offset by one period**, because the payment falls at
-the *end* of the period. **The guarantee indicator differs between them** — `t < g` in IF,
-`t + 1 <= g` in F — and both are right: the obligation is open at time t for t = 0 … 9 on
-a ten-year guarantee, and the instalments the guarantee covers fall at times 1 … 10. **On
+the *end* of the period. **The survival term the guarantee floor is maxed against differs
+between them** — `l(t)` in IF, `l(t + 1)` in F — under one and the same guarantee window:
+`t < g` and the `t + 1 <= g` written in F are the same test on integers, and both readings
+of it are right, because the obligation is open at time t for t = 0 … 9 on a ten-year
+guarantee and the instalments the guarantee covers fall at times 1 … 10. **On
 the certain shape survival is irrelevant to both** [R12 §III-1](#krlib-immediate_annuity-r12). And **on the inheritance
 shape the 생존연금 is payable 「살아있을 때」**, so F carries a further year of survival,
 the death benefit taking the place of the payment for those who die.
@@ -690,7 +697,7 @@ E[DTH(t)]  = 0                                          life
            = d(t) ( ρ P + V(t + 1) )                    inheritance
            = d(t) ρ P                                   certain
 E[SUR(t)]  = pols_lapse(t) CV(t + 1)
-E[MAT(t)]  = IF(t + 1) M                inheritance, t = N;  0 otherwise
+E[MAT(t)]  = IF(t + 1) M                inheritance, t = N − 1;  0 otherwise
 E[COM(t)]  = P κ IF(0)                  t = 0;  0 otherwise
 E[EXP(t)]  = φ A(t) F(t)  +  P ε IF(0) at t = 0
 ```
@@ -709,7 +716,7 @@ consequence of measuring it on the 연금연액 [S1 §VIII] rather than per poli
 why the expense column of the anchor is exactly 0.80% of the annuity column at every
 `t >= 1`.
 
-### Processing order (period t = 0 … N)
+### Processing order (period t = 0 … N − 1)
 
 The order is not a presentational matter: three of the flows above depend on it.
 
@@ -728,23 +735,25 @@ The order is not a presentational matter: three of the flows above depend on it.
    연금월액 to the date of death, so a life dying in period t on the inheritance shape
    here receives the post-payment fund and **not** that period's annuity.
 5. **Surrenders are taken after the deaths**, at `CV(t + 1)`, and are suppressed in the
-   final period (`w(N) = 0`).
+   final period (`w(N − 1) = 0`).
 6. **The 만기보험금 falls at the end of the last period** on the inheritance shape alone,
-   weighted by `IF(N + 1)` — the probability of reaching maturity alive **and** in force.
+   at `t = N − 1`, weighted by `IF(N)` — the probability of reaching maturity alive **and**
+   in force, one further period of decrement past the row that carries it.
 
-The horizon itself:
+The horizon itself, as a **count** of periods:
 
 ```
-N = max( g − 1 , ω − x )       life
-  = n − 1                      inheritance, certain
+N = max( g , ω − x + 1 )       life
+  = n                          inheritance, certain
 ```
 
-On the life shape the projection runs to the limiting age, at which q = 1, so the
-obligation is **exhausted rather than truncated**; the `max` covers the case — impossible
-on any shipped model point but reachable at a high enough issue age — where the guarantee
-outlives the annuitant's limiting age. On the other two the contract ends at a stated
-term, so the last period is `n − 1` and its payment falls at time n, with the 만기보험금
-beside it where there is one.
+so the last projected period is `N − 1`: `max(g − 1, ω − x)` on the life shape and `n − 1`
+on the other two. On the life shape the projection runs to the limiting age, at which
+q = 1, so the obligation is **exhausted rather than truncated**; the `max` covers the case
+— impossible on any shipped model point but reachable at a high enough issue age — where
+the guarantee outlives the annuitant's limiting age. On the other two the contract ends at
+a stated term, so the last period is `n − 1` and its payment falls at time n, with the
+만기보험금 beside it where there is one.
 
 ### Net cash flow
 
@@ -893,7 +902,7 @@ annuity_pp(0)               4,948,039.1569365682     연금연액, level for lif
 risk_prem_pp()                      0.0000000000
 maturity_benefit()                  0.0000000000
 retention_shortfall_pp()            0.0000000000
-proj_len()                                     50    rows 0 … 50; ω − x = 110 − 60
+proj_len()                                     51    rows 0 … 50; ω − x + 1 = 110 − 60 + 1
 ```
 
 The 연금연액 of **₩4,948,039** is about **495만원** a year. Divided by twelve it is
@@ -1194,7 +1203,7 @@ are taken once, at the door, and almost nothing is taken afterwards.**
 Both are 남자 60, 일시납 ₩100,000,000, **상속연금형 만기형**, 보험기간 10년, `decl_2017`,
 `lapse_rate` 0.02. They differ in one column: `retention_basis`. On both,
 `av_pp_init() = 95,030,000.00` (= P × (1 − 0.0350 − 0.0147)) and
-`maturity_benefit() = 100,000,000.00`, and `proj_len() = 9`.
+`maturity_benefit() = 100,000,000.00`, and `proj_len() = 10`, so the frame is `t = 0 … 9`.
 
 **Hand trace, period 0, as designed (point 6).**
 
@@ -1510,10 +1519,13 @@ of the eleven `check_*()` cells.
    `payment_factor(10) = l(11) = 0.946528763357` are **different numbers**. Either error
    shifts the cliff by a year. *Test:* `check_pols_roll_fwd()`, `pols_exit(8) == 0.0`, and
    both t = 10 weights, on point 1.
-4. **`proj_len()` read as a row count.** It is the **last row index**. The anchor has 51
-   rows, 0 … 50, and `ω − x = 110 − 60 = 50`. An off-by-one drops the last instalment on
-   the term shapes — on point 9 that is ₩9,052,841.76 of outgo, 9.1% of the annuity total.
-   *Test:* `len(result_cf()) == proj_len() + 1` on every model point.
+4. **`proj_len()` read as the last row index.** It is the **number of projected periods**,
+   the frame's exclusive end, so the frame is `range(proj_len())` and the last row is
+   `proj_len() − 1`. The anchor has 51 rows, 0 … 50, and `ω − x + 1 = 110 − 60 + 1 = 51`.
+   An off-by-one either drops the last instalment on the term shapes — on point 9 that is
+   ₩9,052,841.76 of outgo, 9.1% of the annuity total — or projects a period past the end of
+   the shipped table. *Test:* `len(result_cf()) == proj_len()` and
+   `result_cf().index[-1] == proj_len() − 1` on every model point.
 5. **Reading the mortality rate at the wrong end of the period.** `lives_if` applies
    `q(x + t − 1)`, the age attained at the **start** of the period. Reading `q(x + t)`
    raises the factor's mortality by a year throughout and gives an annuity of
@@ -1579,11 +1591,11 @@ of the eleven `check_*()` cells.
     surrender rate is a defect in the table rather than a scenario. *Test:*
     `check_surr_value()`, which asserts a nil rate **and** a nil surrender value at every
     duration on that shape.
-17. **Letting a surrender fire in the final period.** `lapse_rate(N) = 0` on every shape.
+17. **Letting a surrender fire in the final period.** `lapse_rate(N − 1) = 0` on every shape.
     Without it a contract in its last year is surrendered a moment before its 만기보험금 and
     the maturity benefit is diverted into a surrender value of a different amount for no
     reason any contract states. *Test:* `claims_lapse(9) == 0.0` on points 6, 7 and 9.
-18. **Weighting the 만기보험금 by `pols_if(N)` instead of `pols_if(N + 1)`.** It is payable
+18. **Weighting the 만기보험금 by `pols_if(N − 1)` instead of `pols_if(N)`.** It is payable
     on survival **to** maturity, one further period of decrement away:
     ₩79,495,349.97 on point 6, against ₩80,023,013.57 if the earlier weight were used.
     *Test:* the maturity figure at point 6, t = 9.

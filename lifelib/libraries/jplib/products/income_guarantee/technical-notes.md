@@ -9,7 +9,8 @@ carried verbatim from `_research/income-guarantee.md` and frozen; [REG-R#] resol
 `references/regulatory-and-actuarial-references.md`, whose own R-numbering is distinct and
 must never be read across. **[std]** marks a standardization introduced for the reference
 implementation; [unverified] marks a claim not confirmed against a retrieved document.
-**Every contractual parameter here is identical to `product-spec.md`'s.** Two parameters are
+**Every contractual parameter here is identical to `product-spec.md`'s, save that every
+month index is restated on the 0-based `t` (see Time index).** Two parameters are
 new, and both are named as such where they appear: a **rate-class mortality factor**, which
 `product-spec.md` footnote 6 explicitly defers to this file because no carrier publishes the
 premium differential between classes, and a **per-instalment annuity administration
@@ -449,10 +450,12 @@ For `t = 0 .. T − 1`, in this order **[std]**:
        l(t+1) = l(t) * (1 - q_m(t)) * (1 - w_m(t))     for t < N - 1
        l(t+1) = 0                                       for t >= N - 1
 
-   The identity `l(t) − l(t+1) = D(t) + lapses(t)` holds for `t < N − 1`, and
-   `check_pols_roll_fwd()` asserts it over the whole of cover, `t = 0 … N − 1`. At
-   `t = N − 1` the survivors leave with nothing: on the anchor cell that is 0.144342 of
-   the original cohort.
+   The identity `l(t) − l(t+1) = D(t) + lapses(t)` holds for `t < N − 1`. At `t = N − 1`
+   the survivors neither die nor lapse: their cover runs out, and on the anchor cell that
+   is 0.144342 of the original cohort. `check_pols_roll_fwd()` therefore asserts the
+   extended form `l(t) + reinstatements(t+1) − l(t+1) = D(t) + lapses(t) + expiries(t)`
+   over the whole of cover, `t = 0 … N − 1`, with `expiries(t)` (the model's
+   `pols_maturity`) zero in every month but `N − 1`.
 
 ### Net cash flow
 

@@ -210,7 +210,7 @@ worked example exactly — the same device `Term_US_A` uses when it ships
 It is a reproduction switch, not a claim about the product. Paid-up additions **are**
 dividend-eligible, that compounding is the notes' first-ranked sensitivity, and
 `pua_div_on = True` is the product-faithful setting: on the anchor cell it raises the
-policy-year-10 dividend — `div_base(9)` — from 326.25 to 361.58 and, on the new-business
+policy-year-10 dividend — `div_credited(9)` — from 326.25 to 361.58 and, on the new-business
 point, paid-up-additions face at maturity from 83,675 to 134,042. `div_pua(t)` implements the notes' formula
 either way, and a test asserts its value against the notes' own parenthetical —
 35.331623 on the anchor cell — so neither reading can be lost.

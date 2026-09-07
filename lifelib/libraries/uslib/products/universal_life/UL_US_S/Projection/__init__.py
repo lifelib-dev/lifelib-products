@@ -50,13 +50,16 @@ in-force point the month sitting ``duration_mth_init()`` completed months after 
 Policy month ``t`` runs from the monthiversary at time ``t`` to the next; the frame is
 ``t = 0, 1, ..., proj_len() - 1`` and ``result_cf()`` has ``proj_len()`` rows. The
 policy year is the 1-based contractual label ``policy_year(t) = duration(t) + 1``, derived
-and never indexed by. State variables are **closing balances** of month ``t``:
-``av_pp(t)``, ``loan_bal_pp(t)``, ``cum_prem_pp(t)`` and ``sum_assured_at(t)`` are the
-values at the end of the month, and their opening values -- the notes' ``AV(t-1)``,
-``L(t-1)``, ``CumPrem(t-1)`` -- are ``av_pp_at(t, "BEF_PREM")``, ``loan_bal_pp_bom(t)``
-and ``cum_prem_pp(t - 1)``, which at ``t = 0`` are the model point's ``av_pp_init()``,
-``loan_bal_init()`` and zero. ``pols_if(t)`` is the count in force at the start of
-month ``t``, so ``pols_if(0) = pols_if_init()``. Nothing is indexed at ``t = -1``.
+and never indexed by. ``av_pp(t)``, ``loan_bal_pp(t)`` and ``cum_prem_pp(t)`` are
+**closing balances** of month ``t``: the values at the end of the month, and their
+opening values -- the notes' ``AV(t-1)``, ``L(t-1)``, ``CumPrem(t-1)`` -- are
+``av_pp_at(t, "BEF_PREM")``, ``loan_bal_pp_bom(t)`` and ``cum_prem_pp(t - 1)``, which
+at ``t = 0`` are the model point's ``av_pp_init()``, ``loan_bal_init()`` and zero.
+``sum_assured_at(t)`` is not a closing balance: it is the face amount in force
+**during** month ``t``, after that month's BOM withdrawal reduction -- the face that
+``db_pp(t)``, ``net_amt_at_risk(t)`` and ``units(t)`` are measured on. ``pols_if(t)``
+is the count in force at the start of month ``t``, so ``pols_if(0) = pols_if_init()``.
+Nothing is indexed at ``t = -1``.
 
 Within each month the notes' monthiversary order is followed exactly:
 
@@ -1147,8 +1150,10 @@ def lapse_rate_base(t):
 def lapse_shock_year():
     """The policy year of the surrender-charge-expiry lapse shock.
 
-    The first policy year with no surrender charge, i.e. the run-off length plus one,
-    derived from *surr_charge_table.csv* rather than hard-coded, so a different
+    The first policy year with no surrender charge in any month, i.e. the run-off length
+    plus one; because the run-off counts the current month the charge already reaches
+    zero at ``t = 107``, the last month of policy year 9.  Derived from
+    *surr_charge_table.csv* rather than hard-coded, so a different
     schedule moves the shock with it.  Zero when the model point carries no surrender
     charge, which no policy year can equal.
     """

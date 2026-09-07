@@ -614,14 +614,14 @@ def test_reduce_prem_offsets_and_spills_into_puas(whole_life):
 
 
 def test_every_credited_dividend_is_delivered(whole_life):
-    """No option may credit a dividend and then deliver nothing - the year-T leak.
+    """No option may credit a dividend and then deliver nothing - the last-period leak.
 
     Under REDUCE_PREM the notes route D_t to the *next* period's premium, and there is
     no period after the last.  Read literally that drops the final dividend - 2,030.14
     on model point
     5, more than a full year's gross premium: it offset no premium, bought no paid-up
     additions, was not paid in cash and never reached the maturity benefit, while the
-    other three options all delivered theirs.  The model treats the whole of D_T as
+    other three options all delivered theirs.  The model treats the whole of D_{T-1} as
     REDUCE_PREM excess and buys paid-up additions with it at NSP_100 = 1.
     """
     pua, cash, accum, rpd = (whole_life.Projection[i] for i in (2, 3, 4, 5))

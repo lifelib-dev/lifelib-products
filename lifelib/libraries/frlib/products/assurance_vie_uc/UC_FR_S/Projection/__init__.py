@@ -1113,9 +1113,9 @@ def av_at(t, timing):
     """The in-force account value: ``av_pp_at(t, timing) x pols_if_at(t, "AFT_DECR")``.
 
     The account value is a **stock**, so it is weighted by the count the balance is still
-    carried for once the month's decrements have gone — the notes' ``l(t)`` — and not by
-    the start-of-month exposure :func:`pols_if` that weights the month's *flows*.  At month
-    12 of the anchor cell ``77,330.08 x 0.968240 = 74,874.07``.
+    carried for once the month's decrements have gone — the notes' ``l(t + 1)`` — and not
+    by the start-of-month exposure :func:`pols_if` that weights the month's *flows*.  At
+    ``t = 11`` on the anchor cell ``77,330.08 x 0.968240 = 74,874.07``.
     """
     return av_pp_at(t, timing) * pols_if_at(t, "AFT_DECR")
 
@@ -1650,7 +1650,7 @@ def check_benefit_funding():
 
 
 def result_cf():
-    """Result table of cashflows, indexed by policy month t.
+    """Result table of cashflows, indexed by policy month t = 0, 1, ..., proj_len() - 1.
 
     ``pols_if`` is the in-force probability at the **start** of the month, which is the
     weight carried by every flow on its own row - divide a flow by it and the per-policy
@@ -1686,7 +1686,7 @@ def result_cf():
 
 
 def result_av():
-    """Result table of the account value recursion, indexed by policy month t.
+    """Result table of the account value recursion, indexed by t = 0, 1, ..., proj_len() - 1.
 
     The notes' worked-example table, column for column: the liquidation value, the unit
     count, the two legs, the end-of-month account value, the floor, the `capital sous

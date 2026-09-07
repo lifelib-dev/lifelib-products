@@ -174,7 +174,12 @@ no public product-specific study; replace with experience):
 
 ## Cash flow components and recursions
 
-### Notation (defined once, used throughout; shared with product-spec.md)
+### Notation (defined once, used throughout)
+
+`product-spec.md` states the same mechanics in **contractual** month numbering, where the
+issue month is month 1: its `t` is this `t + 1`, so its `t <= 12` is this `t < 12`, its
+`CumPrem(t) = P x min(t, T_cess)` is this `P x min(t + 1, T_cess)`, and its crossover at
+month 167 is this `t* = 166`.
 
 | Symbol | Meaning |
 |---|---|

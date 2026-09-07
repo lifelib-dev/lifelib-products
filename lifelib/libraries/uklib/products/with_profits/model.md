@@ -114,7 +114,7 @@ changing the target payout*. That is the whole tension the discretion manages.
 | Cost of bonus | `b(t)·FV(t−1)` | `ΔG(t)·v_sv^(n−(t+1))` |
 | Death benefit | `1.01 × (FV + FB)` | `G + TB` |
 | Surrender | `FV + FB − MVR` | smoothed payout, capped at `G + TB` |
-| Maturity | none — whole of life | `G(n) + TB(n)` |
+| Maturity | none — whole of life | `G(n−1) + TB(n−1)` |
 
 Both are **one cells**, `guar_benefit_pp`. Every rule that consumes them — the bonus
 cost, the mortality charge's sum at risk, the final bonus, the MVR — treats them
@@ -147,10 +147,13 @@ Two things the cap cannot say, both visible in the shipped cells:
   is a *like-for-like* comparison between successive maturity cohorts — this year's payout
   on a 25-year endowment against last year's — not a comparison of one policy's own payout
   across its own durations. A regular-premium asset share grows far faster than 10% a year
-  early on because premiums, not investment return, dominate it, so the cap binds
-  throughout and the **corridor floor** is what actually sets the payout: 80% of the asset
-  share in the first policy year (`t = 0`) on the shipped endowment cell, rising to 100.0%
-  at maturity as the asset share outgrows the premium. The single-premium bond the worked
+  early on because premiums, not investment return, dominate it, so the cap's upper bound
+  binds and the **corridor floor** is what actually sets the payout: exactly 80% of the
+  asset share from the second policy year (`t = 1`) through `t = 12` on the shipped
+  endowment cell — `t = 0` is the one period where the cap is skipped, so the payout there
+  is the asset share itself. From `t = 13` the corridor floor no longer binds and the ±10%
+  cap alone carries the payout up, reaching 100.0% of the asset share at maturity as the
+  asset share outgrows the premium. The single-premium bond the worked
   example uses has no such problem, which is why the notes can state the cap plainly.
 
 The corridor implements the 80–120% target range deterministically at model-point level.

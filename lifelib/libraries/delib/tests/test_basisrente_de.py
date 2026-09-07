@@ -120,15 +120,15 @@ ROUNDED_CELL_SUMS = {
 S_ANCHOR = 163793.9012327640          # beitragssumme_pp(): 6 000 x (1.02^22 - 1) / 0.02
 ALPHA_TOTAL_ANCHOR = 4094.8475308191  # 0.025 x S -- the same number as commissions(0)
 ALPHA_INSTALMENT = 818.9695061638     # alpha_total / zill_spread_y
-N1_ANCHOR = 7215.0304938362           # prem_to_av_pp(0), the first projected year
-AV_PP_AFT_INT_1 = 7377.3686799475     # N(0) x (1 + 0.026 - 0.0035)
-AV_2_ANCHOR = 7366.7479330812         # that, after the first year's death decrement
+N_ANCHOR_T0 = 7215.0304938362         # prem_to_av_pp(0), the first projected year
+AV_PP_AFT_INT_T0 = 7377.3686799475    # N(0) x (1 + 0.026 - 0.0035)
+AV_ANCHOR_T1 = 7366.7479330812        # that, after the first year's death decrement
 QX45_TABLE = 0.0023263433             # 0.014000 x 1.085^(45 - 67), the shipped table at 45
 TREND_2005_TO_2026 = 0.7280493868     # (1 - 0.015)^21
-Q1_FIRST_ORDER = 0.0016936928         # mort_rate_base(0); mort_rate(0) is 0.85 x it
-Q1_BEST_ESTIMATE = 0.0014396389
-FREEZE_1 = POLS_PAIDUP_2 = 0.0399424144
-POLS_PAYING_2 = 0.9586179467
+Q_FIRST_ORDER_T0 = 0.0016936928       # mort_rate_base(0); mort_rate(0) is 0.85 x it
+Q_BEST_ESTIMATE_T0 = 0.0014396389
+FREEZE_T0 = POLS_PAIDUP_T1 = 0.0399424144
+POLS_PAYING_T1 = 0.9586179467
 FUND_PER_ANNUITANT = 200050.6219643070
 ANN_PP_CONV = 7561.9135102508             # ann_pp at ret_t(), which is t = 22
 ANN_PP_CONV_IF_GUARANTEE_BOUND = 6721.70  # what 28,00 EUR would have given
@@ -154,9 +154,9 @@ SINGLE_TOTALS = {
     "expenses": 2321.22, "commissions": 1500.00, "net_cf": -29984.36,
 }
 SINGLE_NET_CF_ROUNDED_CELL_SUM = -29984.39   # three cents away from the full-precision total
-N1_SINGLE = 55164.0000000000                 # 60 000 x 0.925 - 300 - 36
-AV_PP_2_SINGLE = 56405.1900000000
-AV_2_SINGLE = 56170.6811550510
+N_SINGLE_T0 = 55164.0000000000               # 60 000 x 0.925 - 300 - 36
+AV_PP_SINGLE_T1 = 56405.1900000000
+AV_SINGLE_T1 = 56170.6811550510
 
 # The notes' Rentenfaktor table: the anchor, where the current factor binds, and model point 13,
 # where the guaranteed one does.  (ret_t, av(T), fund_at_conv, per annuitant, gtd, curr,
@@ -230,7 +230,7 @@ def test_the_worked_example_totals_are_summed_at_full_precision(de_basis_anchor)
 
 
 def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_anchor):
-    """The notes' first independent check: N(1) and the account, from the charge scale up.
+    """The notes' first independent check: N(0) and the account, from the charge scale up.
 
     ``S = 6 000 x (1.02^22 - 1) / 0.02``; the *Zillmerung* is ``0.025 x S`` in five instalments;
     the *Zuzahlung* paid is ``4 000 x 0.70`` and carries its own 2,5 % charge rather than a share
@@ -247,14 +247,14 @@ def test_check_1_the_first_year_account_rebuilt_from_the_charge_scale(de_basis_a
     assert p.unit_cost_pp(0) == 36.00
     assert p.prem_to_av_pp(0) == pytest.approx(
         8140.00 - ALPHA_INSTALMENT - 70.00 - 36.00, rel=1e-12)
-    assert p.prem_to_av_pp(0) == pytest.approx(N1_ANCHOR, rel=1e-12)
+    assert p.prem_to_av_pp(0) == pytest.approx(N_ANCHOR_T0, rel=1e-12)
     assert p.cred_rate(0) == pytest.approx(0.026, rel=1e-12)
-    assert p.av_pp_at(0, "AFT_INT") == pytest.approx(AV_PP_AFT_INT_1, rel=1e-12)
+    assert p.av_pp_at(0, "AFT_INT") == pytest.approx(AV_PP_AFT_INT_T0, rel=1e-12)
     assert p.av_pp_at(0, "AFT_INT") == pytest.approx(
-        N1_ANCHOR * (1 + 0.026 - 0.0035), rel=1e-9)
+        N_ANCHOR_T0 * (1 + 0.026 - 0.0035), rel=1e-9)
     # The fund-level value the table publishes, one death decrement later.
-    assert p.av(1) == pytest.approx(AV_2_ANCHOR, rel=1e-12)
-    assert p.av(1) == pytest.approx(AV_PP_AFT_INT_1 * (1 - Q1_BEST_ESTIMATE), rel=1e-8)
+    assert p.av(1) == pytest.approx(AV_ANCHOR_T1, rel=1e-12)
+    assert p.av(1) == pytest.approx(AV_PP_AFT_INT_T0 * (1 - Q_BEST_ESTIMATE_T0), rel=1e-8)
     # 2,5 % of the Beitragssumme, twice: what the insurer pays out at inception is sized to
     # what it may write into the reserve.  One is an outgo and the other is only an account
     # deduction, which is why the commission is in net_cf and the instalment is not.
@@ -276,17 +276,17 @@ def test_check_2_the_year_one_decrement_split_and_the_rate_behind_it(de_basis_an
     assert QX45_TABLE == pytest.approx(0.014000 * 1.085 ** (45 - 67), abs=5e-11)
     assert (1 - 0.015) ** 21 == pytest.approx(TREND_2005_TO_2026, abs=5e-10)
     assert p.cal_year(0) == 2026
-    assert p.mort_rate_base(0) == pytest.approx(Q1_FIRST_ORDER, abs=5e-10)
-    assert p.mort_rate(0) == pytest.approx(Q1_BEST_ESTIMATE, abs=5e-10)
+    assert p.mort_rate_base(0) == pytest.approx(Q_FIRST_ORDER_T0, abs=5e-10)
+    assert p.mort_rate(0) == pytest.approx(Q_BEST_ESTIMATE_T0, abs=5e-10)
     assert p.mort_rate(0) == pytest.approx(0.85 * p.mort_rate_base(0), rel=1e-12)
-    assert p.pols_death(0) == pytest.approx(Q1_BEST_ESTIMATE, abs=5e-10)
+    assert p.pols_death(0) == pytest.approx(Q_BEST_ESTIMATE_T0, abs=5e-10)
     assert p.bf_rate(0) == 0.04
-    assert p.pols_freeze(0) == pytest.approx(FREEZE_1, abs=5e-10)
-    assert p.pols_freeze(0) == pytest.approx((1 - Q1_BEST_ESTIMATE) * 0.04, rel=1e-8)
-    assert p.pols_paying(1) == pytest.approx(POLS_PAYING_2, abs=5e-10)
-    assert p.pols_paidup(1) == pytest.approx(POLS_PAIDUP_2, abs=5e-10)
-    assert p.pols_if(1) == pytest.approx(POLS_PAYING_2 + POLS_PAIDUP_2, abs=5e-10)
-    assert p.pols_if(1) == pytest.approx(1.0 - Q1_BEST_ESTIMATE, abs=5e-10)
+    assert p.pols_freeze(0) == pytest.approx(FREEZE_T0, abs=5e-10)
+    assert p.pols_freeze(0) == pytest.approx((1 - Q_BEST_ESTIMATE_T0) * 0.04, rel=1e-8)
+    assert p.pols_paying(1) == pytest.approx(POLS_PAYING_T1, abs=5e-10)
+    assert p.pols_paidup(1) == pytest.approx(POLS_PAIDUP_T1, abs=5e-10)
+    assert p.pols_if(1) == pytest.approx(POLS_PAYING_T1 + POLS_PAIDUP_T1, abs=5e-10)
+    assert p.pols_if(1) == pytest.approx(1.0 - Q_BEST_ESTIMATE_T0, abs=5e-10)
 
 
 def test_check_3_the_conversion_and_the_branch_of_the_max_that_binds(de_basis_anchor):
@@ -430,9 +430,9 @@ def test_the_einmalbeitrag_totals_and_its_first_year_account(basisrente):
     assert p.commissions(0) == pytest.approx(p.alpha_total_pp(), rel=1e-12)
     assert [p.alpha_amort_pp(t) for t in range(5)] == [300.00] * 5
     assert p.alpha_amort_pp(5) == 0.0
-    assert p.prem_to_av_pp(0) == pytest.approx(N1_SINGLE, rel=1e-12)
-    assert p.av_pp(1) == pytest.approx(AV_PP_2_SINGLE, rel=1e-12)
-    assert p.av(1) == pytest.approx(AV_2_SINGLE, rel=1e-12)
+    assert p.prem_to_av_pp(0) == pytest.approx(N_SINGLE_T0, rel=1e-12)
+    assert p.av_pp(1) == pytest.approx(AV_PP_SINGLE_T1, rel=1e-12)
+    assert p.av(1) == pytest.approx(AV_SINGLE_T1, rel=1e-12)
     # No premium left to stop, so no Beitragsfreistellung and no premium-free block at all, and
     # a single payment carries no Ratenzahlungszuschlag.
     assert all(p.bf_rate(t) == 0.0 for t in (0, 1, 4, 8))

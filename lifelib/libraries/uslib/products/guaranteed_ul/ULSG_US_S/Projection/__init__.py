@@ -241,9 +241,9 @@ to this product.
 ``l_t`` in these notes is the in-force probability at the **beginning** of month ``t``
 -- the notes weight every cash flow of month ``t`` by ``l_t`` and roll forward with
 ``l_{t+1} = l_t (1 - q^d)(1 - w)(1 - w^ROP)`` -- so it maps straight onto
-``pols_if(t)`` with no offset. Note the contrast with the universal life chassis, whose
-notes define ``l(t)`` at the **end** of month ``t``, making ``pols_if(t) = l(t-1)``
-there.
+``pols_if(t)`` with no offset -- the same mapping the universal life chassis now
+carries, whose notes also define ``l(t)`` at the **beginning** of month ``t``
+(``pols_if(t) = l(t)`` there too).
 
 The account value measured for the net amount at risk is ``AV'(t)``, which in these
 notes is the balance **after the expense charges and before the cost of insurance** --

@@ -1182,7 +1182,7 @@ def pols_healthy_stay(t):
 def pols_itt_recovery(t):
     """rec_itt(t): recoveries out of ITT at the end of month t, back to ``healthy``.
 
-    ``sum over z of l_itt(t-1, z) rho(z)``.  Recovered lives re-enter ``healthy`` and are
+    ``sum over z of l_itt(t, z) rho(z)``.  Recovered lives re-enter ``healthy`` and are
     again exposed to inception **[std]**.  A same-cause recurrence would contractually
     restart payment with no new *franchise*; returning them to the standard inception
     basis ignores that and understates re-inception at short horizons.
@@ -1195,7 +1195,7 @@ def pols_itt_recovery(t):
 def pols_itt_to_ipt(t):
     """trn_ipt(t): ITT claims consolidating into IPT at the end of month t.
 
-    ``sum over z of l_itt(t-1, z) (1 - rho(z)) tau(z)`` - recovery first, then transition
+    ``sum over z of l_itt(t, z) (1 - rho(z)) tau(z)`` - recovery first, then transition
     among the non-recovered.  These lives are paid for month t as ITT and enter IPT at the
     end of it, so the move creates neither an unpaid month nor a doubled one.
     """
@@ -1207,7 +1207,7 @@ def pols_itt_to_ipt(t):
 def pols_itt_death(t):
     """dth_itt(t): deaths in ITT at the end of month t.
 
-    ``sum over z of l_itt(t-1, z) (1 - rho)(1 - tau) q_s``, the last of the three
+    ``sum over z of l_itt(t, z) (1 - rho)(1 - tau) q_s``, the last of the three
     competing exits.  They carry the Décès benefit like any other death.
     """
     v = itt_cohorts(t)

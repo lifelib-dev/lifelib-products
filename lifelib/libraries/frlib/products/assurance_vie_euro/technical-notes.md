@@ -34,8 +34,9 @@ the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_A`, an **annual**
   frame is `t = 0 … proj_len − 1`, so `proj_len` is the number of projected years and
   `result_cf()` has `proj_len` rows. The contractual **policy year is `t + 1`**, and every
   formula below is written on the 0-based index; where the prose names a year of the
-  worked example it names its `t`. The contract's own completed duration is a separate
-  clock, `duration(t) = duration_init + t + 1` at the 31 December of year `t`.
+  worked example it names its `t`. The contract's own 1-based policy year is a separate
+  clock, `policy_year(t) = duration_init + t + 1`, which is equally its completed policy
+  years at the 31 December of year `t`.
 - **Projection frequency.** Annual **[std]**: the PB is fixed for the closing year and
   credited at 31 December value date [S1] [S2] [S6] [S7] [S9], and the eight-year PPB
   clock counts financial years [R5, art. A132-16](#frlib-assurance_vie_euro-r5). Sub-annual mechanics — BoursoVie's

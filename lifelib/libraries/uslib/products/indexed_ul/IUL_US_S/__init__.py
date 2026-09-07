@@ -185,16 +185,16 @@ growing net amount at risk live. Point 3 sets the indexed allocation to 0%, so t
 whole balance stays in the fixed account and no segment is ever created -- the control
 run against which the segment ladder is read. Point 4 pays **monthly** rather than
 annually, and is the only point that builds the notes' full twelve-concurrent-segment
-ladder: under the annual baseline nothing reaches the fixed account in months 1-11 of
-each policy year (``t = 1 ... 11`` of the first), so
-nothing is swept, the ladder degenerates to one segment a year, and the notes' first
-pitfall would otherwise go untested. Point 5 is underfunded at $6,000 a year and takes a
-$200 monthly withdrawal from policy year 2 and a $6,000 annual standard loan from policy
-year 21, which exercises the fixed-account-first-then-pro-rata sourcing, the loan
-collateral account, the no-lapse test and the overloan exposure -- and which, because no
-policy is terminated for insufficiency here, runs its *account value* away negative in
-late duration; the "Not implemented" note on the grace cascade above says from exactly
-when, and the README says it again. A model point on any other issue age, sex or class
+ladder: under the annual baseline nothing reaches the fixed account in the other eleven
+months of each policy year (``t = 1 ... 11`` of the first), so nothing is swept, the
+ladder degenerates to one segment a year, and the notes' first pitfall would otherwise
+go untested. Point 5 is underfunded at $6,000 a year and takes a $200 monthly withdrawal
+from policy year 2 and a $6,000 annual standard loan from policy year 21, which
+exercises the fixed-account-first-then-pro-rata sourcing, the loan collateral account,
+the no-lapse test and the overloan exposure -- and which, because no policy is
+terminated for insufficiency here, runs its *account value* away negative in late
+duration; the "Not implemented" note on the grace cascade above says from exactly when,
+and the README says it again. A model point on any other issue age, sex or class
 requires ``coi_rates.csv`` to be extended first; a test asserts every model point in the
 table actually projects.
 

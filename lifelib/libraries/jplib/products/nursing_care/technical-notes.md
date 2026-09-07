@@ -65,11 +65,12 @@ other is the whole modelling problem of this product. Section (c) does it explic
 - **The time index [library-wide convention].** `t` is the policy month and is
   **0-based**: `t = 0` is the first projected month, month `t` runs from `t` to `t + 1`
   months after the contract date (*keiyakubi*, 契約日), the frame is `t = 0 … proj_len − 1`
-  and `proj_len` is the number of projected months, not the last index. Every model point is new business at `t = 0`, so
-  `age(0) = x` and `pols_if(0) = 1`; there is no in-force offset to carry. The **policy
-  year** is the contractual, 1-based label derived from the index — `y(t) = floor(t/12) +
-  1`, so months `t = 0 … 11` are policy year 1 — and is what a schedule written in policy
-  years, such as the lapse table below, is read at. Where these notes say "policy year k"
+  and `proj_len` is the number of projected months, not the last index. Every model point
+  is new business at `t = 0`, so `age(0) = x` and `pols_if(0) = 1`; there is no in-force
+  offset to carry. The **policy year** is the contractual, 1-based label derived from the
+  index — `y(t) = floor(t/12) + 1`, so months `t = 0 … 11` are policy year 1 — and is
+  what a schedule written in policy years, such as the lapse table below, is read at.
+  Where these notes say "policy year k"
   they mean that label; the corresponding index is `t = 12(k − 1) … 12k − 1`.
 - **Timing conventions [std].** Office premium received at the **start** of month `t`, and
   only by lives not yet on premium waiver (*hokenryō haraikomi menjo*, 保険料払込免除); maintenance
@@ -95,9 +96,9 @@ other is the whole modelling problem of this product. Section (c) does it explic
 - **Termination.** Whole-of-life cover with whole-of-life premiums [S1] [S4] [S7] [S8] [S10]
   [S11]. The projection runs to the terminal age of 第三分野標準生命表2018, **116 for males and 118
   for females** [REG-R18] [REG-R20], so `proj_len = 12 × (terminal_age − x + 1)` — 684
-  months for the anchor cell, projected as `t = 0 … 683`. There is no maturity benefit, no 死亡保険金 and no surrender value
-  (*kaiyaku-henreikin*, 解約返戻金), so death and lapse are pure liability-releasing
-  decrements.
+  months for the anchor cell, projected as `t = 0 … 683`. There is no maturity benefit, no
+  死亡保険金 and no surrender value (*kaiyaku-henreikin*, 解約返戻金), so death and lapse are
+  pure liability-releasing decrements.
   There **is** a benefit-driven termination: the contract is extinguished on the **tenth**
   annuity instalment, effective retroactively to the date that instalment's trigger was met
   [S1].
@@ -134,7 +135,7 @@ other is the whole modelling problem of this product. Section (c) does it explic
 | `premium` (`P`) | JPY per month, office premium, model-point input | 11,500 **[std]** |
 | `prem_mode` | enum {monthly, semiannual, annual} | monthly |
 | `prem_period` | enum {whole_life} | whole_life (終身払) |
-| `issue_date` | date | — |
+| `issue_date` | date | — (not carried by the shipped CSV; every model point is new business at `t = 0`) |
 
 `premium` is an **input, not a computed quantity**. No carrier publishes assumed incidence
 rate (*yotei hasseiritsu*, 予定発生率), assumed interest rate (*yotei riritsu*, 予定利率) or

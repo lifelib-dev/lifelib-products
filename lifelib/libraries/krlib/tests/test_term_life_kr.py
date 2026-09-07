@@ -59,75 +59,76 @@ CSV_DIR = MODEL_DIR.parent
 # ---------------------------------------------------------------------------
 # The notes' worked example, anchor cell (point_id = 1)
 
-# "The decrement basis, year by year": t -> (보험나이, q_x^tab, q(t), w(t), l(t)).
+# "The decrement basis, period by period": t -> (보험나이, q_x^tab, q(t), w(t), l(t)).
+# ``t`` is the 0-based period index throughout: t = 0 is the first policy year.
 WORKED_EXAMPLE_BASIS = {
-    1:  (40, 0.00065000, 0.00055250, 0.0460000000, 1.0000000000),
-    2:  (41, 0.00069504, 0.00059078, 0.0376048847, 0.9534729150),
-    3:  (42, 0.00074482, 0.00063310, 0.0307418990, 0.9170755621),
-    4:  (43, 0.00079985, 0.00067987, 0.0251314254, 0.8883201687),
-    5:  (44, 0.00086067, 0.00073157, 0.0205448773, 0.8654066502),
-    6:  (45, 0.00092789, 0.00078871, 0.0167953857, 0.8470068787),
-    7:  (46, 0.00100219, 0.00085186, 0.0137301857, 0.8321242517),
-    8:  (47, 0.00108431, 0.00092166, 0.0112243924, 0.8199999093),
-    9:  (48, 0.00117508, 0.00099882, 0.0091759127, 0.8100486275),
-    10: (49, 0.00127541, 0.00108410, 0.0075012856, 0.8018140251),
-    11: (50, 0.00138630, 0.00117836, 0.0061322822, 0.7949366641),
-    12: (51, 0.00150887, 0.00128254, 0.0050131253, 0.7891309148),
-    13: (52, 0.00164435, 0.00139770, 0.0040982174, 0.7841678848),
-    14: (53, 0.00179408, 0.00152497, 0.0033502824, 0.7798626566),
-    15: (54, 0.00195959, 0.00166565, 0.0027388475, 0.7760646153),
-    16: (55, 0.00214252, 0.00182114, 0.0022390010, 0.7726499798),
-    17: (56, 0.00234471, 0.00199300, 0.0018303777, 0.7695160610),
-    18: (57, 0.00256820, 0.00218297, 0.0014963292, 0.7665767149),
-    19: (58, 0.00281521, 0.00239293, 0.0012232453, 0.7637587538),
-    20: (59, 0.00308823, 0.00262500, 0.0010000000, 0.7609991050),
+    0:  (40, 0.00065000, 0.00055250, 0.0460000000, 1.0000000000),
+    1:  (41, 0.00069504, 0.00059078, 0.0376048847, 0.9534729150),
+    2:  (42, 0.00074482, 0.00063310, 0.0307418990, 0.9170755621),
+    3:  (43, 0.00079985, 0.00067987, 0.0251314254, 0.8883201687),
+    4:  (44, 0.00086067, 0.00073157, 0.0205448773, 0.8654066502),
+    5:  (45, 0.00092789, 0.00078871, 0.0167953857, 0.8470068787),
+    6:  (46, 0.00100219, 0.00085186, 0.0137301857, 0.8321242517),
+    7:  (47, 0.00108431, 0.00092166, 0.0112243924, 0.8199999093),
+    8:  (48, 0.00117508, 0.00099882, 0.0091759127, 0.8100486275),
+    9:  (49, 0.00127541, 0.00108410, 0.0075012856, 0.8018140251),
+    10: (50, 0.00138630, 0.00117836, 0.0061322822, 0.7949366641),
+    11: (51, 0.00150887, 0.00128254, 0.0050131253, 0.7891309148),
+    12: (52, 0.00164435, 0.00139770, 0.0040982174, 0.7841678848),
+    13: (53, 0.00179408, 0.00152497, 0.0033502824, 0.7798626566),
+    14: (54, 0.00195959, 0.00166565, 0.0027388475, 0.7760646153),
+    15: (55, 0.00214252, 0.00182114, 0.0022390010, 0.7726499798),
+    16: (56, 0.00234471, 0.00199300, 0.0018303777, 0.7695160610),
+    17: (57, 0.00256820, 0.00218297, 0.0014963292, 0.7665767149),
+    18: (58, 0.00281521, 0.00239293, 0.0012232453, 0.7637587538),
+    19: (59, 0.00308823, 0.00262500, 0.0010000000, 0.7609991050),
 }
 
-# "The cash flow statement, t = 1..20": t -> (pols_if, premiums, claims_death,
+# "The cash flow statement, t = 0..19": t -> (pols_if, premiums, claims_death,
 # claim_expenses, expenses, commissions, net_cf).  The four other claims_* columns are
 # 0.00 in every row of this model point; the notes say so and the row test asserts it.
 WORKED_EXAMPLE_CF = {
-    1:  (1.0000000000, 180960.00,  55250.00, 165.75, 144000.00, 108576.00, -127031.75),
-    2:  (0.9534729150, 172540.46,  56329.65, 168.99,  23341.02,   5176.21,   87524.58),
-    3:  (0.9170755621, 165953.99,  58059.78, 174.18,  22899.01,   4978.62,   79842.41),
-    4:  (0.8883201687, 160750.42,  60394.45, 181.18,  22624.62,   4822.51,   72727.66),
-    5:  (0.8654066502, 156603.99,  63310.51, 189.93,  22481.86,   4698.12,   65923.57),
-    6:  (0.8470068787, 153274.36,  66803.98, 200.41,  22443.94,   4598.23,   59227.80),
-    7:  (0.8321242517, 150581.20,  70885.46, 212.66,  22490.57,   4517.44,   52475.08),
-    8:  (0.8199999093, 148387.18,  75576.40, 226.73,  22606.13,   4451.62,   45526.31),
-    9:  (0.8100486275, 146586.40,  80909.12, 242.73,  22778.43,   4397.59,   38258.54),
-    10: (0.8018140251, 145096.27,  86924.54, 260.77,  22997.81,   4352.89,   30560.26),
-    11: (0.7949366641, 143851.74,  93671.76, 281.02,  23256.56,   4315.55,   22326.85),
-    12: (0.7891309148, 142801.13, 101209.16, 303.63,  23548.44,   4284.03,   13455.87),
-    13: (0.7841678848, 141903.02, 109602.95, 328.81,  23868.35,   4257.09,    3845.82),
-    14: (0.7798626566, 141123.95, 118926.56, 356.78,  24212.05,   4233.72,   -6605.16),
-    15: (0.7760646153, 140436.65, 129265.32, 387.80,  24576.02,   4213.10,  -18005.58),
-    16: (0.7726499798, 139818.74, 140710.53, 422.13,  24957.24,   4194.56,  -30465.73),
-    17: (0.7695160610, 139251.63, 153364.82, 460.09,  25353.14,   4177.55,  -44103.97),
-    18: (0.7665767149, 138719.72, 167341.40, 502.02,  25761.42,   4161.59,  -59046.71),
-    19: (0.7637587538, 138209.78, 182762.01, 548.29,  26180.05,   4146.29,  -75426.86),
-    20: (0.7609991050, 137710.40, 199761.92, 599.29,  26607.17,   4131.31,  -93389.29),
+    0:  (1.0000000000, 180960.00,  55250.00, 165.75, 144000.00, 108576.00, -127031.75),
+    1:  (0.9534729150, 172540.46,  56329.65, 168.99,  23341.02,   5176.21,   87524.58),
+    2:  (0.9170755621, 165953.99,  58059.78, 174.18,  22899.01,   4978.62,   79842.41),
+    3:  (0.8883201687, 160750.42,  60394.45, 181.18,  22624.62,   4822.51,   72727.66),
+    4:  (0.8654066502, 156603.99,  63310.51, 189.93,  22481.86,   4698.12,   65923.57),
+    5:  (0.8470068787, 153274.36,  66803.98, 200.41,  22443.94,   4598.23,   59227.80),
+    6:  (0.8321242517, 150581.20,  70885.46, 212.66,  22490.57,   4517.44,   52475.08),
+    7:  (0.8199999093, 148387.18,  75576.40, 226.73,  22606.13,   4451.62,   45526.31),
+    8:  (0.8100486275, 146586.40,  80909.12, 242.73,  22778.43,   4397.59,   38258.54),
+    9:  (0.8018140251, 145096.27,  86924.54, 260.77,  22997.81,   4352.89,   30560.26),
+    10: (0.7949366641, 143851.74,  93671.76, 281.02,  23256.56,   4315.55,   22326.85),
+    11: (0.7891309148, 142801.13, 101209.16, 303.63,  23548.44,   4284.03,   13455.87),
+    12: (0.7841678848, 141903.02, 109602.95, 328.81,  23868.35,   4257.09,    3845.82),
+    13: (0.7798626566, 141123.95, 118926.56, 356.78,  24212.05,   4233.72,   -6605.16),
+    14: (0.7760646153, 140436.65, 129265.32, 387.80,  24576.02,   4213.10,  -18005.58),
+    15: (0.7726499798, 139818.74, 140710.53, 422.13,  24957.24,   4194.56,  -30465.73),
+    16: (0.7695160610, 139251.63, 153364.82, 460.09,  25353.14,   4177.55,  -44103.97),
+    17: (0.7665767149, 138719.72, 167341.40, 502.02,  25761.42,   4161.59,  -59046.71),
+    18: (0.7637587538, 138209.78, 182762.01, 548.29,  26180.05,   4146.29,  -75426.86),
+    19: (0.7609991050, 137710.40, 199761.92, 599.29,  26607.17,   4131.31,  -93389.29),
 }
 
 # "Load-bearing values at full float64 precision", printed in the notes so that a reader
 # reconciling to the model rather than to the rounded table has something exact to
-# reconcile to.  claims_death(1) is carried as the float the notes print, not as 55,250.
+# reconcile to.  claims_death(0) is carried as the float the notes print, not as 55,250.
 FULL_PRECISION = {
-    "pols_if(2)": 0.953472915,
-    "pols_if(3)": 0.917075562112279,
-    "pols_if(10)": 0.8018140250566161,
-    "pols_if(20)": 0.7609991050099496,
-    "premiums(2)": 172540.4586984,
-    "claims_death(1)": 55249.99999999999,
-    "claim_expenses(1)": 165.74999999999997,
-    "expenses(1)": 144000.0,
-    "commissions(1)": 108576.0,
-    "net_cf(1)": -127031.75,
-    "net_cf(2)": 87524.5847539274,
-    "net_cf(3)": 79842.40590172037,
-    "net_cf(10)": 30560.25860988572,
-    "net_cf(12)": 13455.869541227945,
-    "net_cf(20)": -93389.29024513016,
+    "pols_if(1)": 0.953472915,
+    "pols_if(2)": 0.917075562112279,
+    "pols_if(9)": 0.8018140250566161,
+    "pols_if(19)": 0.7609991050099496,
+    "premiums(1)": 172540.4586984,
+    "claims_death(0)": 55249.99999999999,
+    "claim_expenses(0)": 165.74999999999997,
+    "expenses(0)": 144000.0,
+    "commissions(0)": 108576.0,
+    "net_cf(0)": -127031.75,
+    "net_cf(1)": 87524.5847539274,
+    "net_cf(2)": 79842.40590172037,
+    "net_cf(9)": 30560.25860988572,
+    "net_cf(11)": 13455.869541227945,
+    "net_cf(19)": -93389.29024513016,
 }
 
 TOTAL_POLS_IF = 16.4929323384
@@ -139,37 +140,39 @@ TOTAL_COMMISSIONS = 192684.03
 TOTAL_NET_CF = 117619.70
 TOTAL_POLS_DEATH = 0.0207106031
 TOTAL_POLS_LAPSE = 0.2210469126
-POLS_MATURITY_20 = 0.7582424843
+POLS_MATURITY_LAST = 0.7582424843     # pols_maturity(proj_len() - 1) on the anchor
 
-# The published 갱신형 ladder: (cycle k, first policy year, attained 보험나이, P_m, P_a).
+# The published 갱신형 ladder: (cycle k, first period t of the cycle, attained 보험나이,
+# P_m, P_a).  ``k`` stays the contractual 1-based cycle label; ``t`` is 0-based.
 RENEWAL_LADDER = [
-    (1,  1, 40,   9000.0,  108000.0),
-    (2, 11, 50,  21000.0,  252000.0),
-    (3, 21, 60,  56000.0,  672000.0),
-    (4, 31, 70, 201000.0, 2412000.0),
+    (1,  0, 40,   9000.0,  108000.0),
+    (2, 10, 50,  21000.0,  252000.0),
+    (3, 20, 60,  56000.0,  672000.0),
+    (4, 30, 70, 201000.0, 2412000.0),
 ]
 
 # The notes' boundary-row table for model point 3, the long boundary reading:
 # t -> (pols_if, renewal_decline_rate, pols_decline, wop_waived_frac, net_cf).
 GAENGSIN_BOUNDARY_ROWS = {
-    9:  (0.7571341236, 0.0, 0.0000000000, 0.0063821086,  -18330.11),
-    10: (0.7405136863, 0.2, 0.1451293946, 0.0071770030,  -24739.94),
-    11: (0.5805175782, 0.0, 0.0000000000, 0.0000000000,   56307.38),
-    20: (0.5126702892, 0.2, 0.1015364175, 0.0071770030,  -28486.45),
-    21: (0.4061456699, 0.0, 0.0000000000, 0.0000000000,  132875.76),
-    30: (0.3743068750, 0.2, 0.0741053844, 0.0071770030,  -53389.60),
-    31: (0.2964215375, 0.0, 0.0000000000, 0.0000000000,  434066.03),
-    40: (0.2588401346, 0.0, 0.0000000000, 0.0071770030,   17271.43),
+    8:  (0.7571341236, 0.0, 0.0000000000, 0.0063821086,  -18330.11),
+    9:  (0.7405136863, 0.2, 0.1451293946, 0.0071770030,  -24739.94),
+    10: (0.5805175782, 0.0, 0.0000000000, 0.0000000000,   56307.38),
+    19: (0.5126702892, 0.2, 0.1015364175, 0.0071770030,  -28486.45),
+    20: (0.4061456699, 0.0, 0.0000000000, 0.0000000000,  132875.76),
+    29: (0.3743068750, 0.2, 0.0741053844, 0.0071770030,  -53389.60),
+    30: (0.2964215375, 0.0, 0.0000000000, 0.0000000000,  434066.03),
+    39: (0.2588401346, 0.0, 0.0000000000, 0.0071770030,   17271.43),
 }
 
-YEAR_10_EXITS = (0.0008027898, 0.0140639237, 0.1451293946)   # deaths, lapses, declines
+# deaths, lapses, declines at t = 9, the first boundary period of model point 3
+BOUNDARY_EXITS = (0.0008027898, 0.0140639237, 0.1451293946)
 GAENGSIN_TOTAL_NET_CF = 2976124.30
 CURRENT_TERM_NET_CF = -179423.24
 GAENGSIN_FIRST_TEN_NET_CF = -170638.50
 WAIVED_AT_CYCLE_END = 0.0071770029564316665
 
 # "The other eight shipped model points, undiscounted":
-# pid -> (proj_len, premium_mth_pp(1), premiums, all claims, net_cf).
+# pid -> (proj_len, premium_mth_pp(0), premiums, all claims, net_cf).
 POINT_SUMMARY = {
     1:  (20,  15080.0,  2984561.04,  2071060.31,   117619.70),
     2:  (20,   8010.0,  1591097.71,  1068175.07,  -181709.67),
@@ -262,7 +265,7 @@ def test_worked_example_decrement_basis_row(kr_term_anchor, t):
 
 def test_worked_example_the_lapse_curve_is_the_prescribed_shape(term_life,
                                                                kr_term_anchor):
-    """w(t) = 0.046 (0.001/0.046)^((t-1)/19), from three disclosed endpoints.
+    """w(t) = 0.046 (0.001/0.046)^(t/19) on the 0-based t, from three disclosed endpoints.
 
     The endpoints are published 적용해지율 figures and the log-linear interpolation between
     them is the 계리가정 가이드라인's 원칙모형 for 무·저해지 business, so the whole curve is
@@ -279,17 +282,17 @@ def test_worked_example_the_lapse_curve_is_the_prescribed_shape(term_life,
 
     a = kr_term_anchor
     assert a.lapse_be_factor == 1.0 and a.pay_term() == 20 == a.proj_len()
-    for t in range(1, 21):
+    for t in range(20):
         assert a.lapse_rate(t) == pytest.approx(
-            0.046 * (0.001 / 0.046) ** ((t - 1.0) / 19.0), rel=1e-13)
-    rates = [a.lapse_rate(t) for t in range(1, 21)]
+            0.046 * (0.001 / 0.046) ** (t / 19.0), rel=1e-13)
+    rates = [a.lapse_rate(t) for t in range(20)]
     assert rates[0] == pytest.approx(0.046, rel=1e-14)
     assert rates[-1] == pytest.approx(0.001, rel=1e-14)
     assert rates == sorted(rates, reverse=True) and 0.008 not in rates
     # The two means the notes quote for this cell.
     assert sum(rates) / 20.0 == pytest.approx(0.012379, abs=5e-7)
-    assert (sum(a.pols_if(t) * a.lapse_rate(t) for t in range(1, 21))
-            / sum(a.pols_if(t) for t in range(1, 21))) == pytest.approx(
+    assert (sum(a.pols_if(t) * a.lapse_rate(t) for t in range(20))
+            / sum(a.pols_if(t) for t in range(20))) == pytest.approx(
                 0.013413, abs=5e-7)
 
 
@@ -338,9 +341,9 @@ def test_worked_example_assumption_table(kr_term_anchor):
     assert a.sum_assured() == 100000000.0 and a.contract_boundary() == "ceiling"
     assert (a.acc_death(), a.waiver(), a.accel(), a.reinstatement()) == (
         False, False, False, False)
-    assert a.prem_rate_mth(1) == 15080.0 and a.class_prem_ratio() == 1.0
-    assert a.pay_factor(1) == 1.0
-    assert a.premium_mth_pp(1) == 15080.0 and a.prem_pp(1) == 180960.0
+    assert a.prem_rate_mth(0) == 15080.0 and a.class_prem_ratio() == 1.0
+    assert a.pay_factor(1) == 1.0                 # k is the 1-based cycle label
+    assert a.premium_mth_pp(0) == 15080.0 and a.prem_pp(0) == 180960.0
     assert a.mort_be_factor == 0.85 and a.class_mort_ratio() == 1.0
     assert a.mort_rate_at_age(40) == 0.000650     # a disclosed anchor, to the digit
     for t in sorted(WORKED_EXAMPLE_BASIS):
@@ -350,7 +353,7 @@ def test_worked_example_assumption_table(kr_term_anchor):
             0.85 * a.mort_rate_at_age(a.age(t)), rel=1e-14)
     for cells in (a.renewal_decline_rate, a.wop_waived_frac, a.accel_share,
                   a.pols_reinstate):
-        assert all(cells(t) == 0.0 for t in range(1, 21)), cells
+        assert all(cells(t) == 0.0 for t in range(20)), cells
 
 
 def test_worked_example_full_precision_values(kr_term_anchor):
@@ -361,128 +364,131 @@ def test_worked_example_full_precision_values(kr_term_anchor):
     """
     a = kr_term_anchor
     got = {
-        "pols_if(2)": a.pols_if(2), "pols_if(3)": a.pols_if(3),
-        "pols_if(10)": a.pols_if(10), "pols_if(20)": a.pols_if(20),
-        "premiums(2)": a.premiums(2), "claims_death(1)": a.claims(1, "DEATH"),
-        "claim_expenses(1)": a.claim_expenses(1), "expenses(1)": a.expenses(1),
-        "commissions(1)": a.commissions(1), "net_cf(1)": a.net_cf(1),
-        "net_cf(2)": a.net_cf(2), "net_cf(3)": a.net_cf(3),
-        "net_cf(10)": a.net_cf(10), "net_cf(12)": a.net_cf(12),
-        "net_cf(20)": a.net_cf(20),
+        "pols_if(1)": a.pols_if(1), "pols_if(2)": a.pols_if(2),
+        "pols_if(9)": a.pols_if(9), "pols_if(19)": a.pols_if(19),
+        "premiums(1)": a.premiums(1), "claims_death(0)": a.claims(0, "DEATH"),
+        "claim_expenses(0)": a.claim_expenses(0), "expenses(0)": a.expenses(0),
+        "commissions(0)": a.commissions(0), "net_cf(0)": a.net_cf(0),
+        "net_cf(1)": a.net_cf(1), "net_cf(2)": a.net_cf(2),
+        "net_cf(9)": a.net_cf(9), "net_cf(11)": a.net_cf(11),
+        "net_cf(19)": a.net_cf(19),
     }
     for name, expected in FULL_PRECISION.items():
         assert got[name] == pytest.approx(expected, rel=1e-14, abs=1e-9), name
-    assert a.pols_if(21) == 0.0
-    assert all(a.prem_pp(t) == 180960.0 for t in range(1, 21))
+    assert a.pols_if(20) == 0.0
+    assert all(a.prem_pp(t) == 180960.0 for t in range(20))
 
 
 # ---------------------------------------------------------------------------
 # The worked example — the hand traces
 
 
-def test_worked_example_year_one_trace(kr_term_anchor):
-    """The notes' year-one hand trace, line by line: the acquisition strain.
+def test_worked_example_first_period_trace(kr_term_anchor):
+    """The notes' t = 0 hand trace, line by line: the acquisition strain.
 
-    Year-one outgo is 307,991.75 won against 180,960.00 of premium, and the acquisition
-    charge alone — 120,000 of expense plus 108,576 of commission — is 126% of the year's
+    First-period outgo is 307,991.75 won against 180,960.00 of premium, and the acquisition
+    charge alone — 120,000 of expense plus 108,576 of commission — is 126% of the period's
     premium.  That is the strain the protection shape starts from, and it is why the first
     three lapse rates decide how long the strain takes to recover.
     """
     a = kr_term_anchor
-    assert a.pols_if_init() == 1.0 and a.pols_if(1) == 1.0
-    assert a.prem_payable(1) == 1.0 and a.wop_waived_frac(1) == 0.0
-    assert a.pols_payer(1) == 1.0
-    assert a.premiums(1) == pytest.approx(180960.00, abs=WON)
-    assert a.pols_death(1) == pytest.approx(0.0005525, rel=1e-14)
-    assert a.claims(1, "DEATH") == pytest.approx(
+    assert a.pols_if_init() == 1.0 and a.pols_if(0) == 1.0
+    assert a.prem_payable(0) == 1.0 and a.wop_waived_frac(0) == 0.0
+    assert a.pols_payer(0) == 1.0
+    assert a.premiums(0) == pytest.approx(180960.00, abs=WON)
+    assert a.pols_death(0) == pytest.approx(0.0005525, rel=1e-14)
+    assert a.claims(0, "DEATH") == pytest.approx(
         100000000.0 * (1 - 0.0) * 0.0005525, rel=1e-14)
-    assert a.claim_expenses(1) == pytest.approx(300000.0 * 0.0005525, rel=1e-14)
-    assert a.expenses(1) == pytest.approx(120000.0 + 24000.0 * 1.02 ** 0, abs=WON)
+    assert a.claim_expenses(0) == pytest.approx(300000.0 * 0.0005525, rel=1e-14)
+    assert a.expenses(0) == pytest.approx(120000.0 + 24000.0 * 1.02 ** 0, abs=WON)
     assert a.comm_init_pp() == pytest.approx(0.60 * 180960.0, abs=WON)
-    assert a.net_cf(1) == pytest.approx(
+    assert a.net_cf(0) == pytest.approx(
         180960.00 - 55250.00 - 165.75 - 144000.00 - 108576.00, abs=1e-9)
-    outgo = a.claims(1) + a.claim_expenses(1) + a.expenses(1) + a.commissions(1)
+    outgo = a.claims(0) + a.claim_expenses(0) + a.expenses(0) + a.commissions(0)
     assert outgo == pytest.approx(307991.75, abs=WON)
-    assert (120000.0 + 108576.0) / a.premiums(1) == pytest.approx(1.263, abs=5e-4)
+    assert (120000.0 + 108576.0) / a.premiums(0) == pytest.approx(1.263, abs=5e-4)
 
 
-def test_worked_example_year_one_roll_forward(kr_term_anchor):
-    """The notes' year-one roll-forward, in the processing order and no other.
+def test_worked_example_first_period_roll_forward(kr_term_anchor):
+    """The notes' t = 0 roll-forward, in the processing order and no other.
 
-    After mortality 1 x (1 - 0.0005525); then w(1) = 0.046 exactly on the survivors of it,
-    giving a lapse of 0.045974585 and l(2) = 0.953472915.  d(1) = 0 on a 비갱신형 point, and
-    neither a reinstatement nor a maturity moves the year.
+    After mortality 1 x (1 - 0.0005525); then w(0) = 0.046 exactly on the survivors of it,
+    giving a lapse of 0.045974585 and l(1) = 0.953472915.  d(0) = 0 on a 비갱신형 point, and
+    neither a reinstatement nor a maturity moves the period.
     """
     a = kr_term_anchor
-    assert a.pols_if_at(1, "BEF_DECR") == 1.0
-    assert a.pols_if_at(1, "BEF_LAPSE") == pytest.approx(0.9994475, rel=1e-14)
-    assert a.pols_lapse(1) == pytest.approx(0.045974585, rel=1e-12)
-    assert a.pols_if_at(1, "BEF_DECLINE") == pytest.approx(0.9994475 * 0.954, rel=1e-14)
-    assert a.renewal_decline_rate(1) == 0.0
-    assert a.pols_if_at(1, "AFT_DECR") == a.pols_if_at(1, "BEF_DECLINE")
-    assert a.pols_reinstate(1) == 0.0 and a.pols_maturity(1) == 0.0
-    assert a.pols_if(2) == pytest.approx(0.953472915, rel=1e-15)
+    assert a.pols_if_at(0, "BEF_DECR") == 1.0
+    assert a.pols_if_at(0, "BEF_LAPSE") == pytest.approx(0.9994475, rel=1e-14)
+    assert a.pols_lapse(0) == pytest.approx(0.045974585, rel=1e-12)
+    assert a.pols_if_at(0, "BEF_DECLINE") == pytest.approx(0.9994475 * 0.954, rel=1e-14)
+    assert a.renewal_decline_rate(0) == 0.0
+    assert a.pols_if_at(0, "AFT_DECR") == a.pols_if_at(0, "BEF_DECLINE")
+    assert a.pols_reinstate(0) == 0.0 and a.pols_maturity(0) == 0.0
+    assert a.pols_if(1) == pytest.approx(0.953472915, rel=1e-15)
 
 
-def test_worked_example_years_two_and_three_traces(kr_term_anchor):
-    """The notes' year-two and year-three traces: ordinary years, with no acquisition in them.
+def test_worked_example_second_and_third_period_traces(kr_term_anchor):
+    """The notes' t = 1 and t = 2 traces: ordinary periods, with no acquisition in them.
 
-    ``expense_acq`` and ``comm_init_pp`` are t = 1 only, and the commission is three per
+    ``expense_acq`` and ``comm_init_pp`` are t = 0 only, and the commission is three per
     cent of *premium income* rather than of ``prem_pp``, so it is already net of any waived
-    fraction.  Year three carries the inflation factor squared, which is the cheapest way
-    to catch an off-by-one in the exponent that year two alone cannot distinguish.
+    fraction.  ``t = 2`` carries the inflation factor squared, which is the cheapest way
+    to catch an off-by-one in the exponent that ``t = 1`` alone cannot distinguish.
     """
     a = kr_term_anchor
-    assert a.premiums(2) == pytest.approx(180960.0 * 0.953472915, rel=1e-14)
-    assert a.pols_death(2) == pytest.approx(0.00056329654262, rel=1e-11)
-    assert a.claims(2, "DEATH") == pytest.approx(56329.65426154, abs=1e-6)
-    assert a.claim_expenses(2) == pytest.approx(168.98896278, abs=1e-7)
-    assert a.inflation_factor(2) == pytest.approx(1.02, rel=1e-15)
-    assert a.expenses(2) == pytest.approx(24480.0 * 0.953472915, rel=1e-14)
-    assert a.commissions(2) == pytest.approx(0.03 * a.premiums(2), rel=1e-14)
-    assert a.commissions(2) == pytest.approx(5176.21376095, abs=1e-6)
-    assert a.net_cf(2) == pytest.approx(87524.58475393, abs=1e-6)
-    assert a.pols_if_at(2, "BEF_LAPSE") == pytest.approx(0.95290961845738, abs=5e-13)
-    assert a.pols_lapse(2) == pytest.approx(0.03583405634511, abs=5e-13)
-    assert a.pols_if(3) == pytest.approx(0.917075562112279, rel=1e-15)
+    assert a.premiums(1) == pytest.approx(180960.0 * 0.953472915, rel=1e-14)
+    assert a.pols_death(1) == pytest.approx(0.00056329654262, rel=1e-11)
+    assert a.claims(1, "DEATH") == pytest.approx(56329.65426154, abs=1e-6)
+    assert a.claim_expenses(1) == pytest.approx(168.98896278, abs=1e-7)
+    assert a.inflation_factor(1) == pytest.approx(1.02, rel=1e-15)
+    assert a.expenses(1) == pytest.approx(24480.0 * 0.953472915, rel=1e-14)
+    assert a.commissions(1) == pytest.approx(0.03 * a.premiums(1), rel=1e-14)
+    assert a.commissions(1) == pytest.approx(5176.21376095, abs=1e-6)
+    assert a.net_cf(1) == pytest.approx(87524.58475393, abs=1e-6)
+    assert a.pols_if_at(1, "BEF_LAPSE") == pytest.approx(0.95290961845738, abs=5e-13)
+    assert a.pols_lapse(1) == pytest.approx(0.03583405634511, abs=5e-13)
+    assert a.pols_if(2) == pytest.approx(0.917075562112279, rel=1e-15)
 
-    assert a.premiums(3) == pytest.approx(165953.99371984, abs=1e-6)
-    assert a.pols_death(3) == pytest.approx(0.00058059778715, abs=5e-13)
-    assert a.claims(3, "DEATH") == pytest.approx(58059.77871466, abs=1e-6)
-    assert a.claim_expenses(3) == pytest.approx(174.17933614, abs=1e-7)
-    assert a.inflation_factor(3) == pytest.approx(1.02 ** 2, rel=1e-15)
-    assert a.expenses(3) == pytest.approx(24969.60 * 0.917075562112279, rel=1e-13)
-    assert a.commissions(3) == pytest.approx(4978.61981160, abs=1e-6)
-    assert a.net_cf(3) == pytest.approx(79842.40590172, abs=1e-6)
+    assert a.premiums(2) == pytest.approx(165953.99371984, abs=1e-6)
+    assert a.pols_death(2) == pytest.approx(0.00058059778715, abs=5e-13)
+    assert a.claims(2, "DEATH") == pytest.approx(58059.77871466, abs=1e-6)
+    assert a.claim_expenses(2) == pytest.approx(174.17933614, abs=1e-7)
+    assert a.inflation_factor(2) == pytest.approx(1.02 ** 2, rel=1e-15)
+    assert a.expenses(2) == pytest.approx(24969.60 * 0.917075562112279, rel=1e-13)
+    assert a.commissions(2) == pytest.approx(4978.61981160, abs=1e-6)
+    assert a.net_cf(2) == pytest.approx(79842.40590172, abs=1e-6)
 
 
-def test_worked_example_year_twenty_trace_and_the_maturity_that_pays_nothing(
+def test_worked_example_last_period_trace_and_the_maturity_that_pays_nothing(
         kr_term_anchor):
-    """The notes' final-year trace, where the 순수보장형 pays nothing at maturity.
+    """The notes' last-period trace, where the 순수보장형 pays nothing at maturity.
 
-    w(20) = 0.001 exactly — the disclosed convergence point, reached at 납입완료 — and
-    ``pols_maturity(20)`` then removes the **entire** surviving cohort, 0.7582424843 of it,
-    for no benefit at all.  l(21) = 0 exactly, which is what makes the roll-forward close in
-    the last year rather than leaving a residual a model with no maturity term would carry.
+    w(19) = 0.001 exactly — the disclosed convergence point, reached at 납입완료 — and
+    ``pols_maturity(19)`` then removes the **entire** surviving cohort, 0.7582424843 of it,
+    for no benefit at all.  l(20) = 0 exactly one step past the frame, which is what makes
+    the roll-forward close in
+    the last period rather than leaving a residual a model with no maturity term would carry.
     """
     a = kr_term_anchor
-    assert a.premiums(20) == pytest.approx(137710.39804260, abs=1e-6)
-    assert a.pols_death(20) == pytest.approx(0.00199761922616, abs=5e-13)
-    assert a.claims(20, "DEATH") == pytest.approx(199761.92261551, abs=1e-6)
-    assert a.claim_expenses(20) == pytest.approx(599.28576785, abs=1e-7)
-    assert a.expenses(20) == pytest.approx(
-        24000.0 * 1.02 ** 19 * a.pols_if(20), rel=1e-13)
-    assert a.commissions(20) == pytest.approx(4131.31194128, abs=1e-6)
-    assert a.net_cf(20) == pytest.approx(-93389.29024513, abs=1e-6)
-    assert a.pols_if_at(20, "BEF_LAPSE") == pytest.approx(0.75900148578379, abs=5e-13)
-    assert a.pols_if_at(20, "AFT_DECR") == pytest.approx(0.75824248429801, abs=5e-13)
-    assert a.pols_maturity(20) == pytest.approx(POLS_MATURITY_20, abs=INFORCE)
-    assert a.pols_maturity(20) == a.pols_if_at(20, "AFT_DECR") + a.pols_reinstate(20)
-    assert a.maturity_form() == "pure" and a.claims(20, "MATURITY") == 0.0
-    assert a.cum_prem_pp(20) == 3619200.0        # what a rop point would have paid
-    assert a.pols_if(21) == 0.0
-    assert a.check_pols_roll_fwd_resid(20) == pytest.approx(0.0, abs=1e-15)
-    assert all(a.pols_maturity(t) == 0.0 for t in range(1, 20))
+    last = a.proj_len() - 1
+    assert last == 19
+    assert a.premiums(19) == pytest.approx(137710.39804260, abs=1e-6)
+    assert a.pols_death(19) == pytest.approx(0.00199761922616, abs=5e-13)
+    assert a.claims(19, "DEATH") == pytest.approx(199761.92261551, abs=1e-6)
+    assert a.claim_expenses(19) == pytest.approx(599.28576785, abs=1e-7)
+    assert a.expenses(19) == pytest.approx(
+        24000.0 * 1.02 ** 19 * a.pols_if(19), rel=1e-13)
+    assert a.commissions(19) == pytest.approx(4131.31194128, abs=1e-6)
+    assert a.net_cf(19) == pytest.approx(-93389.29024513, abs=1e-6)
+    assert a.pols_if_at(19, "BEF_LAPSE") == pytest.approx(0.75900148578379, abs=5e-13)
+    assert a.pols_if_at(19, "AFT_DECR") == pytest.approx(0.75824248429801, abs=5e-13)
+    assert a.pols_maturity(19) == pytest.approx(POLS_MATURITY_LAST, abs=INFORCE)
+    assert a.pols_maturity(19) == a.pols_if_at(19, "AFT_DECR") + a.pols_reinstate(19)
+    assert a.maturity_form() == "pure" and a.claims(19, "MATURITY") == 0.0
+    assert a.cum_prem_pp(19) == 3619200.0        # what a rop point would have paid
+    assert a.pols_if(20) == 0.0
+    assert a.check_pols_roll_fwd_resid(19) == pytest.approx(0.0, abs=1e-15)
+    assert all(a.pols_maturity(t) == 0.0 for t in range(19))
 
 
 # ---------------------------------------------------------------------------
@@ -517,43 +523,43 @@ def test_worked_example_cohort_decomposition(kr_term_anchor):
     single year's residual is inside tolerance, because the errors accumulate.
     """
     a = kr_term_anchor
-    deaths = sum(a.pols_death(t) for t in range(1, 21))
-    lapses = sum(a.pols_lapse(t) for t in range(1, 21))
-    declines = sum(a.pols_decline(t) for t in range(1, 21))
-    maturities = sum(a.pols_maturity(t) for t in range(1, 21))
-    reinstates = sum(a.pols_reinstate(t) for t in range(1, 21))
+    deaths = sum(a.pols_death(t) for t in range(20))
+    lapses = sum(a.pols_lapse(t) for t in range(20))
+    declines = sum(a.pols_decline(t) for t in range(20))
+    maturities = sum(a.pols_maturity(t) for t in range(20))
+    reinstates = sum(a.pols_reinstate(t) for t in range(20))
     assert deaths == pytest.approx(TOTAL_POLS_DEATH, abs=INFORCE)
     assert lapses == pytest.approx(TOTAL_POLS_LAPSE, abs=INFORCE)
     assert declines == 0.0 and reinstates == 0.0
-    assert maturities == pytest.approx(POLS_MATURITY_20, abs=INFORCE)
-    assert deaths + lapses + declines + maturities + a.pols_if(21) == pytest.approx(
+    assert maturities == pytest.approx(POLS_MATURITY_LAST, abs=INFORCE)
+    assert deaths + lapses + declines + maturities + a.pols_if(20) == pytest.approx(
         1.0, abs=1e-13)
 
 
 def test_worked_example_reading_the_shape(kr_term_anchor):
-    """The cumulative path the notes describe: strain, crossing, peak at t = 13, giveback.
+    """The cumulative path the notes describe: strain, crossing, peak at t = 12, giveback.
 
     Every part of the protection shape is mechanical and the notes assert each part with a
-    number, so each is pinned: the crossing back through zero during year 3, the peak of
-    +444,663.00 at t = 13 and the 327,043.30 given back over the last seven years — 73% of
+    number, so each is pinned: the crossing back through zero at t = 2, the peak of
+    +444,663.00 at t = 12 and the 327,043.30 given back over the last seven periods — 73% of
     the peak — as the level premium falls behind a table rate that has multiplied by 4.75
     between 보험나이 40 and 59.
     """
     a = kr_term_anchor
     df = a.result_cf()
     cum = df["net_cf"].cumsum()
-    assert cum.loc[1] == pytest.approx(-127031.75, abs=WON)
-    assert cum.loc[2] == pytest.approx(-39507.17, abs=WON)
-    assert cum.loc[3] == pytest.approx(40335.24, abs=WON)
-    assert cum.loc[13] == pytest.approx(444663.00, abs=WON)
-    assert cum.idxmax() == 13
-    assert cum.loc[13] - cum.loc[20] == pytest.approx(327043.30, abs=WON)
-    assert (cum.loc[13] - cum.loc[20]) / cum.loc[13] == pytest.approx(0.735, abs=5e-4)
-    assert a.net_cf(13) > 0.0 > a.net_cf(14)
-    assert all(a.net_cf(t) < 0.0 for t in range(14, 21))
+    assert cum.loc[0] == pytest.approx(-127031.75, abs=WON)
+    assert cum.loc[1] == pytest.approx(-39507.17, abs=WON)
+    assert cum.loc[2] == pytest.approx(40335.24, abs=WON)
+    assert cum.loc[12] == pytest.approx(444663.00, abs=WON)
+    assert cum.idxmax() == 12
+    assert cum.loc[12] - cum.loc[19] == pytest.approx(327043.30, abs=WON)
+    assert (cum.loc[12] - cum.loc[19]) / cum.loc[12] == pytest.approx(0.735, abs=5e-4)
+    assert a.net_cf(12) > 0.0 > a.net_cf(13)
+    assert all(a.net_cf(t) < 0.0 for t in range(13, 20))
     assert a.mort_rate_at_age(59) / a.mort_rate_at_age(40) == pytest.approx(
         4.751, abs=5e-4)
-    assert a.prem_pp(20) == a.prem_pp(1)
+    assert a.prem_pp(19) == a.prem_pp(0)
     # The answer is a difference of large numbers: premium is 1.44x death claims.
     assert df["premiums"].sum() / df["claims_death"].sum() == pytest.approx(
         1.441, abs=5e-4)
@@ -574,7 +580,7 @@ def test_the_shipped_model_point_summary_table(term_life, point_id):
     proj_len, prem_mth, premiums, claims, net_cf = POINT_SUMMARY[point_id]
     p = term_life.Projection[point_id]
     assert p.proj_len() == proj_len
-    assert p.premium_mth_pp(1) == prem_mth
+    assert p.premium_mth_pp(0) == prem_mth
     got_prem, got_claims, got_net = _totals(p)
     assert got_prem == pytest.approx(premiums, abs=WON)
     assert got_claims == pytest.approx(claims, abs=WON)
@@ -597,10 +603,10 @@ def test_the_maturity_form_point_pays_back_the_premiums_it_collected(term_life):
     assert df["claims_maturity"].sum() == pytest.approx(8016046.20, abs=WON)
     assert df["claims_death"].sum() == pytest.approx(727007.36, abs=WON)
     assert (df["claims_maturity"][:n - 1] == 0.0).all()
-    assert p.claims(n, "MATURITY") == pytest.approx(
-        p.cum_prem_pp(n) * p.pols_maturity(n), rel=1e-14)
-    assert p.cum_prem_pp(n) == pytest.approx(
-        sum(p.prem_pp(s) for s in range(1, n + 1)), rel=1e-14)
+    assert p.claims(n - 1, "MATURITY") == pytest.approx(
+        p.cum_prem_pp(n - 1) * p.pols_maturity(n - 1), rel=1e-14)
+    assert p.cum_prem_pp(n - 1) == pytest.approx(
+        sum(p.prem_pp(s) for s in range(n)), rel=1e-14)
     assert df["net_cf"].sum() < 0.0
 
 
@@ -615,7 +621,7 @@ def test_the_accidental_uplift_point_prints_the_split_the_notes_quote(term_life)
     """
     p = term_life.Projection[10]
     assert p.acc_death() is True and p.rate_class() == "preferred"
-    for t, share in ((1, 0.1236207830), (10, 0.0871551347), (20, 0.0536694127)):
+    for t, share in ((0, 0.1236207830), (9, 0.0871551347), (19, 0.0536694127)):
         assert p.acc_mort_share(t) == pytest.approx(share, abs=INFORCE)
         assert p.acc_mort_share(t) == pytest.approx(
             p.acc_mort_rate_at_age(p.age(t)) / p.mort_rate_at_age(p.age(t)), rel=1e-14)
@@ -649,9 +655,9 @@ def test_the_renewal_ladder_is_read_off_published_cells_with_no_extension(term_l
         assert ("pure", "M", entry_age, 10) in tbl.index    # published, not extended
         assert p.prem_rate_mth(t) == p_m and p.premium_mth_pp(t) == p_m
         assert p.prem_pp(t) == p_a
-    assert [round(p.prem_pp(t) / p.prem_pp(1), 2) for _, t, *_ in RENEWAL_LADDER] == [
+    assert [round(p.prem_pp(t) / p.prem_pp(0), 2) for _, t, *_ in RENEWAL_LADDER] == [
         1.00, 2.33, 6.22, 22.33]
-    jumps = [round(p.prem_pp(t + 1) / p.prem_pp(t), 2) for t in (10, 20, 30)]
+    jumps = [round(p.prem_pp(t + 1) / p.prem_pp(t), 2) for t in (9, 19, 29)]
     assert jumps == [2.33, 2.67, 3.59] == sorted(jumps)
 
 
@@ -659,8 +665,8 @@ def test_the_renewal_ladder_is_read_off_published_cells_with_no_extension(term_l
 def test_the_gaengsin_boundary_rows(term_life, t):
     """The notes' eight-row boundary table on model point 3, cell by cell.
 
-    Three rows per boundary — the year before, the boundary itself and the repriced year
-    after — plus the final year, where cover ends at the ceiling rather than renewing.
+    Three rows per boundary — the period before, the boundary itself and the repriced period
+    after — plus the last period, where cover ends at the ceiling rather than renewing.
     Between them they pin the decline rate, the exits it produces, the waiver reset and the
     saw-tooth, which are the four things a 갱신형 model gets wrong independently.
     """
@@ -673,65 +679,65 @@ def test_the_gaengsin_boundary_rows(term_life, t):
     assert p.net_cf(t) == pytest.approx(net_cf, abs=WON)
 
 
-def test_the_gaengsin_year_ten_trace(term_life):
-    """The notes' boundary-year trace: the old premium, in the year the contract reprices.
+def test_the_gaengsin_boundary_period_trace(term_life):
+    """The notes' t = 9 trace: the old premium, in the period the contract reprices.
 
-    Premium income in the boundary year is collected at the **old** premium, the repricing
-    taking effect at the start of year 11 and not before.  Then the roll-forward in the
+    Premium income in the boundary period is collected at the **old** premium, the repricing
+    taking effect at the start of period 10 and not before.  Then the roll-forward in the
     processing order — mortality, ordinary lapse, and the renewal decline on the survivors
-    of both — takes l(10) from 0.7405136863 to 0.5805175782.
+    of both — takes l(9) from 0.7405136863 to 0.5805175782.
     """
     p = term_life.Projection[3]
-    assert p.pols_if(10) == pytest.approx(0.7405136863039591, rel=1e-14)
-    assert p.wop_waived_frac(10) == pytest.approx(WAIVED_AT_CYCLE_END, rel=1e-12)
-    assert p.pols_payer(10) == pytest.approx(0.7351990174, abs=INFORCE)
-    assert p.prem_pp(10) == 108000.0
-    assert p.premiums(10) == pytest.approx(79401.49, abs=WON)
-    assert p.mort_rate(10) == pytest.approx(0.85 * 0.00127541, rel=1e-14)
-    assert p.pols_death(10) == pytest.approx(0.0008027898, abs=INFORCE)
-    assert p.claims(10, "DEATH") == pytest.approx(80278.98, abs=WON)
-    assert p.claim_expenses(10) == pytest.approx(240.84, abs=WON)
-    assert p.expenses(10) == pytest.approx(
-        24000.0 * 1.02 ** 9 * p.pols_if(10), rel=1e-13)
-    assert p.commissions(10) == pytest.approx(0.03 * p.premiums(10), rel=1e-14)
-    assert p.net_cf(10) == pytest.approx(-24739.94, abs=WON)
-    assert p.lapse_rate(10) == pytest.approx(0.0190127302, abs=INFORCE)
-    assert p.pols_if_at(10, "BEF_LAPSE") == pytest.approx(0.7397108965, abs=INFORCE)
-    assert p.pols_if_at(10, "BEF_DECLINE") == pytest.approx(0.7256469728, abs=INFORCE)
-    assert p.pols_if_at(10, "AFT_DECR") == pytest.approx(0.5805175782, abs=INFORCE)
-    assert p.pols_if(11) == pytest.approx(0.5805175782471498, rel=1e-14)
+    assert p.pols_if(9) == pytest.approx(0.7405136863039591, rel=1e-14)
+    assert p.wop_waived_frac(9) == pytest.approx(WAIVED_AT_CYCLE_END, rel=1e-12)
+    assert p.pols_payer(9) == pytest.approx(0.7351990174, abs=INFORCE)
+    assert p.prem_pp(9) == 108000.0
+    assert p.premiums(9) == pytest.approx(79401.49, abs=WON)
+    assert p.mort_rate(9) == pytest.approx(0.85 * 0.00127541, rel=1e-14)
+    assert p.pols_death(9) == pytest.approx(0.0008027898, abs=INFORCE)
+    assert p.claims(9, "DEATH") == pytest.approx(80278.98, abs=WON)
+    assert p.claim_expenses(9) == pytest.approx(240.84, abs=WON)
+    assert p.expenses(9) == pytest.approx(
+        24000.0 * 1.02 ** 9 * p.pols_if(9), rel=1e-13)
+    assert p.commissions(9) == pytest.approx(0.03 * p.premiums(9), rel=1e-14)
+    assert p.net_cf(9) == pytest.approx(-24739.94, abs=WON)
+    assert p.lapse_rate(9) == pytest.approx(0.0190127302, abs=INFORCE)
+    assert p.pols_if_at(9, "BEF_LAPSE") == pytest.approx(0.7397108965, abs=INFORCE)
+    assert p.pols_if_at(9, "BEF_DECLINE") == pytest.approx(0.7256469728, abs=INFORCE)
+    assert p.pols_if_at(9, "AFT_DECR") == pytest.approx(0.5805175782, abs=INFORCE)
+    assert p.pols_if(10) == pytest.approx(0.5805175782471498, rel=1e-14)
 
 
-def test_the_gaengsin_year_eleven_trace_and_the_saw_tooth(term_life):
+def test_the_gaengsin_repriced_period_trace_and_the_saw_tooth(term_life):
     """84% more premium on 22% fewer policies, then the same shape three times over.
 
     The crossing is the signature of a 갱신형 contract and no UK or U.S. term model in this
-    repository has it.  ``net_cf`` runs -156,215.75 at t = 1, positive from t = 2, decays to
-    -1,036.78 at t = 6 and -24,739.94 at t = 10, then jumps to +56,307.38 — and the
+    repository has it.  ``net_cf`` runs -156,215.75 at t = 0, positive from t = 1, decays to
+    -1,036.78 at t = 5 and -24,739.94 at t = 9, then jumps to +56,307.38 — and the
     amplitude grows at each boundary, because the premium resets to attained age while the
     in-force does not reset at all.
     """
     p = term_life.Projection[3]
-    assert p.term_index(11) == 2 and p.term_start_age(2) == 50
-    assert p.prem_rate_mth(11) == 21000.0 and p.prem_pp(11) == 252000.0
-    assert p.wop_waived_frac(11) == 0.0
-    assert p.pols_payer(11) == pytest.approx(p.pols_if(11), rel=1e-15)
-    assert p.premiums(11) == pytest.approx(146290.43, abs=WON)
-    assert p.pols_death(11) == pytest.approx(0.00068405579, abs=5e-12)
-    assert p.claims(11, "DEATH") == pytest.approx(68405.58, abs=WON)
-    assert p.claim_expenses(11) == pytest.approx(205.22, abs=WON)
-    assert p.expenses(11) == pytest.approx(16983.54, abs=WON)
-    assert p.commissions(11) == pytest.approx(4388.71, abs=WON)
-    assert p.net_cf(11) == pytest.approx(56307.38, abs=WON)
-    assert p.pols_if(11) < 0.79 * p.pols_if(10)
-    assert p.premiums(11) / p.premiums(10) == pytest.approx(1.84, abs=5e-3)
+    assert p.term_index(10) == 2 and p.term_start_age(2) == 50
+    assert p.prem_rate_mth(10) == 21000.0 and p.prem_pp(10) == 252000.0
+    assert p.wop_waived_frac(10) == 0.0
+    assert p.pols_payer(10) == pytest.approx(p.pols_if(10), rel=1e-15)
+    assert p.premiums(10) == pytest.approx(146290.43, abs=WON)
+    assert p.pols_death(10) == pytest.approx(0.00068405579, abs=5e-12)
+    assert p.claims(10, "DEATH") == pytest.approx(68405.58, abs=WON)
+    assert p.claim_expenses(10) == pytest.approx(205.22, abs=WON)
+    assert p.expenses(10) == pytest.approx(16983.54, abs=WON)
+    assert p.commissions(10) == pytest.approx(4388.71, abs=WON)
+    assert p.net_cf(10) == pytest.approx(56307.38, abs=WON)
+    assert p.pols_if(10) < 0.79 * p.pols_if(9)
+    assert p.premiums(10) / p.premiums(9) == pytest.approx(1.84, abs=5e-3)
     # The saw-tooth.
-    assert p.net_cf(1) == pytest.approx(-156215.75, abs=WON)
-    assert p.net_cf(2) > 0.0
-    assert p.net_cf(6) == pytest.approx(-1036.78, abs=WON)
-    for t in (10, 20, 30):
+    assert p.net_cf(0) == pytest.approx(-156215.75, abs=WON)
+    assert p.net_cf(1) > 0.0
+    assert p.net_cf(5) == pytest.approx(-1036.78, abs=WON)
+    for t in (9, 19, 29):
         assert p.net_cf(t) < 0.0 < p.net_cf(t + 1), f"boundary at {t}"
-    jumps = [p.net_cf(t + 1) - p.net_cf(t) for t in (10, 20, 30)]
+    jumps = [p.net_cf(t + 1) - p.net_cf(t) for t in (9, 19, 29)]
     assert jumps == sorted(jumps)
 
 
@@ -748,7 +754,7 @@ def test_the_contract_boundary_is_published_both_ways_and_ruled_on_neither(term_
     assert p3.contract_boundary() == "ceiling" and p3.proj_len() == 40
     assert p4.contract_boundary() == "current_term" and p4.proj_len() == 10
     assert p3.horizon_ceiling() == 40 == p4.horizon_ceiling()
-    assert p4.policy_term() == 10 and p3.age(p3.proj_len()) + 1 == 80
+    assert p4.policy_term() == 10 and p3.age(p3.proj_len() - 1) + 1 == 80
     assert p3.result_cf()["net_cf"].sum() == pytest.approx(
         GAENGSIN_TOTAL_NET_CF, abs=WON)
     assert p4.result_cf()["net_cf"].sum() == pytest.approx(CURRENT_TERM_NET_CF, abs=WON)
@@ -784,7 +790,7 @@ def test_which_checks_this_model_publishes(term_life, kr_term_anchor):
         assert value is True and isinstance(value, bool), name
     for name in sorted(CHECKS_WITH_RESID):
         residual = getattr(a, name + "_resid")
-        for t in range(1, a.proj_len() + 1):
+        for t in range(a.proj_len()):
             assert residual(t) == pytest.approx(0.0, abs=1e-8), f"{name}_resid({t})"
 
 
@@ -801,7 +807,7 @@ def test_the_check_tolerances_are_named_references(term_life, kr_term_anchor):
     assert refs["roll_fwd_tol"] == 1e-12 and refs["cash_tol"] == 1e-6
     assert refs["roll_fwd_tol"] < refs["cash_tol"] < 1.0
     a = kr_term_anchor
-    worst = max(abs(a.check_net_cf_resid(t)) for t in range(1, a.proj_len() + 1))
+    worst = max(abs(a.check_net_cf_resid(t)) for t in range(a.proj_len()))
     assert worst < refs["cash_tol"] / 100.0
 
 
@@ -816,7 +822,7 @@ def test_the_inforce_rollforward_is_the_notes_identity(term_life):
     """
     for point_id in (1, 3, 6, 8):
         p = term_life.Projection[point_id]
-        for t in range(1, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             out = (p.pols_death(t) + p.pols_lapse(t) + p.pols_decline(t)
                    + p.pols_maturity(t) - p.pols_reinstate(t))
             assert p.pols_if(t) - p.pols_if(t + 1) == pytest.approx(out, abs=1e-13), (
@@ -825,7 +831,7 @@ def test_the_inforce_rollforward_is_the_notes_identity(term_life):
             if not p.reinstatement():
                 assert p.pols_if(t + 1) <= p.pols_if(t) + 1e-15
         assert p.check_pols_roll_fwd() is True
-        assert p.pols_if(p.proj_len() + 1) == 0.0
+        assert p.pols_if(p.proj_len()) == 0.0
 
 
 def test_the_decrements_are_taken_in_the_notes_processing_order(term_life):
@@ -836,7 +842,7 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(term_life):
     Asserted on the 갱신형 point, where the third factor is not identically one.
     """
     p = term_life.Projection[3]
-    for t in (1, 5, 10, 20, 31, 40):
+    for t in (0, 4, 9, 19, 30, 39):
         assert p.pols_if_at(t, "BEF_DECR") == p.pols_if(t)
         assert p.pols_if_at(t, "BEF_LAPSE") == pytest.approx(
             p.pols_if(t) * (1 - p.mort_rate(t)), rel=1e-15)
@@ -850,10 +856,14 @@ def test_the_decrements_are_taken_in_the_notes_processing_order(term_life):
             p.pols_if_at(t, "BEF_LAPSE") * p.lapse_rate(t), rel=1e-15)
         assert p.pols_decline(t) == pytest.approx(
             p.pols_if_at(t, "BEF_DECLINE") * p.renewal_decline_rate(t), rel=1e-15)
-    assert p.pols_if_at(0, "BEF_DECR") == 0.0
-    assert p.pols_if_at(p.proj_len() + 1, "BEF_DECR") == 0.0
+    # Both guards of ``if t < 0 or t >= proj_len()``. Neither index is on the frame — the
+    # frame is t = 0 .. proj_len() - 1 and nothing in the model reads t = -1; these probe
+    # the guard itself, which is what makes the cells safe to call from a window read such
+    # as pols_lapse_pool's [max(0, t - 3), t - 1].
+    assert p.pols_if_at(-1, "BEF_DECR") == 0.0
+    assert p.pols_if_at(p.proj_len(), "BEF_DECR") == 0.0
     with pytest.raises(FormulaError):
-        p.pols_if_at(1, "BEF_NOTHING")
+        p.pols_if_at(0, "BEF_NOTHING")
 
 
 def test_the_published_statement_adds_up(term_life):
@@ -887,7 +897,7 @@ def test_the_two_published_frames_and_the_sign_they_carry(kr_term_anchor, term_l
     whose decline rate is non-zero and whose premium moves on the next one.
     """
     df = kr_term_anchor.result_cf()
-    assert list(df.index) == list(range(1, 21)) and df.index.name == "t"
+    assert list(df.index) == list(range(20)) and df.index.name == "t"
     assert list(df.columns) == [
         "pols_if", "premiums", "claims_death", "claims_acc_death", "claims_accel",
         "claims_maturity", "claims_lapse", "claim_expenses", "expenses",
@@ -895,7 +905,7 @@ def test_the_two_published_frames_and_the_sign_they_carry(kr_term_anchor, term_l
     ]
     assert df.notna().all().all()
     assert "liability_cf" not in term_life.Projection.cells
-    assert kr_term_anchor.net_cf(1) < 0.0 < kr_term_anchor.net_cf(2)
+    assert kr_term_anchor.net_cf(0) < 0.0 < kr_term_anchor.net_cf(1)
 
     pols = term_life.Projection[3].result_pols()
     assert pols.index.name == "t" and list(pols.columns)[0] == "pols_if"
@@ -903,7 +913,7 @@ def test_the_two_published_frames_and_the_sign_they_carry(kr_term_anchor, term_l
                  "pols_waived", "pols_lapse_pool"):
         assert name in pols.columns
     boundaries = [t for t in pols.index if pols.loc[t, "renewal_decline_rate"] > 0.0]
-    assert boundaries == [10, 20, 30]
+    assert boundaries == [9, 19, 29]
     for t in boundaries:
         assert pols.loc[t + 1, "prem_pp"] > pols.loc[t, "prem_pp"]
         assert pols.loc[t + 1, "term_index"] == pols.loc[t, "term_index"] + 1
@@ -914,53 +924,53 @@ def test_the_two_published_frames_and_the_sign_they_carry(kr_term_anchor, term_l
 
 
 def test_pitfall_renewal_decline_is_not_lapse_and_the_order_is_not_cosmetic(term_life):
-    """A different event, in a different year, from a different population — 90.7% of exits.
+    """A different event, in a different period, from a different population — 90.7% of exits.
 
     The multiplicative roll-forward is order-invariant, so a model applying the decline
     **first** still balances its policy count to the last digit — and books 20% fewer death
-    claims in the boundary year: 64,223.18 won instead of 80,278.98, with l(11) identical
+    claims in the boundary period: 64,223.18 won instead of 80,278.98, with l(10) identical
     either way.  Folding the decline into w(t) is worse, because it makes the boundary
     invisible: on this row the decline is 0.1451293946 of 0.1599610806 total exits.
     """
     p = term_life.Projection[3]
-    deaths, lapses, declines = YEAR_10_EXITS
-    assert p.pols_death(10) == pytest.approx(deaths, abs=INFORCE)
-    assert p.pols_lapse(10) == pytest.approx(lapses, abs=INFORCE)
-    assert p.pols_decline(10) == pytest.approx(declines, abs=INFORCE)
-    total = p.pols_death(10) + p.pols_lapse(10) + p.pols_decline(10)
-    assert total == pytest.approx(sum(YEAR_10_EXITS), abs=INFORCE)
-    assert p.pols_if(10) - p.pols_if(11) == pytest.approx(total, abs=1e-13)
-    assert p.pols_decline(10) / total == pytest.approx(0.907, abs=5e-4)
+    deaths, lapses, declines = BOUNDARY_EXITS
+    assert p.pols_death(9) == pytest.approx(deaths, abs=INFORCE)
+    assert p.pols_lapse(9) == pytest.approx(lapses, abs=INFORCE)
+    assert p.pols_decline(9) == pytest.approx(declines, abs=INFORCE)
+    total = p.pols_death(9) + p.pols_lapse(9) + p.pols_decline(9)
+    assert total == pytest.approx(sum(BOUNDARY_EXITS), abs=INFORCE)
+    assert p.pols_if(9) - p.pols_if(10) == pytest.approx(total, abs=1e-13)
+    assert p.pols_decline(9) / total == pytest.approx(0.907, abs=5e-4)
 
     # The counterfactual: decline first, then mortality on the survivors of it.
-    l10, q10, w10, d10 = (p.pols_if(10), p.mort_rate(10), p.lapse_rate(10),
-                          p.renewal_decline_rate(10))
-    reversed_deaths = l10 * (1 - d10) * q10
+    l9, q9, w9, d9 = (p.pols_if(9), p.mort_rate(9), p.lapse_rate(9),
+                      p.renewal_decline_rate(9))
+    reversed_deaths = l9 * (1 - d9) * q9
     assert reversed_deaths == pytest.approx(0.0006422318, abs=INFORCE)
     assert 100000000.0 * reversed_deaths == pytest.approx(64223.18, abs=WON)
-    assert reversed_deaths == pytest.approx(0.80 * p.pols_death(10), rel=1e-12)
-    assert l10 * (1 - d10) * (1 - q10) * (1 - w10) == pytest.approx(
-        p.pols_if(11), rel=1e-14)          # the roll-forward cannot catch it
+    assert reversed_deaths == pytest.approx(0.80 * p.pols_death(9), rel=1e-12)
+    assert l9 * (1 - d9) * (1 - q9) * (1 - w9) == pytest.approx(
+        p.pols_if(10), rel=1e-14)          # the roll-forward cannot catch it
 
     # Taken after lapse, from the survivors of it, and only at a boundary.
-    assert p.pols_decline(10) == pytest.approx(
-        p.pols_if_at(10, "BEF_DECLINE") * 0.20, rel=1e-14)
+    assert p.pols_decline(9) == pytest.approx(
+        p.pols_if_at(9, "BEF_DECLINE") * 0.20, rel=1e-14)
     assert p.check_decline_timing() is True
-    for t in range(1, p.proj_len() + 1):
-        boundary = t % 10 == 0 and t < p.proj_len()
+    for t in range(p.proj_len()):
+        boundary = (t + 1) % 10 == 0 and t < p.proj_len() - 1
         assert (p.renewal_decline_rate(t) > 0.0) is boundary, t
         assert (p.pols_decline(t) > 0.0) is boundary, t
-    assert p.lapse_rate(11) < p.lapse_rate(10) < p.lapse_rate(9)   # w absorbs nothing
+    assert p.lapse_rate(10) < p.lapse_rate(9) < p.lapse_rate(8)   # w absorbs nothing
 
     # A declined renewal is an expiry: nothing is paid, and nobody is re-counted.
-    assert p.claims(10, "LAPSE") == 0.0
-    assert p.pols_if(11) == pytest.approx(
-        p.pols_if_at(10, "BEF_DECLINE") * 0.80, rel=1e-14)
-    assert p.pols_lapse(11) == pytest.approx(
-        p.pols_if_at(11, "BEF_LAPSE") * p.lapse_rate(11), rel=1e-14)
-    assert p.pols_lapse(11) < p.pols_decline(10)
-    assert p.renewal_decline_rate(p.proj_len()) == 0.0
-    assert p.pols_decline(p.proj_len()) == 0.0
+    assert p.claims(9, "LAPSE") == 0.0
+    assert p.pols_if(10) == pytest.approx(
+        p.pols_if_at(9, "BEF_DECLINE") * 0.80, rel=1e-14)
+    assert p.pols_lapse(10) == pytest.approx(
+        p.pols_if_at(10, "BEF_LAPSE") * p.lapse_rate(10), rel=1e-14)
+    assert p.pols_lapse(10) < p.pols_decline(9)
+    assert p.renewal_decline_rate(p.proj_len() - 1) == 0.0
+    assert p.pols_decline(p.proj_len() - 1) == 0.0
 
 
 # ---------------------------------------------------------------------------
@@ -995,17 +1005,17 @@ def test_pitfall_truncation_shortens_the_cycle_not_the_horizon():
         p = model.Projection[99]
         assert p.age_at_entry() == 45 and p.renew_ceiling() == 80
         assert p.horizon_ceiling() == 35 == p.proj_len()
-        assert p.age(p.proj_len()) + 1 == 80        # the horizon still ends at 80
+        assert p.age(p.proj_len() - 1) + 1 == 80    # the horizon still ends at 80
         assert [p.term_start_age(k) for k in (1, 2, 3, 4)] == [45, 55, 65, 75]
         assert [p.term_len(k) for k in (1, 2, 3, 4)] == [10, 10, 10, 5]
-        assert p.term_index(31) == 4 == p.term_index(35)
+        assert p.term_index(30) == 4 == p.term_index(34)
         assert p.mort_table_mean(75, 5) < p.mort_table_mean(75, 10)
         anchor = model.Data.prem_anchor_table().loc[("pure", "M")]
-        assert p.prem_rate_mth(31) == pytest.approx(
+        assert p.prem_rate_mth(30) == pytest.approx(
             float(anchor["prem_mth_per_100m"]) * p.mort_table_mean(75, 5)
             / p.mort_table_mean(40, 20), rel=1e-12)
-        assert p.renewal_decline_rate(30) == 0.20   # the last renewal
-        assert p.renewal_decline_rate(35) == 0.0    # the cover ends; it does not renew
+        assert p.renewal_decline_rate(29) == 0.20   # the last renewal
+        assert p.renewal_decline_rate(34) == 0.0    # the cover ends; it does not renew
         assert p.check_pols_roll_fwd() is True
         assert p.check_decline_timing() is True and p.check_prem_level() is True
     finally:
@@ -1027,15 +1037,15 @@ def test_pitfall_bi_gaengsin_never_renews(term_life):
         n = p.proj_len()
         assert p.renewal_type() == "bi_gaengsin"
         assert p.horizon_ceiling() == p.policy_term() == n
-        assert all(p.term_index(t) == 1 for t in range(1, n + 1))
+        assert all(p.term_index(t) == 1 for t in range(n))
         assert all(p.term_start_age(k) == p.age_at_entry() for k in (1, 2, 3))
-        assert all(p.renewal_decline_rate(t) == 0.0 for t in range(1, n + 1))
-        assert all(p.pols_decline(t) == 0.0 for t in range(1, n + 1))
-        assert all(p.prem_pp(t) == p.prem_pp(1) for t in range(1, n + 1))
+        assert all(p.renewal_decline_rate(t) == 0.0 for t in range(n))
+        assert all(p.pols_decline(t) == 0.0 for t in range(n))
+        assert all(p.prem_pp(t) == p.prem_pp(0) for t in range(n))
         assert p.check_decline_timing() is True
     p7 = term_life.Projection[7]                    # a 세만기 point: term from expiry age
     assert p7.age_at_entry() == 65 and p7.policy_term() == 15
-    assert p7.age(p7.proj_len()) + 1 == 80
+    assert p7.age(p7.proj_len() - 1) + 1 == 80
 
 
 def test_pitfall_the_premium_follows_the_renewal_index_not_the_policy_year(term_life):
@@ -1045,17 +1055,17 @@ def test_pitfall_the_premium_follows_the_renewal_index_not_the_policy_year(term_
     into a 비갱신형 without changing anything a policy roll-forward can see.
     ``check_prem_level`` asserts the complement — level **within** a cycle, changing across
     a boundary — which catches the opposite error, a rate lookup keyed on attained age that
-    makes the premium drift year by year instead of stepping.
+    makes the premium drift period by period instead of stepping.
     """
     p = term_life.Projection[3]
     assert p.check_prem_level() is True
-    for t in range(1, p.proj_len() + 1):
+    for t in range(p.proj_len()):
         assert p.check_prem_level_resid(t) == pytest.approx(0.0, abs=1e-12)
-    assert all(p.prem_pp(t) == p.prem_pp(1) for t in range(2, 11))
-    for t in (10, 20, 30):
+    assert all(p.prem_pp(t) == p.prem_pp(0) for t in range(1, 10))
+    for t in (9, 19, 29):
         assert p.prem_pp(t + 1) > p.prem_pp(t)
         assert p.check_prem_level_resid(t + 1) == 0.0   # zero by definition, not by luck
-    frozen = sum(p.prem_pp(1) * p.pols_payer(t) for t in range(1, p.proj_len() + 1))
+    frozen = sum(p.prem_pp(0) * p.pols_payer(t) for t in range(p.proj_len()))
     assert frozen == pytest.approx(2217536.20, abs=WON)
     assert p.result_cf()["premiums"].sum() == pytest.approx(11602888.01, abs=WON)
     assert frozen / p.result_cf()["premiums"].sum() == pytest.approx(0.191, abs=5e-4)
@@ -1066,7 +1076,7 @@ def test_pitfall_the_premium_follows_the_renewal_index_not_the_policy_year(term_
 
 
 def test_pitfall_a_premium_waiver_does_not_survive_a_gaengsin(term_life):
-    """u(t) is 0.0 exactly at t = 1, 11, 21, 31 and rebuilds to 0.0071770030 by t = 10.
+    """u(t) is 0.0 exactly at t = 0, 10, 20, 30 and rebuilds to 0.0071770030 by t = 9.
 
     Sourced, not assumed: 「다만, 새로이 갱신되는 계약에서는 갱신 전 보험료 납입면제 사유로
     인한 보험료 납입면제를 적용하지 않고, 보험료를 계속 납입하여야 합니다」.  A disabled life
@@ -1076,20 +1086,20 @@ def test_pitfall_a_premium_waiver_does_not_survive_a_gaengsin(term_life):
     """
     p = term_life.Projection[3]
     assert p.waiver() is True and p.check_waiver_reset() is True
-    for t in (1, 11, 21, 31):
+    for t in (0, 10, 20, 30):
         assert p.wop_waived_frac(t) == 0.0, f"the waiver survived into t={t}"
         assert p.pols_waived(t) == 0.0
         assert p.pols_payer(t) == pytest.approx(p.pols_if(t), rel=1e-15)
-    for first in (1, 11, 21, 31):
+    for first in (0, 10, 20, 30):
         run = [p.wop_waived_frac(t) for t in range(first, first + 10)]
         assert run == sorted(run)
         assert run[-1] == pytest.approx(WAIVED_AT_CYCLE_END, rel=1e-12)
     assert p.wop_rec_rate == 0.0
-    for t in range(2, 10):
+    for t in range(1, 9):
         u = p.wop_waived_frac(t - 1)
         assert p.wop_waived_frac(t) == pytest.approx(u + (1 - u) * 0.0008, rel=1e-13)
     assert p.check_pols_payer() is True
-    for t in (5, 10, 25, 40):
+    for t in (4, 9, 24, 39):
         assert p.pols_payer(t) + p.pols_waived(t) == pytest.approx(
             p.pols_if(t) * p.prem_payable(t), rel=1e-15)
 
@@ -1104,15 +1114,15 @@ def test_pitfall_the_suicide_and_contestability_clocks_do_not_reset_at_a_gaengsi
     initial commission at a renewal, and an inflation clock that runs from issue.
     """
     p = term_life.Projection[3]
-    for t in (10, 20, 30):
+    for t in (9, 19, 29):
         assert p.pols_if(t + 1) == pytest.approx(p.pols_if_at(t, "AFT_DECR"), rel=1e-15)
         assert p.pols_if(t + 1) < 0.6                     # never a reset to 1
         assert p.expenses(t + 1) == pytest.approx(
-            24000.0 * 1.02 ** t * p.pols_if(t + 1), rel=1e-13)
+            24000.0 * 1.02 ** (t + 1) * p.pols_if(t + 1), rel=1e-13)
         assert p.commissions(t + 1) == pytest.approx(0.03 * p.premiums(t + 1), rel=1e-13)
         assert p.comm_new_term(t + 1) == 0.0
-    assert p.expenses(1) - 24000.0 == pytest.approx(120000.0, abs=WON)
-    assert p.commissions(1) == pytest.approx(0.60 * p.prem_pp(1), abs=WON)
+    assert p.expenses(0) - 24000.0 == pytest.approx(120000.0, abs=WON)
+    assert p.commissions(0) == pytest.approx(0.60 * p.prem_pp(0), abs=WON)
 
 
 def test_pitfall_the_waiver_is_cause_neutral_so_it_is_not_scaled_off_mort_rate(
@@ -1127,9 +1137,9 @@ def test_pitfall_the_waiver_is_cause_neutral_so_it_is_not_scaled_off_mort_rate(
     """
     p = term_life.Projection[3]
     assert p.wop_inc_rate == 0.0008
-    increments = [p.wop_waived_frac(t) - p.wop_waived_frac(t - 1) for t in range(2, 11)]
+    increments = [p.wop_waived_frac(t) - p.wop_waived_frac(t - 1) for t in range(1, 10)]
     assert max(increments) / min(increments) < 1.01
-    assert p.mort_rate(10) / p.mort_rate(1) > 1.6
+    assert p.mort_rate(9) / p.mort_rate(0) > 1.6
     names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
     for absent in ("wop_mort_ratio", "wop_rate_factor", "disab_from_mort"):
         assert absent not in names
@@ -1150,14 +1160,14 @@ def test_pitfall_acc_death_is_a_split_of_the_decrement_never_a_second_decrement(
     never exceed two sums assured on that year's decrement.
     """
     p = term_life.Projection[10]
-    for t in range(1, p.proj_len() + 1):
+    for t in range(p.proj_len()):
         assert p.acc_mort_share(t) <= 1.0
         assert p.claims(t, "DEATH") == pytest.approx(
             p.sum_assured() * p.pols_death(t), rel=1e-14)
         assert p.claims(t, "ACC_DEATH") == pytest.approx(
             p.sum_assured() * p.acc_mort_share(t) * p.pols_death(t), rel=1e-14)
         assert p.claims(t) <= 2.0 * p.sum_assured() * p.pols_death(t) + 1e-9
-    assert p.pols_death(1) == pytest.approx(p.pols_if(1) * p.mort_rate(1), rel=1e-15)
+    assert p.pols_death(0) == pytest.approx(p.pols_if(0) * p.mort_rate(0), rel=1e-15)
     assert p.check_pols_roll_fwd() is True
     for point_id in (1, 3, 7):
         q = term_life.Projection[point_id]
@@ -1181,12 +1191,12 @@ def test_pitfall_the_disability_state_is_not_a_benefit(term_life):
     assert not [n for n in names if "disab" in n or "morbid" in n]
     for point_id in (1, 3, 5):
         p = term_life.Projection[point_id]
-        for t in range(1, p.proj_len() + 1):
+        for t in range(p.proj_len()):
             if p.pols_maturity(t) == 0.0:
                 assert p.claims(t) <= p.sum_assured() * p.pols_death(t) + 1e-9, (
                     f"point {point_id}, t={t}: outgo exceeds one sum assured")
     with pytest.raises(FormulaError):
-        term_life.Projection[1].claims(1, "DISABILITY")
+        term_life.Projection[1].claims(0, "DISABILITY")
 
 
 def test_pitfall_no_claims_aggregate_column_beside_the_splits(term_life):
@@ -1203,12 +1213,12 @@ def test_pitfall_no_claims_aggregate_column_beside_the_splits(term_life):
         "claims_death", "claims_acc_death", "claims_accel", "claims_maturity",
         "claims_lapse"]
     p = term_life.Projection[10]
-    for t in (1, 10, 20):
+    for t in (0, 9, 19):
         assert p.claims(t) == pytest.approx(
             sum(p.claims(t, k) for k in
                 ("DEATH", "ACC_DEATH", "ACCEL", "MATURITY", "LAPSE")), rel=1e-15)
     with pytest.raises(FormulaError):
-        p.claims(1, "SURRENDER")
+        p.claims(0, "SURRENDER")
 
 
 # ---------------------------------------------------------------------------
@@ -1230,8 +1240,8 @@ def test_pitfall_lapse_pays_nothing_and_the_zero_is_published(term_life):
         p = term_life.Projection[point_id]
         df = p.result_cf()
         assert "claims_lapse" in df.columns and (df["claims_lapse"] == 0.0).all()
-        assert all(p.claims(t, "LAPSE") == 0.0 for t in range(1, p.proj_len() + 1))
-        assert any(p.pols_lapse(t) > 0.0 for t in range(1, p.proj_len() + 1))
+        assert all(p.claims(t, "LAPSE") == 0.0 for t in range(p.proj_len()))
+        assert any(p.pols_lapse(t) > 0.0 for t in range(p.proj_len()))
     names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
     for absent in ("cv_pp", "av_pp", "policy_loan", "loan_bal", "apl", "apl_rate",
                    "surr_charge", "prem_to_av_pp", "cv_rate"):
@@ -1259,20 +1269,20 @@ def test_pitfall_the_jeongi_nap_resolution_couples_pay_term_to_the_boundary(term
     assert p4.result_cf()["net_cf"].sum() == pytest.approx(CURRENT_TERM_NET_CF, abs=WON)
     assert p3.result_cf()["net_cf"][:10].sum() != pytest.approx(
         p4.result_cf()["net_cf"].sum(), abs=1.0)
-    assert p3.lapse_rate(1) == pytest.approx(p4.lapse_rate(1), rel=1e-14)
-    assert p4.lapse_rate(10) == pytest.approx(0.001, rel=1e-14)
-    assert p3.lapse_rate(10) > p4.lapse_rate(10)
-    assert p3.lapse_rate(40) == pytest.approx(0.001, rel=1e-14)
+    assert p3.lapse_rate(0) == pytest.approx(p4.lapse_rate(0), rel=1e-14)
+    assert p4.lapse_rate(9) == pytest.approx(0.001, rel=1e-14)
+    assert p3.lapse_rate(9) > p4.lapse_rate(9)
+    assert p3.lapse_rate(39) == pytest.approx(0.001, rel=1e-14)
 
     p = term_life.Projection[5]
     assert p.pay_term() == 10 and p.proj_len() == 20
-    assert p.lapse_rate(10) == pytest.approx(0.001, rel=1e-14)
-    assert all(p.lapse_rate(t) == 0.008 for t in range(11, 21))
-    assert p.prem_payable(10) == 1.0 and p.prem_payable(11) == 0.0
-    assert p.pols_payer(11) == 0.0 and p.premiums(11) == 0.0
-    assert p.commissions(11) == 0.0 and p.check_pols_payer() is True
-    assert p.pols_death(11) > 0.0 and p.claims(11, "DEATH") > 0.0
-    assert all(p.claims(t, "LAPSE") == 0.0 for t in range(11, 21))
+    assert p.lapse_rate(9) == pytest.approx(0.001, rel=1e-14)
+    assert all(p.lapse_rate(t) == 0.008 for t in range(10, 20))
+    assert p.prem_payable(9) == 1.0 and p.prem_payable(10) == 0.0
+    assert p.pols_payer(10) == 0.0 and p.premiums(10) == 0.0
+    assert p.commissions(10) == 0.0 and p.check_pols_payer() is True
+    assert p.pols_death(10) > 0.0 and p.claims(10, "DEATH") > 0.0
+    assert all(p.claims(t, "LAPSE") == 0.0 for t in range(10, 20))
 
 
 # ---------------------------------------------------------------------------
@@ -1302,18 +1312,18 @@ def test_pitfall_qbar_is_a_mean_of_table_rates_not_best_estimate_rates(term_life
     assert p.rate_class() == "preferred" and p.class_mort_ratio() < 1.0
     anchor = float(term_life.Data.prem_anchor_table().loc[
         ("pure", "M"), "prem_mth_per_100m"])
-    assert p.prem_rate_mth(1) == pytest.approx(
+    assert p.prem_rate_mth(0) == pytest.approx(
         anchor * p.mort_table_mean(55, 20) / p.mort_table_mean(40, 20), rel=1e-12)
     # A class-adjusted qbar would cancel; a best-estimate one would not.
     classed = (anchor * p.mort_table_mean(55, 20) * p.class_mort_ratio()
                / (p.mort_table_mean(40, 20) * p.class_mort_ratio()))
-    assert classed == pytest.approx(p.prem_rate_mth(1), rel=1e-12)
-    be_scaled = (anchor * sum(p.mort_rate(t) for t in range(1, 21)) / 20.0
+    assert classed == pytest.approx(p.prem_rate_mth(0), rel=1e-12)
+    be_scaled = (anchor * sum(p.mort_rate(t) for t in range(20)) / 20.0
                  / p.mort_table_mean(40, 20))
-    assert be_scaled != pytest.approx(p.prem_rate_mth(1), rel=1e-3)
+    assert be_scaled != pytest.approx(p.prem_rate_mth(0), rel=1e-3)
     # The class enters through class_prem_ratio, once, and not through qbar.
-    raw = p.prem_rate_mth(1) * p.class_prem_ratio() * p.sum_assured() / 100000000.0
-    assert p.premium_mth_pp(1) == float(int(raw / 10.0 + 0.5) * 10)
+    raw = p.prem_rate_mth(0) * p.class_prem_ratio() * p.sum_assured() / 100000000.0
+    assert p.premium_mth_pp(0) == float(int(raw / 10.0 + 0.5) * 10)
 
 
 def test_the_premium_scale_uses_published_cells_where_they_exist(term_life):
@@ -1339,7 +1349,7 @@ def test_the_premium_scale_uses_published_cells_where_they_exist(term_life):
         assert int(anchors.loc[(form, sex), "term_y"]) == 20
     assert float(tbl.loc[("pure", "M", 40, 20), "prem_mth_per_100m"]) == 15080.0
     assert float(tbl.loc[("pure", "F", 40, 20), "prem_mth_per_100m"]) == 8010.0
-    assert term_life.Projection[2].prem_rate_mth(1) == 8010.0
+    assert term_life.Projection[2].prem_rate_mth(0) == 8010.0
 
 
 def test_pitfall_the_premium_rounds_to_ten_won_before_annualization(term_life):
@@ -1352,17 +1362,17 @@ def test_pitfall_the_premium_rounds_to_ten_won_before_annualization(term_life):
     """
     for point_id in sorted(POINT_SUMMARY):
         p = term_life.Projection[point_id]
-        raw = (p.prem_rate_mth(1) * p.class_prem_ratio() * p.pay_factor(1)
+        raw = (p.prem_rate_mth(0) * p.class_prem_ratio() * p.pay_factor(1)
                * p.sum_assured() / 100000000.0)
-        assert p.premium_mth_pp(1) == float(int(raw / 10.0 + 0.5) * 10)
-        assert p.premium_mth_pp(1) % 10 == 0
-        assert p.prem_pp(1) == 12.0 * p.premium_mth_pp(1)
+        assert p.premium_mth_pp(0) == float(int(raw / 10.0 + 0.5) * 10)
+        assert p.premium_mth_pp(0) % 10 == 0
+        assert p.prem_pp(0) == 12.0 * p.premium_mth_pp(0)
     p10 = term_life.Projection[10]
-    raw10 = p10.prem_rate_mth(1) * p10.class_prem_ratio() * p10.sum_assured() / 1e8
-    assert raw10 != pytest.approx(p10.premium_mth_pp(1), abs=1e-9)
-    assert abs(raw10 - p10.premium_mth_pp(1)) < 5.0 and p10.premium_mth_pp(1) == 49480.0
-    assert term_life.Projection[1].premium_mth_pp(1) == 15080.0
-    assert term_life.Projection[3].prem_pp(1) == 108000.0
+    raw10 = p10.prem_rate_mth(0) * p10.class_prem_ratio() * p10.sum_assured() / 1e8
+    assert raw10 != pytest.approx(p10.premium_mth_pp(0), abs=1e-9)
+    assert abs(raw10 - p10.premium_mth_pp(0)) < 5.0 and p10.premium_mth_pp(0) == 49480.0
+    assert term_life.Projection[1].premium_mth_pp(0) == 15080.0
+    assert term_life.Projection[3].prem_pp(0) == 108000.0
 
 
 def test_pitfall_twelve_times_p_m_is_exact_in_amount_and_standardized_only_in_timing(
@@ -1377,10 +1387,10 @@ def test_pitfall_twelve_times_p_m_is_exact_in_amount_and_standardized_only_in_ti
     for point_id in (1, 3, 9):
         p = term_life.Projection[point_id]
         assert p.premium_mode() == "monthly"
-        for t in (1, p.proj_len()):
+        for t in (0, p.proj_len() - 1):
             assert p.prem_pp(t) == 12.0 * p.premium_mth_pp(t)
     a = term_life.Projection[1]
-    for t in (1, 2, 10, 20):
+    for t in (0, 1, 9, 19):
         assert a.premiums(t) == pytest.approx(a.prem_pp(t) * a.pols_payer(t), rel=1e-15)
     names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
     for absent in ("mode_factor", "prem_mode_discount", "half_year_adj",
@@ -1448,7 +1458,7 @@ def test_pitfall_the_accelerated_amount_comes_out_of_the_death_benefit(term_life
     v = 1.0 / 1.025
     assert (p.accel_take_up, p.accel_disc_rate, p.accel_prognosis_months) == (
         0.10, 0.025, 12)
-    for t in range(1, p.proj_len() + 1):
+    for t in range(p.proj_len()):
         assert p.accel_available(t) is True and p.accel_share(t) == 0.10
         assert p.claims(t, "DEATH") == pytest.approx(
             p.sum_assured() * 0.90 * p.pols_death(t), rel=1e-14)
@@ -1456,11 +1466,11 @@ def test_pitfall_the_accelerated_amount_comes_out_of_the_death_benefit(term_life
             p.accel_payout_pp(t) * 0.10 * p.pols_death(t), rel=1e-14)
         assert p.claims(t) <= p.sum_assured() * p.pols_death(t) + 1e-9
     amount = p.accel_amount()
-    assert p.accel_payout_pp(1) == pytest.approx(
-        amount * v - 12 * p.premium_mth_pp(1) * amount / p.sum_assured() * v ** 0.5,
+    assert p.accel_payout_pp(0) == pytest.approx(
+        amount * v - 12 * p.premium_mth_pp(0) * amount / p.sum_assured() * v ** 0.5,
         rel=1e-13)
-    assert p.accel_payout_pp(1) < amount
-    on = sum(p.claims(t) for t in range(1, p.proj_len() + 1))
+    assert p.accel_payout_pp(0) < amount
+    on = sum(p.claims(t) for t in range(p.proj_len()))
 
     model = _reread("accoff")
     try:
@@ -1468,10 +1478,10 @@ def test_pitfall_the_accelerated_amount_comes_out_of_the_death_benefit(term_life
         model.Projection.clear_all()
         off = model.Projection[7]
         n = off.proj_len()
-        assert off.accel_share(1) == 0.0
+        assert off.accel_share(0) == 0.0
         assert all(off.pols_death(t) == pytest.approx(p.pols_death(t), abs=1e-15)
-                   for t in range(1, n + 1))
-        assert sum(off.claims(t) for t in range(1, n + 1)) > on
+                   for t in range(n))
+        assert sum(off.claims(t) for t in range(n)) > on
     finally:
         model.close()
     # Off in the base run, with the column published and zero.
@@ -1496,20 +1506,20 @@ def test_pitfall_the_buhwal_window_runs_from_each_life_s_own_lapse(term_life):
     p = term_life.Projection[8]
     assert p.reinstatement() is True
     assert p.reinstate_rate_eff() == 0.10 and p.reinstate_window == 3
-    assert p.pols_lapse_pool(1) == 0.0
-    assert p.pols_reinstate(2) == pytest.approx(0.10 * p.pols_lapse_pool(2), rel=1e-14)
-    assert p.pols_if(3) > p.pols_if_at(2, "AFT_DECR")        # lives come back in
-    for t in range(2, p.proj_len() + 1):
+    assert p.pols_lapse_pool(0) == 0.0
+    assert p.pols_reinstate(1) == pytest.approx(0.10 * p.pols_lapse_pool(1), rel=1e-14)
+    assert p.pols_if(2) > p.pols_if_at(1, "AFT_DECR")        # lives come back in
+    for t in range(1, p.proj_len()):
         rebuilt = sum(p.pols_lapse(s) * 0.9 ** (t - 1 - s)
-                      for s in range(max(1, t - 3), t))
+                      for s in range(max(0, t - 3), t))
         assert p.pols_lapse_pool(t) == pytest.approx(rebuilt, abs=1e-14)
-    assert p.pols_lapse_expire(3) == 0.0
-    assert p.pols_lapse_expire(4) == pytest.approx(p.pols_lapse(1) * 0.9 ** 3, rel=1e-13)
+    assert p.pols_lapse_expire(2) == 0.0
+    assert p.pols_lapse_expire(3) == pytest.approx(p.pols_lapse(0) * 0.9 ** 3, rel=1e-13)
     assert p.check_lapse_pool() is True
     a = term_life.Projection[1]
     assert a.reinstatement() is False and a.reinstate_rate_eff() == 0.0
-    assert all(a.pols_reinstate(t) == 0.0 for t in range(1, a.proj_len() + 1))
-    assert a.pols_lapse_pool(4) > 0.0 and a.check_lapse_pool() is True
+    assert all(a.pols_reinstate(t) == 0.0 for t in range(a.proj_len()))
+    assert a.pols_lapse_pool(3) > 0.0 and a.check_lapse_pool() is True
 
 
 def test_pitfall_declines_never_enter_the_reinstatement_pool(term_life):
@@ -1517,13 +1527,13 @@ def test_pitfall_declines_never_enter_the_reinstatement_pool(term_life):
 
     Only ordinary lapses flow into the pool.  Folding the boundary exits in would reinstate
     lives whose contract ended rather than lapsed — and on the 갱신형 anchor the declines are
-    90.7% of the boundary year's exits, so the error would be large as well as wrong.
+    90.7% of the boundary period's exits, so the error would be large as well as wrong.
     """
     p = term_life.Projection[3]
-    assert p.pols_decline(10) > 0.0
-    for t in (10, 11, 12, 13):
+    assert p.pols_decline(9) > 0.0
+    for t in (9, 10, 11, 12):
         assert p.pols_lapse_pool(t) == pytest.approx(
-            sum(p.pols_lapse(s) for s in range(max(1, t - 3), t)), abs=1e-14)
+            sum(p.pols_lapse(s) for s in range(max(0, t - 3), t)), abs=1e-14)
     assert p.check_lapse_pool() is True
     model = _reread("pool")
     try:
@@ -1531,8 +1541,8 @@ def test_pitfall_declines_never_enter_the_reinstatement_pool(term_life):
         model.Projection.clear_all()
         q = model.Projection[3]
         assert q.reinstatement() is False          # the column, not the Reference
-        assert q.pols_lapse_pool(11) == pytest.approx(
-            sum(q.pols_lapse(s) for s in range(8, 11)), abs=1e-14)
+        assert q.pols_lapse_pool(10) == pytest.approx(
+            sum(q.pols_lapse(s) for s in range(7, 10)), abs=1e-14)
     finally:
         model.close()
 
@@ -1551,9 +1561,9 @@ def test_pitfall_read_the_tables_at_boheom_nai_and_at_nothing_else(term_life):
     here** — importing one is the error, and the model carries no lever that could.
     """
     a = term_life.Projection[1]
-    assert a.age_at_entry() == 40 and a.age(1) == 40 and a.age(20) == 59
-    for t in (1, 10, 20):
-        assert a.age(t) == a.age_at_entry() + t - 1
+    assert a.age_at_entry() == 40 and a.age(0) == 40 and a.age(19) == 59
+    for t in (0, 9, 19):
+        assert a.age(t) == a.age_at_entry() + t
         assert a.mort_rate_base(t) == a.mort_rate_at_age(a.age(t)) * a.class_mort_ratio()
     names = set(term_life.Projection.cells) | set(term_life.Projection.refs)
     for absent in ("mort_age_shift", "age_shift", "age_basis_shift", "man_nai_shift"):
@@ -1561,7 +1571,7 @@ def test_pitfall_read_the_tables_at_boheom_nai_and_at_nothing_else(term_life):
     # The counterfactual is the whole projection read a year early — the shifted rate
     # drives the survivorship too, which is what a mis-specified model would actually do.
     understated, pols = 0.0, 1.0
-    for t in range(1, 21):
+    for t in range(20):
         q = a.mort_be_factor * a.mort_rate_at_age(a.age(t) - 1)
         understated += a.sum_assured() * pols * q
         pols *= (1.0 - q) * (1.0 - a.lapse_rate(t))
@@ -1604,8 +1614,8 @@ def test_the_std_scalar_assumptions_the_notes_state(term_life):
         model.Projection.clear_all()
         p = model.Projection[7]
         assert p.prem_int_rate == 0.025           # unmoved: a different quantity
-        assert p.premium_mth_pp(1) == term_life.Projection[7].premium_mth_pp(1)
-        assert p.accel_payout_pp(1) < term_life.Projection[7].accel_payout_pp(1)
+        assert p.premium_mth_pp(0) == term_life.Projection[7].premium_mth_pp(0)
+        assert p.accel_payout_pp(0) < term_life.Projection[7].accel_payout_pp(0)
     finally:
         model.close()
 
@@ -1670,7 +1680,7 @@ def test_the_rate_class_relativities_are_sourced_ratios(term_life):
     assert p8.rate_class() == "super_preferred" and p8.sex() == "M"
     assert p8.class_mort_ratio() == pytest.approx(0.583077, abs=5e-7)
     assert p8.class_prem_ratio() == pytest.approx(0.586207, abs=5e-7)
-    assert p8.mort_rate(1) == pytest.approx(
+    assert p8.mort_rate(0) == pytest.approx(
         0.85 * 0.583077 * p8.mort_rate_at_age(19), rel=1e-6)
 
 
@@ -1739,32 +1749,32 @@ def test_the_lapse_level_sensitivity_is_third_order_and_that_is_the_finding(fact
 
 
 def test_commission_at_a_gaengsin_is_off_and_changes_the_sign_when_switched_on():
-    """Setting the rate to 0.60 turns year 11 from +56,307.38 to -31,466.88.
+    """Setting the rate to 0.60 turns t = 10 from +56,307.38 to -31,466.88.
 
     A 갱신 is issued on a new product code, which argues for paying commission on it, and it
     takes no 고지, which argues against; no document discloses a scale at all, so the base run
     pays nothing and exposes the switch.  The sign flips at the first two boundaries and not
-    at the third — by year 31 the repriced premium has grown enough to absorb it — which is
+    at the third — by t = 30 the repriced premium has grown enough to absorb it — which is
     worth pinning because the effect is easy to overstate.
     """
     model = _reread("comm")
     try:
         base = model.Projection[3]
         assert base.comm_new_term_rate == 0.0
-        assert all(base.comm_new_term(t) == 0.0 for t in range(1, 41))
-        before = {t: base.net_cf(t) for t in (11, 21, 31)}
+        assert all(base.comm_new_term(t) == 0.0 for t in range(40))
+        before = {t: base.net_cf(t) for t in (10, 20, 30)}
         model.Projection.comm_new_term_rate = 0.60
         model.Projection.clear_all()
         p = model.Projection[3]
-        for t in (10, 20, 30):
+        for t in (9, 19, 29):
             assert p.comm_new_term(t + 1) == pytest.approx(
                 0.60 * p.prem_pp(t + 1) * p.pols_if(t + 1), rel=1e-13)
             assert p.net_cf(t + 1) < before[t + 1]
-        assert p.net_cf(11) < 0.0 and p.net_cf(21) < 0.0
-        assert 0.0 < p.net_cf(31) < 0.02 * before[31]
-        assert p.comm_new_term(1) == 0.0        # not the first cycle
-        assert p.comm_new_term(12) == 0.0       # only the cycle's first year
-        assert p.net_cf(11) == pytest.approx(-31466.88, abs=WON)
+        assert p.net_cf(10) < 0.0 and p.net_cf(20) < 0.0
+        assert 0.0 < p.net_cf(30) < 0.02 * before[30]
+        assert p.comm_new_term(0) == 0.0        # not the first cycle
+        assert p.comm_new_term(11) == 0.0       # only the cycle's first period
+        assert p.net_cf(10) == pytest.approx(-31466.88, abs=WON)
         assert p.result_cf()["net_cf"].sum() == pytest.approx(2295610.86, abs=WON)
         assert p.check_net_cf() is True
     finally:
@@ -1783,11 +1793,11 @@ def test_the_renewal_decline_elasticity_is_off_and_works_when_switched_on():
     try:
         base = model.Projection[3]
         assert base.renewal_decline_beta == 0.0
-        assert [base.renewal_decline_rate(t) for t in (10, 20, 30)] == [0.20] * 3
+        assert [base.renewal_decline_rate(t) for t in (9, 19, 29)] == [0.20] * 3
         model.Projection.renewal_decline_beta = 0.5
         model.Projection.clear_all()
         p = model.Projection[3]
-        rates = [p.renewal_decline_rate(t) for t in (10, 20, 30)]
+        rates = [p.renewal_decline_rate(t) for t in (9, 19, 29)]
         assert rates == sorted(rates) and all(r < p.renewal_decline_max for r in rates)
         assert rates[0] == pytest.approx(0.20 * (252000.0 / 108000.0) ** 0.5, rel=1e-13)
         assert rates[-1] == pytest.approx(
@@ -1797,7 +1807,7 @@ def test_the_renewal_decline_elasticity_is_off_and_works_when_switched_on():
         model.Projection.renewal_decline_beta = 2.0    # above the cap everywhere
         model.Projection.clear_all()
         q = model.Projection[3]
-        assert [q.renewal_decline_rate(t) for t in (10, 20, 30)] == [0.40] * 3
+        assert [q.renewal_decline_rate(t) for t in (9, 19, 29)] == [0.40] * 3
         assert q.result_cf()["net_cf"].sum() == pytest.approx(
             DECLINE_SENSITIVITY[0.40][0], abs=WON)
     finally:
@@ -1849,11 +1859,11 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         alt_path = model.Data.input_dir() / alt_name
         doubled.to_csv(alt_path)
         try:
-            base = model.Projection[1].claims(1, "DEATH")
+            base = model.Projection[1].claims(0, "DEATH")
             model.Data.mort_table_file = alt_name
             model.Data.clear_all()
             model.Projection.clear_all()
-            assert model.Projection[1].claims(1, "DEATH") == pytest.approx(
+            assert model.Projection[1].claims(0, "DEATH") == pytest.approx(
                 2 * base, rel=1e-12)
         finally:
             alt_path.unlink(missing_ok=True)

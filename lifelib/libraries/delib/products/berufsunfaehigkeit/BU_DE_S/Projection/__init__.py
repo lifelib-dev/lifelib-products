@@ -607,10 +607,12 @@ def first_len():
     """The **number of months** in the **first-order pricing run**, from inception.
 
     ``12 x (cover_end_age() - entry_age())``, which is ``proj_len() +
-    duration_init_months()``, so the run is ``s = 0 ... first_len() - 1``.  The shadow
-    ledgers run over the contract's original term whatever duration the model point has
-    already run, because the *Bruttobeitrag* was struck at inception and does not change
-    afterwards.
+    duration_init_months()``, so the run is ``s = 0 ... first_len() - 1``.
+    :func:`pols_actv_first` admits ``s == first_len()`` as well, the month past the end,
+    exactly as the roll-forward checks read ``t == proj_len()`` on the main frame.  The
+    shadow ledgers run over the contract's original term whatever duration the model point
+    has already run, because the *Bruttobeitrag* was struck at inception and does not
+    change afterwards.
     """
     return 12 * (cover_end_age() - entry_age())
 

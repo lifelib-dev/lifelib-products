@@ -35,7 +35,8 @@ for this library, so lapse here is a behavioural decrement acting at the end of 
 the slot Japanese whole life fills with a 高度障害保険金 is filled in Korea by the premium
 waiver, which continues the contract instead of extinguishing it. And there is **no
 expiry**: the projection runs to the terminal age of the mortality table, every remaining
-life dies in the final year, and nothing is paid at the horizon but the death benefit.
+life dies in the last projected period, and nothing is paid at the horizon but the death
+benefit.
 
 **Spaces.** The model contains two:
 
@@ -59,13 +60,20 @@ rather than stored inside the model. The model folder itself holds no data, so t
 and its inputs must travel together.
 
 **Projection basis.** Annual steps on policy years running 계약해당일 to 계약해당일, on
-**보험나이** (*boheom nai*, insurance age). 감독규정 제7-65조제2항 expressly permits the
-계약자적립액 of a monthly-premium contract to be computed on an annualised premium basis —
-「연납보험료를 기준으로 하여 산출할 수 있다」 — and that permission is what lets an annual
-grid carry this product. Premium, maintenance expense and renewal commission fall at the
-start of the policy year; acquisition expense and initial commission at issue; death
-claims at the end of the year of death; surrenders and any 감액 at the end of the year,
-after deaths.
+**보험나이** (*boheom nai*, insurance age). The time index ``t`` is **0-based**: ``t = 0`` is
+the first policy year, period ``t`` runs from anniversary ``t`` to anniversary ``t + 1``, the
+frame is ``range(proj_len())``, and the contractual policy year is the 1-based label
+``t + 1``. Values *at* a point in time — the 계약자적립액, the 해약공제액, the two surrender
+values, cumulative premiums and the 보험계약대출 balance — carry a second index, the
+anniversary ``d = 0 … proj_len()`` with ``d = 0`` at issue, and the flows of period ``t`` read
+``d = t`` as the opening anniversary and ``d = t + 1`` as the closing one. 감독규정
+제7-65조제2항 expressly permits the 계약자적립액 of a monthly-premium contract to be computed
+on an annualised premium basis — 「연납보험료를 기준으로 하여 산출할 수 있다」 — and that
+permission is what lets an annual grid carry this product. Premium, maintenance expense and
+renewal commission fall at the start of the period; acquisition expense and initial
+commission at issue, in period ``t = 0``; death claims at the end of the period of death;
+surrenders and any 감액 at the end of the period, after deaths, on the value at the
+anniversary that closes it.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the level
 whole-of-life benefit, the identity 해약환급금 = 계약자적립액 − 해약공제액, the

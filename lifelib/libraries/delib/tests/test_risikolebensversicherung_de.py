@@ -371,8 +371,9 @@ def test_closure_three_the_cash_flow_statement_is_check_net_cf(de_rlv_anchor):
 
 def test_the_first_order_deckungskapital_opens_and_closes_at_zero(de_rlv_anchor):
     """res(0) = 0 by the equivalence, res(n) = 0 by exhaustion, a peak of 7 553,29 EUR
-    at t = 15, and a Thiele step.  The *gezillmerte* companion opens at ``-z k G``; the
-    two are formed by different summations and agree to about 4e-12, not to the last bit.
+    at t = 15, and a Thiele step.  The *gezillmerte* companion opens at ``-z k G``; the two
+    are formed by different summations, so the 1e-9 tolerances are headroom rather than a
+    residual the shipped calibration actually shows.
     """
     p = de_rlv_anchor
     n, k = p.proj_len(), RESERVE["peak_t"]

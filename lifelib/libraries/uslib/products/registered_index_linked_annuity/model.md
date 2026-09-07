@@ -125,11 +125,12 @@ the consequence is visible in the other direction: `age(proj_len() − 1)` is 89
 *during* the last month, and the owner attains 90 at its end — which is the Maturity Date
 the contract's own rule names.
 
-This is the same split `MYGA_US_S` makes, reached from the other side: that chassis takes
-elective transactions at the *beginning* of the month, so its anniversary month belongs to
-the year that is opening; here the month end *is* the anniversary, so the year that has
-just closed is the one a transaction sees. Each convention is right for its own timing
-basis, and the two agree in every month but one a year.
+`MYGA_US_S` needs only one reading, because its beginning-of-month transaction convention
+makes the two coincide: that chassis takes elective transactions at the *beginning* of the
+month, so its anniversary month belongs to the year that is opening; here the month end
+*is* the anniversary, so the year that has just closed is the one a transaction sees. Each
+convention is right for its own timing basis, and the two products' `policy_year`s differ
+in exactly that one month a year.
 
 `proj_len()` is contractual rather than chosen, and is the **number** of months projected:
 the Maturity Date is the later of the anniversary after the oldest owner's 90th birthday
@@ -209,7 +210,7 @@ decided by meaning, not by name:
 
 | File | Column | Decision | Why |
 |---|---|---|---|
-| `market_scenario.csv` | `month_end` | A **time point**, values unchanged, column renamed from `t` | Each row is the market state holding from a date, and one of those dates is a Term Start Date that the option pricer reads directly. Times are what the contract names — the 6-year term ends at month end 72, the worked example's rate move lands at month end 36 — so shifting the values would break the tie to the contract. It is *not* the frame's `t`: month `t` is valued at month end `t + 1`, and the reader adds the one |
+| `market_scenario.csv` | `month_end` | A **time point**, values unchanged, column renamed from `t` | Each row is the market state holding from a date, and one of those dates is a Term Start Date that the option pricer reads directly. Times are what the contract names — the 6-year term ends at month end 72, the worked example's rate move lands at month end 36 — so shifting the values would break the tie to the contract. It is *not* the frame's `t`: month `t` is valued at month end `t + 1`, and the reader adds the one. The name records the commoner of the two uses rather than the key's meaning — `term_start_month(t)` reads it at a month *start*, and row `0` is the Issue Date, an instant no month ends at |
 | `withdrawal_table.csv` | `month_end` | Same, values unchanged, column renamed from `t` | The same clock, so that the worked example's $8,000 and the scenario's index move sit at the same number, 36. `wd_scheduled_pp(t)` reads key `t + 1` |
 | `surr_charge_table.csv` | `contract_year` | Unchanged | Its values are 0–6: **complete** contract years, an elapsed count that is 0-based already. Read at `duration_eom(t)` |
 | `lapse_table.csv` | `contract_year` | Unchanged | Its values are 1, 7, 8: the 1-based contractual label. Read through `policy_year(t)`, which maps the month to it |
@@ -509,7 +510,7 @@ table: it carries the valuation margin built in at construction [REG-R60].
 ## Tests
 
 `tests/test_registered_index_linked_annuity_us.py` asserts every cell of the notes'
-six-row, thirteen-column worked example table, on both scenarios and on both sides of the
+six-row, fourteen-column worked example table, on both scenarios and on both sides of the
 $8,000 withdrawal; the trace beneath it (`beta = 10.0632%`, the $10,063.19 budget, the
 $89,936.81 opening fixed leg, the 1.7834% accretion yield and 2.22% implied spread, the
 $5,031.60 midterm amortization, the $2,687.62 cost of the rate rise, the $119,171.01 and

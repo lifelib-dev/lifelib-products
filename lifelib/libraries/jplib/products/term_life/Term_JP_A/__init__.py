@@ -27,7 +27,7 @@ the shape of the answer:
 end of each 保険期間 unless the policyholder declines, with **no 告知 and no fresh
 underwriting**, and the premium is recomputed on attained age at the scale then in
 force [S1][S4][S8][S12]. On the anchor cell the monthly premium multiplies by 1.87 at
-the first renewal, then 2.16, 2.34 and 2.88 — so the premium is a function of the
+the first renewal, then 2.16, 2.28 and 2.66 — so the premium is a function of the
 *term index*, not of the policy year, and the projection horizon is the renewal
 ceiling of attained age 80 rather than the ten-year term. A UK term assurance
 guarantees its premium for the whole term; this one guarantees it only within the

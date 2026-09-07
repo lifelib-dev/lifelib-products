@@ -94,7 +94,7 @@ for single-pay [R8]; premium persistency study basis [REG-R21]).
 | `AV_t` | base account value, EOM of month `t`, floored at 0 | `av_init` (read as `AV_{t−1}` when `t = 0`) |
 | `SG_t` | shadow account value, EOM, NOT floored (negative = catch-up shortfall) | `sg_init` (read as `SG_{t−1}` when `t = 0`) |
 | `L_t` | loan balance including accrued interest, EOM | `loan_init` (read as `L_{t−1}` when `t = 0`) |
-| `DB_t` | death benefit = max(F, κ(x_t)·AV_t) [S2, S4; R4 corridor] | — |
+| `DB_t` | death benefit = max(F, κ(x_t)·max(AV_t', 0)) [S2, S4; R4 corridor] | — |
 | `l_t` | in-force probability at BOM of month `t` (survivorship from all decrements) | `l_0` = 1.0 |
 | `g_t` | grace-period counter, months (0 = not in grace) [S7] | 0 (read as `g_{t−1}` when `t = 0`) |
 | `D_t` | monthly deduction forgone because AV = 0 under active guarantee | — |
@@ -194,16 +194,17 @@ anchored to the public highlights findings.
 
 1. **Status check.** If `g_{t−1} > 0` (in grace) and cumulative grace ≥ 61 days
    without the required payment, the policy lapses at BOM with no value
-   (`CSV ≤ 0` in grace by construction) [S7]. Never at `t = 0`: `g_{−1}` is read as
+   (`CSV ≤ 0` in grace by construction) [S7]. Never at `t = 0`: `g_{t−1}` is read as
    the opening value 0.
-2. **Premium.** `CumPrem_t = CumPrem_{t−1} + P_t` (`CumPrem_{−1}` = `cumprem_init`).
+2. **Premium.** `CumPrem_t = CumPrem_{t−1} + P_t`, with `CumPrem_{t−1}` read as
+   `cumprem_init` when `t = 0`.
    Base credit `(1 − π)·P_t`; shadow credit `(1 − π^g)·P_t`. (Catch-up premiums route
    identically **[std]**.)
 3. **Expense charges.**
    `AV_t' = AV_{t−1} + (1−π)P_t − e_pol − e_u·F/1000 − W_t − 25·1{W_t>0}`
    `SG_t' = SG_{t−1} + (1−π^g)P_t − e_u^g·F/1000 − W_t`  (withdrawal reduces shadow
-   dollar-for-dollar **[std]**, spec note), with `AV_{−1} = av_init` and
-   `SG_{−1} = sg_init` opening the first month.
+   dollar-for-dollar **[std]**, spec note), with `AV_{t−1}` and `SG_{t−1}` read as
+   `av_init` and `sg_init` when `t = 0`.
 4. **Death benefit and NAAR.** `DB_t = max(F, κ(x_t)·max(AV_t',0))`;
    `NAAR_t = max(DB_t/(1+j_g) − max(AV_t', 0), 0)`;
    `NAAR_t^g = max(DB_t/(1+j^g) − max(SG_t', 0), 0)` **[std]** (discount convention;
@@ -224,7 +225,7 @@ anchored to the public highlights findings.
    `AV_t = AV_t''·(1+j_c)` (split loaned/unloaned when `L > 0`).
    `SG_t = SG_t''·(1+j^g)` — no floor at zero.
 8. **Loan interest.** `L_t = L_{t−1}·(1 + (1.05)^{1/12} − 1)` (5% in arrears [S4],
-   accrued monthly **[std]**; `L_{−1} = loan_init`).
+   accrued monthly **[std]**; `L_{t−1}` is `loan_init` when `t = 0`).
 9. **In-force test.** Guarantee active iff `SG_t − L_t > 0` [S4; S2, S9]. The policy
    is in force iff (base account can cover deductions, i.e., not in expired grace)
    OR the guarantee is active. Lapse occurs ONLY if all three hold: (i) base AV net

@@ -48,6 +48,11 @@ anchor), the suicide window is `t < suicide_mths`, and `payments_made(t) = min(t
 T_cess)`. `crossover_mth()` returns the 0-based month and `-1` where there is none, since
 `0` is now a real month.
 
+`product-spec.md` states the same mechanics in **contractual** month numbering, where the
+issue month is month 1: its `t` is this `t + 1`, so its `t <= 12` is this `t < 12`, its
+`CumPrem(t) = P x min(t, T_cess)` is this `P x min(t + 1, T_cess)`, and its crossover at
+month 167 is this `t* = 166`.
+
 The notes' `l(t)` is the in-force probability at the **start** of month `t` with
 `l(0) = 1`, so `pols_if(t)` is exactly `l(t)` and the worked example's rows are the same
 numbers at the same `t`.

@@ -100,10 +100,11 @@ Points 1 and 2 are the two columns of the worked-example table; points 3–6, 10
 are its traces and the pitfall cases; points 7, 8, 9 and 12 project on the shipped
 mortality tables, point 8 being the anchor cell on that basis. Two points exist to hold
 open a case the notes leave under-specified and would otherwise go untested: point 14 is
-**quarterly in advance**, the frequency at which the notes' ``t - 12/m`` survival point
-and their own advance payment schedule disagree, and point 15 is the **certain_only**
-form, where the notes' expense formula ``IF(t) = max(C, l_alive)`` outlives the contract
-that their own prose ends at ``n_eff``. Both divergences are resolved in
+**quarterly in advance**, the frequency at which the notes' ``t + 1 - 12/m`` survival
+point and their own advance payment schedule disagree, and point 15 is the
+**certain_only** form, where the notes' expense formula ``IF(t) = max(C, l_alive(t+1))``
+outlives the contract that their own prose ends in month ``n_eff - 1``. Both divergences
+are resolved in
 :mod:`~.SPIA_US_S.Projection`'s docstring and pinned by tests. A test asserts
 every model point projects.
 

@@ -68,7 +68,9 @@ respect that matters: the Zulage is an annual entitlement determined on a calend
 the *Überschuss* is declared annually, and the *Beitragsgarantie* is tested once. The
 period index ``t`` runs ``0 ... proj_len() - 1``, with ``proj_len() = omega_age - age(0)
 + 1`` the number of projected periods and ``t = 0`` opening at the 1 January 2027
-valuation date; the contractual policy year is ``t + 1``. The one genuinely sub-annual
+valuation date; the contractual contract year is ``duration(t) + 1 = duration_init() + t
++ 1``, which is ``t + 1`` only on a point projected from its own inception
+(``duration_init() == 0``). The one genuinely sub-annual
 element, the monthly *Leibrente*, is compressed to one annual payment at the start of the
 payout year; the *level* of the annuity is still right, because the conversion factor
 carries the Woolhouse ``-11/24`` correction. ``products/sofortrente/`` runs monthly for

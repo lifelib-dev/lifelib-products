@@ -50,8 +50,8 @@ print("Cash flow statement, first 13 months (KRW; net_cf is income-positive)")
 print(cf.head(13).round(2).to_string())
 print()
 
-annual = cf.groupby(cf.index // 12).sum()
-annual.index.name = "policy_year_less_1"
+annual = cf.groupby(cf.index // 12 + 1).sum()
+annual.index.name = "policy_year"
 print("Policy year totals (sums of unrounded monthly values)")
 print(annual.round(2).to_string())
 print()

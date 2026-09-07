@@ -11,10 +11,34 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 3            # or switch the default
 
-``t`` counts **policy years**, 1-based: ``t = 1`` is the first policy year and
-``t = proj_len() = omega_age() - age_at_entry() + 1`` the last. There is no maturity date
-and no 만기보험금; the horizon is the terminal age of the mortality table, every remaining
-life dies in year ``proj_len()``, and nothing is paid there but a death benefit.
+``t`` counts **policy years**, 0-based: ``t = 0`` is the first policy year, period ``t``
+runs from time ``t`` to time ``t + 1``, and the contractual **policy year label is
+``t + 1``**. ``proj_len() = omega_age() - age_at_entry() + 1`` is the **number** of
+projected policy years and the frame's exclusive end, so the frame is
+``range(proj_len())`` and the last projected year is ``t = proj_len() - 1``. There is no
+maturity date and no 만기보험금; the horizon is the terminal age of the mortality table,
+every remaining life dies in year ``proj_len() - 1``, and nothing is paid there but a
+death benefit.
+
+**Two clocks, and every cells docstring says which one it is on.** The **period** clock is
+``t`` above: decrements, policy counts, premiums, claims, expenses, and every row of
+``result_cf()``, ``result_pols()`` and ``result_val()`` are indexed by it, and it runs
+``0 … proj_len() - 1``. The **anniversary** clock is a time-point index running
+``0 … proj_len()``, 0 at issue, and carries the contract's *state* — :func:`pol_val_pp`,
+:func:`cum_prem_pp`, :func:`base_benefit_pp`, :func:`surr_chg_pp`, :func:`cv_std_pp`,
+:func:`cv_mult`, :func:`cv_pp`, :func:`cv_pp_ci`, :func:`resid_db_pp`,
+:func:`loan_avail_pp`, :func:`loan_avail_ci_pp` and :func:`pol_loan_draw`. It is already
+0-based and does **not** move with the frame. Both are written ``t``; they coincide at the
+**opening** of a period, because period ``t`` opens at anniversary ``t`` and closes at
+anniversary ``t + 1``. So a claim or a surrender arising in period ``t``, which is paid at
+the **end** of the year, is paid the anniversary-``t + 1`` amount, and that ``+ 1`` is
+written out wherever it occurs. ``V(0) = 0`` and ``SC(0) = SC_max`` are the issue-instant
+values of the second clock and are real values, not padding.
+
+A **post-CI cohort label** ``s`` is on that same anniversary clock: it is the anniversary at
+which the acceleration was paid, so a life accelerating in period ``t`` joins cohort
+``s = t + 1``. That is what leaves label ``0`` free for the first-year 감액 cohort — no
+acceleration can be paid at anniversary 0.
 
 .. rubric:: The age basis
 
@@ -59,12 +83,12 @@ Notes symbol               Cells                               Meaning
 =========================  ==================================  ============================
 (none)                     model_point()                       The selected model point row
 x                          age_at_entry()                      가입나이 at issue, 보험나이
-x + t - 1                  age(t)                              Attained age in year t
+x + t                      age(t)                              Attained age in year t
 omega                      omega_age()                         Terminal age of the table
-T                          proj_len()                          Projection length in years
+T                          proj_len()                          Number of projected years
 m                          prem_term(), prem_period()          납입기간
-(none)                     prem_end()                          Last year a premium is due
-n_CI                       ci_cover_end()                      Last year of CI cover
+(none)                     prem_end()                          Number of years a premium is due
+n_CI                       ci_cover_end()                      Number of years of CI cover
 SA                         sum_assured()                       보험가입금액
 G                          premium_pp()                        Annual gross premium
 P                          prem_net_level_pp()                 Annual net level premium
@@ -88,22 +112,23 @@ A1(t)                      epv_resid(t)                        EPV of the residu
 A0(t)                      epv_ben(t)                          EPV of all benefits, pre-CI
 a-double-dot(t)            annuity_due(t)                      EPV of 1 p.a. while pre-CI
 V(t)                       pol_val_pp(t)                       계약자적립액 at anniversary t
-cumprem(t)                 cum_prem_pp(t)                      Premiums paid to year t
-B(t)                       base_benefit_pp(t)                  기본보험금
+cumprem(t)                 cum_prem_pp(t)                      Premiums paid by anniversary t
+B(t)                       base_benefit_pp(t)                  기본보험금 at anniversary t
 SC_max                     surr_chg_cap_pp()                   표준해약공제액
-SC(t)                      surr_chg_pp(t)                      해약공제액
-W(t)                       cv_std_pp(t)                        표준형 twin's 해약환급금
-CV(t)                      cv_pp(t)                            Payable value, pre-CI
-CV'(t)                     cv_pp_ci(t)                         Payable value, post-CI
-(none)                     cv_mult(t)                          k or 1, by policy year
+SC(t)                      surr_chg_pp(t)                      해약공제액 at anniversary t
+W(t)                       cv_std_pp(t)                        표준형 twin's 해약환급금 at t
+CV(t)                      cv_pp(t)                            Payable value at t, pre-CI
+CV'(t)                     cv_pp_ci(t)                         Payable value at t, post-CI
+(none)                     cv_mult(t)                          k or 1, by anniversary
 a B(s)                     accel_benefit_pp(s)                 The 선지급 of cohort s
 r B(s)                     resid_nominal_pp(s)                 Nominal residual of cohort s
-max(rB, cV)                resid_db_pp(t, s)                   Residual death benefit
-(weighted mean)            resid_db_avg_pp(t)                  In-force mean residual
-L(t)                       loan_pp(t)                          보험계약대출 balance
+max(rB, cV)                resid_db_pp(t, s)                   Residual death benefit at t
+(weighted mean)            resid_db_avg_pp(t)                  In-force mean residual, period t
+L(t)                       loan_pp(t)                          보험계약대출 balance at time t
 i_L                        i_loan                              보험계약대출이율
-(available)                loan_avail_pp(t)                    Loan limit, pre-CI
-(available)                loan_avail_ci_pp(t)                 Loan limit, post-CI
+Delta(t)                   pol_loan_draw(t)                    Draw at anniversary t
+(available)                loan_avail_pp(t)                    Loan limit at t, pre-CI
+(available)                loan_avail_ci_pp(t)                 Loan limit at t, post-CI
 l(t)                       pols_if(t)                          In force, start of year t
 l0(t)                      pols_if_pre(t)                      In force and pre-CI
 l1(t)                      pols_if_ci(t)                       In force and post-CI
@@ -126,37 +151,42 @@ CF(t)                      net_cf(t)                           Net cash flow, in
 
 .. rubric:: The acceleration, in one paragraph
 
-On the first qualifying event the insurer pays ``a B(t)``, the contract does **not**
-terminate, the death benefit becomes ``max(r B(t_CI), c V(s))`` for every later ``s``, and
-the premium stops. The contract's survival is a regulatory requirement and not a design
+On the first qualifying event the insurer pays ``a B(s)`` at the anniversary ``s`` that
+closes the period of the event, the contract does **not** terminate, the death benefit
+becomes ``max(r B(s), c V(k))`` at every later anniversary ``k``, and the premium stops. The contract's survival is a regulatory requirement and not a design
 choice: 감독규정 제7-60조제8호 forbids a contract to be extinguished while the risk it
 covers remains effective [REG-R16]. **The complement is exact** — ``a + r = 1``, and
 :func:`check_accel_complement` asserts it cohort by cohort — so the acceleration
 redistributes one sum assured across two dates and never adds cover.
 
-.. rubric:: Two cohorts, and why the post-CI one is indexed by its entry year
+.. rubric:: Two cohorts, and why the post-CI one is indexed by its entry anniversary
 
 :func:`pols_if_pre` and :func:`pols_if_ci` are the two states, and the second is carried
-**by the policy year it accelerated in**, :func:`pols_if_ci_at`. That is not tidiness: the
+**by the anniversary at which it accelerated**, :func:`pols_if_ci_at`; a life accelerating
+in period ``t`` is paid at anniversary ``t + 1`` and carries the label ``s = t + 1``. That
+is not tidiness: the
 residual a post-CI policy carries was fixed at its own acceleration date, at ``r`` times
 the 기본보험금 *then*, and the 기본보험금 grows with the account. Collapsing the cohorts
 to one average residual would let a policy that accelerated at duration 3 inherit the
 larger residual of one that accelerated at duration 40.
 
 Cohort ``0`` is the exception and is the first-year 감액 cohort: a breast-cancer claim in
-policy year 1 is paid at ``a f B(1)`` with ``f = 0.5`` and leaves a residual of
-``(1 - a f) B(1)``, which is a different amount from every other cohort's. Where the model
-point sets ``first_year_scope`` to ``all``, the whole of year one's accelerations go into
-it, which is the GI-generation design.
+the **first** policy year, ``t = 0``, is paid at ``a f B(1)`` with ``f = 0.5`` and leaves a
+residual of ``(1 - a f) B(1)``, which is a different amount from every other cohort's. The
+label ``0`` is available for it precisely because no acceleration can be paid at
+anniversary 0; the full-benefit claims of the same period go to cohort ``1``. Where the
+model point sets ``first_year_scope`` to ``all``, the whole of the first year's
+accelerations go into it, which is the GI-generation design.
 
 .. rubric:: Processing order
 
 Within policy year ``t``, in this order **[std order]**: premium, acquisition expense,
 maintenance expense and commission at the start of the year; then the CI transition;
 then death among those who did not accelerate; then surrender among those who neither
-accelerated nor died. A life accelerating in year ``t`` receives ``a B(t)`` at the end of
-year ``t`` and joins the post-CI cohort at the start of year ``t + 1``, so it is not
-exposed to the residual death benefit until the following year. That lag is deliberate
+accelerated nor died. A life accelerating in year ``t`` receives ``a B(t + 1)`` at the end
+of year ``t`` — anniversary ``t + 1`` — and joins the post-CI cohort at the start of year
+``t + 1``, so it is not exposed to the residual death benefit until the following year.
+That lag is deliberate
 and conservative in the right direction: the 장해분류표 defers assessment of a 중대한
 뇌졸중 for **twelve months** after onset [S1 별표3], so a CI claim and the death that may
 follow it are not simultaneous events even on a finer grid.
@@ -164,11 +194,15 @@ follow it are not simultaneous events even on a finer grid.
 .. rubric:: One policy value, three surrender values
 
 There is a single ``V(t)`` in this model, :func:`pol_val_pp`, the 계약자적립액 of the
-**표준형 twin** — the non-marketed comparison contract. The 해약환급금 is
-``W(t) = max(0, V(t) - SC(t))`` and the amount actually payable is a multiplier on it:
+**표준형 twin** — the non-marketed comparison contract — at anniversary ``t``. The
+해약환급금 is ``W(t) = max(0, V(t) - SC(t))`` and the amount actually payable is a
+multiplier on it:
 
 * ``cv_pp(t) = k W(t)`` for a pre-CI policy inside the 납입기간, ``W(t)`` after it;
 * ``cv_pp_ci(t) = W(t)`` for a post-CI policy at **every** duration.
+
+All four are on the anniversary clock, so a surrender arising in period ``t`` — paid at the
+end of the year — is paid ``cv_pp(t + 1)``.
 
 **The suppression therefore has two exits, not one: 납입완료 and a CI/LTC 지급사유.** The
 second is contractual — [S2] conditions the suppression on 「CI/LTC보험금 지급사유가
@@ -337,9 +371,10 @@ def prem_period():
 
 
 def prem_end():
-    """The last policy year in which a premium is actually due.
+    """The **number** of policy years in which a premium is actually due.
 
-    ``prem_period()``.  Nothing else about the contract stops there: maintenance expense,
+    ``prem_period()``, so the paying years are ``t = 0 … prem_end() - 1`` and 납입완료 falls
+    at anniversary ``prem_end()``.  Nothing else about the contract stops there: maintenance expense,
     death cover, CI cover to 100세 and the account value all continue, which is the
     structural point of a whole-life chassis and the reason a projection truncated at
     납입완료 misses the majority of the liability.
@@ -348,7 +383,7 @@ def prem_end():
 
 
 def premium_pp():
-    """G: the level annual gross premium per policy, payable in advance in years 1 to m.
+    """G: the level annual gross premium per policy, payable in advance in years 0 to m - 1.
 
     Level and guaranteed for the whole of 납입기간, subject only to the statutory
     예정위험률 revision right from five years — which, where it bites, is applied by
@@ -561,9 +596,10 @@ def waiver_rate(t):
     published.  A waived policy stays pre-CI, keeps its full death cover
     and — the chassis's **"waived premiums count as paid"** rule — continues to accrue
     surrender value on the full premium scale, so the waiver is the only route to the
-    저해지 step without funding it.  Zero once no premium is due.
+    저해지 step without funding it.  Zero once no premium is due, that is from
+    ``t = prem_end()``.
     """
-    if t < 1 or t > prem_end():
+    if t < 0 or t >= prem_end():
         return 0.0
     return float(model_point()["waiver_rate"])
 
@@ -581,7 +617,12 @@ def pol_loan_util():
 
 
 def pol_loan_year():
-    """The policy year in which the 보험계약대출 is drawn; 0 for no draw."""
+    """The **anniversary** at which the 보험계약대출 is drawn; 0 for no draw.
+
+    An elapsed count of completed policy years — duration 12 on model point 7 — and so
+    already 0-based: it is a point on the anniversary clock, not an index into the frame,
+    and it did not move when the frame did.
+    """
     return int(model_point()["pol_loan_year"])
 
 
@@ -599,11 +640,14 @@ def omega_age():
 
 
 def proj_len():
-    """T = omega - x + 1: the projection length in policy years.
+    """T = omega - x + 1: the **number** of projected policy years.
+
+    The frame's exclusive end, not its last index: :func:`result_cf` carries ``proj_len()``
+    rows indexed ``0 … proj_len() - 1`` and the frame is ``range(proj_len())``.
 
     There is no maturity date and no 만기보험금, so the horizon is the table's and not the
-    contract's.  Every remaining life dies in year T and ``pols_if(T + 1)`` is zero; there
-    are no tail states.  **CI cover ends earlier**, at the 100세 계약해당일 — see
+    contract's.  Every remaining life dies in the last year ``T - 1`` and ``pols_if(T)`` is
+    zero; there are no tail states.  **CI cover ends earlier**, at the 100세 계약해당일 — see
     :func:`ci_cover_end` — so the projection carries a long stretch on which the death
     benefit is the only cover left.
     """
@@ -611,15 +655,16 @@ def proj_len():
 
 
 def age(t):
-    """x + t - 1: the attained 보험나이 at the start of policy year t."""
-    return age_at_entry() + t - 1
+    """x + t: the attained 보험나이 at the start of policy year t, which is 0-based."""
+    return age_at_entry() + t
 
 
 def ci_cover_end():
-    """n_CI: the last policy year in which the CI benefit is covered.
+    """n_CI: the **number** of policy years in which the CI benefit is covered.
 
     The death benefit is 종신 but **CI/LTC cover ends at the 100세 계약해당일**, so the
-    last covered year is the one opening at attained age 99 and ``n_CI = 100 - x``.  This
+    last covered year is ``t = n_CI - 1``, the one opening at attained age 99, and
+    ``n_CI = 100 - x``.  This
     is the post-2008 design and is the one a contract written today has: the 2002 product
     put the acceleration inside a 제1보험기간 running to the 80세 계약해당일 and paid 100%
     of the death benefit thereafter [S6] [R1], and that legacy split is named in
@@ -720,8 +765,9 @@ def ci_wait_factor():
 def ci_rate_base(t):
     """The pricing-basis CI decrement in policy year t: one **first-event** rate.
 
-    The five causes summed, with the 90-day 보장개시일 proration applied in year 1 to the
-    two that carry it, capped at 1, and **zero after** :func:`ci_cover_end`.  Summing is
+    The five causes summed, with the 90-day 보장개시일 proration applied in the first year
+    ``t = 0`` to the two that carry it, capped at 1, and **zero from**
+    ``t = ci_cover_end()``.  Summing is
     legitimate here only because the shipped rates are themselves first-event rates across
     the competing-risk set: the benefit is payable once only across every trigger
     [S1 별표1], and Korea's supervisor required the overlap between CI causes to be
@@ -730,13 +776,13 @@ def ci_rate_base(t):
     검증받고 사용하였다」 [R1].  A table built by adding published site-specific incidences
     would be wrong in exactly the direction the regulation addresses.
     """
-    if t < 1 or t > ci_cover_end():
+    if t < 0 or t >= ci_cover_end():
         return 0.0
     y = age(t)
     total = 0.0
     for cause in ("cancer", "ami", "stroke", "other", "ltc"):
         rate = ci_rate_at_age(y, cause)
-        if t == 1 and cause in ("cancer", "ltc"):
+        if t == 0 and cause in ("cancer", "ltc"):
             rate = rate * ci_wait_factor()
         total = total + rate
     return min(1.0, total)
@@ -758,14 +804,15 @@ def ci_rate(t):
 def ci_reduced_share(t):
     """The share of policy year t's CI claims paid at the reduced first-year rate.
 
-    Zero in every year but the first.  In year 1 it is 1 where ``first_year_scope`` is
-    ``all``, and otherwise the breast-cancer share of that year's own CI decrement —
-    :func:`breast_share` times the 중대한 암 component after the 90-day proration, over
-    :func:`ci_rate_base`.  Splitting the decrement rather than averaging the benefit is
-    what lets the two first-year cohorts carry different residuals, which they must:
-    a reduced claim leaves ``(1 - a f) B(1)`` and a full one leaves ``r B(1)``.
+    Zero in every year but the first.  In the first year, ``t = 0``, it is 1 where
+    ``first_year_scope`` is ``all``, and otherwise the breast-cancer share of that year's
+    own CI decrement — :func:`breast_share` times the 중대한 암 component after the 90-day
+    proration, over :func:`ci_rate_base`.  Splitting the decrement rather than averaging the
+    benefit is what lets the two first-year cohorts carry different residuals, which they
+    must: a reduced claim leaves ``(1 - a f) B(1)`` and a full one leaves ``r B(1)``, both
+    at anniversary 1, where the first year's claims are paid.
     """
-    if t != 1 or first_year_factor >= 1.0:                           # noqa: F821
+    if t != 0 or first_year_factor >= 1.0:                           # noqa: F821
         return 0.0
     if first_year_scope() == "all":
         return 1.0
@@ -779,6 +826,10 @@ def ci_reduced_share(t):
 def lapse_rate_base(t):
     """The 표준형 voluntary surrender rate in policy year t, from ``lapse_table.csv``.
 
+    The file is keyed by the **contractual, 1-based ``policy_year`` label**, so the 0-based
+    period ``t`` is read at row ``t + 1`` and the file itself is untouched by the frame's
+    indexing; rows past the last are the level tail.
+
     9% / 7% / 5.5% / 4.5% / 3.8% / 3.2% and a 2.8% tail, all **[std]**.  **No CI lapse
     experience of any kind was retrieved** — [R1] gives one cession ratio and no lapse data
     at all — so the curve is bounded rather than fitted: Korean 상품요약서 publish the
@@ -788,7 +839,7 @@ def lapse_rate_base(t):
     the subject of [REG-R27].
     """
     tbl = data.lapse_table()                                         # noqa: F821
-    return float(tbl.loc[min(max(t, 1), int(tbl.index.max())),
+    return float(tbl.loc[min(max(t + 1, 1), int(tbl.index.max())),
                          "lapse_rate"])
 
 
@@ -796,11 +847,12 @@ def lapse_rate_ult():
     """The post-납입완료 ultimate surrender rate of whichever basis is in force.
 
     0.8% on the 로그-선형 원칙모형, which the IFRS17 주요 계리가정 가이드라인 sets as the
-    post-완납 rate for 무·저해지 business [REG-R27]; the table's own tail otherwise.
+    post-완납 rate for 무·저해지 business [REG-R27]; the table's own tail otherwise, read at
+    ``t = prem_end()``, the first year after 납입완료.
     """
     if lapse_basis() == "log_linear":
         return lapse_post_paidup                                     # noqa: F821
-    return lapse_rate_base(prem_end() + 1)
+    return lapse_rate_base(prem_end())
 
 
 def lapse_rate(t):
@@ -808,9 +860,9 @@ def lapse_rate(t):
 
     This is the **annual** rate; there is no monthly companion on an annual-grid model.
     On the ``log_linear`` basis it is the guideline's 원칙모형 — geometric decay from a
-    first-year 10% **[std]** to the 0.1% the guideline sets at 납입완료, then the 0.8%
-    post-완납 ultimate [REG-R27].  On the ``table`` basis it is
-    :func:`lapse_rate_base` unchanged.
+    first-year 10% **[std]** at ``t = 0`` to the 0.1% the guideline sets at 납입완료, reached
+    in the last paying year ``t = m - 1``, then the 0.8% post-완납 ultimate from ``t = m``
+    [REG-R27].  On the ``table`` basis it is :func:`lapse_rate_base` unchanged.
 
     **No separate 완납 surrender spike is imposed.**  The eightfold step from 0.1% to 0.8%
     at 납입완료 is produced by the guideline's own shape, and the contractual step in
@@ -824,12 +876,12 @@ def lapse_rate(t):
     if lapse_basis() != "log_linear":
         return min(1.0, lapse_rate_base(t))
     m = prem_end()
-    if t > m:
+    if t >= m:
         return lapse_post_paidup                                     # noqa: F821
     if m <= 1:
         return lapse_ll_target                                       # noqa: F821
     lam = math.log(lapse_ll_first / lapse_ll_target) / (m - 1)       # noqa: F821
-    return min(1.0, lapse_ll_first * math.exp(-lam * (t - 1)))       # noqa: F821
+    return min(1.0, lapse_ll_first * math.exp(-lam * t))             # noqa: F821
 
 
 def lapse_rate_ci(t):
@@ -872,13 +924,13 @@ def disc_factor():
 def epv_resid(t):
     """A1(t): the EPV at the start of policy year t of the residual, for a post-CI life.
 
-    ``v [q' r SA + (1 - q') A1(t + 1)]`` on the pricing basis, with ``A1(T + 1) = 0``.
+    ``v [q' r SA + (1 - q') A1(t + 1)]`` on the pricing basis, with ``A1(T) = 0``.
     It values the residual at its **nominal** ``r SA`` and ignores the 105% account floor
     **[std]**: the floor is a multiple of ``V`` and ``V`` is built out of this quantity, so
     pricing it in would make the reserve self-referential.  The projection applies the
     floor in full, and :func:`check_resid_floor` asserts it there.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     q = mort_rate_ci_base(t)
     return disc_factor() * (q * resid_rate() * sum_assured()
@@ -898,8 +950,10 @@ def epv_ben(t):
     simply dies; the CI event moves ``a SA`` of it forward by the years between the two
     events.  At the anchor cell that is worth 24.4% of the net premium against the same
     contract with no acceleration, and it is the whole actuarial content of the product.
+
+    ``A0(T) = 0`` is the base case, at ``T = proj_len()``.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     qc = ci_rate_base(t)
     qd = mort_rate_base(t)
@@ -913,19 +967,19 @@ def epv_ben(t):
 def annuity_due(t):
     """The EPV at the start of policy year t of 1 a year while pre-CI and premium due.
 
-    ``1 + v (1 - q_ci)(1 - q) a(t + 1)`` for ``t <= m``, zero after.  **The CI decrement
-    is in the annuity as well as in the benefit**, because any CI/LTC 지급사유 waives all
-    future 기본보험료 [S1 별표1 주4]: a premium stream that ran on through the post-CI
-    state would over-fund the contract by the whole of the waiver.
+    ``1 + v (1 - q_ci)(1 - q) a(t + 1)`` for ``t < m``, zero from ``t = m``.  **The CI
+    decrement is in the annuity as well as in the benefit**, because any CI/LTC 지급사유
+    waives all future 기본보험료 [S1 별표1 주4]: a premium stream that ran on through the
+    post-CI state would over-fund the contract by the whole of the waiver.
     """
-    if t < 1 or t > prem_period():
+    if t < 0 or t >= prem_period():
         return 0.0
     return 1.0 + disc_factor() * (1.0 - ci_rate_base(t)) * (
         1.0 - mort_rate_base(t)) * annuity_due(t + 1)
 
 
 def prem_net_level_pp():
-    """P: the annual net level premium on the pricing basis, ``A0(1) / a(1)``.
+    """P: the annual net level premium on the pricing basis, ``A0(0) / a(0)``.
 
     A **pricing** quantity that never becomes a cash flow: what is collected is
     :func:`premium_pp`.  On the anchor cell it is ₩2,968,483.20 against a gross of
@@ -938,13 +992,19 @@ def prem_net_level_pp():
     :func:`surr_chg_cap_pp`, which follows the chassis in taking 80% of the gross premium
     **[std]** so that the statutory cap can be reproduced from published quantities alone.
     """
-    return epv_ben(1) / annuity_due(1)
+    return epv_ben(0) / annuity_due(0)
 
 
 def pol_val_pp(t):
-    """V(t): the 계약자적립액 at anniversary t, prospective and net level premium.
+    """V(t): the 계약자적립액 at **anniversary** t, prospective and net level premium.
 
-    ``A0(t + 1) - P a(t + 1)``, zero at ``t = 0`` and at ``t = T``.  It is the account of
+    On the anniversary clock: ``t = 0`` is the issue instant and ``t = T`` the horizon, so
+    this cells is defined for ``t = 0 … proj_len()`` and does not move with the frame.  The
+    account that period ``t`` opens with is ``V(t)`` and the one it closes with is
+    ``V(t + 1)``.
+
+    ``A0(t) - P a(t)``, zero at ``t = 0`` — by the definition of ``P`` — and at ``t = T``.
+    It is the account of
     the **표준형 twin** — the non-marketed comparison contract priced with the lapse
     assumption switched off — and there is exactly one of it in this model: the suppression
     is a haircut on this value, the post-CI carve-out lifts the haircut off this value, and
@@ -960,13 +1020,14 @@ def pol_val_pp(t):
     """
     if t <= 0:
         return 0.0
-    return epv_ben(t + 1) - prem_net_level_pp() * annuity_due(t + 1)
+    return epv_ben(t) - prem_net_level_pp() * annuity_due(t)
 
 
 def cum_prem_pp(t):
-    """cumprem(t): gross premiums paid per policy by the end of policy year t.
+    """cumprem(t): gross premiums paid per policy by **anniversary** t.
 
-    ``G min(t, m)``.  **Waived premiums count as paid** — the chassis's rule, carried over
+    ``G min(t, m)``, the premiums falling at anniversaries ``0 … m - 1``.  **Waived
+    premiums count as paid** — the chassis's rule, carried over
     — so a policy on the 장해 50%+ waiver reaches the same cumulative figure without
     funding it.  This is one of the three limbs of the 기본보험금.
     """
@@ -974,7 +1035,10 @@ def cum_prem_pp(t):
 
 
 def base_benefit_pp(t):
-    """B(t): the 기본보험금, the floored base every percentage in this contract applies to.
+    """B(t): the 기본보험금 at **anniversary** t, the base every percentage applies to.
+
+    On the anniversary clock, so a claim arising in period ``t`` — paid at the end of the
+    year — is paid off ``B(t + 1)``.
 
     ``max(기본사망보험금, 이미 납입한 보험료, c V(t))`` with 기본사망보험금 =
     보험가입금액 - 중도인출금액 + 추가납입보험료 [S1 별표1 주7], the last two held at zero
@@ -1024,7 +1088,10 @@ def surr_chg_cap_pp():
 
 
 def surr_chg_pp(t):
-    """SC(t): the 해약공제액 (미상각신계약비) outstanding at anniversary t.
+    """SC(t): the 해약공제액 (미상각신계약비) outstanding at **anniversary** t.
+
+    On the anniversary clock, ``t = 0`` at issue where the whole cap is outstanding, so a
+    surrender arising in period ``t`` bears ``SC(t + 1)``.
 
     The cap running off in a straight line over the 해약공제기간, which is the 납입기간 or
     the 신계약비 부가기간 **capped at 7 years** [REG-R19 제7-66조제1항제2호].  On the
@@ -1041,7 +1108,7 @@ def surr_chg_pp(t):
 
 
 def cv_std_pp(t):
-    """W(t): the 표준형 twin's 해약환급금 at anniversary t, floored at zero.
+    """W(t): the 표준형 twin's 해약환급금 at **anniversary** t, floored at zero.
 
     ``max(0, V(t) - SC(t))``.  The 미경과보험료 that 감독규정 제7-66조제5항 adds on
     termination is not modelled **[std]**: on an annual grid with premiums paid in advance
@@ -1051,18 +1118,19 @@ def cv_std_pp(t):
 
 
 def cv_mult(t):
-    """The multiplier on W(t) for a **pre-CI** policy: k inside the 납입기간, 1 after it.
+    """The multiplier on W(t) at **anniversary** t: k inside the 납입기간, 1 from 납입완료.
 
-    A **step, not a ramp**.  A surrender occurring in policy year m is paid at the end of
-    that year on the full value **[std ordering]**; the suppressed value applies to years
-    1 to m - 1.  Both quantities exist at every duration and the model publishes both,
+    A **step, not a ramp**, at anniversary ``m``.  A surrender occurring in the last paying
+    year — period ``m - 1`` — is paid at the end of that year, that is at anniversary ``m``,
+    on the full value **[std ordering]**; the suppressed value applies to anniversaries 1 to
+    ``m - 1``.  Both quantities exist at every duration and the model publishes both,
     :func:`cv_pp` and :func:`cv_pp_ci`.
     """
     return 1.0 if t >= prem_period() else cv_floor_ratio()
 
 
 def cv_pp(t):
-    """CV(t): the 해약환급금 actually payable on a **pre-CI** surrender at anniversary t.
+    """CV(t): the 해약환급금 payable on a **pre-CI** surrender at **anniversary** t.
 
     ``cv_mult(t) W(t)``.  On the 무해지 form (``k = 0``) this is nil throughout the
     납입기간, and the FSS's finding that such a contract cannot support a policy loan at
@@ -1073,7 +1141,7 @@ def cv_pp(t):
 
 
 def cv_pp_ci(t):
-    """CV'(t): the 해약환급금 payable on a **post-CI** surrender — the carve-out.
+    """CV'(t): the 해약환급금 payable on a **post-CI** surrender at anniversary t.
 
     ``W(t)``, the full 표준형 value, at **every** duration, before and after 납입완료
     [S2] [S4].  This is the CI-specific delta on the chassis and it is contractual: [S2]
@@ -1101,20 +1169,24 @@ def cv_pp_ci(t):
 def ci_cohort_ids(t):
     """The post-CI cohort labels that can carry policies at the start of policy year t.
 
-    ``[0] + [1 .. t - 1]``.  A cohort is labelled by the policy year it accelerated in;
-    label **0** is the first-year 감액 cohort, whose residual differs from cohort 1's
-    because its acceleration was halved.  Entrants join at the start of the year after
-    they accelerate, so no label ``>= t`` can be populated at t.
+    ``[0] + [1 .. t]``.  A cohort is labelled by the **anniversary at which its
+    acceleration was paid**, so a life accelerating in period ``u`` is paid at anniversary
+    ``u + 1`` and carries the label ``u + 1``; label **0** is the first-year 감액 cohort,
+    whose residual differs from cohort 1's because its acceleration was halved, and the
+    label is free for it because nothing can be accelerated at anniversary 0.  Entrants
+    join at the start of the year after they accelerate, so no label ``> t`` can be
+    populated at t.
     """
-    return [0] + list(range(1, max(t, 1)))
+    return [0] + list(range(1, max(t, 0) + 1))
 
 
 def accel_benefit_pp(s):
     """a B(s): the 선지급 CI/LTC보험금 paid to cohort s, per policy.
 
-    ``a B(s)`` for a full claim in policy year s, and ``a f B(1)`` for cohort 0, the
-    first-year reduced claim, with ``f = 0.5`` — 40% of the 기본보험금 instead of 80% on
-    the composite, 25% instead of 50% on the 50% form [S1 별표1] [S2 별표1].  Paid at the
+    ``a B(s)`` for a full claim paid at anniversary ``s``, and ``a f B(1)`` for cohort 0,
+    the first-year reduced claim, which is paid at anniversary 1; ``f = 0.5``, so 40% of the
+    기본보험금 instead of 80% on the composite, 25% instead of 50% on the 50% form
+    [S1 별표1] [S2 별표1].  Paid at the
     end of the year of the event, **once only** across the whole trigger set, and **not**
     netted against any policy loan: the contract continues and the loan stays outstanding
     against the residual.
@@ -1138,7 +1210,10 @@ def resid_nominal_pp(s):
 
 
 def resid_db_pp(t, s):
-    """The death benefit payable in policy year t to a policy that accelerated in year s.
+    """The death benefit payable at **anniversary** t to a policy in cohort s.
+
+    Both indices are on the anniversary clock, so a post-CI death in period ``t`` is paid
+    ``resid_db_pp(t + 1, s)``.
 
     ``max(r B(s), c V(t))`` — 「CI/LTC보험금 지급사유 발생당시의 기본보험금의 20%와
     CI/LTC보험금 지급사유 발생 후 계약자적립금의 105% 중 큰 금액」 [S1 별표1 주8].  **The
@@ -1153,7 +1228,11 @@ def resid_db_pp(t, s):
 
 
 def resid_db_avg_pp(t):
-    """The in-force-weighted mean residual death benefit across the post-CI cohorts at t.
+    """The in-force-weighted mean residual death benefit over the cohorts, in period t.
+
+    The weights are the post-CI counts at the **start** of period ``t`` and the amounts are
+    the benefits payable at its **end**, anniversary ``t + 1``, which is the pairing
+    :func:`claims` uses for ``"DEATH_CI"``.
 
     A reporting quantity only; no cash flow uses it.  It is published because the spread
     between it and ``r SA`` is the clearest single reading of how far the 105% floor has
@@ -1162,7 +1241,7 @@ def resid_db_avg_pp(t):
     n = pols_if_ci(t)
     if n <= 0.0:
         return 0.0
-    return sum(pols_if_ci_at(t, s) * resid_db_pp(t, s)
+    return sum(pols_if_ci_at(t, s) * resid_db_pp(t + 1, s)
                for s in ci_cohort_ids(t)) / n
 
 
@@ -1192,25 +1271,35 @@ def loan_avail_ci_pp(t):
 
 
 def pol_loan_draw(t):
-    """The 보험계약대출 drawn at anniversary t, per policy; zero in the base run."""
+    """Delta(t): the 보험계약대출 drawn at **anniversary** t, per policy; nil in the base run.
+
+    On the anniversary clock, like the :func:`loan_avail_pp` limit it is sized against and
+    like the ``pol_loan_year`` model point column that selects it, so nothing here moved
+    when the frame did: duration 12 is still duration 12.
+    """
     if pol_loan_year() <= 0 or t != pol_loan_year():
         return 0.0
     return pol_loan_util() * loan_avail_pp(t)
 
 
 def loan_pp(t):
-    """L(t): the 보험계약대출 balance carried into policy year t, per policy.
+    """L(t): the 보험계약대출 balance at time t, the opening balance of policy year t.
 
-    ``L(t + 1) = (L(t) + draw(t))(1 + i_L)`` at ``i_L = 예정이율 + 1.5% = 4.00%``
-    compound, the chassis's rate.  One balance per policy, carried unchanged across the CI
+    ``L(0) = 0`` and ``L(t) = (L(t - 1) + Delta(t))(1 + i_L)`` at
+    ``i_L = 예정이율 + 1.5% = 4.00%``
+    compound, the chassis's rate; ``Delta`` is :func:`pol_loan_draw` on the anniversary
+    clock, so a draw is booked with one year's interest in the year it is taken **[std]** —
+    this model's own arithmetic, and identically immaterial in the base run, where nothing
+    is drawn.  It is the balance the benefits of period ``t`` are netted down by.
+    One balance per policy, carried unchanged across the CI
     transition — a policy that borrowed before accelerating still owes it afterwards — and
     deducted from every terminal payment, floored at zero.  The 보험계약대출 is a modelled
     state and not a decrement: no policy leaves because of it here, and a loan that
     outgrows the benefit simply reduces the payment to nil.
     """
-    if t <= 1:
+    if t <= 0:
         return 0.0
-    return (loan_pp(t - 1) + pol_loan_draw(t - 1)) * (1.0 + i_loan)  # noqa: F821
+    return (loan_pp(t - 1) + pol_loan_draw(t)) * (1.0 + i_loan)      # noqa: F821
 
 
 def pols_if_pre(t):
@@ -1218,11 +1307,11 @@ def pols_if_pre(t):
 
     Decremented in the year by the CI transition first, then death among those who did not
     accelerate, then surrender among those who neither accelerated nor died, so
-    ``l0(t + 1) = l0(t)(1 - q_ci)(1 - q)(1 - w)``.
+    ``l0(t + 1) = l0(t)(1 - q_ci)(1 - q)(1 - w)``, with ``l0(0) = pols_if_init()``.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return pols_if_init()
     return (pols_if_pre(t - 1) - pols_ci(t - 1) - pols_death(t - 1)
             - pols_lapse(t - 1))
@@ -1236,11 +1325,11 @@ def pols_waived(t):
     on the full premium scale.  What it stops doing is paying, so it is subtracted from
     :func:`pols_if_pay` and from the renewal commission that follows the cash.  The waiver
     on the CI limb is not counted here — it is implicit in the post-CI cohort, which pays
-    nothing at all.
+    nothing at all.  Nil in the first year, ``t = 0``: nobody has yet been on the waiver.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
-    if t == 1:
+    if t == 0:
         return 0.0
     u = t - 1
     entered = (pols_waived(u)
@@ -1258,7 +1347,7 @@ def pols_if_pay(t):
     acceleration date — which [S4] states in terms, computing the post-waiver reserve on
     the post-acceleration basis 「「선지급 진단보험금」 발생 이후 기준의 책임준비금을 계산」.
     """
-    if t < 1 or t > prem_end():
+    if t < 0 or t >= prem_end():
         return 0.0
     return pols_if_pre(t) - pols_waived(t)
 
@@ -1278,14 +1367,15 @@ def pols_ci(t):
 def pols_ci_in(t, s):
     """C(t, s): accelerations in policy year t entering post-CI cohort s.
 
-    Cohort ``t`` takes the full-benefit claims of year ``t``; cohort ``0`` takes the
-    first-year reduced ones, and is empty in every year but the first.
+    Cohort ``t + 1`` — the anniversary at which the year's claims are paid — takes the
+    full-benefit claims of period ``t``; cohort ``0`` takes the first-year reduced ones, and
+    is empty in every year but the first, ``t = 0``.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     if s <= 0:
-        return pols_ci(1) * ci_reduced_share(1) if t == 1 else 0.0
-    return pols_ci(t) * (1.0 - ci_reduced_share(t)) if t == s else 0.0
+        return pols_ci(0) * ci_reduced_share(0) if t == 0 else 0.0
+    return pols_ci(t) * (1.0 - ci_reduced_share(t)) if s == t + 1 else 0.0
 
 
 def pols_if_ci_at(t, s):
@@ -1293,9 +1383,11 @@ def pols_if_ci_at(t, s):
 
     Entrants join at the start of the year **after** they accelerate, and are then
     decremented by post-CI mortality and post-CI surrender.  Kept by cohort because the
-    residual is a cohort property: see :func:`resid_nominal_pp`.
+    residual is a cohort property: see :func:`resid_nominal_pp`.  Nil at ``t = 0``, and
+    defined one step past the frame at ``t = proj_len()``, the terminal anniversary, where
+    the roll-forward checks read it.
     """
-    if t <= 1 or t > proj_len() + 1:
+    if t <= 0 or t > proj_len():
         return 0.0
     u = t - 1
     return (pols_ci_in(u, s)
@@ -1314,10 +1406,10 @@ def pols_if(t):
     Pre-CI plus post-CI.  A CI claimant's contract is still in force — that is the whole
     point of an acceleration — so both states are counted here, and this is the weight on
     every maintenance-expense figure of the same ``result_cf()`` row.  It is
-    :func:`pols_if_init` in the first policy year and 0 at ``proj_len() + 1``, because the
-    table terminates and every remaining life dies in the final year.
+    :func:`pols_if_init` in the first policy year, ``t = 0``, and 0 at ``proj_len()``,
+    because the table terminates and every remaining life dies in the final year.
     """
-    if t < 1 or t > proj_len():
+    if t < 0 or t >= proj_len():
         return 0.0
     return pols_if_pre(t) + pols_if_ci(t)
 
@@ -1335,8 +1427,8 @@ def pols_if_at(t, timing):
         this is the population surrenders are taken from.
 
     ``"AFT_DECR"``
-        l(t + 1), the end-of-year state, and zero at ``proj_len()`` because the
-        table's terminal rate is 1 and nobody survives the final year.
+        l(t + 1), the end-of-year state, and zero at ``proj_len() - 1`` because
+        the table's terminal rate is 1 and nobody survives the final year.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
@@ -1394,7 +1486,7 @@ def premiums(t):
 
     ``G lp(t)``, carried on the paying cohort alone: the post-CI cohort pays nothing
     because any CI/LTC 지급사유 waives the premium, and the 장해 50%+ waived subset pays
-    nothing either.  Zero from ``prem_end() + 1``; **nothing else about the contract stops
+    nothing either.  Zero from ``t = prem_end()``; **nothing else about the contract stops
     there.**
 
     There is no 자동대출납입 behind the 납입최고 in any retrieved Korean 약관 — a
@@ -1409,25 +1501,30 @@ def premiums(t):
 def claims(t, kind=None):
     """Benefit outgo in policy year t, by kind; the total when kind is omitted.
 
+    Every payment here falls at the **end** of period ``t``, which is anniversary ``t + 1``,
+    so every amount is read off the anniversary clock one step ahead of the row: ``B(t + 1)``,
+    ``CV(t + 1)``, ``W(t + 1)``, ``resid_db_pp(t + 1, s)``.  The loan netted off is
+    ``loan_pp(t)``, the balance the period opened with, as it was before the frame moved.
+
     ``"CI"``
-        the 선지급 CI/LTC보험금, ``a B(t)`` on the full-benefit claims and
-        ``a f B(1)`` on the first-year reduced ones, paid at the end of the
-        year of the event and **not** netted against any policy loan, because
-        the contract continues and the loan does with it.
+        the 선지급 CI/LTC보험금, ``a B(t + 1)`` on the full-benefit claims —
+        cohort ``t + 1`` — and ``a f B(1)`` on the first-year reduced ones,
+        paid at the end of the year of the event and **not** netted against any
+        policy loan, because the contract continues and the loan does with it.
 
     ``"DEATH"``
-        the 사망보험금 of a policy with no prior CI payment, ``B(t)`` net of
+        the 사망보험금 of a policy with no prior CI payment, ``B(t + 1)`` net of
         any loan, floored at zero.
 
     ``"DEATH_CI"``
-        the residual death benefit, ``max(r B(s), c V(t))`` net of any loan,
+        the residual death benefit, ``max(r B(s), c V(t + 1))`` net of any loan,
         summed cohort by cohort because each carries its own nominal.
 
     ``"LAPSE"``
-        the 해약환급금 on a pre-CI surrender, ``CV(t)`` net of any loan.
+        the 해약환급금 on a pre-CI surrender, ``CV(t + 1)`` net of any loan.
 
     ``"LAPSE_CI"``
-        the 해약환급금 on a post-CI surrender, the **full** ``W(t)`` net of
+        the 해약환급금 on a post-CI surrender, the **full** ``W(t + 1)`` net of
         any loan — the carve-out, at every duration.
 
     Every one of these is floored at zero: a loan can outgrow the surrender value and,
@@ -1440,15 +1537,15 @@ def claims(t, kind=None):
         return sum(pols_ci_in(t, s) * accel_benefit_pp(s)
                    for s in ci_cohort_ids(t + 1))
     if kind == "DEATH":
-        return max(0.0, base_benefit_pp(t) - loan_pp(t)) * pols_death(t)
+        return max(0.0, base_benefit_pp(t + 1) - loan_pp(t)) * pols_death(t)
     if kind == "DEATH_CI":
         return sum(pols_if_ci_at(t, s) * mort_rate_ci(t)
-                   * max(0.0, resid_db_pp(t, s) - loan_pp(t))
+                   * max(0.0, resid_db_pp(t + 1, s) - loan_pp(t))
                    for s in ci_cohort_ids(t))
     if kind == "LAPSE":
-        return max(0.0, cv_pp(t) - loan_pp(t)) * pols_lapse(t)
+        return max(0.0, cv_pp(t + 1) - loan_pp(t)) * pols_lapse(t)
     if kind == "LAPSE_CI":
-        return max(0.0, cv_pp_ci(t) - loan_pp(t)) * pols_lapse_ci(t)
+        return max(0.0, cv_pp_ci(t + 1) - loan_pp(t)) * pols_lapse_ci(t)
     raise ValueError("invalid kind")
 
 
@@ -1471,14 +1568,14 @@ def claim_expenses(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in policy year t: ``(1 + pi)^(t-1)`` **[std]**.
+    """The expense inflation factor in policy year t: ``(1 + pi)^t`` **[std]**, 1 at t = 0.
 
     1.0% a year.  Over a seventy-year whole-life horizon 1% compounds to 2.0 and 3% to
     7.9, so importing a Western inflation assumption here produces a different product
     rather than a stressed one.  There is no published Korean expense basis to anchor
     either figure.
     """
-    return (1.0 + inflation_rate) ** (t - 1)                         # noqa: F821
+    return (1.0 + inflation_rate) ** t                               # noqa: F821
 
 
 def expenses(t):
@@ -1492,7 +1589,7 @@ def expenses(t):
     **[std]**.  The claim handling expense is not here: it is :func:`claim_expenses`,
     deducted separately and published in its own column.
     """
-    acq = expense_acq * pols_if(1) if t == 1 else 0.0                # noqa: F821
+    acq = expense_acq * pols_if(0) if t == 0 else 0.0                # noqa: F821
     maint = expense_maint * inflation_factor(t) * pols_if(t)         # noqa: F821
     return acq + maint
 
@@ -1500,18 +1597,18 @@ def expenses(t):
 def commissions(t):
     """Commission outgo in policy year t **[std]**.
 
-    80% of the annual premium at issue, then 3% of premium income in years 2 to
-    ``prem_end()``.  The initial rate is set below the **1,200% rule** — the 2019 사업비
+    80% of the annual premium at issue, then 3% of premium income in years 1 to
+    ``prem_end() - 1`` — every paying year but the first.  The initial rate is set below the **1,200% rule** — the 2019 사업비
     reform caps first-year 모집수수료 at twelve times the monthly premium, so at one annual
     premium [REG-R29] — and it sits just under the 표준해약공제액 of ₩3,944,704, which is
     the statutory bound on what a surrender may be made to repay.  Renewal commission
     follows the premium **actually collected in cash**, so neither the waived subset nor
     the post-CI cohort produces any, and none is paid after 납입완료.
     """
-    init = (comm_init_rate * premium_pp() * pols_if(1)               # noqa: F821
-            if t == 1 else 0.0)
+    init = (comm_init_rate * premium_pp() * pols_if(0)               # noqa: F821
+            if t == 0 else 0.0)
     renew = (comm_renewal_rate * premiums(t)                         # noqa: F821
-             if 2 <= t <= prem_end() else 0.0)
+             if 1 <= t < prem_end() else 0.0)
     return init + renew
 
 
@@ -1522,7 +1619,7 @@ def net_cf(t):
     expense and commission.  The notes' own sign, which is also the library-wide
     convention, so there is no outgo-positive ``liability_cf`` companion to publish.
 
-    The shape to expect is a deep new business strain in year 1, a long positive stretch
+    The shape to expect is a deep new business strain in the first year ``t = 0``, a long positive stretch
     while the premium runs against a CI decrement that is still small, a steepening drain
     as the incidence curve turns over from the fifties, a negative step at 납입완료 where
     the premium stops and the suppression lifts, and then a run-off in which the whole of
@@ -1549,7 +1646,7 @@ def check_pols_roll_fwd_resid(t):
 def check_pols_roll_fwd():
     """True when the total in-force roll-forward closes in every projected policy year."""
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_ci_state_roll_fwd_resid(t):
@@ -1571,51 +1668,53 @@ def check_ci_state_roll_fwd_resid(t):
 def check_ci_state_roll_fwd():
     """True when both cohorts roll forward and the transition between them balances."""
     return all(abs(check_ci_state_roll_fwd_resid(t)) <= roll_fwd_tol  # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_decrement_sum_resid(t):
     """The cumulative-decrement residual at policy year t; zero everywhere.
 
-    ``l(1)`` less every exit up to and including year t less ``l(t + 1)``.  At ``t = T``
+    ``l(0)`` less every exit up to and including year t less ``l(t + 1)``.  At
+    ``t = T - 1``
     it is the statement that the decrements sum to 1: because the table terminates, every
     policy leaves by a death or a surrender in one of the two states and there is no
     residual population and no tail state anywhere in this model.
     """
     exits = sum(pols_death(u) + pols_death_ci(u) + pols_lapse(u)
-                + pols_lapse_ci(u) for u in range(1, t + 1))
-    return pols_if(1) - exits - pols_if(t + 1)
+                + pols_lapse_ci(u) for u in range(t + 1))
+    return pols_if(0) - exits - pols_if(t + 1)
 
 
 def check_decrement_sum():
     """True when every policy issued leaves by a modelled decrement, in every year."""
     return all(abs(check_decrement_sum_resid(t)) <= roll_fwd_tol     # noqa: F821
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_pol_val_roll_fwd_resid(t):
-    """The 계약자적립액 recursion residual at anniversary t; zero everywhere.
+    """The 계약자적립액 recursion residual over policy year t; zero everywhere.
 
-    ``(V(t-1) + P 1{t <= m})(1 + i)`` less ``q_ci [a SA + A1(t+1)] + (1 - q_ci) q SA +
-    (1 - q_ci)(1 - q) V(t)`` on the pricing decrements — the retrospective form of the
-    same prospective value.  It is what catches a mis-set 납입기간, a discount factor
-    applied on the wrong side, or a CI decrement left out of the premium annuity but
-    present in the benefit.
+    ``(V(t) + P 1{t < m})(1 + i)`` less ``q_ci [a SA + A1(t+1)] + (1 - q_ci) q SA +
+    (1 - q_ci)(1 - q) V(t + 1)`` on the pricing decrements — the retrospective form of the
+    same prospective value, rolling the account the period **opens** with, ``V(t)``, into
+    the one it **closes** with, ``V(t + 1)``.  It is what catches a mis-set 납입기간, a
+    discount factor applied on the wrong side, or a CI decrement left out of the premium
+    annuity but present in the benefit.
     """
-    pi = prem_net_level_pp() if t <= prem_period() else 0.0
+    pi = prem_net_level_pp() if t < prem_period() else 0.0
     qc = ci_rate_base(t)
     qd = mort_rate_base(t)
-    return ((pol_val_pp(t - 1) + pi) * (1.0 + prem_int_rate)         # noqa: F821
+    return ((pol_val_pp(t) + pi) * (1.0 + prem_int_rate)             # noqa: F821
             - qc * (accel_rate() * sum_assured() + epv_resid(t + 1))
             - (1.0 - qc) * qd * sum_assured()
-            - (1.0 - qc) * (1.0 - qd) * pol_val_pp(t))
+            - (1.0 - qc) * (1.0 - qd) * pol_val_pp(t + 1))
 
 
 def check_pol_val_roll_fwd():
     """True when the 계약자적립액 rolls forward on its own basis in every year."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_pol_val_roll_fwd_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_accel_complement_resid(t):
@@ -1641,23 +1740,24 @@ def check_accel_complement():
     """True when the acceleration and its residual sum to the 기본보험금, every cohort."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_accel_complement_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_resid_floor_resid(t):
-    """The residual-floor residual at policy year t; zero everywhere.
+    """The residual-floor residual for policy year t; zero everywhere.
 
-    The post-CI death benefit must be at or above **both** of its limbs — the nominal
-    complement fixed at the acceleration date and 105% of the account now — so the two
-    shortfalls, each floored above at zero, must vanish.  A one-sided ``max`` written the
-    wrong way round, or a floor read off the wrong anniversary's account, shows up here
-    and nowhere else.
+    Read at anniversary ``t + 1``, the end of the period, which is where a post-CI death
+    in period ``t`` is paid.  The post-CI death benefit must be at or above **both** of its
+    limbs — the nominal complement fixed at the acceleration date and 105% of the account
+    now — so the two shortfalls, each floored above at zero, must vanish.  A one-sided
+    ``max`` written the wrong way round, or a floor read off the wrong anniversary's
+    account, shows up here and nowhere else.
     """
     resid = 0.0
     for s in ci_cohort_ids(t):
-        db = resid_db_pp(t, s)
+        db = resid_db_pp(t + 1, s)
         resid = resid + min(0.0, db - resid_nominal_pp(s))
-        resid = resid + min(0.0, db - resid_floor_mult() * pol_val_pp(t))
+        resid = resid + min(0.0, db - resid_floor_mult() * pol_val_pp(t + 1))
     return resid
 
 
@@ -1665,11 +1765,14 @@ def check_resid_floor():
     """True when the residual death benefit is the maximum of its two limbs, every year."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_resid_floor_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def check_cv_carve_out_resid(t):
-    """The carve-out residual at anniversary t; zero everywhere.
+    """The carve-out residual at **anniversary** t; zero everywhere.
+
+    On the anniversary clock, so :func:`check_cv_carve_out` sweeps ``0 … proj_len()``
+    rather than the frame.
 
     ``min(0, CV'(t) - CV(t))``.  The consumer-protection design the carve-out exists to
     produce is that **a CI claimant is never worse off on surrender than an unaccelerated
@@ -1685,25 +1788,26 @@ def check_cv_carve_out():
     """True when the post-CI surrender value is never below the pre-CI one."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_cv_carve_out_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len() + 1))
 
 
 def check_loan_roll_fwd_resid(t):
-    """The 보험계약대출 roll-forward residual in policy year t; zero everywhere.
+    """The 보험계약대출 roll-forward residual over policy year t; zero everywhere.
 
-    ``L(t + 1) - (L(t) + draw(t))(1 + i_L)``.  Identically zero in the base run, where
-    there is no loan at all; non-trivial the moment the module is switched on, which is
-    the point of it.
+    ``L(t + 1) - (L(t) + Delta(t + 1))(1 + i_L)``, the balance the period closes with
+    against the one it opened with and the draw taken at its closing anniversary.
+    Identically zero in the base run, where there is no loan at all; non-trivial the moment
+    the module is switched on, which is the point of it.
     """
     return (loan_pp(t + 1)
-            - (loan_pp(t) + pol_loan_draw(t)) * (1.0 + i_loan))      # noqa: F821
+            - (loan_pp(t) + pol_loan_draw(t + 1)) * (1.0 + i_loan))  # noqa: F821
 
 
 def check_loan_roll_fwd():
     """True when the loan balance accumulates at ``i_loan`` in every year."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_loan_roll_fwd_resid(t)) <= tol
-               for t in range(1, proj_len()))
+               for t in range(proj_len() - 1))
 
 
 def check_net_cf_resid(t):
@@ -1724,7 +1828,7 @@ def check_net_cf():
     """True when the net cash flow equals the sum of its published columns, every year."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_net_cf_resid(t)) <= tol
-               for t in range(1, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def result_cf():
@@ -1739,7 +1843,7 @@ def result_cf():
     ``net_cf`` and the acceleration can be read apart from the death benefit it
     accelerates.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1764,7 +1868,7 @@ def result_pols():
     The two states side by side, so that the migration from ``pols_if_pre`` to
     ``pols_if_ci`` — which is the product — can be read directly.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1787,22 +1891,31 @@ def result_pols():
 def result_val():
     """Result table of the account, the surrender values and the benefit levels, by t.
 
+    Indexed by the **period** ``t``, like ``result_cf()``, and every state column is the
+    value at the anniversary that **closes** that period, ``t + 1`` — the amount a claim or
+    a surrender arising in the row's own year is actually paid.  So row ``t = 0`` carries
+    ``V(1)``, the account at the first anniversary, and the issue-instant values ``V(0) = 0``
+    and ``SC(0) = SC_max`` are one step off the top of the table, reachable from the cells
+    themselves.  ``accel_benefit_pp`` and ``resid_nominal_pp`` are read at the cohort label
+    ``t + 1``, which is the cohort the row's own accelerations form; ``loan_pp`` is the
+    balance the row opens with, as in ``claims()``.
+
     ``cv_pp`` is the amount payable before a CI event and ``cv_pp_ci`` the amount payable
     after one, so the carve-out and the step at 납입완료 can be read off the same table.
     ``resid_db_avg_pp`` against ``resid_nominal_pp`` at any duration shows how far the 105%
     account floor has taken over the residual.
     """
-    ts = list(range(1, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
-            "pol_val_pp": [pol_val_pp(t) for t in ts],
-            "surr_chg_pp": [surr_chg_pp(t) for t in ts],
-            "cv_std_pp": [cv_std_pp(t) for t in ts],
-            "cv_pp": [cv_pp(t) for t in ts],
-            "cv_pp_ci": [cv_pp_ci(t) for t in ts],
-            "base_benefit_pp": [base_benefit_pp(t) for t in ts],
-            "accel_benefit_pp": [accel_benefit_pp(t) for t in ts],
-            "resid_nominal_pp": [resid_nominal_pp(t) for t in ts],
+            "pol_val_pp": [pol_val_pp(t + 1) for t in ts],
+            "surr_chg_pp": [surr_chg_pp(t + 1) for t in ts],
+            "cv_std_pp": [cv_std_pp(t + 1) for t in ts],
+            "cv_pp": [cv_pp(t + 1) for t in ts],
+            "cv_pp_ci": [cv_pp_ci(t + 1) for t in ts],
+            "base_benefit_pp": [base_benefit_pp(t + 1) for t in ts],
+            "accel_benefit_pp": [accel_benefit_pp(t + 1) for t in ts],
+            "resid_nominal_pp": [resid_nominal_pp(t + 1) for t in ts],
             "resid_db_avg_pp": [resid_db_avg_pp(t) for t in ts],
             "loan_pp": [loan_pp(t) for t in ts],
         },

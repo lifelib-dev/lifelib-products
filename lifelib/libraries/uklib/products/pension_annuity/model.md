@@ -46,9 +46,8 @@ with `duration(t) = t // 12`, derived and never indexed by; `age(t, life)` is
 `tests/test_model_conventions_uk.py`.
 
 The **state** cells are indexed differently, and deliberately: `lives_if(k, life)`,
-`lives_if_last(k)`, `cum_annuity_pp(k, kind)`, `vp_balance(k)` — and the
-anniversary-keyed `rpi_index(k)`, `rpi_peak(k)` — take a **time point** `k`, with
-`k = 0` at the start date. `l(0) = 1` and `G(0) = 0` are the seeds, month `t` opens
+`lives_if_last(k)`, `cum_annuity_pp(k, kind)` and `vp_balance(k)` take a **time point**
+`k`, with `k = 0` at the start date. `l(0) = 1` and `G(0) = 0` are the seeds, month `t` opens
 with the state at `k = t` and closes with the state at `k = t + 1`, and that index does
 not move with the frame: the annuitant who dies in month 16 is alive at time 16 and
 dead at time 17, and the value-protection balance that nets "instalments already paid"
@@ -57,6 +56,11 @@ is `G(16)` on either labelling. Every flow, rate and factor — `annuity_pp`,
 indexed by the month it belongs to. `payment_surv_mth(t)` maps between the two: it
 returns the *time point* at which survival is measured for month `t`'s instalment,
 `t + 1` on arrears and `t` on advance.
+
+`rpi_index(a)` and `rpi_peak(a)` sit on a third scale, an **anniversary count** with
+`a = 0` at outset and one step per policy year — `rpi_index(1)` is the reference level
+one *year* in, not one month — and it is likewise unmoved by the frame. The letter is
+`a`, not `k`, precisely so that the two cannot be read as the same index.
 
 The `result_pols()` state columns (`lives_if_1`, `lives_if_2`, `cum_annuity_all`,
 `vp_balance`) are therefore read at `t + 1`: they are the closing values of the month
@@ -153,7 +157,7 @@ one.
 | `rpi_catchup` | income indexed to the **running peak** of the RPI reference index [S2 defs] |
 
 The catch-up is a **ratchet**: a fall in the index freezes income rather than reducing
-it, and later rises bite only once the index passes its previous peak. `rpi_peak(k)`
+it, and later rises bite only once the index passes its previous peak. `rpi_peak(a)`
 carries that state across anniversaries. Resetting it each year turns the catch-up into a
 plain zero floor and overstates indexed income after a deflation-recovery path.
 
@@ -171,8 +175,10 @@ reach the `t = 11` arrears instalment, which accrued in year 1 [S2 §3.3].
 ## Value protection, and where the balance is measured
 
 `VP(t) = d(t) × max(0, v·P − G(t))` — the death benefit measured against instalments
-**already paid** [S1 p11] [S2 §7], `G` being the time-point schedule, so `G(t)` is the
-balance as month `t` opens. Two timing rules matter and both are the notes' pitfalls:
+**already paid** [S1 p11] [S2 §7], `G` being the time-point schedule: `G(k)` sums the
+instalments of months `0 … k − 1`, so month `t`'s instalment enters at `G(t+1)` whether it
+falls at the month's start or at its end. Two timing rules matter and both are the notes'
+pitfalls:
 
 - on **arrears** timing the balance is `G(t)`, the opening one, because the instalment due
   at the end of the death month is never paid;
@@ -260,7 +266,7 @@ time-valued columns:
 
 | File, column | Decision | Why |
 |---|---|---|
-| `model_point_table.csv`, `death_mth_1` / `death_mth_2` | **shifted −1** (17 → 16 on points 1, 3, 4, 9, 10) | a point on the frame's time axis: the month in which the scenario life dies. The blank sentinel moved from `0` to `-1` in `death_mth()`, because month 0 is a projectable month on the 0-based frame and can no longer double as "never" |
+| `model_point_table.csv`, `death_mth_1` | **shifted −1** (17 → 16 on points 1, 3, 4, 9, 10); `death_mth_2` is blank on all ten rows, so nothing moved in it | a point on the frame's time axis: the month in which the scenario life dies. The blank sentinel moved from `0` to `-1` in `death_mth()`, because month 0 is a projectable month on the 0-based frame and can no longer double as "never" |
 | `model_point_table.csv`, `guarantee_months` | unchanged (120) | an elapsed count of months, not a point on the axis; the comparison moved instead, `certain_floor(t) = 1{t < n}` |
 | `model_point_table.csv`, `start_year` | unchanged (2026) | a calendar year, the improvement-scale anchor |
 | `model_point_table.csv`, `annuitant_age`, `dependant_age` | unchanged | entry ages |
@@ -349,7 +355,8 @@ deterministic RPI path, the advance-timing VP netting rule, the `v + δ ≤ 1` b
 guarantee/VP exclusivity, and that no lapse machinery exists anywhere in the model. It
 also pins the frame: `result_cf()` is indexed by `range(636)` on the worked point.
 `tests/test_model_conventions_uk.py` asserts the 0-based frame itself — contiguous,
-starting at `t = 0`, ending at `proj_len() - 1` — for every model point.
+opening at a `t_first >= 0`, which is 0 for every point of this model, and ending at
+`proj_len() - 1` — for every model point.
 
 ```bash
 python -m pytest tests -q

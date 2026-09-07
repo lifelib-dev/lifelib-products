@@ -116,7 +116,7 @@ diag_rep(t)                diag_rep(t)                          Repeat triggers
 trig(t)                    trig(t)                             All payment triggers
 unlock(t)                  unlock(t)                           Cycle expiries arriving
 insitu_ev(t)               insitu_ev(t)                        上皮内新生物 diagnoses
-Z(t)                       insitu_avail(t)                     Once-only tier unused
+Z(t)                       insitu_avail(t)                     Once-only tier unused at the start of month t
 (consumed)                 insitu_used(t)                      Once-only tier consumed
 (decrement)                pols_death(t)                       Deaths, both states
 (decrement)                pols_lapse(t)                       Lapses, both states
@@ -124,13 +124,13 @@ h                          hosp_rate_mth(t)                    Monthly admission
 L                          hosp_stay_days(t)                   Mean stay in days
 s_h, s_z                   surg_per_hosp, surg_per_insitu      Surgeries per event
 p_tr                       treat_prob                          Qualifying-month chance
-M(t)                       treat_months(t)                     Treatment-month ledger
+M(t)                       treat_months(t)                     Treatment-month ledger at the start of month t
 (capped draw)              paid_months(t)                      Months paid in month t
 o                          outp_days                           Outpatient days per year
 f_a                        adv_freq_mth()                      Monthly 先進医療 frequency
 S_a                        adv_sev                             Mean 技術料
 LV                         adv_cap                             先進医療 lifetime cap
-V(t)                       adv_paid(t)                         先進医療 ledger
+V(t)                       adv_paid(t)                         先進医療 ledger at the start of month t
 pay(t)                     adv_pay(t)                          先進医療 draw in month t
 P x pols_healthy           premiums(t)                         Premium income
 (claim lines)              claims(t, kind)                     Benefit outgo by kind
@@ -1087,6 +1087,10 @@ def insitu_avail(t):
     ``Z(t+1) = Z(t) (1 - iz(t) cover(t))``, from ``Z(0) = 1``.  A separate ledger rather
     than a flag on the diagnosis benefit, because the tier has its own cap, does not start
     the two-year cycle and does not trigger the waiver.
+
+    A **time-point** value, not a closing balance: ``Z(t)`` is the probability **at time
+    `t`** — the opening value of month ``t``, which :func:`insitu_ev` draws against, with
+    ``t = 0`` at the 契約日; the month's closing value is ``Z(t+1)``.
     """
     if t <= 0:
         return 1.0 if t == 0 else 0.0
@@ -1203,6 +1207,10 @@ def treat_months(t):
     repeat trigger is an already-diagnosed life whose ledger continues.  ``M(0) = 0``, and
     zero thereafter while ``pols_cancer`` is zero.
 
+    A **time-point** value, not a closing balance: ``M(t)`` is the ledger **at time `t`**
+    — the opening value of month ``t``, which :func:`paid_months` draws against; the
+    month's closing value is ``M(t+1)``.
+
     The direction of the approximation is stated rather than discovered:
     ``E[min(sum, K)] != min(E[sum], K)``, so a deterministic average **understates** the
     cap's bite.  Here that matters more than on the medical chassis, because the 60-month
@@ -1249,6 +1257,10 @@ def adv_paid(t):
     accumulating the 技術料 only — the 10% cash top-up is a benefit, not a draw against the
     cap.  ``V(0) = 0``; ``V(12) = ¥2,401.31`` at the anchor cell — the value at the end of
     policy year 1, months ``t = 0 .. 11``.
+
+    A **time-point** value, not a closing balance: ``V(t)`` is the ledger **at time `t`**
+    — the opening value of month ``t``, which :func:`adv_pay` draws against; the month's
+    closing value is ``V(t+1)``.
     """
     if t <= 0:
         return 0.0

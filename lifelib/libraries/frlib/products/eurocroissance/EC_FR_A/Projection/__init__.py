@@ -79,8 +79,8 @@ duration_ifo               duration_inforce()              Completed years at va
 n                          policy_term()                   Years to the échéance
 (none)                     proj_len()                      Periods projected, = n
 g                          guarantee_rate()                Share of net versements guaranteed
-P(0) at inception          premium_initial_pp(t)           Initial versement, opening state
-P_net(0) at inception      prem_init_after_charge()        Net of the R. 134-3 1° charge
+P_0                        premium_initial_pp(t)           Initial versement, opening state
+P_net,0                    prem_init_after_charge()        Net of the R. 134-3 1° charge
 P(t)                       premium_gross_pp(t)             Scheduled versement, BOY
 P_net(t)                   prem_after_charge_pp(t)               Net of the R. 134-3 1° charge
 (free versement)           premium_top_up_gross_pp(t)      Free versement, EOY
@@ -110,7 +110,7 @@ u(t)                       part_value(t)                   Valeur de la part
 (opening, pre-versement)   part_value_at(t, timing)        u opening and at the striking
 u_min                      min_part_value()                Contractual floor on u
 L(t)                       parts_levy(t)                   BOY levy, base 4°
-I(t)                       invest_income(t)                Financial performance in year t
+I(t)                       invest_income(t)                Financial performance in period t
 F(t)                       perf_levy(t)                    EOY levy, base 5°
 (entry)                    entry_charge(t)                 Base 1° charge on a versement
 C(t)                       insurer_contribution(t)         L. 134-3 outstanding contribution
@@ -234,26 +234,26 @@ The diversification provision takes the **residual** and stops at the parts' con
 floor. Where the floor binds, the two provisions together exceed the assets, and the
 excess is exactly ``C(t)`` — the contribution the insurer must make under L. 134-3 to
 complete the representation. The **surrender value therefore exceeds the account's own
-assets by exactly ``C(t)``** while the contribution is outstanding: on the notes' year-6
-shock, 12,384.73 paid against assets of 10,250.65.
+assets by exactly ``C(t)``** while the contribution is outstanding: on the notes'
+policy-year-6 shock, period ``t`` = 5, 12,384.73 paid against assets of 10,250.65.
 
 ``C(t)`` carries **no return to the savers**: :func:`own_assets` rolls forward from
 ``A(t-1)``, not from ``pm(t-1) + prov_div(t-1)``. Rolling the topped-up balance forward would
 manufacture investment return out of the insurer's capital, and the shipped worked
-example is the case that catches it — the year-7 asset roll starts from 10,250.65 and not
-from 12,384.73.
+example is the case that catches it — the policy-year-7 asset roll, period ``t`` = 6,
+starts from 10,250.65 and not from 12,384.73.
 
 .. rubric:: The Chassis B surrender value is not guaranteed
 
 This is the single most important product fact. Before the *échéance* a 2° engagement
 pays ``parts × part value`` and **nothing else** (R. 134-5). The guarantee bites only at
 the *échéance* — the end of the last projected period, ``t = proj_len() - 1`` — and only
-there does :func:`maturity_value` take ``max(parts × u, mg)``. On the
-notes' year-6 shock, Chassis B surrenders for **9,899.22** — 84.18% of net *versements*
-against a guarantee of 11,760.00. An implementation that floors the surrender value at
-the guarantee, or at the discounted guarantee, is modelling a contract that does not
-exist. :func:`check_own_funds_not_paid` asserts that no benefit before the term exceeds
-the two provisions.
+there does :func:`maturity_value` take ``max(parts × u, mg)``. On the notes'
+policy-year-6 shock, period ``t`` = 5, Chassis B surrenders for **9,899.22** — 84.18% of
+net *versements* against a guarantee of 11,760.00. An implementation that floors the
+surrender value at the guarantee, or at the discounted guarantee, is modelling a contract
+that does not exist. :func:`check_own_funds_not_paid` asserts that no benefit before the
+term exceeds the two provisions.
 
 The shortfall against the guarantee is carried instead as the *provision pour garantie à
 terme*, :func:`pgt` — the insurer's own funds, computed per auxiliary account on the
@@ -271,7 +271,7 @@ is the **current provision value**, and any *garantie décès plancher* is a com
 guarantee provisioned **outside** the auxiliary account (R. 134-7). :func:`death_payout`
 therefore floors the payout at cumulative net *versements* where the model point elects
 the rider, and :func:`rider_claim_pp` reports the difference separately — 1,860.78 on the
-notes' year-6 Chassis B death, which is not the account's money.
+notes' policy-year-6 Chassis B death, period ``t`` = 5, which is not the account's money.
 
 .. rubric:: The charge bases are not interchangeable
 
@@ -472,8 +472,9 @@ def parts_charge_rate():
 def perf_charge_rate():
     """f_perf: the levy on positive financial performance, R. 134-3 base 5° **[std]**.
 
-    10% of the year's positive financial-management performance and nothing at all on a
-    negative one, which is why the worked example's year-6 performance levy is zero.
+    10% of the period's positive financial-management performance and nothing at all on a
+    negative one, which is why the worked example's policy-year-6 performance levy —
+    period ``t`` = 5 — is zero.
     """
     return float(model_point()["perf_charge_rate"])
 
@@ -516,7 +517,7 @@ def min_part_value():
     limit of its minimum** (R. 134-4), so this level sets the floor of the diversification
     provision — and therefore both the Chassis A maturity payout and the point at which
     the insurer must start contributing assets.  Without it the worked example's Chassis A
-    ``prov_div`` would go to **-1,095.35** in year 6.
+    ``prov_div`` would go to **-1,095.35** in policy year 6, ``t`` = 5.
     """
     return float(model_point()["min_part_value"])
 
@@ -599,10 +600,10 @@ def scenario():
     """The asset-return path and TEC curve the model point runs on.
 
     Both the return and the discount curve are drawn from the same scenario name, because
-    the two move together: the year-6 double shock in the worked example — equities down
-    and rates down at once — is what makes the rebalancing visible, and pairing an equity
-    fall with an unchanged curve would understate the *provision mathématique* by the
-    whole rate effect.
+    the two move together: the policy-year-6 double shock in the worked example — period
+    ``t`` = 5, equities down and rates down at once — is what makes the rebalancing
+    visible, and pairing an equity fall with an unchanged curve would understate the
+    *provision mathématique* by the whole rate effect.
     """
     return model_point()["scenario"]
 
@@ -1334,7 +1335,8 @@ def insurer_contribution(t):
     guarantee is carried as a PGT instead.  It is the insurer's capital: it carries **no
     return to the savers** and is releasable as soon as the account's own assets cover the
     two provisions.  The surrender value exceeds the account's own assets by exactly this
-    amount while it is outstanding — 2,134.08 on the worked example's year-6 shock.
+    amount while it is outstanding — 2,134.08 on the worked example's policy-year-6
+    shock, period ``t`` = 5.
     """
     if not is_euro_leg():
         return 0.0

@@ -633,8 +633,8 @@ seventeen years, not only the five displayed:
 
 The two forms are the whole point of this product. The revisable premium runs from 1 575,00 €
 to 7 290,00 € — a factor of **4,6286**, exactly `r(74)/r(58) = 4,86/1,05` and independent of
-the capital — while the level premium is flat at 3 914,39 €, above the tariff until `t = 7`
-and below it thereafter. The revisable form has almost no new-business strain (`net_cf(0)` is
+the capital — while the level premium is flat at 3 914,39 €, above the tariff until `t = 8`
+and below it from `t = 9`. The revisable form has almost no new-business strain (`net_cf(0)` is
 −38,72 €); the level form is strongly positive at `t = 0` (+1 364,91 €) and would carry a real
 *provision mathématique* against the later years [R11] [R13].
 

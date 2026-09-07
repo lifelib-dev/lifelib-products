@@ -90,7 +90,7 @@ ranges 0.29%–1.18% [S1], 0.55%–2.88% gross [S2], 0.46%–2.54% [S3], 0.08%�
 | DB_t | death benefit per option and corridor |
 | NAAR_t | net amount at risk = max(0, DB_t − AV_t) [S2] (floor **[std]**) |
 | SC_t | surrender charge (per schedule, **[std]** scale) |
-| CSV_t | cash surrender value = AV_t − SC_t − D_t [S1] |
+| CSV_t | cash surrender value = AV_t − SC_t − D_t [S1], a start-of-month value; the surrender outflow and the default test use the end-of-month form CSV_t^{EOM} = AV_{t+1} − SC_t − D_{t+1} |
 | l_t | probability policy is in force at start of month t; l_0 = 1 |
 | status | in force / grace / lapsed / matured (age 121) |
 
@@ -113,7 +113,7 @@ in separate input structures.
 | Surrender charge | $18.00 per $1,000 initial, linear to 0 over 14 years | **[std]** (spec footnote 10) |
 | Corridor factors κ | 250% (≤40), 215% (45), 185% (50), 150% (55), 130% (60), to 100% at 90–95; linear interpolation | [S2] [R3]; interpolation **[std]** |
 | Grace / default | default when AV − SC − D ≤ 0; 61-day grace | [S1] [R8] |
-| Age-121 rule | no premiums or monthly deductions after attained age 121; asset charges continue | [S1] [S2] [S4] |
+| Age-121 rule | no premiums or monthly deductions from attained age 121; asset charges continue | [S1] [S2] [S4] |
 
 ### (b) Current non-guaranteed scales (insurer-declared; snapshot)
 
@@ -166,7 +166,8 @@ placeholders below.
 ### Monthly processing order (monthiversary t → t+1)
 
 1. Advance to monthiversary t; on an anniversary — a month with
-   (duration_inforce + t) mod 12 = 0 — advance x_t and the policy-year dependent
+   (duration_inforce + t) mod 12 = 0; at t = 0 of a new-business point these are set
+   rather than advanced — advance x_t and the policy-year dependent
    parameters (loan tier, SC_t, corridor κ_t). If x_t ≥ 121: skip steps 2–4 and 6
    (no premiums, no monthly deduction) [S1] [S2] [S4].
 2. **Premium.** P_t = ρ_t × planned modal premium. Load: γ·P_t to insurer. Net
@@ -206,7 +207,7 @@ placeholders below.
    - Maintenance expense outflow: l_t · (75/12) **[std]**; premium expense 2%·P_t
      at step 2 **[std]**.
    - Survivorship: l_{t+1} = l_t · (1 − q^d_t) · (1 − q^w_t).
-9. **Status checks.** If CSV_t ≤ 0 (and no NLG): default → grace; the baseline
+9. **Status checks.** If CSV_t^{EOM} ≤ 0 (and no NLG): default → grace; the baseline
    model lapses the policy at the next monthiversary if not cured, collapsing the
    61-day grace and notice mechanics [S1] [R8] into a one-month lag **[std]**. At
    x_t = 121, switch to the age-121 regime [S1] [S2] [S4].

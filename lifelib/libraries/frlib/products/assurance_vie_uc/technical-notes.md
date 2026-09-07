@@ -264,9 +264,10 @@ is an assertable invariant, not a coincidence — see spec footnote 14.
 ### The unit leg
 
 The UC management charge is taken on the units held at the start of the month and cancels
-units [S7] [S13 art. 32.4]. Throughout this section `n(t−1)`, `p(t−1)` and `V(t−1)` mean the
-**opening** balance of month `t`, which in month `t = 0` is `n_init`, `p_init` and `V_init`;
-the model reads them through `units_open(t)`, `unit_price_open(t)` and `av_euro_open_pp(t)`:
+units [S7] [S13 art. 32.4]. Throughout these recursions `n(t−1)`, `p(t−1)` and `V(t−1)`
+mean the **opening** balance of month `t`, which in month `t = 0` is `n_init`, `p_init`
+and `V_init`; the model reads them through `units_open(t)`, `unit_price_open(t)` and
+`av_euro_open_pp(t)`:
 
     fee_units(t) = n(t−1) × c_m
     mgmt_fee_uc(t) = fee_units(t) × p(t)            ← insurer income, in EUR
@@ -362,7 +363,8 @@ The UC leg is taxed only at `dénouement` [R8 II, 3°, c)](#frlib-assurance_vie_
 interest is credited [R8 II, 3°, a)](#frlib-assurance_vie_uc-r8) and that flow belongs to `Euro_FR_A`. On an outflow of
 `X` from the UC leg (partial surrender, surrender or death):
 
-    B(t) = B(t−1) + A(t)(1 − φ)                           on investments; B(−1) = B_init
+    B(t) = B_open(t) + A(t)(1 − φ)                        on investments, with
+           B_open(t) = B_init for t = 0 and B(t−1) for t ≥ 1
     gain(X) = X × (1 − B / U_before)
     social_levy_uc = τ × max(0, gain(X))
     B := B − B × X / U_before                              pro-rata cost removal
@@ -401,8 +403,8 @@ opens on, not a period. Because `l(0) = 1` they carry their full per-policy amou
 `t = 0 … proj_len − 1` and `prem_charge(0) = 1,000.00`, `expenses(0) = 403.33`,
 `net_cf(0) = 647.99`.
 
-`net_cf` is income-positive; the outgo-positive presentation survives as
-`liability_cf(t) = −net_cf(t)`.
+`net_cf` is income-positive; an outgo-positive presentation is simply `−net_cf(t)`, and no
+`liability_cf` cells is shipped.
 
 **The in-force weight, and the column that publishes it.** `l(t)` above is the count at
 the **start** of month t, and it is what `result_cf()` publishes in its own `pols_if` column

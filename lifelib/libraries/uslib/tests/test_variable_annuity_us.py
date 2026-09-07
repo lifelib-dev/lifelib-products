@@ -227,7 +227,7 @@ def test_worked_example_eom_balances(reading):
     assert p.av_pp_at(t, "BEF_FEE") - p.charge_pp(t) == pytest.approx(
         g["av_eom"], abs=CENT)
     # The account fell $140.81 over the month while the guarantee bases did not move.
-    assert p.av_pp(t - 1) - p.av_pp(t) == pytest.approx(140.81, abs=CENT)
+    assert p.av_pp_at(t, "BEF_PREM") - p.av_pp(t) == pytest.approx(140.81, abs=CENT)
 
 
 def test_worked_example_memo_asset_charge(reading):

@@ -73,7 +73,7 @@ AS_OPEN = 30000.00
 S_OPEN = 29500.00
 FV_OPEN = 27602.02
 
-CWP_MATURITY = 29018.91      # G(25) = 20,000 x 1.015^25, the notes' endowment check
+CWP_MATURITY = 29018.91      # G(24) = 20,000 x 1.015^25, the notes' endowment check
 
 
 # ---------------------------------------------------------------------------

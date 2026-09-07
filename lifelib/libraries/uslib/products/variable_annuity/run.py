@@ -33,7 +33,8 @@ if worked >= 0:
     print("worked-example month (the 27th policy month, t = {}), per contract:".format(
         worked))
     print("  BOM subaccounts    {:>12,.2f} {:>12,.2f}   total {:>12,.2f}".format(
-        proj.sa_pp(worked - 1, 1), proj.sa_pp(worked - 1, 2), proj.av_pp(worked - 1)))
+        proj.sa_pp_at(worked, 1, "BEF_PREM"), proj.sa_pp_at(worked, 2, "BEF_PREM"),
+        proj.av_pp_at(worked, "BEF_PREM")))
     print("  after growth       {:>12,.2f} {:>12,.2f}   total {:>12,.2f}".format(
         proj.sa_pp_at(worked, 1, "BEF_FEE"), proj.sa_pp_at(worked, 2, "BEF_FEE"),
         proj.av_pp_at(worked, "BEF_FEE")))

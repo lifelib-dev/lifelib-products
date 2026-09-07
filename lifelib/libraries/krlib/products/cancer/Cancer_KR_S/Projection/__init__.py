@@ -127,15 +127,15 @@ n_g(t)                     diag_gen(t)                           일반암 diagn
 n_h(t)                     diag_high(t)                          고액암 diagnoses
 n_m(t)                     diag_minor(t)                         특정소액암 diagnoses
 n_z(t)                     diag_similar(t)                       유사암 diagnoses
-Z(t)                       similar_avail(t)                      유사암 tier unused
-(consumed)                 similar_used(t)                       유사암 tier consumed
+Z(t)                       similar_avail(t)                      유사암 tier unused, at start of t
+(consumed)                 similar_used(t)                       유사암 tier consumed by start of t
 A(k)                       treat_avail(k)                        Treatment benefit unused
 P x pols_payer             premiums(t)                           Premium income
 (claim lines)              claims(t, kind)                       Benefit outgo by kind
-V(t)                       av_pp(t)                              계약자적립액 per policy
-CV_std(t)                  cv_std_pp(t)                          표준형 해약환급금
-CV(t)                      cv_pp(t)                              해약환급금 as written
-alpha(t)                   surr_chg_pp(t)                        해약공제액
+V(t)                       av_pp(t)                              계약자적립액 per policy at start of t
+CV_std(t)                  cv_std_pp(t)                          표준형 해약환급금, at start of t
+CV(t)                      cv_pp(t)                              해약환급금 as written, at start of t
+alpha(t)                   surr_chg_pp(t)                        해약공제액, at start of t
 alpha_cap                  surr_chg_cap_pp()                     표준해약공제액
 e(t)                       expenses(t)                           Acquisition + maintenance
 ec(t)                      claim_expenses(t)                     Claim handling expense
@@ -571,8 +571,9 @@ def pay_months():
     240 on the anchor cell, so 납입완료 falls at ``t = 240`` and the surrender-value cliff of
     the 미지급형 form with it: 「보험료 납입기간 중이라 함은 계약일로부터 보험료 납입기간이
     경과하여 최초로 도래하는 계약해당일 전일까지의 기간」 [S3]. On a 전기납 model point it is
-    the whole 보험기간, ``proj_len() - 1`` months -- 720 on the anchor cell's term, the frame's
-    720 months of cover without its terminal expiry row.
+    the whole 보험기간, ``proj_len() - 1`` months -- 720 on model point 3, the 전기납 cell
+    carrying the anchor's term, the frame's 720 months of cover without its terminal expiry
+    row.
     """
     return proj_len() - 1 if pay_term() == 0 else 12 * pay_term()
 

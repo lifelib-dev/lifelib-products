@@ -549,7 +549,8 @@ def test_pitfall_mva_sign_collar_and_scope(anchor, fixed_indexed_annuity):
     # Negative when the reference yield has risen above the issue level.
     assert anchor.mva_ref_yield(8) > anchor.mva_ref_yield_at_issue()
     assert anchor.mva_rate(7) < 0.0
-    # Only inside the ten-year MVA period, which is contract years 1-10.
+    # Only inside the ten-year MVA period: the remaining term runs out at anniversary 10,
+    # so a transaction carries an adjustment in contract years 1-9 and none in year 10.
     assert anchor.mva_in_force(8) is True                 # contract year 9
     assert anchor.mva_term(9) == 0.0                      # contract year 10
     assert anchor.mva_in_force(9) is False
@@ -1105,13 +1106,15 @@ def test_the_pols_if_column_is_the_weight_on_its_own_row(fixed_indexed_annuity):
     for point_id in fixed_indexed_annuity.Data.model_point_table().index:
         p = fixed_indexed_annuity.Projection[point_id]
         df = p.result_cf()
-        for t in range(p.entry_year() + 1, p.proj_len()):
+        for t in range(p.entry_year(), p.proj_len()):
             w = df.loc[t, "pols_if"]
             assert w == pytest.approx(p.pols_if(t), abs=EXACT)
             assert df.loc[t, "withdrawals"] == pytest.approx(
                 p.wd_payment_pp(t) * w, abs=1e-9), (point_id, t)
+            # The merged first row of a new issue carries the acquisition expense too;
+            # premiums(t) is zero on every later row, so the first term drops out there.
             assert df.loc[t, "expenses"] == pytest.approx(
-                80.0 * 1.025 ** t * w, abs=1e-9), (point_id, t)
+                0.06 * p.premiums(t) + 80.0 * 1.025 ** t * w, abs=1e-9), (point_id, t)
             if p.phase_open(t) == "DEPLETED":
                 assert df.loc[t, "income_payments"] == pytest.approx(
                     p.lw_pp_at(t, "BEF_WD") * w, abs=1e-9), (point_id, t)
@@ -1243,7 +1246,7 @@ def test_mortality_reads_the_age_entering_the_contract_year(anchor):
         float(table.loc[(69, "M"), "mort_rate"]), rel=1e-12)
     assert anchor.age(anchor.proj_len() - 1) == 120
     assert anchor.mort_rate(anchor.proj_len() - 1) == 1.0
-    assert anchor.pols_maturity(anchor.proj_len() - 1) == pytest.approx(0.0, abs=1e-12)
+    assert anchor.pols_maturity(anchor.proj_len() - 1) == 0.0
 
 
 def test_space_docstrings_carry_their_reference_material(fixed_indexed_annuity):

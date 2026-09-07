@@ -9,6 +9,9 @@ written in hangul, the two renewal structures are "gaengsin" (renewable, reprice
 attained insurance age) and "bi-gaengsin" (non-renewable), the age basis is romanized
 "boheom nai" (insurance age, the six-month rounding rule), and amounts are labelled KRW
 rather than carrying a currency sign.
+
+The printed frame is 0-based: t = 0 is the first policy year and the statement runs to
+t = proj_len() - 1.
 """
 import sys
 from pathlib import Path
@@ -34,8 +37,8 @@ print("  {}-year term, {}, {}, {} class, cover KRW {:,.0f}".format(
     proj.policy_term(), pay, form, proj.rate_class(), proj.sum_assured()))
 print("  premium = KRW {:,.0f}/month ({:,.0f} p.a.)   horizon = {} years to "
       "boheom nai {}   boundary = {}".format(
-          proj.premium_mth_pp(1), proj.prem_pp(1), proj.proj_len(),
-          proj.age(proj.proj_len()) + 1, proj.contract_boundary()))
+          proj.premium_mth_pp(0), proj.prem_pp(0), proj.proj_len(),
+          proj.age(proj.proj_len() - 1) + 1, proj.contract_boundary()))
 print("  modules: acc_death = {}   waiver = {}   accel = {}   "
       "reinstatement = {}".format(
           proj.acc_death(), proj.waiver(), proj.accel(), proj.reinstatement()))
@@ -44,7 +47,8 @@ print()
 df = proj.result_cf()
 print(df.head(12).round(2).to_string())
 if len(df) > 12:
-    print("... {} further years to t = {}".format(len(df) - 12, proj.proj_len()))
+    print("... {} further years to t = {}".format(
+        len(df) - 12, proj.proj_len() - 1))
 print()
 print("undiscounted totals: premiums {:,.2f}   claims {:,.2f}   "
       "claim exp+expenses+commissions {:,.2f}   net_cf {:+,.2f}".format(

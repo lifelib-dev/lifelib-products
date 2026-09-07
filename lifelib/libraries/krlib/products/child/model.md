@@ -60,7 +60,7 @@ Real output, elided in the middle — the statement is reproduced in full in
 ```text
 Child_KR_S - eorini boheom (children's insurance), monthly grid, boheom nai
 model point 1: CH-KR-0001 - sex M, taea gaip (written in utero), gyeyak nai 0, birth at policy month 5
-term to boheom nai 100 (t = 0 .. 1200, 1201 months), premium term 20 years (t = 0 .. 239), monthly
+term to boheom nai 100 (t = 0 .. 1200, 1201 rows), premium term 20 years (t = 0 .. 239), monthly
 form: pyojunhyeong (standard surrender value)
 premium: KRW 28,000 core + KRW 3,000 taea module to t = 16, so KRW 31,000 to t = 16 and KRW 28,000 after
 napip myeonje (premium waiver) on: child + gyeyakja (M33, man nai)
@@ -796,7 +796,7 @@ the notes by eye:
   zeros rather than left implied.
 - **The month of birth and the month after**, `t = 5` and `t = 16 / 17`, where the 태아 module
   pays, `age_man` turns from 0 to 1 and `claims_hospital` falls from ₩7,164.01 to ₩3,512.46.
-- **The policy-year-1 aggregate** and the undiscounted totals over all 1,201 months, line by
+- **The policy-year-1 aggregate** and the undiscounted totals over all 1,201 rows, line by
   line on unrounded values — ₩5,458,037.93 of premium against ₩17,087,999 of benefit and
   ₩1,455,474 of expense and commission, for **−₩13,085,435.00** — and the four exits summing
   to one: 0.0049757330 + 0.4688979472 + 0.5103916457 + 0.0157346742.

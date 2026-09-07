@@ -7,6 +7,9 @@ Output is ASCII-only so it prints on a Windows console under any code page: amou
 KRW, the product is written "jongsin boheom (whole life)" rather than in hangul, and the
 suppressed-surrender-value forms are written "muhaeji hwangeuphyeong" (nil) and "jeohaeji
 hwangeuphyeong" (low).  Ages are boheom nai, the Korean insurance age.
+
+The time index t is 0-based: t = 0 is the first policy year, the frame is
+t = 0 .. proj_len() - 1, and the contractual policy year is t + 1.
 """
 import sys
 from pathlib import Path
@@ -49,22 +52,23 @@ print("acquisition cost = KRW {:,.2f} of which first-year commission KRW {:,.2f}
 print("modules: waiver rate = {:.3%}   loan utilisation = {:.2f} at year {}   "
       "bonus = {:.3%}   reduction = {:.0%} at year {}   reinstatement = {:.2%}   "
       "mort_be_factor = {:.2f}".format(
-          proj.waiver_rate(1), proj.loan_util(), proj.loan_year(), proj.bonus_rate(),
+          proj.waiver_rate(0), proj.loan_util(), proj.loan_year(), proj.bonus_rate(),
           proj.reduce_frac(), proj.reduce_year(), proj.reinstate_rate(),
           proj.mort_be_factor()))
 print()
 
 df = proj.result_cf()
 m = proj.prem_period()
-rows = [t for t in (1, 2, 3, 4, 5) if t <= proj.proj_len()]
-rows += [t for t in (m - 1, m, m + 1) if t <= proj.proj_len() and t not in rows]
-print("cash flow statement - first policy years, and the years around napip wallyo "
-      "(completion of premium payment):")
+rows = [t for t in (0, 1, 2, 3, 4) if t < proj.proj_len()]
+rows += [t for t in (m - 2, m - 1, m) if 0 <= t < proj.proj_len() and t not in rows]
+print("cash flow statement - t is 0-based, policy year = t + 1: the first policy years, "
+      "and the years around napip wallyo (completion of premium payment):")
 print(df.loc[sorted(rows)].round(2).to_string())
 print()
 
 val = proj.result_val()
-print("surrender values at the same durations (KRW per policy):")
+print("surrender values on the same rows, at the anniversary d = t + 1 that closes each "
+      "period (KRW per policy):")
 print(val.loc[sorted(rows)].round(2).to_string())
 print()
 

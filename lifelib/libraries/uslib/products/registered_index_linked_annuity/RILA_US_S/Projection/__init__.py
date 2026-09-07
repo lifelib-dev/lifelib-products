@@ -75,11 +75,11 @@ that closes on an anniversary**: ``duration(11) = 0`` but ``duration_eom(11) = 1
 month 11 bears the age-``x`` mortality rate and the year-1 expense level while a surrender
 settling at its end is already on the year-2 side of the charge schedule.
 
-This is the same split :mod:`.MYGA_US_S` makes on a beginning-of-month transaction
-convention, arrived at from the other side: there the anniversary month belongs to the
-year that is opening, here the anniversary closes the month that has just run. Each
-convention is the right one for its own timing basis, and the divergence is visible only
-in that one month a year.
+:mod:`.MYGA_US_S` needs only one reading, because its beginning-of-month transaction
+convention makes the two coincide: there the anniversary month belongs to the year that is
+opening, here the anniversary closes the month that has just run, and the two products'
+``policy_year`` readings differ in exactly that one month a year. Each convention is the
+right one for its own timing basis.
 
 Within month ``t`` the notes' processing order is: refresh the **market state**; apply
 **term-end crediting** if ``t`` is a Term End Date; apply the **renewal / transfer** roll
@@ -175,7 +175,7 @@ HA(t)                         holding_acct_pp(t)                Holding Account 
 i_declared                    acct_rate()                       Declared rate on FA and HA
 AV(t)                         av_pp(t), av_pp_at(t, timing)     Account Value
 l(t) x AV(t)                  av_at(t, timing)                  In-force weighted Account Value
-ROP(t)                        rop_pp(t)                         Return-of-premium GMDB base
+ROP(t)                        rop_pp(t)                         ROP base at the end of month t
 DB(t)                         death_ben_pp(t)                   Death benefit
 CSV(t)                        surr_value_pp(t)                  Cash surrender value
 AV_anniv(y)                   free_wd_base(t)                   Account Value at the anniversary
@@ -1645,7 +1645,8 @@ def surr_value_pp(t):
 
 
 def rop_pp(t):
-    """ROP(t): the return-of-premium GMDB base, reduced **proportionally** [S1][S2].
+    """ROP(t): the return-of-premium GMDB base at the **end** of month t, reduced
+    **proportionally** [S1][S2].
 
     ``ROP(t+) = ROP(t-) x (1 - G_total / AV(t-))``, the ratio taken on the **gross** amount
     removed from the contract - including any withdrawal charge [S1] - and on the Account

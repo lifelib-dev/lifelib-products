@@ -162,7 +162,8 @@ the in-force annuity is a round figure of the right order for a 2012 tariff at 1
 | `proj_len()` | **Exclusive end** of the frame, so `result_cf().index[-1] == proj_len() − 1` | once |
 | `horizon_mths(life)` | `12 × (omega_age − entry_age(life))`, the month at which that life's survival reaches zero | once |
 | `age(t, life)` | Attained age = `entry_age(life) + t // 12` | monthly |
-| `policy_year(t)` | Completed policy years = `t // 12` | monthly |
+| `duration(t)` | Completed policy years = `t // 12`; 0 through the first policy year | monthly |
+| `policy_year(t)` | Contractual, 1-based policy year = `t // 12 + 1` | monthly |
 | `calendar_year(t)` | `entry_year() + t // 12`; reporting and the cohort cross-check | monthly |
 | `mort_rate(t, life)` | **Annual** second-order rate at `age(t, life)` for that life's cohort and sex | monthly |
 | `mort_rate_mth(t, life)` | `1 − (1 − mort_rate)^(1/12)` **[std]** | monthly |
@@ -568,7 +569,7 @@ those who die is forfeited to the survivors.
 
 ### The *Überschussrente*
 
-    U(t) = R · u₀ · (1 + ψ)^( policy_year(t) − defer_years() )      for t ≥ first_pay_mth()
+    U(t) = R · u₀ · (1 + ψ)^( duration(t) − D / 12 )                for t ≥ first_pay_mth()
          = 0                                                        otherwise
     A(t) = R + U(t)
 
@@ -666,7 +667,7 @@ For `t = t₀ … n − 1`, in this order:
    generational surface at each life's own cohort and sex.
 3. Advance the second-order survival: `l_a(t)`, `l_s(t)` from `l(t − 1)` and `mort_rate_mth(t − 1)`.
 4. Set `γ(t)` and `is_payment_mth(t)`.
-5. Set the instalment: `U(t)` from the surplus form and the completed policy year, then
+5. Set the instalment: `U(t)` from the surplus form and the completed policy year `duration(t)`, then
    `A(t) = R + U(t)`. Accumulate `C(t)` and set `K(t) = max(SP − C(t), 0)`.
 6. Compute `payment_factor(t)` at the payment instant `t`.
 7. **Start of month — premium.** At `t = 0` only, `premiums(0) = SP · pols_if_init`.
@@ -867,8 +868,9 @@ pitfall 8 rather than a simplification.
 
 ### The frame
 
-672 monthly rows, `t = 0 … 671`. The table shows the first policy year in full, then the two
-months either side of the guarantee's expiry and one row every ten years to the horizon. Money
+672 monthly rows, `t = 0 … 671`. The table shows the first policy year in full and the first
+month of the second, where the *Überschussrente* steps, then the two months either side of the
+guarantee's expiry and one row every ten years to the horizon. Money
 to the cent, `pols_if` to six decimals; the **Total** row is summed over all 672 rows at full
 precision and then rounded.
 
@@ -945,7 +947,7 @@ Each rebuilds a cell of the table a **different way** from the way the model bui
 and in the market's own unit, `100,000 x 0.975 / (12 x 21.9642595019 x 1.02) = 362.67 €`. The
 opening total instalment is then `362.6658241684 x 1.10 = 398.9324065852`, the 1.10 being
 `1 + u₀` with the *teildynamisch* opening share of 10 % and the growth exponent still zero in
-policy year 0.
+the first policy year (`duration(0) − D / 12 = 0`).
 
 **2. Month 1, rebuilt from the mortality table.** The annuitant is 65 and born in 1960, so the
 cohort exponent is `1960 + 65 − 2025 = 0` and the generational surface returns the shipped rate

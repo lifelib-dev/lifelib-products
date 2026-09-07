@@ -588,10 +588,11 @@ deduction would produce is nil, because the 해약공제액 is nil. That is the 
 structural difference from **both** of the neighbouring accumulation models, and the nearer
 of the two is the dangerous one. `WholeLife_KR_A`, the chassis whose surrender-value
 machinery this product does inherit, runs the classical net-level recursion
-`V(t) = ((V(t−1) + P)(1 + i) − q·SA)/(1 − q)` under the same Korean name, 계약자적립액; the
-deferred annuity on the Japanese page divides by `(1 − q')` in the same way and pays a
-**larger** annuity out of the same premium as a result. A model that ports either shape
-here does not fail loudly: it silently overstates the 연금개시 fund.
+`V(d) = ((V(d−1) + P·1{d <= m})(1 + i) − q·SA)/(1 − q)` under the same Korean name,
+계약자적립액 — on **that** model's anniversary index `d` (`d = 0` at issue), not on this
+model's period index `t`; the deferred annuity on the Japanese page divides by `(1 − q')`
+in the same way and pays a **larger** annuity out of the same premium as a result. A model
+that ports either shape here does not fail loudly: it silently overstates the 연금개시 fund.
 `check_av_roll_fwd()` asserts the recursion above over the whole deferral phase, and it is
 the check that would catch it.
 
@@ -1451,8 +1452,9 @@ each is checkable against the shipped model.
     that is meant to bind.
 17. **Reading `proj_len()` as the last index.** It is a **count** — the exclusive end of the
     frame: 81 at the anchor cell, with 81 rows in `result_cf()` running `t` = 0 … 80, so the
-    last index is `proj_len() − 1`. Off-by-one here silently drops the terminal row, which on
-    the life form is where the last survivors die.
+    last index is `proj_len() − 1`. Reading it as the last index appends an empty row at
+    `t = proj_len()`; the mirror slip, `range(proj_len() − 1)`, silently drops the terminal
+    row, which on the life form is where the last survivors die.
 18. **Assuming the 100.1% floor protects a death claim.** It is a **survival** guarantee
     applied once, at `t = n`, to a policy in force; a death in deferral is paid the fund,
     which may be less than premiums paid — and is, for the first four policy years at the

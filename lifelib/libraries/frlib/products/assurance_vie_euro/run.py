@@ -38,7 +38,8 @@ print("versements {:,.2f} p.a.   rachats partiels {:,.2f} p.a. from t = {}   "
 print("projection runs t = 0 to {} (no maturity: the euro support has no term)".format(
     proj.proj_len() - 1))
 print()
-print("Crediting machinery (per policy):")
+print("Crediting machinery (per policy; the ppb_pp column is the PPB at the END of "
+      "year t, i.e. ppb_pp(t + 1), while av_pp and guar_floor_pp are start of year):")
 pb = proj.result_pb()
 rates = ("r_fin", "ts_stat", "ts_net")
 # Adding 0.0 turns IEEE negative zero back into zero: an exhausted PPB carries a few

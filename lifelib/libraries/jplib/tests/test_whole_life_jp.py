@@ -158,7 +158,7 @@ DEATHS_AFTER_YEAR_40 = 0.230566   # of 0.305066 — the horizon sensitivity, t >
 # "自動振替貸付 trace (module on)", on the anchor cell's policy value.
 APL_PREMIUM_WITH_INTEREST = 179771.40    # P (1 + i_L)
 APL_BENEFIT_ON_FAILURE = 41092.68        # max(0, CV*(2) - L(2, 1)) on the suppressed form
-APL_L15_ORDINARY = 2764330.63            # L(14, 1) on the ordinary form, k = 1.00
+APL_L14_ORDINARY = 2764330.63            # L(14, 1) on the ordinary form, k = 1.00
 APL_FAIL_T_CLAWBACK_ON = 52              # cohort defaulting at s = 9, i.e. policy year 10
 APL_FAIL_T_CLAWBACK_OFF = 68             # t = 68 is policy year 69
 
@@ -512,7 +512,7 @@ def test_pitfall_the_apl_test_runs_on_the_suppressed_value(whole_life):
     # closes it against the balance at its start.
     assert low.apl_test_val(3) == pytest.approx(0.70 * low.pol_val_pp(3), rel=1e-14)
     assert low.apl_test_val(3) < low.loan_apl_pp(2, 1) + APL_PREMIUM_WITH_INTEREST
-    assert ordinary.loan_apl_pp(14, 1) == pytest.approx(APL_L15_ORDINARY, abs=YEN)
+    assert ordinary.loan_apl_pp(14, 1) == pytest.approx(APL_L14_ORDINARY, abs=YEN)
     assert (ordinary.loan_apl_pp(14, 1) + APL_PREMIUM_WITH_INTEREST
             > ordinary.cv_pp(15) > ordinary.loan_apl_pp(14, 1))
 
@@ -562,7 +562,7 @@ def test_pitfall_premiums_stop_at_m_and_nothing_else_does(jp_wl_anchor):
     assert m == 15
     # m is a count of policy years, so the last period with a premium due is m - 1.
     assert a.premiums(m - 1) > 0.0 and a.commissions(m - 1) > 0.0
-    for t in (m, 30, 60, a.proj_len() - 1):
+    for t in (m, 29, 59, a.proj_len() - 1):
         assert a.premiums(t) == 0.0
         assert a.commissions(t) == 0.0
         assert a.expenses(t) > 0.0
@@ -665,7 +665,9 @@ def test_pitfall_everything_is_floored_at_zero(whole_life):
     for t in range(p.proj_len()):
         assert p.claims(t, "DEATH") >= 0.0
         assert p.claims(t, "LAPSE") >= 0.0
-        assert p.cv_pp(t) >= 0.0
+    # cv_pp is anniversary-indexed, d = 0 ... proj_len(), so its sweep is one longer.
+    for d in range(p.proj_len() + 1):
+        assert p.cv_pp(d) >= 0.0
 
 
 def test_pitfall_reserve_pp_is_not_cv_pp(whole_life):
@@ -868,8 +870,8 @@ def test_the_policy_loan_is_off_in_the_base_run_and_terminates_when_switched_on(
     """pol_loan_util is zero in the base run; point 7 draws the contractual maximum.
 
     The 9/10-while-paying and 8/10-once-paid-up caps are contractual and bind whatever
-    the utilisation is set to.  A draw of the maximum at the fortieth anniversary — the
-    start of period t = 39, policy year 40 — compounds at i_L against a value growing at
+    the utilisation is set to.  A draw of the maximum at the anniversary d = 39, which
+    opens period t = 39, policy year 40 — compounds at i_L against a value growing at
     i_cv and reaches the loan-excess termination at t = 52, policy year 53, with a zero
     benefit.
     """
@@ -1108,7 +1110,7 @@ def test_the_projection_docstring_describes_the_shipped_model_points(whole_life)
     """
     proj = flat(whole_life.Projection.doc)
     table = whole_life.Data.model_point_table()
-    assert "fortieth anniversary" in proj
+    assert "anniversary ``d = 39``" in proj
     assert int(table.loc[7, "pol_loan_year"]) == 40
     assert float(table.loc[7, "pol_loan_util"]) == 0.9
 

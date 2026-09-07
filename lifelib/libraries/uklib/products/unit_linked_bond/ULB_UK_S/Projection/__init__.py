@@ -557,7 +557,7 @@ def av_pp(t):
     withdrawal at what the fund can pay, so the fund is drawn to nothing rather than
     through it.
     """
-    if t <= 0:
+    if t == 0:
         return av_init_pp()
     return av_pp_at(t - 1, "AFT_WD")
 

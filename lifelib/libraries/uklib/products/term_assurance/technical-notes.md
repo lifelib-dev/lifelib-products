@@ -385,10 +385,9 @@ Update: `l(2) = 0.899505 × (1 − 0.00060) × (1 − 0.08) = 0.827048`.
 
 The pattern is characteristic of guaranteed term: a deep new-business strain in the
 first year, t = 0 (upfront commission and acquisition expense against one year's
-premium [R9]) and
-thin positive margins thereafter — the level premium prefunds the rising mortality
-cost, so early-duration lapses forfeit margin to the insurer while late-duration
-lapses relieve it.
+premium [R9]) and thin positive margins thereafter — the level premium prefunds the
+rising mortality cost, so early-duration lapses forfeit margin to the insurer while
+late-duration lapses relieve it.
 
 ---
 

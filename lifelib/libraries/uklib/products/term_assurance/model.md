@@ -71,11 +71,13 @@ arbiter of both.
 
 ## The time index
 
-`t` is 0-based and counts policy years from issue, lifelib's own convention
-(`basiclife/BasicTerm_S`): `t = 0` is the first policy year, `age(t) = age_at_entry() +
-t`, `duration(t) = t`, `pols_if(0) = pols_if_init()`, and the frame is
-`range(proj_start(), proj_len())` — `range(proj_len())`, `proj_len()` rows, for a point
-projected from issue. `proj_len()` is the *number* of years, the exclusive end; the last
+`t` is 0-based and counts policy years from issue, lifelib's own 0-based convention
+(`annuallife/TradLife_A` on the annual grid, `basiclife/BasicTerm_S` and
+`savings/CashValue_SE` on the monthly one). Here, on the annual grid: `t = 0` is the
+first policy year, `age(t) = age_at_entry() + t`, `duration(t) = t`, `pols_if(0) =
+pols_if_init()`, and the frame is `range(proj_start(), proj_len())` —
+`range(proj_len())`, `proj_len()` rows, for a point projected from issue. `proj_len()`
+is the *number* of years, the exclusive end; the last
 row is `t = proj_len() − 1` and `pols_maturity` fires there. Year `t` runs from time `t`
 to time `t + 1`: `pols_if(t)` is the count at its start, premiums and maintenance
 expense fall at its start, claims and lapses at its end, so `pols_if(t + 1) =
@@ -201,10 +203,10 @@ claims(t, "FIB") = I × [6 × D(t) + 12 × FIBcum(t)]
 ```
 
 and one death in year `s` generates `6 + 12(n − 1 − s)` instalments in total, which is
-exactly `N − k` at the mid-year death month `k = 12s + 6`. `check_fib_ledger()` rebuilds each year's
-instalment count straight off the death vector, with no reference to the recursion, and
-asserts the two agree; a ledger decremented by mortality — the notes' pitfall — or one
-paying only the year-of-death instalments fails there.
+exactly `N − k` at the mid-year death month `k = 12s + 6`. `check_fib_ledger()` rebuilds
+each year's instalment count straight off the death vector, with no reference to the
+recursion, and asserts the two agree; a ledger decremented by mortality — the notes'
+pitfall — or one paying only the year-of-death instalments fails there.
 
 The optional commutation module replaces a proportion of the streams with a lump sum,
 the present value of the remaining instalments at the **[std]** snapshot rate
@@ -300,12 +302,12 @@ Four cases needed care:
 Everything in this list is **[std]**: the whole mortality table and its select factors;
 the 75% proxy scaling; the lapse duration table; the premium itself (£12.00 per month);
 acquisition expense £150; maintenance £30 inflating at 3%; claim expense £250; initial
-commission 150% of annualized premium and renewal 2.5% from policy year 2 (`t ≥ 1`); the clawback
-formula; the FIB commutation rate of 3%; the decreasing shape's 6% schedule rate, its
-`j_m = (1+j)^(1/12) − 1` monthly convention and its mid-year death benefit; the
-selective-lapsation and rebroking constructions; the waiver incidence, recovery and
-premium loading; the flat 3% RPI scenario; and death-before-lapse as the processing
-order.
+commission 150% of annualized premium and renewal 2.5% from policy year 2 (`t ≥ 1`);
+the clawback formula; the FIB commutation rate of 3%; the decreasing shape's 6%
+schedule rate, its `j_m = (1+j)^(1/12) − 1` monthly convention and its mid-year death
+benefit; the selective-lapsation and rebroking constructions; the waiver incidence,
+recovery and premium loading; the flat 3% RPI scenario; and death-before-lapse as the
+processing order.
 
 ## Tests
 

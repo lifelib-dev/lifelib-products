@@ -815,7 +815,7 @@ def pols_maturity(t):
     there is no maturity benefit on a 순수보장성 contract, so there is no
     ``claims(t, "MATURITY")`` limb — but the count is needed for the in-force
     roll-forward to close in the final month.  What ends here is the *stated horizon* of
-    :func:`proj_len`, which is the fourth 재가입 or the maximum cover age, whichever
+    :func:`proj_len`, which is the second 재가입 or the maximum cover age, whichever
     comes first; the contract itself continues into the then-current generation.
     """
     if t != proj_len() - 1:

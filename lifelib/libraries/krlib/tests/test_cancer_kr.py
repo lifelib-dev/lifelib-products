@@ -40,10 +40,9 @@ through the 납입기간; a payment on death with no death benefit, and an accou
 binds; ``risk_prem_pp`` excluding the two lines paid out of the account; nothing paid at
 expiry; ten ``claims_*`` splits and no ``claims`` column; rounded lines that do not re-add
 and a commission carrying its own floating-point residue; ``proj_len()`` as the row count
-rather than the last index;
-log-linear incidence against linear tier shares; [std] incidence rows above age 80 that the
-projection reaches; 부활 re-running the 90 days; and the indemnity machinery of
-``Medical_KR_S`` that this chassis must not borrow.
+rather than the last index; log-linear incidence against linear tier shares; [std]
+incidence rows above age 80 that the projection reaches; 부활 re-running the 90 days; and
+the indemnity machinery of ``Medical_KR_S`` that this chassis must not borrow.
 
 The ten ``check_*`` cells are asserted **by name**, because a generic sweep cannot notice a
 check that has quietly disappeared, and the [std] scalar assumptions are read off the model

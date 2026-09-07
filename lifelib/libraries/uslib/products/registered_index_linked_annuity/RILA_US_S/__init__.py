@@ -73,9 +73,11 @@ month 11, which ends on the anniversary, included — are charged at ``q_x`` and
 issue expense level. The instant reading ``duration_eom(t) = (t + 1) // 12`` is right for
 what settles *at* the month end — the withdrawal charge a transaction bears, the
 free-withdrawal base snapshotted at an anniversary, and the surrender behaviour keyed to
-that charge. The two differ only in the month that closes on an anniversary; this is the
-same split :mod:`.MYGA_US_S` makes from the other side of a beginning-of-month
-transaction convention. The contractual interim
+that charge. The two differ only in the month that closes on an anniversary.
+:mod:`.MYGA_US_S` needs only one reading, because its beginning-of-month transaction
+convention makes the two coincide: there the anniversary month belongs to the year that is
+opening, here the anniversary closes the month that has just run, and the two products'
+``policy_year`` readings differ in exactly that one month a year. The contractual interim
 value is a *daily* quantity [S2][S4][S6]; the model evaluates it at each month end
 **[std]**, which resolves every contractual boundary because terms are whole years, the
 withdrawal-charge schedule runs by complete contract years and the free-withdrawal limit
@@ -204,7 +206,7 @@ and a $77,840 cash surrender value — end to end rather than by re-deriving it.
 asserts every point projects to completion.
 
 **Verification.** ``tests/test_registered_index_linked_annuity_us.py`` asserts every row
-and every column of the notes' worked example table — all six rows and all thirteen
+and every column of the notes' worked example table — all six rows and all fourteen
 columns, money to the cent — together with the trace beneath it: the option budget
 ``beta = 10.0632%``, the fixed leg opening at $89,936.81, its 1.7834% equivalent accretion
 yield and the 2.22% implied spread, the $2,687.62 cost of the 100 bp rate rise, the

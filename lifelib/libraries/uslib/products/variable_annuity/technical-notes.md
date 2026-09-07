@@ -58,11 +58,13 @@ deterministic run.
   reconciling to an admin system requires knowing which was used.
 - **Time index: `t` is 0-based.** `t` is the policy month index and `t = 0` is the **first**
   policy month, so `t` counts the policy months already **elapsed** at the beginning of
-  month `t`. Month `t` runs from time `t` to time `t + 1`. The frame is
-  `t = 0, 1, …, proj_len − 1`. The contract year is the 1-based label `y = t//12 + 1` and the
+  month `t`. Month `t` runs from time `t` to time `t + 1`. For a contract projected from
+  issue the frame is `t = 0, 1, …, proj_len − 1`; a cell entered in force opens at its
+  elapsed policy month instead. The contract year is the 1-based label `y = t//12 + 1` and the
   contract quarter the 1-based label `k = t//3 + 1`, so contract year 1 is months
   `t = 0 … 11`. The single premium is a beginning-of-month flow of `t = 0`; there is no
-  separate issue-instant row, and the state entering the projection is read at `t = −1`.
+  separate issue-instant row, and the state entering the projection is the opening balance
+  of the first projected month — `S_init` at `t = 0` and `S(t − 1)` after it.
 - **Event calendar.** Contract Quarterly Anniversaries fall at the end of the months with
   `t + 1 ≡ 0 (mod 3)` — that is `t = 2, 5, 8, …` — and Contract Anniversaries at the end of
   those with `t + 1 ≡ 0 (mod 12)`, that is `t = 11, 23, 35, …` **[std]**. Rider
@@ -217,7 +219,7 @@ for a **non-qualified FIA**, not a VA, and must be applied with care [R5].
 
 | Symbol | Meaning |
 |---|---|
-| `t` | policy month index, **0-based**: t = 0, 1, …, proj_len − 1; `y = t//12 + 1` contract year (1-based label); `k = t//3 + 1` contract quarter (1-based label) |
+| `t` | policy month index, **0-based**: t = 0, 1, 2, … (a contract projected from issue runs t = 0 … proj_len − 1; one entered in force opens at its elapsed policy month); `y = t//12 + 1` contract year (1-based label); `k = t//3 + 1` contract quarter (1-based label) |
 | `x` | issue age (ANB) = 60 **[std]**; attained age `a(t) = x + y − 1` |
 | `i` | subaccount index, i ∈ {1, 2} (1 = equity, 2 = fixed income) |
 | `U_i(t)`, `V_i(t)` | units and unit value; `SA_i(t) = U_i(t)·V_i(t)`; `AV(t) = Σ_i SA_i(t)` |

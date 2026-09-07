@@ -88,9 +88,9 @@ point must therefore force `exit_form = annuity` and use a reduced early-release
 
 | Variable | Description | Updated |
 |---|---|---|
-| `av_euro_pp(t, timing)` | Per-policy euro-support balance, `timing` ∈ {BEF_REBAL, BOY, EOY} | carried in at BEF_REBAL, BOY rebalance, EOY crediting and charge |
-| `av_uc_pp(t, timing)` | Per-policy UC balance | same |
-| `av_pp(t, timing)` | `av_euro_pp + av_uc_pp` | derived |
+| `av_euro_pp_at(t, timing)` | Per-policy euro-support balance, `timing` ∈ {BEF_REBAL, BOY, EOY} | carried in at BEF_REBAL, BOY rebalance, EOY crediting and charge |
+| `av_uc_pp_at(t, timing)` | Per-policy UC balance | same |
+| `av_pp_at(t, timing)` | `av_euro_pp_at + av_uc_pp_at` | derived |
 | `death_floor_pp(t)` | *Garantie plancher* base: *versements* net of loading, less all charges taken, less benefits paid — the [S1] drafting, **not** the [S3] one, which adds euro-fund interest | annual |
 | `alloc_euro(t)` | Target euro (low-risk) share for plan year `t`, from the grid [R6] | BOY, from `years_to_horizon` |
 | `switch_pp(t)` | Gross amount switched between supports at the BOY rebalancing | BOY |
@@ -221,9 +221,9 @@ payment formula to half the exits.
 | `load`, `c_eu`, `c_uc`, `arb_rate`, `c_arr` | 2,50 %, 0,70 %, 0,70 %, 0,30 %, 1,50 % |
 | `r_eu`, `r_uc` | euro and UC gross returns, 3,38 % and 5,00 % |
 | `E_eu(t)`, `E_uc(t)` | per-policy support balances after the BOY steps |
-| `E_eu⁻(t)`, `E_uc⁻(t)` | the two support balances **carried into** year `t`: `av_euro_init` / `av_uc_init` at `t = 0`, last year's EOY balances afterwards; `av_euro_pp(t, BEF_REBAL)` and `av_uc_pp(t, BEF_REBAL)` |
-| `A(t)` | per-policy total account value at EOY `t`, `= av_pp(t, EOY)` |
-| `A⁻(t)` | per-policy total carried into year `t`: the opening state at `t = 0`, `A(t−1)` afterwards; `av_pp(t, BEF_REBAL)` |
+| `E_eu⁻(t)`, `E_uc⁻(t)` | the two support balances **carried into** year `t`: `av_euro_init` / `av_uc_init` at `t = 0`, last year's EOY balances afterwards; `av_euro_pp_at(t, "BEF_REBAL")` and `av_uc_pp_at(t, "BEF_REBAL")` |
+| `A(t)` | per-policy total account value at EOY `t`, `= av_pp_at(t, "EOY") = av_pp(t)` |
+| `A⁻(t)` | per-policy total carried into year `t`: the opening state at `t = 0`, `A(t−1)` afterwards; `av_pp_at(t, "BEF_REBAL")` |
 | `m(t)` | gross amount switched at the BOY rebalance |
 | `g(t)` | *garantie plancher* base, `death_floor_pp(t)` |
 | `g⁻(t)` | the base carried into year `t`: `death_floor_init` at `t = 0`, `g(t−1)` afterwards |
@@ -274,9 +274,9 @@ formula is symmetric.
 ### Crediting and charges
 
 ```
-av_euro_pp(t, EOY) = E_eu(t) · (1 + r_eu) · (1 − c_eu)
-av_uc_pp(t, EOY)   = E_uc(t) · (1 + r_uc) · (1 − c_uc)
-A(t)               = av_euro_pp(t, EOY) + av_uc_pp(t, EOY)
+av_euro_pp_at(t, "EOY") = E_eu(t) · (1 + r_eu) · (1 − c_eu)
+av_uc_pp_at(t, "EOY")   = E_uc(t) · (1 + r_uc) · (1 − c_uc)
+A(t)                    = av_euro_pp_at(t, "EOY") + av_uc_pp_at(t, "EOY")
 ```
 
 The euro support rises in the base run, but it is **not monotone by construction**, and
@@ -456,9 +456,10 @@ a test.
    euro share **below** the regulatory minimum. The assertion has to be stated by
    direction, because the source-charging convention above and a share at or above the
    line cannot both hold on a reverse switch. Assert
-   `av_euro_pp(t, BOY) ≥ a(t) · av_pp(t, BOY)` where `m(t) ≥ 0` — the ordinary de-risking
-   switch, where the UC bucket is the source and the euro destination receives the switch
-   in full — and `av_euro_pp(t, BOY) ≥ a(t) · av_pp(t, BOY) − (1 − a(t)) · arb(t)` where
+   `av_euro_pp_at(t, "BOY") ≥ a(t) · av_pp_at(t, "BOY")` where `m(t) ≥ 0` — the ordinary
+   de-risking switch, where the UC bucket is the source and the euro destination receives
+   the switch in full — and
+   `av_euro_pp_at(t, "BOY") ≥ a(t) · av_pp_at(t, "BOY") − (1 − a(t)) · arb(t)` where
    `m(t) < 0`, the euro support being the source and so bearing the charge out of the
    balance being measured. `check_euro_share_min()` tests exactly that pair, against
    `euro_share_min_bound(t)`. **An unconditional `≥ a(t)` is wrong** and one shipped model

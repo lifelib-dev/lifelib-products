@@ -52,15 +52,15 @@ MODEL_DIR = LIB / MODELS["IP_UK_S"][0]
 WORKED_EXAMPLE = {
     0: (1.000000, 0.041675, 0.002429, 0.955895, 1911.79, 0.997540, 1907.09),
     1: (0.955895, 0.039837, 0.002322, 0.913735, 1827.47, 0.995086, 1818.49),
-    2: (0.913735, 0.038080, 0.002220, 0.873434, 1746.87, 0.992638, 1734.01),
+    2: (0.913735, 0.038080, 0.002220, 0.873435, 1746.87, 0.992638, 1734.01),
 }
 WORKED_EXAMPLE_PV3 = 5459.59        # three-month PV of benefit outgo
 
-# The notes chain their *displayed* (rounded) survival factors down the table, so by the
-# third row the sixth decimal of the state column has drifted about 1.3e-6 from the
-# unrounded product s_S^3.  The money columns are unaffected -- every one of them still
-# agrees to the penny -- so the state tolerance is set just wide enough to absorb the
-# notes' own rounding rather than the goldens being restated.
+# The notes chain their *displayed* (rounded) survival factors down the table, so the
+# sixth decimal of the state column drifts a few times 1e-7 from the unrounded product
+# s_S^t.  The money columns are unaffected -- every one of them still agrees to the
+# penny -- so the state tolerance is set wide enough to absorb the notes' own rounding
+# rather than the goldens being restated.
 
 # The notes' derived monthly factors for duration year 1.
 RHO_M = 0.041675          # 1 - 0.60^(1/12)

@@ -18,12 +18,14 @@ its opening value and at ``t + 1`` for its closing one, and the policy year cont
 month ``t`` is ``t // 12 + 1``.
 
 The **state** cells are indexed by a **time point** ``k``, ``k = 0`` at the start date:
-:func:`lives_if`, :func:`lives_if_last`, :func:`cum_annuity_pp`, :func:`vp_balance`, and
-the anniversary-keyed :func:`rpi_index` and :func:`rpi_peak`. That index does not move
-with the frame — the annuitant who dies in month 16 is alive at time 16 and dead at time
-17 — and every recursion's base case sits at ``k = 0`` (``lives_if(0, life) = 1``,
-``cum_annuity_pp(0, kind) = 0``). Everything else — rates, factors, payment months, cash
-flows — is indexed by the month it belongs to.
+:func:`lives_if`, :func:`lives_if_last`, :func:`cum_annuity_pp` and :func:`vp_balance`.
+That index does not move with the frame — the annuitant who dies in month 16 is alive at
+time 16 and dead at time 17 — and every recursion's base case sits at ``k = 0``
+(``lives_if(0, life) = 1``, ``cum_annuity_pp(0, kind) = 0``). :func:`rpi_index` and
+:func:`rpi_peak` are indexed on a different scale again — an **anniversary count**, one
+step per policy year, 0 at outset, so ``rpi_index(1)`` is the reference level one *year*
+in — and it too is unmoved by the frame. Everything else — rates, factors, payment
+months, cash flows — is indexed by the month it belongs to.
 
 .. rubric:: Input data
 
@@ -62,6 +64,7 @@ Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 t                          (the cells argument)            Month from the start date, 0-based
 k                          (the cells argument)            Time point, k = 0 at the start date
+a                          (the cells argument)            Anniversary count, a = 0 at outset
 y = t//12 + 1              policy_year(t)                  Policy year containing month t
 (none)                     duration(t)                     Completed policy years, y - 1
 (none)                     duration_mth(t)                 Months elapsed at the start of month t
@@ -77,8 +80,8 @@ A(1)                       annual_income_init()            Starting annualized i
 A(y)                       annual_income(y)                Annualized income in year y
 g                          escalation_rate()               Fixed escalation rate
 escalation_type            escalation_type()               level / fixed / rpi_catchup / lpi5
-I(k)                       rpi_index(k)                    RPI reference level at anniv. k
-peak                       rpi_peak(k)                     Running peak of the index
+I(a)                       rpi_index(a)                    RPI reference level at anniversary a
+peak(a)                    rpi_peak(a)                     Running peak of I through anniversary a
 m                          payment_freq()                  Payments per year
 timing                     payment_timing()                arrears or advance
 T                          is_payment_mth(t)               Month t is a payment date
@@ -442,7 +445,8 @@ def mort_basis():
     """Whether the run is probability-weighted (*table*) or deterministic (*scenario*).
 
     *table* runs the generational recursion off the shipped table and improvement scale;
-    *scenario* **[std]** replaces it with the step function ``1{t < death_mth(life)}`` so
+    *scenario* **[std]** replaces it with the step function ``1{k <= death_mth(life)}``,
+    the life alive up to the start of its death month and dead from the end of it, so
     the notes' worked example - which is a scenario, not an expectation - reproduces
     exactly.  See the Space docstring.
     """
@@ -535,9 +539,9 @@ def is_payment_mth(t):
     """Whether an instalment falls in month t.
 
     Arrears: the instalment falls at the *end* of the month, so ``t = 2, 5, 8, ...`` at
-    m = 4.  Advance: the k-th instalment falls one full payment period earlier, at the
-    start of month ``12(k-1)/m``, so t = 0, 3, 6, ...  At m = 12 every month is a
-    payment month on either convention.
+    m = 4.  Advance: the j-th instalment (j = 1, 2, ...) falls one full payment period
+    earlier, at the start of month ``12(j-1)/m``, so t = 0, 3, 6, ...  At m = 12 every
+    month is a payment month on either convention.
     """
     if t < 0:
         return False
@@ -559,27 +563,30 @@ def payment_surv_mth(t):
     return t + 1 if payment_timing() == "arrears" else t
 
 
-def rpi_index(k):
-    """I(k): the RPI reference level at anniversary k **[std]**; I(0) = 1.
+def rpi_index(a):
+    """I(a): the RPI reference level at anniversary a **[std]**; I(0) = 1.
 
-    A deterministic ``(1 + rpi_rate)^k`` path.  A deterministic path cannot value the
-    zero floor, the catch-up ratchet or the LPI cap - all of them inflation options -
-    and values them at intrinsic only; a market-consistent value needs stochastic
-    inflation.
+    ``a`` is an **anniversary count** - one step per policy year, 0 at outset - not the
+    month-scale time point ``k`` the state cells take: ``rpi_index(1)`` is the level one
+    *year* in.  A deterministic ``(1 + rpi_rate)^a`` path.  A deterministic path cannot
+    value the zero floor, the catch-up ratchet or the LPI cap - all of them inflation
+    options - and values them at intrinsic only; a market-consistent value needs
+    stochastic inflation.
     """
-    return (1.0 + rpi_rate) ** k                                     # noqa: F821
+    return (1.0 + rpi_rate) ** a                                     # noqa: F821
 
 
-def rpi_peak(k):
-    """The running maximum of the RPI reference index through anniversary k.
+def rpi_peak(a):
+    """The running maximum of the RPI reference index through anniversary a.
 
-    The catch-up ratchet's state, and it is **path-dependent**: it must persist across
-    anniversaries.  Resetting it each year turns the catch-up into a plain zero floor
-    and overstates indexed income after a deflation-recovery path.
+    Indexed by the same **anniversary count** as :func:`rpi_index`.  The catch-up
+    ratchet's state, and it is **path-dependent**: it must persist across anniversaries.
+    Resetting it each year turns the catch-up into a plain zero floor and overstates
+    indexed income after a deflation-recovery path.
     """
-    if k <= 0:
+    if a <= 0:
         return rpi_index(0)
-    return max(rpi_peak(k - 1), rpi_index(k))
+    return max(rpi_peak(a - 1), rpi_index(a))
 
 
 def annual_income(y):
@@ -627,11 +634,12 @@ def next_payment_mth(t):
     """The next scheduled payment month at or after month t; -1 if there is none.
 
     Used by the proportion rule.  The sentinel is -1 rather than 0 because month 0 is a
-    projectable month on the 0-based frame.
+    projectable month on the 0-based frame.  The scan stops at the end of the frame:
+    ``proj_len()`` is the number of projected months, so the last month it can return is
+    ``proj_len() - 1``, and a month past the frame has no next payment to price.
     """
-    step = 12 // payment_freq()
     s = t
-    while s <= proj_len() + step:
+    while s < proj_len():
         if is_payment_mth(s):
             return s
         s += 1
@@ -833,8 +841,9 @@ def dependant_factor(t):
 def cum_annuity_pp(k, kind):
     """G(k): cumulative scheduled instalments per contract up to time k.
 
-    A **time-point** cells: ``G(0) = 0`` at the start date and month t's instalment
-    enters at ``G(t + 1)``, so ``G(k)`` is what has been paid when month k opens.
+    A **time-point** cells: ``G(0) = 0`` at the start date and ``G(k)`` sums the
+    instalments of months ``0 ... k - 1``, so month t's instalment enters at
+    ``G(t + 1)`` whether it falls at the month's start or at its end.
 
     ``"ANNUITANT"``
         the **deterministic as-if-alive** annuitant schedule.  This is what

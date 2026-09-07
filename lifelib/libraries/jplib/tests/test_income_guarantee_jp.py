@@ -395,8 +395,9 @@ def test_pitfall_the_guarantee_is_a_term_extension_not_a_benefit_floor(
         jp_income_anchor):
     """Both readings pay max(N - m, G) instalments; only the timing distinguishes them.
 
-    ``m`` is the 0-based claim month, so the notes' 1-based ``max(N - m + 1, G)`` reads
-    ``max(N - m, G)`` here.  A floor implementation compresses the guaranteed instalments
+    ``m`` is the 0-based claim month, so a source's 1-based policy month ``k`` maps as
+    ``m = k - 1`` and its ``max(N - k + 1, G)`` reads ``max(N - m, G)`` here.
+    A floor implementation compresses the guaranteed instalments
     inside the term and produces zero cash flow after ``t = N - 1``.  So the total cannot
     be the test — months ``t = 420 ... 442`` have to be checked individually, and every
     one of them must carry an instalment and its administration expense and nothing else.
@@ -501,7 +502,7 @@ def test_pitfall_pols_if_and_annuities_if_are_disjoint(income_guarantee):
     assert a.pols_if(420) == 0.0 and a.annuities_if(420) > 0.0
 
 
-def test_pitfall_the_ledger_peaks_at_exactly_month_n(jp_income_anchor):
+def test_pitfall_the_ledger_peaks_in_the_last_month_of_cover(jp_income_anchor):
     """R(N - 1) equals the sum of every claim the contract has ever made.
 
     Every stream opened in months 0 ... N - G ends at t = N - 1, the last month of

@@ -459,8 +459,9 @@ the maximum normal reduction [S1] [S7]).
 | 8 | Smoothing/guarantee cost on exit (payout − AS): guarantee-date / surrender | 0.00 / 0.00 | 2,704.05 / 1,376.01 |
 
 The Step column is the processing-order step, not the time index: every row of the
-table is period `t = 5`, and the numbers are the row `result_cf()` and
-`result_payout()` publish at `t = 5`.
+table is period `t = 5`. The closing quantities are the row `result_payout()` publishes
+at `t = 5`; the intermediate steps are `asset_share_at(5, …)` and the per-claim exit
+costs are `smoothing_cost_pp(5, kind)`.
 
 Checks: scenario B surrender pays exactly the smoothed target (−10.0% y/y, the [S1]
 cap); the MVR (1,328.04) is below the COBS bound `FV − AS = 2,704.05` [R1]; the

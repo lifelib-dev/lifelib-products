@@ -123,7 +123,7 @@ ANNUITY_FACTOR = 19.502675087912
 FACTOR_GUARANTEED = 8.752063930971     # SUM t=0..9 v^(t+1), the annuity-certain half
 FACTOR_TAIL = 10.750611156941          # SUM t=10..50 v^(t+1) l(t+1), the life half
 ANNUITY_PP = 4948039.1569365682
-PROJ_LEN = 50
+PROJ_LEN = 51                          # the row count; the last row index is 50
 EXPENSE_CHARGE = 39584.3132554925      # 0.80% of the 연금연액, at a weight of one
 EXPENSES_0 = 1539584.3132554926
 NET_CF_0 = 91512376.5298079401
@@ -239,7 +239,7 @@ RETENTION_PATH = [                            # R(t), t = 0 … 9, on point 6
     443616.05, 454706.45, 466074.12, 477725.97, 489669.12,
     501910.85, 514458.62, 527320.08, 540503.08, 554015.66,
 ]
-MATURITY_EARLIER_WEIGHT = 80023013.57         # pitfall 18: IF(N) M instead of IF(N+1) M
+MATURITY_EARLIER_WEIGHT = 80023013.57         # pitfall 18: IF(N−1) M instead of IF(N) M
 
 # ---------------------------------------------------------------------------
 # The floor-stepping panel — model point 8, 여자 70, 상속연금형 20년, min_guar
@@ -324,9 +324,10 @@ MIN_GUAR_SCHEDULE = {0: 0.0125, 4: 0.0125, 5: 0.0100, 9: 0.0100, 10: 0.0075, 30:
 DECL_RATE = 0.0250
 OMEGA_AGE = 110
 
-# "The ten shipped model points": point_id -> proj_len(), the notes' own column.
-SHIPPED_HORIZONS = {1: 50, 2: 50, 3: 50, 4: 65, 5: 30,
-                    6: 9, 7: 9, 8: 19, 9: 9, 10: 29}
+# "The ten shipped model points": point_id -> proj_len(), the notes' own column, as a
+# period count; the last row index of each is one less.
+SHIPPED_HORIZONS = {1: 51, 2: 51, 3: 51, 4: 66, 5: 31,
+                    6: 10, 7: 10, 8: 20, 9: 10, 10: 30}
 
 # The two published 개인연금사망률 the construction reproduces exactly, per sex.
 SOURCED_MORT_ANCHORS = {("M", 60): 0.00353, ("M", 70): 0.00728,
@@ -360,7 +361,7 @@ def test_worked_example_annuity_factor_decomposition(kr_immediate_anchor):
     i = a.crediting_rate(0)
     v = 1.0 / (1.0 + i)
     guaranteed = sum(v ** (t + 1) * a.pricing_factor(t) for t in range(0, 10))
-    tail = sum(v ** (t + 1) * a.pricing_factor(t) for t in range(10, a.proj_len() + 1))
+    tail = sum(v ** (t + 1) * a.pricing_factor(t) for t in range(10, a.proj_len()))
     assert guaranteed == pytest.approx(FACTOR_GUARANTEED, abs=FACTOR)
     assert guaranteed == pytest.approx(a.annuity_factor_certain(10, i), abs=FACTOR)
     assert tail == pytest.approx(FACTOR_TAIL, abs=FACTOR)
@@ -369,7 +370,7 @@ def test_worked_example_annuity_factor_decomposition(kr_immediate_anchor):
     assert tail / a.annuity_factor() == pytest.approx(0.551, abs=5e-4)
     # Only the tail reads the mortality table: inside the guarantee the weight is one.
     assert all(a.pricing_factor(t) == 1.0 for t in range(0, 10))
-    assert all(a.pricing_factor(t) < 1.0 for t in range(10, a.proj_len() + 1))
+    assert all(a.pricing_factor(t) < 1.0 for t in range(10, a.proj_len()))
 
 
 def test_worked_example_the_three_readings_of_the_factor(kr_immediate_anchor):
@@ -397,12 +398,12 @@ def test_worked_example_the_three_readings_of_the_factor(kr_immediate_anchor):
         0.0350 / (1.0 - 0.0350), rel=1e-12)
     v = 1.0 / (1.0 + a.crediting_rate(0))
     no_guarantee = sum(v ** (t + 1) * a.lives_if(t + 1)
-                       for t in range(0, a.proj_len() + 1))
+                       for t in range(0, a.proj_len()))
     assert no_guarantee == pytest.approx(FACTOR_NO_GUARANTEE, abs=5e-7)
     assert a.av_pp_init() / no_guarantee == pytest.approx(ANNUITY_NO_GUARANTEE, abs=WON)
     assert 1.0 - a.annuity_pp(0) / (a.av_pp_init() / no_guarantee) == pytest.approx(
         GUARANTEE_COST, abs=5e-6)
-    complete = sum(a.lives_if(t) for t in range(1, a.proj_len() + 2)) + 0.5
+    complete = sum(a.lives_if(t) for t in range(1, a.proj_len() + 1)) + 0.5
     assert complete == pytest.approx(E60_COMPLETE, abs=5e-5)
     assert a.annuity_term() < complete
 
@@ -449,9 +450,9 @@ def test_worked_example_assumption_table(kr_immediate_anchor):
     assert a.decl_rate() == DECL_RATE
     assert [a.min_guar_rate(t) for t in (0, 4, 5, 9, 10, 50)] == [
         0.0125, 0.0125, 0.0100, 0.0100, 0.0075, 0.0075]
-    assert all(a.crediting_rate(t) == DECL_RATE for t in range(0, a.proj_len() + 1))
+    assert all(a.crediting_rate(t) == DECL_RATE for t in range(0, a.proj_len()))
     assert a.mort_rate(0) == 0.00353 and a.mort_rate(10) == 0.00728
-    assert all(a.lapse_rate(t) == 0.0 for t in range(0, a.proj_len() + 1))
+    assert all(a.lapse_rate(t) == 0.0 for t in range(0, a.proj_len()))
     assert a.shape() == "life" and a.sex() == "M" and a.age_at_entry() == 60
     assert a.prem_pp() == 100000000.0 and a.annuity_term() == 10
     assert a.crediting_basis() == "decl_2017" and a.pols_if_init() == 1.0
@@ -526,9 +527,9 @@ def test_the_three_claims_columns_are_zero_at_every_t(kr_immediate_anchor):
     for column in ("claims_death", "claims_lapse", "claims_maturity"):
         assert column in df.columns
         assert (df[column] == 0.0).all(), column
-    assert all(a.claims(t, "DEATH") == 0.0 for t in range(0, a.proj_len() + 1))
-    assert all(a.claims(t, "LAPSE") == 0.0 for t in range(0, a.proj_len() + 1))
-    assert all(a.claims(t, "MATURITY") == 0.0 for t in range(0, a.proj_len() + 1))
+    assert all(a.claims(t, "DEATH") == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.claims(t, "LAPSE") == 0.0 for t in range(0, a.proj_len()))
+    assert all(a.claims(t, "MATURITY") == 0.0 for t in range(0, a.proj_len()))
 
 
 # ---------------------------------------------------------------------------
@@ -540,8 +541,9 @@ def test_worked_example_period_zero_trace(kr_immediate_anchor):
 
     The six quantities struck at inception open it — V(0), ä, A(0), B, M and N — and
     everything else on the anchor cell is a function of them and of the mortality table, so
-    an error in any one of them moves every row of the statement; ``N`` is ω − x = 110 − 60
-    and is a **last row index**, which is the pitfall the notes list fourth.
+    an error in any one of them moves every row of the statement; ``N`` is ω − x + 1 =
+    110 − 60 + 1 = 51 and is a **period count, not a last row index**, which is the pitfall
+    the notes list fourth.
 
     V(0) = P(1 − c − b); ä decomposed; A(0) = V(0)/ä; F(0) = max(l(1), 1{1 ≤ 10}) = 1;
     ANN(0) = A(0); COM(0) = 0.0200 P; EXP(0) = 0.0150 P + 0.0080 A(0); and net_cf(0) =
@@ -562,8 +564,8 @@ def test_worked_example_period_zero_trace(kr_immediate_anchor):
         a.av_pp_init() / a.annuity_factor(), rel=1e-15)
     assert a.risk_prem_pp() == 0.0 and a.maturity_benefit() == 0.0
     assert a.retention_shortfall_pp() == 0.0
-    assert a.proj_len() == PROJ_LEN == OMEGA_AGE - a.age_at_entry()
-    assert len(a.result_cf()) == PROJ_LEN + 1 == 51
+    assert a.proj_len() == PROJ_LEN == OMEGA_AGE - a.age_at_entry() + 1
+    assert len(a.result_cf()) == PROJ_LEN == 51
     assert a.payment_factor(0) == pytest.approx(1.0, abs=EXACT)
     assert a.payment_factor(0) == max(a.lives_if(1), 1.0)
     assert a.lives_if(1) == pytest.approx(0.996470000000, abs=EXACT)
@@ -700,7 +702,7 @@ def test_worked_example_the_obligation_years_decompose(kr_immediate_anchor):
     income it costs.
     """
     a = kr_immediate_anchor
-    ts = range(0, a.proj_len() + 1)
+    ts = range(0, a.proj_len())
     obligation = sum(a.pols_if(t) for t in ts)
     survival = sum(a.lives_if(t) for t in ts)
     inside = sum(a.lives_if(t) for t in range(0, a.annuity_term()))
@@ -760,10 +762,10 @@ def test_worked_example_reading_the_shape_of_the_result(kr_immediate_anchor):
     """
     a = kr_immediate_anchor
     assert a.net_cf(0) > 0.0
-    assert all(a.net_cf(t) < 0.0 for t in range(1, a.proj_len()))
+    assert all(a.net_cf(t) < 0.0 for t in range(1, a.proj_len() - 1))
     assert a.net_cf(50) == 0.0
     assert len({round(a.net_cf(t), 6) for t in range(1, 10)}) == 1
-    tail = [a.payment_factor(t) for t in range(10, a.proj_len() + 1)]
+    tail = [a.payment_factor(t) for t in range(10, a.proj_len())]
     assert tail == sorted(tail, reverse=True) and tail[-1] == 0.0
     assert tail[0] == pytest.approx(PAYMENT_FACTOR_10, abs=PROB)
     guaranteed = sum(a.annuity_payments(t) for t in range(0, 10))
@@ -814,7 +816,7 @@ def test_the_dispute_panel_period_zero_trace_as_ordered(immediate_annuity):
     """
     p = immediate_annuity.Projection[7]
     assert p.retention_pp(0) == 0.0
-    assert all(p.retention_pp(t) == 0.0 for t in range(0, p.proj_len() + 1))
+    assert all(p.retention_pp(t) == 0.0 for t in range(0, p.proj_len()))
     assert p.annuity_pp(0) == pytest.approx(ORDERED["annuity_pp"], abs=SUB_WON)
     assert p.annuity_pp(0) == pytest.approx(p.av_pp(0) * 0.025, rel=1e-15)
     assert p.av_pp(1) == pytest.approx(ORDERED["av_pp_1"], abs=SUB_WON)
@@ -865,7 +867,7 @@ def test_the_dispute_costs_the_insurer_the_whole_first_day_deduction(immediate_a
     assert designed.retention_basis() == "as_designed"
     assert ordered.retention_basis() == "as_ordered"
     for p in (designed, ordered):
-        assert p.shape() == "inheritance" and p.proj_len() == 9
+        assert p.shape() == "inheritance" and p.proj_len() == 10
         assert p.av_pp_init() == pytest.approx(AV_PP_INIT_LOADED, abs=SUB_WON)
         assert p.av_pp_init() == pytest.approx(
             p.prem_pp() * (1.0 - 0.0350 - 0.0147), rel=1e-15)
@@ -1010,7 +1012,7 @@ def test_the_certain_shape_load_cross_check(immediate_annuity):
         -0.0060, abs=5e-5)
     assert p.decl_rate() == DECL_RATE < 0.0252
     # No mortality in the annuity: the factor is pure interest on this shape.
-    assert all(p.pricing_factor(t) == 1.0 for t in range(0, p.proj_len() + 1))
+    assert all(p.pricing_factor(t) == 1.0 for t in range(0, p.proj_len()))
     with pytest.raises(FormulaError):
         p.annuity_factor()
     # The notes' point-9 totals, and the fund that runs off to zero on its own.
@@ -1063,7 +1065,7 @@ def test_which_checks_this_model_publishes(immediate_annuity, kr_immediate_ancho
     for name in sorted(CHECKS_WITH_RESID - {"check_annuity_basis"}):
         residual = getattr(a, name + "_resid")
         tol = 1e-12 * a.prem_pp() if name in money else 1e-10
-        for t in range(0, a.proj_len() + 1):
+        for t in range(0, a.proj_len()):
             assert residual(t) == pytest.approx(0.0, abs=tol), f"{name}_resid({t})"
 
 
@@ -1086,7 +1088,7 @@ def test_the_check_tolerances_are_named_references(immediate_annuity,
     assert refs["val_tol"] * table["prem_pp"].max() < 1.0
     # The tolerance is not slack the checks hide behind.
     a = kr_immediate_anchor
-    worst = max(abs(a.check_net_cf_resid(t)) for t in range(0, a.proj_len() + 1))
+    worst = max(abs(a.check_net_cf_resid(t)) for t in range(0, a.proj_len()))
     assert worst < refs["val_tol"] * a.prem_pp() / 100.0
 
 
@@ -1105,16 +1107,16 @@ def test_the_obligation_rolls_forward_on_its_own_decrements(immediate_annuity,
     """
     a = kr_immediate_anchor
     assert a.check_pols_roll_fwd() is True
-    for t in range(0, a.proj_len() + 1):
+    for t in range(0, a.proj_len()):
         assert a.pols_if(t) - a.pols_exit(t) - a.pols_if(t + 1) == pytest.approx(
             0.0, abs=1e-12)
-    assert sum(a.pols_exit(t) for t in range(0, a.proj_len() + 1)) == pytest.approx(
+    assert sum(a.pols_exit(t) for t in range(0, a.proj_len())) == pytest.approx(
         1.0, abs=1e-9)
     for point_id, expected in ((6, "inheritance"), (9, "certain")):
         p = immediate_annuity.Projection[point_id]
         assert p.shape() == expected
         assert p.check_pols_roll_fwd() is True
-        for t in range(0, p.proj_len() + 1):
+        for t in range(0, p.proj_len()):
             built = (p.pols_lapse(t) if p.shape() == "certain"
                      else p.pols_death(t) + p.pols_lapse(t))
             assert p.pols_exit(t) == pytest.approx(built, rel=1e-14), (point_id, t)
@@ -1131,7 +1133,7 @@ def test_the_fund_recursion_closes_against_a_closed_form_on_every_shape(
     """
     a = kr_immediate_anchor
     assert a.check_av_roll_fwd() is True
-    for t in range(0, a.proj_len() + 1):
+    for t in range(0, a.proj_len()):
         assert a.av_pp(t + 1) == pytest.approx(
             a.av_pp(t) * (1.0 + a.crediting_rate(t)) - a.annuity_pp(t), rel=1e-12)
     i0 = a.crediting_rate(0)
@@ -1157,7 +1159,7 @@ def test_the_pricing_identity_ties_the_projection_to_the_fund(immediate_annuity,
     a = kr_immediate_anchor
     assert a.check_annuity_basis() is True
     built = sum(a.annuity_pp(t) * a.pricing_factor(t) * a.disc_factor(t + 1)
-                for t in range(0, a.proj_len() + 1))
+                for t in range(0, a.proj_len()))
     assert built == pytest.approx(a.av_pp_init(), abs=1e-6)
     for point_id in (6, 8, 9):
         p = immediate_annuity.Projection[point_id]
@@ -1185,7 +1187,7 @@ def test_the_premium_split_closes_and_there_is_no_acquisition_strain(immediate_a
         assert built == pytest.approx(p.prem_pp(), abs=1e-6), point_id
         assert p.comm_rate() < p.acq_charge_rate()      # the charge covers the commission
         assert p.net_cf(0) > 0.0
-        assert all(p.net_cf(t) < 0.0 for t in range(1, p.proj_len()))
+        assert all(p.net_cf(t) < 0.0 for t in range(1, p.proj_len() - 1))
 
 
 def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuity):
@@ -1203,21 +1205,21 @@ def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuit
     **Surrenders after the deaths** — the inheritance branch carries a (1 − q) the certain
     branch does not, so the weight is 0.0199294 rather than 0.02; on the certain shape the
     contract survives the annuitant and the decrement bites on persistency alone.
-    **The 만기보험금 last, at IF(N + 1)** — one further period of decrement away from the row
+    **The 만기보험금 last, at IF(N)** — one further period of decrement away from the row
     that carries it, and nil at every earlier t and on both other shapes.
     """
     inheritance = immediate_annuity.Projection[6]
     certain = immediate_annuity.Projection[9]
 
-    for t in range(0, certain.proj_len() + 1):
+    for t in range(0, certain.proj_len()):
         i, m = certain.crediting_rate(t), certain.annuity_term() - t
         assert certain.annuity_pp(t) == pytest.approx(
             certain.av_pp(t) / certain.annuity_factor_certain(m, i), rel=1e-14)
         credited = certain.av_pp(t) * (1.0 + i) / certain.annuity_factor_certain(m, i)
         assert credited / certain.annuity_pp(t) == pytest.approx(1.025, rel=1e-12)
-    assert certain.av_pp(certain.proj_len() + 1) == pytest.approx(0.0, abs=1e-6)
+    assert certain.av_pp(certain.proj_len()) == pytest.approx(0.0, abs=1e-6)
 
-    for t in range(0, inheritance.proj_len() + 1):
+    for t in range(0, inheritance.proj_len()):
         rho_p = inheritance.db_rate() * inheritance.prem_pp()
         assert inheritance.claims(t, "DEATH") == pytest.approx(
             inheritance.pols_death(t) * (rho_p + inheritance.av_pp(t + 1)), rel=1e-14)
@@ -1236,7 +1238,7 @@ def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuit
     assert inheritance.pols_lapse(0) == pytest.approx(0.0199294, abs=EXACT)
     assert certain.pols_lapse(0) == pytest.approx(0.02, rel=1e-14)
 
-    n = inheritance.proj_len()
+    n = inheritance.proj_len() - 1             # the last projected period
     assert inheritance.claims(n, "MATURITY") == pytest.approx(
         inheritance.pols_if(n + 1) * inheritance.maturity_benefit(), rel=1e-14)
     assert all(inheritance.claims(t, "MATURITY") == 0.0 for t in range(0, n))
@@ -1244,7 +1246,7 @@ def test_the_notes_processing_order_is_the_order_the_model_runs(immediate_annuit
     for point_id in (1, 9):
         q = immediate_annuity.Projection[point_id]
         assert q.maturity_benefit() == 0.0
-        assert all(q.claims(t, "MATURITY") == 0.0 for t in range(0, q.proj_len() + 1))
+        assert all(q.claims(t, "MATURITY") == 0.0 for t in range(0, q.proj_len()))
 
 
 def test_the_published_statement_adds_up(immediate_annuity, kr_immediate_anchor):
@@ -1285,7 +1287,7 @@ def test_the_two_result_frames_and_the_sign_they_publish(immediate_annuity,
         "claims_maturity", "commissions", "expenses", "liability_cf", "net_cf",
     ]
     assert df.index.name == "t"
-    assert list(df.index) == list(range(0, PROJ_LEN + 1))
+    assert list(df.index) == list(range(PROJ_LEN))
     assert df.notna().all().all()
     assert df.loc[0, "net_cf"] == pytest.approx(NET_CF_0, abs=WON) and df.loc[
         0, "net_cf"] > 0.0                      # the single premium is income
@@ -1296,7 +1298,7 @@ def test_the_two_result_frames_and_the_sign_they_publish(immediate_annuity,
         "pols_if", "lives_if", "surr_if", "pols_death", "pols_lapse", "payment_factor",
         "crediting_rate", "av_pp", "cv_pp", "annuity_pp", "retention_pp",
     ]
-    assert pols.index.name == "t" and len(pols) == PROJ_LEN + 1
+    assert pols.index.name == "t" and len(pols) == PROJ_LEN
     assert pols.loc[0, "av_pp"] == pytest.approx(AV_PP_INIT, abs=SUB_WON)
     assert (pols["retention_pp"] == 0.0).all()  # no maturity benefit on this shape
     assert not any(c.startswith("premium") or c.endswith("_cf") for c in pols.columns)
@@ -1313,12 +1315,12 @@ def test_the_surrender_deduction_is_nil_and_the_statutory_cap_binds_nothing(
     dropped from the formula.
     """
     a = kr_immediate_anchor
-    assert all(a.surr_chg_pp(t) == 0.0 for t in range(0, a.proj_len() + 1))
+    assert all(a.surr_chg_pp(t) == 0.0 for t in range(0, a.proj_len()))
     assert a.check_surr_value() is True
     for point_id in (6, 9):
         p = immediate_annuity.Projection[point_id]
         assert p.check_surr_value() is True
-        for t in range(0, p.proj_len() + 2):
+        for t in range(0, p.proj_len() + 1):
             assert p.surr_chg_pp(t) == 0.0
             assert p.cv_pp(t) == pytest.approx(max(p.av_pp(t), 0.0), abs=1e-6)
         assert p.claims(0, "LAPSE") == pytest.approx(
@@ -1366,7 +1368,7 @@ def test_pitfall_pols_if_is_not_a_survival_probability(kr_immediate_anchor):
     assert a.lives_if(9) == pytest.approx(0.959798841, abs=PROB)
     assert a.pols_if(9) != a.lives_if(9)
     assert a.pols_if(9) > a.lives_if(9)
-    for t in range(0, a.proj_len() + 1):
+    for t in range(0, a.proj_len()):
         assert a.pols_if(t) >= a.lives_if(t)
     doc = a.cells["pols_if"].doc.replace("*", "")
     assert "payment obligation remains" in doc
@@ -1385,14 +1387,14 @@ def test_pitfall_the_guarantee_is_a_max_and_not_a_sum(kr_immediate_anchor):
     v = 1.0 / (1.0 + a.crediting_rate(0))
     additive = sum(
         v ** (t + 1) * (a.lives_if(t + 1) + (1.0 if t + 1 <= a.annuity_term() else 0.0))
-        for t in range(0, a.proj_len() + 1))
+        for t in range(0, a.proj_len()))
     assert additive == pytest.approx(ADDITIVE_FACTOR, abs=5e-7)
     assert a.av_pp_init() / additive == pytest.approx(ADDITIVE_ANNUITY, abs=WON)
     assert (a.av_pp_init() / additive) / a.annuity_pp(0) == pytest.approx(
         ADDITIVE_SHARE, abs=5e-5)
     assert additive > a.annuity_factor()
     # The model takes the max, and the checks that would fail on the sum both pass.
-    for t in range(0, a.proj_len() + 1):
+    for t in range(0, a.proj_len()):
         guaranteed = 1.0 if t + 1 <= a.annuity_term() else 0.0
         assert a.payment_factor(t) == max(a.lives_if(t + 1), guaranteed)
     assert a.check_guarantee_certain() is True
@@ -1422,31 +1424,34 @@ def test_pitfall_nothing_exits_inside_the_guarantee(kr_immediate_anchor):
     assert a.check_guarantee_certain() is True
 
 
-def test_pitfall_proj_len_is_a_last_index_not_a_row_count(immediate_annuity):
-    """Pitfall 4: ``proj_len()`` read as a row count.
+def test_pitfall_proj_len_is_a_row_count_not_a_last_index(immediate_annuity):
+    """Pitfall 4: ``proj_len()`` read as the last row index.
 
-    It is the **last row index**.  The anchor has 51 rows, 0 … 50, and ω − x = 110 − 60 = 50.
-    An off-by-one drops the last instalment on the term shapes — on point 9 that is
-    ₩9,052,841.76 of outgo, 9.1% of the annuity total.  The notes' horizon column is asserted
-    beside it for all ten shipped points, N being max(g − 1, ω − x) on the life shape and
-    n − 1 on the other two: a structural property of the shape and not a rounded projection
-    length, so that the life shape's obligation is exhausted rather than truncated.
+    It is the **number of projected periods**, the frame's exclusive end, so the frame is
+    ``range(proj_len())`` and the last row is ``proj_len() − 1``.  The anchor has 51 rows,
+    0 … 50, and ω − x + 1 = 110 − 60 + 1 = 51.  An off-by-one either drops the last
+    instalment on the term shapes — on point 9 that is ₩9,052,841.76 of outgo, 9.1% of the
+    annuity total — or projects a period past the end of the table.  The notes' horizon
+    column is asserted beside it for all ten shipped points, N being max(g, ω − x + 1) on the
+    life shape and n on the other two: a structural property of the shape and not a rounded
+    projection length, so that the life shape's obligation is exhausted rather than
+    truncated.
     """
     for point_id, horizon in SHIPPED_HORIZONS.items():
         p = immediate_annuity.Projection[point_id]
         df = p.result_cf()
-        assert len(df) == p.proj_len() + 1, point_id
-        assert df.index[0] == 0 and df.index[-1] == p.proj_len(), point_id
+        assert len(df) == p.proj_len(), point_id
+        assert df.index[0] == 0 and df.index[-1] == p.proj_len() - 1, point_id
         assert p.proj_len() == horizon
         if p.shape() == "life":
-            assert p.proj_len() == max(p.annuity_term() - 1,
-                                       OMEGA_AGE - p.age_at_entry())
-            assert p.mort_rate(p.proj_len()) == 1.0
-            assert p.lives_if(p.proj_len() + 1) == 0.0
+            assert p.proj_len() == max(p.annuity_term(),
+                                       OMEGA_AGE - p.age_at_entry() + 1)
+            assert p.mort_rate(p.proj_len() - 1) == 1.0
+            assert p.lives_if(p.proj_len()) == 0.0
         else:
-            assert p.proj_len() == p.annuity_term() - 1
+            assert p.proj_len() == p.annuity_term()
     certain = immediate_annuity.Projection[9]
-    dropped = certain.annuity_payments(certain.proj_len())
+    dropped = certain.annuity_payments(certain.proj_len() - 1)
     assert dropped == pytest.approx(CERTAIN_LAST_INSTALMENT, abs=WON)
     total = certain.result_cf()["annuity_payments"].sum()
     assert dropped / total == pytest.approx(0.091, abs=5e-4)
@@ -1466,24 +1471,25 @@ def test_pitfall_the_mortality_rate_is_read_at_the_start_of_the_period(
     """
     a = kr_immediate_anchor
     assert a.check_lives_roll_fwd() is True
-    for t in range(1, a.proj_len() + 2):
+    for t in range(1, a.proj_len() + 1):
         assert a.lives_if(t) == pytest.approx(
             a.lives_if(t - 1) * (1.0 - a.mort_rate(t - 1)), rel=1e-14)
     built = 1.0                                # the same curve as an explicit product
-    for t in range(0, a.proj_len() + 1):
+    for t in range(0, a.proj_len()):
         assert a.lives_if(t) == pytest.approx(built, abs=1e-14)
         built *= (1.0 - a.mort_rate(t))
     assert built == 0.0                        # q(110) = 1 closes the table
-    assert a.lives_if(a.proj_len() + 1) == 0.0
+    assert a.lives_if(a.proj_len()) == 0.0
     with pytest.raises(FormulaError):
-        a.mort_rate(a.proj_len() + 1)          # 보험나이 111 is off the shipped table
+        a.mort_rate(a.proj_len())          # 보험나이 111 is off the shipped table
     v = 1.0 / (1.0 + a.crediting_rate(0))
     lives = [1.0]
-    for t in range(0, a.proj_len() + 1):
-        lives.append(lives[-1] * (1.0 - a.mort_rate(t + 1)) if t < a.proj_len() else 0.0)
+    for t in range(0, a.proj_len()):
+        lives.append(lives[-1] * (1.0 - a.mort_rate(t + 1))
+                     if t < a.proj_len() - 1 else 0.0)
     wrong = sum(v ** (t + 1) * max(lives[t + 1],
                                    1.0 if t + 1 <= a.annuity_term() else 0.0)
-                for t in range(0, a.proj_len() + 1))
+                for t in range(0, a.proj_len()))
     assert a.av_pp_init() / wrong == pytest.approx(WRONG_END_ANNUITY, abs=WON)
     assert (a.av_pp_init() / wrong) / a.annuity_pp(0) - 1.0 == pytest.approx(
         WRONG_END_UPLIFT, abs=5e-6)
@@ -1552,7 +1558,7 @@ def test_pitfall_the_life_shape_annuity_is_not_re_struck_each_year(immediate_ann
         p = immediate_annuity.Projection[point_id]
         assert p.shape() == "life"
         level = p.annuity_pp(0)
-        assert all(p.annuity_pp(t) == level for t in range(0, p.proj_len() + 1)), point_id
+        assert all(p.annuity_pp(t) == level for t in range(0, p.proj_len())), point_id
         assert p.check_rate_level() is True, point_id
     a = immediate_annuity.Projection[1]
     assert a.annuity_pp(30) == a.annuity_pp(0)
@@ -1570,7 +1576,7 @@ def test_pitfall_av_pp_is_not_floored_at_zero(kr_immediate_anchor):
     """
     a = kr_immediate_anchor
     assert a.av_pp(28) < 0.0
-    assert min(a.av_pp(t) for t in range(0, a.proj_len() + 2)) < -1.4e8
+    assert min(a.av_pp(t) for t in range(0, a.proj_len() + 1)) < -1.4e8
     assert a.check_av_roll_fwd() is True
     i0 = a.crediting_rate(0)
     for t in (28, 40, 50):
@@ -1578,7 +1584,7 @@ def test_pitfall_av_pp_is_not_floored_at_zero(kr_immediate_anchor):
             a.av_pp_init() * (1.0 + i0) ** t
             - a.annuity_pp(0) * a.accum_factor(t, i0), abs=1e-3)
         assert a.cv_pp(t) == 0.0
-    assert all(a.claims(t, "LAPSE") == 0.0 for t in range(0, a.proj_len() + 1))
+    assert all(a.claims(t, "LAPSE") == 0.0 for t in range(0, a.proj_len()))
     assert "payment obligation remains" in a.cells["pols_if"].doc
 
 
@@ -1592,7 +1598,7 @@ def test_pitfall_the_retention_is_re_struck_every_year(immediate_annuity):
     """
     p = immediate_annuity.Projection[8]
     frozen = p.retention_pp(0)
-    path = [p.retention_pp(t) for t in range(0, p.proj_len() + 1)]
+    path = [p.retention_pp(t) for t in range(0, p.proj_len())]
     assert path[0] == pytest.approx(220272.3364700692, abs=SUB_WON)
     assert path[-1] == pytest.approx(271273.8626488275, abs=SUB_WON)
     assert path == sorted(path)
@@ -1637,7 +1643,7 @@ def test_pitfall_the_floor_is_a_rate_on_the_fund_not_a_floor_on_the_annuity(
     """
     p = immediate_annuity.Projection[8]
     assert all(p.crediting_rate(t) == p.min_guar_rate(t)
-               for t in range(0, p.proj_len() + 1))
+               for t in range(0, p.proj_len()))
     assert p.annuity_pp(10) / p.annuity_pp(9) - 1.0 == pytest.approx(
         SECOND_STEP_FALL, abs=5e-5)
     assert p.annuity_pp(10) / p.annuity_pp(0) - 1.0 == pytest.approx(
@@ -1648,8 +1654,8 @@ def test_pitfall_the_floor_is_a_rate_on_the_fund_not_a_floor_on_the_annuity(
     assert p.av_pp(20) == pytest.approx(AV_PP_20_POINT_8, abs=1e-6)
     assert p.check_av_terminal() is True and p.check_av_roll_fwd() is True
     # The floor was honoured at every single step while the annuity halved.
-    assert all(p.crediting_rate(t) >= 0.0075 for t in range(0, p.proj_len() + 1))
-    assert all(p.av_pp(t + 1) > p.av_pp(t) for t in range(0, p.proj_len() + 1))
+    assert all(p.crediting_rate(t) >= 0.0075 for t in range(0, p.proj_len()))
+    assert all(p.av_pp(t + 1) > p.av_pp(t) for t in range(0, p.proj_len()))
     # The floor never touches the annuity: it is applied to the fund and to nothing else.
     for t in (0, 5, 10, 19):
         assert p.annuity_pp(t) == pytest.approx(
@@ -1690,7 +1696,7 @@ def test_pitfall_the_annuity_charge_is_not_netted_off_the_payment(kr_immediate_a
     identity, since the fund bought the gross annuity.
     """
     a = kr_immediate_anchor
-    for t in range(1, a.proj_len() + 1):
+    for t in range(1, a.proj_len()):
         assert a.expenses(t) == pytest.approx(
             0.0080 * a.annuity_payments(t), rel=1e-13), t
     assert a.expenses(1) == pytest.approx(EXPENSE_CHARGE, abs=SUB_WON)
@@ -1719,7 +1725,7 @@ def test_pitfall_no_death_benefit_is_paid_on_the_jongsin_yeongeum_hyeong(
         assert p.risk_prem_rate() == 0.0        # and no 위험보험료 is deducted for one
         assert p.risk_prem_pp() == 0.0
         assert all(p.claims(t, "DEATH") == 0.0
-                   for t in range(0, p.proj_len() + 1)), point_id
+                   for t in range(0, p.proj_len())), point_id
         assert p.result_cf()["claims_death"].sum() == 0.0
     a = immediate_annuity.Projection[1]
     # What survives the annuitant is inside the annuity, at a weight of one.
@@ -1766,42 +1772,42 @@ def test_pitfall_no_lapse_decrement_touches_the_life_shape(immediate_annuity):
         assert p.shape() == "life"
         assert float(table.loc[point_id, "lapse_rate"]) == 0.0
         assert p.check_surr_value() is True, point_id
-        assert all(p.lapse_rate(t) == 0.0 for t in range(0, p.proj_len() + 1))
-        assert all(p.pols_lapse(t) == 0.0 for t in range(0, p.proj_len() + 1))
-        assert all(p.cv_pp(t) == 0.0 for t in range(0, p.proj_len() + 1))
-        assert all(p.surr_if(t) == 1.0 for t in range(0, p.proj_len() + 1))
+        assert all(p.lapse_rate(t) == 0.0 for t in range(0, p.proj_len()))
+        assert all(p.pols_lapse(t) == 0.0 for t in range(0, p.proj_len()))
+        assert all(p.cv_pp(t) == 0.0 for t in range(0, p.proj_len()))
+        assert all(p.surr_if(t) == 1.0 for t in range(0, p.proj_len()))
         assert p.result_cf()["claims_lapse"].sum() == 0.0
 
 
 def test_pitfall_no_surrender_fires_in_the_final_period(immediate_annuity):
     """Pitfall 17: letting a surrender fire in the final period.
 
-    ``lapse_rate(N) = 0`` on every shape.  Without it a contract in its last year is
+    ``lapse_rate(N − 1) = 0`` on every shape.  Without it a contract in its last year is
     surrendered a moment before its 만기보험금 and the maturity benefit is diverted into a
     surrender value of a different amount for no reason any contract states.
     """
     for point_id in (6, 7, 9):
         p = immediate_annuity.Projection[point_id]
-        n = p.proj_len()
+        n = p.proj_len() - 1                   # the last projected period
         assert p.lapse_rate(n - 1) == 0.02
         assert p.lapse_rate(n) == 0.0
         assert p.pols_lapse(n) == 0.0
         assert p.claims(n, "LAPSE") == 0.0, point_id
         assert p.result_cf().loc[n, "claims_lapse"] == 0.0
     inheritance = immediate_annuity.Projection[6]
-    assert inheritance.claims(inheritance.proj_len(), "MATURITY") > 0.0
-    assert inheritance.cv_pp(inheritance.proj_len() + 1) == pytest.approx(
+    assert inheritance.claims(inheritance.proj_len() - 1, "MATURITY") > 0.0
+    assert inheritance.cv_pp(inheritance.proj_len()) == pytest.approx(
         MATURITY_BENEFIT, abs=1e-6)          # the two amounts a lapse would confuse
 
 
 def test_pitfall_the_maturity_benefit_is_weighted_one_period_later(immediate_annuity):
-    """Pitfall 18: weighting the 만기보험금 by ``pols_if(N)`` instead of ``pols_if(N + 1)``.
+    """Pitfall 18: weighting the 만기보험금 by ``pols_if(N − 1)`` instead of ``pols_if(N)``.
 
     It is payable on survival **to** maturity, one further period of decrement away:
     ₩79,495,349.97 on point 6, against ₩80,023,013.57 if the earlier weight were used.
     """
     p = immediate_annuity.Projection[6]
-    n = p.proj_len()
+    n = p.proj_len() - 1                       # the last projected period
     assert p.claims(n, "MATURITY") == pytest.approx(
         DISPUTE_TOTALS[6]["claims_maturity"], abs=WON)
     assert p.claims(n, "MATURITY") == pytest.approx(
@@ -1953,16 +1959,16 @@ def test_the_four_optional_modules_are_asserted_in_both_positions(immediate_annu
     """
     a = immediate_annuity.Projection[1]
     # 1. The retention: inert on the anchor, and both bases on points 6 and 7.
-    assert all(a.retention_pp(t) == 0.0 for t in range(0, a.proj_len() + 1))
+    assert all(a.retention_pp(t) == 0.0 for t in range(0, a.proj_len()))
     assert immediate_annuity.Projection[6].retention_pp(0) > 0.0
     assert immediate_annuity.Projection[7].retention_pp(0) == 0.0
     # 2. The stepping floor: inert on the anchor, binding at every duration on point 8.
-    assert all(a.crediting_rate(t) == a.decl_rate() for t in range(0, a.proj_len() + 1))
+    assert all(a.crediting_rate(t) == a.decl_rate() for t in range(0, a.proj_len()))
     stepping = immediate_annuity.Projection[8]
     assert len({stepping.crediting_rate(t)
-                for t in range(0, stepping.proj_len() + 1)}) == 3
+                for t in range(0, stepping.proj_len())}) == 3
     # 3. Voluntary surrender: off by contract on the anchor, on for points 6 to 9.
-    assert all(a.pols_lapse(t) == 0.0 for t in range(0, a.proj_len() + 1))
+    assert all(a.pols_lapse(t) == 0.0 for t in range(0, a.proj_len()))
     assert immediate_annuity.Projection[9].pols_lapse(0) == pytest.approx(0.02)
     # 4. The longer guarantee: ten years on the anchor, twenty on point 3.
     longer = immediate_annuity.Projection[3]

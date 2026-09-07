@@ -587,7 +587,7 @@ def civil_month(t):
 
 
 def cal_year_index(t):
-    """k(t): completed 31 Decembers between the effective date and the end of month t.
+    """k(t): completed 31 Decembers strictly before the start of month t.
 
     The annuity is in service for ``13 - M0`` months of its first calendar year - months
     ``t = 0 .. 12 - M0`` on the 0-based clock - so ``k(t) = 0`` while ``t < 13 - M0`` and
@@ -1184,7 +1184,7 @@ def net_cf(t):
 def check_lives_roll_fwd_resid(t):
     """Residual between :func:`lives_if` and an independently rebuilt survival path.
 
-    Deliberately **not** the telescoping identity ``l(t-1) - d(t) - l(t)``:
+    Deliberately **not** the telescoping identity ``l(t) - d(t) - l(t + 1)``:
     :func:`lives_death` is *defined* as that difference, so the identity is identically
     zero whatever :func:`lives_if` returns and constrains nothing.  Each life's survival
     is rebuilt here from the assumptions instead, with no reference to the recursion - on

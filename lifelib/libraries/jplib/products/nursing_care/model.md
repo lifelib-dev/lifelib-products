@@ -82,9 +82,11 @@ age. Every model point is new business at `t = 0`, so there is no in-force offse
 anywhere in this model: no `proj_start()`, no `duration_mth_init()`, and no issue-date
 column in the model point table.
 
-Everything the contract writes in **policy years** is read through `policy_year(t)` rather
-than through the index: the lapse table's rows, and the renewal commission that starts in
-policy year 2, `t >= 12`. Every other duration constant in the model is a count of months
+The one schedule the contract writes in **policy years** and looks up by that label is
+read through `policy_year(t)` rather than through the index: the lapse table's rows. The
+contract's other policy-year boundary, the renewal commission that starts in policy year
+2, is written directly on the 0-based index as `t >= 12` — the same condition as
+`policy_year(t) >= 2`. Every other duration constant in the model is a count of months
 on the 0-based index and is compared with `<`, at the boundary — the 1-year 不担保期間 is
 `t < waiting_mths()` with `waiting_mths()` = 12, the rider's 認知症診断責任開始期 is
 `t < dementia_wait_mths` with `dementia_wait_mths` = 6, and the annuity's `n_A`-instalment
@@ -514,10 +516,11 @@ contractual parameter in the notes is unchanged and still identical to its.
 the read-once property, the `Data` / `Projection` split, the docstring contract, the
 `result_cf` column vocabulary, the no-argument `check_*` shape, the read-write-re-read
 round trip, and the frame rule: `result_cf()` is indexed by `t`, contiguous, starting at a
-non-negative index and ending at `proj_len() - 1`, with `len(result_cf()) == proj_len()`
-on every model point. `tests/test_nursing_care_jp.py` pins the frame for this product
-directly — `list(df.index) == list(range(proj_len()))`, `proj_len() == 684` on the anchor
-cell, `pols_if(0) == 1`, `age(0) == 60` — and then asserts the product, in five blocks:
+non-negative index and ending at `proj_len() - 1` — which for this product, whose every
+model point opens at `t = 0`, means `len(result_cf()) == proj_len()`.
+`tests/test_nursing_care_jp.py` pins the frame for this product directly —
+`list(df.index) == list(range(proj_len()))`, `proj_len() == 684` on the anchor cell,
+`pols_if(0) == 1`, `age(0) == 60` — and then asserts the product, in five blocks:
 
 - **The worked example**, hard-coded as module-level tables so a reviewer can check it
   against the notes by eye: every assumption value the notes list, the four-row table, all

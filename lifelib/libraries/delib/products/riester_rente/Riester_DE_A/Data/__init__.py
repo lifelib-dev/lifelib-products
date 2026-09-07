@@ -150,7 +150,8 @@ def lapse_table():
 
     The ``duration`` key is the **contract year**, 1-based and contractual: row ``k`` is
     contract year ``k``, and the projection reaches it through
-    ``duration(t) = duration_init() + t + 1`` rather than through the 0-based ``t``.
+    ``duration(t) + 1 = duration_init() + t + 1`` rather than through the 0-based ``t``
+    — ``duration(t)`` is itself the 0-based count of completed contract years.
 
     Two rates, not one.  ``lapse_rate`` is a *Kündigung*, which repays every Zulage and
     every § 10a relief and taxes the accumulated growth; ``transfer_rate`` is an

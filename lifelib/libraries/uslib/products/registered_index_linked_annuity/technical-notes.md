@@ -473,8 +473,9 @@ from the contract, i.e. including any withdrawal charge [S1].
 
 Fixed and Holding Accounts accrue monthly at the declared rate, floored at the 1%
 guaranteed minimum [S1] [S2]:
-`FA(t) = FA(t−1) * (1 + max(i_declared, 0.01))^(1/12)`, the bucket opening empty at
-`FA(−1) = 0` because the purchase payment is allocated wholly to the index-linked option.
+`FA(t) = FA(t−1) * (1 + max(i_declared, 0.01))^(1/12)`, the bucket opening **empty in
+month 0** — the purchase payment is allocated wholly to the index-linked option — so
+`FA`'s opening value is 0 in month 0 and `FA(t−1)` in every later month.
 
 ### Monthly processing order [std]
 

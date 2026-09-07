@@ -402,7 +402,7 @@ acquisition 5 % of *versements*, acquisition commission 2 % of the initial one, 
 processing order, 100 % of survivors taking the maturity amount, and *âge atteint* as the
 age basis, since A. 335-1 fixes no model age basis [REG-R23]. The PCDD and the
 *apport d'actifs* at zero in the base run. Reading A. 134-1's index maturity as the
-**remaining** term `n − t` at each valuation date, which the article does not state. The
+**remaining** term `n − k` at each valuation time `k`, which the article does not state. The
 **PGT without its survival factor**, one of the two cash-flow drivers A. 134-2 admits.
 Returning a zero surrender indemnity beyond ten years unconditionally, which takes up a
 permission R. 132-5-3 grants rather than obeying a prohibition it does not impose.

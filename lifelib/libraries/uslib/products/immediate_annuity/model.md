@@ -56,6 +56,15 @@ there is no deferral period; any nonzero deferral turns this product into the
 deferred-income-annuity chassis. The contractual **policy year is the derived 1-based
 label `t // 12 + 1`** and is never used to index the frame.
 
+**`pols_if(t)` is a closing measure here, deliberately.** It is the notes' own end-of-month
+obligation indicator `IF(t) = max(C(t), l_alive(t+1))`, scaled by `pols_if_init()`, and not
+the library's usual count in force at the *opening* of period `t`. So `pols_if(0)` is not
+`pols_if_init()` — on model point 8 it is 0.99999986 against 1.0 — because the month's
+mortality has already been taken out of it. `pols_if_init()` is the scaling constant the
+indicator multiplies, not the frame's first row. The alternative, an opening count, would
+carry the maintenance expense on a measure the notes do not use and would move every
+`expenses(t)` figure the notes' table pins.
+
 **Two cells are indexed by a time point, not by a month, and their arguments do not move
 with the frame.** `lives_if(k, life)` is survival *at* time `k` and `cum_annuity_pp(k)`
 the instalments scheduled *before* time `k`, both with `k = 0` at the annuity date —
@@ -148,20 +157,21 @@ no formula change. That is also how the notes' first sensitivity is run: scale
 | File | Contents | Provenance |
 |---|---|---|
 | `model_point_table.csv` | Fifteen contracts on one anchor configuration, varying only what the worked example varies, plus two that hold open a case the notes under-specify (14: quarterly in advance; 15: `certain_only`). **Point 1 is the worked-example anchor cell** (trig = `either`); point 2 is the same cell on trig = `primary`, which is the table's second CF column | anchor cell **[std]**, technical notes "Worked example" |
+| `mort_table.csv` | Base annuitant mortality `q_x` by age (40–120) and sex, with a `provenance` column | **[std]** illustrative Gompertz–Makeham curve — ***not*** the 2012 IAM Basic table, and not any published table |
+| `improvement_scale.csv` | Generational improvement rates by age and sex | **[std]** illustrative G2-shaped scale — ***not*** Projection Scale G2 |
+| `surr_charge_table.csv` | Commutation surrender charge by contract year, 8% in year 2 to 0% from year 10 | sourced [S1] — the only published SPIA surrender-charge schedule found |
 
 **Time-like columns in the inputs.** `model_point_table.csv` carries two, `death_mth_1`
 and `death_mth_2`, and both are **points on the frame's month axis**: they shifted with
-the frame when the model moved to the 0-based index, so the notes' "dies during month 14"
-is `death_mth = 13` (and 3 → 2, 30 → 29). A blank still means the life never dies, but the
+the frame when the model moved to the 0-based index, so the notes' death "during the
+fourteenth month, `t = 13`" is `death_mth = 13` (and 3 → 2, 30 → 29). A blank still means
+the life never dies, but the
 sentinel `death_mth()` returns for it is now `-1`, because month 0 is a projectable month
 of death like any other. `certain_months` is a **count** of months and did not move;
 `annuity_year` is a calendar year and did not move. `surr_charge_table.csv` is keyed by
 `policy_year`, the contract's own 1-based label, so the file is unchanged and the reader
 maps into it through `policy_year(t) = t // 12 + 1`. `mort_table.csv` and
 `improvement_scale.csv` are keyed by `(age, sex)` — not a time axis at all.
-| `mort_table.csv` | Base annuitant mortality `q_x` by age (40–120) and sex, with a `provenance` column | **[std]** illustrative Gompertz–Makeham curve — ***not*** the 2012 IAM Basic table, and not any published table |
-| `improvement_scale.csv` | Generational improvement rates by age and sex | **[std]** illustrative G2-shaped scale — ***not*** Projection Scale G2 |
-| `surr_charge_table.csv` | Commutation surrender charge by contract year, 8% in year 2 to 0% from year 10 | sourced [S1] — the only published SPIA surrender-charge schedule found |
 
 **On the mortality tables.** The technical notes prescribe the **2012 IAM Basic** table
 projected with **Projection Scale G2**, applied generationally, with a ×1.084 A/E factor
@@ -317,13 +327,14 @@ The notes flag both as pitfalls, and they are wired to the same model point swit
   are the same single life dying in the fourteenth month, `t = 13`: the arrears run stops
   paying at `t = 13`, the advance run at `t = 14`.
 
-  The notes write that advance point as `t − 12/m`, "one full payment period earlier".
+  The notes write that advance point as `t + 1 − 12/m`, "one full payment period earlier"
+  than the arrears point `t + 1`.
   That is measured from the **arrears** month of the same instalment, which falls one
   payment period *later* than the advance month; `is_payment_mth` indexes an advance
   instalment by the month it actually falls in (`t = 0, 3, 6, …` at `m = 4`), so the two
   readings coincide only at `m = 12` — the only frequency the notes spell out, and the
-  only one every other shipped model point uses. Taking `t − 12/m` literally at `m = 4`
-  reads survival three months too early and pays the quarterly instalment due at the
+  only one every other shipped model point uses. Taking `t + 1 − 12/m` literally at
+  `m = 4` reads survival two months too early and pays the quarterly instalment due at the
   start of month 3 to a life the projection has already killed off in month 2. Model
   point 14 is that contract: quarterly in advance, single male 65, dying in month `t = 2`.
   It pays $1,500.00 in the first year, not $3,000.00, and a test asserts both the payment

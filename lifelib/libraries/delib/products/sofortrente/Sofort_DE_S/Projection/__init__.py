@@ -60,7 +60,8 @@ t0               t_start()                             First projected month ind
 n                proj_len()                            Exclusive end of the frame, t < n
 (none)           horizon_mths(life)                    12 (omega_age - entry age)
 (none)           duration_mth(t)                       Months elapsed since inception
-(none)           policy_year(t)                        Completed policy years, t // 12
+(none)           duration(t)                           Completed policy years, t // 12
+(none)           policy_year(t)                        Contractual policy year, t // 12 + 1
 x_a(t), x_s(t)   age(t, life)                          Attained age of each life
 (none)           calendar_year(t)                      Calendar year of month t
 SP               single_prem()                         The Einmalbeitrag
@@ -524,14 +525,26 @@ def duration_mth(t):
     return t
 
 
-def policy_year(t):
-    """Completed policy years at month ``t``: ``t // 12``.
+def duration(t):
+    """Completed policy years at the start of month ``t``: ``t // 12``; 0 for t = 0..11.
 
     The step that matters in this product.  The *Überschussrente* increase, the expense
     inflation index and the attained-age step all fall on the **policy anniversary**;
-    nothing happens on 31 December, so no cells needs the civil month.
+    nothing happens on 31 December, so no cells needs the civil month.  This is the
+    0-based elapsed count; the 1-based contractual label is :func:`policy_year`.
     """
     return t // 12
+
+
+def policy_year(t):
+    """y(t) = ``t // 12 + 1``: the contractual, 1-based policy year containing month ``t``.
+
+    1 for ``t = 0 ... 11``, 2 for ``t = 12 ... 23``, and so on.  It is **derived from**
+    ``t`` and never indexed **by**: no cells in this model takes a policy year as its
+    argument.  Every formula that needs the elapsed count — the *Überschussrente*
+    exponent, the inflation index, the attained age — uses :func:`duration` instead.
+    """
+    return duration(t) + 1
 
 
 def age(t, life=1):
@@ -929,7 +942,7 @@ def annuity_guar_pp(t):
 def annuity_surp_pp(t):
     """U(t): the *Überschussrente* instalment in month ``t``.
 
-    ``R u0 (1 + psi)^(policy_year(t) - deferment in years)`` from the first payment month,
+    ``R u0 (1 + psi)^(duration(t) - defer_mths() // 12)`` from the first payment month,
     and zero before it.  Two properties, both asserted by
     :func:`check_annuity_roll_fwd`.  It steps at the **policy anniversary**, so it is
     constant across each block of twelve months and compounding it monthly is a listed
@@ -945,7 +958,7 @@ def annuity_surp_pp(t):
     if t < first_pay_mth():
         return 0.0
     return (annuity_guar_pp(t) * surplus_init_pct()
-            * (1.0 + surplus_growth()) ** (policy_year(t) - defer_mths() // 12))
+            * (1.0 + surplus_growth()) ** (duration(t) - defer_mths() // 12))
 
 
 def annuity_pp(t):

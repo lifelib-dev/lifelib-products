@@ -1885,8 +1885,10 @@ def test_pitfall_proj_len_is_a_count_not_the_last_index(pension_savings):
 
     It is the **number** of projected policy years — the exclusive end of the frame — 81 at
     the anchor cell, with 81 rows in ``result_cf()`` running ``t = 0 .. 80``.  An off-by-one
-    here silently drops the terminal row, which on the life form is where the last survivors
-    die — ``q`` = 1 at the terminal age and the whole remaining in-force goes out at once.
+    here either appends an empty row at ``t = proj_len()`` or, sweeping
+    ``range(proj_len() - 1)``, drops the terminal row, which on the life form is where the
+    last survivors die — ``q`` = 1 at the terminal age and the whole remaining in-force goes
+    out at once.
     """
     for point_id in (1, 4, 6):
         p = pension_savings.Projection[point_id]

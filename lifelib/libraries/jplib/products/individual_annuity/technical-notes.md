@@ -332,7 +332,7 @@ and 復活 are not exercised in the base run **[std scope]** [S1] [S2] [S4].
 |---|---|
 | `t` | time index, **0-based**: `t = 0, 1, …, proj_len − 1`, period `t` running from time `t` to `t + 1`; the contractual policy year is `t + 1`; attained 保険年齢 in year `t` is `x + t` |
 | `x`, `m`, `d` | 契約年齢; 保険料払込期間 in years; 据置期間 in years |
-| `n`, `k` | `n = m + d`, the year of the 年金支払開始日; `k`, the payment period in years |
+| `n`, `k` | `n = m + d`, the index `t` of the 年金支払開始日 (the first payout year); `k`, the payment period in years |
 | `g` | guarantee period in years, life form only |
 | `P` | level office annual premium (`premium_pp`) |
 | `β`, `θ` | 予定事業費率 on premium; 年金支払開始時費用 on the 年金原資 |

@@ -345,7 +345,7 @@ def omega_age():
 
     121 on the shipped **[std]** table, the age German annuity tables are conventionally
     carried to.  The projection runs to it because the annuity is lifelong, and
-    :func:`mort_rate` returns 1.0 there, so the last survivor dies at ``t = proj_len()``
+    :func:`mort_rate` returns 1.0 there, so the last survivor dies at ``t = proj_len() - 1``
     and there is no tail state of any kind.
     """
     return int(data.mort_table().index.max())                        # noqa: F821

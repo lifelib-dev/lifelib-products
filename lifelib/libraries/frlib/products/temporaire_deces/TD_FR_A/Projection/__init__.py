@@ -219,14 +219,14 @@ The same statutory fact is why the whole of the exit machinery is lapse. The 30-
 *renonciation* window sits inside the year-1 lapse rate **[std]**; there is no surrender
 charge, no dynamic surrender behaviour and no paid-up election to model.
 
-.. rubric:: The last policy year has no lapse, and why
+.. rubric:: The last projected year has no lapse, and why
 
-The notes' processing order puts lapses at the **end** of the policy year, after both
-insured decrements. In the final policy year the end of the year is also the moment the
+The notes' processing order puts lapses at the **end** of the year, after both
+insured decrements. In the final projected year the end of the year is also the moment the
 cover expires, and a lapse and an expiry are then the same event paying the same nothing.
 So :func:`lapse_rate` returns 0 at ``t = proj_len() - 1`` and the whole surviving population
 leaves as an expiry: ``pols_if(proj_len())`` is that cohort. The notes set out the same
-convention, ``w(n) = 0`` **[std]**, under *Lapse* and in step 7 of their processing order — and
+convention, ``w(n - 1) = 0`` **[std]**, under *Lapse* and in step 7 of their processing order — and
 it is what reproduces their own split of the closure identity, 6,939 % deaths, 0,536 % PTIA,
 64,638 % lapses and 27,887 % survivors on the worked configuration. No cash flow depends on
 the split: at the table's 6 % the last two would read 66,311 % and 26,214 %.
@@ -407,7 +407,7 @@ def issue_age():
 
     Not age nearest birthday and not age last birthday — an integer age that steps on
     1 January irrespective of birth month, and the single most important convention to get
-    right in a French annual-step model.  A one-year shift moves ``prem_pp(1)`` on the
+    right in a French annual-step model.  A one-year shift moves ``prem_pp(0)`` on the
     worked configuration from 1 575,00 € to 1 695,00 €, a 7,6 % error in year one that
     compounds through the whole projection.  On this annual grid the age steps at the
     policy anniversary instead, so an implementation on real dates carries a fractional
@@ -967,8 +967,8 @@ def prem_refund_pp(t):
     ``policy_year(t) = t + 1`` of them.  Accumulated at nil interest **[std]**: no source
     gives a rate, and the window is one year on the model point that uses it.
     """
-    if t < 0:
-        return 0.0
+    if t <= 0:
+        return prem_pp(0)
     return prem_refund_pp(t - 1) + prem_pp(t)
 
 

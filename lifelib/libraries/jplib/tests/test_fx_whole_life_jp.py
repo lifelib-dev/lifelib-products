@@ -637,7 +637,7 @@ def test_the_special_reserve_shares_reproduce_the_published_amounts(
         assert abs(got20 - want20) / want20 <= 0.040
         # The 20-year share is applied to the fund *including* the compounded ten-year
         # top-up, not to the excess the ten-year point measured: dropping it would shift
-        # the twenty-year fit by about a tenth and the 3.0% bound would not hold.
+        # the twenty-year fit by about a tenth and the 4.0% bound would not hold.
         assert got20 == pytest.approx(
             0.16 * (run.av_pp_bef_sr(240) - run.av0_pp(240)), abs=5e-3)
         assert run.av_pp(120) > run.av_pp_bef_sr(120)

@@ -80,7 +80,7 @@ w(n-1)        shock_lapse_rate                                          Shock la
 cv(t)         conv_rate(t)                                              Conversion rate
 M(d)          plt_mort_factor(d)                                        PLT mortality deterioration, d = t + 1 - n
 M(1)          plt_mort_factor_init                                      M(1) actually used
-(M(1) rule)   plt_mort_factor_init_formula The notes' formula for M(1)
+(M(1) rule)   plt_mort_factor_init_formula                              The notes' formula for M(1)
 J             jump_ratio                                                AP(n)/AP(n-1), fee included
 AP(t)         premium_pp(t)                                             Guaranteed annual premium in period t
 G(t)          premiums(t)                                               Premium income

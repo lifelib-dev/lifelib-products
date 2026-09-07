@@ -96,8 +96,8 @@ tables are cited but never shipped, and no eurocroissance lapse experience is pu
 **Verification.** ``tests/test_eurocroissance_fr.py`` asserts both chassis of the notes'
 worked example row by row to the cent — the asset roll, the parts levy and its base, the
 performance levy, the re-strike of the PM and its rate/time decomposition, the minimum
-part value, the insurer's contribution, the PGT, the year-3 *versement* split, and every
-exit value the two chassis pay.
+part value, the insurer's contribution, the PGT, the policy-year-3 *versement* split, and
+every exit value the two chassis pay.
 
 Example:
 

@@ -329,10 +329,10 @@ distinguish either from a different fixed allocation.
 `추가납입` and `중도인출` are switched off on the anchor so the account recursion is a clean
 function of premium, charges and return, and both are retained as live terms because each
 **leaks the guarantee**. Model point 8 turns 추가납입 on at 100% of the 기본보험료; model
-point 9 turns 중도인출 on at 10% of the 해약환급금 once a year from the eleventh policy
-year, and the proportional re-basing [S2] [S7 제51조제8항] cuts its guarantee base from
-₩48,000,000 to ₩25,509,168.00 by annuitisation against ₩23,847,432.46 of cumulative
-withdrawal. Without that adjustment a policyholder could withdraw the fund and keep the
+point 9 turns 중도인출 on at 10% of the 해약환급금 once a year from the eleventh
+계약해당일 (`t = 132`, the start of the twelfth policy year), and the proportional
+re-basing [S2] [S7 제51조제8항] cuts its guarantee base from ₩48,000,000 to
+₩25,509,168.00 by annuitisation against ₩23,847,432.46 of cumulative withdrawal. Without that adjustment a policyholder could withdraw the fund and keep the
 strike, which [R1] names as the reason the rule exists:
 「중도인출금은 최저보증한도에서 차감된다」.
 
@@ -499,11 +499,12 @@ index convention was settled:
 - **`charge_table.csv` `line`** — the rows `comm_yr1` … `comm_yr5` are **policy-year
   labels** inside the line name, read by `comm_rate(y)` with `y = policy_year(t)`. Left
   alone.
-- **`model_point_table.csv` `wd_start_year`** — a contractual **policy year** from which
-  the 중도인출 module runs (11 on model point 9; 0 = off), read by `wd_pp(t)` as
-  `t < 12 * wd_start_year()`, i.e. the first withdrawal falls at the start of the twelfth
-  policy year. Left alone: it is a 1-based label the reader maps, not a point on the
-  frame's axis.
+- **`model_point_table.csv` `wd_start_year`** — the number of **completed policy years**
+  after which the 중도인출 module starts (11 on model point 9; 0 = off), an elapsed count
+  and so already 0-based. Read by `wd_pp(t)` as `t < 12 * wd_start_year()`, i.e. the first
+  withdrawal falls on the eleventh 계약해당일, `t = 132`, the start of the twelfth policy
+  year. Left alone: it is not a point on the frame's axis and not a 1-based policy-year
+  label.
 - **`mort_table.csv` `age`** and **`risk_prem_table.csv` `age_from`** — attained
   **보험나이**, not time. Read with `age(t)` = `age_at_entry() + t // 12`. Left alone.
 - **`fund_table.csv`** and **`return_scenario.csv`** have no time dimension at all.

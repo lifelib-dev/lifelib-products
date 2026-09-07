@@ -201,6 +201,38 @@ def test_inforce_is_a_decreasing_probability(uk_term_anchor):
 
 
 # ---------------------------------------------------------------------------
+# The 1-based lapse table is read through policy_year(t)
+
+
+def test_policy_year_is_the_one_based_label_of_the_zero_based_t(uk_term_anchor):
+    """policy_year(t) = t + 1, the contractual label, never the index itself."""
+    a = uk_term_anchor
+    assert a.policy_year(0) == 1
+    assert a.policy_year(24) == 25
+    assert all(a.policy_year(t) == t + 1 for t in range(a.proj_len()))
+
+
+def test_the_lapse_table_keeps_its_one_based_key_and_is_read_through_policy_year(
+        term_assurance, uk_term_anchor):
+    """The CSV key is a contractual policy year, so the reader maps through t + 1.
+
+    lapse_table.csv holds policy years 1...6 at 10 / 8 / 7 / 5 / 6 / 4 %, the last row
+    being the clamped "6 and later" tail.  The index shift lives entirely in
+    policy_year(t); the file itself was not re-keyed.
+    """
+    a = uk_term_anchor
+    assert list(term_assurance.Data.lapse_table().index) == [1, 2, 3, 4, 5, 6]
+    assert a.lapse_rate_base(0) == 0.10              # CSV row policy_year = 1
+    assert a.lapse_rate_base(1) == 0.08
+    assert a.lapse_rate_base(2) == 0.07
+    assert a.lapse_rate_base(3) == 0.05
+    assert a.lapse_rate_base(4) == 0.06              # CSV row policy_year = 5
+    # the clamped "6+" row applies from t = 5 to the end of the frame
+    assert (a.lapse_rate_base(5) == a.lapse_rate_base(9)
+            == a.lapse_rate_base(a.proj_len() - 1) == 0.04)
+
+
+# ---------------------------------------------------------------------------
 # Lapse pays nothing
 
 
@@ -690,7 +722,7 @@ def test_space_docstrings_carry_their_reference_material(term_assurance):
     proj = term_assurance.Projection.doc
     assert "Notes symbol" in proj                # the symbol-to-cells mapping table
     for cells in ("pols_if", "pols_maturity", "fib_cum", "benefit_sched",
-                  "select_factor", "mort_basis"):
+                  "select_factor", "mort_basis", "policy_year"):
         assert cells in proj
     data = term_assurance.Data.doc
     assert "TradLife_A" in data                  # the pattern it follows

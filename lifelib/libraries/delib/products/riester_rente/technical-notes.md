@@ -33,7 +33,8 @@ German terms of art keep their German form in prose.
   than specified (see *Valuation and reserve pointers*).
 - **Projection grid and what `t` counts.** **Annual**, **0-based**: `t = 0 … proj_len() − 1`, one
   policy year per step, `t = 0` being the policy year that opens at the **valuation date**; the
-  contractual policy year is `t + 1`. The
+  contractual contract year is `duration(t) + 1 = duration_init + t + 1`, which is `t + 1` only
+  on a point projected from its own inception (`duration_init = 0`). The
   valuation date is **1 January 2027** [std] — the first day on which the product is closed to new
   business [REG-R44] — so `calendar_year(t) = 2027 + t`. The contract is itself annual in every
   respect that matters here: the Zulage is an annual entitlement determined on a calendar year
@@ -212,7 +213,7 @@ contract carries, an at-issue point beside the in-force ones, and four boundary 
 |---|---|---|
 | `proj_len()` | Number of projected periods, `omega_age − age(0) + 1`; the frame is `0 … proj_len() − 1` | once per model point |
 | `t_conv()` | The conversion year, `rentenbeginn_age − age(0)` | once |
-| `age(t)`, `duration(t)`, `calendar_year(t)` | Attained age, completed contract years at the **end** of period `t` (1-based, the contract-year band), and the calendar year of period `t` | annual |
+| `age(t)`, `duration(t)`, `calendar_year(t)` | Attained age, completed contract years at the **start** of period `t` (0-based; the contract-year band is the 1-based `duration(t) + 1`), and the calendar year of period `t` | annual |
 | `pols_if(t)` | Policies in force at the **start** of period `t`; `pols_if(0) = pols_if_init()` | annual recursion |
 | `pols_if_at(t, timing)` | `"BEF_DECR"` = `pols_if(t)`, `"AFT_DECR"` = `pols_if(t+1)` | within year |
 | `pols_death(t)`, `pols_lapse(t)`, `pols_transfer(t)` | Expected deaths, surrenders and *Anbieterwechsel* exits in year `t` | annual |
@@ -410,9 +411,9 @@ not from data.
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t`, `n` | — | Period index, **0-based**: `t = 0 … n − 1`, `n = proj_len()`; the contractual policy year is `t + 1` |
+| `t`, `n` | — | Period index, **0-based**: `t = 0 … n − 1`, `n = proj_len()`; the contractual contract year is `d(t) + 1 = duration_init + t + 1`, which is `t + 1` only on a point projected from its own inception (`duration_init = 0`) |
 | `T` | `t_conv()` | The conversion year |
-| `x(t)`, `τ(t)`, `d(t)` | `age`, `calendar_year`, `duration` | Attained age, calendar year, completed contract years at the **end** of period `t` (so `d` is 1-based, the contract-year band) |
+| `x(t)`, `τ(t)`, `d(t)` | `age`, `calendar_year`, `duration` | Attained age, calendar year, completed contract years at the **start** of period `t` (so `d` is 0-based; the contract-year band is `d(t) + 1`) |
 | `l(t)` | `pols_if(t)` | Policies in force at the **start** of year `t`; `l(0) = pols_if_init()` |
 | `q(t)`, `w(t)`, `θ(t)` | `mort_rate`, `lapse_rate`, `transfer_rate` | Annual decrement rates in year `t` |
 | `Y(t)`, `E(t)` | `income_ref(t)`, `eigenbeitrag_pp(t)` | Reference income; the *Eigenbeitrag* before the frequency loading |
@@ -454,7 +455,7 @@ credited, guaranteed and converted before the guarantee is tested (pitfall 2).
 
     B(t)   = E(t) + Z(t) + contrib_extra_pp · 1{is_accum(t)}        charge base, unloaded
     C(t)   = E(t)·φ + Z(t) + contrib_extra_pp · 1{is_accum(t)}      cash actually received
-    K_a(t) = acq_charge_rate · beitragssumme / 5      if d(t) ≤ 5 and t ≤ T, else 0
+    K_a(t) = acq_charge_rate · beitragssumme / 5      if d(t) < 5 and t ≤ T, else 0
     K_v(t) = admin_charge_prem_rate · B(t) + admin_charge_fixed + E(t)·(φ − 1)
     S(t)   = C(t) − K_a(t) − K_v(t)
            = B(t) − K_a(t) − admin_charge_prem_rate · B(t) − admin_charge_fixed
@@ -590,7 +591,7 @@ of the *Rentengarantiezeit*: the guarantee period changes **who is paid**, never
     premiums(t)   = ( E(t)·φ + contrib_extra_pp·1{is_accum(t)} ) · l(t)
     zulagen(t)    = Z(t) · l(t)
     expenses(t)   = expense_acq · 1{t = 0 and duration_init = 0}
-                    + expense_maint · (1 + expense_infl)^(d(t) − 1) · l(t) · 1{is_accum(t)}
+                    + expense_maint · (1 + expense_infl)^d(t) · l(t) · 1{is_accum(t)}
                     + expense_annuity · pols_annuity_pay(t)
                     + expense_claim · ( pols_death(t) + pols_lapse(t) + pols_transfer(t) )
     commissions(t)= comm_rate_init · beitragssumme · l(0) · 1{t = 0 and duration_init = 0}
@@ -787,7 +788,8 @@ Every formula here is **[std]**; there is no German Riester calibration evidence
 **Configuration.** Model point 1, the anchor: an in-force *klassische Riester-Rentenversicherung* at
 the **1 January 2027** valuation date. `point_id = 1`; `sex = F` (reporting only — the tariff and the
 conversion are unisex [R23]); `issue_age = 47`, the contract having been concluded on 1 January
-**2024**; `duration_init = 3`, so `age(0) = 50`, `duration(0) = 4` and `calendar_year(0) = 2027`;
+**2024**; `duration_init = 3`, so `age(0) = 50`, `duration(0) = 3` — contract year 4 — and
+`calendar_year(0) = 2027`;
 `pols_if_init = 1.0`; `rentenbeginn_age = 67`; `rechnungszins = 0.0025`, the *Höchstrechnungszins* of
 the 2024 vintage [R22] [REG-R15]; `beitragssumme = 33,600.00`; `contrib_form = mindest` with
 `contrib_fixed_pp = 0.00`; `contrib_ratio = 1.00`, the full *Mindesteigenbeitrag* paid;
@@ -951,7 +953,8 @@ minimum is `max(60, min(0,04 × 42 000, 2 100) − 475) = max(60, 1 680 − 475)
 Interest at the declared 2,30 % on the *Deckungskapital* plus the *Sparbeitrag* plus the
 *Überschussguthaben*: `0,023 × (3 860,50 + 1 432,80 + 150,48) = 0,023 × 5 443,78 = 125,206940 €`,
 the table's 125,21 €, and `A(1) = 5 568,986940 €`. Decrements at attained age 50, contract
-duration 4: `q = 0,001500 × 1,10⁰ × 0,80 = 0,001200`, `w = 0,008`, `θ = 0,012`, applied in that
+year 4 (`d(0) = 3`, the band read at `d(0) + 1 = 4`): `q = 0,001500 × 1,10⁰ × 0,80 =
+0,001200`, `w = 0,008`, `θ = 0,012`, applied in that
 order, so `pols_death = 0,001200`, `pols_lapse = 0,9988 × 0,008 = 0,0079904` and
 `pols_transfer = 0,9988 × 0,992 × 0,012 = 0,0118897152`. Benefits struck on `A(1)`:
 `claims_death = 5 568,986940 × 0,001200 = 6,682784 €`;

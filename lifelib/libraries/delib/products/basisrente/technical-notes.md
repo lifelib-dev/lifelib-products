@@ -138,7 +138,7 @@ tagged in *Assumption inputs* below: `mort_be_factor`, `elig_surv_prob`, `mort_b
 | `prem_mode` | enum {annual, half_yearly, quarterly, monthly} | Payment frequency; keys `option_table.csv` for the *Ratenzahlungszuschlag* | 1, 5, 7, 8, 9, 13 annual · 4 half-yearly · 3, 11 quarterly · 2, 6, 10, 12 monthly |
 | `prem_dyn_rate` | rate p.a. | *Beitragsdynamik*, the contractual annual escalation | 1, 2, 3, 4, 6, 9, 11, 12 |
 | `zuzahlung_pp` | EUR p.a. | The nominal annual *Zuzahlung* before take-up | 1, 3, 11 |
-| `zuzahlung_end_dur` | int | Last policy duration at which a *Zuzahlung* is assumed | 1, 3, 11 |
+| `zuzahlung_end_dur` | int | Policy duration at which the *Zuzahlung* stops: it is paid while `duration(t) < zuzahlung_end_dur`, i.e. through policy year `zuzahlung_end_dur` | 1, 3, 11 |
 | `paidup_at_init` | bool | The model point is already *beitragsfrei* at the valuation date | 7 |
 | `av_pp_init` | EUR | *Deckungskapital* per policy at the valuation date | 6, 7 |
 | `ann_pp_init` | EUR p.a. | Annual annuity already in payment, for a point that opens in the *Rentenphase* | 8 |
@@ -160,7 +160,7 @@ exist here, and `bf_rate` — which is **not** a lapse — takes its place.
 **An in-force paid-up point is represented wholly, not partly.** A model point opens either entirely
 premium-paying (`paidup_at_init = 0`) or entirely premium-free (`paidup_at_init = 1`, the whole of
 `pols_if_init` opening in the premium-free cohort with
-`av_pu_at(1, "BEF_PREM") = av_pp_init × pols_if_init`). A part-paid-up book is **two model points**,
+`av_pu_at(0, "BEF_PREM") = av_pp_init × pols_if_init`). A part-paid-up book is **two model points**,
 which is the honest arrangement: averaging the two cohorts' reserves is pitfall 3.
 
 ### The shipped model point table
@@ -869,8 +869,8 @@ Four things in the frame are worth reading before the checks below.
   *Deckungsrückstellung* stands behind and that delib does not compute.
 - **The annuity rises and the claim falls.** `ann_pp(t)` compounds at 1,0 % — 7 561,91 €,
   7 637,53 €, 7 713,91 € — while `claims_annuity(t)` peaks at `t = 30` and then falls away as
-  mortality outruns the *Überschussrente*. Nothing is paid at `t = 76`: the last survivor dies at
-  the terminal age, and there is no maturity value and no tail state.
+  mortality outruns the *Überschussrente*. Nothing is paid *after* `t = 76`: the last survivor dies
+  at the terminal age, and there is no maturity value and no tail state.
 
 ### Three independent checks and a closure identity
 

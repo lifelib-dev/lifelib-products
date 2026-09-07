@@ -566,13 +566,21 @@ def test_pitfall_age_121_regime_switch(anchor):
     assert anchor.pols_maturity(t) == 0.0        # and there is no maturity
 
 
-def test_pitfall_grace_collapse_is_a_diagnostic_only(variable_ul):
+def test_pitfall_grace_collapse_is_a_diagnostic_only(variable_ul, anchor):
     """The default test is reported, not acted on; and read literally it fires at issue.
 
     On a front-loaded design AV - SC is negative in policy year 1 on a perfectly
     healthy new policy, which is what model point 3 shows.  is_shortfall is the
     companion diagnostic that answers the question the default rule is really asking.
+
+    The "never" sentinel is -1, not 0: on a 0-based frame t = 0 is a real month, and
+    the anchor cell -- which never defaults and never falls short -- must say so.
     """
+    assert anchor.first_default_month() == -1    # "never"; 0 is a real month now
+    assert anchor.first_shortfall_month() == -1
+    assert all(not anchor.is_default(t) for t in range(anchor.proj_len()))
+    assert all(not anchor.is_shortfall(t) for t in range(anchor.proj_len()))
+
     p = variable_ul.Projection[3]
     assert p.is_default(0) is True               # the notes' literal test, at issue
     assert p.first_default_month() == 0          # t = 0, the issue month

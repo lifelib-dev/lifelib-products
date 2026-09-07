@@ -67,9 +67,9 @@ effective year and civil month — and not merely the duration, because revalori
 expense inflation step at 31 December while the *paliers* and the attained ages step on
 12-month multiples of the effective date. Age is **age last birthday**; the *millésime* (year of birth) is a
 separate model point attribute and is never derived from the projection year. The
-limiting age is 120, the published top age of the tables, and the projection stops one
-limiting age before the youngest covered life would reach it — stopping on the
-annuitant's age alone would truncate a younger reversionary's tail.
+limiting age is 120, the published top age of the tables, and the projection runs to the
+last month of age 119 of the **youngest** covered life, ``t = proj_len() - 1`` — stopping
+on the annuitant's age alone would truncate a younger reversionary's tail.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 instalment formula and its *terme échu* timing, the rule that the arrérage of the month

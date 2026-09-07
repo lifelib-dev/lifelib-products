@@ -181,7 +181,10 @@ def ci_incidence_table():
 def lapse_table():
     """The 표준형 voluntary surrender rates by policy year, from *lapse_table.csv*.
 
-    Six duration rows and a level tail read for every later year.  Used only where the
+    The ``policy_year`` key is the **contractual, 1-based label**, not the model's 0-based
+    time index: the projection's period ``t`` reads row ``t + 1``, so the file is unaffected
+    by the frame's indexing.  Six duration rows and a level tail read for every later year.
+    Used only where the
     model point sets ``lapse_basis`` to ``table``; the suppressed forms run the
     로그-선형 원칙모형 of [REG-R27] instead, which is a formula and lives in
     :mod:`~.CI_KR_A.Projection`.

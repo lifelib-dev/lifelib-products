@@ -34,9 +34,10 @@ the cover stops at the cessation age rather than extrapolating a tariff that sto
 
 One assertion here is about the frame rather than the product: ``pols_if(t)`` is the
 **start**-of-month count and therefore the weight on its own ``result_cf`` row, with the
-notes' end-of-month ``l(t)`` reachable as ``pols_if_at(t, "AFT_DECR")``.  This model was
-first written with ``l(t)`` published under the ``pols_if`` name, which is silent - the
-column is the right series one month stale - so it is asserted rather than assumed.
+notes' end-of-month ``l(t + 1)`` reachable as ``pols_if_at(t, "AFT_DECR")``.  This model
+was first written with the **end**-of-month count published under the ``pols_if`` name,
+which is silent - the column is the right series one month stale - so it is asserted
+rather than assumed.
 """
 import modelx as mx
 import pytest

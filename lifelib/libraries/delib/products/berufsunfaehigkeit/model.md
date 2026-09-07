@@ -385,12 +385,15 @@ read, and `check_*()` / `check_*_resid(t)` for the identities. The full symbol m
 the `Projection` Space docstring.
 
 The **monthly cohort-vector chassis** is shared with frlib's `Dep_FR_S` (*assurance
-dépendance*) and, inside this library, with `Pflege_DE_S`: `dis_cohorts` ↔ `dep_cohorts`,
-`pols_dis_dur(t, z)` ↔ `pols_part_dur` / `pols_tot_dur`, and `cohort_len`, `seed_claim_dur`,
-`rente_pay_pp(t, z)`, `pols_prem`, `pols_recovery`, `check_states` and `check_pols_roll_fwd`
-mean the same thing on all three. `pols_runoff_slot` is this model's counterpart of
-`Dep_FR_S`'s `pols_red` — a small holding ledger a naive implementation omits, which is a
-first-order error in both.
+dépendance*): `dis_cohorts` ↔ `dep_cohorts`, `pols_dis_dur(t, z)` ↔ `pols_part_dur` /
+`pols_tot_dur`, `seed_claim_dur` ↔ `seed_dur`, and `cohort_len`, `rente_pay_pp(t, z)`,
+`pols_prem` and `pols_recovery` mean the same thing on both. `pols_runoff_slot` is this
+model's counterpart of `Dep_FR_S`'s `pols_red` — a small holding ledger a naive
+implementation omits, which is a first-order error in both. Inside this library,
+`Pflege_DE_S` is the other monthly multi-state model and shares the **vocabulary** —
+`pols_prem`, `pols_if_at`, `check_states`, `check_pols_roll_fwd` — but not the cohort
+vectors: its ledgers (`pols_karenz(t, g, z)`, `pols_grad(t, g)`, `pols_pg(t, g)`,
+`pols_reactiv`) are indexed by *Pflegegrad* rather than by claim duration.
 
 Five names needed care:
 

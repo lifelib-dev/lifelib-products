@@ -183,7 +183,7 @@ anniversary, before any claim: different quantities, different clocks.
 | `rente_pay_pp(t, z)` | The monthly *BU-Rente* **in payment** for the duration-`z` cohort | at claim anniversaries |
 | `prem_gross_level_pp()` | The level annual *Bruttobeitrag* — derived by equivalence or overridden | once per model point |
 | `prem_gross_pp(t)`, `prem_zahl_pp(t)` | The *Bruttobeitrag* and *Zahlbeitrag* **instalments due** at month `t`; both zero in a month that is not a payment month | monthly |
-| **First-order shadow** | `pols_actv_first(t)`, `pols_dis_dur_first(t, z)`, `pols_runoff_first(t)`, `pols_prem_first(t)` — the same chain on *Rechnungsgrundlagen erster Ordnung* **without lapse**, used only to fix `prem_gross_level_pp()` | monthly |
+| **First-order shadow** | `pols_actv_first(s)`, `pols_dis_dur_first(s, z)`, `pols_runoff_first(s)`, `pols_prem_first(s)` — the same chain on *Rechnungsgrundlagen erster Ordnung* **without lapse**, indexed by `s` **from inception**, `s = 0 … first_len() − 1`, used only to fix `prem_gross_level_pp()` | monthly |
 
 **Four absences are product facts, not gaps.** There is **no account value and no surrender value**
 [R9] [R5], so no `av_pp_at` exists and a lapse carries no cash flow. There is **no death benefit**

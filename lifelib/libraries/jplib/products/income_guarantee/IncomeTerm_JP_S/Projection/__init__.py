@@ -735,8 +735,9 @@ def pay_count(m):
     """n_pay(m) = max(N - m, G): the instalments a claim in month m generates.
 
     ``m`` is the model's own 0-based month index, so the contractual policy month of
-    the event is ``m + 1`` and the notes' 1-based ``max(N - m + 1, G)`` becomes
-    ``max(N - m, G)`` here.  One instalment per monthly payment date from the insured
+    the event is ``m + 1``: a source that quotes an illustration for policy month ``k``
+    is read here at ``m = k - 1``, and its ``max(N - k + 1, G)`` becomes
+    ``max(N - m, G)``.  One instalment per monthly payment date from the insured
     event to the 保険期間満了日, floored at the 最低支払保証期間.  The rule reproduces every
     published illustration in the source set: on ``N = 420``, 420 instalments for a
     claim at ``m = 0``, 240 at ``m = 180`` and 60 at ``m = 360``; 411 at ``m = 9`` and

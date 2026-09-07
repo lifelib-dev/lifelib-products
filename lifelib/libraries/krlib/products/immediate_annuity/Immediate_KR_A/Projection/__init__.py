@@ -12,11 +12,15 @@ model point 1::
     >>> Projection.point_id = 6            # the 상속연금형, retention as designed
     >>> Projection.point_id = 7            # the same contract, retention as ordered
 
-``t`` counts **policy years from inception, 0-based**. Period ``t`` runs from time ``t`` to
-time ``t + 1``; row ``t`` of :func:`result_cf` carries the cash flows of period ``t``; the
+``t`` counts **completed policy years from inception and is 0-based**: ``t = 0`` is the
+first policy year, and the contractual policy year — the 1-based label the 약관 speaks in —
+is the derived ``t + 1``. Period ``t`` runs from time ``t`` to time ``t + 1``; row ``t``
+of :func:`result_cf` carries the cash flows of period ``t``; the
 single premium falls at time 0 on row 0; and the annuity is payable **in arrears**, so the
-payment shown on row ``t`` falls at time ``t + 1``, on the 계약해당일. The last row is
-``proj_len()`` and carries the last scheduled payment.
+payment shown on row ``t`` falls at time ``t + 1``, on the 계약해당일. ``proj_len()`` is the
+**number of projected periods**, the frame's exclusive end, so the frame is
+``range(proj_len())`` and the last row — the one carrying the last scheduled payment — is
+``t = proj_len() - 1``.
 
 .. rubric:: Age basis
 
@@ -55,7 +59,7 @@ compact actuarial symbols instead. The mapping is:
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
-t                          (the cells argument)            Policy year from inception
+t                          (the cells argument)            0-based period index
 (model point)              model_point()                   The selected row as a Series
 (shape)                    shape()                         life / inheritance / certain
 x                          age_at_entry()                  가입나이, 보험나이
@@ -101,7 +105,7 @@ d(t)                       pols_death(t)                   Deaths in period t
 (exits)                    pols_exit(t)                    Obligations ending in period t
 F(t)                       payment_factor(t)               Weight on the payment at t + 1
 (pricing)                  pricing_factor(t)               The same on the pricing basis
-N                          proj_len()                      Last projected period index
+N                          proj_len()                      Number of projected periods
 E[PREM(t)]                 premiums(t)                     Single premium income
 E[ANN(t)]                  annuity_payments(t)             생존연금 outgo
 E[DTH(t)]                  claims(t, "DEATH")              사망보험금
@@ -367,7 +371,7 @@ def lapse_rate(t):
     """
     if shape() == "life":
         return 0.0
-    if t >= proj_len():
+    if t >= proj_len() - 1:
         return 0.0
     return float(model_point()["lapse_rate"])
 
@@ -632,7 +636,7 @@ def annuity_factor():
     i = crediting_rate(0)
     v = 1.0 / (1.0 + i)
     return sum(v ** (t + 1) * pricing_factor(t)
-               for t in range(0, proj_len() + 1))
+               for t in range(proj_len()))
 
 
 def retention_pp(t):
@@ -896,19 +900,24 @@ def retention_shortfall_pp():
 
 
 def proj_len():
-    """N: the **last projected period index**, so ``result_cf()`` runs ``0 .. proj_len()``.
+    """N: the **number of projected periods**, the frame's exclusive end.
 
-    On the inheritance and certain shapes the contract ends at a stated term, so the last
-    period is ``n - 1`` and its payment falls at time ``n``, with the 만기보험금 beside it
-    where there is one.  On the life shape the projection runs to the limiting age of the
-    shipped table, at which ``qx`` is 1, so the obligation is exhausted rather than
-    truncated; where the 보증지급기간 outlives the annuitant's limiting age — which it
-    cannot on any shipped model point but can at a high enough issue age — the guarantee
-    sets the horizon instead.
+    ``result_cf()`` runs ``t = 0 .. proj_len() - 1`` and the frame is ``range(proj_len())``,
+    so the last projected period is ``proj_len() - 1`` and ``len(result_cf())`` is
+    ``proj_len()`` itself — 51 rows, ``t = 0`` to ``t = 50``, on the worked-example anchor.
+
+    On the inheritance and certain shapes the contract ends at a stated term, so there are
+    ``n`` periods, the last of them ``n - 1``, and its payment falls at time ``n`` with the
+    만기보험금 beside it where there is one.  On the life shape the projection runs to the
+    limiting age of the shipped table, at which ``qx`` is 1, so the obligation is exhausted
+    rather than truncated: the last period is ``ω - x``, of which there are ``ω - x + 1``.
+    Where the 보증지급기간 outlives the annuitant's limiting age — which it cannot on any
+    shipped model point but can at a high enough issue age — the guarantee sets the horizon
+    instead.
     """
     if shape() == "life":
-        return max(annuity_term() - 1, omega_age - age_at_entry())   # noqa: F821
-    return annuity_term() - 1
+        return max(annuity_term(), omega_age - age_at_entry() + 1)   # noqa: F821
+    return annuity_term()
 
 
 def premiums(t):
@@ -963,7 +972,7 @@ def claims(t, kind):
     if kind == "LAPSE":
         return pols_lapse(t) * cv_pp(t + 1)
     if kind == "MATURITY":
-        if shape() == "inheritance" and t == proj_len():
+        if shape() == "inheritance" and t == proj_len() - 1:
             return pols_if(t + 1) * maturity_benefit()
         return 0.0
     raise ValueError("unknown claim kind: %s" % kind)
@@ -1070,7 +1079,7 @@ def check_net_cf():
     """Whether the cash flow statement reconciles to ``net_cf`` at every projected period."""
     tol = val_tol * prem_pp()                                        # noqa: F821
     return bool(all(abs(check_net_cf_resid(t)) < tol
-                    for t in range(0, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_pols_roll_fwd_resid(t):
@@ -1088,7 +1097,7 @@ def check_pols_roll_fwd_resid(t):
 def check_pols_roll_fwd():
     """Whether the payment obligation rolls forward on its own decrements at every t."""
     return bool(all(abs(check_pols_roll_fwd_resid(t)) < roll_fwd_tol  # noqa: F821
-                    for t in range(0, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_lives_roll_fwd_resid(t):
@@ -1108,7 +1117,7 @@ def check_lives_roll_fwd_resid(t):
 def check_lives_roll_fwd():
     """Whether the annuitant's survival curve closes against a direct product at every t."""
     return bool(all(abs(check_lives_roll_fwd_resid(t)) < roll_fwd_tol  # noqa: F821
-                    for t in range(0, proj_len() + 2)))
+                    for t in range(proj_len() + 1)))
 
 
 def check_av_roll_fwd_resid(t):
@@ -1151,7 +1160,7 @@ def check_av_roll_fwd():
     """Whether the 계약자적립액 recursion closes against its closed form at every t."""
     tol = val_tol * prem_pp()                                        # noqa: F821
     return bool(all(abs(check_av_roll_fwd_resid(t)) < tol
-                    for t in range(0, proj_len() + 2)))
+                    for t in range(proj_len() + 1)))
 
 
 def check_av_terminal():
@@ -1168,7 +1177,7 @@ def check_av_terminal():
     holds that shape to its basis instead.
     """
     tol = val_tol * prem_pp()                                        # noqa: F821
-    v = av_pp(proj_len() + 1)
+    v = av_pp(proj_len())
     if shape() == "certain":
         return bool(abs(v) < tol)
     if shape() == "inheritance":
@@ -1192,7 +1201,7 @@ def check_annuity_basis_resid():
     why that term appears on the right-hand side rather than being tolerated away.
     """
     built = sum(annuity_pp(t) * pricing_factor(t) * disc_factor(t + 1)
-                for t in range(0, proj_len() + 1))
+                for t in range(proj_len()))
     if shape() == "inheritance":
         built += maturity_benefit() * disc_factor(annuity_term())
     return built - av_pp_init() - retention_shortfall_pp()
@@ -1237,7 +1246,7 @@ def check_rate_level():
         return True
     i0 = crediting_rate(0)
     return bool(all(abs(crediting_rate(t) - i0) < 1e-15
-                    for t in range(0, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_guarantee_certain():
@@ -1282,7 +1291,7 @@ def check_payment_factor_resid(t):
 def check_payment_factor():
     """Whether the payment weight matches its second construction at every period."""
     return bool(all(abs(check_payment_factor_resid(t)) < roll_fwd_tol  # noqa: F821
-                    for t in range(0, proj_len() + 1)))
+                    for t in range(proj_len())))
 
 
 def check_surr_value():
@@ -1300,17 +1309,18 @@ def check_surr_value():
     tol = val_tol * prem_pp()                                        # noqa: F821
     if shape() == "life":
         return bool(all(lapse_rate(t) == 0.0 and cv_pp(t) == 0.0
-                        for t in range(0, proj_len() + 1)))
+                        for t in range(proj_len())))
     return bool(all(abs(cv_pp(t) - max(av_pp(t), 0.0)) < tol
-                    for t in range(0, proj_len() + 2)))
+                    for t in range(proj_len() + 1)))
 
 
 def result_cf():
-    """Result table of cash flows, indexed by policy year t.
+    """Result table of cash flows, indexed by the 0-based period index t.
 
     Row ``t`` carries period ``t``, which runs from time ``t`` to time ``t + 1``: the single
     premium falls at time 0 on row 0, and the annuity shown on row ``t`` falls at time
-    ``t + 1``, in arrears on the 계약해당일.
+    ``t + 1``, in arrears on the 계약해당일.  The frame is ``range(proj_len())``, so the
+    table has ``proj_len()`` rows indexed ``0 .. proj_len() - 1``.
 
     ``pols_if`` is the probability that a **payment obligation remains**, which on this
     product is not the probability that the annuitant is alive; see :func:`pols_if`.  The
@@ -1319,7 +1329,7 @@ def result_cf():
     net flow are published: ``net_cf`` is income-positive, the library-wide convention, and
     ``liability_cf`` is the technical notes' outgo-positive ``CF(t)``.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -1338,14 +1348,14 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of the fund, the annuity and the decrements, indexed by policy year t.
+    """Result table of the fund, the annuity and the decrements, indexed by the same t.
 
     The companion to :func:`result_cf`: everything the cash flow statement is built out of
     and nothing that is a cash flow itself.  ``av_pp`` and ``cv_pp`` are shown at the
     **start** of the period, as ``pols_if`` is, so a row reads as the state the period opens
     in and the flows that period produces.
     """
-    ts = list(range(0, proj_len() + 1))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],

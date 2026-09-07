@@ -274,13 +274,13 @@ resolution **[std]**.
 
 For `premium_guarantee = reviewable`: `P(t)` is constant between reviews; at each
 5-yearly review from the 5th anniversary [S3] [S4] — the start of month t = 60, then
-t = 120, 180, … — `P ← P x (1 + ρ_review)` where
-`ρ_review` is a scenario input (snapshot 0 **[std]**). Contractual constraints: one
-carrier's form — no limits, changes under 2% or 50p ignored, policyholder may instead
-reduce cover [S4] [S5]; another's intermediary form — ±5% tolerance per review,
-individual health not a factor [S3]. A review-driven lapse response belongs in behavior
-modeling (below). Premium rates for in-force reviewable business are insurer-discretionary
-current elements — class (b) snapshots, not guarantees.
+t = 120, 180, … — `P ← P x (1 + ρ_review)` where `ρ_review` is a scenario input
+(snapshot 0 **[std]**). Contractual constraints: one carrier's form — no limits, changes
+under 2% or 50p ignored, policyholder may instead reduce cover [S4] [S5]; another's
+intermediary form — ±5% tolerance per review, individual health not a factor [S3]. A
+review-driven lapse response belongs in behavior modeling (below). Premium rates for
+in-force reviewable business are insurer-discretionary current elements — class (b)
+snapshots, not guarantees.
 
 ---
 
@@ -299,9 +299,8 @@ for calibration.
 - **Premium-review shock (reviewable module only) [std].**
   `w_shock = min(0.30, w(y) + 2.0 x max(0, ρ_review − 0.05))` applied in the 12 months
   from a review that raises premiums by more than 5% (t = 60..71 after the first).
-  Rationale: one carrier's
-  unlimited review changes [S4] make review-driven shocks the dominant behavioral risk
-  on reviewable business; slope and cap are placeholders.
+  Rationale: one carrier's unlimited review changes [S4] make review-driven shocks the
+  dominant behavioral risk on reviewable business; slope and cap are placeholders.
 - **Selective lapsation [std].** Optional morbidity-anti-selection overlay: after a
   lapse-shock event, remaining lives carry `i_ci x (1 + η)` with `η = 0.10`.
   Rationale: healthier lives lapse first when premiums rise; magnitude is a

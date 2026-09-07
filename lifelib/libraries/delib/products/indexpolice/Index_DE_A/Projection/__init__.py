@@ -721,7 +721,7 @@ def index_return_year(t):
 
     The uncapped, unfloored movement of the index itself.  It drives the
     *Partizipationsquote* design and is otherwise a diagnostic — and the diagnostic that
-    matters most, because on the research file's Example B ``Y(10) = +6.4402 %`` while the
+    matters most, because on the research file's Example B ``Y(9) = +6.4402 %`` while the
     Cap design credits **zero**.  The index rose and the credit was nothing; that is the
     feature the product is most criticised for and the one most often misdescribed.
     """

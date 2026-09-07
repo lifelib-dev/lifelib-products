@@ -92,7 +92,7 @@ C_red(t)                   reduced_capital_pp(t)               The same amount, 
 k_adb                      accident_mult()                     Accidental multiplier
 d_acc                      acc_share                           Accidental share of deaths
 V(t)                       surr_value_pp(t)                    Surrender value
-surr_scale(t)              surr_scale_pp(t)                    The scale, per 5000 EUR
+surr_scale(t)              surr_scale_pp(t)                    Scale per 5000 EUR, read at t+1
 pen(t)                     surr_penalty(t)                     Surrender penalty rate
 u(x)                       single_prem_rate(x)                 Single premium per 1 EUR
 rho                        reduction_share()                   Premium-stops made paid-up
@@ -700,9 +700,12 @@ def cum_prem_pp(t):
     one year's premium through months 0 to 11 - not a monthly accrual.  Accruing it
     monthly gives 28.00 rather than 336.03 in the first month on the anchor cell and
     understates policy-year-1 death outgo by 26 %.
+
+    ``K(0) = P(0)``: the first month's premium is the whole of the base at ``t = 0``, and
+    nothing is indexed below the frame.
     """
-    if t < 0:
-        return 0.0
+    if t == 0:
+        return prem_due_pp(0)
     return cum_prem_pp(t - 1) + prem_due_pp(t)
 
 

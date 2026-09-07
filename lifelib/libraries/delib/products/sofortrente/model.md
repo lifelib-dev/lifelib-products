@@ -60,8 +60,9 @@ six-line cash flow statement and `net_cf` in both orientations — and `result_p
 state behind it beside it.
 
 `t` is the library's **0-based** month index, counted in complete months from
-*Vertragsbeginn*: a new-business point's first row is `t = 0`, the completed policy year is
-`t // 12` and the contractual policy year is `t // 12 + 1`. `proj_len()` is the **exclusive
+*Vertragsbeginn*: a new-business point's first row is `t = 0`, `duration(t) = t // 12` is the
+completed policy years and `policy_year(t) = t // 12 + 1` the contractual, 1-based label —
+every formula that steps at the anniversary uses `duration(t)`. `proj_len()` is the **exclusive
 end** of the frame, so the frame is `range(t_start(), proj_len())`, the last row is
 `proj_len() − 1` and the row count is `proj_len() − t_start()`. On the anchor cell
 `proj_len() = 672` and the frame is `t = 0 … 671`, 672 monthly rows; on the in-force point 10

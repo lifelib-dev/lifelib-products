@@ -1293,6 +1293,11 @@ def test_the_time_index_is_zero_based(cancer):
         assert p.pols_cancer(0) == 0.0
         assert p.policy_year(0) == 1 and p.policy_year(11) == 1
         assert p.policy_year(12) == 2
+        # The renewal commission pinned on both sides of its boundary: policy year 1
+        # carries none, and the first month of policy year 2 is t = 12, not t = 13.
+        assert p.commissions(11) == 0.0
+        assert p.commissions(12) == pytest.approx(
+            0.03 * p.premiums(12), rel=1e-14)
         assert p.expenses(0) - p.maint_expenses(0) == pytest.approx(20_000.0, abs=YEN)
         for df in (p.result_cf(), p.result_pols()):
             assert df.index.name == "t"

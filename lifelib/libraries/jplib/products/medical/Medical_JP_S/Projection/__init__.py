@@ -103,8 +103,8 @@ d_ben                      d_ben(t)                        Benefit days, floor i
 room_dis, room_acc         room_dis(t), room_acc(t)        Days left on each limb
 d_pay_dis, d_pay_acc       d_pay_dis(t), d_pay_acc(t)      Paid days after the 通算 cap
 d_ben_dis, d_ben_acc       d_ben_dis(t), d_ben_acc(t)      Benefit days after the cap
-A_dis(t)                   agg_days_dis(t)                 疾病 通算 ledger, days
-A_acc(t)                   agg_days_acc(t)                 災害 通算 ledger, days
+A_dis(t)                   agg_days_dis(t)                 疾病 通算 ledger, days, at the start of t
+A_acc(t)                   agg_days_acc(t)                 災害 通算 ledger, days, at the start of t
 s_dis, s_acc               s_dis, s_acc                    Limb split of incidence [std]
 term(t)                    term_rate(t)                    Benefit-driven termination
 s_ih                       surg_ih_per_hosp                In-hospital surgeries per stay
@@ -115,8 +115,8 @@ f_adv                      adv_freq_mth()                  Monthly 先進医療 
 S_adv                      adv_sev                         Mean 技術料 per 療養
 pay(t)                     adv_pay_pp(t)                   Reimbursement before top-up
 adv_claim(t)               adv_claim_pp(t)                 先進医療 claim per policy
-V(t), LV                   adv_paid(t), adv_cap            先進医療 ledger and its cap
-(rider)                    lump_count(t)                   入院一時金 通算 count ledger
+V(t), LV                   adv_paid(t), adv_cap            先進医療 ledger, at the start of t, and its cap
+(rider)                    lump_count(t)                   入院一時金 通算 count ledger, at the start of t
 waived(t)                  waived(t)                       Fraction on 保険料払込免除
 waiver_inc                 waiver_inc_mth(t)               Waiver incidence, 0 in base
 l(t)                       pols_if(t)                      In force at the start of t
@@ -948,7 +948,7 @@ def d_ben_acc(t):
 
 
 def agg_days_dis(t):
-    """A_dis(t): the 疾病 limb's 通算 ledger in days, **per surviving policy**.
+    """A_dis(t): the 疾病 limb's 通算 ledger in days at the start of month t, **per surviving policy**.
 
     ``A_dis(t+1) = A_dis(t) + i(t) s_dis d_pay_dis(t)``, unweighted by ``pols_if``.
     Weighting it by the in-force probability would measure the block's consumption rather
@@ -966,7 +966,7 @@ def agg_days_dis(t):
 
 
 def agg_days_acc(t):
-    """A_acc(t): the 災害 limb's 通算 ledger in days, **per surviving policy**.
+    """A_acc(t): the 災害 limb's 通算 ledger in days at the start of month t, **per surviving policy**.
 
     A separate ledger, because the 通算 limit is applied separately to the two limbs
     [S4][S1].  One combined ledger terminates the contract roughly twice as early.  The
@@ -1042,7 +1042,8 @@ def adv_claim_pp(t):
 
 
 def adv_paid(t):
-    """V(t): the 先進医療 ledger in JPY, **per surviving policy**, against ``LV``.
+    """V(t): the 先進医療 ledger in JPY at the start of month t, **per surviving policy**,
+    against ``LV``.
 
     ``V(t+1) = V(t) + f_adv pay(t)``.  Only the reimbursed 技術料 counts against the
     lifetime cap; the cash top-up does not.  Never approached on the expectation — about
@@ -1069,7 +1070,8 @@ def lump_claims_pp(t):
 
 
 def lump_count(t):
-    """The 入院一時金 通算 count ledger, **per surviving policy**, against 50 payments.
+    """The 入院一時金 通算 count ledger at the start of month t, **per surviving policy**,
+    against 50 payments.
 
     Carried on the same basis as the day ledgers and for the same reason: a count
     weighted by the in-force probability would defer the 通算50回 limit indefinitely.
@@ -1229,13 +1231,19 @@ def premiums(t):
 
 
 def cv_pp(t):
-    """The 解約返戻金 per policy at the end of month t; **zero under 終身払** [S1][S6][S9].
+    """The 解約返戻金 per policy at the **start** of month t; **zero under 終身払** [S1][S6][S9].
 
     Every carrier examined writes no surrender value during the premium-paying period,
     and under 終身払 that is every duration.  Where a 短期払 is chosen a small value
     appears afterwards, standardized across two carriers at **10 x 入院給付金日額**
     [S1][S6] — the single route by which this chassis ever acquires one, and the reason
     :func:`claims` carries a ``"LAPSE"`` kind at all.
+
+    A start-of-month state, like every other state cells here: it turns on at
+    ``t = prem_end_month()``, the month of the 契約応当日 at age 65, which is the instant
+    the 払込期間 completes — premiums fall at the start of months ``0 … prem_end_month()
+    - 1``, so the last one is paid a month earlier.  ``claims(t, "LAPSE")`` pays month
+    ``t``'s end-of-month lapses at that start-of-month value.
     """
     if prem_period_type() == "to_65" and t >= prem_end_month():
         return cv_mult_short_pay * daily_amount()                    # noqa: F821

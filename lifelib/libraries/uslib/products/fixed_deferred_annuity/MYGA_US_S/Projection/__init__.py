@@ -131,8 +131,8 @@ gp_end(t)               gp_end(t)                                             Mo
 (the 30-day window)     in_gp_window(t)                                       True in the guarantee-period-end window
 basis(t)                tax_basis_pp(t)                                       IRC 72 investment in the contract
 (taxable part of W)     taxable_wd_pp(t)                                      Income-first taxable amount
-l(t-1)                  pols_if(t)                                            In-force at the start of month t; pols_if(0) = l(0)
-l(0) = 1                pols_if_init                                          In-force at issue, the start of month 0
+l(t-1)                  pols_if(t)                                            In-force at the start of month t; pols_if(0) = pols_if_init()
+(opening l)             pols_if_init                                          In-force at issue: the opening value of month 0, the notes' l(t-1) at t = 0
 l(t)                    pols_if_at(t, "AFT_DECR")                             In-force at the end of month t
 (intra-month l)         pols_if_at(t, timing)                                 BEF_DECR / BEF_MORT / BEF_LAPSE / AFT_DECR
 q(t)                    mort_rate_mth(t)                                      Monthly mortality rate
@@ -315,7 +315,11 @@ def premium_pp():
 
 
 def pols_if_init():
-    """l(0): in-force probability at issue, 1 for a single-contract model point."""
+    """The opening in-force of month 0: 1 for a single-contract model point.
+
+    The notes' ``l(t-1)`` at ``t = 0``, the in-force probability at issue; their
+    end-of-month ``l(0)`` is ``pols_if_at(0, "AFT_DECR")``.
+    """
     return float(model_point()["pols_if_init"])
 
 
@@ -425,7 +429,11 @@ def premium_tax_rate():
 
 
 def tax_basis_pp_init():
-    """basis(0): the IRC 72 investment in the contract at issue [R6]."""
+    """The opening IRC 72 investment in the contract, at the start of month 0 [R6].
+
+    The notes' ``basis(t)`` is the end-of-month value, so this is ``basis(t-1)`` at
+    ``t = 0``, not ``tax_basis_pp(0)``.
+    """
     return float(model_point()["tax_basis_initial"])
 
 

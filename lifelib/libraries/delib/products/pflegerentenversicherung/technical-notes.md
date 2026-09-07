@@ -54,7 +54,8 @@ German terms of art keep their German form in prose.
   which depends only on the entry age and the terminal age, **not** on `duration_mth_init()`. The
   anchor cell (entry age 45, `omega_age = 110`) therefore has `proj_len() = 780` and runs to
   `t = 779`, 780 monthly rows, attained ages 45 to 109. A point opening at `duration_mth_init() = d0`
-  publishes `proj_len() - d0` rows ending at the same last index.
+  publishes `proj_len() - d0` rows and still ends at its own `proj_len() - 1`:
+  `duration_mth_init` shortens the frame at the front, never at the back.
 - **Terminal age.** `omega_age = 110` **[std]**, with `mort_rate(t) = 1.0` forced in the final year
   of age so the model is a closed system rather than a truncated one and the decrement closure holds
   exactly. It is a modelling choice, not a table fact — the DAV tables run higher [R15] [REG-R51] —
@@ -371,14 +372,18 @@ established** (gap 20); the shape is a modeller's construction, argued from *Zil
 and the profile is flatter than a savings product's, and a paid-up contract has no premium-driven
 exit at all. The monthly rate is `1 - (1 - lapse_rate(t)) ** (1/12)`.
 
-**The guaranteed *Rückkaufswert* [std]**, as a fraction of premiums paid to date by completed policy
-year — the scale-free form, and the form a German contract states [REG-R28]:
+**The guaranteed *Rückkaufswert* [std]**, as a fraction of premiums paid to date by
+*Versicherungsjahr* `y(t) = t // 12 + 1` — the scale-free form, and the form a German contract
+states [REG-R28]:
 
 | Policy year | 1 | 2 | 3 | 4 | 5 | 10 | 15 | 20 | 25 | 30 | 40 |
 |---|---|---|---|---|---|---|---|---|---|---|---|
 | `rkw_prem_ratio` | 0.00 | 0.00 | 0.05 | 0.12 | 0.20 | 0.42 | 0.50 | 0.56 | 0.60 | 0.64 | 0.70 |
 
 with intermediate years interpolated in the shipped file and year 40's ratio applying thereafter.
+Year `k`'s ratio applies **throughout** policy year `k`, `t = 12(k − 1) … 12k − 1`: it is the
+current *Versicherungsjahr*, not the completed one, so a surrender at `t = 24` — two completed
+years — already takes year 3's 0.05.
 The shape encodes two cited facts: the 25 ‰ *Zillmerung* allowance [REG-R16], which is why the first
 two years are zero, and the § 169 Abs. 3 five-year spread **floor** [REG-R28], which is why it turns
 positive in year three. It never approaches 1.00, the contract having consumed risk premium
@@ -890,7 +895,7 @@ end of the band it lands at and why.
 ### The model's own output
 
 Every figure is transcribed from `Projection[1].result_cf()`, money to the cent and policy counts to
-six decimals. The frame has **780 rows**, `t = 0 … 779`; thirteen are shown. `claims_death` is a
+six decimals. The frame has **780 rows**, `t = 0 … 779`; fourteen are shown. `claims_death` is a
 column of the frame, is **structurally zero at every `t`** here (`beitragsrueckgewaehr = False`), and
 is omitted rather than printed as 780 zeros. The equivalence premium is
 **`premium_mth_pp() = 64.198409` € a month**.

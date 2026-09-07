@@ -176,15 +176,16 @@ auto-convert to another product [S4][S7][S12] — and importing one changes the 
 are taken **after** mortality and after ordinary lapse — the notes' processing order,
 steps 3, 4 and 5. It is also the larger decrement where it applies: in the anchor cell's
 first boundary year (``t = 9``, the tenth policy year) it removes 0.08235591 of the
-0.11175249 lives that leave that year, 74% of all exits. Folding it into :func:`lapse_rate` makes the boundary invisible and mis-times
-most of the cohort's departure.
+0.11175249 lives that leave that year, 74% of all exits. Folding it into
+:func:`lapse_rate` makes the boundary invisible and mis-times most of the cohort's
+departure.
 
 Two behaviours roll into the one rate, and a production model should separate them: the
 policyholder who gives notice to decline, and the policyholder whose **first renewed
 premium goes unpaid through grace**, in which case the renewal is treated as never
 having happened and the contract terminates at the original expiry [S1][S7]. Only the
 first is a decision. Both leave at the boundary, which is why one rate can carry them —
-and why neither may appear in force in year ``t + 1`` collecting the renewed premium.
+and why neither may appear in force at ``t + 1`` collecting the renewed premium.
 
 .. rubric:: One decrement, one benefit
 
@@ -825,10 +826,12 @@ def pols_lapse_pool(t):
     than as one blanket balance, because the window runs from each life's own 失効 and a
     single indicator would drop a whole cohort a year early or late::
 
-        lap(t) = sum over s in [t - W, t - 1] of pols_lapse(s) (1 - rho)^(t - 1 - s)
+        lap(t) = sum over s in [max(0, t - W), t - 1] of pols_lapse(s) (1 - rho)^(t - 1 - s)
 
-    with ``W = reinstate_window = 3`` years [S1].  Renewal declines never enter it: a
-    declined renewal is an expiry, not a 失効, and there is nothing to reinstate.
+    with ``W = reinstate_window = 3`` years [S1].  The vintage index ``s`` is the same
+    0-based projection index as ``t``, so the sum is empty and ``lap(0) = 0``.  Renewal
+    declines never enter it: a declined renewal is an expiry, not a 失効, and there is
+    nothing to reinstate.
     """
     rho = reinstate_rate_eff()
     return sum(pols_lapse(s) * (1.0 - rho) ** (t - 1 - s)
@@ -851,7 +854,8 @@ def pols_lapse_expire(t):
     """Lives leaving the pool in year t because their three-year window has run out.
 
     The vintage that lapsed in year ``t - W``, net of the reinstatements taken out of it
-    along the way.  They are gone for good: after the window there is no 復活 [S1].
+    along the way, and zero while ``t < W``, when no vintage has aged out yet.  They are
+    gone for good: after the window there is no 復活 [S1].
     """
     s = t - reinstate_window                                         # noqa: F821
     if s < 0:
@@ -1243,8 +1247,9 @@ def check_net_cf():
 
 
 def result_cf():
-    """Result table of cashflows, indexed by the 0-based projection year ``t = 0 .. proj_len() - 1``.
+    """Result table of cashflows, indexed by the 0-based projection year ``t``.
 
+    The frame runs ``t = 0 .. proj_len() - 1``, so it has ``proj_len()`` rows.
     ``pols_if`` is the start-of-year count, which is the weight applied to every cash
     flow on the same row.  ``net_cf`` carries the notes' own income-positive sign.
     ``claims_lapse`` is a column of zeros by product design — there is no 解約返戻金 —

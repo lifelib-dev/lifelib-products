@@ -119,8 +119,9 @@ net-level-premium reserve with a **survivorship release**: the premiums of those
 to the survivors net of the death benefit paid, so the recursion divides by `(1 - q')`. So —
 and this is the trap, because it is the nearer neighbour and shares the Korean name — does
 `WholeLife_KR_A`'s own 계약자적립액, which runs
-`V(t) = ((V(t-1) + P)(1 + i) - q·SA)/(1 - q)`. **This** 계약자적립액 does none of that. It is
-a contractual balance:
+`V(d) = ((V(d-1) + P·1{d <= m})(1 + i) - q·SA)/(1 - q)`, on **that** model's anniversary
+index `d` (`d = 0` at issue), not on this model's period index `t`. **This** 계약자적립액
+does none of that. It is a contractual balance:
 
 ```
 AV(0)   = 0
@@ -166,9 +167,10 @@ the frame's exclusive end, `range(proj_len())` — so the last index is `proj_le
 Korean industry table is published at all [REG-R33] [REG-R34]. It costs almost nothing to
 be generous with it — the last five years of the anchor cell's projection carry 0.0249 of
 combined in-force and ₩170,814 of outgo, 0.12% of the annuity total — while a horizon
-short enough to bite would silently truncate a life annuity's tail. Reading `proj_len()`
-as the last index — and so sweeping `range(proj_len())` one row short — is the off-by-one
-that drops exactly that terminal row.
+short enough to bite would silently truncate a life annuity's tail. Sweeping
+`range(proj_len() - 1)` — the off-by-one of reading the exclusive end as the last index
+and then subtracting — drops exactly that terminal row; the slip in the other direction,
+`range(proj_len() + 1)`, appends an empty row at `t = 81` instead.
 
 ## The annual grid and the monthly contract
 

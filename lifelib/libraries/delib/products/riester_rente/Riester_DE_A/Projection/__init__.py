@@ -13,8 +13,11 @@ projecting model point 1::
 
 ``t`` counts **policy years**, 0-based: ``t = 0`` is the policy year that opens at the
 1 January 2027 valuation date and ``t = proj_len() - 1`` the last, with
-``proj_len() = omega_age - age(0) + 1`` the **number** of projected periods.  The policy
-year in contractual language is ``t + 1``.  The frame is contiguous and uniform on every
+``proj_len() = omega_age - age(0) + 1`` the **number** of projected periods.  The
+contractual contract year is ``duration(t) + 1 = duration_init() + t + 1``, which is
+``t + 1`` only on a point projected from its own inception (``duration_init() == 0``);
+on the anchor, whose contract has run three years, ``t = 0`` is contract year 4.  The
+frame is contiguous and uniform on every
 model point, including a point that commutes at *Rentenbeginn* and therefore carries zeros
 to the end — a uniform frame is what lets two model points be read side by side, and
 truncating a commuted point is a listed pitfall.
@@ -22,7 +25,7 @@ truncating a commuted point is a listed pitfall.
 **Two phases in one projection.** ``t_conv() = rentenbeginn_age - age(0)`` is the
 conversion year. ``is_accum(t)`` holds for ``t < t_conv()`` and ``is_payout(t)`` for
 ``t >= t_conv()``. The accumulation recursions stop at ``t_conv()``; the lifelong annuity
-runs from ``t_conv()`` to ``proj_len()``. A model that stops at *Rentenbeginn* has not
+runs from ``t_conv()`` to ``proj_len() - 1``. A model that stops at *Rentenbeginn* has not
 modelled the benefit the AltZertG requires.
 
 .. rubric:: Input data
@@ -75,7 +78,7 @@ Notes symbol               Cells                           Meaning
 n = omega - x(0) + 1       proj_len()                      Number of projected periods
 T                          t_conv()                        The conversion year
 x(t)                       age(t)                          Attained age in year t
-d(t)                       duration(t)                     Contract years done by end of t
+d(t)                       duration(t)                     Contract years done at start t
 tau(t)                     calendar_year(t)                Calendar year of period t
 (phase)                    is_accum(t), is_payout(t)       Accumulation / payout flag
 l(t)                       pols_if(t)                      In force at the START of year t
@@ -295,7 +298,7 @@ def duration_init():
     """Completed contract years at the valuation date; 0 for a point projected from issue.
 
     It drives three things and each of them matters.  ``duration(t) = duration_init() +
-    t + 1`` selects the *Stornoabzug* band and the acquisition-charge window, so an in-force
+    t`` selects the *Stornoabzug* band and the acquisition-charge window, so an in-force
     point picks up the charge only for the contract years it has left; the expense
     inflation factor runs on contract duration rather than projection year; and the
     acquisition expense and initial commission fall only where ``duration_init() == 0``,
@@ -558,15 +561,18 @@ def age(t):
 
 
 def duration(t):
-    """d(t): completed contract years at the end of period t, ``duration_init() + t + 1``.
+    """d(t): completed contract years at the start of period t, ``duration_init() + t``.
 
-    The **contract** clock rather than the projection clock, and **1-based**, because it is
-    a contractual band label: ``duration(t) = k`` is contract year ``k``, which is the key
-    of *lapse_table.csv*.  It selects the surrender and transfer bands, gates the five-year
-    acquisition charge, and drives the expense inflation factor, so an in-force point
-    inherits the charge window its contract has actually used up.
+    The **contract** clock rather than the projection clock, and **0-based**, as lifelib's
+    ``duration`` is and as ``Basis_DE_A`` and ``KLV_DE_A`` define it: a point projected from
+    its own inception opens at ``duration(0) = 0``.  The contractual band label is the
+    1-based ``duration(t) + 1`` — contract year ``k`` is ``duration(t) = k - 1`` — and that
+    is the key of *lapse_table.csv*, so the surrender and transfer bands are read at
+    ``duration(t) + 1``.  It also gates the five-year acquisition charge and drives the
+    expense inflation factor, so an in-force point inherits the charge window its contract
+    has actually used up.
     """
-    return duration_init() + t + 1
+    return duration_init() + t
 
 
 def calendar_year(t):
@@ -665,7 +671,8 @@ def lapse_rate(t):
     """
     if not is_accum(t):
         return 0.0
-    return float(data.lapse_table().at[duration(t), "lapse_rate"])   # noqa: F821
+    return float(data.lapse_table().at[duration(t) + 1,               # noqa: F821
+                                       "lapse_rate"])
 
 
 def transfer_rate(t):
@@ -678,7 +685,8 @@ def transfer_rate(t):
     """
     if not is_accum(t):
         return 0.0
-    return float(data.lapse_table().at[duration(t), "transfer_rate"])  # noqa: F821
+    return float(data.lapse_table().at[duration(t) + 1,               # noqa: F821
+                                       "transfer_rate"])
 
 
 # === the in-force recursion
@@ -951,7 +959,7 @@ def acq_charge_pp(t):
     contract it drives :func:`prem_to_av_pp` negative; stopping it at *Beitragsfreistellung*
     is a listed pitfall.
     """
-    if t > t_conv() or duration(t) > acq_charge_years:               # noqa: F821
+    if t > t_conv() or duration(t) >= acq_charge_years:              # noqa: F821
         return 0.0
     return acq_charge_rate * beitragssumme() / acq_charge_years      # noqa: F821
 
@@ -1584,7 +1592,7 @@ def expenses(t):
                   * beitragssumme()) * pols_if(0)
     if is_accum(t):
         total += (expense_maint                                      # noqa: F821
-                  * (1.0 + expense_infl) ** (duration(t) - 1)        # noqa: F821
+                  * (1.0 + expense_infl) ** duration(t)             # noqa: F821
                   * pols_if(t))
     total += expense_annuity * pols_annuity_pay(t)                   # noqa: F821
     total += expense_claim * (pols_death(t) + pols_lapse(t)          # noqa: F821
