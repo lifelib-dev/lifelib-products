@@ -52,13 +52,13 @@ technical notes' symbols and the cells names.
 `t` runs from anniversary `t` to anniversary `t + 1`, the attained age entering it is
 `age(t) = age_at_entry() + t`, and the contractual **policy year is the 1-based label
 `t + 1`** — derived where a contractual schedule has to be read, never indexed by. This is
-the library-wide convention (lifelib's `basiclife/BasicTerm_S`, `savings/CashValue_SE`,
-`annuallife/TradLife_A`: `for t in range(proj_len())`). **Note the contrast with
-`BasicTerm_S` and `CashValue_SE`, where `t` counts months** — here it counts years,
-because every cash flow driver in this product is annual: the level annual premium, the
-annual dividend declaration, the anniversary capitalization of loan interest. There is no
-account value requiring monthiversary processing. The notes' monthly modal-premium
-refinement is a premium-income adjustment only and is not implemented.
+the library-wide convention (lifelib's `basiclife/BasicTerm_S`, `savings/CashValue_SE`:
+`for t in range(proj_len())`). **Note the contrast with `BasicTerm_S` and `CashValue_SE`,
+where `t` counts months** — here it counts years, because every cash flow driver in this
+product is annual: the level annual premium, the annual dividend declaration, the
+anniversary capitalization of loan interest. There is no account value requiring
+monthiversary processing. The notes' monthly modal-premium refinement is a premium-income
+adjustment only and is not implemented.
 
 The frame is `t = proj_start() … proj_len() − 1`. `proj_len() = 100 − age_at_entry()` is
 the **number** of policy years projected from issue — the exclusive end of the frame, so
@@ -401,10 +401,14 @@ stop reconciling: 1,800 of premium beside 0.98 policies.
 
 `pols_if(t)` is therefore the number in force at the **start** of period `t` — the notes'
 `l_t`, `l_0 = 1` at issue — which is both the weight on that same `result_cf()` row and
-what `pols_if` means in every other model in this library (`Term_US_A.pols_if(0)` is
-`pols_if_init()`; lifelib's `CashValue_SE.pols_if(t)` is `pols_if_at(t, "BEF_MAT")`).
+what `pols_if` means in every other model in this library but `SPIA_US_S`
+(`Term_US_A.pols_if(0)` is `pols_if_init()`; lifelib's `CashValue_SE.pols_if(t)` is
+`pols_if_at(t, "BEF_MAT")`).
 `premiums(t) / premium_net_pp(t) == pols_if(t)` is an identity, and a test asserts it;
 `pols_if(proj_start()) == pols_if_init()` on every model point, in force or new business.
+`SPIA_US_S` is the library's one documented exception: its `pols_if(t)` is the notes'
+end-of-month obligation indicator `max(C(t), l_alive(t+1))`, a *closing* measure, so
+`pols_if(0) != pols_if_init()` there — see that product's own `model.md`.
 
 The end-of-period count is not lost. It is `pols_if_at(t, "AFT_DECR")`, the notes'
 `l_{t+1}` and the fourth `timing` string: after deaths, surrenders and — in the final

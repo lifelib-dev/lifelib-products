@@ -536,7 +536,10 @@ def pols_if_init():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``duration_mth(t) // 12``."""
+    """Completed policy years at the start of month t: ``duration_mth(t) // 12``.
+
+    0-based, as ``duration`` is throughout lifelib: 0 through the first policy year.
+    """
     return duration_mth(t) // 12
 
 

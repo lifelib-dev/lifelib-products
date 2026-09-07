@@ -48,7 +48,7 @@ Cells Descriptions
 
 .. autofunction:: age
 
-.. autofunction:: duration
+.. autofunction:: policy_year
 
 .. autofunction:: r_fin
 

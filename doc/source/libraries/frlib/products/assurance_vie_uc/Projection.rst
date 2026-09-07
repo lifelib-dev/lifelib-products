@@ -82,7 +82,11 @@ Cells Descriptions
 
 .. autofunction:: uc_return_mth
 
+.. autofunction:: unit_price_open
+
 .. autofunction:: unit_price
+
+.. autofunction:: units_open
 
 .. autofunction:: fee_units
 
@@ -95,6 +99,8 @@ Cells Descriptions
 .. autofunction:: arb_fee_pp
 
 .. autofunction:: arb_units
+
+.. autofunction:: av_euro_open_pp
 
 .. autofunction:: av_euro_aft_credit_pp
 

@@ -48,6 +48,8 @@ Cells Descriptions
 
 .. autofunction:: proj_len
 
+.. autofunction:: policy_year
+
 .. autofunction:: age
 
 .. autofunction:: mort_rate_at_age

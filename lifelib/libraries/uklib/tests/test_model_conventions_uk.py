@@ -397,10 +397,12 @@ def test_result_cf_column_conventions(model):
 def test_net_cf_is_income_positive(model):
     """``net_cf`` carries one sign across every model in the library: income less outgo.
 
-    Where a product's technical notes print the stream outgo-positive (whole of life, and
-    the pension annuity), that orientation survives verbatim as ``liability_cf`` and
-    ``net_cf`` is its negative - so ``result_cf()["net_cf"]`` can be compared and summed
-    across the library without checking which product it came from.
+    Where a product's technical notes print the stream outgo-positive - in this library
+    that is the pension annuity alone, whose ``CF(t)`` is gross liability outgo - that
+    orientation survives verbatim as ``liability_cf`` and ``net_cf`` is its negative, so
+    ``result_cf()["net_cf"]`` can be compared and summed across the library without
+    checking which product it came from.  Every other model's notes are already income
+    positive, ships no ``liability_cf``, and skips below.
     """
     proj = model.Projection[list(model.Data.model_point_table().index)[0]]
     if "liability_cf" not in model.Projection.cells:
@@ -425,18 +427,19 @@ def test_every_model_point_projects(model):
     checked for one separately; and every point must publish the same columns, or two rows
     of one model's output cannot be read together.
 
-    It is also where the library's one time-index convention is asserted, for every model
-    point of every model. The time index ``t`` is 0-based: ``t = 0`` is the first period of
-    a policy projected from issue (the issue year on an annual grid, the issue month on a
-    monthly one), period ``t`` runs from time ``t`` to time ``t + 1``, and the attained age
-    is ``age_at_entry + t`` on an annual grid (``age_at_entry + duration(t)``,
-    ``duration(t) = t // 12``, on a monthly one). ``proj_len()`` is the number of periods
-    from ``t = 0``, i.e. the exclusive end of the frame: ``result_cf()`` covers
-    ``t = t_first, ..., proj_len() - 1``, where ``t_first`` is 0 for a point projected from
-    issue and the elapsed periods for an in-force point. This is lifelib's own convention
-    (``basiclife/BasicTerm_S``, ``savings/CashValue_SE``, ``annuallife/TradLife_A``:
-    ``for t in range(proj_len())``). A contractual policy year is the 1-based label
-    ``t + 1`` (``duration(t) + 1`` on a monthly grid) and is derived, never indexed by.
+    It is also where the library's one time-index convention is asserted, for every
+    model point of every model. The time index ``t`` is 0-based: ``t = 0`` is the first
+    period of a policy projected from issue (the issue year on an annual grid, the issue
+    month on a monthly one), period ``t`` runs from time ``t`` to time ``t + 1``, and
+    the attained age is ``age_at_entry + t`` on an annual grid
+    (``age_at_entry + duration(t)``, ``duration(t) = t // 12``, on a monthly one).
+    ``proj_len()`` is the number of periods from ``t = 0``, i.e. the exclusive end of
+    the frame: ``result_cf()`` covers ``t = t_first, ..., proj_len() - 1``, where
+    ``t_first`` is 0 for a point projected from issue and the elapsed periods for an
+    in-force point. This is lifelib's own convention (``basiclife/BasicTerm_S``,
+    ``savings/CashValue_SE``: ``for t in range(proj_len())``). A contractual policy year
+    is the 1-based label ``t + 1`` (``duration(t) + 1`` on a monthly grid) and is
+    derived, never indexed by.
 
     So the frame of every ``result_cf()`` is contiguous, starts at some ``t_first >= 0``,
     and ends at ``proj_len() - 1`` inclusive: ``range(t_first, proj_len())``.

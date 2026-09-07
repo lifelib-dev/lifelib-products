@@ -36,12 +36,11 @@ model.Projection[1].result_cf()
 `t` is the **month from the annuity start date, 0-based**: `t = 0` is the first
 projected month, month `t` runs from time `t` to time `t + 1`, and `proj_len()` is the
 *number* of months projected — the exclusive end of the frame, so `result_cf()` and
-`result_pols()` are indexed by `range(proj_len())` and the last row is
-`proj_len() - 1`. On the worked model point that is 636 rows, `t = 0 … 635`. The
-contractual **policy year** is the 1-based label `policy_year(t) = duration(t) + 1`
-with `duration(t) = t // 12`, derived and never indexed by; `age(t, life)` is
-`age_at_entry(life) + duration(t)`. This is the library-wide convention
-(`basiclife/BasicTerm_S`, `savings/CashValue_SE`, `annuallife/TradLife_A`:
+`result_pols()` are indexed by `range(proj_len())` and the last row is `proj_len() - 1`. On
+the worked model point that is 636 rows, `t = 0 … 635`. The contractual **policy year** is
+the 1-based label `policy_year(t) = duration(t) + 1` with `duration(t) = t // 12`, derived
+and never indexed by; `age(t, life)` is `age_at_entry(life) + duration(t)`. This is the
+library-wide convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
 `for t in range(proj_len())`), asserted for every model point in
 `tests/test_model_conventions_uk.py`.
 

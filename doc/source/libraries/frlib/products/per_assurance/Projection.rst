@@ -52,6 +52,8 @@ Cells Descriptions
 
 .. autofunction:: duration
 
+.. autofunction:: plan_year
+
 .. autofunction:: years_to_horizon
 
 .. autofunction:: alloc_euro
@@ -83,6 +85,8 @@ Cells Descriptions
 .. autofunction:: inv_income_pp
 
 .. autofunction:: mgmt_charge_pp
+
+.. autofunction:: death_floor_pp_at
 
 .. autofunction:: death_floor_pp
 

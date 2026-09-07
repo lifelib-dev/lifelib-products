@@ -29,8 +29,15 @@ import pathlib
 
 LIB = pathlib.Path(__file__).resolve().parents[1]
 
-ANNUAL = {"grid": "annual", "age_basis": "ANB", "discounted": False}
-MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
+ANNUAL = {"grid": "annual", "discounted": False}
+MONTHLY = {"grid": "monthly", "discounted": False}
+
+# The age basis is a property of the product, not of the grid: most of the library rates
+# on age nearest birthday, but whole of life prices on "age last birthday" for both cells,
+# the unit-linked bond's mortality charge is quoted ALB, and the pension annuity's
+# generational table is entered ALB.  It is recorded per model rather than folded into the
+# grid constants, where a single value would be false for three of the seven.
+ANB, ALB = "ANB", "ALB"
 
 # name -> (path relative to the library root, metadata)
 #
@@ -45,15 +52,15 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # name, folder and the model's own _name all agree.
 MODELS = {
     # Protection
-    "Term_UK_A": ("products/term_assurance/Term_UK_A", ANNUAL),
-    "CI_UK_S": ("products/critical_illness/CI_UK_S", MONTHLY),
-    "IP_UK_S": ("products/income_protection/IP_UK_S", MONTHLY),
-    "WOL_UK_S": ("products/whole_of_life/WOL_UK_S", MONTHLY),
+    "Term_UK_A": ("products/term_assurance/Term_UK_A", {**ANNUAL, "age_basis": ANB}),
+    "CI_UK_S": ("products/critical_illness/CI_UK_S", {**MONTHLY, "age_basis": ANB}),
+    "IP_UK_S": ("products/income_protection/IP_UK_S", {**MONTHLY, "age_basis": ANB}),
+    "WOL_UK_S": ("products/whole_of_life/WOL_UK_S", {**MONTHLY, "age_basis": ALB}),
     # Savings
-    "ULB_UK_S": ("products/unit_linked_bond/ULB_UK_S", MONTHLY),
-    "WP_UK_A": ("products/with_profits/WP_UK_A", ANNUAL),
+    "ULB_UK_S": ("products/unit_linked_bond/ULB_UK_S", {**MONTHLY, "age_basis": ALB}),
+    "WP_UK_A": ("products/with_profits/WP_UK_A", {**ANNUAL, "age_basis": ANB}),
     # Annuity
-    "PA_UK_S": ("products/pension_annuity/PA_UK_S", MONTHLY),
+    "PA_UK_S": ("products/pension_annuity/PA_UK_S", {**MONTHLY, "age_basis": ALB}),
 }
 
 

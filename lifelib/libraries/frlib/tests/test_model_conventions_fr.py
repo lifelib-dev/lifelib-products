@@ -31,17 +31,17 @@ the first alone, and where the few product assertions that did not generalise li
 
 **On the time index and ``proj_len()``.** The time index ``t`` is 0-based: ``t = 0`` is
 the first period of a policy projected from issue (the issue year on an annual grid, the
-issue month on a monthly one), period ``t`` runs from time ``t`` to time ``t + 1``, and the
-attained age is ``age_at_entry + t`` on an annual grid (``age_at_entry + duration(t)``,
-``duration(t) = t // 12``, on a monthly one). ``proj_len()`` is the number of periods from
-``t = 0``, i.e. the exclusive end of the frame: ``result_cf()`` covers
-``t = t_first, ..., proj_len() - 1``, where ``t_first`` is 0 for a point projected from
-issue and the elapsed periods for an in-force point. This is lifelib's own convention
-(``basiclife/BasicTerm_S``, ``savings/CashValue_SE``, ``annuallife/TradLife_A``:
-``for t in range(proj_len())``). A contractual policy year is the 1-based label ``t + 1``
-(``duration(t) + 1`` on a monthly grid) and is derived, never indexed by. The same
-convention holds in every sister library, and the sweep below asserts it for every model
-point of every model in the registry.
+issue month on a monthly one), period ``t`` runs from time ``t`` to time ``t + 1``, and
+the attained age is ``age_at_entry + t`` on an annual grid
+(``age_at_entry + duration(t)``, ``duration(t) = t // 12``, on a monthly one).
+``proj_len()`` is the number of periods from ``t = 0``, i.e. the exclusive end of the
+frame: ``result_cf()`` covers ``t = t_first, ..., proj_len() - 1``, where ``t_first`` is
+0 for a point projected from issue and the elapsed periods for an in-force point. This
+is lifelib's own convention (``basiclife/BasicTerm_S``, ``savings/CashValue_SE``:
+``for t in range(proj_len())``). A contractual policy year is the 1-based label
+``t + 1`` (``duration(t) + 1`` on a monthly grid) and is derived, never indexed by. The
+same convention holds in every sister library, and the sweep below asserts it for every
+model point of every model in the registry.
 """
 import math
 import re
@@ -115,7 +115,7 @@ def read_log(name):
     With the window over the sweep the module already runs, the read-once check no longer
     needs an instance of its own: it used to build a second ``<name>_reads`` model and
     re-project every model point purely to count reads, which was the single most expensive
-    line in all four suites.
+    line in every one of the country libraries' suites.
 
     ``name`` is requested so the window is per model rather than per module.
     """
@@ -344,7 +344,7 @@ def test_cells_names_are_lower_snake_case(model):
 # spelling two concepts. Each maps to the name that won and why it won. Reintroducing one
 # is how the library drifts back apart, so it fails here.
 #
-# The register is shared across all four libraries, and the reasons record where each
+# The register is shared across the country libraries, and the reasons record where each
 # collision was found — so some of them name a US, UK or Japanese model. That is
 # provenance, not a stale reference: the name lost there, and it stays lost here.
 #
@@ -474,8 +474,8 @@ def test_net_cf_is_income_positive(model):
 def test_pols_if_is_the_start_of_period_count(name, model):
     """``pols_if(t)`` is the exposure at the **start** of period t, not the end of it.
 
-    This is the first row of uslib's shared vocabulary table, which the library index
-    names as the settled ruling across all four libraries: ``pols_if(t)`` is the count at
+    This is the in-force row of uslib's shared vocabulary table, which the library index
+    names as the settled ruling across the country libraries: ``pols_if(t)`` is the count at
     the start of period ``t`` and is the weight on that same ``result_cf()`` row's cash
     flows, with end-of-period state reachable through ``pols_if_at(t, timing)``.
 

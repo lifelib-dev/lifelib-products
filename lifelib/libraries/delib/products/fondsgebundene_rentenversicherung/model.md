@@ -54,15 +54,15 @@ what a replacement must preserve.
 
 ## The time index and the frame
 
-`t` is the **0-based** policy month counted from the contract's own inception: `t = 0` is the
-inception month, period `t` runs from time `t` to time `t + 1`, and `t = 60` means the same
-thing on every model point — the first month after the acquisition-charge instalment ends.
-`proj_len() = 12 × (annuity_age − entry_age)` is the **number** of policy months and so the
-frame's **exclusive** end, so `result_cf()` covers `range(proj_start(), proj_len())` — the last
-row is `t = proj_len() − 1`, which is 359 on the anchor cell, and `len(result_cf())` is
-`proj_len() − proj_start()`. That is lifelib's own convention (`basiclife/BasicTerm_S`,
-`savings/CashValue_SE`, `annuallife/TradLife_A`: `for t in range(proj_len())`), and it is what
-the conventions suite asserts for every model point.
+`t` is the **0-based** policy month counted from the contract's own inception: `t = 0` is
+the inception month, period `t` runs from time `t` to time `t + 1`, and `t = 60` means the
+same thing on every model point — the first month after the acquisition-charge instalment
+ends. `proj_len() = 12 × (annuity_age − entry_age)` is the **number** of policy months and
+so the frame's **exclusive** end, so `result_cf()` covers `range(proj_start(), proj_len())`
+— the last row is `t = proj_len() − 1`, which is 359 on the anchor cell, and
+`len(result_cf())` is `proj_len() − proj_start()`. That is lifelib's own convention
+(`basiclife/BasicTerm_S`, `savings/CashValue_SE`: `for t in range(proj_len())`), and it is
+what the conventions suite asserts for every model point.
 
 `proj_start() = duration_init_m` — **0** for new business and **96** for the in-force cell.
 `duration_init_m` is an elapsed count and is therefore already 0-based, so it is the first

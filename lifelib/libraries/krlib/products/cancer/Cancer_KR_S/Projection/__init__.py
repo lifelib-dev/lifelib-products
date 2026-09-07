@@ -561,7 +561,12 @@ def age(t):
 
 
 def policy_year(t):
-    """y(t): the policy year containing month t, ``t // 12 + 1``."""
+    """y(t): the policy year containing month t, ``t // 12 + 1``.
+
+    The **contractual** policy year, a **1-based** label: the 0-based month ``t = 0`` falls
+    in policy year 1.  It is derived from the frame's index and is never the index itself;
+    only :func:`lapse_rate` reads it, the lapse scale being written in policy years.
+    """
     return t // 12 + 1
 
 

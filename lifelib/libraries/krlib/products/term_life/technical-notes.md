@@ -70,7 +70,7 @@ savings chassis.
   contractual **policy year** is the derived 1-based label `t + 1`. `proj_len` is the
   **number** of projected periods — the exclusive end of the frame — so `result_cf()`
   covers `t = 0, 1, …, proj_len − 1` and has `proj_len` rows. This is lifelib's own
-  convention (`basiclife/BasicTerm_S`, `annuallife/TradLife_A`: `for t in
+  convention (`basiclife/BasicTerm_S`: `for t in
   range(proj_len())`) and it is the convention of every model in this library.
 - **Timing conventions [std].** Premiums at the start of each period; maintenance
   expense at the start of the period; acquisition expense and initial commission at

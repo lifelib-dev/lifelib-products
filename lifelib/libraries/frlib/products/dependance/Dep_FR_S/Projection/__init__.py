@@ -662,7 +662,10 @@ def proj_len():
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``t // 12``."""
+    """Completed policy years at the start of month t: ``t // 12``.
+
+    0-based, as ``duration`` is throughout lifelib: 0 through the first policy year.
+    """
     return t // 12
 
 

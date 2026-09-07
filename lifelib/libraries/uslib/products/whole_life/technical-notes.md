@@ -233,12 +233,12 @@ coincidence of the snapshot, not a model property.
 
 ### Dividend application (by option)
 
-- **PUA (default [S1] [S2]):** `ΔPUAF_t = (D_t + D^PUA_t) / NSP_{x+t+1}`; `PUAF_t = PUAF_{t−1}
-  + ΔPUAF_t`; `PUACV_t = PUAF_t · NSP_{x+t+1}` **[std]** (the purchase falls at the
-  anniversary `t + 1` that ends the period, so it is priced at that attained age; valuing all
-  PUA face at the attained-age NSP on the guarantee basis is exact at issue of each layer and
-  at age 100, approximate between **[std]**). At age 100, `NSP_100 = 1` so `PUACV = PUAF`
-  [S1].
+- **PUA (default [S1] [S2]):** `ΔPUAF_t = (D_t + D^PUA_t) / NSP_{x+t+1}`;
+  `PUAF_t = PUAF_{t−1} + ΔPUAF_t`; `PUACV_t = PUAF_t · NSP_{x+t+1}` **[std]** (the purchase
+  falls at the anniversary `t + 1` that ends the period, so it is priced at that attained
+  age; valuing all PUA face at the attained-age NSP on the guarantee basis is exact at issue
+  of each layer and at age 100, approximate between **[std]**). At age 100, `NSP_100 = 1` so
+  `PUACV = PUAF` [S1].
 - **CASH:** dividend paid out; policyholder cash flow at EOY.
 - **REDUCE_PREM:** offsets the next period's BOY premium: `G^{net}_{t+1} = max(G − D_t, 0)`,
   excess to PUAs **[std]** (excess-to-PUA per one carrier's reduce-premium option [S3]).

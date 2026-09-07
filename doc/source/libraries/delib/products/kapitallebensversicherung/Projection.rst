@@ -60,6 +60,8 @@ Cells Descriptions
 
 .. autofunction:: duration
 
+.. autofunction:: policy_year
+
 .. autofunction:: mort_rate_at_age
 
 .. autofunction:: mort_rate_base

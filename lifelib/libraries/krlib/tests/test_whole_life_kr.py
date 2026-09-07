@@ -1413,7 +1413,7 @@ def test_the_decrements_sum_to_one_with_and_without_reinstatement(whole_life):
     ts = range(p.proj_len())
     deaths = sum(p.pols_death(t) for t in ts)
     lapses = sum(p.pols_lapse(t) for t in ts)
-    returns = sum(p.pols_reinstate(t) for t in range(1, p.proj_len() + 1))
+    returns = sum(p.pols_reinstate(t) for t in ts)
     assert p.reinstate_rate() == 0.2
     assert returns == pytest.approx(0.2 * lapses, rel=1e-9)
     assert lapses > 0.84                        # gross of the returns, above one half

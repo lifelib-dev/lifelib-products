@@ -69,7 +69,7 @@ n                   proj_len()                             Policy years from t =
 (none)              t_start()                              First projected year index
 m                   prem_term()                            Beitragszahlungsdauer
 x(t)                age(t)                                 Attained age in year t
-k = t              duration(t)                             Completed policy years
+k = t               duration(t)                            Completed policy years
 y(t) = t + 1        policy_year(t)                         Contractual 1-based policy year
 SE                  sum_assured()                          Guaranteed Erlebensfallleistung
 SD                  sum_death()                            Guaranteed Todesfallleistung
