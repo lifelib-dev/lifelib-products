@@ -82,9 +82,9 @@ x + dur            age(t)                                                    Att
 n                  policy_term                                               Level period in years
 F                  sum_assured                                               Face amount
 t = 0..12(95-x)-1  proj_len                                                  Number of months; frame ends at proj_len - 1
-(t // 12)          duration(t)                                               Completed policy years at month t
+dur(t)             duration(t)                                               Completed policy years at month t
 (t)                duration_mth(t)                                           Completed policy months at month t
-dur(t)             policy_year(t)                                            Policy year, duration(t) + 1 (1-based label)
+dur(t) + 1         policy_year(t)                                            Policy year, the 1-based contractual label
 l(t)               pols_if(t)                                                In-force at start of month t (time t)
 (l(0))             pols_if_init                                              In-force at issue
 d(t)               pols_death(t)                                             Deaths in month t
@@ -156,9 +156,10 @@ policy years so the two can be laid side by side.
 month, quarterly every third, monthly every month — and the annualized guaranteed
 premium ``AP(t)`` the notes tabulate is :func:`premium_pp_ann`. Modal loading is
 inside the factor (twelve monthly payments come to 0.99996 of the annual premium, six
-semi-annual instalments to 1.04 of it) exactly as the specimen prints it [S6]; the
-jump ratio, the conversion credit and the commission base are all on ``AP``, which is
-what keeps them mode-independent.
+two semi-annual instalments to 1.04 of it) exactly as the specimen prints it [S6]. The
+jump ratio and the conversion credit are both on ``AP``, which is what keeps them
+mode-independent; commission is a *rate* keyed by policy year applied to the premium
+actually collected, so a modal payer earns it in instalments too.
 
 .. rubric:: pols_maturity
 
@@ -329,9 +330,10 @@ def premium_pp_ann(t):
     """AP(t): the guaranteed **annualized** gross premium per policy, fee included.
 
     The notes' ``AP``, looked up in ``premium_rates.csv`` at ``policy_year(t)``. It is
-    the base for the jump ratio, the commission rate and the conversion credit, none of
-    which should move with the premium mode; :func:`premium_pp` is what is actually
-    collected in month t.
+    the base for the jump ratio and the conversion credit, neither of which should move
+    with the premium mode; :func:`premium_pp` is what is actually collected in month t,
+    and it is that instalment — not ``AP`` — that :func:`commissions` and
+    :func:`premium_taxes` are charged on.
     """
     key = (plan(), sex(), rate_class(), band(), policy_year(t))
     return float(data.premium_rates().loc[key, "premium_pp"])               # noqa: F821
@@ -633,9 +635,15 @@ def result_cf_annual():
 
     Every cash flow column is the total of its twelve months; ``pols_if`` is the count
     at the **start** of the policy year, ``pols_if(12 * (policy_year - 1))``, which is
-    the number the annual-step model carried on the same row. The two grids agree on
-    that column exactly and on nothing else, which is the point of the finer one — see
-    the Space docstring.
+    the number the annual-step model carried on the same row.
+
+    On the shipped annual-mode points the two grids agree exactly on five columns —
+    ``pols_if``, ``premiums``, ``commissions``, ``premium_taxes`` and ``conv_credits`` —
+    because an annual premium is collected on the anniversary and weighted by the
+    anniversary in force under either grid, and the other three are rates on it. They do
+    **not** agree on ``claims`` or ``expenses``, which now fall where they happen rather
+    than at the anniversary, and so not on ``net_cf``. That gap is the point of the finer
+    grid — see the Space docstring.
     """
     df = result_cf()
     years = pd.Index([duration(t) + 1 for t in df.index], name="policy_year")

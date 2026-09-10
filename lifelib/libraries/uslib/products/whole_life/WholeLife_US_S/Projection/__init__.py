@@ -267,7 +267,7 @@ pins the size of the gap in both directions.
 .. rubric:: The worked example sets the PUA-block dividend aside
 
 The notes' worked-example table computes steps 11-15 from the base-block dividend
-alone, saying so explicitly: "For clarity the PUA-block dividend ``D^PUA_9`` is
+alone, saying so explicitly: "For clarity the PUA-block dividend ``D^PUA`` is
 omitted from this table; in the model it adds ... to the amount in step 9." The
 Reference ``pua_div_on`` ships **False** so the base deterministic run reproduces the
 worked example exactly, the same way ``Term_US_S`` ships ``conv_rate_base = 0``. It is
@@ -728,13 +728,13 @@ def cv_pp_anniv(y):
     The notes give the Standard Nonforfeiture Law adjusted-premium formula conceptually
     but prescribe a table input in practice, because contractual cash value tables are
     policy-form documents that are not public. The shipped schedule is **[std]**,
-    calibrated to the worked example's CV_8 and CV_9 — the policy-year 9 and 10 rows —
+    calibrated to the worked example's CV_107 and CV_119 — the policy-year 9 and 10 rows —
     and reaching exactly face at attained age 100.
 
     It is **sex-distinct**, as the notes require of every rate in this product: the male
     pay-to-100 schedule carries the worked example's anchors, and the female schedule is
-    that schedule's funding-progress shape ``f_t = CV^M_t / (F NSP^M_{x+t+1})`` applied
-    to the female paid-up value ``F NSP^F_{x+t+1}`` **[std]**. The shape — how far along
+    that schedule's funding-progress shape ``f = CV^M / (F NSP^M_{x+dur+1})`` applied
+    to the female paid-up value ``F NSP^F_{x+dur+1}`` **[std]**. The shape — how far along
     the way to paid-up status the schedule has come — is a design choice that does not
     depend on sex; the value it is progressing towards does, through NSP. See the
     guarantee-basis rubric in the Space docstring for what this construction is *not*.
@@ -873,7 +873,7 @@ def lapse_rate(t):
     Participating: 5.0% in policy year 1 grading linearly to 2.0% in policy year 10,
     level 2.0% thereafter. Final expense (simplified issue, so heavier): 12% in year 1,
     10% in year 2, grading linearly to 6% by year 5 and level after. Zero in the final
-    projected policy year — the notes' "0 within 1 year of maturity" — so that its
+    projected policy year — the notes' "0 through the final policy year" — so that its
     survivors mature rather than surrender.
     """
     y = duration(t)
@@ -915,12 +915,12 @@ def div_prev_anniv(t):
 def div_int(t):
     """D^int_t: the dividend's interest margin, with direct recognition **[std]**.
 
-    ``(i_d - i_g)(CV_{t-1} + NP_g - L_{t-1}) + (i_L - i_g) L_{t-1}`` — the loaned
+    ``(i_d - i_g)(CV_{t-12} + NP_g - L_{t-12}) + (i_L - i_g) L_{t-12}`` — the loaned
     portion is credited at the loan rate rather than the portfolio dividend rate. With
     the snapshot i_L = i_d = 6.00% the adjustment is zero, which is a coincidence of the
     snapshot and not a model property.
 
-    ``CV_{t-1}`` and ``L_{t-1}`` are the balances entering the **policy year** that this
+    ``CV_{t-12}`` and ``L_{t-12}`` are the balances entering the **policy year** that this
     anniversary closes — the closing balances of the month twelve back, the guaranteed
     cash value being zero at issue and the loan the model point's loan_inforce at the
     first projected period.
@@ -963,7 +963,7 @@ def div_base(t):
 def div_pua(t):
     """D^PUA_t: the dividend earned by the paid-up-additions block **[std]**.
 
-    ``(i_d - i_g) PUACV_{t-1} + (q^g - q^sc)(PUAF_{t-1} - PUACV_{t-1})``, on the block
+    ``(i_d - i_g) PUACV_{t-12} + (q^g - q^sc)(PUAF_{t-12} - PUACV_{t-12})``, on the block
     entering the **policy year** this anniversary closes — the closing block of the
     month twelve back, or the model point's puaf_inforce at the first projected period,
     valued at ``NSP_{x+dur}``. Paid-up additions are dividend-eligible, and the
@@ -1093,7 +1093,7 @@ def pua_face_purch(t):
     """dPUAF_t: paid-up-additions face bought by the dividend, div / NSP_{x+dur+1}.
 
     Non-zero only at an anniversary, where the dividend is credited, and priced at the
-    attained age reached there — the notes' ``NSP_{x+t+1}``.
+    attained age reached there — the notes' ``NSP_{x+dur(t)+1}``.
     """
     d = div_to_pua(t)
     return d / nsp(age_anniv(t)) if d else 0.0

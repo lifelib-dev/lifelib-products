@@ -200,7 +200,7 @@ with no formula change.
 | File | Contents | Provenance |
 |---|---|---|
 | `model_point_table.csv` | Fifteen points. **Point 1 is the worked-example anchor cell** (WL_PAR / M45 / STD_NT / $100k / $1,800 / PUA / annual mode), carried as an *in-force* point at duration 9 with $4,100 of paid-up additions; points 2–10 are the same policy as new business under each dividend option, each in-scope rider, the limited-pay variant and the female cell; points 11–13 are the final-expense variant; point 14 is the term blend with no rider premium funding it; point 15 is point 2 on **monthly** premium mode, added with the monthly grid | anchor from the worked example **[std]**; FE points from the sourced rate table [S7]; modal factors [S1] [S7] |
-| `cv_table.csv` | Guaranteed cash value per $1,000 of face by premium period, sex, issue age and policy year, with a `provenance` column | policy years 9 and 10 of the M45 pay-to-100 cell — the model's `cv_pp_anniv(9)` and `cv_pp_anniv(10)`, reached at `cv_pp(107)` and `cv_pp(119)` — are the worked example's **[std]** anchors; the rest is a monotone **[std]** shape reaching exactly 1,000.00 at attained age 100. **Sex-distinct throughout**: the female pay-to-100 schedule is the male schedule's funding-progress shape `f_t = CV_t / (F · NSP_{x+t+1})` applied to the female paid-up value `F · NSP^F_{x+t+1}` **[std]**, so it endows at face like the male one but sits below it at every earlier duration |
+| `cv_table.csv` | Guaranteed cash value per $1,000 of face by premium period, sex, issue age and policy year, with a `provenance` column | policy years 9 and 10 of the M45 pay-to-100 cell — the model's `cv_pp_anniv(9)` and `cv_pp_anniv(10)`, reached at `cv_pp(107)` and `cv_pp(119)` — are the worked example's **[std]** anchors; the rest is a monotone **[std]** shape reaching exactly 1,000.00 at attained age 100. **Sex-distinct throughout**: the female pay-to-100 schedule is the male schedule's funding-progress shape `f = CV^anniv / (F · NSP_{x+dur+1})` applied to the female paid-up value `F · NSP^F_{x+dur+1}` **[std]**, so it endows at face like the male one but sits below it at every earlier duration |
 | `nsp_table.csv` | Endowment-at-100 net single premium per 1 of paid-up face by sex and age | age 55 male is the worked example's 0.42 **[std]**; the curve is **[std]** generated and equals exactly 1.000000 at age 100. It is *not* the endowment NSP implied by `mort_table.csv` at 4% — see below |
 | `np_guar_table.csv` | Nonforfeiture net level premium per $1,000 by sex and issue age, keyed by premium period | the M45 pay-to-100 cell is the worked example's 13.00 **[std]**; the rest is `1000 · NSP_x / ä_{x:(100−x)}` on the shipped basis **[std]**, the notes' definition. That subscript is the **endowment** period, not the premium period `m` — the notes annotate only the *other* nonforfeiture quantity, `P_adj`, with "(m = premium period)" — so `NNLP` does not vary with `m`, and the shipped rows for one (sex, issue age) are all equal. The `premium_period` key is kept so that a carrier table which *does* vary by `m` drops in with no formula change |
 | `mort_table.csv` | Guaranteed mortality `q^g` by sex and age 18–100 | male age 54 is the worked example's 0.00320 **[std]**; the rest is a **[std]** illustrative Makeham curve with a 3-year female setback — ***not* a published table, and not the 2017 CSO** |
@@ -251,9 +251,9 @@ The technical notes use compact actuarial symbols instead; the full mapping live
 ## The worked example sets the PUA-block dividend aside
 
 The notes' worked-example table computes its last five steps from the base-block
-dividend alone, and says so: *"For clarity the PUA-block dividend `D^PUA_9` is omitted
-from this table; in the model it adds `(0.02 · PUACV_8) + (0.00096 · (PUAF_8 −
-PUACV_8))` to the amount in step 9."*
+dividend alone, and says so: *"For clarity the PUA-block dividend `D^PUA` is omitted
+from this table; in the model it adds `(0.02 · PUACV_107) + (0.00096 · (PUAF_107 −
+PUACV_107))` to the amount in step 9."*
 
 Rather than reproduce four of the fifteen steps and quietly miss the rest, the
 Reference `pua_div_on` ships **`False`**, so the base deterministic run reproduces the
@@ -263,7 +263,7 @@ worked example exactly — the same device `Term_US_S` uses when it ships
 It is a reproduction switch, not a claim about the product. Paid-up additions **are**
 dividend-eligible, that compounding is the notes' first-ranked sensitivity, and
 `pua_div_on = True` is the product-faithful setting: on the anchor cell it raises the
-policy-year-10 dividend — `div_credited(9)` — from 326.25 to 361.58 and, on the new-business
+policy-year-10 dividend — `div_credited(119)`, at the anniversary — from 326.25 to 361.58 and, on the new-business
 point, paid-up-additions face at maturity from 83,675 to 134,042. `div_pua(t)` implements the notes' formula
 either way, and a test asserts its value against the notes' own parenthetical —
 35.331623 on the anchor cell — so neither reading can be lost.
@@ -278,7 +278,7 @@ The notes' worked example adds its *displayed* margins — `216.00 + 85.25 + 25.
 additions face. The exact mortality margin is 85.248, so the unrounded dividend is
 326.248, and `326.248 / 0.42 = 776.7810`, which displays as **776.78**. One displayed
 cent, because the exact value sits just below the rounding boundary — and it propagates
-into `PUAF_9` — the model's `pua_face(9)` — and into the death benefit.
+into `PUAF_119` — the model's `pua_face(119)`, 4,876.79 — and into the death benefit.
 
 Declared dividends are credited in whole cents, so the model rounds; that reading makes
 every one of the fifteen steps reproduce. Setting `div_round_digits = None` turns it off,
@@ -308,8 +308,8 @@ produce 4,100 at duration 9 — would have been fitting the model to the answer.
 The whole-life notes print
 
 ```
-NetCF_t = −G^net·l − A·l + E·l + q^e·l·DB + w·l(1−q^e)·CSV + D^cash·l(1−q^e)
-          + MAT·l(1−q^e)·1{t=T−1}
+NetCF_t = −P·l − A·l + E·l + q^e_m·l·DB + w_m·l(1−q^e_m)·CSV + D^cash·l(1−q^e_m)
+          + MAT·l(1−q^e_m)·1{t=T−1}
 ```
 
 with the sign convention stated inline: **outgo positive**. The other eleven reference
@@ -397,13 +397,15 @@ is the honest price of the notes' own arithmetic rather than something to tune a
 
 ## The term-blend rider needed two decisions the notes do not make
 
-The notes give the blend as: OYT face `= max(TF − F − PUAF_t, 0)`, the dividend first
-pays `q^sc_{x+t} · OYT_t · v_g`, remainder buys paid-up additions.
+The notes originally gave the blend as: OYT face `= max(TF − F − PUAF_t, 0)`, the dividend
+first pays `q^sc · OYT_t · v_g`, remainder buys paid-up additions.
 
 **It is circular.** `PUAF_t` is bought with the dividend that is left *after* the term
-cost, which is computed from `PUAF_t`. The model uses `PUAF_{t−1}` — the balance entering
-the period, which at the first projected period is `puaf_inforce()` — and says so in the
-`oyt_face` docstring.
+cost, which is computed from `PUAF_t`. The model sizes the layer on the block entering the
+**policy year** instead — `pua_face(anniv − 12)`, or `puaf_inforce()` where that falls
+before the frame — and says so in the `oyt_face` docstring. The notes were rewritten to
+match, and now read `max(TF − F − PUAF_{prev anniv}, 0)` with the cost at
+`q^{sc}_{x+dur+1} · OYT · v_g`.
 
 **It has no shortfall rule.** Nothing in the notes says what happens when the dividend
 cannot pay for the whole gap. Left uncapped, the model would report a term face it never
@@ -484,13 +486,13 @@ every period but the last:
 pols_if(t) − pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 ```
 
-The notes' lapse schedule cooperates: "0 within 1 year of maturity" is read as
-`w_{T−1} = 0`, so the survivors of the final period mature rather than surrender.
+The notes' lapse schedule cooperates: it is "0 through the final policy year", so the
+survivors of the final month mature rather than surrender.
 
 `check_pols_roll_fwd()` takes **no argument and returns a `bool`** over every projected
 period — the shape every `check_*` in this library has, so one test can call the same
 check across all twelve models — and `check_pols_roll_fwd_resid(t)` returns the signed residual
-of a single year for when it fails. `check_pua_roll_fwd()` / `check_pua_roll_fwd_resid(t)`
+of a single month for when it fails. `check_pua_roll_fwd()` / `check_pua_roll_fwd_resid(t)`
 are the same pair for the paid-up-additions block, which is this product's analogue of
 `CashValue_SE.check_av_roll_fwd()`.
 

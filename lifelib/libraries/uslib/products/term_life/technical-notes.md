@@ -179,7 +179,7 @@ intentionally empty so the input schema matches sibling products (UL etc.).
 | dur(t) | Completed policy years at the start of month t, `t // 12` |
 | l(t) | In-force count at start of month t (time t); l(0) = 1 per unit model point |
 | q(t) | Best-estimate **annual** mortality at the attained age of month t, incl. class factor and PLT multiplier; q_m(t) = 1 − (1 − q(t))^(1/12) is the rate applied in the month |
-| w(t) | **Annual** lapse rate of the policy year containing month t (w(n−1) = shock lapse, in policy year n); w_m(t) is the rate applied in the month, and the shock is not spread — see below |
+| w(t) | **Annual** lapse rate of the policy year containing month t; in policy year n it *is* the shock lapse. w_m(t) is the rate applied in the month, and the shock is not spread — see below |
 | cv(t) | **Annual** conversion rate (0 outside eligibility window); cv_m(t) = 1 − (1 − cv(t))^(1/12) |
 | AP(t) | Annualized guaranteed gross premium for the policy year containing month t |
 | P(t) | Modal instalment collected at BOM t: modal factor × AP(t) in a due month, 0 otherwise [S6] |
@@ -250,8 +250,9 @@ NetCF(t) = G(t) − K(t) − X(t) − E(t) − DC(t) − CV(t)
 
 with k(t) = 80% in policy year 1, 5% in policy years 2…n, 2% after **[std]**, applied to
 the premium collected — so a modal payer earns it in instalments too. Three quantities
-stay on the **annualized** premium AP and so do not move with the mode: the jump ratio J,
-the conversion credit CV(t), and the acquisition expense.
+stay on the **annualized** premium AP and so do not move with the mode: the jump ratio J
+and the conversion credit CV(t). The acquisition expense is mode-independent too, for a
+different reason — it is a flat per-policy amount, not a fraction of any premium.
 
 Maintenance expense accrues at a twelfth a month and inflates continuously,
 `1.02^(t/12)`, rather than stepping at anniversaries. Twelve twelfths of $30 is the
@@ -557,8 +558,9 @@ Known modeling pitfalls:
 - **Modal factor double-count.** The modal load lives in the modal factor [S6], so the
   premium collected is `factor × AP` and nothing else scales it. Three quantities stay on
   the annualized AP and must not be modalized: the jump ratio (the shock buckets are
-  calibrated on annualized premiums [R4]), the conversion credit (contractually one annual
-  premium [S6]), and the acquisition expense.
+  calibrated on annualized premiums [R4]) and the conversion credit (contractually one
+  annual premium [S6]). The acquisition expense must not be modalized either, being a
+  flat per-policy charge rather than a fraction of premium.
 - **ANB/ALB mismatch.** Model ages, rate table lookups, and mortality tables must share
   the ANB basis [S2] [S3] [S5] [S6] [R3]; a silent ALB table import shifts mortality by half a
   year of age.

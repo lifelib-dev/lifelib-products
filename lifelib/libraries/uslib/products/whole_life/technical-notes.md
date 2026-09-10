@@ -86,7 +86,7 @@ reference implementation. Parameter values are identical to those in `product-sp
 | `term_blend_target` | float (0 = off) | 0.00 (variant: 2 × F **[std]**) |
 | `loan_utilization` | float in [0,1] | 0.00 (variant: 0.20 **[std]**) |
 | `duration_inforce` (t0) | int, policy **years** elapsed (0 for new business); the frame opens at month `12·t0` | 0 |
-| `puaf_inforce` | float (PUA face entering `t = t0`) | 0.00 |
+| `puaf_inforce` | float (PUA face entering `t = 12·t0`) | 0.00 |
 | `loan_inforce` | float | 0.00 |
 
 ## State variables
@@ -113,7 +113,7 @@ annually, (c) is the modeler's experience basis.
 | Input | Value | Basis |
 |---|---|---|
 | Guarantee interest `i_g` | 4.00% | [S1]; Model 808 floor [R1] |
-| Guarantee mortality `q^g_{x+t}` | 2017 CSO composite, sex-distinct, ANB | [S1] [R3] [R8]; ANB **[std]** |
+| Guarantee mortality `q^g_{x+dur(t)}` | 2017 CSO composite, sex-distinct, ANB | [S1] [R3] [R8]; ANB **[std]** |
 | Guaranteed CV schedule `CV_t` | Table input per model point (generated on the above basis) | [S1] [R1]; see below |
 | Gross premium `G` | Model point input (level, guaranteed) | [S1] [S3] |
 | Loan rate `i_L` | 6.00% fixed, in arrears | [S1] |
@@ -126,10 +126,10 @@ annually, (c) is the modeler's experience basis.
 | Input | Value | Basis |
 |---|---|---|
 | Dividend interest rate `i_d` | 6.00% (2026-scale snapshot) | **[std]**, within observed 5.75%–6.60% [S4] [S14] |
-| Experience mortality in scale `q^{sc}_{x+t}` | `AE^{sc} · q^{2015VBT}_{x+t}` with `AE^{sc} = 0.70` of 2017 CSO in the worked example | **[std illustrative]**; structure per [S4] [R6], tables [REG-R18] |
+| Experience mortality in scale `q^{sc}_{x+dur(t)}` | `AE^{sc} · q^{2015VBT}_{x+dur(t)}` with `AE^{sc} = 0.70` of 2017 CSO in the worked example | **[std illustrative]**; structure per [S4] [R6], tables [REG-R18] |
 | Expense margin in scale `e^{m}_t` | $25 per policy per year | **[std]** |
 | Dividend floor | `D_t ≥ 0` | **[std]** (dividends are non-negative distributions of surplus [R6]) |
-| PUA purchase basis | `NSP_{x+t}` on 2017 CSO / 4%, unloaded (dividend purchases); 10% load on rider payments | **[std]** / [S3] (product-spec Table 3 note (k), Riders) |
+| PUA purchase basis | `NSP_{x+dur(t)}` on 2017 CSO / 4%, unloaded (dividend purchases); 10% load on rider payments | **[std]** / [S3] (product-spec Table 3 note (k), Riders) |
 | Accumulation option credit rate | `i_d` | [S2] rate declared annually; reuse of DIR **[std]** |
 
 Non-guaranteed scales are constrained in illustration use by the disciplined-current-scale and
@@ -141,7 +141,7 @@ of future scale changes.
 
 | Input | Recommended base | Reference value |
 |---|---|---|
-| Best-estimate mortality `q^e_{x+t}` | 2015 VBT (sex/smoker-distinct, ANB) × company A/E; industry A/E from the ILEC 2012–2019 study | tables [REG-R18], experience [R9]/[REG-R19]; A/E factor 0.70 × 2017 CSO in the worked example **[std illustrative]** |
+| Best-estimate mortality `q^e_{x+dur(t)}` | 2015 VBT (sex/smoker-distinct, ANB) × company A/E; industry A/E from the ILEC 2012–2019 study | tables [REG-R18], experience [R9]/[REG-R19]; A/E factor 0.70 × 2017 CSO in the worked example **[std illustrative]** |
 | Base lapse `w_t` | LIMRA/SOA U.S. Individual Life Persistency study (WL by duration/size/mode) | [REG-R20] for the study; rates below **[std]** (study figures not recorded in the research file) |
 | Lapse schedule **[std]** | Annual: 5.0% in policy year 1, grading linearly to 2.0% at year 10, level 2.0% thereafter; 0 through the final policy year, so its survivors mature rather than surrender | **[std]** — "low and level" pattern consistent with mature par WL persistency; source study [REG-R20] |
 | Premium persistency | 1 (premiums are fixed and guaranteed; premium cessation = lapse/RPU) | [S1] [S3]; convention **[std]** |
@@ -228,7 +228,7 @@ Anchor (published mechanics of one surveyed carrier) [S4]:
 D_t = ( CV_{t−1} + G − MEC_t ) · (1 + i_d) − CV_t
 ```
 
-with `CV_{t−1}` the guaranteed cash value entering period `t` (zero at issue), and where
+with `CV_{t−12}` the guaranteed cash value entering the policy year (zero at issue), and where
 `MEC_t` is the mortality-and-expense charge based on actual company results — i.e., the
 dividend is the excess of an experience-basis accumulated value over the guaranteed value [S4].
 

@@ -94,9 +94,11 @@ is the instalment actually collected in month `t`: `modal_factor() × AP` in a p
 month, zero otherwise, on the specimen's own scale of A 1.0 / SA 0.52 / Q 0.27 / M 0.08333
 [S6], with the modal load inside the factor. Three quantities deliberately stay on `AP` so
 that they do not move with the mode: the jump ratio (the shock buckets are calibrated on
-annualized premiums), the conversion credit (contractually one annual premium), and the
-acquisition expense. Both shipped model points are annual mode, which is the anchor cell's
-mode.
+annualized premiums) and the conversion credit (contractually one annual premium). The
+acquisition expense does not move with the mode either, but for a different reason — it is
+a flat $300 per policy, not a fraction of premium. Commission and premium tax *are* charged
+on the instalment, so a modal payer pays them in instalments too. Both shipped model points
+are annual mode, which is the anchor cell's mode.
 
 ## Inputs are external files
 

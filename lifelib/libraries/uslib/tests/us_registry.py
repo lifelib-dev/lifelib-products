@@ -12,10 +12,10 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis — every model in the library now runs on a
-monthly grid — and records that none of them discount.  That last entry is a property of
-the library, not an omission: every ``technical-notes.md`` specifies *gross liability cash flows* and leaves
-discounting and reserves to a separate layer that consumes them.
+fails.  The metadata records the projection basis and records that none of them discount.
+That last entry is a property of the library, not an omission: every ``technical-notes.md``
+specifies *gross liability cash flows* and leaves discounting and reserves to a separate
+layer that consumes them.
 
 **Why this is not in `conftest.py`.**  Two libraries now ship in-library suites, and
 ``conftest.py`` is a name pytest fixes.  Collecting both in one run puts two files called
@@ -31,12 +31,19 @@ LIB = pathlib.Path(__file__).resolve().parents[1]
 ANNUAL = {"grid": "annual", "age_basis": "ANB", "discounted": False}
 MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 
-# ``ANNUAL`` currently has no members: every model in the library runs on a monthly grid.
-# It is kept, and kept exported, because the metadata is a statement about a model rather
-# than about the library, and the letter it maps to is asserted in
-# ``test_model_conventions.test_the_name_carries_the_right_grid_suffix``: a model added or
-# converted back to an annual step registers ``ANNUAL`` here and the suffix rule then
-# applies to it without further ceremony.
+# ``ANNUAL`` has no members below, and that is **not** the same as saying every model in the
+# library is monthly.  ``FIA_US_S`` is registered ``MONTHLY`` here while its own docstring and
+# technical notes specify annual steps and say so explicitly ("The product assignment table
+# records this product as monthly; its own technical notes state annual, and the notes
+# govern").  That predates the term/whole-life conversion and is left alone here because
+# correcting it means renaming the model to ``FIA_US_A`` -- the suffix is asserted from this
+# metadata by ``test_the_name_carries_the_right_grid_suffix``, so the row and the name have to
+# move together.  Recorded rather than silently carried: a wrong grid here reads as a
+# statement about the model.
+#
+# ``ANNUAL`` is kept, and kept exported, because the metadata is a statement about a model
+# rather than about the library: a model added or corrected to an annual step registers
+# ``ANNUAL`` here and the suffix rule then applies to it without further ceremony.
 
 # name -> (path relative to the library root, metadata)
 #

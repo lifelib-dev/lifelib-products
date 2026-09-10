@@ -58,11 +58,15 @@ Model names are `<product>_<country>_<grid>`: the short name the product is actu
 by — `MYGA`, `FIA`, `RILA`, `SPIA`, `DIA`, `ULSG` — then `US`, then `_A` for an annual step
 or `_S` for a monthly one. The grid letters follow lifelib, where `annuallife/TradLife_A` is
 the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are the monthly
-ones. **All twelve models run on a monthly grid**, so all twelve carry `_S`; the `_A` letter
-is still what an annual-step model would take, and `tests/us_registry.py` records the basis
-per model so the suffix rule applies to any model added later. `S` carries a second sense in
-lifelib — scalar, one model point at a time, as against the vectorized `_M` models — and
-that is true of all twelve here too.
+ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
+the vectorized `_M` models — and that is true of all twelve here.
+
+Eleven of the twelve run on a **monthly** grid, the term and whole life models included
+since their conversion. `FIA_US_S` is the exception: its own technical notes and docstring
+specify **annual** steps, on the grounds that every mechanic in that composite is annual and
+a finer grid would buy only excluded variants. Its name and its `tests/us_registry.py`
+metadata both still say monthly, which is a pre-existing discrepancy this table does not
+paper over — the model, not the registry, is the authority on its own grid.
 
 Where a product's contractual drivers *are* annual — the term guaranteed premium schedule
 and its shock lapse, whole life's cash value schedule and dividend declaration — the model
@@ -125,7 +129,7 @@ and the ruling is asserted, not merely documented:
 |---|---|
 | Time index | `t` is **0-based** and counts policy months: `t = 0` is the issue month of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `duration(t) + 1`, never the index |
 | In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` |
-| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event — a dividend declaration, a shock lapse, a guaranteed premium — is not spread: it lands on the anniversary month |
+| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event is never spread across the year to match: a dividend declaration, a shock lapse and a paid-up-additions purchase land whole on the anniversary month, and a premium lands whole on each date the elected mode bills it |
 | Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly |
 | Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` |
 | Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` |
