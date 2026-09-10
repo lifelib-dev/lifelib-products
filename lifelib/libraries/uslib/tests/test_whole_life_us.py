@@ -193,7 +193,7 @@ def test_the_anchor_is_the_in_force_point_the_notes_describe(anchor):
 
 
 def test_pua_block_dividend_matches_the_notes_parenthetical(fresh):
-    """The notes' aside: D^PUA_9 = 0.02*PUACV_8 + 0.00096*(PUAF_8 - PUACV_8).
+    """The notes' aside: D^PUA = 0.02*PUACV_107 + 0.00096*(PUAF_107 - PUACV_107).
 
     0.02 is i_d - i_g and 0.00096 is q^g_54 - q^sc_54, both taken straight from the
     steps above, so this pins the PUA-block formula against the notes' own arithmetic.

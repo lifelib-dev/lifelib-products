@@ -54,7 +54,8 @@ collapses to ``NNLP = 1000 d NSP_45 / (1 - NSP_45)``, so the worked example's
 assumed. Each shipped table is therefore pinned to its own worked-example anchor
 independently: ``q^g_54 = 0.00320``, ``NSP_55 = 0.42``, ``NP_g = 13.00``, and 95.00 and
 112.00 per $1,000 on the policy-year 9 and 10 rows of the cash value schedule — the
-worked example's ``CV_8`` and ``CV_9`` under the model's 0-based period index. Reconciling ``nsp_table.csv`` with
+worked example's ``CV_107`` and ``CV_119``, which the model reaches at ``cv_pp(107)`` and
+``cv_pp(119)`` on its 0-based **month** index. Reconciling ``nsp_table.csv`` with
 ``mort_table.csv`` would need a guarantee interest rate falling from 5.99% at age 45
 to 0.02% at age 99. The model README and the ``Projection`` docstring carry the
 arithmetic; a test pins the mismatch by age so it cannot quietly close.
