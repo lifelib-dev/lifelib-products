@@ -51,9 +51,10 @@ time `t` to time `t + 1`, and the frame is `t = 0 … proj_len() − 1`. The con
 the 1-based label `policy_year(t) = t // 12 + 1`, derived from `t` and never indexed by;
 anniversaries fall at the *start* of `t = 12, 24, …`, so the closing account value at the
 first anniversary is `av_pp(11)`, and the five-year guarantee period covers `t = 0 … 59`.
-**Note the contrast with `Term_US_A`, where `t` counts years.** The contract credits interest daily
-against a quoted *annual effective* rate, while surrender charges and the MVA step on
-contract-year boundaries; monthly is the coarsest grid that resolves both. It hits every
+Monthly is the library-wide grid, and it is the right one here on its own merits: the
+contract credits interest daily against a quoted *annual effective* rate, while surrender
+charges and the MVA step on contract-year boundaries, and monthly is the coarsest grid
+that resolves both. It hits every
 anniversary exactly and puts the guarantee-period-end window and the shock-lapse boundary
 within one step. Finer grids buy nothing on a book-value chassis with no daily-valued
 index.
@@ -179,10 +180,10 @@ notes themselves carry:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `d(t)` — the floor deduction | `mgsv_wd_deduct_pp` | `d(t)` is deaths in `Term_US_A`; here it is the withdrawal deducted from the Model #805 floor in step 7 |
-| `c(t)` — the contract charge | `mgsv_charge_pp` | `c(t)` is conversions in `Term_US_A` |
-| `E(t)` — two different bases | `wd_excess_pp` / `surr_excess_pp` | The excess of a *withdrawal* over the allowance and the excess of the whole *account value* over it are both written `E(t)`; `E(t)` is also expenses in `Term_US_A`, here `expenses` |
-| `X` — the lapse exponent | `lapse_dyn_exponent` | `X(t)` is premium tax in `Term_US_A`, here `premium_taxes` |
+| `d(t)` — the floor deduction | `mgsv_wd_deduct_pp` | `d(t)` is deaths in `Term_US_S`; here it is the withdrawal deducted from the Model #805 floor in step 7 |
+| `c(t)` — the contract charge | `mgsv_charge_pp` | `c(t)` is conversions in `Term_US_S` |
+| `E(t)` — two different bases | `wd_excess_pp` / `surr_excess_pp` | The excess of a *withdrawal* over the allowance and the excess of the whole *account value* over it are both written `E(t)`; `E(t)` is also expenses in `Term_US_S`, here `expenses` |
+| `X` — the lapse exponent | `lapse_dyn_exponent` | `X(t)` is premium tax in `Term_US_S`, here `premium_taxes` |
 | `T(t)` — the MVA duration | `mva_term` | `T` is in years while `t` is the policy month |
 | `MGSV` / `GMSV` / `MGV` | `mgsv_pp` | One concept, three labels across the sources; MGSV is the library's term |
 
@@ -192,7 +193,7 @@ than being dropped:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `l(t)` — end-of-month in-force | `pols_if(t)` is the **start**-of-month count; the notes' `l(t)` is `pols_if_at(t, "AFT_DECR")` | `pols_if(t)` is the weight applied to month `t`'s cash flows, so the `pols_if` column of `result_cf()` reconciles with the row it sits on — `withdrawals(t) / wd_payment_pp(t)` and `expenses(t) / ((expense_maint/12) × inflation_factor(t))` both return it. This matches `Term_US_A` and `CashValue_SE` (`pols_if(0) == pols_if_init()`). `pols_if(t+1) == pols_if_at(t, "AFT_DECR")` in every month but the last, `t = proj_len() − 1` |
+| `l(t)` — end-of-month in-force | `pols_if(t)` is the **start**-of-month count; the notes' `l(t)` is `pols_if_at(t, "AFT_DECR")` | `pols_if(t)` is the weight applied to month `t`'s cash flows, so the `pols_if` column of `result_cf()` reconciles with the row it sits on — `withdrawals(t) / wd_payment_pp(t)` and `expenses(t) / ((expense_maint/12) × inflation_factor(t))` both return it. This matches `Term_US_S` and `CashValue_SE` (`pols_if(0) == pols_if_init()`). `pols_if(t+1) == pols_if_at(t, "AFT_DECR")` in every month but the last, `t = proj_len() − 1` |
 | `w(t)` monthly, `w_annual(t)` annual | `lapse_rate_mth` / `lapse_rate` | `lapse_rate` is the **annual** rate everywhere in the library, pairing with `lapse_rate_mth` exactly as `mort_rate` pairs with `mort_rate_mth`. The notes already carry both quantities; only the suffixes move |
 
 The roll-forward self-checks follow `CashValue_SE`: `check_av_roll_fwd()` and
@@ -226,7 +227,7 @@ closes for every `t` — `pols_if(t)` is the start-of-month count, so it opens t
 four exits are taken during the month, and the next month opens on what is left. Including
 the last month, where the block would otherwise appear to lose
 lives with no cause. This is bookkeeping determined by the horizon, not a new assumption; the
-name and the construction follow `BasicTerm_S.pols_maturity` and `Term_US_A`. It matters
+name and the construction follow `BasicTerm_S.pols_maturity` and `Term_US_S`. It matters
 little in practice: with a 90% shock lapse every five years, in-force falls by roughly a
 factor of ten per cycle — at the end of the fifth contract year `pols_if_at(59, "AFT_DECR")`
 = 0.9077, at the end of the tenth (`t = 119`) 0.0808, at the end of the twentieth

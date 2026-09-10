@@ -138,7 +138,7 @@ def main(argv):
     # `module-…` id: each library's own `index.md` opens with a ```{module}``` directive
     # and so carries a bare `module-uslib`, which would exempt the two landing pages from
     # this check -- and they are documents, with `[std]` and `[unverified]` tags on them.
-    # `automodule` ids are dotted (`module-uslib.products.term_life.Term_US_A`) because
+    # `automodule` ids are dotted (`module-uslib.products.term_life.Term_US_S`) because
     # they name a submodule; the directive's is not.  That is the discriminator.
     plain, sources, in_docstrings = collections.Counter(), collections.Counter(), 0
     unparsed = collections.Counter()

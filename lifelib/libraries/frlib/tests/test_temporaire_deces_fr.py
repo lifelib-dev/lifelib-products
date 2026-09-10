@@ -465,7 +465,7 @@ def test_nothing_runs_past_the_age_limit(temporaire_deces, fr_td_anchor):
 
     ``proj_len() = cover_end_age - issue_age = 17``, so the frame is ``t = 0 ... 16`` --
     seventeen rows whose last index is ``proj_len() - 1``.  No maturity benefit, no
-    renewal, no conversion and no post-level-term phase -- the last of which ``Term_US_A``
+    renewal, no conversion and no post-level-term phase -- the last of which ``Term_US_S``
     has and importing it here would invent.  In the final projected year a lapse and an
     expiry are the same event paying the same nothing, so ``lapse_rate(16)`` is zero: that
     is what makes the notes' closure split 64,638 % lapses and 27,887 % survivors rather

@@ -39,7 +39,7 @@ lifelib/libraries/uslib/
       run.py
       model_point_table.csv  premium_rates.csv  mort_table.csv
       class_factor_table.csv  shock_lapse_table.csv
-      Term_US_A/                    <- the modelx model, formulas only
+      Term_US_S/                    <- the modelx model, formulas only
         __init__.py  _system.json  Data/  Projection/
     whole_life/  universal_life/  indexed_ul/  variable_ul/  guaranteed_ul/
     fixed_deferred_annuity/  fixed_indexed_annuity/  variable_annuity/
@@ -102,7 +102,7 @@ project with the installed toolchain (Sphinx 8.2.3, myst-parser 5.1.0, markdown-
 
 `term-life` → `term_life`, `fixed-deferred-annuity` → `fixed_deferred_annuity`, etc.
 
-**Why:** C4. `uslib.products.term-life.Term_US_A` is not an importable dotted name, so
+**Why:** C4. `uslib.products.term-life.Term_US_S` is not an importable dotted name, so
 hyphenated slugs permanently rule out lifelib-style per-cells API pages for these twelve
 models. Underscores also match every other lifelib library.
 
@@ -348,7 +348,7 @@ directory with documents but no model must be legal.
 | `exclude_patterns` | `libraries/uslib/_research/*` | `libraries/*/_research/*` |
 | `.gitignore` | `doc/source/libraries/uslib/` | one line per library, listed explicitly — `doc/source/libraries/` also holds hand-written dirs, so it cannot be globbed |
 | P3/P4/P5 and D5 tooling | — | every script takes `--library` and derives its product list from disk; no slug is hardcoded |
-| Model names | `<Product>_US_<grid>` | `<Product>_<CC>_<grid>` — the country tag already separates `Term_US_A` from a future `Term_UK_A` |
+| Model names | `<Product>_US_<grid>` | `<Product>_<CC>_<grid>` — the country tag already separates `Term_US_S` from a future `Term_UK_A` |
 
 Product slugs convert cleanly under D1 in both (`term-assurance` → `term_assurance`, …),
 and the per-library link definitions of D4 mean `[S1]` can safely mean a different source
@@ -384,7 +384,7 @@ hand-listing 150 `.. autofunction::` entries per model:
 
 ````markdown
 ```{eval-rst}
-.. automodule:: uslib.products.term_life.Term_US_A.Projection
+.. automodule:: uslib.products.term_life.Term_US_S.Projection
    :members:
 ```
 ````
@@ -395,7 +395,7 @@ order the notes derive them.
 **Verified by spike, in this order:**
 
 1. The model folders **import cleanly at the target depth** as implicit namespace packages —
-   `uslib.products.term_life.Term_US_A.Projection` imports and carries its docstring. The
+   `uslib.products.term_life.Term_US_S.Projection` imports and carries its docstring. The
    serialized files say they are importable; they are.
 2. A **MyST page can host `automodule`**. The docstrings are RST — roles and simple tables —
    and they render correctly inside `{eval-rst}`: cells emitted, tables as real `<table>`,
@@ -407,10 +407,10 @@ order the notes derive them.
 
 | Issue | Count | Cause |
 |---|---|---|
-| `:mod:`<Model>`` — bare model name | 91 | role resolution is relative to the current module, which becomes `uslib.products.<slug>.<Model>`; a bare `Term_US_A` names nothing |
+| `:mod:`<Model>`` — bare model name | 91 | role resolution is relative to the current module, which becomes `uslib.products.<slug>.<Model>`; a bare `Term_US_S` names nothing |
 | `:mod:`<Model>.<Space>`` | 72 | same |
 | cross-Space `:func:` (e.g. `input_dir`, in `Data`, cited from `Projection`) | 2 | resolves only within the current module |
-| malformed RST simple table in a docstring | ≥1 of ~54 | in `Term_US_A.Projection`, `plt_mort_factor_init_formula` is 28 characters and overflows its 26-character column rule |
+| malformed RST simple table in a docstring | ≥1 of ~54 | in `Term_US_S.Projection`, `plt_mort_factor_init_formula` is 28 characters and overflows its 26-character column rule |
 
 The other **823** `:func:`/`:attr:` roles are fine: they are same-Space and resolve relative
 to the current module at any depth.
@@ -419,7 +419,7 @@ to the current module at any depth.
 
 *Sixty-six of the 163 module roles are cross-model* — the variable annuity naming the MYGA
 deferred chassis, the DIA naming the SPIA payout chassis, FIA and VA both naming
-`Term_US_A`. They are the chassis relationships the documents describe, restated in the
+`Term_US_S`. They are the chassis relationships the documents describe, restated in the
 docstrings, and they break in exactly the same way. The leading dot fixes them the same way
 too: refspecific search matches any module whose path ends that way, so a sibling reference
 resolves without either model knowing where the other sits. A fixer that only knew its own
@@ -433,10 +433,10 @@ who had built the docs. The comparison now ignores `__pycache__`, through a shar
 where documenting the models changed what the tests must assert, and it is a consequence of
 D9 rather than incidental tidying.
 
-**The fix is one character.** Prefix the failing roles with a dot — `:mod:`.Term_US_A``,
+**The fix is one character.** Prefix the failing roles with a dot — `:mod:`.Term_US_S``,
 `:func:`.input_dir``. The leading dot makes the lookup *refspecific*, matching any module
 whose path ends that way. Verified: it resolves to
-`#module-uslib.products.term_life.Term_US_A`, and the dot is stripped from the rendered
+`#module-uslib.products.term_life.Term_US_S`, and the dot is stripped from the rendered
 text, so the page reads exactly as before. It is also **library-agnostic**, which
 `.. currentmodule::` would have been too — except that it does not work: tested, and
 `:mod:` roles stay unresolved under it. 165 mechanical edits, no docstring rewritten.
@@ -461,7 +461,7 @@ Only the directory disagreed — which meant the autodoc module paths were *wron
 repository* and right only after the merge, and the doc build needed a copy-and-rename step
 to make them resolve at all.
 
-Naming the directory for the library removes that. `uslib.products.term_life.Term_US_A` is
+Naming the directory for the library removes that. `uslib.products.term_life.Term_US_S` is
 importable here — `doc/source/conf.py` puts the repository root on `sys.path` and autodoc
 finds it, exactly as lifelib puts `lifelib/libraries` on `sys.path` and finds `basiclife` —
 so there is one less thing that is true only on the far side of a move. It is the same reasoning as P2's choice of
@@ -630,7 +630,7 @@ which was real and invisible without `-n`. What they were, since the mix is the 
 
 | Found | Count | What it actually was |
 |---|---|---|
-| Unresolved `:func:` roles | 38 | Roles written as a path through a model, `Term_US_A.Projection.pols_if`. The P2 fixer only knew bare `:mod:` names. |
+| Unresolved `:func:` roles | 38 | Roles written as a path through a model, `Term_US_S.Projection.pols_if`. The P2 fixer only knew bare `:mod:` names. |
 | Double-dotted roles | 38 | **Self-inflicted.** The P2 fixer was not idempotent — it re-dotted its own `~.` output — and I ran it twice. `~..X` resolves to nothing, silently. |
 | Malformed RST tables | 4 | Cells names outgrew their column rules. Docutils rejects the *whole* table, so each one lost the notes-symbol-to-cells mapping that is the most useful thing on the page. |
 | Aligned two-column blocks | 6 | `` ``"IN FORCE"``  the account value… `` reads as a paragraph plus a block quote. Converted to RST definition lists, which is the construct for it. |

@@ -42,10 +42,10 @@ model and its inputs must travel together.
 ..., proj_len() - 1``: ``t = 0`` is the first policy month and month ``t`` runs from time
 ``t`` to time ``t + 1``. The contract year is the 1-based label ``policy_year(t) = t // 12
 + 1``, so anniversaries fall at the start of ``t = 12, 24, ...`` and the closing account
-value at the first anniversary is ``av_pp(11)``. Note the contrast with
-:mod:`.Term_US_A`, where ``t`` counts **years**: monthly is the coarsest grid that hits
-every contract anniversary exactly while still resolving the guarantee-period-end window
-and the shock-lapse boundary to within one step **[std]**.
+value at the first anniversary is ``av_pp(11)``. Monthly is the library-wide grid, and
+for this product it is also the coarsest one that hits every contract anniversary exactly
+while still resolving the guarantee-period-end window and the shock-lapse boundary to
+within one step **[std]**.
 
 The month's processing order follows the technical notes exactly. At the beginning of
 the month (BOM): roll the free-withdrawal counters; apply the guarantee-period boundary
@@ -67,7 +67,7 @@ and ``mgsv_pp(0)`` are the closing balances of month 0, one month of crediting l
 ``result_cf()`` therefore has exactly ``proj_len()`` rows, ``t = 0 .. proj_len() - 1``.
 
 ``pols_if(t)`` is the count in force at the **start** of month ``t``, the library-wide
-convention (``pols_if(0) == pols_if_init()``, as in :mod:`.Term_US_A`), and it is the
+convention (``pols_if(0) == pols_if_init()``, as in :mod:`.Term_US_S`), and it is the
 weight applied to that same month's cash flows, so the ``pols_if`` column of
 ``result_cf()`` reconciles with the row it sits on. The technical notes' end-of-month
 ``l(t)`` is unchanged and is read as ``pols_if_at(t, "AFT_DECR")``. Likewise

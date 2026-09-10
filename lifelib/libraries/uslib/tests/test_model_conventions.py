@@ -16,7 +16,7 @@ What the house style is, and why, is written up in ``products/term_life/model.md
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``Term_US_A`` also asserts several of these for itself, in more specific form (it names
+``Term_US_S`` also asserts several of these for itself, in more specific form (it names
 its five input files and its own docstring phrases). That overlap is deliberate: the
 checks here are the general contract, the ones there are that model's particulars.
 
@@ -137,7 +137,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's market short name, a country tag and a grid tag —
-    ``MYGA_US_S``, ``Term_US_A`` — rather than anything derivable from the folder slug,
+    ``MYGA_US_S``, ``Term_US_S`` — rather than anything derivable from the folder slug,
     because ``registered-index-linked-annuity`` spelled out is unusable and the industry
     already calls it a RILA. So the pairing lives in :data:`conftest.MODELS` and is
     asserted here instead of being recomputed.
@@ -329,7 +329,7 @@ RETIRED_NAMES = {
     "lapse_rate_ann": "lapse_rate (annual), with lapse_rate_mth for the monthly rate",
     "free_wd_used_pp": "wd_free_pp, the fixed-deferred-annuity chassis name",
     "free_wd_taken_pp": "wd_free_pp",
-    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_A.premium_net_pp)",
+    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_S.premium_net_pp)",
     "mort_a_e_factor": "mort_ae_factor",
     "ae_factor": "mort_ae_factor",
     "omega": "omega_age",
@@ -508,7 +508,7 @@ def test_every_model_point_projects(name, model):
     ``duration(t) = t // 12``, on a monthly one). ``proj_len()`` is the number of
     periods from ``t = 0``, i.e. the exclusive end of the frame: ``result_cf()`` covers
     ``t = t_first, ..., proj_len() - 1``, where ``t_first`` is 0 for a point projected
-    from issue and the elapsed periods for an in-force point (``WholeLife_US_A``'s
+    from issue and the elapsed periods for an in-force point (``WholeLife_US_S``'s
     ``proj_start()``). This is lifelib's own convention (``basiclife/BasicTerm_S``,
     ``savings/CashValue_SE``: ``for t in range(proj_len())``). A contractual policy year
     is the 1-based label ``t + 1`` (``duration(t) + 1`` on a monthly grid) and is

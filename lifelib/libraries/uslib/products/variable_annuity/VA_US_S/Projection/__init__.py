@@ -253,7 +253,7 @@ Nine names needed care.
 ``l(t-1)`` — and is the weight applied to that same row's cash flows, so
 ``premiums(t) / premium_pp(t)`` is exactly ``pols_if(t)`` and the printed in-force column
 reconciles with the row it sits on. That is the library-wide convention, set by
-:mod:`.Term_US_A` and by ``savings.CashValue_SE``. The notes' own end-of-month ``l(t)``
+:mod:`.Term_US_S` and by ``savings.CashValue_SE``. The notes' own end-of-month ``l(t)``
 has not gone anywhere: it is :func:`pols_if_at` ``(t, "AFT_DECR")``, and the roll-forward
 is written across it.
 
@@ -280,7 +280,7 @@ quantities and both exist: the charge base is :func:`wd_chargeable_pp`. Reading
 ``wd_excess_pp`` across the two models without checking is the single easiest mistake to
 make in this library.
 
-``E(t)`` in :mod:`.Term_US_A` is expenses, which here is :func:`expenses` as usual. ``M``
+``E(t)`` in :mod:`.Term_US_S` is expenses, which here is :func:`expenses` as usual. ``M``
 is the in-the-moneyness ratio here and the market value adjustment in
 :mod:`.MYGA_US_S`; a VA separate account has no MVA at all, so there is no
 collision in the model, only in the reader's memory. ``c(t)`` is the CDSC here and the
@@ -390,7 +390,7 @@ lives with no cause. The identity is written on start-of-month counts because th
 what :func:`pols_if` carries; the horizon month is ``t = proj_len() − 1`` and
 ``pols_if(proj_len())`` is zero, every survivor of that month having left as
 :func:`pols_maturity`. The name follows
-``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_A` and
+``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_S` and
 :mod:`.MYGA_US_S`. It is bookkeeping determined by the horizon, not an added
 assumption.
 
@@ -949,7 +949,7 @@ def prem_to_av_pp(t):
 
     The per-contract counterpart of :func:`prem_to_av`, and the name every
     account-value model in this library uses for the premium credited to the account
-    value. Not to be confused with ``WholeLife_US_A.premium_net_pp``, which is a *gross*
+    value. Not to be confused with ``WholeLife_US_S.premium_net_pp``, which is a *gross*
     premium net of the dividend offset — a different concept entirely.
     """
     return premium_pp(t) * (1.0 - premium_tax_rate())
@@ -2002,7 +2002,7 @@ def pols_if(t):
     The notes' ``l(t-1)``, and the weight applied to month ``t``'s cash flows, so that
     the ``pols_if`` column of :func:`result_cf` reconciles with the row it sits on:
     ``premiums(t) / premium_pp(t)`` is exactly ``pols_if(t)``. This is the library-wide
-    convention, set by :mod:`.Term_US_A` and by ``savings.CashValue_SE``.
+    convention, set by :mod:`.Term_US_S` and by ``savings.CashValue_SE``.
 
     The notes' own end-of-month ``l(t)`` is :func:`pols_if_at` ``(t, "AFT_DECR")``. The
     two coincide — ``pols_if(t + 1) == pols_if_at(t, "AFT_DECR")`` — everywhere but the

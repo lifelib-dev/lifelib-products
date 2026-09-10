@@ -994,7 +994,7 @@ def test_the_checks_take_no_argument_and_return_a_bool(anchor):
 def test_pols_if_is_the_start_of_period_count_and_the_row_weight(anchor):
     """pols_if(t) opens month t, and is the weight on that same row's cash flows.
 
-    The library-wide convention (``Term_US_A``, ``savings.CashValue_SE``): the printed
+    The library-wide convention (``Term_US_S``, ``savings.CashValue_SE``): the printed
     in-force column reconciles with the cash flows printed beside it.  The notes' own
     end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")`` and is one row further down.
     """

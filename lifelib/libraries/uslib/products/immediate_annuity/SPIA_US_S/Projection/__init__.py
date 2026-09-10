@@ -166,7 +166,7 @@ in both cases and no second cells is needed.
 instalment alone** — at ``t = 0`` it shows 500.00, not the 505.00 that the definition
 gives once the $5.00 monthly maintenance expense is added. The worked example is
 therefore asserted against :func:`annuity_payments`, and :func:`net_cf` carries the
-house sign convention of ``Term_US_A`` (income less outgo, so ``-liability_cf``). Both
+house sign convention of ``Term_US_S`` (income less outgo, so ``-liability_cf``). Both
 signs are published as columns of :func:`result_cf`, the notes' outgo-positive total
 under ``liability_cf`` and the library-wide income-positive one under ``net_cf``.
 
@@ -1118,7 +1118,7 @@ def liability_cf(t):
 def net_cf(t):
     """Net cash flow to the insurer in month t: income less outgo, so ``-liability_cf``.
 
-    **Income positive**, the sign convention of ``Term_US_A.net_cf``, kept even though
+    **Income positive**, the sign convention of ``Term_US_S.net_cf``, kept even though
     this product has no projected income so that every model's ``net_cf`` can be compared
     or summed across the library.  :func:`liability_cf` carries the opposite, outgo-positive
     sign of the technical notes; both are published as columns of :func:`result_cf` rather

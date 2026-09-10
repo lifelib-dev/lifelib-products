@@ -53,9 +53,10 @@ first projected month, sitting `duration_mth_init()` completed months after issu
 contractual label `policy_year(t) = duration(t) + 1` — derived from `t`, never indexed
 by. This is the grid the technical notes specify, and it is not a stylistic choice:
 universal life is defined by a monthiversary deduction and a monthly interest credit,
-and the order of those two inside the month changes the answer. Compare `Term_US_A`,
-where `t` counts **years**, because every decrement in that product is on an annual
-cycle and there is no account value requiring monthiversary processing.
+and the order of those two inside the month changes the answer. It is also the grid every
+model in this library runs on — `Term_US_S` and `WholeLife_US_S`, whose contractual
+drivers *are* annual, keep the annual quantities on the anniversary and derive the policy
+year from `t` rather than indexing by it.
 
 `av_pp(t)`, `loan_bal_pp(t)` and `cum_prem_pp(t)` are **closing balances** of month `t`,
 as in `CashValue_SE`: the values at the end of the month. Their opening values — the
@@ -156,7 +157,7 @@ follows, with no formula change.
 | `coi_rates.csv` | Guaranteed maximum monthly COI per $1,000 NAAR, policy years 1–87, with a `provenance` column marking each row. **Covers the specimen anchor cell M / StdNT / issue age 35 only** — a model point on any other cell needs this table extended first, and a test enforces that every model point is projectable | printed anchor years sourced [S3]; intermediate years log-linearly interpolated **[std]** |
 | `corridor_factors.csv` | GPT corridor factors by attained age, 250% to age 40 grading to 101% above 93 | specimen table [S3] [R2] |
 | `mort_table.csv` | Best-estimate annual mortality by age 18–120, `q(120) = 1.0` | **illustrative [std]**, a Gompertz–Makeham curve — *not* a published table. The notes recommend 2015 VBT; that family is licensed and may not be reproduced here |
-| `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `Term_US_A` where the classes overlap |
+| `class_factor_table.csv` | Rate-class factors for the spec's six classes | **[std]**, matching `Term_US_S` where the classes overlap |
 | `lapse_table.csv` | Base annual lapse 6% / 5% / 4% / 3% by policy year | **[std]**; shape informed qualitatively by [R7] [REG-R20], whose tables are behind a paid package |
 | `prem_persistency.csv` | Paid/planned factors, 100% falling 2pp a year to a 70% floor | **[std]**; shape from [R7] |
 | `surr_charge_table.csv` | The surrender charge schedule as `(initial per $1,000, runoff years)` | 9-year runoff and monthly amortization sourced [S1] [S2] [S3]; the $9.00 level **[std]** |
@@ -197,7 +198,7 @@ optional NGE revision rule would need). Eight cases needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `risk_class` | `rate_class` | The name comes from `Term_US_A`/`BasicTerm_S`, which this library follows ahead of the notes where the two collide; it also avoids reading as Python's `class`. The six classes themselves are the product spec's, unchanged |
+| `risk_class` | `rate_class` | The name comes from `Term_US_S`/`BasicTerm_S`, which this library follows ahead of the notes where the two collide; it also avoids reading as Python's `class`. The six classes themselves are the product spec's, unchanged |
 | `l(t)` | `pols_if(t)` | The notes' `l(t)` is the probability in force at the **start** of month `t`, before its decrements, with `l(0) = 1`; `BasicTerm_S`'s `pols_if(t)` is the same start-of-month count. So `pols_if(t) = l(t)`, `pols_if(0) = pols_if_init()`, and the notes' "weight premiums by `l(t)`" is "weight by `pols_if(t)`". Do not read `l(t)` as an end-of-month survivor count |
 | `MD(t)` | `mth_deduction_pp` / `maint_fee_pp` | `CashValue_SE` calls the non-COI part of an account-value deduction `maint_fee`; that name is kept, and `mth_deduction_pp` is the notes' `MD(t)` in full |
 | *(none)* | `maint_fee` vs `expenses` | See below — they are opposite signs and easy to confuse |

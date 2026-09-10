@@ -1,7 +1,7 @@
-The **Term_US_A** Model
+The **Term_US_S** Model
 =======================
 
-.. automodule:: uslib.products.term_life.Term_US_A
+.. automodule:: uslib.products.term_life.Term_US_S
 
 .. toctree::
    :hidden:

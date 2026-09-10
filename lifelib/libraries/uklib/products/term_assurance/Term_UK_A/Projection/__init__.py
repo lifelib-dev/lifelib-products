@@ -153,7 +153,7 @@ paid is nil.
 
 .. rubric:: No tail states
 
-This is the structural difference from ``Term_US_A``, and the notes list importing a
+This is the structural difference from ``Term_US_S``, and the notes list importing a
 U.S.-style post-level-term tail as a modelling pitfall. A UK term policy expires at the
 end of ``t = n - 1``: there is no jump to ART rates, no post-level-term shock lapse, no
 mortality deterioration factor and no conversion option, so none of those cells exist
@@ -461,7 +461,7 @@ def proj_len():
     - ``range(proj_len())`` for a point projected from issue.  Cover ceases at the end of
     the term with no maturity value, no renewal and no conversion [S1][S2][S6][S8][R8],
     so the horizon is ``n`` years and there is nothing after ``t = n - 1`` - the
-    structural contrast with ``Term_US_A``, which runs on to attained age 95.
+    structural contrast with ``Term_US_S``, which runs on to attained age 95.
     """
     return policy_term()
 

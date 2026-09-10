@@ -554,7 +554,7 @@ def test_the_projection_runs_to_the_limiting_age(uk_o50_anchor):
 def test_none_of_the_us_whole_life_machinery_exists(whole_of_life):
     """No cash value, no dividends, no paid-up additions, no loans - a product fact.
 
-    WholeLife_US_A is built around all four; these two UK cells are pure decrement
+    WholeLife_US_S is built around all four; these two UK cells are pure decrement
     protection models, and importing that chassis would invent a benefit that does not
     exist.
     """
@@ -651,7 +651,7 @@ def test_model_docstring_describes_the_current_structure(whole_of_life):
     assert "external" in doc                     # inputs are not stored in the model
     assert "once per model" in doc               # why Data exists
     assert "moratorium" in doc
-    assert "WholeLife_US_A" in doc               # the contrast it is drawn against
+    assert "WholeLife_US_S" in doc               # the contrast it is drawn against
 
 
 def test_space_docstrings_carry_their_reference_material(whole_of_life):

@@ -1,13 +1,13 @@
 """Make the model docstrings' RST cross-references survive the move into lifelib.
 
 The 1,581 cells docstrings were written when a model was a top-level module, so they say
-``:mod:`Term_US_A``` and ``:mod:`~Term_US_A.Projection```.  Under lifelib the model sits at
-``uslib.products.term_life.Term_US_A``, and role resolution is relative to the current
-module -- so a bare ``Term_US_A`` names nothing and Sphinx **silently drops the role and
+``:mod:`Term_US_S``` and ``:mod:`~Term_US_S.Projection```.  Under lifelib the model sits at
+``uslib.products.term_life.Term_US_S``, and role resolution is relative to the current
+module -- so a bare ``Term_US_S`` names nothing and Sphinx **silently drops the role and
 renders plain text**.  No warning, unless the build runs with ``-n``.
 
 The fix is a leading dot, which makes the lookup *refspecific*: it matches any module whose
-dotted path ends that way.  ``:mod:`.Term_US_A``` and ``:mod:`~.Term_US_A.Projection```
+dotted path ends that way.  ``:mod:`.Term_US_S``` and ``:mod:`~.Term_US_S.Projection```
 both resolve, the ``~`` still trims the displayed text, and the rendered page is unchanged.
 
 It is also depth- and library-agnostic, so the same docstrings work in uslib, in uklib, and
@@ -16,7 +16,7 @@ would not.
 
 **The name universe is every library, not the one being fixed.**  uklib's docstrings name
 uslib models: the pension annuity states its deltas against ``SPIA_US_S``, UK term against
-``Term_US_A``, UK whole of life against ``WholeLife_US_A``.  Those are the same chassis
+``Term_US_S``, UK whole of life against ``WholeLife_US_S``.  Those are the same chassis
 pointers the plan describes between siblings *inside* uslib, one level out, and they break
 the same way -- but a tool that only knew its own library's model names would leave every
 one of them dead, silently.  So model names are collected from every sibling library and
@@ -73,7 +73,7 @@ def fix_text(text, models, this_model, own_cells, other_cells, other_space, loca
 
     text = re.sub(rf':mod:`(~?)((?:{alternatives})(?:\.\w+)*)`', mod_sub, text)
 
-    # :func:/:attr: written as a path through a model -- Term_US_A.Projection.pols_if.
+    # :func:/:attr: written as a path through a model -- Term_US_S.Projection.pols_if.
     # Same breakage as the module roles and the same one-character fix.
     def dotted_sub(m):
         # The prefix is "", "~", "." or "~." -- test for the dot anywhere in it, not at the

@@ -57,7 +57,7 @@ grid would resolve only the variants the notes exclude.
 
 ``age(t) = age_at_entry() + t`` is the attained age **at anniversary** ``t``, the age
 *entering* period ``t``, so mortality over the period reads ``age(t)`` itself — the
-library convention of :mod:`.Term_US_A` and :mod:`.MYGA_US_S`. The transactions at the
+library convention of :mod:`.Term_US_S` and :mod:`.MYGA_US_S`. The transactions at the
 closing anniversary are one year older, and that age is :func:`exercise_age`,
 ``covered_age(t) + 1``: it is what reads the lifetime-withdrawal percentage table and
 what clears the contractual minimum exercise age.
@@ -235,7 +235,7 @@ Six names needed care.
 
 **pols_if(t) is the notes' l(t), because both are read at anniversary t.** Across this
 library ``pols_if(t)`` is the number in force at the **start** of period ``t`` and is the
-weight carried by that same row's cash flows — :mod:`.Term_US_A` has
+weight carried by that same row's cash flows — :mod:`.Term_US_S` has
 ``pols_if(0) == pols_if_init()`` and ``savings.CashValue_SE`` has ``pols_if(t)`` equal to
 ``pols_if_at(t, "BEF_MAT")``. The notes define ``l(t)`` as the in-force probability at the
 *end* of contract year ``t``, which is anniversary ``t``, which is where period ``t``
@@ -269,7 +269,7 @@ surrender charge on the wrong base.
 
 **age(t) opens the period; exercise_age(t) closes it.** ``age(t) = age_at_entry() + t`` is
 the attained age at anniversary ``t``, the age entering period ``t``, exactly as in
-:mod:`.Term_US_A` and :mod:`.MYGA_US_S`, and :func:`mort_rate` reads it directly. Every
+:mod:`.Term_US_S` and :mod:`.MYGA_US_S`, and :func:`mort_rate` reads it directly. Every
 transaction, however, falls at the **closing** anniversary ``t + 1``, one year older, and
 the payout percentage depends on that age: the anchor cell's first lifetime withdrawal, in
 period ``t = 7`` from an issue age of 62, is taken at attained age 70 and reads
@@ -282,10 +282,10 @@ period ``t = 7`` from an issue age of 62, is taken at attained age 70 and reads
 ``M_shock`` as a separate factor would require inventing a denominator, so
 :func:`lapse_rate_base` returns :func:`shock_lapse_rate` in the shock year and
 :func:`lapse_rate` multiplies only by :func:`lapse_moneyness_factor`. The name
-``shock_lapse_rate`` follows :mod:`.Term_US_A`.
+``shock_lapse_rate`` follows :mod:`.Term_US_S`.
 
 **d and c collide across the library.** ``d`` is the performance-trigger rate in these
-notes, deaths in :mod:`.Term_US_A` and the floor's withdrawal deduction on the chassis;
+notes, deaths in :mod:`.Term_US_S` and the floor's withdrawal deduction on the chassis;
 ``c`` is the declared cap here and the floor's contract charge on the chassis. The names
 ``trigger_rate``, :func:`pols_death`, :func:`mgsv_charge_pp` and :func:`cap_rate`
 keep the four apart.
@@ -372,7 +372,7 @@ holds for every ``t``, including the last, ``t = proj_len() - 1``, where
 at age 120, so the projection closes itself and the term is numerically zero; it is kept
 because a substituted table with no terminal age would make it bite, and because without
 it the last year would appear to lose lives with no cause. The name follows
-``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_A`.
+``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_S`.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -670,7 +670,7 @@ def policy_year(t):
 def age(t):
     """x + t: the attained age (ANB) at anniversary t, the age **opening** period t.
 
-    The library convention of :mod:`.Term_US_A` and :mod:`.MYGA_US_S`, so :func:`mort_rate`
+    The library convention of :mod:`.Term_US_S` and :mod:`.MYGA_US_S`, so :func:`mort_rate`
     reads this age directly for the year of mortality it covers.  The transactions of
     period t fall at its *closing* anniversary and are one year older: that age is
     :func:`exercise_age`, which is what reads the lifetime withdrawal percentage table.
@@ -1831,7 +1831,7 @@ def mort_rate(t):
 
     ``age(t)`` is the attained age at anniversary ``t``, the age *entering* the period, so
     the rate for the contract year it covers is read there — the library convention of
-    :mod:`.Term_US_A` and :mod:`.MYGA_US_S`.  The shipped table is the same illustrative Makeham
+    :mod:`.Term_US_S` and :mod:`.MYGA_US_S`.  The shipped table is the same illustrative Makeham
     annuitant curve as ``products/fixed_deferred_annuity`` **[std]**, *not* a published
     basis.  The prescribed basis is the 2012 IAM Basic / 2012 IAR generational family
     with Projection Scale G2, ``q_x^(2012+n) = q_x^(2012) x (1 - G2_x)^n``, rounding
@@ -1928,7 +1928,7 @@ def lapse_rate(t):
 def pols_if(t):
     """The in-force probability at the **start** of period t: the notes' l(t).
 
-    The library convention, set by :mod:`.Term_US_A` and ``savings.CashValue_SE``: this is
+    The library convention, set by :mod:`.Term_US_S` and ``savings.CashValue_SE``: this is
     the count entering the period, before any of its eight processing steps, and it is the
     weight carried by every cash flow reported on the same row of :func:`result_cf`.
     Because period ``t`` opens at anniversary ``t``, this is exactly the notes' ``l(t)``,

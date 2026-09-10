@@ -31,71 +31,121 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/whole_life/WholeLife_US_A")
+model = mx.read_model("products/whole_life/WholeLife_US_S")
 model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by the 0-based period index `t` with one
-column per cash flow line, the start-of-period `pols_if` each row is weighted by, and the
-net flow under both signs — `net_cf` (income positive, the library convention) and
-`liability_cf` (outgo positive, the notes'). `result_pols()` and `result_cv()` give the
-decrement and value rolls.
+`result_cf()` returns a tidy `DataFrame` indexed by the 0-based **month** index `t` with
+one column per cash flow line, the start-of-month `pols_if` each row is weighted by, and
+the net flow under both signs — `net_cf` (income positive, the library convention) and
+`liability_cf` (outgo positive, the notes'). `result_cf_annual()` sums the same frame into
+policy years; `result_pols()` and `result_cv()` give the decrement and value rolls.
 
 The model and both its Spaces carry docstrings — `model.doc` describes the product and
 the projection basis, and `model.Projection.doc` holds the full mapping between the
 technical notes' symbols and the cells names.
 
-## Annual, not monthly — and `t` is 0-based
+## Monthly, and `t` is 0-based
 
-`t` counts **policy years from issue, 0-based**: `t = 0` is the first policy year, period
-`t` runs from anniversary `t` to anniversary `t + 1`, the attained age entering it is
-`age(t) = age_at_entry() + t`, and the contractual **policy year is the 1-based label
-`t + 1`** — derived where a contractual schedule has to be read, never indexed by. This is
-the library-wide convention (lifelib's `basiclife/BasicTerm_S`, `savings/CashValue_SE`:
-`for t in range(proj_len())`). **Note the contrast with `BasicTerm_S` and `CashValue_SE`,
-where `t` counts months** — here it counts years, because every cash flow driver in this
-product is annual: the level annual premium, the annual dividend declaration, the
-anniversary capitalization of loan interest. There is no account value requiring
-monthiversary processing. The notes' monthly modal-premium refinement is a premium-income
-adjustment only and is not implemented.
+`t` counts **policy months from issue, 0-based** — lifelib's own clock
+(`basiclife/BasicTerm_S`, `savings/CashValue_SE`) and the one every other model in this
+library runs on: `t = 0` is the issue month, period `t` runs from time `t` to time
+`t + 1`, and `for t in range(proj_len())` is the frame.
 
-The frame is `t = proj_start() … proj_len() − 1`. `proj_len() = 100 − age_at_entry()` is
-the **number** of policy years projected from issue — the exclusive end of the frame, so
-`proj_len() − 1` is the final policy year, the one ending at attained age 100 — and
-`proj_start() = duration_inforce()` is 0 for new business and the policy years already
-elapsed for an in-force point. `len(result_cf()) == proj_len() − proj_start()`: 55 rows
-for the new-business male 45, 46 for the anchor at duration 9.
+Everything *contractual* about this product is nevertheless annual — the guaranteed cash
+value schedule, the dividend declaration, the anniversary capitalization of loan interest,
+the premium-paying period — so the policy year is derived and used as a lookup key:
+`duration(t) = t // 12` is the completed policy years, the contractual **policy year is
+the 1-based label `duration(t) + 1`** (never indexed by), `age(t) = age_at_entry() +
+duration(t)` is the attained age entering that policy year, and `age_anniv(t)` the age at
+the anniversary ending it. `is_anniv(t)` — true in the last month of a policy year — is
+where every annual event lands.
+
+The frame is `t = proj_start() … proj_len() − 1`. `proj_len() = 12 × (100 −
+age_at_entry())` is the **number** of policy months projected from issue — the exclusive
+end of the frame, so `proj_len() − 1` is the final month, the one ending at attained age
+100 — and `proj_start() = 12 × duration_inforce()` is 0 for new business and the elapsed
+policy years in months for an in-force point, so the frame always opens on an anniversary.
+`len(result_cf()) == proj_len() − proj_start()`: 660 rows for the new-business male 45,
+552 for the anchor at duration 9.
+
+### Two speeds, and what actually changed
+
+`mort_rate(t)` and `lapse_rate(t)` are the **annual** rates of the policy year containing
+month `t` — the vectors the notes tabulate — and `mort_rate_mth(t)` and `lapse_rate_mth(t)`
+are `1 − (1 − q)^(1/12)`, the rates the month applies. That naming is the library's
+convention and `tests/test_model_conventions.py` asserts it. Because twelve monthly rates
+compound back to the annual one and every annual event stays on the anniversary,
+**`pols_if(12k)` is exactly what the annual-step model carried at `t = k`**, to floating
+point, and so is every anniversary-dated value: the guaranteed cash value, the dividend
+and all three of its margins, the paid-up additions purchased and in force, the anniversary
+surrender and death benefit amounts. All fifteen steps of the notes' worked example are
+anniversary quantities, which is why the walk-through survived the change of grid
+unaltered — only the indices it is read at moved, `CV_8 → CV_107` and `CV_9 → CV_119`.
+
+What the finer grid buys is everything that is *not* contractually annual:
+
+| | Annual grid | Monthly grid |
+|---|---|---|
+| Death claims | at the anniversary, on the anniversary in force | at the end of the month of death |
+| Surrenders | at the anniversary, valued at the anniversary CV | at the end of the month, valued at an interpolated CV |
+| Maintenance expense | once a year, `1.02^t` | a twelfth a month, `1.02^(t/12)` |
+| Premium | the annual premium, once a year | the modal instalment, when it is contractually due |
+| Loan advances | one net advance a year | spread as the cash value moves; interest still capitalizes once, at the anniversary |
+
+The last of those is the one the notes themselves asked for: the annual-mode
+standardization of product-spec Table 2 note (f) existed only because the grid could not
+express the sourced modal factors, and it is now retired. `premium_pp_ann(t)` is the notes'
+`G`, the annual premium; `premium_pp(t)` is the gross instalment billed and
+`premium_net_pp(t)` the one actually collected once any dividend offset is applied, and
+`modal_factor_par_*` / `modal_factor_fe_*` carry the two sourced scales ([S1] 0.515 /
+0.26265 / 0.085833 and [S7] 0.52 / 0.275 / 0.089), one Reference each. The dividend offset under REDUCE_PREM
+is applied to the *annual* premium and the instalments split what is left **[std]**, so
+changing the mode moves the timing of the collection and not the amount the offset
+absorbs.
+
+### The two interpolations
+
+`cv_pp(t)` and `nsp_mth(t)` are straight-lined between anniversary values, `(k + 1)/12` of
+the way with `k = duration_mth(t) % 12`, both **[std]** and both exact at the anniversary.
+`cv_pp_anniv(y)` is the schedule as printed, and is what the tests pin. Nothing else is
+interpolated: `pua_face` is a step function that moves only when a purchase is made, and
+the dividend is annual by contract.
+
+### Closing balances and opening state
 
 The **value** state variables are closing balances. `cv_pp(t)`, `pua_face(t)`,
-`pua_cv(t)`, `div_accum(t)` and `loan_bal(t)` are all **as at the anniversary that ends
-period `t`**. The value *entering* period `t` is the closing value of period `t − 1`, or,
-at the first projected period, the model point's opening state — the notes'
-initializations `PUAF = puaf_inforce`, `DA = 0`, `L = loan_inforce`. That is written
-inline wherever an opening balance is read,
+`pua_cv(t)`, `div_accum(t)` and `loan_bal(t)` are all **as at the end of month `t`**. The
+value *entering* month `t` is the closing value of month `t − 1`, or, at the first
+projected month, the model point's opening state — the notes' initializations
+`PUAF = puaf_inforce`, `DA = 0`, `L = loan_inforce`. That is written inline wherever an
+opening balance is read,
 
 ```python
 puaf = pua_face(t - 1) if t > proj_start() else puaf_inforce()
 ```
 
-so that no cells is ever asked for a period below the first projected one — there is no
+so that no cells is ever asked for a month below the first projected one — there is no
 `t = −1` anywhere in the model, and for an in-force point the opening balance is the
-model point's input rather than a projected value.
+model point's input rather than a projected value. An **annual** quantity reads the balance
+entering its *policy year* instead, twelve months back: `div_int(t)` takes `cv_pp(t − 12)`
+and `loan_bal(t − 12)`, which is the annual grid's `t − 1` under the month index.
 
-`pols_if(t)` is on the same clock: the number in force at the **start** of period `t` —
+`pols_if(t)` is on the same clock: the number in force at the **start** of month `t` —
 the notes' `l_t`, `l_0 = 1` at issue. See
 [below](#uslib-whole_life-pols-if-start-of-year).
 
-Within the period the order is the notes': premium, rider premium, premium tax and
-expenses at the beginning; then deaths, loan-interest capitalization, the dividend
-credit, surrenders and — in the final period only — maturity at the end. So deaths carry
-the *prior* anniversary's paid-up additions while surrenders carry the current one,
-including the dividend just credited.
+Within the month the order is the notes': premium, rider premium, premium tax and
+expenses at the beginning; then deaths, and — where the month is an anniversary —
+loan-interest capitalization and the dividend credit, then surrenders and, in the final
+month only, maturity at the end. So deaths carry the paid-up additions *entering* the
+month while surrenders carry the closing ones, including any dividend just credited.
 
 ## Inputs are external files
 
 The six input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `WholeLife_US_A/` holds nothing but formulas:
+folder. `WholeLife_US_S/` holds nothing but formulas:
 
 ```
 products/whole_life/
@@ -107,7 +157,7 @@ products/whole_life/
   premium_rates.csv
   run.py
   README.md
-  WholeLife_US_A/                 <- formulas only
+  WholeLife_US_S/                 <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -141,7 +191,7 @@ Reference and a reader Cells, both on `Data`:
 | `mort_table_file` | `mort_table()` | `mort_table.csv` |
 | `premium_rates_file` | `premium_rates()` | `premium_rates.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `WholeLife_US_A/` without the
+**The trade-off:** the model is not portable on its own. Copy `WholeLife_US_S/` without the
 CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
 of the model shows logic changes only, and an input can be edited or swapped in place —
 point `Data.mort_table_file` at another same-schema file and the projection follows,
@@ -149,8 +199,8 @@ with no formula change.
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Fourteen points. **Point 1 is the worked-example anchor cell** (WL_PAR / M45 / STD_NT / $100k / $1,800 / PUA), carried as an *in-force* point at duration 9 with $4,100 of paid-up additions; points 2–10 are the same policy as new business under each dividend option, each in-scope rider, the limited-pay variant and the female cell; points 11–13 are the final-expense variant; point 14 is the term blend with no rider premium funding it | anchor from the worked example **[std]**; FE points from the sourced rate table [S7] |
-| `cv_table.csv` | Guaranteed cash value per $1,000 of face by premium period, sex, issue age and policy year, with a `provenance` column | policy years 9 and 10 of the M45 pay-to-100 cell — the model's `cv_pp(8)` and `cv_pp(9)` — are the worked example's **[std]** anchors; the rest is a monotone **[std]** shape reaching exactly 1,000.00 at attained age 100. **Sex-distinct throughout**: the female pay-to-100 schedule is the male schedule's funding-progress shape `f_t = CV_t / (F · NSP_{x+t+1})` applied to the female paid-up value `F · NSP^F_{x+t+1}` **[std]**, so it endows at face like the male one but sits below it at every earlier duration |
+| `model_point_table.csv` | Fifteen points. **Point 1 is the worked-example anchor cell** (WL_PAR / M45 / STD_NT / $100k / $1,800 / PUA / annual mode), carried as an *in-force* point at duration 9 with $4,100 of paid-up additions; points 2–10 are the same policy as new business under each dividend option, each in-scope rider, the limited-pay variant and the female cell; points 11–13 are the final-expense variant; point 14 is the term blend with no rider premium funding it; point 15 is point 2 on **monthly** premium mode, added with the monthly grid | anchor from the worked example **[std]**; FE points from the sourced rate table [S7]; modal factors [S1] [S7] |
+| `cv_table.csv` | Guaranteed cash value per $1,000 of face by premium period, sex, issue age and policy year, with a `provenance` column | policy years 9 and 10 of the M45 pay-to-100 cell — the model's `cv_pp_anniv(9)` and `cv_pp_anniv(10)`, reached at `cv_pp(107)` and `cv_pp(119)` — are the worked example's **[std]** anchors; the rest is a monotone **[std]** shape reaching exactly 1,000.00 at attained age 100. **Sex-distinct throughout**: the female pay-to-100 schedule is the male schedule's funding-progress shape `f_t = CV_t / (F · NSP_{x+t+1})` applied to the female paid-up value `F · NSP^F_{x+t+1}` **[std]**, so it endows at face like the male one but sits below it at every earlier duration |
 | `nsp_table.csv` | Endowment-at-100 net single premium per 1 of paid-up face by sex and age | age 55 male is the worked example's 0.42 **[std]**; the curve is **[std]** generated and equals exactly 1.000000 at age 100. It is *not* the endowment NSP implied by `mort_table.csv` at 4% — see below |
 | `np_guar_table.csv` | Nonforfeiture net level premium per $1,000 by sex and issue age, keyed by premium period | the M45 pay-to-100 cell is the worked example's 13.00 **[std]**; the rest is `1000 · NSP_x / ä_{x:(100−x)}` on the shipped basis **[std]**, the notes' definition. That subscript is the **endowment** period, not the premium period `m` — the notes annotate only the *other* nonforfeiture quantity, `P_adj`, with "(m = premium period)" — so `NNLP` does not vary with `m`, and the shipped rows for one (sex, issue age) are all equal. The `premium_period` key is kept so that a carrier table which *does* vary by `m` drops in with no formula change |
 | `mort_table.csv` | Guaranteed mortality `q^g` by sex and age 18–100 | male age 54 is the worked example's 0.00320 **[std]**; the rest is a **[std]** illustrative Makeham curve with a 3-year female setback — ***not* a published table, and not the 2017 CSO** |
@@ -163,9 +213,10 @@ of them is keyed by the model's `t`:
 
 | File | Time-like column | Decision |
 |---|---|---|
-| `cv_table.csv` | `policy_year`, values 1 … 100 − x | **Left alone.** It is the contractual, 1-based policy-year label of a cash value schedule, not the frame's index. `cv_pp(t)` reads it at `t + 1`, so the closing value of period `t` is the schedule's policy year `t + 1` — `cv_pp(9)` is the worked example's policy-year-10 row, 112.00 per $1,000 |
-| `model_point_table.csv` | `duration_inforce` | **Left alone.** An elapsed count of completed policy years, which is 0-based by nature: 9 means nine years have run. It is now `proj_start()` itself rather than `proj_start() − 1` |
-| `mort_table.csv`, `nsp_table.csv` | `age` | Attained age, not time; unchanged. `age(t) = x + t` and `age_anniv(t) = x + t + 1` reach them |
+| `cv_table.csv` | `policy_year`, values 1 … 100 − x | **Left alone.** It is the contractual, 1-based policy-year label of a cash value schedule, not the frame's index — and it stayed annual through the move to a monthly frame, because it is the *contract* that is annual. `cv_pp_anniv(y)` reads it directly and `cv_pp(t)` straight-lines between consecutive rows; `cv_pp_anniv(10)` is the worked example's policy-year-10 row, 112.00 per $1,000, which `cv_pp(119)` reproduces exactly |
+| `model_point_table.csv` | `duration_inforce` | **Left alone.** An elapsed count of completed policy **years**, which is 0-based by nature: 9 means nine years have run. `proj_start()` is `12 ×` it, so the frame opens on an anniversary |
+| `model_point_table.csv` | `premium_mode` | Added with the monthly grid. The contractual billing mode, read by `modal_factor()` and `prem_due(t)`; point 15 is the one monthly-mode cell |
+| `mort_table.csv`, `nsp_table.csv` | `age` | Attained age, not time; unchanged. `age(t) = x + duration(t)` and `age_anniv(t) = x + duration(t) + 1` reach them, and `nsp_mth(t)` straight-lines between two consecutive `nsp` rows |
 | `np_guar_table.csv`, `premium_rates.csv` | `issue_age` | Issue age, not time; unchanged |
 
 No other column in any of the six files is on the frame's time axis.
@@ -188,11 +239,13 @@ The technical notes use compact actuarial symbols instead; the full mapping live
 | `m` (premium period) | `policy_term` | It is the **premium-paying** period, not the coverage period — those differ on `PAY_10` |
 | `w_t` "surrenders" | `pols_lapse`, `kind="LAPSE"` | The notes say surrenders; lifelib says lapse, and the `kind` vocabulary has to stay intact |
 | `CSV_t` | `claim_pp(t, "LAPSE")` | The cash surrender value, not a file; reached through the shared `kind` vocabulary |
-| `x+t` vs `x+t+1` | `age(t)` / `age_anniv(t)` | Mortality is indexed at the age entering the period, paid-up additions bought at its end at the age one higher. Swapping them shifts every dividend purchase by a year |
+| `x+t` vs `x+t+1` | `age(t)` / `age_anniv(t)` | Mortality is indexed at the age entering the policy year, paid-up additions bought at its anniversary at the age one higher. Swapping them shifts every dividend purchase by a year |
+| `q`, `w` annual | `mort_rate` / `mort_rate_mth`, `lapse_rate` / `lapse_rate_mth` | The library's two-speed convention: the unsuffixed cells is the **annual** rate the notes tabulate, the `_mth` one is what the month applies. The dividend's mortality margin uses the *annual* rate, and must |
+| `G` vs the instalment | `premium_pp_ann(t)` / `premium_pp(t)` / `premium_net_pp(t)` | The annual premium the notes call `G`, the gross instalment billed in month `t`, and the one actually collected after any dividend offset |
 | `l_t` vs `l_{t+1}` | `pols_if(t)` / `pols_if_at(t, "AFT_DECR")` | `pols_if` is the **start**-of-period count library-wide, and it is the weight on its own `result_cf()` row. The end-of-period count keeps a name of its own — [below](#uslib-whole_life-pols-if-start-of-year) |
 | `NetCF_t` | `liability_cf(t)` / `net_cf(t)` | The notes are outgo-positive and the library is income-positive, so the stream is published under both names — [below](#uslib-whole_life-net-flow-both-signs) |
 
-`risk_class` follows this product's notes; `Term_US_A` calls the same concept
+`risk_class` follows this product's notes; `Term_US_S` calls the same concept
 `rate_class`.
 
 ## The worked example sets the PUA-block dividend aside
@@ -204,7 +257,7 @@ PUACV_8))` to the amount in step 9."*
 
 Rather than reproduce four of the fifteen steps and quietly miss the rest, the
 Reference `pua_div_on` ships **`False`**, so the base deterministic run reproduces the
-worked example exactly — the same device `Term_US_A` uses when it ships
+worked example exactly — the same device `Term_US_S` uses when it ships
 `conv_rate_base = 0` because its worked example sets conversion aside.
 
 It is a reproduction switch, not a claim about the product. Paid-up additions **are**
@@ -234,15 +287,16 @@ Neither is "correct": the notes' own arithmetic is what is ambiguous.
 
 ## The anchor model point is in force, not new business
 
-The worked example walks through **policy year 10 — the period `t = 9`** — of a policy
-that already holds 9,500 of guaranteed cash value and 4,100 of paid-up additions at the
-anniversary it opens on. Paid-up-additions face is a projected state variable, so the only
-faithful way to hold it at 4,100 is to make the anchor an in-force point:
+The worked example walks through **policy year 10 — the months `t = 108 … 119`** — of a
+policy that already holds 9,500 of guaranteed cash value and 4,100 of paid-up additions at
+the anniversary it opens on. Paid-up-additions face is a projected state variable, so the
+only faithful way to hold it at 4,100 is to make the anchor an in-force point:
 `duration_inforce = 9`, `puaf_inforce = 4100`. Both columns are in the notes' own
 model-point attribute table, and this is what they are for. `duration_inforce` is an
-elapsed count and so already 0-based: `proj_start()` is therefore 9 for point 1 and
-`result_cf()` begins at `t = 9` and ends at `t = 54`; point 2 is the same policy issued as
-new business and runs the full 55 years, `t = 0 … 54`.
+elapsed count of policy **years** and so already 0-based: `proj_start()` is therefore
+`12 × 9 = 108` for point 1 and `result_cf()` begins at `t = 108` and ends at `t = 659`;
+point 2 is the same policy issued as new business and runs the full 660 months,
+`t = 0 … 659`.
 
 The alternative — tuning the shipped tables until a new-business projection happened to
 produce 4,100 at duration 9 — would have been fitting the model to the answer.
@@ -260,7 +314,7 @@ NetCF_t = −G^net·l − A·l + E·l + q^e·l·DB + w·l(1−q^e)·CSV + D^cash
 
 with the sign convention stated inline: **outgo positive**. The other eleven reference
 models in `products/` all define `net_cf` the other way round, income less outgo — the
-sign `Term_US_A` sets. One name cannot carry both without `result_cf()["net_cf"]`
+sign `Term_US_S` sets. One name cannot carry both without `result_cf()["net_cf"]`
 becoming uncomparable and unsummable across the library.
 
 So the model publishes the stream twice, under two names, and both are `result_cf()`
@@ -290,7 +344,7 @@ guarantee-basis quantities from one 2017 CSO / 4% source."*
 **The shipped tables do not do that.** They are pinned to their worked-example anchors
 one at a time: `mort_table.csv` to `q^g_54 = 0.00320`, `nsp_table.csv` to
 `NSP_55 = 0.42` and `NSP_100 = 1`, `np_guar_table.csv` to `NP_g = 13.00`, `cv_table.csv`
-to 95.00 and 112.00 per $1,000 on its policy-year 9 and 10 rows (`cv_pp(8)`, `cv_pp(9)`). This is a disclosed divergence, not an oversight,
+to 95.00 and 112.00 per $1,000 on its policy-year 9 and 10 rows (`cv_pp_anniv(9)`, `cv_pp_anniv(10)`). This is a disclosed divergence, not an oversight,
 because **the worked example's own anchors are unreachable on any single basis**:
 
 On one mortality table at interest `i`, endowment insurance and the annuity-due satisfy
@@ -364,8 +418,8 @@ carries both cases:
 
 | | Model point 8 — 2× target, $5,000 rider premium | Model point 14 — 2× target, no rider premium |
 |---|---|---|
-| cap binds in | `t = 0` (policy year 1) only, where `div_first_year = 2` means no dividend is payable at all | `t = 0, 1, 2`, while the dividend is still small, and every period from `t = 29` on as `q^sc` outruns it — 29 of 55 years |
-| crossover | `t = 7` (policy year 8): the rider money closes the gap and the blend becomes pure paid-up additions | never; `PUAF` reaches only 6,513 by maturity against a 100,000 gap |
+| cap binds in | policy year 1 only, where `div_first_year = 2` means no dividend is payable at all | policy years 1–3, while the dividend is still small, and every year from the thirtieth on as `q^sc` outruns it — 29 of 55 years |
+| crossover | policy year 8: the rider money closes the gap and the blend becomes pure paid-up additions | never; `PUAF` reaches only 6,513 by maturity against a 100,000 gap |
 
 Point 8 is how blends are actually funded and exercises the uncapped branch; point 14
 exists so the shortfall branch is exercised too, and so the claim that the block never
@@ -373,13 +427,13 @@ crosses over without rider money is a test rather than an assertion.
 
 ## The last REDUCE_PREM dividend has no premium left to offset
 
-Under `REDUCE_PREM` the notes route the dividend to the *next* period's premium:
-`G^net_{t+1} = max(G − D_t, 0)`, excess to paid-up additions. In the final projected
-period `t = T − 1` there is no period after it. The notes never say what becomes of that
+Under `REDUCE_PREM` the notes route the dividend to the *next* policy year's premium:
+`G^net = max(G − D_{prev anniv}, 0)`, excess to paid-up additions. At the final
+anniversary, `t = T − 1`, there is no policy year after it. The notes never say what becomes of that
 last dividend, and reading them literally drops it: the dividend is credited, offsets
 nothing, buys nothing, is not paid in cash and never reaches the maturity benefit. On
-model point 5 that lost `div_credited(54) = 2,030.14`, more than a full year's gross
-premium, while the other three options all delivered theirs.
+model point 5 that lost the final anniversary's dividend of 2,030.14 — more than a full
+year's gross premium — while the other three options all delivered theirs.
 
 The model treats the whole of `D_{T−1}` as `REDUCE_PREM` excess and buys paid-up additions
 with it at `NSP_100 = 1` **[std]**, which is the rule the option already applies in every
@@ -390,7 +444,7 @@ dividend options, so no option can silently leak a dividend again.
 
 (uslib-whole_life-pols-if-start-of-year)=
 
-## `pols_if` is the start-of-period count
+## `pols_if` is the start-of-month count
 
 Every other state variable in these notes is an end-of-period value, but the in-force
 probability is read at the **start** of the period, because that is what the period's cash
@@ -402,9 +456,10 @@ stop reconciling: 1,800 of premium beside 0.98 policies.
 `pols_if(t)` is therefore the number in force at the **start** of period `t` — the notes'
 `l_t`, `l_0 = 1` at issue — which is both the weight on that same `result_cf()` row and
 what `pols_if` means in every other model in this library but `SPIA_US_S`
-(`Term_US_A.pols_if(0)` is `pols_if_init()`; lifelib's `CashValue_SE.pols_if(t)` is
+(`Term_US_S.pols_if(0)` is `pols_if_init()`; lifelib's `CashValue_SE.pols_if(t)` is
 `pols_if_at(t, "BEF_MAT")`).
-`premiums(t) / premium_net_pp(t) == pols_if(t)` is an identity, and a test asserts it;
+`premiums(t) / premium_net_pp(t) == pols_if(t)` is an identity wherever an instalment
+falls, and a test asserts it;
 `pols_if(proj_start()) == pols_if_init()` on every model point, in force or new business.
 `SPIA_US_S` is the library's one documented exception: its `pols_if(t)` is the notes'
 end-of-month obligation indicator `max(C(t), l_alive(t+1))`, a *closing* measure, so
@@ -448,14 +503,18 @@ trap"); the $25 expense margin; the dividend floor at zero and the no-dividend-i
 convention; rounding the dividend to the cent; the par lapse schedule (5% grading to 2%
 by year 10, level after, zero in the maturity year) and the final-expense schedule (12%,
 10%, grading to 6% by year 5); acquisition expense 90% of first-year premium plus $250;
-maintenance $60 inflating at 2%; premium tax 2%, which the notes' processing order
+maintenance $60 a year accruing at a twelfth a month and inflating at `1.02^(t/12)`;
+premium tax 2%, which the notes' processing order
 collects but their one-line `NetCF` formula omits — the model follows the processing
 order; the 10% load on paid-up-additions rider payments; the 2× term-blend target and
 both blend decisions above; routing the final period's `REDUCE_PREM` dividend to paid-up
 additions, since there is no premium after it to offset; the 3% accidental share of
 final-expense deaths; truncation of the projection at attained age 100; holding the loan
 at `loan_utilization × CV_t`; the funding-progress construction that makes the pay-to-100
-cash value schedule sex-distinct; and every value in `cv_table.csv`, `nsp_table.csv`,
+cash value schedule sex-distinct; the constant-force conversion of every annual rate to its
+monthly counterpart; the straight-line interpolation of the cash value and the net single
+premium between anniversaries; applying the `REDUCE_PREM` offset to the annual premium and
+letting the instalments split what is left; and every value in `cv_table.csv`, `nsp_table.csv`,
 `np_guar_table.csv` and `mort_table.csv` — which, as set out above, are four separate
 constructions rather than one.
 
@@ -467,8 +526,8 @@ behavioural overlay, applied proportionally rather than by splitting the cohort 
 
 **Not implemented**, and named as such in the model docstring: reduced paid-up and
 extended term nonforfeiture, the automatic premium loan, partial surrender of paid-up
-additions, terminal dividends and dividends credited at death, the monthly modal
-refinement, variable and adjustable loan rates, the age 100–121 tail, state variations,
+additions, terminal dividends and dividends credited at death, variable and adjustable
+loan rates, the age 100–121 tail, state variations,
 and any §7702 / §7702A policing — `mec_flag()` flags a model point that would need the
 test rather than performing it, exactly as the notes prescribe.
 
@@ -479,9 +538,12 @@ cent, the PUA-block dividend against the notes' parenthetical, the in-force and
 paid-up-additions roll-forwards, the four cash-value/NSP endpoint invariants, one test
 per "known modeling pitfall" the notes list, the dividend-rounding divergence in both
 directions, both signs of the net flow and that they are exact negatives, the
-start-of-period meaning of `pols_if` and its reconciliation with its own row, each
+start-of-month meaning of `pols_if` and its reconciliation with its own row, each
 dividend option, each rider, the final-expense graded benefit and its premium formula
-against the sourced rates, `result_cf()` shape, and that all fourteen model points
+against the sourced rates, the annual-equivalence invariant (`pols_if(12k)` against the
+annual recursion at every anniversary of the frame), that the two interpolations are exact
+at the anniversary and that no annual event is credited off one, the modal-premium
+machinery against model point 15, `result_cf()` shape, and that all fifteen model points
 project. Four of them pin the divergences and the decisions written up above so they
 cannot quietly change:
 

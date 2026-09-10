@@ -186,7 +186,7 @@ The **dynamic behavior module** -- the funding ratio, dynamic lapse and premium
 persistency -- *is* implemented in full, including the notes' at-issue pricing path
 ``AV*``, but is switched **off** by the Reference ``dyn_behavior_on = False`` so that
 the base deterministic run pays the planned premium in full and reproduces the worked
-example, exactly as ``Term_US_A`` switches conversion off for the same reason.
+example, exactly as ``Term_US_S`` switches conversion off for the same reason.
 
 **Model points.** ``model_point_table.csv`` carries four points, all on the anchor
 configuration M45 / StdNT / $500,000, because the notes disclose a COI anchor for that
@@ -225,7 +225,7 @@ performed at the wrong age, not contract parameters, and carrying an issue-age c
 factor or one disclosed COI rate across seventy-seven years would misstate every later
 month. Model point 2 is the same cell with both blank, so it takes the rule from the
 first month, and a test pins the gap open in both directions. This is the pattern
-``Term_US_A`` uses for its ``M(1)`` divergence; neither reading is "correct", and
+``Term_US_S`` uses for its ``M(1)`` divergence; neither reading is "correct", and
 neither may be closed silently.
 
 Example:

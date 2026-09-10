@@ -58,11 +58,11 @@ the start of month ``t``: 0 in an at-issue cell's first month and
 ``duration_mth``, never on ``t``. ``policy_year(t) = duration_mth(t)//12 + 1`` is the
 1-based contract year, so Contract Anniversaries fall at the **end** of the months with
 11, 23, 35, ... elapsed policy months and Contract Quarterly Anniversaries at the end of
-those with 2, 5, 8, ... **[std]**. Note the contrast with :mod:`.Term_US_A`, where ``t``
-counts years: monthly is required here because the base contract charge accrues daily on
-separate-account value, the rider charges are assessed quarterly on benefit bases, and
-the roll-up and bonus are credited annually — three different clocks, and changing any
-one changes the answer.
+those with 2, 5, 8, ... **[std]**. Every model in this library runs on a monthly grid;
+here it is not merely the house convention but forced, because the base contract charge
+accrues daily on separate-account value, the rider charges are assessed quarterly on
+benefit bases, and the roll-up and bonus are credited annually — three different clocks,
+and changing any one changes the answer.
 
 Within a month: at the beginning of the month (BOM) the premium buys units at the prior
 unit value and raises ``GWB``, ``BB``, ``NP``, ``RP``, ``RB``, ``GAWA`` and ``ADJ``, then

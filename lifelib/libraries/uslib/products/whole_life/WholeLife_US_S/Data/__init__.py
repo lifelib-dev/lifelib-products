@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The six input CSVs are read here, **once per model**, and referenced from
-:mod:`~.WholeLife_US_A.Projection` as ``data``. :mod:`~.WholeLife_US_A.Projection` is
+:mod:`~.WholeLife_US_S.Projection` as ``data``. :mod:`~.WholeLife_US_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
 its own cells cache; if the readers lived there, every model point would re-read every
 file. Holding them in an unparameterized Space reads each file once no matter how many
@@ -20,7 +20,7 @@ so a diff of the model shows logic changes only. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``WholeLife_US_A`` folder without its parent's CSVs produces a model that reads and then
+``WholeLife_US_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so

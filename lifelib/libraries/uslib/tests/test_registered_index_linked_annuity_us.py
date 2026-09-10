@@ -837,7 +837,7 @@ def test_inforce_rollforward_closes(anchor):
 def test_pols_if_is_the_start_of_period_count_and_weights_its_own_row(anchor):
     """The library-wide convention: ``pols_if(t)`` opens month t and weights its cash flows.
 
-    ``pols_if(0) == pols_if_init()``, exactly as in ``Term_US_A``, and the count at the
+    ``pols_if(0) == pols_if_init()``, exactly as in ``Term_US_S``, and the count at the
     month end survives as ``pols_if_at(t, "AFT_DECR")``.  The reconciliation this buys is
     that the ``pols_if`` column of ``result_cf()`` divides the cash flows on the same row:
     before the ruling the printed in-force was the end-of-month count while the row was

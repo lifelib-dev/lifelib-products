@@ -41,7 +41,7 @@ REPO = here.parents[1]
 LIBRARY_ROOT = REPO / "lifelib" / "libraries"
 
 # autodoc imports the models to read their cells docstrings, so the library must be
-# importable under the name its documents use: `uslib.products.term_life.Term_US_A`.
+# importable under the name its documents use: `uslib.products.term_life.Term_US_S`.
 # lifelib does the same thing one level down, which is why the product slugs are
 # underscored -- every component of that path has to be a Python identifier.
 sys.path.insert(0, str(LIBRARY_ROOT))

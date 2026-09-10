@@ -73,7 +73,7 @@ the notes exclude — monthly-sum crediting, a monthly charge deduction, daily i
 values and mid-year withdrawal crediting.
 
 `age(t) = age_at_entry() + t` is the attained age at anniversary `t`, the age **entering**
-period `t`, exactly as in `Term_US_A` and the chassis — so `mort_rate(t)` reads `age(t)`
+period `t`, exactly as in `Term_US_S` and the chassis — so `mort_rate(t)` reads `age(t)`
 itself. The transactions of period `t` fall at its closing anniversary and are one year
 older, and that age is `exercise_age(t) = covered_age(t) + 1`: it is what reads the
 lifetime-withdrawal percentage table and what clears the contractual minimum exercise age
@@ -192,9 +192,9 @@ Six cases needed care:
 | `MGV(t)` | `mgsv_pp` | The chassis calls the same Model #805 floor `MGSV`. Both source files say in terms it is **one quantity under two labels**; the chassis name wins so the two annuity models share it. See below — the *recursion* is not shared |
 | `E(t)` | `wd_excess_pp` | On the chassis `E(t)` is the charge base. Here it is the **excess withdrawal**, the part above the guaranteed amount. See below |
 | `X(t)` | `wd_charge_base_pp` / `surr_charge_base_pp` | The chassis's `wd_excess_pp` / `surr_excess_pp`, renamed because `wd_excess_pp` is taken |
-| `x + t` | `age(t)` | The age at anniversary `t`, which opens period `t`, as in `Term_US_A` and the chassis; `exercise_age(t) = age(t) + 1` is the age at the closing anniversary, where the withdrawal falls |
+| `x + t` | `age(t)` | The age at anniversary `t`, which opens period `t`, as in `Term_US_S` and the chassis; `exercise_age(t) = age(t) + 1` is the age at the closing anniversary, where the withdrawal falls |
 | `M_shock(t)` | *(absorbed)* | The notes state the shock as three absolute rates, not as a multiplier; see below |
-| `d`, `c` | `trigger_rate`, `cap_rate` | `d` is deaths in `Term_US_A` and the floor's withdrawal deduction on the chassis; `c` is the floor's contract charge there |
+| `d`, `c` | `trigger_rate`, `cap_rate` | `d` is deaths in `Term_US_S` and the floor's withdrawal deduction on the chassis; `c` is the floor's contract charge there |
 
 Three shared names are spelled the library's way rather than the notes': the
 free-allowance portion of a withdrawal is `wd_free_pp`, the chassis name; the mortality
@@ -212,7 +212,7 @@ name is kept rather than split.
 
 The technical notes define `l(t)` as the in-force probability at the **end** of contract
 year `t`. Across this library `pols_if(t)` is the number in force at the **start** of period
-`t` — `Term_US_A` has `pols_if(0) == pols_if_init()`, and lifelib's `savings/CashValue_SE`
+`t` — `Term_US_S` has `pols_if(0) == pols_if_init()`, and lifelib's `savings/CashValue_SE`
 has `pols_if(t)` equal to `pols_if_at(t, "BEF_MAT")`. The end of contract year `t` and the
 start of period `t` are the same instant, anniversary `t`, so on the 0-based period index
 the two coincide and the model needs one number rather than two:
@@ -343,7 +343,7 @@ w_shock = 0.05   GLWB activated (phase = INCOME)
 Carrying `M_shock` as a separate factor would require inventing a denominator, so
 `lapse_rate_base(t)` returns `shock_lapse_rate(t)` in the year the surrender charge expires
 and `lapse_rate(t)` multiplies only by `lapse_moneyness_factor(t)`. The name
-`shock_lapse_rate` follows `Term_US_A`. Model points 1, 9 and 6 exercise the three rates
+`shock_lapse_rate` follows `Term_US_S`. Model points 1, 9 and 6 exercise the three rates
 respectively, and the notes call this "the single most important behavioral fact in the
 product".
 

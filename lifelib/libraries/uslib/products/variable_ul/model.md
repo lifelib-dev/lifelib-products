@@ -267,7 +267,7 @@ Because the pin lifts at `t = 1`, point 1's output *steps* between `t = 0` and `
 value is "right"; the rule is a standardization and so is the pin, and
 `test_the_two_age_lookups_are_shipped_both_ways` holds the gap open in both directions.
 
-This is the pattern `Term_US_A` uses for its `M(1)` divergence.
+This is the pattern `Term_US_S` uses for its `M(1)` divergence.
 
 A second, smaller gap sits in the same worked example and is pinned the same way. The
 notes' table totals the two subaccounts by adding the **displayed** figures: 30,482.82 +
@@ -401,7 +401,7 @@ no loans, starting from zero.
 It is switched **off** by `Projection.dyn_behavior_on = False`, which makes `φ = 1`,
 `λ = 1` and `ρ = 1`. That is what lets the base deterministic run pay the planned
 premium in full, which is what the worked example does ("planned premium $500/month
-paid"). `Term_US_A` switches conversion off for exactly the same reason. Switch it on
+paid"). `Term_US_S` switches conversion off for exactly the same reason. Switch it on
 with one assignment:
 
 ```python

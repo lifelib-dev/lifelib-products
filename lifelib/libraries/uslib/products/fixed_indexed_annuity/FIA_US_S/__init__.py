@@ -82,7 +82,7 @@ inside it is exposed through a ``timing`` argument rather than being buried:
 8. decrements --- ``pols_if_at(t, "AFT_DECR")``
 
 ``pols_if(t)`` is the in-force count at the **start** of period ``t``, the library-wide
-convention set by :mod:`.Term_US_A` and ``savings.CashValue_SE``, and it is the weight
+convention set by :mod:`.Term_US_S` and ``savings.CashValue_SE``, and it is the weight
 carried by every cash flow reported on the same row of ``result_cf()``. Because period
 ``t`` opens at anniversary ``t``, it is also the technical notes' own ``l(t)``, the
 probability in force at the end of contract year ``t``; the count leaving the period is

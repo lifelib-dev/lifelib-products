@@ -329,7 +329,7 @@ month's end, where the contract force-annuitizes at the Account Value, and
 closes for every ``t``, including the last — ``pols_if(t)`` opening month ``t`` and
 ``pols_if(t+1)`` opening the next, which past the Maturity Date is zero. The name follows
 ``BasicTerm_S.pols_maturity``
-and the construction follows :mod:`.Term_US_A` and :mod:`.MYGA_US_S`. The
+and the construction follows :mod:`.Term_US_S` and :mod:`.MYGA_US_S`. The
 payout stream bought at that date is not derived here: it is the immediate-annuity
 chassis, restricted to the two forms this contract offers [S2].
 """
@@ -1815,7 +1815,7 @@ def pols_if_at(t, timing):
 def pols_if(t):
     """l(t): the in-force probability at the **start** of policy month t.
 
-    The library-wide convention, following :mod:`.Term_US_A` and ``CashValue_SE``:
+    The library-wide convention, following :mod:`.Term_US_S` and ``CashValue_SE``:
     ``pols_if(t)`` counts the contracts entering month ``t`` and is the weight applied
     to that same month's cash flows, so the ``pols_if`` column of :func:`result_cf`
     reconciles against the row it sits on - ``premiums(t) / premium_pp()``,
