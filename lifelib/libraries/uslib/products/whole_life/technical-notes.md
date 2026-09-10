@@ -460,7 +460,7 @@ unchanged by the change of grid. What the grid changed is the *index* each one i
 
 The steps the monthly grid *adds* sit between those anniversaries. The mortality rate applied
 in each of the twelve months is `q^e_m = 1 − (1 − 0.70 × 0.00320)^{1/12} = 0.00018686`, and
-twelve of them compound back to `1 − (1 − 0.00018670)^{12} = 0.00224` exactly — the annual
+twelve of them compound back to `1 − (1 − 0.00018686)^{12} = 0.00224` exactly — the annual
 rate of step 5's basis. The guaranteed cash value climbs from 9,500.00 to 11,200.00 in twelve
 straight-line steps of 141.67, so a surrender in month `t = 113` (the sixth month of the
 policy year) is valued at `CV_113 = 9,500 + 6 × 141.67 = 10,350.00` plus the paid-up

@@ -109,7 +109,7 @@ elements [R2] [REG-R23]).
 | Item | Value | Basis |
 |---|---|---|
 | Guaranteed premium scale | Level `AP` for n years, then guaranteed ART scale to age 95; full schedule printed at issue | [S3] [S6] |
-| Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60 — charged at `t = 59`, attained age 94, the final year to expiry at 95) | [S6] |
+| Anchor schedule (M35/StdNT/$100k/10-yr) | $140 (yrs 1–10); $764, $830, $992 (yr 15), $1,526 (yr 20), $4,250 (yr 30), $10,946 (yr 40), $30,965 (yr 50), $74,780 (yr 60 — the months `t = 708 … 719`, attained age 94, the final policy year to expiry at 95) | [S6] |
 | Policy fee | $65/yr, level, inside `AP` | [S6] |
 | Modal factors | SA 0.52 / Q 0.27 / M 0.08333 | [S6] |
 | Death benefit | Level face; proceeds = face + pro-rata unearned premium − due unpaid premium | [S6] |
@@ -314,9 +314,10 @@ industry formula.
 
 ### Shock lapse at end of level period
 
-Keyed to the initial premium jump ratio J = AP(n)/AP(n−1) — the first ART premium
-(policy year n+1) over the last level premium (policy year n) — with the policy fee
-included in both premiums — the jump definition used by both the SOA 2021 study [R4] and
+Keyed to the initial premium jump ratio J = AP(12n)/AP(12n−1) — the first ART
+annualized premium (policy year n+1) over the last level one (policy year n), the two
+months either side of the level-period boundary — with the policy fee included in both
+premiums — the jump definition used by both the SOA 2021 study [R4] and
 VM-20's prescribed-shock table (premium increase per $1,000 including the policy fee)
 [R2]. The shock is w(n−1), the lapse rate of the last level-period year:
 
@@ -552,7 +553,7 @@ Known modeling pitfalls:
   loaded annual** rate — base × class factor × M(d) for mortality — not from the base
   table before the multipliers. Converting first and multiplying after gives a different
   number wherever a multiplier is not 1, which is the whole post-level term: at M(1) =
-  3.50 the two differ by about 0.3% of the monthly rate, compounding over the PLT tail.
+  3.50 the two differ by 0.21% of the monthly rate, compounding over the PLT tail.
 - **Modal factor double-count.** The modal load lives in the modal factor [S6], so the
   premium collected is `factor × AP` and nothing else scales it. Three quantities stay on
   the annualized AP and must not be modalized: the jump ratio (the shock buckets are
