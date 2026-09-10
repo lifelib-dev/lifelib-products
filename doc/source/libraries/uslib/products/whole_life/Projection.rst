@@ -66,6 +66,8 @@ Cells Descriptions
 
 .. autofunction:: modal_factor
 
+.. autofunction:: prem_cycle
+
 .. autofunction:: prem_due
 
 .. autofunction:: premium_pp_ann
@@ -73,6 +75,8 @@ Cells Descriptions
 .. autofunction:: premium_net_pp_ann
 
 .. autofunction:: premium_pp
+
+.. autofunction:: premium_net_pp
 
 .. autofunction:: rider_premium_pp_ann
 

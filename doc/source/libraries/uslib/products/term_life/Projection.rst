@@ -38,6 +38,8 @@ Cells Descriptions
 
 .. autofunction:: modal_factor
 
+.. autofunction:: prem_cycle
+
 .. autofunction:: prem_due
 
 .. autofunction:: premium_pp_ann
