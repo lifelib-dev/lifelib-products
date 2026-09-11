@@ -247,7 +247,9 @@ interest is credited; II, 3°, c) levies it on the unit-linked component only at
 death, and on a loss it is zero — at ``t = 11`` on the anchor cell the UC leg is
 17,284.34 € under water and the levy is nil. Accruing it annually on the UC leg is a
 listed pitfall: it would understate the account value throughout and shrink the base the
-management charge is levied on. The euro leg's annual component belongs to ``Euro_FR_S``.
+management charge is levied on. The euro leg's annual component belongs to ``Euro_FR_S``,
+where - on the same monthly grid as this model - it lands whole in the anniversary month
+beside the interest it is struck on.
 Whether the plancher top-up above the account value sits inside the levy base is stated in
 no retrieved document; the model puts it outside.
 
@@ -642,8 +644,15 @@ def mgmt_fee_rate_uc_mth():
 def euro_credit_factor_mth():
     """(1 + i_e)^(1/12): the monthly accrual factor of the euro leg **[std]**.
 
-    A smoothing of an annual credit onto a monthly grid.  The euro fund really credits
-    once a year with the `effet cliquet`; that machinery is ``Euro_FR_S``'s.
+    A smoothing of an annual credit across the months of the year, and it is a
+    **[std]** simplification rather than a grid artefact: ``Euro_FR_S`` runs on this same
+    monthly grid and does *not* smooth, crediting the whole of the year's `taux servi` in
+    the anniversary month with the `effet cliquet`.  The euro leg here is a per-model-point
+    rate and not a model, so the twelfth-of-a-year accrual is the cheapest reading that
+    keeps the two legs on one clock; the real crediting machinery - the `participation aux
+    benefices`, the PPB and its eight-year vintage ledger - is ``Euro_FR_S``'s.  Twelve of
+    these factors compound to exactly ``1 + i_e``, so a full policy year of the euro leg is
+    unaffected by the smoothing and only a mid-year exit sees it.
     """
     return (1.0 + euro_credit_rate()) ** (1.0 / 12.0)
 

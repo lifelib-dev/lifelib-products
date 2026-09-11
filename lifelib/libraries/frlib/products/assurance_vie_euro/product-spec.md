@@ -264,7 +264,7 @@ Footnotes to [std] rows:
 acquise`, the per-contract share of the fund's `provision mathématique` — the first of
 the eleven technical provisions a French life insurer carries [REG-R6]. BoursoVie
 computes it **daily in compound interest** and credits the year's PB at 31 December value
-date [S1]; the reference model works on an annual grid with 31 December as the single
+date [S1]; the reference model works on a monthly grid with 31 December as the single
 crediting date.
 
 **The capital guarantee.** The composite carries the `garantie nette`: the floor equals

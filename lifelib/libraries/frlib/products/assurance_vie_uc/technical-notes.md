@@ -294,9 +294,16 @@ years [S3 art. 21], and at 0.25% a quarter Himalia prints 99.0037 → 98.0174 [S
                  − 1{plancher_levy_source = euro_first} × plancher_charge(t)
 
 `i_e` is credited **net of the euro management charge**, so the euro leg produces no margin
-line in UC_FR_S. The euro fund's real machinery — annual crediting with the `effet cliquet`,
-`participation aux bénéfices`, the PPB — is `Euro_FR_S`'s; the 1/12 accrual here is a
-**[std]** smoothing of an annual credit onto a monthly grid.
+line in UC_FR_S. The euro fund's real machinery — the `participation aux bénéfices`, the
+PPB and its eight-year vintage ledger, the `effet cliquet`, all of it fixed for the closing
+financial year and credited at 31 December — is `Euro_FR_S`'s. The 1/12 accrual here is a
+**[std]** smoothing of that annual credit across the months, and it is a simplification
+rather than a grid artefact: `Euro_FR_S` runs on the **same monthly grid** as this model
+and does not smooth, landing the whole year's `taux servi` in the anniversary month.
+Because twelve monthly factors compound to exactly `1 + i_e`, the two readings agree at
+every anniversary and differ only for a mid-year exit — which `Euro_FR_S` pays the
+contractual floor rate `pro rata temporis` and this model pays a pro-rated share of the
+year's credit.
 
 ### Withdrawals and arbitrages
 

@@ -239,7 +239,9 @@ At `t = 5` on the anchor cell the surrender's gain component is `4,033.25 × (1 
 year by year on the euro leg is restituted at final liquidation under art. L. 136-7
 III bis [R8]. Accruing the UC levy annually is a listed pitfall: it would understate the
 account value throughout and shrink the base the management charge is levied on. The euro
-leg's annual component belongs to `Euro_FR_S`. Whether the plancher top-up above the
+leg's annual component belongs to `Euro_FR_S`, which runs on the same monthly grid and
+lands the whole of the year's levy in the anniversary month, beside the interest it is
+struck on. Whether the plancher top-up above the
 account value sits inside the levy base is stated in **no retrieved document**; the model
 puts it outside and flags the treatment [unverified] (spec footnote 21).
 
