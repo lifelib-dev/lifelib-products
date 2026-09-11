@@ -20,34 +20,48 @@ n = proj.proj_len()
 last = n - 1                      # the frame is t = t0 .. proj_len() - 1
 chassis = ("A (1 deg: euros and parts)" if proj.is_euro_leg()
            else "B (2 deg: parts only)")
-print("model point {}: {} - chassis {}, {}{}, term {} years, in force {}".format(
+print("model point {}: {} - chassis {}, {}{}, term {} years, in force {} years".format(
     point_id, proj.model_point()["policy_id"], chassis, proj.sex(),
-    proj.issue_age(), n, proj.duration_inforce()))
-print("projection: t = {} .. {} ({} annual periods; policy year = t + 1)".format(
+    proj.issue_age(), proj.policy_term(), proj.duration_inforce()))
+print("projection: t = {} .. {} ({} monthly periods; policy year = t // 12 + 1)".format(
     t0, last, last - t0 + 1))
 print("guarantee {:.0%} of net versements = {:,.2f} at t = {}   scenario {}".format(
     proj.guarantee_rate(), proj.mg(last), last, proj.scenario()))
 print("charges: entry {:.2%}  parts {:.2%} p.a.  performance {:.0%}  exit {:.2%}"
       .format(proj.entry_charge_rate(), proj.parts_charge_rate(),
               proj.perf_charge_rate(), proj.exit_charge_rate()))
-print("part value {:.4f} at inception, floor {:.4f}   i_pm {:.2%} at time {} "
-      "to {:.2%} at time {}".format(
+print("part value {:.4f} at inception, floor {:.4f}   i_pm {:.2%} at month boundary {} "
+      "to {:.2%} at boundary {}".format(
           proj.part_value_init(), proj.min_part_value(), proj.i_pm(t0), t0,
           proj.i_pm(n), n))
 print("decrements {}   partial rachat factor {:.2f}   lock-up {} years".format(
     proj.decrement_basis(), proj.wd_factor(), proj.lock_up_years()))
 print()
-print("Provisions (per policy):")
+# Policy months are 0-based: t = 0 is the issue month and t = 11 the first anniversary,
+# so the anniversary that closes policy year y is month 12 * y - 1.  The notes' two
+# worked-example tables are exactly those rows.
+anniv = [t for t in range(t0, n) if t % 12 == 11]
+print("Provisions at the anniversary months (per policy), t = 12y - 1:")
 prov = proj.result_provisions()
 # i_pm and asset_return are rates in a table of money amounts; rounding them to 2
 # would print a 2.25% discount rate as 0.02.
-print(prov.round({c: (4 if c in ("i_pm", "asset_return", "part_value", "parts")
-                      else 2) for c in prov.columns}).to_string())
+rounding = {c: (4 if c in ("i_pm", "asset_return", "part_value", "parts") else 2)
+            for c in prov.columns}
+print(prov.loc[anniv].round(rounding).to_string())
 print()
-print("Cash flows:")
-print(proj.result_cf().round(2).to_string())
+print("Provisions month by month over the first policy year, t = {} .. {}:".format(
+    t0, min(t0 + 12, n) - 1))
+print(prov.loc[t0:min(t0 + 12, n) - 1].round(rounding).to_string())
 print()
-shock = min(t0 + 5, last)         # the notes' policy-year-6 shock row
+print("Cash flows, the first 13 months (t = {} .. {}):".format(
+    t0, min(t0 + 13, n) - 1))
+print(proj.result_cf().head(13).round(2).to_string())
+print()
+print("The same frame summed into policy years:")
+print(proj.result_cf_annual().round(2).to_string())
+print()
+# The notes' policy-year-6 shock closes at the anniversary of policy year 6.
+shock = min(12 * (t0 // 12 + 6) - 1, last)
 print("Exit values at t = {}: surrender {:,.2f}  death {:,.2f}  "
       "maturity at t = {} {:,.2f}".format(
           shock, proj.surrender_value(shock),
