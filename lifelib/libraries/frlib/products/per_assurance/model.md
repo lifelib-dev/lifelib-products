@@ -36,44 +36,74 @@ model = mx.read_model("products/per_assurance/PER_FR_S")
 model.Projection[1].result_cf()
 ```
 
-`result_state()` gives the glide path and the two supports — the technical notes'
-worked-example table, whose `pols_if_eoy` column is the notes' end-of-year `l(t)`.
-`result_settlement()` gives the settlement at the horizon, down to the commutation test.
-`result_cf()` gives the cash flows, and its `pols_if` column is the count each row
-**opens** with, which is the weight that row's flows carry.
+Four frames come out of it, two on the month and two on the plan year.
+`result_cf()` gives the cash flows, one row per **month**, and its `pols_if` column is the
+count each row **opens** with, which is the weight that row's flows carry;
+`result_state()` gives the glide path and the two supports, also monthly, where five of
+its ten columns move in the month that opens a plan year and nowhere else.
+`result_cf_annual()` sums the cash flows into plan years, and `result_state_annual()`
+reads the state frame at the two months that determine each of its columns — that last one
+is the technical notes' worked-example table, whose `pols_if_eoy` column is the notes'
+end-of-year `l(t)`. `result_settlement()` gives the settlement at the horizon, down to the
+commutation test.
 
 ## The time index
 
-`t` is **0-based**, as everywhere in the library: `t = 0` is the first projected plan
-year, plan year `t` runs from time `t` to time `t + 1`, and `proj_len()` is the **number**
-of projected years rather than the last index. Both result frames are
-`range(proj_len())` — `t = 0 … proj_len() − 1`, `proj_len()` rows — so the anchor cell's
-twelve plan years are labelled `t = 0 … 11` and its settlement falls on row 11. Nothing is
-indexed at `t = −1`: the state carried into the first year is the `"BEF_REBAL"` timing of
-`av_euro_pp_at`, `av_uc_pp_at`, `av_pp_at` and `death_floor_pp_at`, which returns the model
-point's `*_init` columns at `t = 0` and last year's closing balance afterwards.
+`t` is **0-based** and counts **plan months**, as in every monthly model in this library:
+`t = 0` is the first projected month, month `t` runs from time `t` to time `t + 1`, and
+`proj_len() = 12 × proj_years()` is the **number** of projected months rather than the last
+index. Both monthly frames are `range(proj_len())` — `t = 0 … proj_len() − 1`,
+`proj_len()` rows — so the anchor cell's twelve plan years are 144 months labelled
+`t = 0 … 143`, and its settlement falls on row 143. Nothing is indexed at `t = −1`: the
+state carried into the first month is the `"BEF_REBAL"` timing of `av_euro_pp_at`,
+`av_uc_pp_at`, `av_pp_at` and `death_floor_pp_at`, which returns the model point's `*_init`
+columns at `t = 0` and last month's closing balance afterwards.
 
-Two clocks run beside `t` and neither is it:
+Three clocks run beside `t` and none of them is it:
 
-- `duration(t) = duration_ifo + t` is the completed years since the **first *versement***
-  at the start of year `t`, 0-based in lifelib's sense — nil through the plan's first
-  year. An in-force cell opens the frame at `t = 0` like any other; its history is carried
-  in `duration_ifo`, not in a frame offset.
+- `duration_mth(t) = t` is the months elapsed. It exists so that the monthly models in this
+  library share one vocabulary, and so that the other two read as `// 12` of it rather than
+  as a bare `t // 12`.
+- `duration(t) = duration_ifo + t // 12` is the completed years since the **first
+  *versement***, 0-based in lifelib's sense — nil through the plan's first year. An
+  in-force cell opens the frame at `t = 0` like any other; its history is carried in
+  `duration_ifo`, not in a frame offset, which on the finer grid is worth more rather than
+  less: there is no `proj_start()` here and no month of the frame that is not projected.
 - `plan_year(t) = duration(t) + 1` is the plan's own **1-based** *ancienneté* year, the
   contractual label the *ancienneté* schedules are written in. It keys `exit_table.csv`
   and the transfer indemnity window (`plan_year(t) < 5`), and it is the only place a
   1-based year appears in a formula.
+
+All three step at the plan **anniversary** and are constant through the twelve months in
+between, and so are `years_to_horizon(t) = proj_years() − t // 12` and the attained age
+`age(t) = age_init() + t // 12`.
+
+**Two months of each plan year carry its annual events, and they are not the same month.**
+`is_plan_boy(t)` — `t % 12 == 0` — is the month that opens a plan year, where the
+*versement* arrives and the balance is rebalanced onto the glide path. `is_anniv(t)` —
+`t % 12 == 11` — is the month that closes it, where the management charge is levied and,
+at `t = proj_len() − 1`, where the plan is liquidated. The *garantie plancher* base moves
+at those two months and nowhere else. Everything that is not contractually annual — the
+crediting of both supports, the three decrements, the maintenance expense — happens every
+month, which is what the finer grid is for.
 
 **The input CSVs.** No column in any of the five is the frame's `t` under another name,
 and none of them shifts with it:
 
 | File | Column | Decision |
 |---|---|---|
-| `allocation_grid.csv` | `years_to_horizon` | Unchanged. It is a years-**remaining** key, read at `k(t) = n − t`, which runs from `n` at `t = 0` down to 1 in the last year |
-| `exit_table.csv` | `duration` | Unchanged. Its first row is the plan's **first** year, so it is a 1-based *ancienneté* label read at `plan_year(t)`, not the 0-based `duration(t)` |
-| `mort_table.csv`, `annuity_factor.csv` | `age` | Unchanged. Attained age, read at `age(t)` and at `retirement_age()` |
+| `allocation_grid.csv` | `years_to_horizon` | Unchanged, and unchanged by the monthly grid too. It is a whole-years-**remaining** key, read at `k(t) = n − t // 12`, which runs from `n` through the first plan year down to 1 through the last, constant inside each |
+| `exit_table.csv` | `duration` | Unchanged. Its first row is the plan's **first** year, so it is a 1-based *ancienneté* label read at `plan_year(t)`, not the 0-based `duration(t)`; the rates it holds stay **annual** and are converted in the `*_rate_mth` cells |
+| `mort_table.csv`, `annuity_factor.csv` | `age` | Unchanged. Attained age, read at `age(t)` — which steps once a plan year — and at `retirement_age()`. `annuity_factor.csv` holds a count of **annual** instalments and is not a function of the projection step at all |
 | `model_point_table.csv` | `age`, `retirement_age` | Unchanged. Ages, not points on the frame |
-| `model_point_table.csv` | `duration_ifo` | Unchanged. An elapsed count, already 0-based: two completed years is `2` |
+| `model_point_table.csv` | `duration_ifo` | Unchanged. An elapsed count in whole **years**, already 0-based: two completed years is `2` |
+| `model_point_table.csv` | `premium` | Unchanged. An amount **per year**, collected whole in the month that opens each plan year. No sourced modal factor exists for this product, so a `premium_freq` column is a documented extension rather than part of the monthly grid |
+
+Every key in that table is a whole year or an age, which is why the finer grid needed no
+input change: each is read at the plan year containing the month. The transfer-indemnity
+window is the one that looks like it might have moved and provably has not — because
+`duration_ifo` is a whole number of years, `plan_year(t) < 5` holds exactly when
+`12 × duration_ifo + t < 48`, so the window is the same to the month on either grid.
 
 ## Accumulation with a two-way exit
 
@@ -103,7 +133,13 @@ Using one decrement for both, or naming either a lapse, silently attaches the wr
 payment formula to half the exits — and they dominate the run-off. At 2.60 % a year
 combined they remove about a quarter of the book over the anchor cell's twelve years, far
 more than mortality; the aggregate anchor is 2.62 % of accumulation-phase provisions
-leaving every year [R22].
+leaving every year [R22]. The two rates stay **annual** — they are what `exit_table.csv`
+tabulates — and are applied month by month at the constant-force conversion, so the total
+they remove over a plan year, and the in force at every anniversary, is exactly what the
+annual grid produced. What the finer grid moves is the **split** between the three
+decrements, because the ordered chain is walked twelve times with small steps instead of
+once with large ones: over the anchor cell's first plan year deaths fall 1.19 %, releases
+0.23 %, and transfers rise 0.98 %, summing to the same total.
 
 Only the main-residence case of the seven is discretionary, and none of them responds to
 investment performance, so a dynamic moneyness multiplier would be a category error on
@@ -117,9 +153,12 @@ moving the declared retirement date, which re-cuts the whole allocation immediat
 `euro_share` and `uc_share`. `alloc_euro(t)` is a lookup, not a formula.
 
 ```
-k(t) = n − t
+k(t) = n − t // 12
 a(t) = allocation_grid[allocation_profile, k(t)].euro_share
 ```
+
+The key is **whole years** to the horizon, so `a(t)` is constant through the twelve months
+of a plan year and steps only at the anniversary.
 
 That is deliberate, and it is the single most important design decision in this model.
 *Gestion pilotée par horizon* is the **default management by law** [R3 L. 224-3](#frlib-per_assurance-r3), the
@@ -166,32 +205,41 @@ E_eu   = E_eu⁻(t) + m(t)          + a(t)·V_net                     (m ≥ 0)
 E_uc   = E_uc⁻(t) − m(t) − arb(t) + (1 − a(t))·V_net
 ```
 
-with the roles of the two supports exchanged when `m(t) < 0`. A `⁻` is the balance
-carried into the year — `av_pp_at(t, "BEF_REBAL")` and its two support halves, which are
-the model point's opening state at `t = 0`. Two conventions, both **[std]** and both
-load-bearing.
+in the month that **opens** a plan year, and with the roles of the two supports exchanged
+when `m(t) < 0`. In the other eleven months `m(t) = 0`, `arb(t) = 0` and `V_net = 0`, so
+the two supports simply carry forward: the rebalancing is a contractual annual event and is
+not spread. A `⁻` is the balance carried into the **month** —
+`av_pp_at(t, "BEF_REBAL")` and its two support halves, which are the model point's opening
+state at `t = 0`. Two conventions, both **[std]** and both load-bearing.
 
 **The arbitrage charge comes off the *source* support.** The destination receives the
 switch in full, so on a de-risking switch the post-rebalancing euro share lands at or just
 above the regulatory minimum rather than just below it. On the anchor cell's band crossing
-at `t = 7` the BOY euro share is 50.04 % against a 50 % target; taking the charge from the
-destination instead would put it under, at every crossing, by `(1 − a)·arb`.
-`check_euro_share_min()` asserts it.
+— the rebalancing month `t = 84` — the BOM euro share is 50.0427 % against a 50 % target;
+taking the charge from the destination instead would put it under, at every crossing, by
+`(1 − a)·arb`. `check_euro_share_min()` asserts it.
 
 **The *versement* is not a switch.** New money is allocated directly at the target mix and
 bears no arbitrage charge, which is what "allocation of both contributions and existing
 balance" means in the one contract publishing its ladder [S1].
-`arbitrage_charge_pp(t) = 0` in the anchor cell's first two years, `t = 0` and `t = 1`,
-where the *équilibré* grid asks for no euro support at all, even though €3 000 was paid in
-each.
+`arbitrage_charge_pp(t) = 0` in the anchor cell's first two plan years, months `t = 0` and
+`t = 12`, where the *équilibré* grid asks for no euro support at all, even though €3 000
+was paid in each — and it is 0 in every month that is not a rebalancing month, on every
+cell, because there is no switch in those months at all.
 
-**The minimum binds at the rebalancing date, not continuously.** Between dates the mix
-drifts with relative performance: the anchor cell is at 70.00 % euro after the rebalancing
-of its last year, `t = 11`, and 69.67 % at that year's end. Nothing in the model reads the
-year-end share,
-because re-imposing the target there would invent a rebalancing frequency the annual grid
-does not have. Real contracts rebalance quarterly to semi-annually [S1] [S3] [S7], and the
-annual grid concentrates each step into one switch.
+**The minimum binds at the rebalancing date, not continuously — and the monthly grid is
+what makes that sentence bite.** Between dates the mix drifts with relative performance,
+and there are now **eleven months** of drift rather than an instant: the anchor cell is at
+70.0006 % euro after the rebalancing that opens its last plan year, month 132, and falls
+monotonically to 69.67 % at the anniversary, month 143. The consequence is a real change to
+the check: `check_euro_share_min()` iterates over the **rebalancing months alone**, because
+in the other eleven the residual is negative by construction, and a check looping over the
+whole frame would fail on every model point while nothing was wrong. Nothing in the model
+reads the intra-year share, because re-imposing the target there would invent a rebalancing
+frequency the contract does not have — real contracts rebalance quarterly to semi-annually
+[S1] [S3] [S7], the finer grid could now express that, and doing it would be an assumption
+change rather than a grid change. Measured, quarterly rebalancing costs the anchor cell
+0.0142 % of its final balance and €0.46 of extra arbitrage over twelve years.
 
 ### The one case the convention cannot cover
 
@@ -214,8 +262,13 @@ nothing else.
 ## The garantie plancher is not a floor at gross premiums
 
 ```
-g(t) = g⁻(t) + V_net − arb(t) − mgmt_charge_pp(t)
+g(t) = g⁻(t) + V_net(t) − arb(t) − mgmt_charge_pp(t)
 ```
+
+Unchanged in form by the monthly grid, and that is the point: its three moving terms are
+non-zero in only **two months of the twelve** — the base steps up by `V_net − arb` in the
+month that opens a plan year and down by the charge in the anniversary month, and is flat
+in between.
 
 *Versements* net of entry loading, less the management charges levied over the plan's
 life, less benefits already paid — **[S1]'s drafting**, and [S7] states expressly of its
@@ -229,21 +282,36 @@ A(t) − g(t) = [A⁻(0) − g⁻(0)] + Σ gross investment return credited to d
 ```
 
 so the floor bites only where cumulative investment return is negative.
-`check_floor_identity()` asserts it in every projected year. That check is zero by
+`check_floor_identity()` asserts it in every projected **month**. That check is zero by
 construction given the recursion — which is why it is written out. What it catches is the
 *wrong* recursion: a base accumulated at gross `V`, a base that forgets the arbitrage
 charge, or a base charged something other than what the account was actually charged. Each
-breaks the identity in the first year in which it is wrong.
+breaks the identity in the first month in which it is wrong.
+
+It is also the identity that decides the conversion's one load-bearing timing question.
+The management charge is levied **whole in the anniversary month** and is not spread over
+the year. Spreading it would leave the account value at the anniversary untouched, because
+the monthly factors still compound back — but the base above accumulates a **sum** of
+charges rather than a product of factors, and twelve monthly charges do not add to the
+annual one: measured, a monthly levy moves `g` at the anniversary by up to €71.95 on the
+anchor cell and €531.57 on model point 12. The price of keeping it annual, stated rather
+than discovered: a mid-year exit is valued **gross** of the plan year's charge, 0.387 %
+above the anniversary value at month 142 on the anchor cell's last plan year.
 
 On the anchor cell the floor never bites: the gap is €22 821.04 at the horizon against an
 opening gap of €600.00, so the guarantee sits 32.6 % below the account value throughout.
 Model point 10 is the same cell with a €19 000 opening base — a plan whose accumulated
-investment return to date is negative — where the floor sets the death benefit for two
-years and then stops.
+investment return to date is negative — where the floor sets the death benefit for the
+first **twenty-six months**, the whole of the first two plan years and the first two months
+of the third, and then stops. The crossing is located to the month on the finer grid,
+because the base is flat inside a plan year while the account value grows every month; on
+the annual grid it could only be reported as "two years".
 
 The cover ceases at the member's **70th birthday** [S1] [S3] and the floor is capped at
 €762 245 across contracts [S3]. Model point 9 retires at 70 and crosses it in its final
-plan year. The age-70 cliff is not incidental: it is also the age at which a PER death
+plan year — the cover is off for the whole of that plan year, because the age steps at the
+anniversary and there is no sub-annual age in this product to test a month-exact rule
+against **[std]**. The age-70 cliff is not incidental: it is also the age at which a PER death
 benefit stops being taxed under CGI art. 990 I and enters the inheritance-duty base **in
 its entirety** under art. 757 B [R15] [REG-R41], and from 2026 the age at which
 contributions stop being deductible [R20] [R21]. One birthday, three consequences.
@@ -254,8 +322,10 @@ neither published figure — 0.10 % p.a. on UC balances [S3], 0.12 % inside a 1 
 
 ## Settlement: a capital leg, and a rente that usually is not one
 
-In the last projected year, `t = n − 1`, the survivors settle. The capital leg bears
-**no exit charge** [S1] [S2] [S3] [S7] [S8]. The annuity leg is converted at
+In the last projected **month**, `t = proj_len() − 1` — the horizon anniversary — the
+survivors settle. The settlement is a contractual event on a contractual date and is not
+spread over the final plan year, so every figure in `result_settlement()` is the
+annual-step model's to floating point. The capital leg bears **no exit charge** [S1] [S2] [S3] [S7] [S8]. The annuity leg is converted at
 `annuity_factor()`, charged the *frais d'arrérages* at 1.50 % **[std]** [S8], and tested
 against the commutation threshold.
 
@@ -264,7 +334,9 @@ Two things follow from the 0 % maximum technical rate [R9 A. 142-1](#frlib-per_a
 **`a_x` is an undiscounted expected-instalment count**, not a discounted annuity factor.
 Nothing in the model discounts it and `rente_gross_pp()` is a plain division; 22.0000
 asserts 22 further annual payments to a male aged 64 **[std]**. A 2 % rate would shorten
-the factor to about 17.66 and inflate the annuity by roughly a quarter.
+the factor to about 17.66 and inflate the annuity by roughly a quarter. Note what fixes the
+annuity's *frequency*: that table, which counts **annual** instalments — not the projection
+grid, which is monthly. Paying quarterly or monthly means replacing `annuity_factor.csv`.
 
 **Commuting at the conversion basis is nearly value-neutral**:
 
@@ -296,9 +368,12 @@ the payout chassis here would give the library two of them to keep in step.
 
 **Staged capital is settled at the horizon** **[std]**. The *capital fractionné* option
 [R3 L. 224-5](#frlib-per_assurance-r3) changes *when* the capital leg is paid, not how much: there is no exit
-charge, and the technical notes fix `proj_len` at the declared horizon. The model records
-the whole capital leg at `t = n − 1`, publishes the instalment as
-`capital_instalment_pp()`, and credits nothing to the unpaid balance.
+charge, and the technical notes fix the frame at the declared horizon. The model records
+the whole capital leg at `t = proj_len() − 1`, publishes the instalment as
+`capital_instalment_pp()`, and credits nothing to the unpaid balance. The finer grid does
+**not** make the *fractionné* schedule expressible — its instalments fall *after* the
+horizon and the frame ends there — so the reason for the simplification is now the frame's
+end rather than the grid's coarseness.
 Exact on an undiscounted gross-cash-flow basis;
 not exact for anything that discounts, and a discounting layer needs the schedule.
 
@@ -328,6 +403,34 @@ Also out of scope, per the notes: partial early release leaving the plan in forc
 [R5 D. 224-4](#frlib-per_assurance-r5); the 15 % transfer-value reduction on euro-denominated rights
 [R5 R. 224-6](#frlib-per_assurance-r5) [S8]; profile and horizon changes during the projection; and the *provision
 de diversification* supports [S4] [S6], which are the `eurocroissance` product.
+
+### What the monthly grid changes, and what it does not
+
+The rule the conversion follows is one sentence: **annual assumptions stay annual, annual
+contract terms stay on their own month of the plan year, and only the grid underneath them
+gets finer.** A monthly grid is not a monthly product. The *versement* and the rebalancing
+land whole in the month that opens a plan year, the management charge lands whole in the
+month that closes it, and the liquidation lands whole at the horizon; the decrements and
+the two credited returns are converted at the constant force, so twelve months compound
+back to exactly the published annual figure.
+
+The consequence is worth stating precisely, because it is what makes a monthly run
+comparable to the annual-step model it replaced. **Every anniversary state and the whole
+settlement reproduce that model to floating point** — worst relative deviation 1.8e-14
+across all twelve shipped model points on the two supports, the account value, the death
+benefit, the management charge and the *garantie plancher* base, and 1.4e-14 absolute on
+the in force. So do the plan-year totals of the credited return and of `premiums`, and
+every quantity that is one value per plan year.
+
+**The cash flows do not, and that is the point.** Claims now fall at the end of the month
+of exit and are valued on the balance held then, so `claims_death` falls 2.49 %,
+`claims_early_release` 1.54 % and `claims_transfer` 0.35 % on the anchor cell; maintenance
+expense accrues monthly on a decrementing block, so the aggregate falls 0.61 % while the
+per-policy total rises 0.82 % on the monthly-compounded inflation factor; and the split
+between the three decrements moves — deaths −1.19 %, releases −0.23 %, transfers +0.98 %
+over the first plan year — while their total, and so the in force at every anniversary, is
+unchanged. `result_cf_annual()` and `result_state_annual()` exist so the two grids can be
+laid side by side.
 
 ## Inputs are external files
 
@@ -389,8 +492,12 @@ its negative, **income-positive**, which is the house sign across the library, s
 product it came from. `test_both_signs_of_the_net_flow_are_published` asserts the two are
 negatives to 1e-9 and that the outgo columns rebuild `liability_cf`.
 
-A contributing plan is cash-positive in every year but the settlement one, where the whole
-account value leaves at once.
+A contributing plan is cash-positive in every **plan year** but the settlement one, where
+the whole account value leaves at once. On the monthly frame that reads differently: only
+the twelve *versement* months are cash-positive, and the eleven ordinary months of each
+plan year carry claims and expenses against no income. The plan-year statement is read off
+`result_cf_annual()`, which is what that frame is for — years 0–10 positive, year 11 at
+−47 395.16.
 
 `annuity_conversion` is an **outgo**, not a memo item: where the annuity is not commuted
 the converted capital leaves this projection. It and `commuted_pp` are mutually exclusive
@@ -408,8 +515,13 @@ because the notes and the library index it at opposite ends of the year.
 | `l⁻(t)` | `pols_if(t)` | The count the year **opens** with, `pols_if(0) = 1`, and the weight on that same `result_cf()` row. This is the library's settled convention, shared with `MYGA_US_S` and `WP_UK_S`: divide a flow by its own row's `pols_if` and you get a per-policy amount for the same period |
 | `l(t)` | `pols_if_at(t, "AFT_DECR")` | The count the year **ends** with — the notes' own indexing, and the column their worked-example table prints. It is published as the `pols_if_eoy` column of `result_state()` and it is one period ahead of `pols_if`: `pols_if_at(t, "AFT_DECR") == pols_if(t + 1)`. It carried the bare name `pols_if` in an earlier draft, which put the next period's exposure on every cash flow row — silently, since nothing raised — and the rename is what fixed it. `pols_if_at` also exposes the two intermediate steps, `"BEF_RELEASE"` and `"BEF_TRANSFER"` |
 | `m(t)` | `switch_pp(t)` | **Signed**, because the sign decides which support bears the arbitrage charge. Positive on the ordinary de-risking switch; negative where a cell arrives above the grid's minimum |
-| `a_x` | `annuity_factor()` | An **undiscounted expected-instalment count**, not a discounted annuity factor [R9 A. 142-1](#frlib-per_assurance-r9). Named for what it is so nothing discounts it twice |
+| `a_x` | `annuity_factor()` | An **undiscounted expected-instalment count**, not a discounted annuity factor [R9 A. 142-1](#frlib-per_assurance-r9). Named for what it is so nothing discounts it twice. It counts **annual** instalments, and it — not the projection step — is what fixes the annuity's frequency |
 | `A(t)` | `av_pp(t)` | **Per policy**, and published as a `result_cf()` column beside aggregate flows so that the difference is visible. `av_at(t, timing)` is the in-force weighted quantity, and no cash flow reads it: every claim is already a decrement times a per-policy amount |
+| `q(t)`, `w_e(t)`, `w_r(t)` | `mort_rate`, `early_release_rate`, `transfer_out_rate` | The **annual** rates the notes tabulate and the CSVs hold, and they keep the bare names for that reason — the library register forbids the opposite spelling. They are properties of the plan year, constant across its twelve months |
+| `q_m`, `w_e,m`, `w_r,m` | `mort_rate_mth`, `early_release_rate_mth`, `transfer_out_rate_mth` | The monthly rates actually applied, `1 − (1 − q)^(1/12)`. The `_mth` suffix marks "derived from an annual rate", not "monthly quantity" — which is why `expenses` and `premiums` carry no suffix |
+| `r_eu,m`, `r_uc,m` | `return_euro_mth()`, `return_uc_mth()` | The same constant-force treatment in interest form, `(1 + r)^(1/12) − 1`, so twelve months compound back to the published annual rate exactly |
+| (the month) | `duration_mth(t)`, `is_plan_boy(t)`, `is_anniv(t)` | `duration_mth` is `t`, kept so the monthly models in this library share one vocabulary. The two predicates mark the two months of a plan year that carry its annual events, and they are **different months** — the *versement* and the rebalancing at `t % 12 == 0`, the management charge and the liquidation at `t % 12 == 11` |
+| (the timings) | `"BEF_REBAL"` / `"BOM"` / `"BEF_CHARGE"` / `"EOM"` | Points inside a **month**. `"BOY"` and `"EOY"` were retired with the annual grid — an `"EOY"` returned for month five of a plan year is a label that lies — and `"BEF_CHARGE"` is new, because crediting and charging no longer happen in the same month |
 
 `claims(t, kind)` takes `"DEATH"`, `"EARLY_RELEASE"`, `"TRANSFER"` and `"MATURITY"`, and
 the `result_cf()` columns are named for the `kind` that produces them. There is no
@@ -417,9 +529,11 @@ the `result_cf()` columns are named for the `kind` that produces them. There is 
 
 ## Standardizations used
 
-Everything in this list is **[std]**: the annual projection frequency and the annual
-rebalancing; the BOY *versement* and rebalancing, EOY crediting, charge, decrement and
-benefit ordering; the glide-path band edges and realising "low risk" wholly as the euro
+Everything in this list is **[std]**: the **monthly** projection frequency; the annual
+*versement* and rebalancing at the plan-year start and the annual management charge at its
+end; the geometric monthly conversion of both credited returns and of all three decrements;
+the monthly accrual of maintenance expense and its monthly-compounded inflation; the
+decrement and benefit ordering; the glide-path band edges and realising "low risk" wholly as the euro
 support; taking the arbitrage charge from the source support and allocating the
 *versement* at the target mix; the entry loading of 2.50 %, the euro and UC management
 charges of 0.70 %, the arbitrage rate of 0.30 % and the *frais d'arrérages* of 1.50 %; the
@@ -431,15 +545,21 @@ early-release rate of 1.60 %, the transfer-out rate of 1.00 % and the reduced c3
 rate; the ordered dependent-decrement convention; folding the *garantie plancher* charge
 into the management charge; the annuity factor ladder and its 22.0000 anchor; the annuity
 election of 30 % and deterministic commutation whenever the test passes; maintenance
-expense of €30 a plan a year inflating at 1.80 %; settling staged capital at the horizon;
+expense of €30 a plan a year inflating at 1.80 %; keeping the *garantie plancher* cessation
+on the plan year rather than on the birthday month; settling staged capital at the horizon;
 and carrying no PPB stock, no partial early release, no 15 % transfer-value reduction and
 no profile or horizon change.
 
 ## Tests
 
 `tests/test_per_assurance_fr.py` asserts every row of the notes' worked example to the
-cent and `l(t)` to six decimals — on the 0-based frame, `t = 0 … 11`, with the twelve rows
-of `result_cf()` labelled `range(proj_len())` — the settlement table and the commutation
+cent and `l(t)` to six decimals — on the 0-based **monthly** frame, `t = 0 … 143`, reading
+each row at the rebalancing month `12y` and the anniversary month `12y + 11`, with
+`result_cf_annual()` summing the 144 rows of `result_cf()` into the notes' twelve and
+`result_state_annual()` publishing the notes' own table — the month-by-month table of the
+first plan year, the constant-force rate conversions in the only direction that is true
+(`1 − (1 − q_m)^12 = q`, never `12·q_m = q`), that the management charge falls in the
+anniversary month alone, the settlement table and the commutation
 identity, and
 then one test per listed modelling pitfall — the glide-path band edge, the *versement*
 that is not a switch, the source-charging convention and the reverse-switch bound, the
