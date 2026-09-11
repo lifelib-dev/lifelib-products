@@ -16,7 +16,7 @@ What the house style is, and why, is written up in ``products/term_life/model.md
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``Term_JP_A`` also asserts several of these for itself, in more specific form (it names
+``Term_JP_S`` also asserts several of these for itself, in more specific form (it names
 its own input files, its own docstring phrases). That overlap is deliberate: the checks
 here are the general contract, the ones there are that model's particulars.
 
@@ -140,7 +140,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's market short name, a country tag and a grid tag —
-    ``LTC_JP_S``, ``Term_JP_A`` — rather than anything derivable from the folder slug,
+    ``LTC_JP_S``, ``Term_JP_S`` — rather than anything derivable from the folder slug,
     because ``individual_annuity`` spelled out is unusable in a model name. Japanese products
     carry no settled Latin abbreviation to borrow either, so the short names are chosen
     rather than found; the pairing lives in :data:`jp_registry.MODELS` and is asserted here
@@ -488,14 +488,14 @@ def _income_term_ledgers_stay_non_negative(proj, df):
 
 
 def _whole_life_opens_on_one_policy(proj, df):
-    """WholeLife_JP_A: the frame opens with the whole policy in force."""
+    """WholeLife_JP_S: the frame opens with the whole policy in force."""
     assert (df["pols_if"] >= 0.0).all()
     assert df["pols_if"].iloc[0] == 1.0
 
 
 EXTRA_POINT_ASSERTIONS = {
     "IncomeTerm_JP_S": _income_term_ledgers_stay_non_negative,
-    "WholeLife_JP_A": _whole_life_opens_on_one_policy,
+    "WholeLife_JP_S": _whole_life_opens_on_one_policy,
 }
 
 

@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~.WholeLife_JP_A` model.
+"""The by-policy projection of the :mod:`~.WholeLife_JP_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -11,21 +11,62 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 5            # or switch the default
 
-``t`` is the **0-based policy-year index**: ``t = 0`` is the first policy year, period
-``t`` runs from anniversary ``t`` to anniversary ``t + 1``, the frame is
-``range(proj_len())`` with ``proj_len() = omega_age() - age_at_entry() + 1``, so the
-last index is ``proj_len() - 1``. The contractual policy year is the 1-based label
-``policy_year(t) = t + 1``, derived and never indexed by.
+``t`` is the **0-based policy-month index**: ``t = 0`` is the first policy month, month
+``t`` runs from time ``t`` to time ``t + 1``, the frame is ``range(proj_len())`` with
+``proj_len() = 12 (omega_age() - age_at_entry()) + 1``, so the last index is
+``proj_len() - 1``. The contractual policy year is the 1-based label
+``policy_year(t) = 1 + t // 12``, derived and never indexed by, and
+``duration(t) = t // 12`` is the count of completed policy years.
 
-Values carry a **second index**, the anniversary ``d = 0 … proj_len()`` with ``d = 0``
-at issue: :func:`pol_val_pp`, :func:`cv_pp`, :func:`surr_charge_pp`, :func:`reserve_pp`
-and their companions are values *at* a point in time and not flows of a period, so the
-flows of period ``t`` read ``d = t`` as the opening anniversary and ``d = t + 1`` as the
-closing one. That index is already 0-based and none of its numbers moved when ``t`` did.
+Values carry a **second index, and it is still the anniversary in years**:
+``d = 0 … proj_years()`` with ``d = 0`` at issue. :func:`pol_val_pp`, :func:`cv_pp`,
+:func:`surr_charge_pp`, :func:`reserve_pp`, :func:`loan_pp` and their companions are
+values *at* a 年単位の契約応当日 and not flows of a period, and **none of their numbers
+moved when ``t`` became a month**. The month ``t`` opens inside the policy year running
+from anniversary ``duration(t)`` to ``duration(t) + 1`` and is settled net of the loan
+balance at the first of those.
 
 There is no maturity date and no 満期保険金; the horizon is the terminal age of the
-mortality table, every remaining life dies in the last period ``proj_len() - 1``, and
-nothing is paid there but the death benefit. **There are no tail states.**
+mortality table, every remaining life dies in the terminal policy year, and nothing is
+paid there but the death benefit. **There are no tail states.** The frame stops in the
+**first month** of that terminal year, which is the ``+ 1`` in ``proj_len()``: the table's
+rate at ``omega`` is 1 and so is its monthly equivalent, so the cohort clears there and
+the eleven months after it would be rows of zeros.
+
+.. rubric:: The monthly grid: what moved and what did not
+
+The contract is quoted in years and valued at anniversaries, so the monthly step is finer
+than the guarantees rather than finer than the product. Three things therefore stayed
+annual on purpose, and four moved.
+
+**Annual, because the contract is.** The **policy value construction** —
+:func:`epv_death`, :func:`annuity_due`, :func:`prem_net_level_pp`, :func:`prosp_val_pp`,
+:func:`reserve_pp` — is built from annual actuarial functions and calibrated to one
+carrier's published **annual** surrender-value run, so re-deriving it monthly would move a
+number that was fitted rather than assumed. The **loan balances** compound once a year
+because the 約款 states a 年利 capitalised at the 契約応当日. And the **APL continuation
+test** is the question the insurer asks when a premium goes unpaid, which happens once a
+year; its cohort index ``s`` is accordingly a policy year and not a month.
+
+**Monthly, because the experience is.** Mortality and ordinary surrender are rates per
+unit time and are taken to the month on the effective convention
+``r_m = 1 - (1 - r)^(1/12)``, so twelve of them compound back to the annual rate exactly
+and survivorship at the anniversaries is identical to the annual-grid model's. The
+**premium**, being 年払, now falls in one month out of twelve instead of being smeared
+across a year — which is what a 年払 contract actually looks like. **Maintenance expense**
+is a twelfth of the annual amount each month, inflating once a policy year. And the
+**cliff** is one month wide.
+
+**One convention is new and one ruling changed.** The new convention is
+:func:`pol_val_at_m`, which reads the surrender value **between** anniversaries by linear
+interpolation in elapsed months **[std]** — the 算出方法書 that would state the real rule
+is unpublished, and the anniversary values it interpolates are untouched. The changed
+ruling is :func:`cv_mult_at_m`: the annual grid had to pay every surrender in policy year
+``m`` the **post-step** value, because the step and the grid landed on the same year; here
+the suppression ends at the month the contract ends it, so eleven months of policy year
+``m`` move to the pre-step side and the 15% surge moves to the month **after** the last
+premium, where the step actually is. That is the largest single difference between the two
+runs of this product.
 
 .. rubric:: Input data
 
@@ -37,7 +78,7 @@ edited or swapped without rewriting the model. This follows ``annuallife.TradLif
 contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~.WholeLife_JP_A.Data`, reached here through the ``data`` Reference:
+:mod:`~.WholeLife_JP_S.Data`, reached here through the ``data`` Reference:
 
 ======================  ==============================  ==========================
 Reference               Cells                           File
@@ -52,7 +93,7 @@ lapse_table_file        data.lapse_table()              lapse_table.csv
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue — ``pols_*`` for policy counts, plural nouns for
 cash flows, ``*_rate`` for rates, ``*_pp`` for per-policy amounts, ``claims(t, kind)``
-with an uppercase ``kind`` string, ``pols_if_at(t, timing)`` for the within-year
+with an uppercase ``kind`` string, ``pols_if_at(t, timing)`` for the within-month
 in-force reads, ``cv_pp`` rather than ``av_pp`` because this is a cash surrender value
 and not an account value. The technical notes use compact actuarial symbols instead. The
 mapping is:
@@ -62,33 +103,44 @@ Notes symbol               Cells                               Meaning
 =========================  ==================================  ============================
 (none)                     model_point()                       The selected model point row
 x                          age_at_entry()                      契約年齢 at issue, 満年齢
-x + t                      age(t)                              Attained age in period t
-t + 1                      policy_year(t)                      Contractual policy year
+x + floor(t/12)            age(t)                              Attained age in month t
+floor(t/12)                duration(t)                         Completed policy years
+y(t) = 1 + floor(t/12)     policy_year(t)                      Contractual policy year
 omega                      omega_age()                         Terminal age of the table
-T                          proj_len()                          Number of periods projected
+T_y                        proj_years()                        Policy years, the span of d
+T                          proj_len()                          Number of months projected
 m                          prem_term(), prem_period()          保険料払込期間; 0 is 終身払
+12m                        prem_period_months()                     払込満了, in policy months
 (none)                     prem_end()                          Last policy year a premium is due
-SA                         sum_assured(), sum_assured_at(t)     保険金額 at issue, in period t
+SA                         sum_assured(), sum_assured_at(t)     保険金額 at issue, in month t
 P                          premium_pp()                        Annual premium
 k                          low_cv_rate()                       解約払戻金支払割合
-q(t)                       mort_rate(t)                        Mortality incl. 高度障害
+q(t)                       mort_rate(t)                        Mortality incl. 高度障害, annual
+q_m(t)                     mort_rate_mth(t)                    The same, per month
 (table q)                  mort_rate_at_age(y)                 Table rate at attained age y
-(none)                     mort_rate_base(t)                   Table rate in period t
+(none)                     mort_rate_base(t)                   Table rate in month t, annual
 (none)                     mort_be_factor()                    Multiplier on the table rate
-w(t)                       lapse_rate(t)                       Voluntary surrender rate
-(table w)                  lapse_rate_base(t)                  Before spike and dynamics
-s                          lapse_spike()                       Cliff spike in policy year m
+w(t)                       lapse_rate(t)                       Surrender rate, annual
+w_m(t)                     lapse_rate_mth(t)                   The same, per month
+(table w)                  lapse_rate_base(t)                  Before the dynamic factor
+s                          lapse_spike()                       Cliff surge, the parameter
+s(t)                       lapse_spike_rate(t)                 The surge, in its one month
 beta                       lapse_beta                          Dynamic-surrender slope
 w_dyn(t) / w(t)            lapse_dyn_factor(t)                 Dynamic-surrender multiplier
 cumprem(d)                 cum_prem_pp(d)                      Premiums paid by anniversary d
+cumprem at month u         cum_prem_pp_m(u)                    The same, by elapsed month
 u(t)                       default_rate(t)                     Premium-default rate
-l(t)                       pols_if(t)                          In force at the start of period t
-l(t)(1-q), l(t+1)          pols_if_at(t, timing)               BEF_DECR/BEF_LAPSE/AFT_DECR
+(none)                     apl_active()                        Whether any cohort can exist
+l(t)                       pols_if(t)                          In force at the start of month t
+(within-month)             pols_if_at(t, timing)               BEF_DECR/BEF_LAPSE/BEF_SPIKE/...
 (paying cohort)            pols_if_pay(t)                      In force and paying premium
 lp(t)                      pols_pay_bef_decr(t)                Payers after the default exit
 (none)                     pols_default(t)                     Movers into the APL state
-D(t)                       pols_death(t)                       Expected deaths in period t
-S(t)                       pols_lapse(t)                       Expected surrenders in period t
+D(t)                       pols_death(t)                       Expected deaths in month t
+S(t)                       pols_lapse(t)                       Expected surrenders in month t
+(ordinary part)            pols_lapse_base(t)                  Surrenders before the surge
+(cliff part)               pols_lapse_spike(t)                 The surge itself
+(cumulative)               pols_exit_cum(t)                    Every exit to month t
 (APL failure)              pols_apl_exit(t)                    Exits on APL exhaustion
 (loan excess)              pols_loan_exit(t)                   Exits on loan excess
 i_cv                       i_cv                                Cash-value basis rate
@@ -104,30 +156,37 @@ pi*                        prem_net_level_std_pp()             Net level premium
 W(d)                       prosp_val_pp(d)                     Prospective policy value
 SC(d)                      surr_charge_pp(d)                   解約控除
 V(d)                       pol_val_pp(d)                       Ordinary surrender value
+V at month u               pol_val_at_m(u)                     The same, interpolated [std]
 CV(d)                      cv_pp(d)                            Payable 解約返戻金
+CV at month u              cv_at_m(u)                          The same, at elapsed month u
 k V(d)                     cv_pp_susp(d)                       Suppressed value at every d
+k V at month u             cv_susp_at_m(u)                     The same, at elapsed month u
 (none)                     cv_mult(d)                          1 or k, by anniversary
+(none)                     cv_mult_at_m(u)                     1 or k, by elapsed month
 (reserve)                  reserve_pp(d)                       平準純保険料式 reserve
-L(t)                       loan_pp(t)                          Main-cohort balance at time t
-L(t) by cohort             loan_apl_pp(t, s)                   APL balance by entry period s
-A(t)                       apl_advance_due(t)                  Premium advanced in period t
-(trigger)                  apl_fires(t, s)                     APL continuation test
+L(d)                       loan_pp(d)                          Main-cohort balance at d
+L(d) by cohort             loan_apl_pp(d, s)                   APL balance by entry year s
+A(d)                       apl_advance_due(d)                  Premium advanced at d
+(trigger)                  apl_fires(d, s)                     APL continuation test
 CV*(d)                     apl_test_val(d)                     Value the APL test runs on
-(exhaustion)               apl_fail_year(s)                    Period the cohort exhausts in
+CV* at month u             apl_test_val_m(u)                   The same, at elapsed month u
+(exhaustion)               apl_fail_year(s)                    Anniversary the cohort ends at
+(exhaustion)               apl_fail_month(s)                   The same, as a month
 (advances)                 apl_advances(s)                     Number of advances made
+(loan excess)              loan_fail_year(), loan_fail_month() Where the loan outgrows CV
 (none)                     pol_loan_year()                     Policy year the 契約者貸付 is drawn
 (none)                     pua_sum_assured()                   払済保険金額 after conversion
-P lp(t)                    premiums(t)                         Premium income
+P lp(t)                    premiums(t)                         Premium income, once a year
 (SA - L)D, (CV - L)S       claims(t, kind)                     Benefit outgo by kind
 ec D(t)                    claim_expenses(t)                   Claim expense
-E0, e(t)                   expenses(t)                         Acquisition and maintenance
+E0, e_m(t)                 expenses(t)                         Acquisition and maintenance
 (none)                     inflation_factor(t)                 Expense inflation factor
 c0, c_r                    commissions(t)                      Commission outgo
 (dividend)                 dividends(t)                        5年ごと利差配当 outgo
 CF(t)                      net_cf(t)                           Net cash flow, income positive
 =========================  ==================================  ============================
 
-Four names needed care.
+Six names needed care.
 
 The notes write ``V(d)`` for the ordinary, unsuppressed surrender value and ``CV(d)`` for
 the amount actually payable. :func:`pol_val_pp` is ``V`` and :func:`cv_pp` is ``CV``, and
@@ -136,12 +195,24 @@ the amount actually payable. :func:`pol_val_pp` is ``V`` and :func:`cv_pp` is ``
 the value the clawed-back APL cohort keeps for life. All three are one policy value times
 one multiplier — there is no second reserve run anywhere in this model.
 
-``L(t)`` is one symbol in the notes but two objects here. :func:`loan_pp` is the
+``L`` is one symbol in the notes but two objects here. :func:`loan_pp` is the
 契約者貸付 balance of the premium-paying cohort; :func:`loan_apl_pp` is the automatic
-premium loan balance of a cohort indexed by the period ``s`` it defaulted in. They are
-kept apart because the APL exhausts at a duration that depends on ``s``, so collapsing
-the cohorts to an average balance would let early entrants ride on late entrants'
-headroom.
+premium loan balance of a cohort indexed by the **anniversary** ``s`` it defaulted at.
+They are kept apart because the APL exhausts at a duration that depends on ``s``, so
+collapsing the cohorts to an average balance would let early entrants ride on late
+entrants' headroom.
+
+Every ``*_at_m`` cells is the **monthly reading of an annual contractual quantity**, and
+the suffix is the warning: ``cv_pp(d)`` is the 解約返戻金 the contract defines at an
+anniversary, and ``cv_at_m(u)`` is what this model pays someone who surrenders between
+two. They agree wherever the contract has an opinion. Where they differ —
+:func:`cv_mult_at_m` inside the last year of the 保険料払込期間 — the difference is the
+subject of its own docstring rather than a rounding.
+
+``lapse_rate`` no longer carries the cliff surge. :func:`lapse_spike_rate` does, and it is
+a **one-off proportion in one month**, not a rate: converting it to a monthly equivalent
+would spread one decision, taken on a date, over a year in which the thing that provokes
+it has not yet happened.
 
 ``expenses`` is **acquisition plus maintenance only**. The claim handling expense is
 :func:`claim_expenses`, a separate cells, deducted explicitly in :func:`net_cf` and
@@ -159,12 +230,17 @@ CSV written against an earlier revision still loads.
 ``CV(d) = k V(d)`` for ``d < m`` and ``CV(d) = V(d)`` for ``d >= m``, with ``k = 0.70``
 where the suppressed form is elected. The transition at the anniversary ``d = m`` is a
 **step**: the ratio ``cv_pp(m) / (low_cv_rate() * pol_val_pp(m))`` is exactly ``1 / k``,
-and anything between is an interpolation the contract does not have. A surrender
-occurring in policy year ``m`` — period ``t = m - 1`` — is paid at the end of that year,
-at anniversary ``m``, on the **full** value **[std ordering]**; the suppressed value
-applies to policy years 1 to ``m - 1``, i.e. to anniversaries 1 to ``m - 1``. Both
-quantities exist at ``d = m`` and the model publishes both, :func:`cv_pp` and
-:func:`cv_pp_susp`.
+and anything between is an interpolation the contract does not have. Both quantities exist
+at ``d = m`` and the model publishes both, :func:`cv_pp` and :func:`cv_pp_susp`.
+
+**On this grid the step is at the month the contract puts it.** A surrender at elapsed
+month ``12m - 1`` is still inside the 保険料払込期間 and is paid ``k V``; one at ``12 m`` is
+not and is paid ``V``. The annual grid could not draw that line — the step and its own
+step were the same size — so it ruled **[std ordering]** that the whole of policy year
+``m`` was paid the post-step value, and put the behavioural surge there too. Here eleven
+of those twelve months are on the pre-step side and the surge is in the month after the
+last premium, beside the step that causes it. Nothing about the contract changed; the grid
+stopped rounding it.
 
 On a 終身払 point (``prem_term = 0``) the suppressed period runs for life and the step
 never happens, which is why one shipped model point is written that way: it is the one
@@ -179,16 +255,17 @@ paying cohort into an APL state, and only the failure of the continuation test
 
     apl_test_val(t + 1) >= loan_apl_pp(t, s) + premium_pp() * (1 + i_loan)
 
-terminates them — the value at the anniversary that closes period ``t`` against the
-balance at its start. The test runs on the **suppressed** value, which is the whole
+terminates them — the value at the anniversary the advanced premium would carry the
+contract to, against the balance at the anniversary the test is made at. The test runs on the **suppressed** value, which is the whole
 point: on the anchor cell a default at ``s = 1`` (policy year 2) buys one advance at
 ``k = 0.70`` and thirteen at ``k = 1.00``. Running it on ``V`` overstates the headroom by
 more than a decade of in force.
 
-**The advance is not cash income.** No cash reaches the insurer, so an APL year produces
-no :func:`premiums` entry and no renewal commission; a loan asset is created and shows up
-only as growth in :func:`loan_apl_pp` and as a deduction from every later benefit.
-:func:`net_cf` is unchanged by an advance in the year it is made.
+**The advance is not cash income.** No cash reaches the insurer, so an APL cohort
+produces no :func:`premiums` entry and no renewal commission; a loan asset is created and
+shows up only as growth in :func:`loan_apl_pp` and as a deduction from every later benefit.
+:func:`net_cf` is unchanged by an advance in the month it is made — which, the premium
+being 年払, is an anniversary month and no other.
 
 **The clawback survives the step.** A cohort carried through the low period by unrepaid
 advances has by definition not paid those premiums, so **[std]** its value stays at
@@ -200,21 +277,25 @@ the difference is sixteen years of in force on the anchor cell.
 Six of the notes' optional constructions are implemented and switched off, so that the
 base run reproduces the worked example while the machinery stays visible and testable:
 
-- **Premium default and the APL**, ``default_rate`` at 0 on the base points and 1% p.a.
-  in policy years 1 to ``m`` — ``0 <= t <= m - 1`` — on model points 5 and 6, which run
-  it on the suppressed and the ordinary form respectively.
+- **Premium default and the APL**, ``default_rate`` at 0 on the base points and 1% per
+  premium in policy years 1 to ``m`` — the anniversary months ``t = 0, 12, …, 12(m - 1)``
+  — on model points 5 and 6, which run it on the suppressed and the ordinary form
+  respectively. It is applied once per premium and never converted to a monthly rate: a
+  default is the failure to pay one premium on one date.
 - **契約者貸付**, ``pol_loan_util`` at 0, with model point 7 drawing the contractual
   maximum at the anniversary ``d = 39``, which opens policy year 40, and reaching the
-  loan-excess termination at ``t = 52``, policy year 53, with the benefit floored at zero. The 9/10-while-paying and
+  loan-excess termination at an anniversary decades later, with the benefit floored at
+  zero. The 9/10-while-paying and
   8/10-once-paid-up caps are contractual and always applied.
 - **Dynamic surrender on the 払戻率**, ``w_dyn = w min(3, max(1, 1 + beta (CV/cumprem -
   1)))`` with ``lapse_beta = 2``, off unless the model point sets ``dyn_lapse``. Model
   point 8 turns it on **and** sets the cliff spike to zero, so the spike is produced
   endogenously instead of imposed — a cross-check on the 15% **[std]** choice rather than
   a replacement for it.
-- **The cliff spike itself**, ``lapse_spike``, 15% **[std]** on every point but 8. It is a
-  behavioural assumption and nothing in any retrieved document quantifies it; the step in
-  ``CV`` that provokes it is contractual, and the two must not be confused.
+- **The cliff spike itself**, ``lapse_spike``, 15% **[std]** on every point but 8, taken
+  as a one-off in the single month after the last premium. It is a behavioural assumption
+  and nothing in any retrieved document quantifies it; the step in ``CV`` that provokes it
+  is contractual, and the two must not be confused.
 - **払済保険 conversion**, ``pua_year``, 0 except on model point 4. The contract stops
   paying premiums, the sum assured is replaced by ``(CV - L) / A(x + d)`` on the same
   single-premium basis, and the suppression switches off for the future — but the
@@ -222,7 +303,8 @@ base run reproduces the worked example while the machinery stays visible and tes
   smaller.
 - **5年ごと利差配当**, ``dividend_type``, ``none`` except on model point 9. The composite is
   無配当; the participating variant declares a dividend out of investment margin every
-  fifth year, here as ``div_spread`` times five years of the policy value **[std]**,
+  fifth year — in the last month of it — here as ``div_spread`` times five years of the
+  policy value **[std]**,
   because the declaration basis lives in the unpublished 算出方法書 and no carrier
   publishes it.
 
@@ -313,12 +395,25 @@ def prem_term():
 
 
 def prem_period():
-    """m: the effective 保険料払込期間, ``proj_len()`` on a 終身払 contract.
+    """m: the effective 保険料払込期間 **in years**, ``proj_years()`` on a 終身払 contract.
 
     The suppressed period is identical to the premium-paying period, so this is also the
-    duration at which :func:`cv_pp` steps up where it steps up at all.
+    anniversary at which :func:`cv_pp` steps up where it steps up at all.  It stays in
+    years on the monthly grid because the contract states it in years: ``m`` is a
+    contractual term, and the month it converts to is ``12 m``, which is
+    :func:`prem_period_months`.
     """
-    return prem_term() if prem_term() > 0 else proj_len()
+    return prem_term() if prem_term() > 0 else proj_years()
+
+
+def prem_period_months():
+    """12 m: the 保険料払込期間 in policy **months** — the month 払込満了 falls at.
+
+    The instant the 低解約返戻金型 suppression ends and the surrender value steps up by
+    ``1 / k``.  On the annual grid that step had to be smeared over the whole of policy
+    year ``m``; here it is the single month the contract puts it in.
+    """
+    return 12 * prem_period()
 
 
 def prem_end():
@@ -386,16 +481,35 @@ def apl_elected():
 
 
 def default_rate(t):
-    """u(t): the premium-default rate in period t; **0 in the base run**.
+    """u(t): the premium-default rate in policy month t; **0 in the base run**.
 
     A decrement out of the premium-paying cohort into the APL state, **not** a lapse:
     a policy does not lapse while the cash value can carry the premium.  Zero where the
-    APL is not elected, and zero once no premium is due — the last period with a premium
-    due is ``t = prem_end() - 1``, policy year ``prem_end()``.
+    APL is not elected, and zero once no premium is due — the last premium falls at the
+    anniversary opening policy year ``prem_end()``.
+
+    **It is non-zero only in a premium due month**, and on the monthly grid that is a
+    statement the model can make.  A premium default is the failure to pay a *particular*
+    premium on a *particular* date, not a hazard running through the year, so the annual
+    rate is applied once, at the anniversary the premium falls due, and never converted to
+    a monthly equivalent.  The annual grid could not tell the two readings apart.
     """
-    if not apl_elected() or t < 0 or policy_year(t) > prem_end():
+    if not apl_elected() or t < 0 or t % 12 != 0 or policy_year(t) > prem_end():
         return 0.0
     return float(model_point()["default_rate"])
+
+
+def apl_active():
+    """Whether any policy can ever enter the APL state on this model point.
+
+    ``apl_elected()`` and a positive ``default_rate`` column.  It exists to keep
+    :func:`apl_entry_years` empty on the eight model points that never default, which is
+    exact — no cohort can be non-empty without it — and which matters on the monthly grid
+    in a way it did not on the annual one: the cohort sums run over the whole frame, so a
+    model point with no APL at all would otherwise pay for twelve times as many empty
+    summands as before.
+    """
+    return apl_elected() and float(model_point()["default_rate"]) > 0.0
 
 
 def pol_loan_util():
@@ -465,10 +579,10 @@ def pua_year():
 
 
 def is_paid_up(t):
-    """Whether the contract is on the 払済保険 basis in period t.
+    """Whether the contract is on the 払済保険 basis in policy month t.
 
-    The election takes effect from policy year ``pua_year()``, which is period
-    ``pua_year() - 1``; the anniversary it is made at is ``pua_year() - 1`` as well.
+    The election takes effect from policy year ``pua_year()``, i.e. from the month
+    ``12 (pua_year() - 1)``; the anniversary it is made at is ``pua_year() - 1``.
     """
     return pua_year() > 0 and policy_year(t) >= pua_year()
 
@@ -484,40 +598,73 @@ def omega_age():
     return int(tbl.index[tbl["mort_rate"] >= 1.0][0])
 
 
-def proj_len():
-    """T = omega - x + 1: the **number** of policy years projected.
+def proj_years():
+    """T_y = omega - x + 1: the number of policy **years** the contract can run.
 
-    The exclusive end of the frame, counted from ``t = 0``: ``result_cf()`` covers
-    ``t = 0, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``.  There is no
-    maturity date, so the horizon is the table's, not the contract's.  Every remaining
-    life dies in the last period ``T - 1`` and ``pols_if(T)`` is zero; nothing is paid at
-    the horizon other than the death benefit and there are no tail states.
+    The span of the **anniversary** index ``d``, which stays in years on this grid because
+    every contractual value in the product — the surrender value, the 解約控除, the
+    reserve, the 保険料払込期間 — is defined at an anniversary and quoted by policy year.
+    ``d`` therefore runs ``0 .. proj_years()`` and none of its numbers moved when ``t``
+    became a month.
     """
     return omega_age() - age_at_entry() + 1
 
 
-def policy_year(t):
-    """t + 1: the contractual policy year of period t, a 1-based label.
+def proj_len():
+    """T: the **number** of policy **months** projected, ``12 (omega - x) + 1``.
 
-    Period ``t = 0`` is policy year 1.  The label exists because the contract's own
+    The exclusive end of the frame, counted from ``t = 0``: ``result_cf()`` covers
+    ``t = 0, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``.  There is no
+    maturity date, so the horizon is the table's, not the contract's.
+
+    The ``+ 1`` is the terminal month and is the whole of the terminal policy year that
+    this model needs.  The table's rate at ``omega`` is 1, so its monthly equivalent
+    ``1 - (1 - 1)^(1/12)`` is also 1: every life still in force at the start of the
+    terminal policy year dies in its **first** month, and the eleven months after it would
+    be rows of zeros.  The frame stops at the month the cohort clears — ``pols_if(T)`` is
+    zero, nothing is paid at the horizon but the death benefit, and there are no tail
+    states.
+    """
+    return 12 * (omega_age() - age_at_entry()) + 1
+
+
+def duration(t):
+    """The number of **completed** policy years at the start of policy month t, ``t // 12``.
+
+    The bridge between the monthly projection index and the annual anniversary index
+    ``d``: month ``t`` opens inside policy year ``duration(t) + 1``, which runs from
+    anniversary ``duration(t)`` to anniversary ``duration(t) + 1``.
+    """
+    return t // 12
+
+
+def policy_year(t):
+    """y(t) = 1 + t // 12: the contractual policy year of month t, a 1-based label.
+
+    Months ``t = 0 .. 11`` are policy year 1.  The label exists because the contract's own
     schedules are quoted in policy years — the 保険料払込期間 ``m``, the ``policy_year``
     column of ``lapse_table.csv``, ``pua_year`` and ``pol_loan_year`` — and it is
     **derived, never indexed by**: every cells of this model is indexed by the 0-based
-    ``t`` or by the anniversary ``d``.
+    month ``t`` or by the anniversary ``d``.
     """
-    return t + 1
+    return 1 + duration(t)
 
 
 def age(t):
-    """x + t: the attained age during period t, i.e. at its opening anniversary."""
-    return age_at_entry() + t
+    """x + floor(t / 12): the attained age during policy month t.
+
+    The 契約年齢 holds for the twelve months ``t = 0 .. 11``, and the rating age
+    increments at each 年単位の契約応当日 rather than at the birthday, so stepping it on the
+    anniversary is what the contract does.
+    """
+    return age_at_entry() + duration(t)
 
 
 def mort_rate_at_age(y):
     """The shipped table's mortality rate at attained age y, before ``mort_be_factor``.
 
     Read from ``mort_table.csv``, a **[std]** construction anchored on quoted rates of
-    生保標準生命表2018（死亡保険用）rather than a copy of it; see :mod:`~.WholeLife_JP_A.Data`.
+    生保標準生命表2018（死亡保険用）rather than a copy of it; see :mod:`~.WholeLife_JP_S.Data`.
     The rate already **includes 高度障害**, so a projection using it must not add a
     separate disability decrement.  This is the rate the contractual cash-value
     construction uses, unadjusted: ``mort_be_factor`` is a best-estimate lever on the
@@ -527,25 +674,47 @@ def mort_rate_at_age(y):
 
 
 def mort_rate_base(t):
-    """The table mortality rate in period t, at attained age ``age(t)``."""
+    """The **annual** table mortality rate in month t, at attained age ``age(t)``.
+
+    Level across the twelve months of a policy year, because the table is graduated by
+    整数年齢 and the rating age steps on the anniversary.
+    """
     return mort_rate_at_age(age(t))
 
 
 def mort_rate(t):
-    """q(t): the mortality decrement applied in period t, 高度障害 included.
+    """q(t): the **annual** mortality rate in policy month t, 高度障害 included.
 
     The table rate times :func:`mort_be_factor`, capped at 1.  At the table's terminal age the
     rate is held at 1 whatever ``mort_be_factor`` is: ``omega_age`` is the horizon of the table
     and a structural property of the projection, not an experience assumption, and
     scaling it would leave lives alive past the end of the table.
+
+    This is the annual rate the table is stated on and the notes quote;
+    :func:`mort_rate_mth` is the decrement actually applied to the month.
     """
     if age(t) >= omega_age():
         return 1.0
     return min(1.0, mort_rate_base(t) * mort_be_factor())
 
 
+def mort_rate_mth(t):
+    """q_m(t): the monthly mortality decrement, ``1 - (1 - q(t))^(1/12)`` **[std]**.
+
+    The **effective** convention, not a nominal ``q / 12``: twelve months of it compound
+    back to the annual rate exactly, so survivorship at the anniversaries is the same as
+    the annual-grid model produced and every difference between the two runs is a timing
+    difference rather than a change of basis.
+
+    At the terminal age ``q = 1`` and this is 1 as well, which is why the frame ends in
+    the first month of the terminal policy year: the cohort clears there and cannot be
+    spread over a year that no longer exists.
+    """
+    return 1.0 - (1.0 - mort_rate(t)) ** (1.0 / 12.0)
+
+
 def lapse_rate_base(t):
-    """The base voluntary surrender rate in period t **[std]**.
+    """The base **annual** voluntary surrender rate in month t **[std]**.
 
     ``lapse_table.csv`` is keyed by the **contractual** ``policy_year``, a 1-based label,
     so the lookup goes through :func:`policy_year`: period ``t`` reads row ``t + 1``.
@@ -572,11 +741,24 @@ def cum_prem_pp(d):
     return premium_pp() * min(d, prem_end())
 
 
+def cum_prem_pp_m(u):
+    """cumprem at **elapsed month u**: premiums paid per policy by that instant.
+
+    The premium is annual and falls at the anniversaries ``0, 12, 24, …``, so the count
+    paid by elapsed month ``u`` is ``ceil(u / 12)`` capped at ``prem_end()`` — and it is a
+    **step** function of ``u``, not a smooth accrual, because that is what paying once a
+    year is. It agrees with :func:`cum_prem_pp` at every anniversary.
+    """
+    return premium_pp() * min(-(-u // 12), prem_end())
+
+
 def lapse_dyn_factor(t):
     """The dynamic-surrender multiplier on the lapse rate **[std]**; 1 in the base run.
 
-    ``min(3, max(1, 1 + beta max(0, CV(t+1)/cumprem(t+1) - 1)))``, read at the
-    anniversary that **closes** period t, which is where the surrender is paid.  The
+    ``min(3, max(1, 1 + beta max(0, CV/cumprem - 1)))``, read at the **end of month t**,
+    which is where the surrender is paid.  On the monthly grid the ratio is therefore a
+    monthly series rather than an annual one, and the surge it produces on model point 8
+    builds over the months around 払込満了 instead of arriving in one annual step.  The
     economically natural driver on a savings-shaped contract is the ratio of the value to
     the premiums paid, and on the anchor cell that ratio crosses 1 exactly at the cliff —
     so with the module on and ``lapse_spike`` at zero the surge at 払込満了 is produced
@@ -585,25 +767,64 @@ def lapse_dyn_factor(t):
     """
     if not dyn_lapse():
         return 1.0
-    cp = cum_prem_pp(t + 1)
+    cp = cum_prem_pp_m(t + 1)
     if cp <= 0.0:
         return 1.0
     return min(lapse_dyn_cap,                                        # noqa: F821
-               max(1.0, 1.0 + lapse_beta * max(0.0, cv_pp(t + 1) / cp - 1.0)))  # noqa: F821
+               max(1.0, 1.0 + lapse_beta * max(0.0, cv_at_m(t + 1) / cp - 1.0)))  # noqa: F821
 
 
 def lapse_rate(t):
-    """w(t): the annual voluntary surrender rate applied at the end of period t.
+    """w(t): the **annual** voluntary surrender rate of the policy year containing month t.
 
-    The table rate, plus :func:`lapse_spike` in the period the suppression ends — policy
-    year ``m``, i.e. ``t = m - 1`` — times the dynamic multiplier, capped at 1.  This is
-    the **annual** rate; there is no monthly companion on an annual-grid model.  A
-    surrender is not a pure decrement here: it pays :func:`cv_pp` net of any loan.
+    The table rate times the dynamic multiplier, capped at 1.  A surrender is not a pure
+    decrement here: it pays :func:`cv_at_m` net of any loan.
+
+    **The cliff spike is no longer inside it.**  On the annual grid the 15% surge at
+    払込満了 had to be added to this rate, because the year was the finest thing there was;
+    here it is :func:`lapse_spike_rate`, a one-off proportion of the survivors of the
+    single month the step happens in.  The two are different kinds of quantity — one is a
+    rate per unit time that converts to a month, the other is a decision taken on a date
+    that does not — and keeping them apart is the same ruling this library makes for the
+    renewal decline in ``Term_JP_S``.
     """
-    base = lapse_rate_base(t)
-    if prem_term() > 0 and policy_year(t) == prem_period() and not is_paid_up(t):
-        base = base + lapse_spike()
-    return min(1.0, base * lapse_dyn_factor(t))
+    return min(1.0, lapse_rate_base(t) * lapse_dyn_factor(t))
+
+
+def lapse_rate_mth(t):
+    """w_m(t): the monthly ordinary surrender rate, ``1 - (1 - w(t))^(1/12)`` **[std]**.
+
+    The same effective convention as :func:`mort_rate_mth`, so the twelve months of a
+    policy year compound back to the annual table rate.  It excludes the cliff spike,
+    which is :func:`lapse_spike_rate`.
+    """
+    return 1.0 - (1.0 - lapse_rate(t)) ** (1.0 / 12.0)
+
+
+def lapse_spike_rate(t):
+    """s: the one-off surrender surge at 払込満了 **[std]**, 15% in the base run.
+
+    Non-zero in exactly one month of the whole projection — ``t = prem_period_months()``, the
+    first month **after** the last premium, which is the month the 解約返戻金 steps up by
+    ``1 / k``.  Zero on a 終身払 contract, which has no 払込満了 and therefore no step, and
+    zero once the contract is on the 払済保険 basis.
+
+    **It is not annualized and never converted to a monthly rate.**  The step in
+    :func:`cv_at_m` is contractual and instantaneous; the surge in surrenders at the step
+    is a behavioural response to it, taken by owners who have been waiting for the step,
+    and it is a proportion of the people standing there rather than a hazard running
+    through a year.  The annual grid had to spread it over the twelve months of policy
+    year ``m`` **and** pay those surrenders the post-step value, which put the surge a year
+    before the event that causes it; here the surge and the step are in the same month.
+
+    Nothing in any retrieved document quantifies it.  It is held as its own cells so that
+    setting ``lapse_spike`` to zero and re-running reads its effect directly, which is the
+    right way to challenge it — and model point 8 does exactly that, replacing it with the
+    endogenous dynamic-surrender module.
+    """
+    if prem_term() <= 0 or is_paid_up(t) or t != prem_period_months():
+        return 0.0
+    return min(1.0, lapse_spike())
 
 
 def disc_factor():
@@ -825,6 +1046,73 @@ def cv_pp(d):
     return cv_mult(d) * pol_val_pp(d)
 
 
+def pol_val_at_m(u):
+    """V at **elapsed month u**: the ordinary surrender value between anniversaries **[std]**.
+
+    ``V(d)`` at every anniversary — ``u = 12 d`` reproduces :func:`pol_val_pp` exactly —
+    and **linear in the elapsed months** between two anniversaries::
+
+        V(u) = (1 - f) V(d) + f V(d + 1),   d = u // 12,  f = (u mod 12) / 12
+
+    The within-year rule is the one thing the monthly grid needs that the annual grid did
+    not, and it is a **[std]**: the 算出方法書 that would state it is a 基礎書類 filed with
+    the 金融庁 and is not published, so no source settles whether a real carrier grades its
+    解約返戻金 linearly in elapsed months, on a 経過月数 table of its own, or on the
+    retrospective value. Linear interpolation is the market's ordinary convention for a
+    value quoted by policy year and is the least assuming of the three.
+
+    What it deliberately does **not** touch is the calibration. ``i_cv`` was derived by
+    fitting this construction to one carrier's complete published surrender-value run,
+    which is an **annual** table; the anniversary values are unchanged here, so the fit is
+    the same fit and the interpolation adds a convention rather than moving a number.
+    """
+    d, r = u // 12, u % 12
+    if r == 0:
+        return pol_val_pp(d)
+    f = r / 12.0
+    return (1.0 - f) * pol_val_pp(d) + f * pol_val_pp(d + 1)
+
+
+def cv_mult_at_m(u):
+    """The 解約払戻金支払割合 applying at elapsed month u: ``k`` before 払込満了, 1 from it.
+
+    The monthly statement of :func:`cv_mult`, and it is where the monthly grid changes an
+    answer rather than merely refining one. The annual grid had to rule that a surrender
+    anywhere in policy year ``m`` was paid at anniversary ``m`` on the **full** value — a
+    **[std ordering]** forced by the step and the grid landing on the same year. Here the
+    suppression ends at the month the contract ends it, ``u = 12 m``: a surrender at
+    elapsed month ``12m - 1`` is inside the 保険料払込期間 and is paid ``k V``, and one at
+    ``12 m`` is not and is paid ``V``. Eleven months of policy year ``m`` move from the
+    post-step to the pre-step side, and on the anchor cell that is the largest single
+    difference between the two grids.
+    """
+    if not low_cv() or (pua_year() > 0 and u >= 12 * pua_year()):
+        return 1.0
+    if prem_term() == 0:
+        return low_cv_rate()
+    return low_cv_rate() if u < prem_period_months() else 1.0
+
+
+def cv_at_m(u):
+    """CV at elapsed month u: the 解約返戻金 actually payable, per policy.
+
+    ``cv_mult_at_m(u) pol_val_at_m(u)``.  This is what a surrender in month ``t`` is paid,
+    read at ``u = t + 1`` because the surrender falls at the end of the month.  It agrees
+    with :func:`cv_pp` at every anniversary except inside the 保険料払込期間's last year,
+    where the two disagree **by design** — see :func:`cv_mult_at_m`.
+    """
+    return cv_mult_at_m(u) * pol_val_at_m(u)
+
+
+def cv_susp_at_m(u):
+    """k V at elapsed month u: the suppressed value between anniversaries.
+
+    The monthly companion of :func:`cv_pp_susp`, and the value a clawed-back APL cohort is
+    settled on when it surrenders between anniversaries.
+    """
+    return low_cv_rate() * pol_val_at_m(u)
+
+
 def cv_pp_susp(d):
     """k V(d): the suppressed value at **every** anniversary, step or no step.
 
@@ -855,13 +1143,15 @@ def reserve_pp(d):
                 age_at_entry() + d, max(prem_period() - d, 0)))
 
 
-def loan_cap_rate(t):
-    """The contractual 契約者貸付 limit in period t: 9/10 while paying, 8/10 once 払込済.
+def loan_cap_rate(d):
+    """The contractual 契約者貸付 limit at anniversary d: 9/10 while paying, 8/10 once 払込済.
 
     Stated identically at three carriers, with the existing balance deducted first.  It
-    binds :func:`pol_loan_util` whatever that is set to.
+    binds :func:`pol_loan_util` whatever that is set to.  Indexed by the **anniversary**,
+    like the loan balance and the value it is a fraction of: a 契約者貸付 is drawn at an
+    anniversary and the 約款 compounds it once a year.
     """
-    return (loan_cap_pay if policy_year(t) <= prem_end()             # noqa: F821
+    return (loan_cap_pay if d + 1 <= prem_end()                      # noqa: F821
             else loan_cap_paidup)                                    # noqa: F821
 
 
@@ -879,244 +1169,313 @@ def pol_loan_year():
     return v
 
 
-def pol_loan_draw(t):
-    """The 契約者貸付 drawn at the start of period t; zero in the base run.
+def pol_loan_draw(d):
+    """The 契約者貸付 drawn at anniversary d; zero in the base run.
 
-    A single drawdown in policy year :func:`pol_loan_year` — period
-    ``pol_loan_year() - 1`` **[std]** — of the elected fraction of the value at that
-    anniversary, capped by :func:`loan_cap_rate`.  There is no public take-up data of any
-    kind, so both the timing and the level are standardizations; a revolving facility
-    would be another input table.
+    A single drawdown at the anniversary opening policy year :func:`pol_loan_year` —
+    ``d = pol_loan_year() - 1`` **[std]** — of the elected fraction of the value there,
+    capped by :func:`loan_cap_rate`.  There is no public take-up data of any kind, so both
+    the timing and the level are standardizations; a revolving facility would be another
+    input table.
     """
     if (pol_loan_util() <= 0.0 or pol_loan_year() <= 0
-            or policy_year(t) != pol_loan_year()):
+            or d != pol_loan_year() - 1):
         return 0.0
-    return min(pol_loan_util(), loan_cap_rate(t)) * cv_pp(t)
+    return min(pol_loan_util(), loan_cap_rate(d)) * cv_pp(d)
 
 
-def loan_pp(t):
-    """L(t): the 契約者貸付 principal and interest of the paying cohort at time t.
+def loan_pp(d):
+    """L(d): the 契約者貸付 principal and interest of the paying cohort at anniversary d.
 
-    The balance at the **start** of period t, which is the anniversary ``d = t``.
-    ``L(t + 1) = (L(t) + draw(t)) (1 + i_L)``, compound, with interest capitalised into
-    principal, and ``L(0) = 0``.  Identically zero in the base run, where every benefit
-    is therefore gross.
+    ``L(d + 1) = (L(d) + draw(d)) (1 + i_L)``, compound, with interest capitalised into
+    principal, and ``L(0) = 0``.  Identically zero in the base run, where every benefit is
+    therefore gross.
+
+    **It stays an annual quantity on the monthly grid, and that is the contract's own
+    convention, not an approximation.**  The 約款 states the loan rate as a 年利 and
+    capitalises it at the 年単位の契約応当日, so the balance genuinely does not move between
+    anniversaries.  A benefit falling in month ``t`` is settled net of ``loan_pp`` read at
+    ``duration(t)``, the anniversary that opened the policy year — which is the balance
+    actually outstanding.
     """
-    if t <= 0:
+    if d <= 0:
         return 0.0
-    return (loan_pp(t - 1) + pol_loan_draw(t - 1)) * (1.0 + i_loan)   # noqa: F821
+    return (loan_pp(d - 1) + pol_loan_draw(d - 1)) * (1.0 + i_loan)   # noqa: F821
 
 
 def loan_fail_year():
-    """The period t in which the loan outgrows the value, or ``proj_len()``.
+    """The **anniversary** d at which the loan outgrows the value, or ``proj_years()``.
 
     The 約款's loan-excess termination: where loan and interest exceed the surrender
-    value the insurer notifies for a top-up and, unpaid, the contract lapses.  The
-    balance at the start of period t is tested against the value at that same instant,
-    the anniversary ``d = t`` — the amount actually available to settle it — and the
-    notice-and-top-up period is not modelled **[std]**.  ``proj_len()``, one past the end
-    of the frame, is the never-reached sentinel; a zero balance cannot exceed a
-    non-negative value, so the base run never reaches it.  The contractual policy year is
-    ``t + 1``.
+    value the insurer notifies for a top-up and, unpaid, the contract lapses.  The balance
+    at anniversary ``d`` is tested against the value at that same instant — the amount
+    actually available to settle it — and the notice-and-top-up period is not modelled
+    **[std]**.  ``proj_years()``, one past the last anniversary, is the never-reached
+    sentinel; a zero balance cannot exceed a non-negative value, so the base run never
+    reaches it.  The termination takes effect in the month ``12 d``, which is
+    :func:`loan_fail_month`.
+
+    The test stays annual because both sides of it are: the balance moves once a year and
+    the notice it triggers is served at the anniversary.
     """
-    for t in range(proj_len()):
-        if loan_pp(t) > cv_pp(t):
-            return t
-    return proj_len()
+    for d in range(proj_years()):
+        if loan_pp(d) > cv_pp(d):
+            return d
+    return proj_years()
 
 
-def apl_advance_due(t):
-    """A(t): the premium the APL would advance in period t, zero once none is due.
+def loan_fail_month():
+    """The policy month the loan-excess termination takes effect in, ``12 loan_fail_year()``.
 
-    Once ``policy_year(t) > prem_end()`` no premium is due, so the balance rolls up on
-    interest alone against a value that is still growing — which is why exhaustion after
-    払込満了 takes decades rather than years.
+    ``proj_len()`` where it never happens, so that a comparison against ``t`` is safe over
+    the whole frame.
     """
-    return premium_pp() if 0 <= t and policy_year(t) <= prem_end() else 0.0
+    d = loan_fail_year()
+    return proj_len() if d >= proj_years() else 12 * d
+
+
+def apl_advance_due(d):
+    """A(d): the premium the APL would advance at anniversary d, zero once none is due.
+
+    Once ``d + 1 > prem_end()`` no premium is due, so the balance rolls up on interest
+    alone against a value that is still growing — which is why exhaustion after 払込満了
+    takes decades rather than years.  Indexed by the anniversary the premium falls at,
+    because an annual premium falls at an anniversary and nowhere else.
+    """
+    return premium_pp() if 0 <= d and d + 1 <= prem_end() else 0.0
 
 
 def apl_test_val(d):
     """CV*(d): the surrender value the APL continuation test is run against, at anniversary d.
 
-    The value computed **as if the premium had been paid**, which on the annual grid is
-    the value at the anniversary that **closes** the period **[std]**: the test for
-    period ``t`` reads ``apl_test_val(t + 1)``.  With the clawback on — the correct
-    treatment, since a cohort carried by advances has not paid its low-period premiums —
-    that is the **suppressed** value at every duration; with it off the value steps up at
-    m like any other.  Running the test on ``V`` instead of on ``k V`` overstates the
-    headroom by more than a decade of in force.
+    The value computed **as if the premium had been paid**: the test made at anniversary
+    ``d`` reads ``apl_test_val(d + 1)``, the value at the anniversary the advanced premium
+    would carry the contract to **[std]**.  With the clawback on — the correct treatment,
+    since a cohort carried by advances has not paid its low-period premiums — that is the
+    **suppressed** value at every duration; with it off the value steps up at m like any
+    other.  Running the test on ``V`` instead of on ``k V`` overstates the headroom by more
+    than a decade of in force.
     """
     return cv_pp_susp(d) if apl_clawback else cv_pp(d)               # noqa: F821
 
 
-def apl_fires(t, s):
-    """Whether the APL continuation test passes in period t for the cohort defaulting in s.
+def apl_test_val_m(u):
+    """CV* at elapsed month u: the same quantity between anniversaries.
 
-    ``CV*(t + 1) >= L(t, s) + P (1 + i_L)`` while a premium is due, and
-    ``CV*(t + 1) >= L(t, s)`` once none is — the value at the anniversary closing period
-    t against the balance at its start.  Stated the same way at three carriers.  In the
-    first policy year the value cannot carry a premium on either form, so a default at
-    ``s = 0`` terminates at once.
+    What an APL cohort surrendering mid-year is settled on.  It is the *test* value and
+    not :func:`cv_at_m` because the clawback applies to the settlement for the same reason
+    it applies to the test: a cohort carried through the low period by unrepaid advances
+    has not paid those premiums, so the suppressed basis continues to apply to it.
     """
-    if t < s or t >= proj_len():
+    return cv_susp_at_m(u) if apl_clawback else cv_at_m(u)           # noqa: F821
+
+
+def apl_fires(d, s):
+    """Whether the APL continuation test passes at anniversary d for the cohort entering at s.
+
+    ``CV*(d + 1) >= L(d, s) + P (1 + i_L)`` while a premium is due, and
+    ``CV*(d + 1) >= L(d, s)`` once none is — the value at the **next** anniversary against
+    the balance at this one.  Stated the same way at three carriers.  In the first policy
+    year the value cannot carry a premium on either form, so a default at ``s = 0``
+    terminates at once.
+
+    **Both indices are anniversaries, and they stay anniversaries on the monthly grid.**
+    An APL advance settles a premium, a premium falls once a year, and the test is what
+    the insurer runs when it does; there is no monthly version of the question.  ``s`` is
+    accordingly the *policy year* the cohort defaulted in — the 0-based anniversary
+    ``d = s``, month ``12 s`` — and not the month.
+    """
+    if d < s or d >= proj_years():
         return False
-    adv = apl_advance_due(t)
-    return apl_test_val(t + 1) >= loan_apl_pp(t, s) + adv * (1.0 + i_loan)  # noqa: F821
+    adv = apl_advance_due(d)
+    return apl_test_val(d + 1) >= loan_apl_pp(d, s) + adv * (1.0 + i_loan)  # noqa: F821
 
 
-def loan_apl_pp(t, s):
-    """L(t, s): the APL balance at the start of period t of the cohort defaulting in s.
+def loan_apl_pp(d, s):
+    """L(d, s): the APL balance at anniversary d of the cohort entering at anniversary s.
 
-    ``L(t + 1, s) = (L(t, s) + A(t)) (1 + i_L)``, with the advance made only where the
-    test fired.  Indexed by the entry period and **not** collapsed to a cohort average:
-    the APL exhausts at a duration that depends on when the loan started, so an average
-    balance would let early entrants ride on late entrants' headroom and would move the
-    termination by decades.
+    ``L(d + 1, s) = (L(d, s) + A(d)) (1 + i_L)``, with the advance made only where the
+    test fired.  Indexed by the entry anniversary and **not** collapsed to a cohort
+    average: the APL exhausts at a duration that depends on when the loan started, so an
+    average balance would let early entrants ride on late entrants' headroom and would
+    move the termination by decades.
+
+    Annual like :func:`loan_pp` and for the same contractual reason — 年利, capitalised at
+    the 契約応当日 — so a benefit in month ``t`` is settled net of ``loan_apl_pp`` read at
+    ``duration(t)``.
     """
-    if t <= s:
+    if d <= s:
         return 0.0
-    prev = loan_apl_pp(t - 1, s)
-    adv = apl_advance_due(t - 1) if apl_fires(t - 1, s) else 0.0
+    prev = loan_apl_pp(d - 1, s)
+    adv = apl_advance_due(d - 1) if apl_fires(d - 1, s) else 0.0
     return (prev + adv) * (1.0 + i_loan)                             # noqa: F821
 
 
 def apl_fail_year(s):
-    """The period t in which the APL cohort entering in period s exhausts.
+    """The anniversary d at which the APL cohort entering at anniversary s exhausts.
 
-    ``proj_len()`` where it never does, one past the end of the frame.  The cohort leaves
-    at the **start** of that period and the policyholder may claim the surrender value
-    net of the loan, floored at zero because the loan can exceed the value.
+    ``proj_years()`` where it never does, one past the last anniversary.  The cohort
+    leaves at the **start** of the policy year that anniversary opens — the month
+    :func:`apl_fail_month` — and the policyholder may claim the surrender value net of the
+    loan, floored at zero because the loan can exceed the value.
     """
-    for t in range(s, proj_len()):
-        if not apl_fires(t, s):
-            return t
-    return proj_len()
+    for d in range(s, proj_years()):
+        if not apl_fires(d, s):
+            return d
+    return proj_years()
+
+
+def apl_fail_month(s):
+    """The policy month the APL cohort entering at anniversary s terminates in.
+
+    ``12 apl_fail_year(s)``, or ``proj_len()`` where the cohort never exhausts, so that a
+    comparison against ``t`` is safe over the whole frame.
+    """
+    d = apl_fail_year(s)
+    return proj_len() if d >= proj_years() else 12 * d
 
 
 def apl_advances(s):
-    """The number of premium advances the APL makes for the cohort entering in period s.
+    """The number of premium advances the APL makes for the cohort entering at anniversary s.
 
     The single most instructive number the module produces: on the anchor cell a default
     at ``s = 1`` — policy year 2 — buys **one** advance on the suppressed form and
     **thirteen** on the ordinary one, from the same default at the same duration on the
     same underlying policy value.
     """
-    return sum(1 for t in range(s, min(apl_fail_year(s), prem_end()))
-               if apl_fires(t, s))
+    return sum(1 for d in range(s, min(apl_fail_year(s), prem_end()))
+               if apl_fires(d, s))
 
 
 def pols_default(t):
-    """Policies moving out of the paying cohort into the APL state at the start of period t.
+    """Policies moving out of the paying cohort into the APL state at the start of month t.
 
-    ``pols_if_pay(t) u(t)``.  Zero in the base run, and zero in the period a loan-excess
+    ``pols_if_pay(t) u(t)``, and non-zero only in a premium due month, because
+    :func:`default_rate` is.  Zero in the base run, and zero in the month a loan-excess
     termination takes the whole paying cohort.
     """
-    if default_rate(t) <= 0.0 or t == loan_fail_year():
+    if default_rate(t) <= 0.0 or t == loan_fail_month():
         return 0.0
     return pols_if_pay(t) * default_rate(t)
 
 
 def pols_pay_bef_decr(t):
-    """The paying cohort exposed to the period-t decrements, after defaults and loan exit."""
-    if t == loan_fail_year():
+    """The paying cohort exposed to the month-t decrements, after defaults and loan exit."""
+    if t == loan_fail_month():
         return 0.0
     return pols_if_pay(t) - pols_default(t)
 
 
 def pols_if_pay(t):
-    """The premium-paying cohort in force at the **start** of period t.
+    """The premium-paying cohort in force at the **start** of policy month t.
 
-    ``pols_if_pay(0) = 1`` and ``pols_if_pay(t + 1) = pols_pay_bef_decr(t)(1 - q)(1 - w)``.
-    Equal to :func:`pols_if` in the base run, where no policy ever enters the APL state.
+    ``pols_if_pay(0) = 1`` and
+    ``pols_if_pay(t + 1) = pols_pay_bef_decr(t)(1 - q_m)(1 - w_m)(1 - s)``, the monthly
+    decrements plus the one-off cliff spike in the month it fires.  Equal to
+    :func:`pols_if` in the base run, where no policy ever enters the APL state.
     """
     if t < 0 or t >= proj_len():
         return 0.0
     if t == 0:
         return 1.0
-    return (pols_pay_bef_decr(t - 1) * (1.0 - mort_rate(t - 1))
-            * (1.0 - lapse_rate(t - 1)))
+    return (pols_pay_bef_decr(t - 1) * (1.0 - mort_rate_mth(t - 1))
+            * (1.0 - lapse_rate_mth(t - 1))
+            * (1.0 - lapse_spike_rate(t - 1)))
 
 
 def pols_apl_in(t, s):
-    """The APL cohort of entry period s carried into the start of period t, before its test.
+    """The APL cohort entering at anniversary s, carried into month t before its test.
 
-    ``pols_default(s)`` in the entry period, then decremented by mortality and voluntary
-    surrender like any other in-force policy, and zero from the period after it exhausts.
+    ``pols_default(12 s)`` in the entry month, then decremented **monthly** by mortality
+    and voluntary surrender like any other in-force policy, and zero from the month after
+    the cohort exhausts.  The cohort index ``s`` is the entry *anniversary* and ``t`` the
+    month: the population moves every month, the loan and its test move once a year.
     """
-    if t < s or t >= proj_len():
+    if t < 12 * s or t >= proj_len():
         return 0.0
-    if pols_default(s) == 0.0:
+    if pols_default(12 * s) == 0.0:
         return 0.0
-    if t == s:
-        return pols_default(s)
-    if apl_fail_year(s) <= t - 1:
+    if t == 12 * s:
+        return pols_default(t)
+    if apl_fail_month(s) <= t - 1:
         return 0.0
-    return (pols_apl_in(t - 1, s) * (1.0 - mort_rate(t - 1))
-            * (1.0 - lapse_rate(t - 1)))
+    return (pols_apl_in(t - 1, s) * (1.0 - mort_rate_mth(t - 1))
+            * (1.0 - lapse_rate_mth(t - 1))
+            * (1.0 - lapse_spike_rate(t - 1)))
 
 
 def pols_if_apl(t, s):
-    """The APL cohort of entry period s exposed to the period-t decrements.
+    """The APL cohort of entry anniversary s exposed to the month-t decrements.
 
-    The carried amount, or zero in and after the period the cohort exhausts: an exhausted
-    cohort leaves at the **start** of the period and does not experience that period's
-    deaths or surrenders.
+    The carried amount, or zero in and after the month the cohort exhausts: an exhausted
+    cohort leaves at the **start** of that month and does not experience its deaths or
+    surrenders.
     """
     n = pols_apl_in(t, s)
     if n == 0.0:
         return 0.0
-    return 0.0 if apl_fail_year(s) <= t else n
+    return 0.0 if apl_fail_month(s) <= t else n
 
 
 def pols_apl_exit_at(t, s):
-    """The APL cohort of entry period s terminating at the start of period t on exhaustion."""
+    """The APL cohort of entry anniversary s terminating at the start of month t."""
     n = pols_apl_in(t, s)
     if n == 0.0:
         return 0.0
-    return n if apl_fail_year(s) == t else 0.0
+    return n if apl_fail_month(s) == t else 0.0
 
 
 def apl_entry_years(t):
-    """The entry periods of every APL cohort that can be in force in period t.
+    """The entry anniversaries of every APL cohort that can be in force in month t.
 
-    ``0 … min(t, prem_end() - 1)``: no cohort can enter before the first period, and none
-    after the last period a premium is due, ``prem_end() - 1``.
+    ``0 … min(duration(t), prem_end() - 1)``: no cohort can enter before the first
+    anniversary, and none after the last anniversary a premium is due,
+    ``prem_end() - 1``.  Empty where :func:`apl_active` is False, which is exact — no
+    cohort can be non-empty there — and keeps eight of the ten model points from summing
+    over an entry list twelve times longer than the annual grid's.
     """
-    return range(min(t, prem_end() - 1) + 1)
+    if not apl_active():
+        return range(0)
+    return range(min(duration(t), prem_end() - 1) + 1)
 
 
 def pols_apl_carried(t):
-    """The APL cohorts carried into period t from an **earlier** entry period.
+    """The APL cohorts carried into month t from an **earlier** entry anniversary.
 
-    Kept apart from the entrants of period t, which are still inside
-    :func:`pols_if_pay` at the start of the period and would otherwise be counted twice.
+    Kept apart from the entrants of month t, which are still inside :func:`pols_if_pay` at
+    the start of the month and would otherwise be counted twice.  A cohort entering at
+    anniversary ``s`` enters in month ``12 s``, so the cohorts carried in are those with
+    ``12 s < t``.
     """
-    return sum(pols_apl_in(t, s) for s in range(min(t - 1, prem_end() - 1) + 1))
+    if not apl_active() or t <= 0:
+        return 0.0
+    return sum(pols_apl_in(t, s)
+               for s in range(min((t - 1) // 12, prem_end() - 1) + 1))
 
 
 def pols_apl(t):
-    """The APL cohorts exposed to the period-t decrements, summed over entry periods."""
+    """The APL cohorts exposed to the month-t decrements, summed over entry anniversaries."""
     return sum(pols_if_apl(t, s) for s in apl_entry_years(t))
 
 
 def pols_apl_exit(t):
-    """Policies terminating at the start of period t because the APL exhausted."""
+    """Policies terminating at the start of month t because the APL exhausted."""
     return sum(pols_apl_exit_at(t, s) for s in apl_entry_years(t))
 
 
 def pols_loan_exit(t):
-    """Policies terminating at the start of period t on loan-excess; zero in the base run."""
-    return pols_if_pay(t) if t == loan_fail_year() else 0.0
+    """Policies terminating at the start of month t on loan-excess; zero in the base run."""
+    return pols_if_pay(t) if t == loan_fail_month() else 0.0
 
 
 def pols_if(t):
-    """l(t): the number of policies in force at the **start** of period t.
+    """l(t): the number of policies in force at the **start** of policy month t.
 
-    The premium-paying cohort plus every APL cohort carried in from an earlier period.
+    The premium-paying cohort plus every APL cohort carried in from an earlier month.
     This is the weight on every cash flow of the same ``result_cf()`` row.  It is 1 in
-    the first period, ``t = 0``, on a single-policy model point and 0 at ``proj_len()``,
+    the first month, ``t = 0``, on a single-policy model point and 0 at ``proj_len()``,
     one past the frame, because the table terminates and every remaining life dies in the
-    final period.
+    final month.
     """
     if t < 0 or t >= proj_len():
         return 0.0
@@ -1124,32 +1483,38 @@ def pols_if(t):
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside period t.
+    """The number of policies in force at a point inside policy month t.
 
     ``"BEF_DECR"``
-        l(t), the start of the period, before anything happens; the same number
-        as :func:`pols_if` and the weight on that period's cash flows.
+        l(t), the start of the month, before anything happens; the same number
+        as :func:`pols_if` and the weight on that month's cash flows.
 
     ``"BEF_LAPSE"``
         after the APL and loan-excess terminations and after deaths, before
         surrenders — the notes' processing order is **death before lapse**
         **[std order]**, so this is the population surrenders are taken from.
 
+    ``"BEF_SPIKE"``
+        after ordinary surrender, before the one-off cliff surge.  Equal to
+        ``"AFT_DECR"`` in every month but the one 払込満了 falls in.
+
     ``"AFT_DECR"``
-        l(t+1), the end-of-period state, and zero at ``proj_len() - 1`` because
-        the table's terminal rate is 1 and nobody survives the final period.
+        l(t+1), the end-of-month state, and zero at ``proj_len() - 1`` because
+        the table's terminal rate is 1 and nobody survives the final month.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
-        return (pols_pay_bef_decr(t) + pols_apl(t)) * (1.0 - mort_rate(t))
+        return (pols_pay_bef_decr(t) + pols_apl(t)) * (1.0 - mort_rate_mth(t))
+    if timing == "BEF_SPIKE":
+        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
     if timing == "AFT_DECR":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
+        return pols_if_at(t, "BEF_SPIKE") * (1.0 - lapse_spike_rate(t))
     raise ValueError("invalid timing")
 
 
 def pols_death(t):
-    """D(t): expected death and 高度障害 claims in period t, at the end of the period.
+    """D(t): expected death and 高度障害 claims in month t, at the end of the month.
 
     One decrement covering both benefits at one amount: the shipped table already
     includes 高度障害 inside the death rate, so adding a separate disability decrement
@@ -1157,32 +1522,59 @@ def pols_death(t):
     sum assured by what it pays, so it is not an addition either and its incidence is
     zero in the base run **[std]**.
     """
-    return (pols_pay_bef_decr(t) + pols_apl(t)) * mort_rate(t)
+    return (pols_pay_bef_decr(t) + pols_apl(t)) * mort_rate_mth(t)
+
+
+def pols_lapse_base(t):
+    """The ordinary voluntary surrenders at the end of month t, before the cliff surge.
+
+    Taken from the survivors of mortality — death before lapse **[std order]**.
+    """
+    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+
+
+def pols_lapse_spike(t):
+    """The cliff surge: surrenders taken at 払込満了 by owners who waited for the step.
+
+    Non-zero in one month of the whole projection, and zero on every contract that has no
+    払込満了.  It is published beside :func:`pols_lapse_base` rather than folded into it
+    because it is the thing the product is about, and on the annual grid it could not be
+    seen apart from a year of ordinary surrender.
+    """
+    return pols_if_at(t, "BEF_SPIKE") * lapse_spike_rate(t)
 
 
 def pols_lapse(t):
-    """S(t): expected voluntary surrenders at the end of period t.
+    """S(t): total expected voluntary surrenders at the end of month t.
 
-    Taken from the survivors of mortality — death before lapse **[std order]** — and paid
-    on the surrender value at the closing anniversary ``d = t + 1``, net of any loan.  A
-    surrender in policy year m — period ``m - 1`` — is paid on the **full** value; the
-    suppressed value applies to anniversaries 1 to m - 1.
+    Ordinary surrenders plus the cliff surge, both paid on the surrender value at the end
+    of the month — ``cv_at_m(t + 1)`` — net of any loan.  The surge falls in the month
+    **after** the last premium, which is where the value steps up, so it is paid on the
+    post-step value while the eleven months before it are paid on the suppressed one.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate(t)
+    return pols_lapse_base(t) + pols_lapse_spike(t)
 
 
 def premiums(t):
-    """Premium income at the start of period t, an inflow.
+    """Premium income at the start of policy month t, an inflow.
+
+    **The premium is annual (年払), so it falls in one month out of twelve** — the
+    anniversary months ``t = 0, 12, 24, …`` — and is zero in the other eleven.  That is
+    the single most visible change the monthly grid makes to this product's statement: the
+    stream is a sawtooth of one large inflow a year against maintenance expense every
+    month, which is what a 年払 contract actually looks like and what the annual grid could
+    not show.
 
     Carried on :func:`pols_pay_bef_decr`, never on the APL cohorts: **an APL advance is
     not cash income.**  No cash reaches the insurer, a loan asset is created instead, and
     booking the advanced premium as income while also netting the loan off the later
-    claim would count it twice.  ``net_cf`` is unchanged by an advance in the year it is
-    made.  Zero from ``t = prem_end()`` on, policy year ``prem_end() + 1``; nothing else
-    about the contract stops there.
+    claim would count it twice.  ``net_cf`` is unchanged by an advance in the month it is
+    made.  Zero once ``policy_year(t) > prem_end()``; nothing else about the contract
+    stops there.
     """
-    return (premium_pp() * pols_pay_bef_decr(t)
-            if policy_year(t) <= prem_end() else 0.0)
+    if t % 12 != 0 or policy_year(t) > prem_end():
+        return 0.0
+    return premium_pp() * pols_pay_bef_decr(t)
 
 
 def claims(t, kind=None):
@@ -1194,11 +1586,14 @@ def claims(t, kind=None):
         cohort carries its own balance.
 
     ``"LAPSE"``
-        the 解約返戻金 paid on voluntary surrender, ``(CV(t + 1) - L(t)) S(t)``
-        floored at zero — the value at the anniversary closing the period —
-        **plus** the residual value paid where an APL cohort exhausts or a loan
-        outgrows the value, which is settled at the **start** of the period, on
-        the anniversary ``d = t``, net of the balance that broke the test.
+        the 解約返戻金 paid on voluntary surrender, ``(CV(t + 1) - L) S(t)``
+        floored at zero — the value at the **end of the month**, interpolated
+        between anniversaries by :func:`cv_at_m` — **plus** the residual value
+        paid where an APL cohort exhausts or a loan outgrows the value, which is
+        settled at the **start** of the month it happens in, on the anniversary
+        that opens it, net of the balance that broke the test.  Both the
+        ordinary surrenders and the 払込満了 cliff surge are in this line and
+        both are paid the same way.
 
     Every one of these is floored at zero: a loan can outgrow both the surrender value
     and, given long enough, the sum assured, and none of them may produce a negative
@@ -1206,31 +1601,33 @@ def claims(t, kind=None):
     """
     if kind is None:
         return sum(claims(t, k) for k in ("DEATH", "LAPSE"))
+    d = duration(t)
     if kind == "DEATH":
-        pay = max(0.0, sum_assured_at(t) - loan_pp(t)) * (
-            pols_pay_bef_decr(t) * mort_rate(t))
-        apl = sum(max(0.0, sum_assured_at(t) - loan_apl_pp(t, s))
-                  * pols_if_apl(t, s) * mort_rate(t)
+        pay = max(0.0, sum_assured_at(t) - loan_pp(d)) * (
+            pols_pay_bef_decr(t) * mort_rate_mth(t))
+        apl = sum(max(0.0, sum_assured_at(t) - loan_apl_pp(d, s))
+                  * pols_if_apl(t, s) * mort_rate_mth(t)
                   for s in apl_entry_years(t) if pols_if_apl(t, s) != 0.0)
         return pay + apl
     if kind == "LAPSE":
-        surv = 1.0 - mort_rate(t)
-        pay = max(0.0, cv_pp(t + 1) - loan_pp(t)) * (
-            pols_pay_bef_decr(t) * surv * lapse_rate(t))
-        apl = sum(max(0.0, apl_test_val(t + 1) - loan_apl_pp(t, s))
-                  * pols_if_apl(t, s) * surv * lapse_rate(t)
+        surv = 1.0 - mort_rate_mth(t)
+        exit_rate = 1.0 - (1.0 - lapse_rate_mth(t)) * (1.0 - lapse_spike_rate(t))
+        pay = max(0.0, cv_at_m(t + 1) - loan_pp(d)) * (
+            pols_pay_bef_decr(t) * surv * exit_rate)
+        apl = sum(max(0.0, apl_test_val_m(t + 1) - loan_apl_pp(d, s))
+                  * pols_if_apl(t, s) * surv * exit_rate
                   for s in apl_entry_years(t) if pols_if_apl(t, s) != 0.0)
-        exhausted = sum(max(0.0, apl_test_val(t) - loan_apl_pp(t, s))
+        exhausted = sum(max(0.0, apl_test_val(d) - loan_apl_pp(d, s))
                         * pols_apl_exit_at(t, s)
                         for s in apl_entry_years(t)
                         if pols_apl_exit_at(t, s) != 0.0)
-        excess = max(0.0, cv_pp(t) - loan_pp(t)) * pols_loan_exit(t)
+        excess = max(0.0, cv_pp(d) - loan_pp(d)) * pols_loan_exit(t)
         return pay + apl + exhausted + excess
     raise ValueError("invalid kind")
 
 
 def claim_expenses(t):
-    """ec D(t): the claim handling expense on the period's death claims **[std]**.
+    """ec D(t): the claim handling expense on the month's death claims **[std]**.
 
     ¥20,000 per claim, uninflated.  No carrier publishes an expense basis of any kind —
     the 予定事業費率 is named in the 保険契約者保護機構 boilerplate and never quantified — so
@@ -1242,42 +1639,49 @@ def claim_expenses(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in period t: ``(1 + pi)^t``, 1 at ``t = 0`` **[std]**.
+    """The expense inflation factor in month t: ``(1 + pi)^(y(t) - 1)``, 1 in year 1 **[std]**.
 
-    1.0% p.a., deliberately below the 3% a UK or U.S. model would carry: over an
+    **Annual steps inside the monthly grid**: maintenance inflates once a policy year, at
+    the anniversary, not once a month.  A 1.0% p.a. assumption is an annual observation and
+    compounding it monthly would assert a within-year expense profile no source supports.
+
+    1.0% p.a. is deliberately below the 3% a UK or U.S. model would carry: over an
     eighty-year whole-life horizon 1% compounds to 2.19 and 3% to 10.33, so importing a
     Western inflation assumption here produces a different product rather than a stressed
     one.  There is no published Japanese expense basis to anchor either figure.
     """
-    return (1.0 + inflation_rate) ** t                               # noqa: F821
+    return (1.0 + inflation_rate) ** (policy_year(t) - 1)            # noqa: F821
 
 
 def expenses(t):
-    """E0 and e(t) in period t: **acquisition and maintenance only** **[std]**.
+    """E0 and e_m(t) in month t: **acquisition and maintenance only** **[std]**.
 
-    ¥50,000 per policy at issue, then ¥8,000 per policy per year inflating at 1%, both at
-    the start of the period.  The claim handling expense is **not** here: it is
-    :func:`claim_expenses`, deducted separately in :func:`net_cf` and published in its own
-    ``result_cf()`` column, which is how the notes' worked-example table prints it too.
-    Maintenance continues
+    ¥50,000 per policy at issue — the acquisition charge falls in the first row of the
+    frame — then ¥8,000 per policy per year taken as ``8,000 / 12`` a month and inflating
+    at 1% a year, both at the start of the month.  The claim handling expense is **not**
+    here: it is :func:`claim_expenses`, deducted separately in :func:`net_cf` and published
+    in its own ``result_cf()`` column, which is how the notes' worked-example table prints
+    it too.  Maintenance continues
     **for life**, not to 払込満了: that is the structural point of this product, a contract
-    on which premiums stop after m years and obligations do not.  There is no separate
+    on which premiums stop after m years and obligations do not — and on the monthly grid
+    that point is visible every month rather than once a year.  There is no separate
     surrender expense; it is folded into maintenance **[std]**.
     """
     acq = expense_acq * pols_if(t) if t == 0 else 0.0                # noqa: F821
-    maint = expense_maint * inflation_factor(t) * pols_if(t)         # noqa: F821
+    maint = expense_maint / 12.0 * inflation_factor(t) * pols_if(t)  # noqa: F821
     return acq + maint
 
 
 def commissions(t):
-    """Commission outgo in period t **[std]**.
+    """Commission outgo in policy month t **[std]**.
 
     90% of the annual premium at issue, then 3% of premium income in policy years 2 to
     ``prem_end()``.  Both levels are standardizations; no Japanese carrier publishes a
     commission scale.  Renewal commission follows the premium **actually collected in
-    cash**, so an APL cohort produces none **[std]**, and none is paid after 払込満了 — a
-    projection that keeps charging it there is charging commission on a premium nobody
-    pays.
+    cash**, so it falls in the same anniversary month the premium does and is zero in the
+    eleven months between; an APL cohort produces none **[std]**; and none is paid after
+    払込満了 — a projection that keeps charging it there is charging commission on a premium
+    nobody pays.
     """
     init = comm_init_rate * premium_pp() * pols_if(t) if t == 0 else 0.0  # noqa: F821
     renew = (comm_renewal_rate * premiums(t)                         # noqa: F821
@@ -1288,42 +1692,48 @@ def commissions(t):
 def dividends(t):
     """The 5年ごと利差配当 declared at the end of every fifth policy year **[std]**; 0 in base.
 
-    Fires in the periods ``t = 4, 9, 14, …``, whose policy years are 5, 10, 15, …, and is
-    declared on the policy value at the anniversary that closes them, ``d = t + 1``.
-    ``div_spread`` times ``div_period`` years of that value, on the policies
-    surviving mortality.  The composite is 無配当 and this column is zero on every model
+    Fires in the **last month** of every fifth policy year — ``t = 59, 119, 179, …`` — and
+    is declared on the policy value at the anniversary that closes it,
+    ``d = policy_year(t)``.  ``div_spread`` times ``div_period`` years of that value, on
+    the policies surviving mortality.  A declaration is an event at a date, so it falls in
+    one month and is not spread; the annual grid put it in a year, which was the same thing
+    said less precisely.  The composite is 無配当 and this column is zero on every model
     point but one.  The declaration basis is a 三利源 calculation inside the unpublished
     算出方法書 and no carrier publishes it, so both the spread and the once-in-five-years
     timing are standardizations — the timing is the only part of it that is sourced, from
     the product name itself.
     """
-    if (dividend_type() != "five_year"
+    if (dividend_type() != "five_year" or (t + 1) % 12 != 0
             or policy_year(t) % div_period != 0):                    # noqa: F821
         return 0.0
-    return (div_spread * div_period * pol_val_pp(t + 1)              # noqa: F821
+    return (div_spread * div_period * pol_val_pp(policy_year(t))     # noqa: F821
             * pols_if_at(t, "BEF_LAPSE"))
 
 
 def net_cf(t):
-    """CF(t): the net cash flow of period t, **income positive**.
+    """CF(t): the net cash flow of policy month t, **income positive**.
 
     Premiums less death and 高度障害 claims, surrender benefits, :func:`claim_expenses`,
     maintenance and acquisition expense, commission and any dividend.  The notes' own
     sign, which is also the library-wide convention, so there is no outgo-positive
     ``liability_cf`` companion to publish.
 
-    The shape to expect is a deep new business strain at ``t = 0``, then a long positive
-    stretch while the premium runs, then a single violent negative year at 払込満了 where
-    the surrender value steps up by ``1 / k`` and the surrender assumption spikes with
-    it, and finally a run-off of claims and expenses against no premium at all.  **The
-    cliff is the largest single feature of this stream and it is one year wide.**
+    The shape to expect is a deep new business strain in the first month, then a sawtooth
+    while the premium runs — one large inflow at each anniversary against maintenance and
+    claims every month — then a single violent negative **month** at 払込満了 where the
+    surrender value steps up by ``1 / k`` and the surrender surge lands on it, and finally
+    a run-off of claims and expenses against no premium at all.  **The cliff is the
+    largest single feature of this stream, and on this grid it is one month wide rather
+    than one year.**  That is the clearest thing the monthly step buys on this product:
+    the annual grid could say the cliff cost a year and could not say what a month of it
+    looked like.
     """
     return (premiums(t) - claims(t) - claim_expenses(t) - expenses(t)
             - commissions(t) - dividends(t))
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in period t; zero everywhere.
+    """The in-force roll-forward residual in policy month t; zero everywhere.
 
     ``l(t) - l(t+1)`` less deaths, surrenders, APL exhaustions and loan-excess
     terminations.  The last two are zero in the base run and are what makes the identity
@@ -1335,60 +1745,82 @@ def check_pols_roll_fwd_resid(t):
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected period.
+    """True when the in-force roll-forward closes in every projected month.
 
     The library-wide form of a roll-forward check: no argument, one bool over all t, so
     one test can call it across every model.  :func:`check_pols_roll_fwd_resid` gives the
-    signed residual of the period that failed.
+    signed residual of the month that failed.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= roll_fwd_tol     # noqa: F821
                for t in range(proj_len()))
 
 
-def check_decrement_sum_resid(t):
-    """The cumulative-decrement residual at period t; zero everywhere.
+def pols_exit_cum(t):
+    """Every exit of every kind from ``t = 0`` to month t inclusive, per policy issued.
 
-    ``l(0)`` less every exit up to and including period t less ``l(t+1)``.  At
+    A running total, defined recursively rather than re-summed at each ``t``.  On the
+    annual grid :func:`check_decrement_sum_resid` re-added the whole history on every row,
+    which cost 80 squared additions over a run; twelve times as many rows makes that 144
+    times as much work, so the cumulative total is carried instead.  The quantity is the
+    same one.
+    """
+    if t < 0:
+        return 0.0
+    return (pols_exit_cum(t - 1) + pols_death(t) + pols_lapse(t)
+            + pols_apl_exit(t) + pols_loan_exit(t))
+
+
+def check_decrement_sum_resid(t):
+    """The cumulative-decrement residual at month t; zero everywhere.
+
+    ``l(0)`` less every exit up to and including month t less ``l(t+1)``.  At
     ``t = T - 1`` it is the notes' statement that the decrements sum to 1: because the
     table terminates, every policy leaves by one of them and ``l(T) = 0``, so there is no
     residual population and no tail state anywhere in this model.
     """
-    exits = sum(pols_death(u) + pols_lapse(u) + pols_apl_exit(u) + pols_loan_exit(u)
-                for u in range(t + 1))
-    return pols_if(0) - exits - pols_if(t + 1)
+    return pols_if(0) - pols_exit_cum(t) - pols_if(t + 1)
 
 
 def check_decrement_sum():
-    """True when every policy issued leaves by a modelled decrement, in every period."""
+    """True when every policy issued leaves by a modelled decrement, in every month."""
     return all(abs(check_decrement_sum_resid(t)) <= roll_fwd_tol     # noqa: F821
                for t in range(proj_len()))
 
 
-def check_pol_val_roll_fwd_resid(t):
-    """The policy-value recursion residual across period t; zero everywhere.
+def check_pol_val_roll_fwd_resid(d):
+    """The policy-value recursion residual across the policy year opening at anniversary d.
 
-    ``(W(t) + pi 1{premium due}) (1 + i_cv) - [q SA + (1 - q) W(t+1)]`` on the table
-    rate — the roll from the opening anniversary of period t to its closing one.  It is
-    the retrospective form of the same prospective value and is what catches a mis-set
-    ``prem_period`` or a discount factor applied on the wrong side.  It is defined as
-    zero for the period that rolls **into** the 払済保険 conversion anniversary
-    ``pua_year() - 1``, i.e. at ``t = pua_year() - 2``, where the value is re-based by
-    the election rather than rolled forward.
+    ``(W(d) + pi 1{premium due}) (1 + i_cv) - [q SA + (1 - q) W(d+1)]`` on the table
+    rate — the roll from one anniversary to the next.  It is the retrospective form of the
+    same prospective value and is what catches a mis-set ``prem_period`` or a discount
+    factor applied on the wrong side.  It is defined as zero for the year that rolls
+    **into** the 払済保険 conversion anniversary ``pua_year() - 1``, i.e. at
+    ``d = pua_year() - 2``, where the value is re-based by the election rather than rolled
+    forward.
+
+    **Annual, and it must stay annual.**  The policy value is constructed from annual
+    actuarial functions on an annual basis and is defined at anniversaries; rolling it
+    monthly would be checking an interpolation convention rather than the construction.
+    The monthly reading of the same value is :func:`pol_val_at_m`, which agrees with this
+    one at every anniversary by definition.
     """
-    if pua_year() > 0 and t == pua_year() - 2:
+    if pua_year() > 0 and d == pua_year() - 2:
         return 0.0
     pi = (prem_net_level_pp()
-          if (policy_year(t) <= prem_period() and not is_paid_up(t)) else 0.0)
-    q = mort_rate_at_age(age(t))
-    return ((prosp_val_pp(t) + pi) * (1.0 + i_cv)                    # noqa: F821
-            - q * sum_assured_at(t) - (1.0 - q) * prosp_val_pp(t + 1))
+          if (d + 1 <= prem_period() and not (pua_year() > 0 and d + 1 >= pua_year()))
+          else 0.0)
+    q = mort_rate_at_age(age_at_entry() + d)
+    sa = (pua_sum_assured() if (pua_year() > 0 and d + 1 >= pua_year())
+          else sum_assured())
+    return ((prosp_val_pp(d) + pi) * (1.0 + i_cv)                    # noqa: F821
+            - q * sa - (1.0 - q) * prosp_val_pp(d + 1))
 
 
 def check_pol_val_roll_fwd():
-    """True when the policy value rolls forward on its own basis in every period."""
+    """True when the policy value rolls forward on its own basis in every policy year."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
-    return all(abs(check_pol_val_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len()))
+    return all(abs(check_pol_val_roll_fwd_resid(d)) <= tol
+               for d in range(proj_years()))
 
 
 def check_reserve_identity_resid(d):
@@ -1411,45 +1843,48 @@ def check_reserve_identity_resid(d):
 def check_reserve_identity():
     """True when the reserve exceeds the surrender value by exactly the 解約控除.
 
-    Swept over every anniversary of the run, ``d = 0 … proj_len()``, issue and horizon
+    Swept over every anniversary of the run, ``d = 0 … proj_years()``, issue and horizon
     included: this is a statement about a value at a point in time, not about a period.
     """
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_reserve_identity_resid(d)) <= tol
-               for d in range(proj_len() + 1))
+               for d in range(proj_years() + 1))
 
 
-def check_loan_roll_fwd_resid(t):
-    """The loan roll-forward residual in period t; zero everywhere.
+def check_loan_roll_fwd_resid(d):
+    """The loan roll-forward residual across the policy year opening at anniversary d.
 
     The 契約者貸付 balance and every APL cohort balance, each rolled
-    ``L(t + 1) = (L(t) + advance) (1 + i_L)`` and compared with the balance the model
+    ``L(d + 1) = (L(d) + advance) (1 + i_L)`` and compared with the balance the model
     actually carries.  Identically zero in the base run, where there is no loan at all;
     non-trivial the moment either module is switched on, which is the point of it.
+
+    Annual, like the balances themselves: the 約款 states a 年利 and capitalises it at the
+    契約応当日, so there is nothing to roll between anniversaries.
     """
-    resid = (loan_pp(t + 1)
-             - (loan_pp(t) + pol_loan_draw(t)) * (1.0 + i_loan))     # noqa: F821
-    for s in apl_entry_years(t):
-        if pols_apl_in(t, s) == 0.0 or apl_fail_year(s) <= t:
+    resid = (loan_pp(d + 1)
+             - (loan_pp(d) + pol_loan_draw(d)) * (1.0 + i_loan))     # noqa: F821
+    for s in apl_entry_years(12 * d):
+        if pols_apl_in(12 * d, s) == 0.0 or apl_fail_year(s) <= d:
             continue
-        adv = apl_advance_due(t) if apl_fires(t, s) else 0.0
-        resid += (loan_apl_pp(t + 1, s)
-                  - (loan_apl_pp(t, s) + adv) * (1.0 + i_loan))      # noqa: F821
+        adv = apl_advance_due(d) if apl_fires(d, s) else 0.0
+        resid += (loan_apl_pp(d + 1, s)
+                  - (loan_apl_pp(d, s) + adv) * (1.0 + i_loan))      # noqa: F821
     return resid
 
 
 def check_loan_roll_fwd():
-    """True when every loan balance accumulates at ``i_loan`` in every period.
+    """True when every loan balance accumulates at ``i_loan`` in every policy year.
 
-    Stops one period short of the end because the residual reads ``loan_pp(t + 1)``.
+    Stops one year short of the end because the residual reads ``loan_pp(d + 1)``.
     """
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
-    return all(abs(check_loan_roll_fwd_resid(t)) <= tol
-               for t in range(proj_len() - 1))
+    return all(abs(check_loan_roll_fwd_resid(d)) <= tol
+               for d in range(proj_years() - 1))
 
 
 def check_net_cf_resid(t):
-    """The published cash-flow statement's residual in period t; zero everywhere.
+    """The published cash-flow statement's residual in policy month t; zero everywhere.
 
     :func:`net_cf` less the published ``result_cf()`` columns of the same row.  It closes
     the loop between the total benefit outgo and the two kinds that make it up, so a
@@ -1461,16 +1896,18 @@ def check_net_cf_resid(t):
 
 
 def check_net_cf():
-    """True when the net cash flow equals the sum of its published columns, every period."""
+    """True when the net cash flow equals the sum of its published columns, every month."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_net_cf_resid(t)) <= tol
                for t in range(proj_len()))
 
 
 def result_cf():
-    """Result table of cash flows, indexed by the 0-based period t = 0 … proj_len() - 1.
+    """Result table of cash flows, indexed by the 0-based policy **month** t.
 
-    ``pols_if`` is the start-of-period count, which is the weight applied to every cash
+    The frame runs ``t = 0 … proj_len() - 1``, twelve rows to the policy year, and
+    ``df.groupby(df.index // 12).sum()`` reads it back as the annual statement.
+    ``pols_if`` is the start-of-month count, which is the weight applied to every cash
     flow on the same row.  ``net_cf`` carries the notes' own income-positive sign.
     ``expenses`` is acquisition and maintenance; the claim handling expense is beside it
     in ``claim_expenses``, as it is in every model in the three libraries.
@@ -1495,7 +1932,14 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts and decrement rates, indexed by the period t."""
+    """Result table of policy counts and decrement rates, indexed by the policy month t.
+
+    Both the annual rates and the monthly decrements are published: ``mort_rate`` and
+    ``lapse_rate`` are the annual rates the assumption tables are stated on and the notes
+    quote, ``mort_rate_mth`` and ``lapse_rate_mth`` the rates actually applied to the
+    month, and ``lapse_spike_rate`` the one-off cliff surge, which is neither — it is
+    non-zero in exactly one row of the whole table.
+    """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
@@ -1504,41 +1948,45 @@ def result_pols():
             "pols_apl": [pols_apl(t) for t in ts],
             "pols_death": [pols_death(t) for t in ts],
             "pols_lapse": [pols_lapse(t) for t in ts],
+            "pols_lapse_spike": [pols_lapse_spike(t) for t in ts],
             "pols_apl_exit": [pols_apl_exit(t) for t in ts],
             "pols_loan_exit": [pols_loan_exit(t) for t in ts],
             "mort_rate": [mort_rate(t) for t in ts],
+            "mort_rate_mth": [mort_rate_mth(t) for t in ts],
             "lapse_rate": [lapse_rate(t) for t in ts],
+            "lapse_rate_mth": [lapse_rate_mth(t) for t in ts],
+            "lapse_spike_rate": [lapse_spike_rate(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
 
 
 def result_val():
-    """Result table of the policy value, the surrender value and the reserve, by period t.
+    """Result table of the policy value, the surrender value and the reserve, by anniversary d.
 
-    Indexed by the same 0-based ``t`` as :func:`result_cf`, so the two read together —
-    but the value columns are **anniversary** quantities, and the anniversary that
-    belongs on the row of period ``t`` is the one that **closes** it, ``d = t + 1``: that
-    is the value a surrender in that period is paid on.  ``loan_pp`` is the balance at
-    the **start** of the period, ``d = t``, because that is the balance every benefit of
-    the period is settled net of.
+    **Indexed by the anniversary, not by the month**, because that is what these
+    quantities are: the contractual value construction is annual, defined at the
+    年単位の契約応当日, and it did not move when the cash flow statement went monthly.  The
+    frame is ``d = 0 … proj_years()``, issue and horizon included.
 
-    ``cv_pp`` is the amount payable and ``cv_pp_susp`` the suppressed value at every
-    anniversary, so the step at 払込満了 and the value an instant before it can be read off
-    the same table.  ``reserve_pp`` is a reference quantity and produces no cash flow.
+    ``cv_pp`` is the amount payable at the anniversary and ``cv_pp_susp`` the suppressed
+    value at every anniversary, so the step at 払込満了 and the value an instant before it
+    read off the same table.  ``reserve_pp`` is a reference quantity and produces no cash
+    flow.  The value a surrender **between** anniversaries is paid on is
+    :func:`cv_at_m`, which interpolates these columns.
     """
-    ts = list(range(proj_len()))
+    ds = list(range(proj_years() + 1))
     return pd.DataFrame(                                             # noqa: F821
         {
-            "prosp_val_pp": [prosp_val_pp(t + 1) for t in ts],
-            "surr_charge_pp": [surr_charge_pp(t + 1) for t in ts],
-            "pol_val_pp": [pol_val_pp(t + 1) for t in ts],
-            "cv_pp": [cv_pp(t + 1) for t in ts],
-            "cv_pp_susp": [cv_pp_susp(t + 1) for t in ts],
-            "reserve_pp": [reserve_pp(t + 1) for t in ts],
-            "loan_pp": [loan_pp(t) for t in ts],
+            "prosp_val_pp": [prosp_val_pp(d) for d in ds],
+            "surr_charge_pp": [surr_charge_pp(d) for d in ds],
+            "pol_val_pp": [pol_val_pp(d) for d in ds],
+            "cv_pp": [cv_pp(d) for d in ds],
+            "cv_pp_susp": [cv_pp_susp(d) for d in ds],
+            "reserve_pp": [reserve_pp(d) for d in ds],
+            "loan_pp": [loan_pp(d) for d in ds],
         },
-        index=pd.Index(ts, name="t"),                                # noqa: F821
+        index=pd.Index(ds, name="d"),                                # noqa: F821
     )
 
 

@@ -118,7 +118,7 @@ Four names needed care.
 ``claims_annuity`` names a **death** benefit here. The instalments are paid on the death
 of the insured, or on the contractual 高度障害 state carried inside the same decrement as
 its accelerated equivalent; the name records the benefit's *form*, not its trigger, and
-the same column carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_A``. So the
+the same column carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_S``. So the
 contingency is stated in :func:`claims` and in :func:`result_cf` rather than inferred.
 **There is no ``claims_death`` column**, and that absence is a product fact: this
 contract pays no lump sum on death at any duration — a claim *opens* an annuity stream
@@ -943,7 +943,7 @@ def claims(t, kind=None):
 
     The contingency is stated rather than left to the column names, because
     ``claims_annuity`` names a benefit paid on a **living** contingency in
-    ``LTC_JP_S`` and ``Annuity_JP_A``.  Here the name records the benefit's *form* — an
+    ``LTC_JP_S`` and ``Annuity_JP_S``.  Here the name records the benefit's *form* — an
     annuity — and the trigger is the death of the insured, or the contractual 高度障害
     state carried inside the same decrement as its accelerated equivalent.  Nothing in
     this model is paid on survival, on disability as such, or on lapse.
@@ -1257,7 +1257,7 @@ def result_cf():
     **``claims_annuity`` is a death benefit.**  The instalments are paid on the death of
     the insured, or on the contractual 高度障害 state treated as its accelerated
     equivalent — not on survival and not on disability as such.  The same column name
-    carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_A``, so on this product
+    carries a *living* benefit in ``LTC_JP_S`` and ``Annuity_JP_S``, so on this product
     the contingency is stated here: the name records the benefit's form, not its
     trigger.  **There is no ``claims_death`` column**, and that absence is a product
     fact rather than an omission — the contract pays no lump sum on death, so the whole

@@ -239,7 +239,7 @@ and zero on a 비갱신형 point.
 
 A Korean term policy pays the 보험가입금액 on death within the 보험기간 and nothing else,
 and payment terminates the contract immediately and automatically [S2 제4조·제23조].
-There is **no Korean analogue of the Japanese 高度障害保険金**, so unlike ``Term_JP_A``
+There is **no Korean analogue of the Japanese 高度障害保険金**, so unlike ``Term_JP_S``
 this model carries no competing benefit on one sum assured. What the 장해 (*janghae*,
 disability) state does instead is **switch the premium off** — the 보험료 납입면제 on a
 장해지급률 of 50% or more from any cause, in the 주계약 at no separate premium [S1]
@@ -777,7 +777,7 @@ def mort_rate(t):
     ``mort_be_factor`` times the class-adjusted table rate, capped at 1.  **One decrement
     carrying one benefit**: a Korean term policy pays the 보험가입금액 on death and
     nothing else, and payment terminates the contract [S2 제4조·제23조].  There is no
-    Korean analogue of the Japanese 高度障害保険金, so unlike ``Term_JP_A`` there is no
+    Korean analogue of the Japanese 高度障害保険金, so unlike ``Term_JP_S`` there is no
     competing benefit to double-count; what the 장해 state does instead is switch the
     premium off, which is :func:`wop_waived_frac`.
 

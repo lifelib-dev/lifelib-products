@@ -263,7 +263,7 @@ There is **no death benefit**: the main contract pays nothing on death, so morta
 pure liability-releasing decrement and no ``claims_death`` exists. There is **no
 自動振替貸付 and no 契約者貸付**: with no surrender value there is nothing to lend
 against, so nothing carries a policy through a missed premium and no lapse-suppression
-term belongs in the recursion — importing the ``WholeLife_JP_A`` machinery here would
+term belongs in the recursion — importing the ``WholeLife_JP_S`` machinery here would
 suppress lapses that really happen. And there is **no surrender value at all** under
 終身払, at any duration, so ``claims(t, "LAPSE")`` is identically zero on the anchor cell
 and the zero is published rather than dropped. :func:`cv_pp` exists only because the

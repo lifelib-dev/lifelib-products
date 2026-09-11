@@ -114,7 +114,7 @@ notes' symbols mapped to the cells names.
 ## The fund is an account, and there is no mortality in it
 
 This is the structural difference from the two nearest accumulation models in this
-repository, and it is not a parameter difference. `Annuity_JP_A`'s 保険料積立金 is a
+repository, and it is not a parameter difference. `Annuity_JP_S`'s 保険料積立金 is a
 net-level-premium reserve with a **survivorship release**: the premiums of those who die go
 to the survivors net of the death benefit paid, so the recursion divides by `(1 - q')`. So —
 and this is the trap, because it is the nearer neighbour and shares the Korean name — does

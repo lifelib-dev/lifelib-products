@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The three input CSVs are read here, **once per model**, and referenced from
-:mod:`~.WholeLife_JP_A.Projection` as ``data``. :mod:`~.WholeLife_JP_A.Projection` is
+:mod:`~.WholeLife_JP_S.Projection` as ``data``. :mod:`~.WholeLife_JP_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
 its own cells cache; if the readers lived there, every model point would re-read every
 file. Holding them in an unparameterized Space reads each file once no matter how many
@@ -20,7 +20,7 @@ contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model th
 modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``WholeLife_JP_A`` folder without its parent's CSVs produces a model that reads and then
+``WholeLife_JP_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
@@ -127,10 +127,15 @@ def lapse_table():
     Three rows: policy years 1 and 2, then a level tail read for every later year.  The
     key column is the **contractual** ``policy_year``, a 1-based label and not the
     model's 0-based time index: ``Projection.lapse_rate_base(t)`` reads row
-    ``policy_year(t) = t + 1``, so the first projected period, ``t = 0``, takes the
-    ``policy_year = 1`` row.  The surrender surge at 払込満了 is **not** in this table — it
-    is the model point's ``lapse_spike``, held apart so that it can be switched off and
-    its effect read directly.
+    ``policy_year(t) = 1 + t // 12`` on the monthly projection index, so the first twelve
+    projected months all take the ``policy_year = 1`` row.  The rates are **annual** and
+    are not restated per month — the rate is the observation, and
+    ``Projection.lapse_rate_mth`` derives the monthly decrement from it.
+
+    The surrender surge at 払込満了 is **not** in this table — it is the model point's
+    ``lapse_spike``, held apart so that it can be switched off and its effect read
+    directly, and on the monthly grid it is a one-off proportion taken in a single month
+    rather than a rate added to a year.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821

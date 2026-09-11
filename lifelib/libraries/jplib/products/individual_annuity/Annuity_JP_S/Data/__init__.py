@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The seven input CSVs are read here, **once per model**, and referenced from
-:mod:`~.Annuity_JP_A.Projection` as ``data``. :mod:`~.Annuity_JP_A.Projection` is
+:mod:`~.Annuity_JP_S.Projection` as ``data``. :mod:`~.Annuity_JP_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its
 own cells cache; if the readers lived there, every model point would re-read every file.
 Holding them in an unparameterized Space reads each file once no matter how many policies
@@ -20,7 +20,7 @@ values — so a diff of the model shows logic changes only. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``Annuity_JP_A`` folder without its parent's CSVs produces a model that reads and then
+``Annuity_JP_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
@@ -137,13 +137,18 @@ def lapse_table():
 
     Three segments: ``premium_paying`` carries a duration curve keyed by the first year it
     applies from, ``defer_gap`` the single rate applying through the 据置期間, and
-    ``pre_annuitisation`` the zero that must apply from ``t = n - 1``.
+    ``pre_annuitisation`` the zero that must apply over the last twelve months before the
+    年金支払開始日.
 
-    The ``from_year`` key is the model's own **0-based** ``t``, not a 1-based policy-year
-    label: its values on ``premium_paying`` are 0, 1, 2, 3 and 10, and
-    ``Projection.lapse_rate_base`` reads them as a step function of ``t``.  The single
-    ``defer_gap`` and ``pre_annuitisation`` rows are keyed 0 because the segment, not the
-    duration, selects them.
+    The ``from_year`` key is a **0-based count of completed policy years**, not a 1-based
+    policy-year label: its values on ``premium_paying`` are 0, 1, 2, 3 and 10, and
+    ``Projection.lapse_rate_base`` reads them as a step function of
+    ``duration(t) = t // 12`` on the monthly projection index.  The single ``defer_gap``
+    and ``pre_annuitisation`` rows are keyed 0 because the segment, not the duration,
+    selects them.
+
+    The rates are **annual** and are not restated per month: the rate is the observation,
+    and ``Projection.lapse_rate_mth`` derives the monthly decrement from it.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file,                              # noqa: F821
@@ -158,8 +163,9 @@ def pricing_table():
     dynamic-lapse parameters.  Every row carries its source tag or its **[std]** rationale
     in the ``provenance`` column.
 
-    Two rows are time quantities on the model's 0-based clock: ``loan_draw_year`` = 20 is a
-    value of ``t`` — the row the 契約者貸付 is drawn on, the twenty-first policy year — and
+    Two rows are time quantities, and both are in **years** even though the projection now
+    steps in months: ``loan_draw_year`` = 20 is an anniversary — the 契約者貸付 is drawn at
+    the start of the twenty-first policy year, the month ``t = 240`` — and
     ``surr_charge_years`` = 10 is an elapsed count of years, the length of the 解約控除
     run-off, not a point on the frame.
     """

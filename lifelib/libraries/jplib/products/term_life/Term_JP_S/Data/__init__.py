@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The four input CSVs are read here, **once per model**, and referenced from
-:mod:`~.Term_JP_A.Projection` as ``data``. :mod:`~.Term_JP_A.Projection` is
+:mod:`~.Term_JP_S.Projection` as ``data``. :mod:`~.Term_JP_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
 its own cells cache; if the readers lived there, every model point would re-read every
 file. Holding them in an unparameterized Space reads each file once no matter how many
@@ -20,7 +20,7 @@ contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model th
 modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``Term_JP_A`` folder without its parent's CSVs produces a model that reads and then
+``Term_JP_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
@@ -66,7 +66,7 @@ the notes' worked-example rates exactly; the interpolated rows are a documented 
 and no conclusion about Japanese mortality should be drawn from them.
 
 Two further distinctions the file does not blur. The shipped rates are **table** rates:
-:mod:`~.Term_JP_A.Projection` applies its own ``mort_be_factor`` to reach a
+:mod:`~.Term_JP_S.Projection` applies its own ``mort_be_factor`` to reach a
 best-estimate basis, because 標準生命表2018 is a **valuation** table carrying an
 explicit risk-theory margin sized near 2σ and capped at 130% of the unadjusted rate
 [REG-R20]. And the table **includes 高度障害 inside its death rate** [REG-R20], which is
@@ -83,7 +83,7 @@ standardizations. Japanese insurers publish rate cards, so the marginal rate per
 premiums [S2]. Four cells are published — male ages 30, 40 and 50 and female age 30, all
 at a ten-year term — and each carries the arithmetic of its decomposition in its
 ``provenance`` column. Ages 60 and 70 are published by no carrier and the anchor cell
-reaches both, so :mod:`~.Term_JP_A.Projection` extends the scale off the ``is_anchor``
+reaches both, so :mod:`~.Term_JP_S.Projection` extends the scale off the ``is_anchor``
 row of the matching sex. The ¥248 is a **premium** component, not an expense recovery;
 crediting it against maintenance expense counts it twice.
 """
@@ -139,11 +139,14 @@ def lapse_table():
     """The ordinary lapse rates by policy year, read from *lapse_table.csv*.
 
     The key column ``policy_year`` is the **contractual, 1-based** label — its first row
-    is policy year 1 — so :func:`~.Term_JP_A.Projection.lapse_rate` reads it at ``t + 1``
-    on the model's 0-based projection index.  **[std]** throughout: Japan's only published
+    is policy year 1 — so :func:`~.Term_JP_S.Projection.lapse_rate` reads it through
+    ``policy_year(t) = 1 + t // 12`` on the monthly projection index, and
+    :func:`~.Term_JP_S.Projection.lapse_rate_mth` converts the annual rate it returns to
+    the month.  **[std]** throughout: Japan's only published
     industry-wide persistency figure is the LIAJ's whole-market 解約・失効率 [REG-R31],
     which is a level and not a duration curve.  Policy years beyond the last row take that
-    row.
+    row.  The table is **annual throughout** and is not restated per month: the rate is the
+    observation, and the monthly decrement is derived from it in the projection.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821
@@ -155,7 +158,7 @@ def prem_rate_table():
     Indexed by ``(sex, issue_age, term_y)``.  ``rate_per_5m`` is the marginal monthly
     rate per ¥5,000,000 of cover and ``policy_fee_m`` the flat monthly element, both
     decomposed out of published rate cards [S2].  ``is_anchor`` marks the one row per
-    sex from which :mod:`~.Term_JP_A.Projection` extends the scale to unpublished ages.
+    sex from which :mod:`~.Term_JP_S.Projection` extends the scale to unpublished ages.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / prem_rate_file,                                # noqa: F821

@@ -84,7 +84,7 @@ which one it is on, so the two cannot be confused silently.
 .. rubric:: This module was checked against a library it does not govern
 
 Before any krlib model existed, this suite was run against two jplib models —
-``Term_JP_A`` and ``WholeLife_JP_A`` — through a throwaway registry pointing at them, to
+``Term_JP_S`` and ``WholeLife_JP_S`` — through a throwaway registry pointing at them, to
 establish that the general contract here is the contract the sister libraries already
 meet. The failures were the intended differences and nothing else: the ``_KR_`` country
 tag, the mandatory ``check_net_cf``, the provenance-tag escalation and the age-basis
