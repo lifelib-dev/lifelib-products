@@ -46,6 +46,14 @@ Cells Descriptions
 
 .. autofunction:: proj_len
 
+.. autofunction:: proj_year
+
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: is_anniv
+
 .. autofunction:: age
 
 .. autofunction:: policy_year
@@ -58,7 +66,13 @@ Cells Descriptions
 
 .. autofunction:: prem_to_av_pp
 
+.. autofunction:: prem_to_av_mth_pp
+
 .. autofunction:: withdrawals_pp
+
+.. autofunction:: withdrawals_mth_pp
+
+.. autofunction:: prem_wt_mth
 
 .. autofunction:: pm_avg_pp
 
@@ -67,6 +81,8 @@ Cells Descriptions
 .. autofunction:: inflation_factor
 
 .. autofunction:: expenses_pp
+
+.. autofunction:: expenses_mth_pp
 
 .. autofunction:: fin_acct_pp
 
@@ -110,7 +126,11 @@ Cells Descriptions
 
 .. autofunction:: int_credited_pp
 
+.. autofunction:: int_credited_mth_pp
+
 .. autofunction:: soc_levy_pp
+
+.. autofunction:: soc_levy_mth_pp
 
 .. autofunction:: soc_levy_cum_pp
 
@@ -128,11 +148,15 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: lapse_dyn_add
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: pols_if
 
@@ -180,6 +204,10 @@ Cells Descriptions
 
 .. autofunction:: check_pols_roll_fwd
 
+.. autofunction:: check_decrements_compound_resid
+
+.. autofunction:: check_decrements_compound
+
 .. autofunction:: check_pb_allocation_resid
 
 .. autofunction:: check_pb_allocation
@@ -193,5 +221,7 @@ Cells Descriptions
 .. autofunction:: check_guar_floor
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_pb

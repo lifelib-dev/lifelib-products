@@ -78,9 +78,25 @@ Cells Descriptions
 
 .. autofunction:: proj_len
 
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
+
+.. autofunction:: is_anniv
+
+.. autofunction:: anniv_mth
+
+.. autofunction:: rem_term
+
 .. autofunction:: age
 
+.. autofunction:: age_anniv
+
 .. autofunction:: asset_return
+
+.. autofunction:: asset_return_mth
 
 .. autofunction:: tec_rate
 
@@ -104,13 +120,15 @@ Cells Descriptions
 
 .. autofunction:: entry_charge
 
-.. autofunction:: parts_added_boy
+.. autofunction:: parts_added_bom
 
-.. autofunction:: parts_added_eoy
+.. autofunction:: parts_added_top_up
 
 .. autofunction:: wd_rate_base
 
 .. autofunction:: wd_rate
+
+.. autofunction:: wd_rate_mth
 
 .. autofunction:: wd_gross_pp
 
@@ -127,6 +145,8 @@ Cells Descriptions
 .. autofunction:: parts_levy
 
 .. autofunction:: invest_income
+
+.. autofunction:: invest_income_ytd
 
 .. autofunction:: perf_levy
 
@@ -182,6 +202,8 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: guarantee_imminent
@@ -189,6 +211,8 @@ Cells Descriptions
 .. autofunction:: duration8_spike
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: pols_if_at
 
@@ -253,5 +277,7 @@ Cells Descriptions
 .. autofunction:: check_pm_restruck
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_provisions
