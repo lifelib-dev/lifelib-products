@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The four input CSVs are read here, **once per model**, and referenced from
-:mod:`~.Term_UK_A.Projection` as ``data``. :mod:`~.Term_UK_A.Projection` is
+:mod:`~.Term_UK_S.Projection` as ``data``. :mod:`~.Term_UK_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
 its own cells cache; if the readers lived there, every model point would re-read every
 file. Holding them in an unparameterized Space reads each file once no matter how many
@@ -20,7 +20,7 @@ values — so a diff of the model shows logic changes only. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``Term_UK_A`` folder without its parent's CSVs produces a model that reads and then
+``Term_UK_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so
@@ -94,8 +94,9 @@ def lapse_table():
     """The lapse rates by policy year, read from *lapse_table.csv*.
 
     The ``policy_year`` key is the contractual 1-based label (1, 2, ..., 6+), not the
-    projection's 0-based ``t``; ``Projection.lapse_rate_base`` reads the row
-    ``policy_year(t) = t + 1``.
+    projection's 0-based month index ``t``; ``Projection.lapse_rate_base`` reads the row
+    ``policy_year(t) = t // 12 + 1``, and the rate it returns is the **annual** one the
+    table is quoted in.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_table_file, index_col="policy_year")     # noqa: F821

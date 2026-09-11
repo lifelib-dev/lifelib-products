@@ -395,7 +395,7 @@ RETIRED_NAMES = {
     "pols_expiry": (
         "pols_maturity — the count whose cover ends at the scheduled end of the contract, "
         "whether or not anything is paid for it; any payment is claims(t, 'MATURITY'). "
-        "BasicTerm_S and Term_UK_A both use it that way"
+        "BasicTerm_S and Term_UK_S both use it that way"
     ),
     "check_cf_ledger": "check_net_cf, the spelling five of the nine already used",
     "check_cf_ledger_resid": "check_net_cf_resid",

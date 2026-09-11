@@ -1,7 +1,7 @@
-The **WP_UK_A** Model
+The **WP_UK_S** Model
 =====================
 
-.. automodule:: uklib.products.with_profits.WP_UK_A
+.. automodule:: uklib.products.with_profits.WP_UK_S
 
 .. toctree::
    :hidden:

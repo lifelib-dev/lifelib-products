@@ -1,7 +1,7 @@
-The **Term_UK_A** Model
+The **Term_UK_S** Model
 =======================
 
-.. automodule:: uklib.products.term_assurance.Term_UK_A
+.. automodule:: uklib.products.term_assurance.Term_UK_S
 
 .. toctree::
    :hidden:

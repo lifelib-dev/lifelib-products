@@ -12,11 +12,13 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions_uk.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — some products run on an annual grid and some on a monthly one — and records
-that none of them discount.  That last entry is a property of the library, not an
-omission: every ``technical-notes.md`` specifies *gross liability cash flows* and leaves
-discounting and reserves to a separate layer that consumes them.
+fails.  The metadata records the projection basis — every model in this library runs on a
+monthly grid, the frequency these products are written in — and records that none of them
+discount.  :data:`ANNUAL` is kept alongside :data:`MONTHLY` because the grid is a property
+of the model rather than of the library, and a later annual-step model would register with
+it.  ``discounted: False`` is a property of the library, not an omission: every
+``technical-notes.md`` specifies *gross liability cash flows* and leaves discounting and
+reserves to a separate layer that consumes them.
 
 **Why this is not in `conftest.py`.**  Two libraries now ship in-library suites, and
 ``conftest.py`` is a name pytest fixes.  Collecting both in one run puts two files called
@@ -45,20 +47,21 @@ ANB, ALB = "ANB", "ALB"
 # by (CI, IP, WOL, ULB, WP, PA — the same short names the taxonomy table in the library's
 # index uses), then UK, then _A for an annual step or _S for a monthly one.  The grid
 # letters follow lifelib, where annuallife/TradLife_A is the annual-step model and
-# basiclife/BasicTerm_S and savings/CashValue_SE are the monthly ones.
+# basiclife/BasicTerm_S and savings/CashValue_SE are the monthly ones.  Every model here
+# carries _S: the whole library is on a monthly grid.
 #
 # This pairing is not derivable from the folder slug — "unit_linked_bond" spelled out is
 # unusable in a model name — so it lives here, and test_model_conventions_uk.py asserts
 # name, folder and the model's own _name all agree.
 MODELS = {
     # Protection
-    "Term_UK_A": ("products/term_assurance/Term_UK_A", {**ANNUAL, "age_basis": ANB}),
+    "Term_UK_S": ("products/term_assurance/Term_UK_S", {**MONTHLY, "age_basis": ANB}),
     "CI_UK_S": ("products/critical_illness/CI_UK_S", {**MONTHLY, "age_basis": ANB}),
     "IP_UK_S": ("products/income_protection/IP_UK_S", {**MONTHLY, "age_basis": ANB}),
     "WOL_UK_S": ("products/whole_of_life/WOL_UK_S", {**MONTHLY, "age_basis": ALB}),
     # Savings
     "ULB_UK_S": ("products/unit_linked_bond/ULB_UK_S", {**MONTHLY, "age_basis": ALB}),
-    "WP_UK_A": ("products/with_profits/WP_UK_A", {**ANNUAL, "age_basis": ANB}),
+    "WP_UK_S": ("products/with_profits/WP_UK_S", {**MONTHLY, "age_basis": ANB}),
     # Annuity
     "PA_UK_S": ("products/pension_annuity/PA_UK_S", {**MONTHLY, "age_basis": ALB}),
 }
@@ -81,12 +84,12 @@ INPUT_FILES = {
         "inception_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv", "termination_table.csv"},
     "PA_UK_S": {"model_point_table.csv", "mort_table.csv"},
-    "Term_UK_A": {
+    "Term_UK_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "select_factor_table.csv"},
     "ULB_UK_S": {"model_point_table.csv", "mort_table.csv", "surr_table.csv"},
     "WOL_UK_S": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
-    "WP_UK_A": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+    "WP_UK_S": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
 }
 
 

@@ -33,13 +33,13 @@ model.Projection[1].result_cf()
 `result_cf()` returns a tidy `DataFrame` indexed by policy month `t` with one column per
 cash flow line.
 
-## Monthly, on an annual chassis
+## Monthly, like its chassis
 
-This product sits on the [term assurance](../term_assurance/model.md) chassis, which is
-an **annual** model — but these notes specify a **monthly** grid, so `CI_UK_S` carries
-the `_S` tag and `Term_UK_A` the `_A`. Nothing in the contract needs monthiversary
-processing; the notes choose monthly for parity with the rest of the library, and it is
-what makes the 14-day survival period and the 5-yearly premium reviews expressible.
+This product sits on the [term assurance](../term_assurance/model.md) chassis, and these
+notes specify a **monthly** grid, so `CI_UK_S` and `Term_UK_S` both carry the `_S` tag.
+Nothing in the contract needs monthiversary processing; the notes choose monthly for
+parity with the rest of the library, and it is what makes the 14-day survival period and
+the 5-yearly premium reviews expressible.
 
 Policy month `t` is 0-based, as everywhere in lifelib: `t = 0` is the issue month, the
 frame is `t = 0 … proj_len() − 1`, and `proj_len() = 12 × term` is the number of
@@ -275,7 +275,7 @@ exclusion of the £4,000 child funeral benefit; claim-before-lapse as the proces
 order; and treating the joint first-event decrement as `1 − (1−q₁)(1−q₂)`.
 
 Two scope limits are worth stating separately. Decreasing and family-income shapes exist
-on the term chassis and are implemented in `Term_UK_A`, but these notes scope them out,
+on the term chassis and are implemented in `Term_UK_S`, but these notes scope them out,
 so `cover_basis` accepts `level` only. And a **standalone joint first-event** policy
 raises rather than projecting: the notes write the standalone decrement split for one
 life, and there is no published basis for splitting a joint first-event decrement into

@@ -56,7 +56,7 @@ file is and, for the mortality table, what it is *not*.
 
 ## The cotisation rises with attained age — the French delta
 
-This is the one thing about the product that a reader arriving from `Term_UK_A` or
+This is the one thing about the product that a reader arriving from `Term_UK_S` or
 `Term_US_S` will get wrong, and it is visible in the cash flows rather than buried in a
 parameter. The French default premium form is `revisable`: the cotisation is recomputed
 at **every annual renewal** from the tariff rate at the new attained age

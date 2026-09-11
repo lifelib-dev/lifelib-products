@@ -1094,7 +1094,7 @@ def pols_commute(t):
 def pols_maturity(t):
     """The count whose cover ends at the scheduled end of the contract, paid for or not.
 
-    The library-wide meaning of the name, as in ``BasicTerm_S`` and ``Term_UK_A``: the
+    The library-wide meaning of the name, as in ``BasicTerm_S`` and ``Term_UK_S``: the
     contracts reaching the scheduled end, whether or not anything is paid for reaching it.
     Here that end is the last 確定年金 instalment, so this is non-zero only at
     ``t = n + k - 1``, and zero on the 保証期間付終身年金 form, which has no fixed end.
