@@ -61,17 +61,18 @@ the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are
 ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
 the vectorized `_M` models — and that is true of all twelve here.
 
-Eleven of the twelve run on a **monthly** grid, the term and whole life models included
-since their conversion. `FIA_US_S` is the exception: its own technical notes and docstring
-specify **annual** steps, on the grounds that every mechanic in that composite is annual and
-a finer grid would buy only excluded variants. Its name and its `tests/us_registry.py`
-metadata both still say monthly, which is a pre-existing discrepancy this table does not
-paper over — the model, not the registry, is the authority on its own grid.
+All twelve run on a **monthly** grid, the term, whole life and FIA models included since
+their conversion.
 
 Where a product's contractual drivers *are* annual — the term guaranteed premium schedule
-and its shock lapse, whole life's cash value schedule and dividend declaration — the model
-keeps those events on the policy anniversary and derives the policy year from `t`
-(`duration(t) = t // 12`), rather than stepping annually. The two grids agree exactly on
+and its shock lapse, whole life's cash value schedule and dividend declaration, the FIA's
+point-to-point index credit, rider charge and lifetime withdrawal — the model keeps those
+events on the policy anniversary and derives the policy year from `t`
+(`duration(t) = t // 12`), rather than stepping annually. A monthly grid is not the same
+thing as a monthly product: what the finer grid resolves is everything that is *not* a
+contractual event — mortality and lapse in the month they happen, interest and
+nonforfeiture floors accruing month by month so a mid-year exit is valued on the balance it
+actually has, and expenses falling where they are incurred. The two grids agree exactly on
 the in-force at every anniversary, and on every anniversary-dated contractual quantity;
 they differ on cash flow timing, which is what the monthly grid is for.
 

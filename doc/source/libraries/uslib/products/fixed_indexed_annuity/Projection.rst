@@ -22,6 +22,8 @@ Cells Descriptions
 
 .. autofunction:: entry_year
 
+.. autofunction:: entry_mth
+
 .. autofunction:: bonus_rate
 
 .. autofunction:: alloc_indexed
@@ -76,6 +78,16 @@ Cells Descriptions
 
 .. autofunction:: policy_year
 
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: is_anniv
+
+.. autofunction:: anniv_mth
+
+.. autofunction:: year_open_mth
+
 .. autofunction:: age
 
 .. autofunction:: covered_age
@@ -100,6 +112,8 @@ Cells Descriptions
 
 .. autofunction:: fixed_interest_pp
 
+.. autofunction:: fixed_interest_ann_pp
+
 .. autofunction:: inv_income_pp
 
 .. autofunction:: rider_charge_pp
@@ -107,6 +121,12 @@ Cells Descriptions
 .. autofunction:: av_pp_at
 
 .. autofunction:: av_pp
+
+.. autofunction:: av_pp_year_open
+
+.. autofunction:: av_fixed_pp_year_open
+
+.. autofunction:: av_indexed_pp_year_open
 
 .. autofunction:: av_fixed_pp_at
 
@@ -234,6 +254,8 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: shock_lapse_rate
 
 .. autofunction:: lapse_rate_base
@@ -241,6 +263,8 @@ Cells Descriptions
 .. autofunction:: lapse_moneyness_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: pols_if
 
@@ -315,3 +339,5 @@ Cells Descriptions
 .. autofunction:: result_av
 
 .. autofunction:: result_glwb
+
+.. autofunction:: result_cf_annual

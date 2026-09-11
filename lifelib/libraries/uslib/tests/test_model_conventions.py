@@ -431,7 +431,7 @@ def _dia_pays_an_income(proj, df):
 
 
 def _fia_phase_is_one_of_four(proj, df):
-    """FIA_US_S: every projected period sits in one of the four GLWB phases."""
+    """FIA_US_S: every projected month sits in one of the four GLWB phases."""
     assert proj.result_glwb()["phase"].isin(
         ["ACCUM", "INCOME", "DEPLETED", "TERMINATED"]).all()
 

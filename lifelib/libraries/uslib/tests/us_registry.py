@@ -31,19 +31,12 @@ LIB = pathlib.Path(__file__).resolve().parents[1]
 ANNUAL = {"grid": "annual", "age_basis": "ANB", "discounted": False}
 MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 
-# ``ANNUAL`` has no members below, and that is **not** the same as saying every model in the
-# library is monthly.  ``FIA_US_S`` is registered ``MONTHLY`` here while its own docstring and
-# technical notes specify annual steps and say so explicitly ("The product assignment table
-# records this product as monthly; its own technical notes state annual, and the notes
-# govern").  That predates the term/whole-life conversion and is left alone here because
-# correcting it means renaming the model to ``FIA_US_A`` -- the suffix is asserted from this
-# metadata by ``test_the_name_carries_the_right_grid_suffix``, so the row and the name have to
-# move together.  Recorded rather than silently carried: a wrong grid here reads as a
-# statement about the model.
-#
-# ``ANNUAL`` is kept, and kept exported, because the metadata is a statement about a model
-# rather than about the library: a model added or corrected to an annual step registers
-# ``ANNUAL`` here and the suffix rule then applies to it without further ceremony.
+# ``ANNUAL`` has no members below, and that is **not** the same as saying the library has no
+# use for it.  The metadata is a statement about a model rather than about the library: a
+# model added or converted to an annual step registers ``ANNUAL`` here, and
+# ``test_the_name_carries_the_right_grid_suffix`` then requires its name to end ``_A``.  The
+# row and the name move together, which is the point of asserting the suffix from the
+# metadata rather than from the folder.
 
 # name -> (path relative to the library root, metadata)
 #
