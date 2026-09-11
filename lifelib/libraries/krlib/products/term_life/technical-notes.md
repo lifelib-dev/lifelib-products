@@ -242,7 +242,7 @@ one lever that dominates a 갱신형; the third is the modeler's view.
 | 사망보험금 | `SA`, on death within the 보험기간; payment terminates the contract immediately and automatically | [S1] [S2 제4조·제23조] [S8] [S10] [S11] [S12] |
 | What counts as death | Includes a court 실종선고 (deemed at the end of the 실종기간) and a 관공서 disaster notification (the date entered in the 가족관계등록부) | [S2 제5조제2항] |
 | Withdrawal of life-sustaining treatment | Expressly does **not** affect the cause of death or the payment | [S2 제5조제3항] |
-| Disability benefit | **None.** There is no Korean analogue of the Japanese 高度障害保険金 | [S2 제5조]; contrast `Term_JP_A` |
+| Disability benefit | **None.** There is no Korean analogue of the Japanese 高度障害保険金 | [S2 제5조]; contrast `Term_JP_S` |
 | 만기보험금 | None on the 순수보장형; 100% of premiums paid on the 만기환급형, computed **as if waived premiums had been paid** | [S1] [S8] [S12] [S17] |
 | 해약환급금 | **Nil at every duration** on the representative 전기납 무해지 form | [S1] [S2 제33조제2항] [S12] |
 | — shortened-pay 무해지 | Nil during the 납입기간; **50% of the 표준형's** thereafter. Not computed by this model | [S1] [S2 제33조제2항] [S12] |
@@ -309,7 +309,7 @@ nothing thereafter.
 
 **Mortality — one decrement, one benefit.** A Korean term policy pays the 보험가입금액 on
 death within the 보험기간 and nothing else, and payment terminates the contract immediately
-[S2 제4조·제23조]. There is **no 高度障害保険金 analogue**, so unlike `Term_JP_A` this model
+[S2 제4조·제23조]. There is **no 高度障害保険金 analogue**, so unlike `Term_JP_S` this model
 carries no competing benefit on one sum assured and no double-count to avoid. What Korea
 has instead is a second, smaller decrement that switches the premium off without
 terminating the contract — the 50% 장해 waiver — which is a *state*, modelled in

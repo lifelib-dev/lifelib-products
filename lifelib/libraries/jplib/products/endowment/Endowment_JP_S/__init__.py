@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for Japanese endowment and education assurance.
 
-:mod:`~.Endowment_JP_A` is the executable counterpart of
+:mod:`~.Endowment_JP_S` is the executable counterpart of
 ``products/endowment/technical-notes.md`` in the lifelib-products library. It projects
 gross best-estimate liability cash flows for a single-policy model point of the
 standardized composite in its two cells:
@@ -23,20 +23,20 @@ standardized composite in its two cells:
 
 The structural difference from a whole life chassis is that there is **no tail and no
 terminal age**: the projection length is exactly the term, every state closes at the end
-of the last period, and the closing cash flow is a certain payment of the sum assured to
+of the last month, and the closing cash flow is a certain payment of the sum assured to
 the survivors rather than a decrement. Importing a terminal age here would project a
 contract that has already matured.
 
 **Spaces.** The model contains two:
 
-:mod:`~.Endowment_JP_A.Data`
+:mod:`~.Endowment_JP_S.Data`
     Reads the four input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.Endowment_JP_A.Projection`
+:mod:`~.Endowment_JP_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.Endowment_JP_A.Data` Space.
+    Reference, which resolves to the single :mod:`~.Endowment_JP_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -47,21 +47,45 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Annual steps on policy years running anniversary to anniversary.
-The period index ``t`` is **0-based**: ``t = 0`` is the first policy year and
-``t = proj_len() - 1`` the last, where ``proj_len() = policy_term()`` is the number of
-projected years, so the frame is ``range(proj_len())`` and the contractual policy year is
-the 1-based label ``t + 1``. A second index, ``k``, counts anniversaries with ``k = 0`` at
-issue: period ``t`` runs from anniversary ``t`` to anniversary ``t + 1``, and the
-per-policy value construction (``pol_val_pp``, ``cv_pp``, ``surr_charge_pp``,
-``benefit_pct``, ``prem_cum_pp``) is indexed by ``k``, so the flows of period ``t`` read
-it at ``t + 1``.
-Premium, maintenance expense and renewal commission fall at the start of the period;
-acquisition expense and initial commission at issue; death claims and claim expense at
-the end of the period of death; the staged benefit and the maturity benefit at the
-end of the period, to policies surviving that period's mortality; surrenders at the
-end of the period, after deaths and after any staged benefit due at that anniversary,
-valued on the surrender value net of that benefit.
+**Projection basis.** **Monthly steps.** The index ``t`` is **0-based** and counts policy
+months: ``t = 0`` is the first policy month and ``t = proj_len() - 1`` the last, where
+``proj_len() = 12 policy_term()``, so the frame is ``range(proj_len())`` and the
+contractual policy year is the 1-based label ``policy_year(t) = 1 + t // 12``. Premium,
+maintenance expense and renewal commission fall at the start of the month; acquisition
+expense and initial commission at issue; death claims and claim expense at the end of the
+month of death; the staged benefit and the maturity benefit at the end of the single month
+whose closing instant is the anniversary they fall on, to policies surviving that month's
+mortality; surrenders at the end of the month, after deaths and after any staged benefit
+just paid, valued on the surrender value net of that benefit.
+
+**The contractual values stayed annual, and that is the point of the split.** Everything
+this product guarantees is defined at a 年単位の契約応当日 — the 保険料積立金, the 解約返戻金,
+the 解約控除, the 責任準備金, the staged 学資金 grid and the 満期保険金 — so a second index
+``k`` counts anniversaries with ``k = 0`` at issue, the value construction
+(``pol_val_pp``, ``cv_pp``, ``surr_charge_pp``, ``benefit_pct``, ``prem_cum_pp``,
+``reserve_pp``, ``loan_pp``) is indexed by it, and **none of its numbers moved**. What
+the monthly grid adds is the interpolating companions — ``pol_val_at_m``, ``cv_at_m`` and
+their family — which a death or a surrender between two anniversaries is settled on
+**[std]**, and which reproduce the annual cells at every anniversary.
+
+Three things the finer grid buys here. The premium is 年払, so it falls in **one month out
+of twelve** instead of being smeared across a year. Every payment that is a payment **on a
+date** — each staged 学資金, and the 満期保険金 that is the largest single item in the whole
+stream — now falls in the single month whose end is that date, so the maturity payment is
+one month wide rather than one year. And ``lapse_rate``'s suppression of surrender in the
+final period, which exists so that the maturity payment is not double-counted, shrinks
+from a whole policy year to the one month whose end **is** the maturity date — which
+returns eleven months of genuine surrender to the projection and moves the anchor cell's
+maturing fraction from 0.5042 to 0.4949.
+
+A fourth falls out of the same change and was invisible before: the education cell's
+death benefit is the greater of deemed-paid premiums and the policy value, and read month
+by month that ``max`` switches 85 times in 264 where at the anniversaries it never
+switched at all.
+
+What did **not** change is survivorship at the anniversaries: both mortality decrements and
+voluntary surrender convert to the month on the effective convention
+``r_m = 1 - (1 - r)^(1/12)``, so twelve months compound back to the annual rate exactly.
 
 **What is sourced and what is not.** Both annual premiums on the two anchor cells are
 12 times a published monthly premium for exactly those cells [S9][S11], and the 予定利率
@@ -91,13 +115,13 @@ roll-forward identities exposed as ``check_*()`` cells.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/endowment/Endowment_JP_A")
+    >>> model = mx.read_model("products/endowment/Endowment_JP_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "Endowment_JP_A"
+_name = "Endowment_JP_S"
 
 _allow_none = False
 

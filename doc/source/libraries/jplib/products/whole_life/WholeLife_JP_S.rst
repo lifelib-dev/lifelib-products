@@ -1,7 +1,7 @@
-The **WholeLife_JP_A** Model
+The **WholeLife_JP_S** Model
 ============================
 
-.. automodule:: jplib.products.whole_life.WholeLife_JP_A
+.. automodule:: jplib.products.whole_life.WholeLife_JP_S
 
 .. toctree::
    :hidden:

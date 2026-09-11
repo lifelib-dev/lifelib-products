@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for Japanese level term life insurance.
 
-:mod:`~.Term_JP_A` is the executable counterpart of
+:mod:`~.Term_JP_S` is the executable counterpart of
 ``products/term_life/technical-notes.md`` in the lifelib-products library. It projects
 gross best-estimate liability cash flows for a single-policy model point of 定期保険
 (*teiki hoken*, level term life) in the two term shapes the representative composite
@@ -43,14 +43,14 @@ see the boundary at all.
 
 **Spaces.** The model contains two:
 
-:mod:`~.Term_JP_A.Data`
+:mod:`~.Term_JP_S.Data`
     Reads the four input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.Term_JP_A.Projection`
+:mod:`~.Term_JP_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.Term_JP_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.Term_JP_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -61,16 +61,34 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Annual steps, the notes' base grid — nothing in the composite has
-intra-year contractual structure, and the one intra-year mechanic that matters, the
-猶予期間 (*yūyo kikan*, grace period of about one month), sits inside a decrement the
-annual grid represents as a rate [S1][S8]. The projection index ``t`` is **0-based**: it
-runs 0, 1, ..., ``proj_len() - 1``, so ``proj_len()`` is the number of projected years
-and the contractual policy year is ``t + 1``. Premiums and maintenance expense fall at
-the start of the year;
-acquisition expense and initial commission at issue; death and 高度障害 claims and
-their claim expense at the end of the year; ordinary lapse at the end of the year after
-deaths; the renewal decline at the end of a boundary year after lapse.
+**Projection basis.** **Monthly steps.** The projection index ``t`` is **0-based** and
+counts policy months: it runs 0, 1, ..., ``proj_len() - 1``, so ``proj_len()`` is the
+number of projected months — 600 on the anchor cell — the contractual policy year is
+``policy_year(t) = 1 + t // 12``, and ``duration(t) = t // 12`` is the completed-years
+count every contractual schedule is quoted against. Premiums and maintenance expense fall
+at the start of the month; acquisition expense and initial commission at issue; death and
+高度障害 claims and their claim expense at the end of the month; ordinary lapse at the end
+of the month after deaths; the renewal decline at the end of a boundary month after lapse.
+
+The contract is still quoted in years — the 保険期間, the ceiling, the rate card's own
+term basis — so the grid is finer than the guarantees, not finer than the product. What it
+buys is three things the annual grid could not do. The **premium payment mode** becomes a
+cash flow rather than a column: 月払, 半年払 and 年払 now differ, which matters because
+Japanese rate cards are quoted monthly [S2]. The **更新 boundary** is one month rather than
+one year, so the renewal decline stands alone instead of being averaged against twelve
+months of ordinary lapse — at ``t = 119`` it is better than 97% of the month's exits,
+against the 74% the annual grid could see. And the **猶予期間** (*yūyo kikan*, grace period
+of about a month) is for the first time shorter than a step rather than longer, so the
+unpaid-premium exit at a renewal is representable even though this composite still folds
+it into one decline rate for want of a take-up assumption.
+
+It also retires a standardization rather than restating it. The annual grid collected a
+whole year's premium in advance from lives that might exit in month two and offset the
+overstatement against claims booked at the end of the year; the notes declared the pair
+matched and warned against correcting either alone. Here a policy pays for the months it
+is in force and its claim falls in the month it arises, so there is no offset to keep
+straight — and the anchor cell's undiscounted premium falls from ¥470,348.54 to
+¥457,507.04 as a result.
 
 **One decrement, one benefit.** 生保標準生命表2018（死亡保険用）includes 高度障害 inside
 its death rate [REG-R20], and the contract pays one sum assured and terminates on
@@ -96,7 +114,7 @@ publisher prohibits reproduction and transmission to third parties without writt
 consent [REG-R21], so ``mort_table.csv`` is a **[std]** construction anchored on the
 handful of rates the worked example quotes and log-linearly interpolated between them.
 It reproduces the notes' own rates exactly and nothing else should be read from it.
-See :mod:`~.Term_JP_A.Data` for the construction.
+See :mod:`~.Term_JP_S.Data` for the construction.
 
 **Model points.** Nine, covering both sexes, both term shapes, the renewal ladder to
 the ceiling, truncation of the final term, both contract boundaries, all three optional
@@ -104,21 +122,21 @@ riders, and the extremes of the issue-age and sum-assured envelopes. Model point
 the anchor cell of the worked example in the technical notes.
 
 **Verification.** ``tests/test_term_life_jp.py`` asserts the notes' worked example to
-the yen and the in-force column to six decimals: ``CF(0) = -18,612.32``,
-``l(10) = 0.466683``, the renewal ladder ¥974 → ¥1,823 → ¥3,933 → ¥8,976 → ¥23,881,
-and undiscounted totals of ¥470,348.54 of premium and +¥50,400.25 of net cash flow over
-the fifty years.
+the yen and the in-force column to six decimals: ``CF(0) = -20,658.14``,
+``l(120) = 0.466683``, the renewal ladder ¥974 → ¥1,823 → ¥3,933 → ¥8,976 → ¥23,881,
+and undiscounted totals of ¥457,507.04 of premium and +¥47,254.64 of net cash flow over
+the 600 months.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/term_life/Term_JP_A")
+    >>> model = mx.read_model("products/term_life/Term_JP_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "Term_JP_A"
+_name = "Term_JP_S"
 
 _allow_none = False
 

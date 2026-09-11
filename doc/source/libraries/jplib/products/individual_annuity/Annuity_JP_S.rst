@@ -1,7 +1,7 @@
-The **Annuity_JP_A** Model
+The **Annuity_JP_S** Model
 ==========================
 
-.. automodule:: jplib.products.individual_annuity.Annuity_JP_A
+.. automodule:: jplib.products.individual_annuity.Annuity_JP_S
 
 .. toctree::
    :hidden:

@@ -482,7 +482,7 @@ def test_pitfall_no_surrender_value_no_apl_no_policy_loan(medical):
     The main contract is 無解約返戻金型 during the premium-paying period, which under
     終身払 is every duration [S1] [S6] [S9], and neither 契約者貸付 nor 自動振替貸付 is
     offered [S1].  So ``claims(t, "LAPSE")`` is identically zero and no lapse-suppression
-    term belongs in the recursion — importing ``WholeLife_JP_A``'s automatic-premium-loan
+    term belongs in the recursion — importing ``WholeLife_JP_S``'s automatic-premium-loan
     machinery here would suppress lapses that genuinely happen.
     """
     names = set(medical.Projection.cells) | set(medical.Projection.refs)

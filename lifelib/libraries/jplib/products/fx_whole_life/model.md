@@ -6,7 +6,7 @@ implements is specified in [`product-spec.md`](product-spec.md). Both state **de
 against the savings chassis, 終身保険: its
 [product specification](../whole_life/product-spec.md) and its
 [technical notes](../whole_life/technical-notes.md) carry the inherited mechanics, and its
-model is [`WholeLife_JP_A`](../whole_life/model.md).
+model is [`WholeLife_JP_S`](../whole_life/model.md).
 
 > **This is a mechanics demonstration, not a pricing or reserving result.** The
 > contractual mechanics are sourced — the surrender-value formula and the base the

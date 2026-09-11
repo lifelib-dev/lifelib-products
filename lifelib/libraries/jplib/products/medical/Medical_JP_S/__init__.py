@@ -32,7 +32,7 @@ chassis:
   carries a *benefit-driven* decrement alongside mortality and lapse;
 * there is **no death benefit**, **no surrender value** on the 終身払 anchor and hence
   **no 自動振替貸付**: mortality is a pure liability release, and a missed premium
-  really does lapse the policy. Importing the ``WholeLife_JP_A`` automatic-premium-loan
+  really does lapse the policy. Importing the ``WholeLife_JP_S`` automatic-premium-loan
   logic here would suppress lapses that genuinely happen.
 
 .. rubric:: Spaces

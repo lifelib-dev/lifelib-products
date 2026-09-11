@@ -189,7 +189,7 @@ which one each model is on and the suite requires the `Projection` docstring to 
 so the two cannot be confused silently. What that is protecting against is set out below.
 
 The conventions suite was also checked against a library it does not govern: before any krlib
-model existed it was run over `Term_JP_A` and `WholeLife_JP_A` through a throwaway registry,
+model existed it was run over `Term_JP_S` and `WholeLife_JP_S` through a throwaway registry,
 and the only failures were the intended differences — the `_KR_` country tag, the mandatory
 `check_net_cf`, the provenance-tag escalation and the age-basis requirement. A krlib model that
 satisfies it is therefore conforming rather than merely self-consistent.

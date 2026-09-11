@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for a Japanese fixed individual annuity.
 
-:mod:`~.Annuity_JP_A` is the executable counterpart of
+:mod:`~.Annuity_JP_S` is the executable counterpart of
 ``products/individual_annuity/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for a single-policy model point of
 定額個人年金保険 (*teigaku kojin nenkin hoken*, fixed individual annuity insurance) with the
@@ -25,14 +25,14 @@ first is prudent against death and the second against longevity.
 
 **Spaces.** The model contains two:
 
-:mod:`~.Annuity_JP_A.Data`
+:mod:`~.Annuity_JP_S.Data`
     Reads the seven input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.Annuity_JP_A.Projection`
+:mod:`~.Annuity_JP_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.Annuity_JP_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.Annuity_JP_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -43,19 +43,38 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Annual steps, the notes' base grid. The time index ``t`` is
-**0-based**: ``t = 0`` is the first projected policy year, the year of issue, and period
-``t`` runs from time ``t`` to time ``t + 1``. ``proj_len()`` is the number of projected
-years and the exclusive end of the frame, so ``result_cf()``
-covers ``t = 0 .. proj_len() - 1`` in ``proj_len()`` rows; the attained 保険年齢 is
-``x + t``; and the contractual policy year is the 1-based label ``t + 1``, derived and
-never indexed by. Premiums fall at ``t = 0 .. m - 1``, the fund accumulates
-over ``t = 0 .. n`` where ``n = m + d``, and the annuity is paid at
-``t = n .. n + k - 1``. Premiums, annuity instalments, maintenance expense and
-commission fall at the start of the year; death benefits and surrender payments at the
-end; lapses act on the survivors of mortality, death before lapse. Acquisition expense
-and initial commission fall at ``t = 0``. There are no tail states: the 確定年金 pays
-exactly ``k`` instalments and the contract ends.
+**Projection basis.** **Monthly steps.** The time index ``t`` is **0-based** and counts
+policy months: ``t = 0`` is the month of issue and month ``t`` runs from time ``t`` to time
+``t + 1``. ``proj_len()`` is the number of projected months and the exclusive end of the
+frame, so ``result_cf()`` covers ``t = 0 .. proj_len() - 1`` in ``proj_len()`` rows, twelve
+to the policy year; the attained 保険年齢 is ``x + t // 12``; and the contractual policy year
+is the 1-based label ``1 + t // 12``, derived and never indexed by. Premiums, annuity
+instalments, maintenance expense and commission fall at the start of the month; death
+benefits and surrender payments at the end of it; lapses act on the survivors of mortality,
+death before lapse. Acquisition expense and initial commission fall at ``t = 0``. There are
+no tail states: the 確定年金 pays exactly ``k`` instalments and the contract ends.
+
+**Both of this product's own cash flows are annual, and the monthly grid shows them as
+such.** The 年払 premium falls in the anniversary months ``t = 0, 12, …, 12(m - 1)`` and
+the 年金年額 instalment in ``t = n, n + 12, …``, each zero in the eleven months between, so
+the statement is a sawtooth: one large inflow a year for the 保険料払込期間, then one large
+outflow a year through the payout phase, with surrender, death and expense running in every
+month against them. That is the shape of a 定額個人年金保険 and the annual grid could not
+draw it.
+
+**The contractual values stayed annual, and that is the point of the split.** The
+保険料積立金 is a net-level-premium recursion at the 予定利率 defined at the 年単位の契約応当日,
+and the whole payout phase is bought out of its value at one such date, so ``av_pp``,
+``db_pp``, ``cv_pp``, ``surr_charge_pp``, ``loan_pp``, ``apl_bal`` and ``div_acc_pp`` keep
+an anniversary index in **years** and **none of their numbers moved**. What the monthly
+grid adds is the readings between anniversaries — ``av_at_m`` interpolating the fund
+**[std]**, ``cv_at_m`` applying the sourced 死亡給付金 ceiling month by month, and
+``db_at_m``, which is the contract's own 月払保険料 x 経過月数 wording rather than the
+annual-grid approximation of it the previous model had to carry.
+
+What did **not** change is survivorship at the anniversaries: mortality and 解約・失効
+convert to the month on the effective convention ``r_m = 1 - (1 - r)^(1/12)``, so twelve
+months compound back to the annual rate exactly.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the death
 benefit as cumulative premiums, the surrender value capped at the death benefit, the
@@ -89,13 +108,13 @@ every product fact the notes list as a modelling pitfall.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/individual_annuity/Annuity_JP_A")
+    >>> model = mx.read_model("products/individual_annuity/Annuity_JP_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "Annuity_JP_A"
+_name = "Annuity_JP_S"
 
 _allow_none = False
 

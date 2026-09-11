@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The four input CSVs are read here, **once per model**, and referenced from
-:mod:`~.Endowment_JP_A.Projection` as ``data``. :mod:`~.Endowment_JP_A.Projection` is
+:mod:`~.Endowment_JP_S.Projection` as ``data``. :mod:`~.Endowment_JP_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its
 own cells cache; if the readers lived there, every model point would re-read every file.
 Holding them in an unparameterized Space reads each file once no matter how many
@@ -20,7 +20,7 @@ contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model th
 modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``Endowment_JP_A`` folder without its parent's CSVs produces a model that reads and then
+``Endowment_JP_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
@@ -123,7 +123,10 @@ def lapse_table():
     """Surrender and premium-default rates by policy year, from *lapse_table.csv*.
 
     The index column is ``policy_year``, the **contractual 1-based label**: rows 1, 2 and
-    3, which the projection's 0-based period index reaches as ``t + 1``.  It is not the
+    3, which the projection's 0-based **month** index reaches as
+    ``policy_year(t) = 1 + t // 12``.  Both rate columns are **annual** and are not
+    restated per month; the projection converts the surrender rate to a monthly decrement
+    and applies the default rate once per premium.  It is not the
     frame's ``t`` and its values are left alone by the 0-based time-index convention.
 
     Two columns.  ``lapse_rate`` is the voluntary surrender rate, 4 / 3 / 2 percent with
@@ -139,10 +142,11 @@ def benefit_schedule_table():
     """The staged 学資金 schedules, read from *benefit_schedule_table.csv*.
 
     Indexed by ``schedule_id``, one row per payment, each row giving the **anniversary**
-    ``k`` the payment falls on — ``k = 0`` at issue, so a payment at ``k`` falls at the
-    end of period ``k - 1`` — and the payment as a fraction of 基準保険金額.  The ``k``
-    column is a time *point* and is already 0-based; it is not the projection's period
-    index ``t`` and its values are left alone by the 0-based time-index convention.
+    ``k``, in years, that the payment falls on — ``k = 0`` at issue, so a payment at ``k``
+    falls at the end of the single month ``t = 12k - 1`` — and the payment as a fraction
+    of 基準保険金額.  The ``k`` column is a time *point* in years and is already 0-based; it
+    is not the projection's month index ``t``, and its values did not move when the
+    projection index became a month.
     The schedule is **data, not formula**:
     observed designs run from a single payment of 100% to four payments of 100% each, so
     an implementation that hard-codes a shape is modelling one carrier.  The maturity

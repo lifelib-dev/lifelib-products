@@ -1,7 +1,7 @@
-The **Endowment_JP_A** Model
+The **Endowment_JP_S** Model
 ============================
 
-.. automodule:: jplib.products.endowment.Endowment_JP_A
+.. automodule:: jplib.products.endowment.Endowment_JP_S
 
 .. toctree::
    :hidden:

@@ -1,7 +1,7 @@
-The **Term_JP_A** Model
+The **Term_JP_S** Model
 =======================
 
-.. automodule:: jplib.products.term_life.Term_JP_A
+.. automodule:: jplib.products.term_life.Term_JP_S
 
 .. toctree::
    :hidden:

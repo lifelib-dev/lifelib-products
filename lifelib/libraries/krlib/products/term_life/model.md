@@ -84,7 +84,7 @@ of six months or more rounded up, incrementing on the **policy anniversary** and
 birthday [S2 제22조] [REG-R25 제21조](#krlib-reg-r25). The model point ages, the premium table and the
 mortality table are all on that one basis, so `age(t) = x + t` is exact rather than
 approximate and **no age-basis shift is applied anywhere** — which is the opposite of
-`Term_JP_A`, whose 満年齢 model points read a 保険年齢 table and carry an optional
+`Term_JP_S`, whose 満年齢 model points read a 保険年齢 table and carry an optional
 correction for it. The one place Korean practice uses 만나이 instead is the 상법 제732조
 voidness test for a life under 만 15 [S2 제22조제1항 단서] [R4], which is an issue rule and
 not a projection quantity.
@@ -169,7 +169,7 @@ premium jump that is 2.33x at the first renewal and 3.59x at the third [S7].
 
 A Korean term policy pays the 보험가입금액 on death and nothing else, and payment
 terminates the contract immediately [S2 제4조·제23조]. There is **no Korean analogue of the
-Japanese 高度障害保険金**, so unlike `Term_JP_A` there is no competing benefit on one sum
+Japanese 高度障害保険金**, so unlike `Term_JP_S` there is no competing benefit on one sum
 assured and nothing to double-count. What the 장해 (*janghae*, disability) state does
 instead is **switch the premium off**: 보험료 납입면제 on a 장해지급률 summing to **50% or
 more** from any cause, in the 주계약 at no separate premium, in identical words at eight

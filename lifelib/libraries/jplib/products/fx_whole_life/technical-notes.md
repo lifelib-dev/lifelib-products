@@ -50,8 +50,10 @@ layer, and a path-dependent conversion rider.
   capital and every statutory reserve are out of scope** and are cited, not reproduced (see
   Valuation and reserve pointers).
 - **Projection frequency.** **Monthly** (`FXWholeLife_JP_S`), stepping on the monthly policy
-  anniversary (*getsu-tan'i no keiyaku ōtōbi*, 月単位の契約応当日). This is not a refinement of
-  the chassis's annual grid but a requirement: the crediting rate (*tsumitate riritsu*, 積立利率)
+  anniversary (*getsu-tan'i no keiyaku ōtōbi*, 月単位の契約応当日). The chassis now steps monthly
+  too, but for a different reason: there the month is a finer reading of quantities the
+  contract defines at the 年単位の契約応当日, while here it is a **requirement** of the product
+  itself — the crediting rate (*tsumitate riritsu*, 積立利率)
   is redeclared monthly and credited from the monthly policy anniversary [S2], the
   death-benefit uplift (*zōka shibō hokenkin-gaku*, 増加死亡保険金額) is recomputed at the same date
   [S2], and the target-value test is made every business day [S9]. `t` counts completed

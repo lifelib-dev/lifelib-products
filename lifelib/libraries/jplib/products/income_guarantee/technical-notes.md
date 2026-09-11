@@ -24,7 +24,7 @@ this file models a disability decrement.
 
 **This file states deltas.** The [term life technical notes (定期保険)](../term_life/technical-notes.md)
 are the library's protection chassis, implemented in
-[`Term_JP_A`](../term_life/model.md). Inherited unchanged and **not restated here**: the
+[`Term_JP_S`](../term_life/model.md). Inherited unchanged and **not restated here**: the
 decrement recursion and its processing order, the premium chassis, the **[std]** mortality
 construction with its 0.80 best-estimate factor, the lapse table, the expense and commission
 levels, the age last birthday (*man-nenrei*, 満年齢) / age nearest birthday (*hoken-nenrei*,

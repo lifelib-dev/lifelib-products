@@ -382,8 +382,8 @@ all nine and decoding each one's output as ASCII.
 `uslib` takes `MYGA`, `RILA`, `SPIA` and `ULSG` from the trade's own usage, and `uklib` takes
 `CI`, `IP`, `WOL`, `ULB`, `WP` and `PA` the same way. Japanese products have no Latin short form
 in circulation, so there was nothing to borrow: `jplib`'s names are short English descriptors —
-`Term_JP_A`, `IncomeTerm_JP_S`, `WholeLife_JP_A`, `Endowment_JP_A`, `Medical_JP_S`,
-`Cancer_JP_S`, `LTC_JP_S`, `Annuity_JP_A`, `FXWholeLife_JP_S`. `jp_registry.py` records that they
+`Term_JP_S`, `IncomeTerm_JP_S`, `WholeLife_JP_S`, `Endowment_JP_S`, `Medical_JP_S`,
+`Cancer_JP_S`, `LTC_JP_S`, `Annuity_JP_S`, `FXWholeLife_JP_S`. `jp_registry.py` records that they
 are chosen and why, so the next library does not re-litigate it, and it names the two that could
 be misread: `IncomeTerm_JP_S` is 収入保障保険, a **death** benefit paid as an income and not
 `uklib`'s disability cover, and `LTC_JP_S` is private cover written on top of the public

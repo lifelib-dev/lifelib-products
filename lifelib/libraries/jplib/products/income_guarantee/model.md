@@ -6,7 +6,7 @@ implements is specified in [`product-spec.md`](product-spec.md). The protection 
 it states deltas against is 定期保険, specified in
 [`products/term_life/product-spec.md`](../term_life/product-spec.md) with its
 [technical notes](../term_life/technical-notes.md) and implemented in
-[`Term_JP_A`](../term_life/model.md) — this model carries that model's names for every
+[`Term_JP_S`](../term_life/model.md) — this model carries that model's names for every
 shared concept, and restates none of its machinery. `S#` and `R#` ids resolve
 against [`sources.md`](sources.md), and `[REG-R#]` against
 `references/regulatory-and-actuarial-references.md`.
@@ -325,7 +325,7 @@ fact.** The instalments are paid on the death of the insured, or on the contract
 state carried inside the same decrement as its accelerated equivalent — not on survival and
 not on disability as such. The name records the benefit's *form*, and the same name carries a
 *living* benefit in `LTC_JP_S` ([nursing care model notes (介護保険)](../nursing_care/model.md)) and
-`Annuity_JP_A` ([individual annuity model notes (個人年金保険)](../individual_annuity/model.md)), so this model states
+`Annuity_JP_S` ([individual annuity model notes (個人年金保険)](../individual_annuity/model.md)), so this model states
 the contingency in the `claims` docstring and in the `result_cf` docstring rather than leaving
 it to the column name. **There is no `claims_death` column**: the contract pays no lump sum on
 death at any duration — a claim *opens* an annuity stream instead of settling one — so the
