@@ -710,7 +710,7 @@ def test_the_pass_throughs_stay_out_of_net_cf(fr_uc_anchor):
 
     The social levy is withheld and remitted; the 1.60% fund-level recurring costs sit
     inside the liquidation value and would put 1,136.76 against a true net_cf of 1,262.66;
-    and the euro credited interest is a policyholder credit whose margin is Euro_FR_A's.
+    and the euro credited interest is a policyholder credit whose margin is Euro_FR_S's.
     """
     p = fr_uc_anchor
     for t in (0, 5, 11):
@@ -729,7 +729,7 @@ def test_the_pass_throughs_stay_out_of_net_cf(fr_uc_anchor):
     assert fund_costs > df["net_cf"].sum() * 0.85
     assert sum(p.euro_interest_pp(t) for t in range(12)) > 500.0
     assert df["net_cf"].sum() == pytest.approx(1262.66, abs=CENTIME)
-    assert "Euro_FR_A" in p.net_cf.doc
+    assert "Euro_FR_S" in p.net_cf.doc
 
 
 # ---------------------------------------------------------------------------
@@ -844,7 +844,7 @@ def test_the_docstrings_describe_the_current_structure(assurance_vie_uc):
     """Specifics a reader would rely on, asserted so they cannot go stale silently."""
     doc = assurance_vie_uc.doc
     for phrase in ("mechanics demonstration", "external", "once per model", "non-unit",
-                   "garantie plancher", "Euro_FR_A"):
+                   "garantie plancher", "Euro_FR_S"):
         assert phrase in doc
     proj = assurance_vie_uc.Projection.doc
     assert "Notes symbol" in proj

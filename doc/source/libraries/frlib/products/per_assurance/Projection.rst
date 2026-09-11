@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: frlib.products.per_assurance.PER_FR_A.Projection
+.. automodule:: frlib.products.per_assurance.PER_FR_S.Projection
 
 Cells Descriptions
 ------------------

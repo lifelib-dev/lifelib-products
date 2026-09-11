@@ -64,7 +64,7 @@ only one.
 .. rubric:: This module was checked against a library it does not govern
 
 Before any delib model existed, this suite was run against two frlib models —
-``TD_FR_A`` and ``Euro_FR_A`` — through a throwaway registry pointing at them. The result
+``TD_FR_S`` and ``Euro_FR_S`` — through a throwaway registry pointing at them. The result
 was **50 passed, 2 skipped, 4 failed**, and all four failures were the intended
 differences: the ``_DE_`` country tag, twice, and ``check_net_cf``, twice. Everything else
 passed unchanged.

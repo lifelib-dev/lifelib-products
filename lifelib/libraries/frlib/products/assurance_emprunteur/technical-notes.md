@@ -21,7 +21,7 @@ is English `lower_snake_case`; French terms of art are kept in French.
   and expenses — for a single-policy model point of French *assurance emprunteur* on a
   **monthly** grid. Reserves are not computed (see Valuation and reserve pointers).
 - **What this model inherits, and where it deviates.** The death leg is the
-  `temporaire_deces` chassis (`TD_FR_A`, `products/temporaire_deces/technical-notes.md`):
+  `temporaire_deces` chassis (`TD_FR_S`, `products/temporaire_deces/technical-notes.md`):
   the same non-annuity mortality basis — TH 00-02 / TF 00-02 with the annexed *décalage
   d'âge* [REG-R22] [REG-R23], never shipped, replaced by an INSEE-derived **[std]** proxy
   [REG-R24] — the same annual-to-monthly conversion, the same "no surrender value, so lapse

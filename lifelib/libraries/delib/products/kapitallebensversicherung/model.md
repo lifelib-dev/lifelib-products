@@ -425,7 +425,7 @@ declared surplus on an index participation instead of accumulating it. `FRV_DE_S
 **not** share it: a unit-linked *Rückkaufswert* is a *Zeitwert* of fund units and not a
 *Deckungskapital* [R2]. Across libraries the nearest relatives are lifelib's
 `annuallife/TradLife_A`, whose external-input layout this model copies, and frlib's
-`Euro_FR_A`, whose *participation aux bénéfices* is the same idea under a different statute
+`Euro_FR_S`, whose *participation aux bénéfices* is the same idea under a different statute
 — with the difference that a French *fonds euros* credits a rate to an account balance while
 a German endowment credits it to a **reserve**.
 

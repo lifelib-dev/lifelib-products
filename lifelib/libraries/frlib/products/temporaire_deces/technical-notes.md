@@ -3,7 +3,7 @@
 **Status:** Draft, 2026-08-26 (all cited sources accessed 2026-08-26).
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model
-name **`TD_FR_A`**, **annual** grid — for the standardized composite French *assurance
+name **`TD_FR_S`**, **annual** grid — for the standardized composite French *assurance
 temporaire décès* defined in `product-spec.md` (same directory). This is not any single
 insurer's product. [S#]/[R#] tags refer to the source list in `sources.md` (numbering carried
 from `_research/temporaire-deces.md`; frozen); [REG-R#] tags refer to the cross-product

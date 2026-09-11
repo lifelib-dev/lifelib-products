@@ -3,7 +3,7 @@
 **Status:** Draft, 2026-08-26 (all cited sources accessed 2026-08-26).
 
 **Scope note.** These notes specify the reference liability cash-flow projection model
-**`EC_FR_A`**, on an **annual** grid, for the standardized composite eurocroissance support
+**`EC_FR_S`**, on an **annual** grid, for the standardized composite eurocroissance support
 defined in `product-spec.md` (same directory). This is not any single insurer's support.
 [S#]/[R#] tags refer to the source list in `sources.md` (numbering carried verbatim from
 `_research/eurocroissance.md`); [REG-R#] tags refer to the cross-product reference library
@@ -32,7 +32,7 @@ directly rather than against that document.
   eurocroissance model points on the two composite chassis — **Chassis A** (1° engagement:
   *provision mathématique* plus parts) and **Chassis B** (2° engagement: parts only, guarantee
   at maturity). Reserves are not computed here.
-- **Projection frequency.** **Annual [std]**, matching the model name `EC_FR_A`. The governing
+- **Projection frequency.** **Annual [std]**, matching the model name `EC_FR_S`. The governing
   discretion cycle — the striking of the *compte de participation aux résultats* and the
   allocation of its balance — is annual [R2 R. 134-4](#frlib-eurocroissance-r2). The code additionally requires the
   diversification provision to be re-struck at an **intermediate value at least monthly** in
@@ -94,7 +94,7 @@ directly rather than against that document.
 | `part_value_init` / `min_part_value` | currency, part value at the account's inception and its contractual floor [R2 R. 134-1](#frlib-eurocroissance-r2) | 10.0000 / 5.0000 |
 | `parts_ifo`, `pm_ifo`, `own_assets_ifo` | float / currency / currency — parts, PM and account assets at valuation (in-force cells) | — (new business) |
 | `lock_up_years` | int, non-surrender period, capped at `min(n, 8)` [R2 R. 134-5](#frlib-eurocroissance-r2) | 0 |
-| `surrender_indemnity_rate` | %, capped at 5 %; R. 132-5-3 lets the contract provide for **no indemnity at all** once ten years have elapsed [R10], and the reference contract charges none at any duration. `EC_FR_A` returns 0 beyond ten years unconditionally **[std]** | 0.00 % |
+| `surrender_indemnity_rate` | %, capped at 5 %; R. 132-5-3 lets the contract provide for **no indemnity at all** once ten years have elapsed [R10], and the reference contract charges none at any duration. `EC_FR_S` returns 0 beyond ten years unconditionally **[std]** | 0.00 % |
 | `death_floor_flag` | bool — *garantie décès plancher* [S1] [S2] | true |
 | `annuity_option_flag` | bool — conversion into a *rente viagère* at `n` [R2 R. 134-6](#frlib-eurocroissance-r2) | false |
 
@@ -154,7 +154,7 @@ valuation dates after inception [R3 A. 134-1](#frlib-eurocroissance-r3). Two rea
 available: hold *n* fixed at the original term for the life of the engagement, or take the
 **remaining** term `n − k` at each valuation time `k`, which is the horizon the guarantee is
 actually discounted over.
-These notes and `EC_FR_A` take the second — the first would discount a one-year promise at a
+These notes and `EC_FR_S` take the second — the first would discount a one-year promise at a
 ten-year constant-maturity rate at the *échéance*, and A. 134-1's own method 2° keys the
 index to a **duration**, which shortens as the engagements run off. The reading is
 **[std]**; it is not stated in the article. `product-spec.md` states A. 134-1 as retrieved,
@@ -175,7 +175,7 @@ model point 10 runs the `sloped` scenario.
 | PCDD piloting target | Insurer's own euro-fund net rate **+0.30 %**; everything above it to the PCDD | [R13]; **[std]** in the base run (`pcdd = 0`) |
 | Apport d'actifs level | 10 % of net premiums for the first three years | [R13]; **[std]** in the base run (0) |
 | Credited-return context | 2025 net returns 0.90 %–3.40 % across seven supports; AXA Fonds Croissance 2.50 %–4.50 %, average 3.13 % | [S9] [S3] [S8] |
-| Commercial bonus uplift | +2.00 % on new money in the promotion year, subject to a ≥ 45 % unit-linked condition. **Not an input to `EC_FR_A`**, and not held at zero by a switch: there is no uplift Reference, no cells and no model-point column, because a commercial promotion is a marketing device rather than a term of the statutory mechanics these notes specify. Recorded here as market context only | [S3] [S4]; out of scope **[std]** |
+| Commercial bonus uplift | +2.00 % on new money in the promotion year, subject to a ≥ 45 % unit-linked condition. **Not an input to `EC_FR_S`**, and not held at zero by a switch: there is no uplift Reference, no cells and no model-point column, because a commercial promotion is a marketing device rather than a term of the statutory mechanics these notes specify. Recorded here as market context only | [S3] [S4]; out of scope **[std]** |
 
 ### (c) Behavioral / experience assumptions (modeler's view)
 

@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: frlib.products.temporaire_deces.TD_FR_A.Projection
+.. automodule:: frlib.products.temporaire_deces.TD_FR_S.Projection
 
 Cells Descriptions
 ------------------

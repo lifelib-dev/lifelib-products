@@ -1,4 +1,4 @@
-"""Golden and structural tests for Euro_FR_A.
+"""Golden and structural tests for Euro_FR_S.
 
 The golden values are the worked example in
 products/assurance_vie_euro/technical-notes.md ("Worked example"): an in-force
@@ -38,7 +38,7 @@ def model_files(folder):
 CENT = 0.01           # money, to the precision the notes display
 RATE = 1e-6           # rates, displayed as a percentage to four decimals
 
-MODEL_DIR = LIB / MODELS["Euro_FR_A"][0]
+MODEL_DIR = LIB / MODELS["Euro_FR_S"][0]
 
 CHECKS = ("check_av_roll_fwd", "check_ppb_roll_fwd", "check_ppb_clock",
           "check_pols_roll_fwd", "check_pb_allocation", "check_cliquet",
@@ -565,7 +565,7 @@ def test_the_dynamic_surrender_cap_binds_when_the_gap_is_wide():
     Raising the coefficient on a throwaway instance is the only way to see it, and seeing
     it is the point: a mass-lapse run here is a pre-management-action number in any case.
     """
-    model = mx.read_model(MODEL_DIR, name="Euro_FR_A_cap")
+    model = mx.read_model(MODEL_DIR, name="Euro_FR_S_cap")
     try:
         assert model.Projection.lapse_cap == 0.3
         model.Projection.lapse_dyn_a = 60.0
@@ -740,7 +740,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
 
     lighter = pd.read_csv(MODEL_DIR.parent / "mort_table.csv", index_col=["sex", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
-    model = mx.read_model(MODEL_DIR, name="Euro_FR_A_swap")
+    model = mx.read_model(MODEL_DIR, name="Euro_FR_S_swap")
     try:
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)
@@ -761,7 +761,7 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    model = mx.read_model(MODEL_DIR, name="Euro_FR_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="Euro_FR_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -771,7 +771,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="Euro_FR_A_rt")
+    reread = mx.read_model(dest, name="Euro_FR_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in TABLE_2.items():

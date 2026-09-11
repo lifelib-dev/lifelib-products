@@ -349,7 +349,7 @@ projection ends at `t = 143` and the step year begins at `t = 144`.
 *Fondsguthaben*; the whole surviving cohort is booked as `pols_maturity`. No cash flow moves
 either way, but the convention decides the split between `Σ pols_lapse` and
 `pols_maturity(proj_len() − 1)` and it is what the closure identity below reproduces. It is
-frlib's convention on `TD_FR_A` and delib adopts it.
+frlib's convention on `TD_FR_S` and delib adopts it.
 
 **Fund return.** No document in this corpus supplies one, and PRIIPs deliberately does not: its
 scenarios are derived from the underlying's own return history under the RTS, not chosen by the

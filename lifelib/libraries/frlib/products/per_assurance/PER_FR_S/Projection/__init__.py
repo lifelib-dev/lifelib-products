@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~.PER_FR_A` model.
+"""The by-policy projection of the :mod:`~.PER_FR_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -29,10 +29,10 @@ swapped without rewriting the model. This follows ``annuallife.TradLife_A``; con
 IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``PER_FR_A`` folder without its parent's CSVs produces a model that reads and then fails
+``PER_FR_S`` folder without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
-Each table has a filename Reference and a reader Cells, both on :mod:`~.PER_FR_A.Data`,
+Each table has a filename Reference and a reader Cells, both on :mod:`~.PER_FR_S.Data`,
 reached here through the ``data`` Reference:
 
 ======================  ==================================  ==========================
@@ -332,7 +332,7 @@ horizon is fifteen years rather than eight, because the commitments sit in a
 extension, and four of the seven sampled contracts have no contractual profit-sharing
 clause at all.
 
-The machinery this stands in for is implemented next door in ``Euro_FR_A`` and specified
+The machinery this stands in for is implemented next door in ``Euro_FR_S`` and specified
 in ``products/assurance_vie_euro/technical-notes.md`` — the *compte de participation aux
 résultats*, the PPB dotation-and-release lever and its vintage clock. Two things change on
 the way across: the release deadline is eight years there and fifteen here, and a PER euro

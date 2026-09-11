@@ -32,7 +32,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/per_assurance/PER_FR_A")
+model = mx.read_model("products/per_assurance/PER_FR_S")
 model.Projection[1].result_cf()
 ```
 
@@ -84,7 +84,7 @@ The plan is **blocked** until the `L. 224-1` maturity [R3]. There is no surrende
 no surrender charge and no market value adjustment, and the contracts say so in terms:
 the accumulation phase carries "no surrender right except in the statutory cases"
 [S2] [S3] [S4] [S7]. So there is **no `lapse_rate` and no `claims_lapse` anywhere in
-`PER_FR_A`**, and `test_there_is_no_lapse_machinery_anywhere` asserts their absence
+`PER_FR_S`**, and `test_there_is_no_lapse_machinery_anywhere` asserts their absence
 rather than leaving it to inspection.
 
 What leaves the book instead are two decrements that are not the same event and do not
@@ -311,7 +311,7 @@ eight, because the commitments sit in a *comptabilité auxiliaire d'affectation*
 [REG-R16] [R8 L. 142-4](#frlib-per_assurance-r8); modelling that stock is a fund-level scenario extension, and four
 of the seven sampled contracts have no contractual profit-sharing clause at all
 [S4] [S5] [S6] [S7]. The machinery this stands in for is implemented next door in
-`Euro_FR_A` and specified in
+`Euro_FR_S` and specified in
 [`../assurance_vie_euro/technical-notes.md`](../assurance_vie_euro/technical-notes.md) —
 the *compte de participation aux résultats*, the PPB dotation-and-release lever and its
 vintage clock. Two cautions before lifting it: the release deadline there is eight years
@@ -332,7 +332,7 @@ de diversification* supports [S4] [S6], which are the `eurocroissance` product.
 ## Inputs are external files
 
 The five input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `PER_FR_A/` holds nothing but formulas:
+folder. `PER_FR_S/` holds nothing but formulas:
 
 ```
 products/per_assurance/
@@ -346,7 +346,7 @@ products/per_assurance/
   product-spec.md              <- the documents this model implements
   technical-notes.md
   sources.md
-  PER_FR_A/                    <- formulas only
+  PER_FR_S/                    <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)

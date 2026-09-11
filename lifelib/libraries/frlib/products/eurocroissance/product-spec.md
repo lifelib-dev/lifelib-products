@@ -106,7 +106,7 @@ dispersion the product is supposed to have, and the euro fund is not, shows in G
 chassis** held in **two separate auxiliary accounts** — **Chassis A** (1° engagement, the
 pre-2020 generation) and **Chassis B** (2° engagement, the post-PACTE generation) — so that
 the same asset path can be run through both and the effect of the reform read off directly.
-The model these chassis feed is **`EC_FR_A`**, on an **annual** grid.
+The model these chassis feed is **`EC_FR_S`**, on an **annual** grid.
 
 ---
 
@@ -146,7 +146,7 @@ Footnotes to [std] rows:
    present value of the mutual engagements; R. 132-5-3 further **permits** the contract to
    provide **no indemnity at all** once it has been in force more than ten years, which is a
    permission and not a prohibition [R10]. The reference contract charges none at any
-   duration, and `EC_FR_A` returns zero beyond ten years unconditionally **[std]**, which is
+   duration, and `EC_FR_S` returns zero beyond ten years unconditionally **[std]**, which is
    that permission taken up rather than a rule the article imposes. No retrieved insurer
    document states a lock-up; AXA says surrender is available at
    any time and carries **no penalty** [S2], and Generali's third-party sheet shows none
@@ -164,7 +164,7 @@ Footnotes to [std] rows:
 |---|---|---|
 | Engagement type | Guarantee expressed **in euros and in parts** | [R1 L. 134-1 1°](#frlib-eurocroissance-r1) |
 | Provision mathématique | `PM(t) = MG(t) × (1 + i_pm)^-(n-t)` — the maturity guarantee discounted | [R2 R. 134-2](#frlib-eurocroissance-r2) |
-| Discount rate `i_pm` | **90 % of the last TEC*n*** published by the Banque de France, `n` = the holder's guarantee maturity (per-engagement method 1°) or the account's 1°-engagement duration (method 2°); linear interpolation between bracketing TEC maturities; longest available TEC beyond the curve; **floor 0 %**; the method choice binds the whole account and is **irreversible**. The article is silent on how that maturity is re-read at later valuation dates; `EC_FR_A` applies method 1° and takes the **remaining** term `n − t` each year, which is **[std]** — `technical-notes.md` states that reading and is the source of truth for the value the model uses | article [R3 A. 134-1](#frlib-eurocroissance-r3); the `n − t` re-reading **[std]**, `technical-notes.md` |
+| Discount rate `i_pm` | **90 % of the last TEC*n*** published by the Banque de France, `n` = the holder's guarantee maturity (per-engagement method 1°) or the account's 1°-engagement duration (method 2°); linear interpolation between bracketing TEC maturities; longest available TEC beyond the curve; **floor 0 %**; the method choice binds the whole account and is **irreversible**. The article is silent on how that maturity is re-read at later valuation dates; `EC_FR_S` applies method 1° and takes the **remaining** term `n − t` each year, which is **[std]** — `technical-notes.md` states that reading and is the source of truth for the value the model uses | article [R3 A. 134-1](#frlib-eurocroissance-r3); the `n − t` re-reading **[std]**, `technical-notes.md` |
 | Reference TEC10 | **2.50 %** to year 5, **1.00 %** from year 6 (rate-shock scenario) → `i_pm` 2.25 % then 0.90 % | **[std]** (5) |
 | Surrender / transfer value before maturity | `PM(t) + parts(t) × part value(t)`, less any R. 132-5-3 indemnity | [R2 R. 134-5](#frlib-eurocroissance-r2) |
 | Maturity amount | the same quantity — `PM(n) + parts(n) × part value(n)` | [R2 R. 134-6](#frlib-eurocroissance-r2) |
@@ -400,7 +400,7 @@ savings in unités de compte** or on piloted/convention management, held to **31
 and through to the attribution date, **no later than 1 April 2027**; money-market funds and
 PACTE-transfer initial payments are excluded [S3] [S4]. It is a marketing term rather than a
 term of the statutory mechanics this composite specifies, and it has **no counterpart in
-`EC_FR_A`** — no uplift Reference, no cells, no model-point column and no eligibility flag.
+`EC_FR_S`** — no uplift Reference, no cells, no model-point column and no eligibility flag.
 Also out of scope: temporary death assurance, which L. 134-1 excludes [R1];
 PER wrappers carrying a eurocroissance support (AXA's PER "Ma Retraite" eurocroissance
 credited **3.25 %** for 2025 [S3]) — see `../per_assurance/`; the *fonds en euros* and

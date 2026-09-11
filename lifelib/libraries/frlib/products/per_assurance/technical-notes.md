@@ -10,7 +10,7 @@ source list in `sources.md` (numbering carried from `_research/per-assurance.md`
 `references/regulatory-and-actuarial-references.md` (its own frozen R-numbering).
 **[std]** marks standardizations introduced for the reference implementation;
 [unverified] marks claims not confirmed against a retrieved document. Parameter values
-are identical to those in `product-spec.md`. The model is **PER_FR_A**, on an **annual**
+are identical to those in `product-spec.md`. The model is **PER_FR_S**, on an **annual**
 grid; the annuity that a liquidating plan buys is projected by `Rente_FR_S` and is
 specified in `products/rente_viagere/technical-notes.md`, not here.
 
@@ -316,7 +316,7 @@ Three things a reader should take from those notes rather than from these.
 - **The PPB is a two-way lever, and its clock is longer here.** The eight-year release
   deadline the euro-fund notes model is **fifteen** years for PER commitments, which sit
   in a *comptabilité auxiliaire d'affectation* [REG-R16] [R8 L. 142-4](#frlib-per_assurance-r8).
-  A PPB layer lifted from `Euro_FR_A` onto this product has to have that clock changed.
+  A PPB layer lifted from `Euro_FR_S` onto this product has to have that clock changed.
 - **A PER euro fund and an assurance vie euro fund are not the same contract.** Four of
   the seven sampled PER contracts have **no** contractual PB clause at all [S4] [S5] [S6]
   [S7], and the *garantie plancher* and glide path specified here have no counterpart in

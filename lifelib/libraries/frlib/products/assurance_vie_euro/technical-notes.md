@@ -13,7 +13,7 @@ refer to the cross-product reference library
 are identical to those in `product-spec.md`. The mechanics anchors are the insurers'
 own booklets [S1] [S2] [S3] [S4] [S9]; the statutory arithmetic is arts. A132-10 to
 A132-17 of the Code des assurances [R5] [REG-R15] [REG-R16]; the quantitative anchor is
-the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_A`, an **annual** model,
+the ACPR's 2025 revaluation study [R14]. The model is `Euro_FR_S`, an **annual** model,
 `t` counted in policy years from the valuation date and **0-based**.
 
 ---

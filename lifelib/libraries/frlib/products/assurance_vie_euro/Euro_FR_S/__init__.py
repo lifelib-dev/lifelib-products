@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for the French euro support (fonds en euros).
 
-:mod:`~.Euro_FR_A` is the executable counterpart of
+:mod:`~.Euro_FR_S` is the executable counterpart of
 ``products/assurance_vie_euro/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for single model points on the euro
 support of a `contrat d'assurance vie` — the standardized composite specified in
@@ -39,15 +39,15 @@ statements are true at once.
 
 **Spaces.** The model contains two:
 
-:mod:`~.Euro_FR_A.Data`
+:mod:`~.Euro_FR_S.Data`
     Reads the four input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.Euro_FR_A.Projection`
+:mod:`~.Euro_FR_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1, the notes' worked example. It reaches the input
     tables through its ``data`` Reference, which resolves to the single
-    :mod:`~.Euro_FR_A.Data` Space.
+    :mod:`~.Euro_FR_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed
@@ -96,13 +96,13 @@ modelling pitfall the notes list.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/assurance_vie_euro/Euro_FR_A")
+    >>> model = mx.read_model("products/assurance_vie_euro/Euro_FR_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "Euro_FR_A"
+_name = "Euro_FR_S"
 
 _allow_none = False
 

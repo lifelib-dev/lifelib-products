@@ -1,4 +1,4 @@
-"""Run the TD_FR_A reference model and print its cash flow statement.
+"""Run the TD_FR_S reference model and print its cash flow statement.
 
     python products/temporaire_deces/run.py            # anchor cell (point_id = 1)
     python products/temporaire_deces/run.py 2          # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "TD_FR_A")
+model = mx.read_model(Path(__file__).parent / "TD_FR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

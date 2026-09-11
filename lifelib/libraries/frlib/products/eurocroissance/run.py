@@ -1,4 +1,4 @@
-"""Run the EC_FR_A reference model and print its provision and cash flow statements.
+"""Run the EC_FR_S reference model and print its provision and cash flow statements.
 
     python products/eurocroissance/run.py            # Chassis A, the worked example
     python products/eurocroissance/run.py 2          # Chassis B, same asset path
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "EC_FR_A")
+model = mx.read_model(Path(__file__).parent / "EC_FR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

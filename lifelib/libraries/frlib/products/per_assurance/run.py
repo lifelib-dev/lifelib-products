@@ -1,4 +1,4 @@
-"""Run the PER_FR_A reference model and print its state and cash flow statements.
+"""Run the PER_FR_S reference model and print its state and cash flow statements.
 
     python products/per_assurance/run.py            # the notes' worked example
     python products/per_assurance/run.py 6          # the annuity that is not commuted
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "PER_FR_A")
+model = mx.read_model(Path(__file__).parent / "PER_FR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

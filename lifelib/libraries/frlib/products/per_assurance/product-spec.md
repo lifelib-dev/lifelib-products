@@ -19,7 +19,7 @@ against a retrieved document are flagged [unverified]. The mechanics anchors are
 retrieved *notices* / *conditions générales* [S1] [S2] [S3] [S4] [S7] and the two Cardif
 documents published under the fee-transparency arrêté [S8] [S9]; the first of these is
 called *the anchor contract* below. French terms of art stay French, glossed on first use.
-The model built from this specification is **PER_FR_A**, on an annual grid.
+The model built from this specification is **PER_FR_S**, on an annual grid.
 
 ---
 

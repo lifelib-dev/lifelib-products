@@ -1,4 +1,4 @@
-"""Golden and structural tests for EC_FR_A.
+"""Golden and structural tests for EC_FR_S.
 
 The golden values are the worked example in
 products/eurocroissance/technical-notes.md ("Worked example"), which is **two** model
@@ -65,7 +65,7 @@ def model_files(folder):
 CENT = 0.005          # money displayed to 2 d.p.
 PART = 0.00005        # parts and part values displayed to 4 d.p.
 
-MODEL_DIR = LIB / MODELS["EC_FR_A"][0]
+MODEL_DIR = LIB / MODELS["EC_FR_S"][0]
 
 # Chassis A, the notes' first table, keyed by the 0-based period index: row t is the
 # CLOSE of policy year t + 1.  The notes' opening row -- the state the initial versement
@@ -811,7 +811,7 @@ def test_a_tec_curve_can_be_swapped_without_touching_formulas():
                         index_col=["scenario", "year", "maturity"])
     lower["tec_rate"] = lower["tec_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="EC_FR_A_swap")
+    model = mx.read_model(MODEL_DIR, name="EC_FR_S_swap")
     try:
         alt_name = "tec_curve_low.csv"
         lower.to_csv(model.Data.input_dir() / alt_name)
@@ -851,7 +851,7 @@ def test_every_model_point_projects_and_every_check_holds(eurocroissance):
 
 def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
-    model = mx.read_model(MODEL_DIR, name="EC_FR_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="EC_FR_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -861,7 +861,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="EC_FR_A_rt")
+    reread = mx.read_model(dest, name="EC_FR_S_rt")
     try:
         p, b = reread.Projection[1], reread.Projection[2]
         for t, row in WORKED_A.items():

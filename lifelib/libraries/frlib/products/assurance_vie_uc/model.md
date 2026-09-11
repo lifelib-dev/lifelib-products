@@ -104,7 +104,7 @@ discretization of a design that observes weekly and levies monthly [S1] [S3] [S4
 | Plancher premium | **yes** | the price of the guarantee |
 | `Prélèvements sociaux` | no | withheld from the policyholder and remitted [R8] |
 | Fund-level recurring costs | no | inside `unit_price`, paid on to the fund manager [R13] |
-| Euro credited interest | no | a policyholder credit; the euro margin is `Euro_FR_A`'s |
+| Euro credited interest | no | a policyholder credit; the euro margin is `Euro_FR_S`'s |
 
 `social_levy_uc` is published as its own `result_cf()` column precisely so its *exclusion*
 from `net_cf` is visible rather than merely asserted. The fund-level costs are not a
@@ -239,7 +239,7 @@ At `t = 5` on the anchor cell the surrender's gain component is `4,033.25 × (1 
 year by year on the euro leg is restituted at final liquidation under art. L. 136-7
 III bis [R8]. Accruing the UC levy annually is a listed pitfall: it would understate the
 account value throughout and shrink the base the management charge is levied on. The euro
-leg's annual component belongs to `Euro_FR_A`. Whether the plancher top-up above the
+leg's annual component belongs to `Euro_FR_S`. Whether the plancher top-up above the
 account value sits inside the levy base is stated in **no retrieved document**; the model
 puts it outside and flags the treatment [unverified] (spec footnote 21).
 
@@ -408,7 +408,7 @@ Five cases needed care:
 Everything in this list is **[std]**: the `frais sur versement` of 1.00%, the UC
 management charge of 0.88% p.a. and the `frais d'arbitrage` of 0.50%; the `c/12` monthly
 accrual and the `(1 + i_e)^(1/12)` euro accrual; the euro credited rate of 2.50% net, which
-is a pointer to `Euro_FR_A` and not a model; the whole mortality basis and the 0.8
+is a pointer to `Euro_FR_S` and not a model; the whole mortality basis and the 0.8
 best-estimate factor; the surrender table and its duration-8 spike; the `cliquet` basis,
 which no retrieved document offers at all; the `1/12` monthly step replacing the published
 `1/52` weekly one, and the once-a-month observation of the `capital sous risque`; the three

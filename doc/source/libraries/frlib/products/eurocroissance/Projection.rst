@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: frlib.products.eurocroissance.EC_FR_A.Projection
+.. automodule:: frlib.products.eurocroissance.EC_FR_S.Projection
 
 Cells Descriptions
 ------------------

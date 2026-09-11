@@ -300,7 +300,7 @@ which is the library-wide sign. :func:`liability_cf` publishes the same stream
 outgo-positive, ``liability_cf(t) = -net_cf(t)`` exactly, so a Solvency II best estimate
 is ``sum v(t) x liability_cf(t)`` over whatever discount curve the valuation layer
 supplies. Both are columns of :func:`result_cf`, so the identity is verifiable in the
-frame rather than only in prose. Unlike ``TD_FR_A``, :func:`expenses` here does **not**
+frame rather than only in prose. Unlike ``TD_FR_S``, :func:`expenses` here does **not**
 include the commission: the two are separate lines of the notes' own cash flow statement
 and :func:`net_cf` subtracts each once.
 

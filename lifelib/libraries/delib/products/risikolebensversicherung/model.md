@@ -341,7 +341,7 @@ exist in the model and not in the subtotal. Which columns are *not* in it is the
 half of publishing it: `prem_gross` is the
 guaranteed stream and does not enter, and `prem_rebate` is the difference between the two
 premium columns and must not be subtracted again. `expenses` here **excludes**
-`commissions` — the opposite convention from `frlib.TD_FR_A`, whose notes fold commission
+`commissions` — the opposite convention from `frlib.TD_FR_S`, whose notes fold commission
 into the expense total. The two libraries' columns look alike and do not mean the same
 thing; this identity settles the reading.
 
@@ -416,7 +416,7 @@ the `Projection` Space docstring. Four cases needed care:
 | `B(t)` | `benefit_pp` / `benefit_paid_pp` | `benefit_pp` is the contractual *Versicherungssumme*; what a death claim actually pays differs inside a § 161 window, tranche by tranche, and `suicide_factor` is the ratio of the two |
 | `w(t)` vs `w_cum(t)` | `lapse_rate` / `lapse_cum` | `lapse_cum` is a proportion of the original cohort, not a running total of `lapse_rate`, and the loading it feeds moves *claims* |
 
-**The sister model that shares this chassis is `frlib`'s `TD_FR_A`** — the French
+**The sister model that shares this chassis is `frlib`'s `TD_FR_S`** — the French
 *temporaire décès*, the same product in another market — and the shared vocabulary is
 deliberate: `pols_if_at`, `lapse_cum`, `suicide_factor`, `benefit_pp`, `mort_rate_base`,
 `prem_freq_load`, `check_no_cash_value` and `liability_cf` mean the same thing on both.

@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: frlib.products.temporaire_deces.TD_FR_A.Data
+.. automodule:: frlib.products.temporaire_deces.TD_FR_S.Data
 
 Cells Descriptions
 ------------------

@@ -76,7 +76,7 @@ so the "every lapse is a free profit release" arithmetic of the UK design does n
 
 ## Deltas against the temporaire décès chassis
 
-`../temporaire_deces/technical-notes.md` specifies **`TD_FR_A`**, this library's protection
+`../temporaire_deces/technical-notes.md` specifies **`TD_FR_S`**, this library's protection
 chassis — an individual French death cover on a decrement-and-premium engine that this product
 reuses rather than reinvents. Those notes are the source of truth for the chassis; this section
 states only what `Obseques_FR_S` takes unchanged and where it departs, and does not restate the
@@ -99,7 +99,7 @@ products the benefit is a stated capital, not a fund.
 
 Five departures, and each is first-order.
 
-| | `TD_FR_A` — *temporaire décès* | `Obseques_FR_S` — *obsèques* |
+| | `TD_FR_S` — *temporaire décès* | `Obseques_FR_S` — *obsèques* |
 |---|---|---|
 | Underwriting | Underwritten issue: a two-tier *déclaration de santé* escalating to a full *questionnaire médical* and thence to examinations, with a *surprime* multiplier (`rating_factor`) on the tariff rate | **Guaranteed acceptance**: no questionnaire, no examination, at every retrieved contract [S1] [S11] [S12] [S13]. There is no rating factor and no rated-lives dimension |
 | Anti-selection device | Underwriting itself; a *délai d'attente* only where the adhesion carried no medical formality, and off (`waiting_period_y = 0`) in the base run | A **12-month *délai de carence* on every contract that states a duration** [S1] [S8] [S9] [S11] [S13] — the rest reference *carences* in their tables without giving one [S5] [S14] [S15] [S16] — because underwriting is always waived. Not a variant: it is the chassis of the product |
@@ -108,13 +108,13 @@ Five departures, and each is first-order.
 | Premium-stops | `pols_lapse` moves `pols_if` and **nothing else**; `claims_lapse(t)` is structurally zero, by statute | `pols_lapse` is **paid `surr_value_pp(t)`**; `claims_lapse` is non-zero from t = 0 and worth 1005.89 € over the anchor cell's horizon |
 
 Two second-order differences follow from the first five and are worth stating so an implementer
-does not carry a chassis habit across. `TD_FR_A` runs an **annual** grid, because the contract
+does not carry a chassis habit across. `TD_FR_S` runs an **annual** grid, because the contract
 is a one-year cover renewed by *tacite reconduction* and repriced at every renewal, and its
 horizon ends at a stated `cover_end_age` where nothing is payable; this model runs a **monthly**
 grid, because the *carence* boundary at twelve months must not be smoothed, and it has **no term at
 all** — `proj_len = 12 × (omega − entry_age + 1)` with omega = 112 **[std]**, and the contract
 ends only on death, on *rachat* or on lapse [S1] [S8] [S9] [S11]. And the premium moves in
-opposite ways: on `TD_FR_A` the tariff is re-read at the new attained age at every renewal, so
+opposite ways: on `TD_FR_S` the tariff is re-read at the new attained age at every renewal, so
 the premium rises with age by construction; here it is **fixed at inception** and the form is
 final [S1] [S5] [S14], which is exactly what produces the overrun — cumulative premiums grow
 without bound while the capital grows at most at `reval_rate`.
@@ -122,7 +122,7 @@ without bound while the capital grows at most at `reval_rate`.
 The statutory hinge under the last row of the table is one article. Art. L. 132-23 CA withholds
 *réduction* and *rachat* from *assurances temporaires en cas de décès* and from immediate or
 in-payment life annuities, and withholds *rachat* from survivorship capitals, pure endowments
-and deferred annuities without return of premium. `TD_FR_A` is squarely the first of those, so
+and deferred annuities without return of premium. `TD_FR_S` is squarely the first of those, so
 it has no surrender value, no paid-up value and no cash-value machinery at any duration. A
 whole-life funeral contract is none of them: it falls in the residual *autres assurances sur la
 vie* class, where "*l'assureur ne peut refuser la réduction ou le rachat*" [R10] — which is why

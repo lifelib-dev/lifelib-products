@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for French eurocroissance business.
 
-:mod:`~.EC_FR_A` is the executable counterpart of
+:mod:`~.EC_FR_S` is the executable counterpart of
 ``products/eurocroissance/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for single-policy model points on the
 two composite chassis those notes specify — **Chassis A**, the 1° engagement carrying a
@@ -44,14 +44,14 @@ computed, reported and kept out of every benefit column;
 
 **Spaces.** The model contains two:
 
-:mod:`~.EC_FR_A.Data`
+:mod:`~.EC_FR_S.Data`
     Reads the five input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.EC_FR_A.Projection`
+:mod:`~.EC_FR_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.EC_FR_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.EC_FR_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -102,13 +102,13 @@ every exit value the two chassis pay.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/eurocroissance/EC_FR_A")
+    >>> model = mx.read_model("products/eurocroissance/EC_FR_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "EC_FR_A"
+_name = "EC_FR_S"
 
 _allow_none = False
 

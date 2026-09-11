@@ -1,4 +1,4 @@
-"""Golden and structural tests for TD_FR_A.
+"""Golden and structural tests for TD_FR_S.
 
 The golden values are the worked example in
 products/temporaire_deces/technical-notes.md ("Worked example"), which is a
@@ -54,7 +54,7 @@ def model_files(folder):
 CENT = 0.005          # money displayed to 2 d.p.
 SIX_DP = 0.0000005    # pols_if displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["TD_FR_A"][0]
+MODEL_DIR = LIB / MODELS["TD_FR_S"][0]
 
 # t: (attained age, r(x), pols_if, premiums, claims_death, claims_ptia, expenses, net_cf)
 # The notes' worked-example table, in full.  claims_lapse is 0.00 at every t and is
@@ -576,7 +576,7 @@ def test_the_accidental_option_is_a_share_and_not_an_uplift(temporaire_deces):
     assert all(opt.accident_extra_pp(t) == 0.0 for t in range(17))
     assert (opt.result_cf() - base.result_cf()).abs().max().max() == 0.0
 
-    model = mx.read_model(MODEL_DIR, name="TD_FR_A_acc")
+    model = mx.read_model(MODEL_DIR, name="TD_FR_S_acc")
     try:
         model.Projection.acc_share = 0.1
         model.Projection.clear_all()
@@ -644,7 +644,7 @@ def test_the_premium_shock_module_bites_where_the_grid_steps():
     The grid's +38 % step at age 60 is the only year whose cotisation rise clears the 10 %
     tolerance, which is the whole point of carrying the module on a revisable form.
     """
-    model = mx.read_model(MODEL_DIR, name="TD_FR_A_shock")
+    model = mx.read_model(MODEL_DIR, name="TD_FR_S_shock")
     try:
         model.Projection.shock_lapse_beta = 1.5
         model.Projection.clear_all()
@@ -664,7 +664,7 @@ def test_the_selective_lapsation_module_loads_persisters():
     Cumulative lapse reaches 64,6 % over the worked configuration, so the loading is
     reached and then grows -- larger here than on a UK guaranteed-premium term policy.
     """
-    model = mx.read_model(MODEL_DIR, name="TD_FR_A_sel")
+    model = mx.read_model(MODEL_DIR, name="TD_FR_S_sel")
     try:
         model.Projection.sel_lapse_lambda = 0.25
         model.Projection.clear_all()
@@ -682,7 +682,7 @@ def test_the_selective_lapsation_module_loads_persisters():
 
 def test_tariff_drift_reprices_the_card_and_nothing_else():
     """A drift assumption is a premium-income assumption, not a mortality one."""
-    model = mx.read_model(MODEL_DIR, name="TD_FR_A_drift")
+    model = mx.read_model(MODEL_DIR, name="TD_FR_S_drift")
     try:
         model.Projection.tariff_drift = 0.02
         model.Projection.clear_all()
@@ -802,7 +802,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     lighter = pd.read_csv(MODEL_DIR.parent / "mort_table.csv", index_col="age")
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="TD_FR_A_swap")
+    model = mx.read_model(MODEL_DIR, name="TD_FR_S_swap")
     try:
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)
@@ -824,7 +824,7 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    model = mx.read_model(MODEL_DIR, name="TD_FR_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="TD_FR_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -834,7 +834,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="TD_FR_A_rt")
+    reread = mx.read_model(dest, name="TD_FR_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

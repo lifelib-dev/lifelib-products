@@ -30,7 +30,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/eurocroissance/EC_FR_A")
+model = mx.read_model("products/eurocroissance/EC_FR_S")
 model.Projection[1].result_provisions()
 ```
 
@@ -296,7 +296,7 @@ the statutory mechanics this model demonstrates. Adding one would mean a rate ov
 ## Inputs are external files
 
 The five input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `EC_FR_A/` holds nothing but formulas:
+folder. `EC_FR_S/` holds nothing but formulas:
 
 ```
 products/eurocroissance/
@@ -310,7 +310,7 @@ products/eurocroissance/
   product-spec.md              <- the documents this model implements
   technical-notes.md
   sources.md
-  EC_FR_A/                     <- formulas only
+  EC_FR_S/                     <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)

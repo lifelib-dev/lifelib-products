@@ -635,7 +635,7 @@ each `_research/<slug>.md` closes with its own numbered register.
   table would not by itself remove. Whether a successor to DAV 1997 I exists could not be
   established, and the DAV table *names* used in the BU file are themselves marked [unverified].
 - **There is no public German rate card, and no price point of any kind, for any of the ten
-  products.** frlib had one published attained-age grid that `TD_FR_A` reproduces exactly; delib
+  products.** frlib had one published attained-age grid that `TD_FR_S` reproduces exactly; delib
   has none. Every premium in this library is computed by the model's own equivalence principle on
   [std] bases and **no delib premium reproduces a published figure**. The single highest-value
   missing datum is named in the term-life register: one published *Bruttobeitrag* / *Zahlbeitrag*

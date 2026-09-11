@@ -162,7 +162,7 @@ nothing in any event.
 **``expenses`` here excludes ``commissions``.** The notes' identity is ``net_cf =
 premiums - claims - expenses - commissions`` and :func:`result_cf` publishes the four
 parts, so subtracting both is right rather than double-counting. That is the opposite
-convention from ``frlib.TD_FR_A``, where the notes fold commission into the expense total,
+convention from ``frlib.TD_FR_S``, where the notes fold commission into the expense total,
 and it is stated here because the two libraries' columns look alike and do not mean the
 same thing. :func:`check_net_cf` is the identity in code.
 
@@ -1361,7 +1361,7 @@ def expenses(t):
 
     Commission is **not** in here.  It is :func:`commissions`, its own column, and
     :func:`net_cf` subtracts the two separately — the opposite convention from
-    ``frlib.TD_FR_A``, whose notes fold commission into the expense total.  The two
+    ``frlib.TD_FR_S``, whose notes fold commission into the expense total.  The two
     libraries' columns look alike and do not mean the same thing, so the identity is
     written down in :func:`check_net_cf` rather than left to a reader's assumption.
     """
@@ -1436,7 +1436,7 @@ def check_net_cf_resid(t):
     ``prem_gross`` is published beside ``premiums`` and must **not** enter the identity,
     and ``prem_rebate`` is the difference between them and must not be subtracted a second
     time — and the commission convention, which is a column of its own here and part of
-    the expense total in ``frlib.TD_FR_A``.
+    the expense total in ``frlib.TD_FR_S``.
     """
     row = result_cf().loc[t]
     rebuilt = (row["premiums"] - row["claims_death"] - row["claims_lapse"]

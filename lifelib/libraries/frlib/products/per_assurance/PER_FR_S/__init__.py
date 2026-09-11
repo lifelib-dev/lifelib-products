@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for the French PER individuel assurantiel.
 
-:mod:`~.PER_FR_A` is the executable counterpart of
+:mod:`~.PER_FR_S` is the executable counterpart of
 ``products/per_assurance/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for single-policy model points on the
 composite *plan d'épargne retraite* those notes specify: a compartment-1 PER assurantiel
@@ -26,14 +26,14 @@ with one decrement, attaches the wrong payment formula to half the exits.
 
 **Spaces.** The model contains two:
 
-:mod:`~.PER_FR_A.Data`
+:mod:`~.PER_FR_S.Data`
     Reads the five input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.PER_FR_A.Projection`
+:mod:`~.PER_FR_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.PER_FR_A.Data` Space.
+    Reference, which resolves to the single :mod:`~.PER_FR_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -87,13 +87,13 @@ the three decrements, and the settlement with its commutation identity.
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/per_assurance/PER_FR_A")
+    >>> model = mx.read_model("products/per_assurance/PER_FR_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "PER_FR_A"
+_name = "PER_FR_S"
 
 _allow_none = False
 

@@ -1,4 +1,4 @@
-"""Golden and structural tests for PER_FR_A.
+"""Golden and structural tests for PER_FR_S.
 
 The golden values are the worked example in
 ``products/per_assurance/technical-notes.md`` ("Worked example"): a male aged 52 with a
@@ -53,7 +53,7 @@ from fr_registry import LIB, MODELS
 CENT = 0.005          # money displayed to 2 d.p.
 POLS = 5e-7           # the in-force probability displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["PER_FR_A"][0]
+MODEL_DIR = LIB / MODELS["PER_FR_S"][0]
 PRODUCT_DIR = MODEL_DIR.parent
 
 # t (0-based): (k, a(t), arb, av_euro_pp, av_uc_pp, av_pp, l(t))
@@ -678,7 +678,7 @@ def test_the_deduction_election_is_carried_and_inert(per_assurance):
     assert set(per_assurance.Data.model_point_table()["deduction_elected"]) == {
         True, False}
 
-    model = mx.read_model(MODEL_DIR, name="PER_FR_A_ded")
+    model = mx.read_model(MODEL_DIR, name="PER_FR_S_ded")
     try:
         path = alt_model_point_file(
             model, [anchor_row(deduction_elected=False)],
@@ -701,7 +701,7 @@ def test_the_deduction_election_is_carried_and_inert(per_assurance):
 
 def test_a_c3_cell_electing_capital_raises():
     """The compartment rule is enforced, not assumed - and the table cannot hold the row."""
-    model = mx.read_model(MODEL_DIR, name="PER_FR_A_c3")
+    model = mx.read_model(MODEL_DIR, name="PER_FR_S_c3")
     try:
         path = alt_model_point_file(
             model, [anchor_row(compartment="c3", exit_form="mixed")],
@@ -717,7 +717,7 @@ def test_a_c3_cell_electing_capital_raises():
 
 def test_an_annuity_share_contradicting_the_exit_form_raises():
     """capital_single with a 30% annuity share is two statements, not one."""
-    model = mx.read_model(MODEL_DIR, name="PER_FR_A_share")
+    model = mx.read_model(MODEL_DIR, name="PER_FR_S_share")
     try:
         path = alt_model_point_file(
             model, [anchor_row(exit_form="capital_single", annuity_share=0.30)],
@@ -902,7 +902,7 @@ def test_the_glide_path_can_be_swapped_without_touching_formulas():
     harder["euro_share"] = (harder["euro_share"] + 0.10).clip(upper=1.0)
     harder["uc_share"] = 1.0 - harder["euro_share"]
 
-    model = mx.read_model(MODEL_DIR, name="PER_FR_A_grid")
+    model = mx.read_model(MODEL_DIR, name="PER_FR_S_grid")
     try:
         alt = "allocation_grid_hard.csv"
         harder.to_csv(model.Data.input_dir() / alt)
@@ -950,7 +950,7 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    model = mx.read_model(MODEL_DIR, name="PER_FR_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="PER_FR_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -960,7 +960,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in PRODUCT_DIR.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="PER_FR_A_rt")
+    reread = mx.read_model(dest, name="PER_FR_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

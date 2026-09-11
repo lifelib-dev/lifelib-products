@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~.TD_FR_A` model.
+"""The by-policy projection of the :mod:`~.TD_FR_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -32,11 +32,11 @@ input can be edited or swapped without rewriting the model. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``TD_FR_A`` folder without its parent's CSVs produces a model that reads and then fails
+``TD_FR_S`` folder without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~.TD_FR_A.Data`, reached here through the ``data`` Reference:
+:mod:`~.TD_FR_S.Data`, reached here through the ``data`` Reference:
 
 ========================  =================================  ==========================
 Reference                 Cells                              File

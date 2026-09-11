@@ -269,7 +269,7 @@ and only model point 5 uses it.
 *Fondsguthaben*, and the whole surviving cohort is booked as ``pols_maturity``. No cash
 flow moves either way; the convention only decides the split between the lapse total and
 the maturity count, and it is what the closure identity reproduces. It is frlib's
-convention on ``TD_FR_A`` and delib adopts it.
+convention on ``TD_FR_S`` and delib adopts it.
 
 ``age(proj_len() - 1) = annuity_age - 1``, because the annuity begins at the **end** of
 that month. The *Rentenfaktor* is read at ``annuity_age`` and not at ``age(proj_len() -

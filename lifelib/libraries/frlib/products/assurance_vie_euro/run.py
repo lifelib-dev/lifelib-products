@@ -1,4 +1,4 @@
-"""Run the Euro_FR_A reference model and print its crediting and cash flow statements.
+"""Run the Euro_FR_S reference model and print its crediting and cash flow statements.
 
     python products/assurance_vie_euro/run.py            # the worked example's anchor cell
     python products/assurance_vie_euro/run.py 7          # the same cell, low scenario
@@ -12,7 +12,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "Euro_FR_A")
+model = mx.read_model(Path(__file__).parent / "Euro_FR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

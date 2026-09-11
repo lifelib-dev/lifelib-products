@@ -1,7 +1,7 @@
-The **TD_FR_A** Model
+The **TD_FR_S** Model
 =====================
 
-.. automodule:: frlib.products.temporaire_deces.TD_FR_A
+.. automodule:: frlib.products.temporaire_deces.TD_FR_S
 
 .. toctree::
    :hidden:

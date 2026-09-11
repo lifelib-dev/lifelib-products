@@ -225,7 +225,7 @@ The *Risikozuschlag* multiplies the **gross** premium and never the benefit, so 
 invariant to it: point 13 prices at 283,130286 € against an unrated 188,753524 €, exactly 1,50 ×.
 
 **There is no published German rate card for this product to reproduce** — the single largest
-difference between this model and frlib's `TD_FR_A`, which reproduces a real attained-age grid. The
+difference between this model and frlib's `TD_FR_S`, which reproduces a real attained-age grid. The
 premium here is computed, and the notes sanity-check its level against an argued 50,00–100,00 €
 band rather than against a citation.
 

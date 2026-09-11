@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: frlib.products.eurocroissance.EC_FR_A.Data
+.. automodule:: frlib.products.eurocroissance.EC_FR_S.Data
 
 Cells Descriptions
 ------------------

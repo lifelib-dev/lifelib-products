@@ -28,7 +28,7 @@ python products/assurance_vie_euro/run.py 8          # the high scenario, PPB bu
 
 ```python
 import modelx as mx
-model = mx.read_model("products/assurance_vie_euro/Euro_FR_A")
+model = mx.read_model("products/assurance_vie_euro/Euro_FR_S")
 model.Projection[1].result_cf()
 ```
 
@@ -280,7 +280,7 @@ truncation and not a contractual event.
 ## Inputs are external files
 
 The four input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `Euro_FR_A/` holds nothing but formulas:
+folder. `Euro_FR_S/` holds nothing but formulas:
 
 ```
 products/assurance_vie_euro/
@@ -293,7 +293,7 @@ products/assurance_vie_euro/
   product-spec.md              <- the documents this model implements
   technical-notes.md
   sources.md
-  Euro_FR_A/                   <- formulas only
+  Euro_FR_S/                   <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)

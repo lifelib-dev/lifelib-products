@@ -30,7 +30,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/temporaire_deces/TD_FR_A")
+model = mx.read_model("products/temporaire_deces/TD_FR_S")
 model.Projection[1].result_cf()
 ```
 
@@ -195,7 +195,7 @@ changes what a claim pays, never who leaves.
 ## Inputs are external files
 
 The six input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `TD_FR_A/` holds nothing but formulas:
+folder. `TD_FR_S/` holds nothing but formulas:
 
 ```
 products/temporaire_deces/
@@ -210,7 +210,7 @@ products/temporaire_deces/
   product-spec.md              <- the documents this model implements
   technical-notes.md
   sources.md
-  TD_FR_A/                     <- formulas only
+  TD_FR_S/                     <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -242,7 +242,7 @@ read, so it works wherever the repository is checked out.
 | `freq_loading_file` | `freq_loading_table()` | `freq_loading_table.csv` |
 | `benefit_schedule_file` | `benefit_schedule()` | `benefit_schedule.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `TD_FR_A/` without the
+**The trade-off:** the model is not portable on its own. Copy `TD_FR_S/` without the
 CSVs and it will read fine, then fail on first evaluation. What you gain is that a diff
 of the model shows logic changes only, and an input can be swapped in place — point
 `Data.mort_table_file` at another same-schema file and the projection follows, with no
