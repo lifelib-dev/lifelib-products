@@ -309,7 +309,7 @@ mechanics demonstrations.
 The notes define `CF(t)` as total gross liability **outgo**, which is `liability_cf`;
 `net_cf` is its negative, the library-wide income-positive convention. Both are published
 as `result_cf()` columns rather than one being made to stand for the other — the same
-arrangement `SPIA_US_S`, `DIA_US_S` and `WholeLife_US_A` use. There is no premium income
+arrangement `SPIA_US_S`, `DIA_US_S` and `WholeLife_US_S` use. There is no premium income
 in the projection at all: the purchase price is a pricing input paid at outset, before
 the first projected month.
 

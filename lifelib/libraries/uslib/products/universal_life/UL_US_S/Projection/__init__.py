@@ -209,7 +209,7 @@ cascade is a diagnostic and no in-grace state is held (:func:`is_shortfall`);
 Eight names needed care.
 
 The notes' ``risk_class`` is :func:`rate_class` here, and the model point table column
-is ``rate_class`` too. The name is taken from ``Term_US_A``/``BasicTerm_S``, which
+is ``rate_class`` too. The name is taken from ``Term_US_S``/``BasicTerm_S``, which
 this library follows ahead of the notes wherever the two collide; ``rate_class`` also
 avoids reading as Python's ``class``. The six classes themselves are the product
 spec's, unchanged.

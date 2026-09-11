@@ -37,14 +37,14 @@ The model and its `Projection` Space both carry docstrings — `model.doc` descr
 product and the projection basis, and `model.Projection.doc` holds the full mapping
 between the technical notes' symbols and the cells names.
 
-## No tail states — the structural contrast with `Term_US_A`
+## No tail states — the structural contrast with `Term_US_S`
 
 `t` runs 0 … `proj_len() − 1`, where `proj_len()` = `policy_term()` is the number of
 policy years, and **there is nothing after it**. Cover ceases at the end of the term
 with no maturity value, no renewal and no conversion [S1] [S2] [S6] [S8] [R8].
 
 That is the one difference from this library's U.S. term model that changes the shape
-of the liability rather than a parameter. `Term_US_A` runs a *post-level-term* phase:
+of the liability rather than a parameter. `Term_US_S` runs a *post-level-term* phase:
 premiums jump to ART rates at the end of the level period, a shock lapse takes 80% of
 the block, the survivors are loaded for mortality deterioration, and coverage continues
 to attained age 95. None of that exists here — no `phase`, no `jump_ratio`, no
@@ -246,7 +246,7 @@ pols_if(t) − pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 
 This is bookkeeping, not a new assumption — the value is fully determined by the notes'
 own rules — and it is *not* a maturity benefit: the amount paid is nil. The name follows
-`BasicTerm_S.pols_maturity`, and `Term_US_A` carries the same cells for the same reason.
+`BasicTerm_S.pols_maturity`, and `Term_US_S` carries the same cells for the same reason.
 
 ## Modules that are off in the base run
 
@@ -277,7 +277,7 @@ no fetched insurer offers indexed decreasing cover.
 ## Sign convention
 
 The notes' `CF(t)` is already **income positive** — they write "+ = inflow" — which is
-the library-wide sign of `net_cf`. So unlike `WholeLife_US_A`, `SPIA_US_S` and
+the library-wide sign of `net_cf`. So unlike `WholeLife_US_S`, `SPIA_US_S` and
 `DIA_US_S`, whose notes print the stream outgo-positive and which therefore publish a
 `liability_cf` companion column, there is one stream here under one name.
 

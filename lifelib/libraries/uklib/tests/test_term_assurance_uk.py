@@ -128,7 +128,7 @@ def test_new_business_strain_then_thin_margins(uk_term_anchor):
 
 
 # ---------------------------------------------------------------------------
-# No tail states — the structural contrast with Term_US_A
+# No tail states — the structural contrast with Term_US_S
 
 
 def test_projection_ends_with_the_term(uk_term_anchor):
@@ -149,7 +149,7 @@ def test_projection_ends_with_the_term(uk_term_anchor):
 
 
 def test_no_post_level_term_machinery(term_assurance):
-    """None of Term_US_A's tail cells exist here, and that is a product fact.
+    """None of Term_US_S's tail cells exist here, and that is a product fact.
 
     A UK term policy expires; it does not jump to ART rates, shock-lapse, deteriorate
     or convert.  Importing that machinery materially misstates UK term liabilities,

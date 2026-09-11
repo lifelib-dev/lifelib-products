@@ -77,8 +77,8 @@ ages. In `model_point_table.csv`, `duration_mth_init` is an **elapsed count** �
 model point 2, meaning the cell opens in its 27th policy month — and `bonus_end_init` is
 a 1-based contract-year label; neither moves with the frame.
 
-**Note the contrast with `Term_US_A`, where `t` counts years.** Monthly is forced here
-by the notes' own last pitfall, *discretization drift*: the base contract charge accrues
+**Monthly is the library-wide grid, but here it is forced** by the notes' own last
+pitfall, *discretization drift*: the base contract charge accrues
 **daily** on separate-account value and is applied at one-twelfth of the annual rate at
 each month end **[std]**; the two rider charges are assessed **quarterly** on benefit
 bases; and the GMDB roll-up and the GLWB bonus are credited **annually** at the Contract
@@ -204,8 +204,8 @@ The technical notes use compact actuarial symbols; the full mapping lives in the
 | Notes | Cells | Why |
 |---|---|---|
 | `E(t)` — the **guarantee** excess | `wd_excess_pp` | In `MYGA_US_S` the same name means the **charge** base. Here those are two different quantities and both exist; the charge base is `wd_chargeable_pp`. This is the easiest mistake to make in this library |
-| `E(t)` in `Term_US_A` | `expenses` | Expenses there, a withdrawal split here |
-| `c(t)` — the CDSC | `wd_charge_pp` | `c(t)` is the Model #805 contract charge on the chassis and conversions in `Term_US_A` |
+| `E(t)` in `Term_US_S` | `expenses` | Expenses there, a withdrawal split here |
+| `c(t)` — the CDSC | `wd_charge_pp` | `c(t)` is the Model #805 contract charge on the chassis and conversions in `Term_US_S` |
 | `M` — moneyness | `moneyness_glwb` / `moneyness_gmdb` | `M(t)` is the market value adjustment on the chassis. A VA separate account has no MVA at all, so the collision is only in the reader's memory |
 | `g` — the GAWA% | `gawa_pct_at_age` | `g` is the monthly nonforfeiture factor on the chassis |
 | `b` — the bonus percentage | `bonus_pct` | `b` is the MVA distribution yield on the chassis |
@@ -425,7 +425,7 @@ closes for every `t`. The identity is written on the start-of-month counts `pols
 carries: `pols_if(proj_len())` is zero, every survivor of the horizon month having
 left as `pols_maturity`. This is bookkeeping determined by the horizon, not an added
 assumption; the name and the construction follow `BasicTerm_S.pols_maturity`,
-`Term_US_A` and `MYGA_US_S`.
+`Term_US_S` and `MYGA_US_S`.
 
 Worth knowing: **the base run depletes.** On the anchor cell the account reaches zero in
 its 229th policy month, `t = 228`, attained age 79 — 5.75% of a benefit base that keeps ratcheting, plus

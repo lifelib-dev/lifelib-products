@@ -79,7 +79,7 @@ numbers at the same `t`.
 **Neither cell has an account value, a unit fund or a surrender value.** Both are pure
 decrement protection models: premiums in, death benefits and expenses out, weighted by
 survivorship. That is the deliberate contrast with
-[`WholeLife_US_A`](../../../uslib/products/whole_life/model.md), the U.S. whole life model in
+[`WholeLife_US_S`](../../../uslib/products/whole_life/model.md), the U.S. whole life model in
 the same library, which is built around a guaranteed cash value schedule, three-factor
 dividends, paid-up additions, a dividend accumulation balance and policy loans. None of
 that machinery exists here — no `cv_pp`, no `div_*`, no `pua_*`, no `loan_bal` — and a

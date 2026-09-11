@@ -338,7 +338,7 @@ RETIRED_NAMES = {
     "lapse_rate_ann": "lapse_rate (annual), with lapse_rate_mth for the monthly rate",
     "free_wd_used_pp": "wd_free_pp, the fixed-deferred-annuity chassis name",
     "free_wd_taken_pp": "wd_free_pp",
-    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_A.premium_net_pp)",
+    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_S.premium_net_pp)",
     "mort_a_e_factor": "mort_be_factor in this library — see mort_ae_factor below",
     "ae_factor": "mort_be_factor in this library — see mort_ae_factor below",
     "omega": "omega_age",
@@ -357,7 +357,7 @@ RETIRED_NAMES = {
     "mort_rate_tab": "mort_rate_at_age",
     "premium_net_pp": (
         "prem_net_level_pp — a net *level* premium is a pricing quantity that never "
-        "becomes a cash flow, while WholeLife_US_A.premium_net_pp is the premium actually "
+        "becomes a cash flow, while WholeLife_US_S.premium_net_pp is the premium actually "
         "collected after the dividend offset"
     ),
     "premium_net_at": "prem_net_level_at",

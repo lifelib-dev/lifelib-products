@@ -258,7 +258,7 @@ monthly expense is added. The column is the annuity instalment alone.
 This is not resolvable from the notes, so the model names both and the tests assert both.
 `annuity_payments(t)` is `E[ANN(t)]` and is what the worked-example rows are asserted
 against; `liability_cf(t)` is the notes' `CF(t)`, outgo positive, and is asserted at
-505.00. `net_cf(t) = −liability_cf(t)` keeps `Term_US_A`'s sign convention (income less
+505.00. `net_cf(t) = −liability_cf(t)` keeps `Term_US_S`'s sign convention (income less
 outgo) so the two models' cash flow statements read the same way, even though this product
 has no projected income at all. **Both are columns of `result_cf()`** — the notes' stream
 survives verbatim under the name the notes give it, and the library-wide income-positive

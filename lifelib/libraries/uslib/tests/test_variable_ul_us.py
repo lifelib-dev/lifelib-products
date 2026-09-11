@@ -805,7 +805,7 @@ def test_pols_if_is_the_start_of_month_weight(anchor):
 def test_dynamic_behavior_module_is_off_by_default(anchor):
     """rho = 1 and lambda = 1, so the base run pays the planned premium in full.
 
-    This is what makes the worked example's "$500/month paid" reproduce; Term_US_A
+    This is what makes the worked example's "$500/month paid" reproduce; Term_US_S
     switches conversion off for the same reason.
     """
     assert anchor.dyn_behavior_on is False

@@ -1,7 +1,7 @@
-The **WholeLife_US_A** Model
+The **WholeLife_US_S** Model
 ============================
 
-.. automodule:: uslib.products.whole_life.WholeLife_US_A
+.. automodule:: uslib.products.whole_life.WholeLife_US_S
 
 .. toctree::
    :hidden:

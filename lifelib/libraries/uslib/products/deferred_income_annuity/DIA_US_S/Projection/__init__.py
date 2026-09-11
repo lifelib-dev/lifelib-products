@@ -1682,7 +1682,7 @@ def liability_cf(t):
 def net_cf(t):
     """Net cash flow to the insurer in month t: premium income less liability outgo.
 
-    The sign convention of ``Term_US_A.net_cf``.  Unlike the immediate-annuity chassis
+    The sign convention of ``Term_US_S.net_cf``.  Unlike the immediate-annuity chassis
     this product **does** carry premium income in the projection, because premiums are
     flexible and fall throughout the deferral - so premium income nets here, and
     :func:`liability_cf` is this stream negated rather than the gross outgo

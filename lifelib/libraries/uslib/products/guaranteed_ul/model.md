@@ -190,7 +190,7 @@ needed care:
 
 | Notes | Cells | Why |
 |---|---|---|
-| `risk_class` | `rate_class` | The name `Term_US_A` and `UL_US_S` both use for the underwriting class, and the one the model point table column carries. The only model point attribute renamed on cross-model grounds rather than for a reason internal to this product |
+| `risk_class` | `rate_class` | The name `Term_US_S` and `UL_US_S` both use for the underwriting class, and the one the model point table column carries. The only model point attribute renamed on cross-model grounds rather than for a reason internal to this product |
 | `l_t` | `pols_if(t)`, no offset | These notes define `l_t` at the **beginning** of month `t`, before that month's decrements, so it maps straight onto `pols_if(t)` — the same convention the universal life chassis uses for its own `l(t)` |
 | `AV'(t)` | `av_pp_at(t, "BEF_COI")` | Measured **after the expense charges**, one step later than the chassis' `"BEF_FEE"` — a deviation the notes flag deliberately |
 | `CSV_t` | `ncsv_pp(t)` | The notes' `CSV_t` already nets indebtedness, so it is the chassis' *net* cash surrender value, not its `csv_pp` |

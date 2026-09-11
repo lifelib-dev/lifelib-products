@@ -627,7 +627,7 @@ def test_account_value_rollforward_closes(anchor):
 def test_pols_if_is_the_start_of_month_count_and_weights_its_own_row(anchor):
     """pols_if(t) opens month t and is the weight on that same row's cash flows.
 
-    The library-wide convention, matching ``Term_US_A.pols_if(0) == pols_if_init()``.
+    The library-wide convention, matching ``Term_US_S.pols_if(0) == pols_if_init()``.
     The notes' end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")`` and is unchanged.
     """
     assert anchor.pols_if(0) == anchor.pols_if_init()
@@ -1019,7 +1019,7 @@ def test_readme_states_the_zero_based_frame():
     ``t`` is the 0-based policy month and ``result_cf()`` has one row per projected
     month, ``t = 0`` to ``proj_len() - 1``; the issue instant is not a row.  The two
     claims this README used to make -- that the table starts at ``t = 0`` *unlike*
-    ``Term_US_A``, and that every other model starts at 1 -- are both gone.
+    ``Term_US_S``, and that every other model starts at 1 -- are both gone.
     """
     readme = _flat((MODEL_PATH.parent / "model.md").read_text(encoding="utf-8"))
     assert "Every other model in the library starts its result table at 1" not in readme

@@ -335,7 +335,7 @@ RETIRED_NAMES = {
     "lapse_rate_ann": "lapse_rate (annual), with lapse_rate_mth for the monthly rate",
     "free_wd_used_pp": "wd_free_pp, the fixed-deferred-annuity chassis name",
     "free_wd_taken_pp": "wd_free_pp",
-    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_A.premium_net_pp)",
+    "prem_net_pp": "prem_to_av_pp (prem_net_pp collided with WholeLife_US_S.premium_net_pp)",
     "mort_a_e_factor": "mort_ae_factor",
     "ae_factor": "mort_ae_factor",
     "omega": "omega_age",

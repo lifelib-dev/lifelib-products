@@ -828,7 +828,7 @@ def prem_persistency(t):
     deterministic run therefore pays the planned premium in full, which is what the
     notes' worked example does ("planned premium $500/month paid"); switching
     ``dyn_behavior_on`` on brings in both the base persistency scale and the funding
-    adjustment.  ``Term_US_A`` switches conversion off for the same reason.
+    adjustment.  ``Term_US_S`` switches conversion off for the same reason.
     """
     if not dyn_behavior_on:                                          # noqa: F821
         return 1.0

@@ -244,8 +244,8 @@ than a heuristic. Verified byte-neutral on uslib.
 ### `fix_doc_roles.py` could not see a cross-library reference
 
 It collected model names from the library it was fixing, so uklib's five chassis pointers at
-uslib models — `PA_UK_S` → `SPIA_US_S`, `Term_UK_A` → `Term_US_A`, `WOL_UK_S` →
-`WholeLife_US_A` — were invisible to it and it reported 0. These are the same sibling
+uslib models — `PA_UK_S` → `SPIA_US_S`, `Term_UK_A` → `Term_US_S`, `WOL_UK_S` →
+`WholeLife_US_S` — were invisible to it and it reported 0. These are the same sibling
 pointers the plan describes *inside* uslib, one level out. It now collects from every
 sibling library. The leading dot is refspecific, so a UK model's chassis pointer lands on the
 US model's page without either library naming the other's location — and that is the second

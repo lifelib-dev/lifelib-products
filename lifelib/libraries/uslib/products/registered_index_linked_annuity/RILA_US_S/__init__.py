@@ -60,8 +60,9 @@ and its inputs must travel together.
 ``t = 0`` is the first policy month, month ``t`` runs from time ``t`` to time ``t + 1`` in
 policy months from the Issue Date, and the frame is ``t = 0 … proj_len() - 1``. Following
 the notes, every within-month quantity is evaluated at the month **end**, time ``t + 1``,
-while ``pols_if(t)`` is the count entering the month at time ``t``. Note the contrast with
-:mod:`.Term_US_A`, where ``t`` counts **years**.
+while ``pols_if(t)`` is the count entering the month at time ``t``. Every model in this
+library runs on that grid; here it is forced by the term structure, whose crediting dates
+are contract-month boundaries.
 
 Complete contract years elapsed at the start of month ``t`` are ``duration(t) = t // 12``
 — lifelib's 0-based duration, ``0`` throughout contract year 1 — and ``policy_year(t)``
@@ -114,7 +115,7 @@ The opening state itself lives in the timing cells that need it:
 
 In-force counts follow the library-wide convention: ``pols_if(t)`` is the number in force
 at the **start** of month ``t`` and is the weight applied to that same month's cash flows,
-so ``pols_if(0) = pols_if_init()`` as in :mod:`.Term_US_A` and the ``pols_if`` column of
+so ``pols_if(0) = pols_if_init()`` as in :mod:`.Term_US_S` and the ``pols_if`` column of
 ``result_cf()`` reconciles against the row it sits on rather than the next one. The count
 at the month **end**, the notes' ``l(t+1)``, is not lost: it is
 ``pols_if_at(t, "AFT_DECR")``, the last

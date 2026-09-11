@@ -232,7 +232,7 @@ P*                         no_lapse_premium()              Solved no-lapse premi
 
 Nine names needed care.
 
-The notes' ``risk_class`` is this model's ``rate_class`` -- the name ``Term_US_A`` and
+The notes' ``risk_class`` is this model's ``rate_class`` -- the name ``Term_US_S`` and
 :mod:`.UL_US_S` both use for the underwriting class, and the one the model point
 table column carries, so the notes' word appears nowhere in the model. It is the only
 model point attribute renamed on cross-model grounds rather than for a reason internal

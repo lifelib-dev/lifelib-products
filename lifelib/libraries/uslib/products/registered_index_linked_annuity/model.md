@@ -241,7 +241,7 @@ model once spelled its own way:
   that same row's cash flows — so `premiums(t) / premium_pp()`,
   `withdrawals(t) / wd_payment_pp(t)` and `expenses(t)` over the per-contract maintenance
   charge all return the `pols_if` column of `result_cf()`. `pols_if(0) = pols_if_init()`,
-  exactly as in `Term_US_A`. The count at the month **end**, the notes' `l(t+1)`, is not
+  exactly as in `Term_US_S`. The count at the month **end**, the notes' `l(t+1)`, is not
   lost: it is `pols_if_at(t, "AFT_DECR")`, the last point of the decrement chain, and it
   is what `result_pols()` prints as `pols_if_aft_decr`.
 - **`lapse_rate(t)` is annual and `lapse_rate_mth(t)` is monthly**, matching the
@@ -339,7 +339,7 @@ hold: 2% taken at the first two anniversaries — the ends of months 11 and 23 �
 leave less than $100,000 of notional at the term midpoint, and the whole worked example is
 built on that figure.
 
-Rather than pick one, the model ships both, the way `Term_US_A` ships its `M(1)`
+Rather than pick one, the model ships both, the way `Term_US_S` ships its `M(1)`
 divergence. `wd_rate_ann` is a **model point column**, not a Reference: points 1 and 2 set
 it to 0 and reproduce the worked example to the cent; point 3 is otherwise identical to
 point 1 and runs the behavioural rule at 2%. A test pins the gap open in both directions.
@@ -419,7 +419,7 @@ closes for every `t`, including the last — `pols_if(t)` opens month `t` and `p
 opens the next, which past the Maturity Date is zero. The last month is
 `t = proj_len() − 1` and the Maturity Date is its end. Without it the block would appear to lose
 lives with no cause. The name follows `BasicTerm_S.pols_maturity` and the construction
-follows `Term_US_A`. The payout stream bought at that date is **not** derived here: it is
+follows `Term_US_S`. The payout stream bought at that date is **not** derived here: it is
 the immediate-annuity chassis, restricted to the two forms this contract offers, and with
 no refund forms at all [S2].
 
