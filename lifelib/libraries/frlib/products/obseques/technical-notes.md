@@ -108,16 +108,20 @@ Five departures, and each is first-order.
 | Premium-stops | `pols_lapse` moves `pols_if` and **nothing else**; `claims_lapse(t)` is structurally zero, by statute | `pols_lapse` is **paid `surr_value_pp(t)`**; `claims_lapse` is non-zero from t = 0 and worth 1005.89 € over the anchor cell's horizon |
 
 Two second-order differences follow from the first five and are worth stating so an implementer
-does not carry a chassis habit across. `TD_FR_S` runs an **annual** grid, because the contract
-is a one-year cover renewed by *tacite reconduction* and repriced at every renewal, and its
-horizon ends at a stated `cover_end_age` where nothing is payable; this model runs a **monthly**
-grid, because the *carence* boundary at twelve months must not be smoothed, and it has **no term at
-all** — `proj_len = 12 × (omega − entry_age + 1)` with omega = 112 **[std]**, and the contract
-ends only on death, on *rachat* or on lapse [S1] [S8] [S9] [S11]. And the premium moves in
-opposite ways: on `TD_FR_S` the tariff is re-read at the new attained age at every renewal, so
-the premium rises with age by construction; here it is **fixed at inception** and the form is
-final [S1] [S5] [S14], which is exactly what produces the overrun — cumulative premiums grow
-without bound while the capital grows at most at `reval_rate`.
+does not carry a chassis habit across. Both models run a **monthly** grid, but they carry
+different things on it and end in different ways. `TD_FR_S` is contractually annual end to end —
+a one-year cover renewed by *tacite reconduction* and repriced at every renewal, so its tariff,
+its capital and its decrement vectors all step on the anniversary and its finer grid buys only
+the timing of claims, expenses and the modal instalment — and its horizon ends at a stated
+`cover_end_age` where nothing is payable. Here the monthly grid is forced by the product rather
+than chosen for resolution, because the *carence* boundary at twelve months must not be smoothed,
+and the model has **no term at all** — `proj_len = 12 × (omega − entry_age + 1)` with
+omega = 112 **[std]**, and the contract ends only on death, on *rachat* or on lapse
+[S1] [S8] [S9] [S11]. And the premium moves in opposite ways: on `TD_FR_S` the tariff is re-read
+at the new attained age at every renewal, so the premium rises with age by construction; here it
+is **fixed at inception** and the form is final [S1] [S5] [S14], which is exactly what produces
+the overrun — cumulative premiums grow without bound while the capital grows at most at
+`reval_rate`.
 
 The statutory hinge under the last row of the table is one article. Art. L. 132-23 CA withholds
 *réduction* and *rachat* from *assurances temporaires en cas de décès* and from immediate or
