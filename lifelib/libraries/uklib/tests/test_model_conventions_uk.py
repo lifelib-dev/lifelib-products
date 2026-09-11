@@ -16,7 +16,7 @@ What the house style is, and why, is written up in ``products/term_assurance/mod
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``Term_UK_A`` also asserts several of these for itself, in more specific form (it names
+``Term_UK_S`` also asserts several of these for itself, in more specific form (it names
 its four input files, its own docstring phrases). That overlap is deliberate: the checks
 here are the general contract, the ones there are that model's particulars.
 
@@ -139,7 +139,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's market short name, a country tag and a grid tag —
-    ``WOL_UK_S``, ``Term_UK_A`` — rather than anything derivable from the folder slug,
+    ``WOL_UK_S``, ``Term_UK_S`` — rather than anything derivable from the folder slug,
     because ``unit_linked_bond`` spelled out is unusable in a model name and the market
     says ULB. So the pairing lives in :data:`conftest.MODELS` and is asserted here
     instead of being recomputed.
@@ -428,18 +428,20 @@ def test_every_model_point_projects(model):
     of one model's output cannot be read together.
 
     It is also where the library's one time-index convention is asserted, for every
-    model point of every model. The time index ``t`` is 0-based: ``t = 0`` is the first
-    period of a policy projected from issue (the issue year on an annual grid, the issue
-    month on a monthly one), period ``t`` runs from time ``t`` to time ``t + 1``, and
-    the attained age is ``age_at_entry + t`` on an annual grid
-    (``age_at_entry + duration(t)``, ``duration(t) = t // 12``, on a monthly one).
-    ``proj_len()`` is the number of periods from ``t = 0``, i.e. the exclusive end of
+    model point of every model. Every model here runs on a **monthly** grid, so the time
+    index ``t`` is 0-based and counts policy months: ``t = 0`` is the issue month of a
+    policy projected from issue, month ``t`` runs from time ``t`` to time ``t + 1``, and
+    the attained age is ``age_at_entry + duration(t)`` with ``duration(t) = t // 12``.
+    ``proj_len()`` is the number of months from ``t = 0``, i.e. the exclusive end of
     the frame: ``result_cf()`` covers ``t = t_first, ..., proj_len() - 1``, where
-    ``t_first`` is 0 for a point projected from issue and the elapsed periods for an
+    ``t_first`` is 0 for a point projected from issue and the elapsed months for an
     in-force point. This is lifelib's own convention (``basiclife/BasicTerm_S``,
     ``savings/CashValue_SE``: ``for t in range(proj_len())``). A contractual policy year
-    is the 1-based label ``t + 1`` (``duration(t) + 1`` on a monthly grid) and is
-    derived, never indexed by.
+    is the 1-based label ``duration(t) + 1`` and is derived, never indexed by.
+
+    The assertions below are grid-agnostic - a contiguous frame ending at
+    ``proj_len() - 1`` - because the grid is a property of each model rather than of the
+    library, and ``GRID_SUFFIX`` above still carries the annual case.
 
     So the frame of every ``result_cf()`` is contiguous, starts at some ``t_first >= 0``,
     and ends at ``proj_len() - 1`` inclusive: ``range(t_first, proj_len())``.

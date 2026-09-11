@@ -405,7 +405,7 @@ check being right for each.
 
 `net_cf` is income-positive, per the library convention. Lapse and decline contribute no
 term: they act only through `l(t)`. A `claims_lapse` column exists and is identically zero
-— the zero is the product fact worth publishing, as it is in `Term_UK_A`.
+— the zero is the product fact worth publishing, as it is in `Term_UK_S`.
 
 Known bias of the annual-in-advance convention **[std]**: a full year's premium is
 collected at the start of each year with no allowance for premiums ceasing at mid-year

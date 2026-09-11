@@ -357,7 +357,7 @@ def cover_basis():
     """The cover shape.  Level only: decreasing and FIB shapes are out of scope here.
 
     Both exist on the term assurance chassis this product sits on and are implemented
-    in ``Term_UK_A``; these notes scope them out **[std scope]**.
+    in ``Term_UK_S``; these notes scope them out **[std scope]**.
     """
     v = model_point()["cover_basis"]
     if v != "level":

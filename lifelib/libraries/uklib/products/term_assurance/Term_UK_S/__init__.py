@@ -5,7 +5,7 @@
 
 """Reference liability cash flow model for UK guaranteed-premium term assurance.
 
-:mod:`~.Term_UK_A` is the executable counterpart of
+:mod:`~.Term_UK_S` is the executable counterpart of
 ``products/term_assurance/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for a single-policy model point of
 UK term assurance in the three benefit shapes the representative product offers —
@@ -22,14 +22,14 @@ factor here, and importing them would materially misstate UK term liabilities.
 
 **Spaces.** The model contains two:
 
-:mod:`~.Term_UK_A.Data`
+:mod:`~.Term_UK_S.Data`
     Reads the four input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.Term_UK_A.Projection`
+:mod:`~.Term_UK_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.Term_UK_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.Term_UK_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -40,17 +40,28 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Annual steps, the notes' base grid. The time index ``t`` is
-0-based and counts policy years from issue: ``t = 0`` is the first policy year
-(policy year = ``t + 1``) and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
-``proj_len() = policy_term()`` is the number of policy years; an in-force model point
-opens at ``t = duration_inforce()``. Premiums, maintenance expense and renewal
-commission fall at the start of the year; death and terminal illness claims and their
-claim expense at the end; lapses act on the survivors of mortality, death before lapse.
-Acquisition expense and initial commission fall at issue, in ``t = 0``. The notes
-describe a monthly grid as the arbiter of the two annual-grid
-approximations — the mid-year benefit balance of the decreasing shape and the
-annual-in-advance premium — and it is not implemented; ``premium_mode`` is inert.
+**Projection basis.** Monthly steps. The time index ``t`` is 0-based and counts policy
+months from issue: ``t = 0`` is the issue month, the policy year containing month ``t``
+is ``t // 12 + 1``, and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len() = term_mths() = 12 x policy_term()`` is the number of policy months; an
+in-force model point opens at ``t = 12 x duration_inforce()``. Premiums, maintenance
+expense and renewal commission fall at the start of the month; death and terminal
+illness claims and their claim expense at the end; lapses act on the survivors of
+mortality, death before lapse. Acquisition expense and initial commission fall at
+issue, in ``t = 0``.
+
+The notes take an annual grid as their base and name a monthly one as the arbiter of
+its two approximations — the mid-year benefit balance of the decreasing shape and the
+annual-in-advance premium, which they call an offsetting pair. This model is that
+monthly grid, so neither approximation is here: the decreasing benefit is the exact
+schedule balance of the month the claim falls in, the premium is the contractual
+monthly one and stops the month the policy leaves, and family income benefit
+instalments are counted one by one rather than rounded to six in the year of death and
+twelve thereafter. ``premium_mode`` is live rather than inert — an annual payer is
+charged twelve months' premium in the first month of each policy year — and the waiver
+rider's 26-week deferred period is carried as six months between incidence and the
+first waived premium. The assumption tables stay in the annual units they are quoted
+in, converted month by month with ``1 - (1 - r)^(1/12)``, the notes' own convention.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 decreasing-shape amortization, the family income benefit as an annuity-certain to the
@@ -69,21 +80,22 @@ indexation option, a joint first-death policy, waiver of premium, family income
 benefit commutation, and one policy already in force at duration 5. Model point 1 is
 the anchor cell of the worked example in the technical notes.
 
-**Verification.** ``tests/test_term_assurance_uk.py`` asserts the notes' three-row
-worked example to the penny and the in-force column to six decimals, the
-``B(60) = £134,588`` decreasing-schedule anchor, and the family income benefit ledger
-against an independent rebuild.
+**Verification.** ``tests/test_term_assurance_uk.py`` asserts the notes' worked-example
+rows and their policy-year totals to the penny and the in-force column to six decimals,
+the anniversary identity that ties ``pols_if(12y)`` to an annual-grid roll-forward of
+the same table, the ``B(60) = £134,588`` decreasing-schedule anchor, and the family
+income benefit ledger against an independent rebuild.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/term_assurance/Term_UK_A")
+    >>> model = mx.read_model("products/term_assurance/Term_UK_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "Term_UK_A"
+_name = "Term_UK_S"
 
 _allow_none = False
 

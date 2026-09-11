@@ -652,7 +652,7 @@ def test_model_docstring_describes_the_current_structure(critical_illness):
     assert "external" in doc                     # inputs are not stored in the model
     assert "once per model" in doc               # why Data exists
     assert "non-terminating" in doc
-    assert "Term_UK_A" in doc                    # the chassis it sits on
+    assert "Term_UK_S" in doc                    # the chassis it sits on
 
 
 def test_space_docstrings_carry_their_reference_material(critical_illness):

@@ -142,7 +142,7 @@ lapse, silently attaches the wrong payment formula to half the exits.
 ``pols_if(t)`` is the in force at the **start** of plan year ``t``, with
 ``pols_if(0) = pols_if_init()``, and it is the weight on that same ``result_cf()`` row's
 cash flows. This is the library's settled convention, shared with ``MYGA_US_S``,
-``WP_UK_A`` and every other model in the country libraries: divide a flow by its own
+``WP_UK_S`` and every other model in the country libraries: divide a flow by its own
 row's ``pols_if`` and you get a per-policy amount for the same period.
 
 **The end-of-year count was renamed.** The technical notes index the in-force probability

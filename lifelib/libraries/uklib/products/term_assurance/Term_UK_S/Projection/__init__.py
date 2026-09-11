@@ -3,7 +3,7 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy projection of the :mod:`~.Term_UK_A` model.
+"""The by-policy projection of the :mod:`~.Term_UK_S` model.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
 projecting model point 1::
@@ -11,13 +11,14 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 3            # or switch the default
 
-``t`` counts **policy years from issue, 0-based**: ``t = 0`` is the first policy year,
-year ``t`` is policy year ``t + 1``, and ``t = proj_len() - 1 = policy_term() - 1`` is
-the last. The frame is ``range(proj_start(), proj_len())`` — ``range(proj_len())`` for
-a point projected from issue, opening at ``t = duration_inforce()`` for a point already
-in force. Year ``t`` runs from time ``t`` to time ``t + 1``: ``pols_if(t)`` is the count
+``t`` counts **policy months from issue, 0-based**, as everywhere in lifelib: ``t = 0``
+is the issue month, ``t = proj_len() - 1 = term_mths() - 1`` is the last, and the policy
+year containing month ``t`` is ``t // 12 + 1``. The frame is
+``range(proj_start(), proj_len())`` — ``range(proj_len())`` for a point projected from
+issue, opening at ``t = proj_start() = 12 x duration_inforce()`` for a point already in
+force. Month ``t`` runs from time ``t`` to time ``t + 1``: ``pols_if(t)`` is the count
 at its start, premiums and maintenance expense fall at its start, claims and lapses at
-its end. There is nothing after the last year — cover ceases at the end of the term
+its end. There is nothing after the last month — cover ceases at the end of the term
 with no maturity value, no renewal and no conversion.
 
 .. rubric:: Input data
@@ -31,11 +32,11 @@ input can be edited or swapped without rewriting the model. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``Term_UK_A`` folder without its parent's CSVs produces a model that reads and then
+``Term_UK_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~.Term_UK_A.Data`, reached here through the ``data`` Reference:
+:mod:`~.Term_UK_S.Data`, reached here through the ``data`` Reference:
 
 ======================  ==============================  ==========================
 Reference               Cells                           File
@@ -50,63 +51,69 @@ lapse_table_file        data.lapse_table()              lapse_table.csv
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` wherever that model has an
 analogue — ``pols_*`` for policy counts, plural nouns for cash flows, ``*_rate`` for
-rates, ``*_pp`` for per-policy amounts, ``claims(t, kind)`` with an uppercase ``kind``
-string, ``pols_if_at(t, timing)`` for the within-year in-force reads. The technical
-notes use compact actuarial symbols instead. The mapping is:
+annual rates and ``*_rate_mth`` for monthly ones, ``*_pp`` for per-policy amounts,
+``claims(t, kind)`` with an uppercase ``kind`` string, ``pols_if_at(t, timing)`` for the
+within-month in-force reads. The technical notes use compact actuarial symbols instead.
+The mapping is:
 
 =========================  ==============================  ==========================
 Notes symbol               Cells                           Meaning
 =========================  ==============================  ==========================
 shape                      shape()                         level / decreasing / fib
 x                          age_at_entry(life)              Issue age (ANB), life 1 or 2
-x + t                      age(t, life)                    Attained age in year t
+x + duration(t)            age(t, life)                    Attained age in month t
 (none)                     sex(life), smoker(life)         Rating factors of each life
 n                          policy_term()                   Term in years
-N = 12n                    term_mths()                     Term in months
-(none)                     proj_len()                      Number of years; last t is n-1
+N = 12n                    term_mths()                     Term in months, = proj_len()
+(none)                     proj_len()                      Months projected; last t is N-1
 (none)                     proj_start()                    First projected t
 (none)                     duration_inforce()              Years elapsed at projection start
-(none)                     duration(t)                     Completed years since entry, t
-(none)                     policy_year(t)                  Contractual policy year, t + 1
+k, duration_mth(t)         duration_mth(t)                 Months elapsed since entry, = t
+(none)                     duration(t)                     Completed years since entry, t//12
+(none)                     policy_year(t)                  Contractual policy year, t//12 + 1
 SA0                        sum_assured()                   Initial sum assured
 I                          fib_income()                    FIB income per month
 j                          sched_rate()                    Decreasing schedule rate p.a.
 j_m                        sched_rate_mth()                (1+j)^(1/12) - 1
-B(k)                       benefit_sched(k)                Decreasing benefit at month k
+B(k)                       benefit_sched(k)                Decreasing benefit after k months
 DB(t)                      benefit_pp(t)                   Death/TI benefit per policy
 idx(t)                     idx_factor(t)                   Cover indexation factor
 idx_p(t)                   idx_prem_factor(t)              Premium indexation factor
 (RPI scenario)             rpi_rate                        Flat RPI assumption, 3%
-P_m                        premium_mth_pp()                Monthly premium
-P_a x idx_p(t)             premium_pp(t)                   Annualized premium in year t
+P_m                        premium_mth_pp()                Monthly premium at outset
+P_m x idx_p(t)             premium_pp(t)                   Premium due in month t
+(mode)                     premium_mode()                  monthly or annual collection
 (table)                    mort_rate_base(t, life)         Table rate before adjustment
 (select)                   select_factor(t)                Select-duration factor
 (proxy scaling)            mort_scale                      "00" to "16" Series factor
-(none)                     mort_rate_life(t, life)         Per-life rate, all factors
-q(t), q_joint              mort_rate(t)                    Policy decrement, incl. TI
+(none)                     mort_rate_life(t, life)         Per-life annual rate
+q(t), q_joint              mort_rate(t)                    Annual policy decrement, incl. TI
+q_m(t)                     mort_rate_mth(t)                Monthly policy decrement
 (none)                     mort_basis()                    applied or select run
 lambda                     sel_lapse_lambda                Selective-lapsation loading
 w_ref                      sel_lapse_ref                   Selective-lapsation threshold
 w_cum(t)                   lapse_cum(t)                    Cumulative lapse proportion
 (none)                     sel_lapse_factor(t)             Mortality loading on persisters
-(table)                    lapse_rate_base(t)              Table lapse rate
+(table)                    lapse_rate_base(t)              Table annual lapse rate
 M_reb(t)                   rebroke_factor(t)               Rebroking multiplier
-w(t)                       lapse_rate(t)                   Lapse rate applied in year t
-l(t)                       pols_if(t)                      In force at the start of year t
-l(t)(1-q), l(t+1)          pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
+w(t)                       lapse_rate(t)                   Annual lapse rate in month t
+w_m(t)                     lapse_rate_mth(t)               Monthly lapse rate
+l(t)                       pols_if(t)                      In force at the start of month t
+l(t)(1-q_m), l(t+1)        pols_if_at(t, timing)           BEF_DECR / BEF_LAPSE / AFT_DECR
 D(t)                       pols_death(t)                   Expected death/TI claims
-(none)                     pols_lapse(t)                   Lapses at the end of year t
+(none)                     pols_lapse(t)                   Lapses at the end of month t
 (none)                     pols_maturity(t)                Expiries at the end of the term
 (none)                     pols_payer(t)                   Policies actually paying premium
-inc(t)                     wop_inc_rate                    WOP incidence rate
-(recovery)                 wop_rec_rate                    WOP recovery rate
+inc(t)                     wop_inc_rate                    WOP annual incidence rate
+(recovery)                 wop_rec_rate                    WOP annual recovery rate
+(deferred period)          wop_defer_mths                  26 weeks, read as 6 months
 (none)                     wop_waived_frac(t)              Fraction with premiums waived
 FIBcum(t)                  fib_cum(t)                      FIB streams already in payment
 a(m)                       annuity_certain_factor(m)       m-month annuity-certain factor
 r_c                        fib_commute_disc_rate           FIB commutation rate, 3%
 CV(k)                      fib_commute_pp(t)               Commuted value of one stream
 (take-up)                  fib_commute_rate()              Proportion of FIB claims commuted
-P_a x idx_p x l            premiums(t)                     Premium income
+P_m x idx_p x l            premiums(t)                     Premium income
 DB(t) x D(t), Claims_fib   claims(t, kind)                 Benefit outgo by kind
 ec x D(t)                  claim_expenses(t)               Claim expense outgo
 E0, e(t)                   expenses(t)                     Acquisition + maintenance
@@ -118,13 +125,19 @@ c0, c_r x premiums         commissions(t)                  Commission outgo, net
 CF(t)                      net_cf(t)                       Net cash flow, income positive
 =========================  ==============================  ==========================
 
-Four names needed care.
+Five names needed care.
 
 The notes use ``q(t)`` both for the per-life table rate and for the decrement actually
 applied to the policy, which on a joint first-death policy is
 ``1 - (1-q_1)(1-q_2)``. :func:`mort_rate_life` is the per-life rate and
 :func:`mort_rate` the policy decrement, so the joint combination has somewhere to live
 and the single-life case collapses to the same number.
+
+``q(t)`` and ``w(t)`` are **annual** rates in the notes and stay annual here, with
+:func:`mort_rate_mth` and :func:`lapse_rate_mth` carrying the monthly conversions
+``1 - (1 - q)^(1/12)`` and ``1 - (1 - w)^(1/12)``. That is the library-wide split — a
+bare ``*_rate`` is the annual rate everywhere, and only ``*_rate_mth`` is monthly — and
+it is what lets the assumption tables stay in the annual units they are quoted in.
 
 ``w(t)`` is the lapse rate and ``w_cum(t)`` the cumulative lapse proportion that drives
 the selective-lapsation loading on *mortality*. Spelling them ``lapse_rate`` and
@@ -138,11 +151,11 @@ kept out of it under :func:`claim_expenses` because the notes' worked-example ta
 prints the two as separate columns.
 
 ``pols_maturity`` has no symbol in the notes at all. The notes give the roll-forward as
-``l(t+1) = l(t)(1-q)(1-w)`` and, separately, terminate everything at the end of
-``t = n - 1``. Those do not reconcile in the final year: its survivors neither die nor
-lapse — their cover simply runs out — so without a term for that the roll-forward
-appears to lose lives with no cause. :func:`pols_maturity` names it, zero in every year
-but the last, so that
+``l(t+1) = l(t)(1-q_m)(1-w_m)`` and, separately, terminate everything at month ``N``.
+Those do not reconcile in the final month: its survivors neither die nor lapse — their
+cover simply runs out — so without a term for that the roll-forward appears to lose
+lives with no cause. :func:`pols_maturity` names it, zero in every month but the last,
+so that
 
     pols_if(t) - pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
 
@@ -151,12 +164,44 @@ determined by the notes' own rules, not an added assumption, and the name follow
 ``BasicTerm_S.pols_maturity``. Note that it is *not* a maturity **benefit**: the amount
 paid is nil.
 
+.. rubric:: The monthly grid, and what it removes
+
+The notes take an annual grid as their base and a monthly one as its arbiter: the
+annual grid has to read the decreasing shape's monthly step-down as a **mid-year**
+balance ``B(12t + 6)``, to annualize the premium and carry it in advance with no
+allowance for a mid-year death or lapse, and to round the family income benefit's
+instalment count to six in the year of death and twelve thereafter. The notes are
+explicit that the first two are an offsetting pair of biases and that the monthly grid
+is what settles them.
+
+This model is that monthly grid, so none of those approximations is here. The
+decreasing benefit is the exact balance :func:`benefit_sched` ``(t)`` of the month the
+claim falls in; the premium is the contractual monthly premium ``P_m``, collected in
+the months it is actually due, and it stops the month the policy leaves; family income
+benefit instalments are counted one by one. What the annual grid could only offset, the
+monthly grid simply does not incur.
+
+Two further things follow. ``premium_mode`` is no longer inert: a policy paying
+annually is charged ``12 P_m`` in the first month of each policy year and nothing in
+the other eleven, which is a real difference in the timing of income on a grid that can
+see it. And the waiver of premium rider's 26-week deferred period, which the annual
+grid could only read as "incidence in year ``t``, waiver from year ``t + 1``", is
+carried explicitly as ``wop_defer_mths = 6`` months.
+
+The assumption tables are unchanged and stay in the annual units they are quoted in:
+``mort_table.csv`` is an annual rate by attained age, ``lapse_table.csv`` an annual rate
+by policy year. :func:`mort_rate_mth` and :func:`lapse_rate_mth` convert them with
+``1 - (1 - r)^(1/12)`` **[std]**, the notes' own monthly-grid convention, so twelve
+months compound back to the annual rate exactly. Both are stepped by policy year, not by
+month: the attained age advances on the policy anniversary, which is what an age-nearest-
+birthday basis means, and the lapse table is keyed by the contractual policy year.
+
 .. rubric:: No tail states
 
 This is the structural difference from ``Term_US_S``, and the notes list importing a
 U.S.-style post-level-term tail as a modelling pitfall. A UK term policy expires at the
-end of ``t = n - 1``: there is no jump to ART rates, no post-level-term shock lapse, no
-mortality deterioration factor and no conversion option, so none of those cells exist
+end of month ``N - 1``: there is no jump to ART rates, no post-level-term shock lapse,
+no mortality deterioration factor and no conversion option, so none of those cells exist
 here. What does exist and has no U.S. analogue is the family income benefit ledger
 below.
 
@@ -168,7 +213,9 @@ separate terminal-illness decrement double-counts claims, which is the notes'
 first-listed pitfall, and the CMI "16" Series assured lives tables already include
 terminal illness. So ``mort_rate`` is the combined death-and-terminal-illness rate and
 there is no ``ti_rate`` anywhere in the model. The acceleration shifts payment earlier
-by less than twelve months, which the annual grid cannot see in any case.
+by up to twelve months; modelling that shift would need a separate terminal-illness
+diagnosis basis, which the subscriber-restricted tables do not provide, so it is left
+out on the monthly grid as it was on the annual one **[std]**.
 
 .. rubric:: The family income benefit ledger
 
@@ -176,21 +223,21 @@ A death in month ``k`` on the ``fib`` shape triggers ``N - k`` monthly instalmen
 ``I``, in arrears, ending at month ``N``. The instalments are an **annuity-certain**:
 once the claim is admitted they run to the end of the term regardless of any life, so
 the in-payment stream is decremented by neither mortality nor lapse. Only *new* claims
-carry ``l(t)``. Omitting the ledger — paying only the instalments falling in the year
-of death — understates the liability by up to ``n - 1`` years of income, and the notes
+carry ``l(t)``. Omitting the ledger — paying only the instalment falling in the month
+of death — understates the liability by up to ``N - 1`` months of income, and the notes
 list it as a pitfall.
 
 :func:`fib_cum` is that ledger: the expected number of streams already in payment at
-the start of year ``t``, ``sum of D(s) for s < t``. With deaths at mid-year on the
-annual grid **[std]**, a death in year ``t`` produces six instalments in year ``t`` and
-twelve in each later year, so
+the start of month ``t``, ``sum of D(s) for s < t``. Each stream pays one instalment at
+the end of each month from the month of death onwards, so
 
-    claims(t, "FIB") = I x [6 D(t) + 12 FIBcum(t)]
+    claims(t, "FIB") = I x [D(t) + FIBcum(t)]
 
-and the whole stream for a death in year ``s`` totals ``6 + 12(n - 1 - s)`` instalments,
-which is exactly ``N - k`` at the mid-year death month ``k = 12s + 6``.
-:func:`check_fib_ledger` rebuilds the year's instalment count from the death vector,
-with no reference to the recursion, and asserts the two agree in every projected year.
+and the whole stream for a death in month ``s`` totals ``N - s`` instalments, which is
+the notes' count at the exact death month with no rounding — the six-and-twelve
+bookkeeping the annual grid needed is gone. :func:`check_fib_ledger` rebuilds the
+month's instalment count from the death vector, with no reference to the recursion, and
+asserts the two agree in every projected month.
 
 The optional commutation module replaces a proportion :func:`fib_commute_rate` of the
 streams with a lump sum, the present value of the remaining instalments at the
@@ -214,9 +261,9 @@ deviate from the notes. Both are shipped instead, and which applies is a model p
 column:
 
 ``mort_basis = "applied"`` **[std]**
-    ``mort_table.csv`` is read as the rate actually applied: no select factor, no
-    proxy scaling. Model points 1-6 and 8; point 1 is the anchor cell and reproduces
-    the worked example to the penny.
+    ``mort_table.csv`` is read as the annual rate actually applied: no select factor,
+    no proxy scaling. Model points 1-6 and 8; point 1 is the anchor cell and
+    reproduces the worked example to the penny.
 
 ``mort_basis = "select"``
     the same table is read as an **ultimate** basis and multiplied by
@@ -245,29 +292,23 @@ base run reproduces the worked example while the machinery stays visible and tes
   The Reference is a flat scalar, so the multiplier is level in ``t``; a market premium
   path would be another input table.
 - **Commission clawback** on lapse inside the clawback window, linear in months in
-  force, with ``clawback_mths`` at 0. Set it to 48 for the notes' four-year rule.
+  force, with ``clawback_mths`` at 0. Set it to 48 for the notes' four-year rule. The
+  months in force at the end of month ``t`` are ``t + 1`` exactly, so on this grid the
+  linear run-off is read month by month rather than in twelve-month jumps.
 - **Waiver of premium**, a two-state incidence/recovery chain on the premium-paying
   population, with ``wop`` false on every model point but 7. Both its incidence basis
   and its extra premium are **[std]** placeholders: no public UK incidence basis for
   the work-tasks definitions exists in the sources. The 26-week deferred period is
-  read on the annual grid as incidence in year ``t`` producing waiver from year
-  ``t + 1`` **[std]**, and mortality and lapse are assumed independent of the waiver
+  carried as ``wop_defer_mths = 6`` months between incidence and the first waived
+  premium **[std]**, and mortality and lapse are assumed independent of the waiver
   state **[std]**, which is what lets the waived population be carried as a fraction
   rather than as a separate decrement.
 
-.. rubric:: Sign convention and the annual-grid bias
+.. rubric:: Sign convention
 
 The notes' ``CF(t)`` is already **income positive** — "+ = inflow" — which is the
 library-wide sign of :func:`net_cf`, so unlike the whole life and payout annuity models
 there is no ``liability_cf`` companion to publish: one stream, one sign, one name.
-
-Two annual-grid approximations are wired in and are, per the notes, offsetting: the
-decreasing shape's death benefit is the **mid-year** balance ``B(12t + 6)``, and
-premiums are annual in advance with no allowance for premiums ceasing at a mid-year
-death or lapse, which slightly overstates premium income. The notes are explicit that
-these are a matched pair and that applying a further half-year premium adjustment on
-top of the mid-year claim timing would double-count the correction. The monthly grid is
-the arbiter of both and is not implemented; ``premium_mode`` is inert.
 
 .. rubric:: Lapse pays nothing
 
@@ -395,29 +436,38 @@ def premium_mth_pp():
     A pure modelling value.  No UK insurer publishes premium rate tables - pricing is
     quote-driven and only the £5/month minimum is public [S5] - so any reference
     premium basis is constructed rather than observed.  It is guaranteed level for the
-    full term [S2][S6][S9], which is what puts every year of premium inside the
+    full term [S2][S6][S9], which is what puts every month of premium inside the
     Solvency UK contract boundary [R3].
     """
     return float(model_point()["premium_mth"])
 
 
 def premium_mode():
-    """Monthly or annual premium payment.
+    """Monthly or annual premium collection.
 
-    Inert on the annual grid, which annualizes either way: ``P_a = 12 P_m``.  It is
-    carried because the notes' monthly-grid variant distinguishes them, and that
-    variant is not implemented.
+    Live on this grid, unlike the annual one, which annualized either way.  A monthly
+    payer is charged ``P_m`` in every month; an annual payer is charged ``12 P_m`` in
+    the first month of each policy year and nothing in the other eleven.  The amount
+    collected over a policy year is the same and only its timing differs, so the
+    difference is small and one-signed: the annual payer's income arrives earlier and
+    is collected in full from a life that may leave during the year.  No premium
+    discount for annual collection is modelled **[std]**; UK protection pricing is
+    quote-driven and no published scale exists.
     """
-    return model_point()["premium_mode"]
+    v = model_point()["premium_mode"]
+    if v not in ("monthly", "annual"):
+        raise ValueError("invalid premium_mode")
+    return v
 
 
 def mort_basis():
     """Whether the mortality table is read as the *applied* rate or as an *ultimate* one.
 
-    *applied* **[std]** takes ``mort_table.csv`` as the rate actually applied, which is
-    how the notes quote their illustrative worked-example vector; *select* multiplies
-    it by :func:`select_factor` and by ``mort_scale``, the notes' proxy for the
-    unavailable subscriber tables.  See the Space docstring for why both are shipped.
+    *applied* **[std]** takes ``mort_table.csv`` as the annual rate actually applied,
+    which is how the notes quote their illustrative worked-example vector; *select*
+    multiplies it by :func:`select_factor` and by ``mort_scale``, the notes' proxy for
+    the unavailable subscriber tables.  See the Space docstring for why both are
+    shipped.
     """
     v = model_point()["mort_basis"]
     if v not in ("applied", "select"):
@@ -431,7 +481,11 @@ def pols_if_init():
 
 
 def duration_inforce():
-    """Completed policy years already elapsed when the projection starts; 0 at issue."""
+    """Completed policy **years** already elapsed when the projection starts; 0 at issue.
+
+    A policy attribute, carried on the model point in the units a contract speaks in,
+    and converted to the grid's months by :func:`proj_start`.
+    """
     return int(model_point()["duration_inforce"])
 
 
@@ -446,70 +500,86 @@ def fib_commute_rate():
 
 
 def proj_start():
-    """The first projected year: ``duration_inforce()``, the 0-based elapsed count.
+    """The first projected month: ``12 x duration_inforce()``, the elapsed months.
 
     0 at issue, so the acquisition expense and the initial commission fall inside the
-    projection; an in-force model point starts later and never sees either.
+    projection; an in-force model point starts on the anniversary that opens its next
+    policy year and never sees either.
     """
-    return duration_inforce()
+    return 12 * duration_inforce()
 
 
 def proj_len():
-    """The number of policy years counted from issue: the term ``n``, exactly.
+    """The number of policy months counted from issue: ``12n``, exactly ``term_mths()``.
 
     The exclusive end of the frame, which runs ``t = proj_start(), ..., proj_len() - 1``
     - ``range(proj_len())`` for a point projected from issue.  Cover ceases at the end of
     the term with no maturity value, no renewal and no conversion [S1][S2][S6][S8][R8],
-    so the horizon is ``n`` years and there is nothing after ``t = n - 1`` - the
+    so the horizon is ``N = 12n`` months and there is nothing after ``t = N - 1`` - the
     structural contrast with ``Term_US_S``, which runs on to attained age 95.
     """
-    return policy_term()
+    return term_mths()
 
 
 def term_mths():
-    """N = 12n: the term in months, the horizon of the benefit schedules."""
+    """N = 12n: the term in months, the horizon of the benefit schedules and the frame."""
     return 12 * policy_term()
 
 
 def duration(t):
-    """Completed years since entry at the start of year t: ``t`` itself, 0 in the first.
+    """Completed years since entry at the start of month t: ``t // 12``, 0 in the first.
 
     The select duration, which is what the UK assured lives tables are indexed by
     alongside attained age.  ``t`` counts from issue for every model point, so an
     in-force point's duration is measured from entry, not from the projection start.
     """
+    return t // 12
+
+
+def duration_mth(t):
+    """Months elapsed from issue at the start of month t; equal to ``t``.
+
+    The notes' benefit-schedule index ``k``.  ``t`` is 0-based and counts from issue, so
+    the identity is trivial - the cells exists so the monthly models in this library
+    share one vocabulary.
+    """
     return t
 
 
 def policy_year(t):
-    """The contractual policy year of year t: the 1-based label ``t + 1``.
+    """The contractual policy year containing month t: the 1-based label ``t // 12 + 1``.
 
     Used only where a 1-based schedule is looked up - the lapse table's
     ``policy_year`` key.  Never the index of anything in the projection.
     """
-    return t + 1
+    return duration(t) + 1
 
 
 def age(t, life=1):
-    """The attained age (ANB) of ``life`` at the start of year t: ``x + t``."""
-    return age_at_entry(life) + t
+    """The attained age (ANB) of ``life`` in month t: ``x + duration(t)``.
+
+    Advances on the policy anniversary rather than monthly, which is what an
+    age-nearest-birthday basis means and how the mortality table is entered.
+    """
+    return age_at_entry(life) + duration(t)
 
 
 def select_factor(t):
-    """The select-duration factor applying in year t **[std]**.
+    """The select-duration factor applying in month t **[std]**.
 
     A 5-year select period, the structure of TMNL16/TFNL16 [R12], with the factor
-    grading from 0.55 at duration 0 to 1.00 at and beyond ``select_period``.  Read
-    only on the *select* mortality basis; the *applied* basis takes the table as it
-    stands.  The values are a standardization - the real tables are subscriber-only
-    [R11] - and a licensed basis drops in by replacing the CSV.
+    grading from 0.55 at duration 0 to 1.00 at and beyond ``select_period``.  Stepped by
+    completed policy year, like the table it multiplies.  Read only on the *select*
+    mortality basis; the *applied* basis takes the table as it stands.  The values are a
+    standardization - the real tables are subscriber-only [R11] - and a licensed basis
+    drops in by replacing the CSV.
     """
     d = min(duration(t), select_period)                              # noqa: F821
     return float(data.select_factor_table().loc[d, "factor"])        # noqa: F821
 
 
 def mort_rate_base(t, life=1):
-    """The mortality table rate for ``life`` at its attained age in year t.
+    """The annual mortality table rate for ``life`` at its attained age in month t.
 
     Includes terminal illness, which is an acceleration of the death benefit rather
     than a separate cover [S1][S6][S8]; the 16-Series tables the shipped table proxies
@@ -520,7 +590,7 @@ def mort_rate_base(t, life=1):
 
 
 def mort_rate_life(t, life=1):
-    """The mortality (incl. TI) rate applied to ``life`` in year t.
+    """The annual mortality (incl. TI) rate applied to ``life`` in month t.
 
     The table rate, then on the *select* basis the select factor and the **[std]** 75%
     proxy scaling, then the selective-lapsation loading.  Capped at 1.
@@ -532,12 +602,12 @@ def mort_rate_life(t, life=1):
 
 
 def mort_rate(t):
-    """q(t): the mortality (incl. TI) decrement applied to the *policy* in year t.
+    """q(t): the **annual** mortality (incl. TI) decrement of the *policy* in month t.
 
     The single life's rate on a single-life policy.  On a joint first-death policy it
     is the joint decrement ``1 - (1 - q_1)(1 - q_2)`` **[std]** on one policy, which
     pays once and ends [S1][S6]; modelling the two lives as separate policies would pay
-    twice.
+    twice.  :func:`mort_rate_mth` is what the projection actually decrements by.
     """
     q1 = mort_rate_life(t, 1)
     if not is_joint():
@@ -546,12 +616,24 @@ def mort_rate(t):
     return 1.0 - (1.0 - q1) * (1.0 - q2)
 
 
+def mort_rate_mth(t):
+    """q_m(t) = 1 - (1 - q(t))^(1/12): the monthly death and TI decrement **[std]**.
+
+    The notes' own monthly-grid conversion, so the twelve months of a policy year
+    compound back to that year's annual rate exactly.  The nominal alternative ``q/12``
+    does not: twelve months of it leave ``(1 - q/12)^12 > 1 - q``, so it **understates**
+    the decrement, by more the larger the rate.  The effective monthly rate is therefore
+    always a little above ``q/12``.
+    """
+    return 1.0 - (1.0 - mort_rate(t)) ** (1.0 / 12.0)
+
+
 def lapse_cum(t):
-    """w_cum(t): the cumulative lapse proportion of the original cohort before year t.
+    """w_cum(t): the cumulative lapse proportion of the original cohort before month t.
 
     A proportion of ``pols_if_init()``, not a running total of :func:`lapse_rate`, and
     it drives a loading on **mortality** rather than on lapse.  Zero in the first
-    projected year.
+    projected month.
     """
     if t <= proj_start():
         return 0.0
@@ -559,26 +641,26 @@ def lapse_cum(t):
 
 
 def sel_lapse_factor(t):
-    """The selective-lapsation loading on mortality in year t **[std]**.
+    """The selective-lapsation loading on mortality in month t **[std]**.
 
     ``1 + lambda max(0, w_cum(t) - w_ref)``.  Lapsers are healthier than persisters, so
     a block that has already shed a large proportion of its lives carries impaired
     mortality on the remainder - guaranteed premiums plus healthy-life rebroking make
     this a structural feature of UK term rather than an incidental one.  Off in the base
-    run (``sel_lapse_lambda = 0``), where it returns 1 in every year.
+    run (``sel_lapse_lambda = 0``), where it returns 1 in every month.
     """
     return 1.0 + sel_lapse_lambda * max(                             # noqa: F821
         0.0, lapse_cum(t) - sel_lapse_ref)                           # noqa: F821
 
 
 def lapse_rate_base(t):
-    """The table lapse rate in year t **[std]**, before any rebroking multiplier.
+    """The table **annual** lapse rate in month t **[std]**, before any rebroking.
 
     10 / 8 / 7 / 5 / 6 / 4 percent, anchored to the FCA's 5% average in-force lapse
     rate for pure protection and to the spike pattern just after the two- and four-year
     commission clawback periods end [R9].  A full duration curve is not public and the
     levels are standardized calibrations.  The table is keyed by the contractual
-    1-based policy year, read at :func:`policy_year` ``(t) = t + 1``; policy years
+    1-based policy year, read at :func:`policy_year` ``(t) = t // 12 + 1``; policy years
     beyond the table take its last row.
     """
     tbl = data.lapse_table()                                         # noqa: F821
@@ -598,7 +680,7 @@ def rebroke_factor(t):
 
 
 def lapse_rate(t):
-    """w(t): the annual lapse rate applied at the end of year t.
+    """w(t): the **annual** lapse rate applying in month t.
 
     The table rate times the rebroking multiplier, capped at 1.  A lapse pays nothing:
     there is no surrender or paid-up value at any duration [S1][S6][S8][R8].
@@ -606,13 +688,25 @@ def lapse_rate(t):
     return min(1.0, lapse_rate_base(t) * rebroke_factor(t))
 
 
-def pols_if(t):
-    """l(t): the number of policies in force at the **start** of year t.
+def lapse_rate_mth(t):
+    """w_m(t) = 1 - (1 - w(t))^(1/12): the monthly lapse rate **[std]**.
 
-    ``pols_if_init()`` in the first projected year ``t = proj_start()`` (``l(0) = 1``
-    at issue), then the notes' recursion ``l(t+1) = l(t)(1 - q(t))(1 - w(t))``.  This is
-    the weight on every cash flow of the same ``result_cf()`` row.  Zero outside
-    ``proj_start() .. proj_len() - 1``: the cover has not started or has expired.
+    The notes' monthly-grid conversion, so twelve months of a policy year compound back
+    to that year's table rate exactly.  As with :func:`mort_rate_mth`, a nominal ``w/12``
+    would understate the decrement; the gap is wider here because the lapse rates are an
+    order of magnitude larger than the mortality ones.
+    """
+    return 1.0 - (1.0 - lapse_rate(t)) ** (1.0 / 12.0)
+
+
+def pols_if(t):
+    """l(t): the number of policies in force at the **start** of month t.
+
+    ``pols_if_init()`` in the first projected month ``t = proj_start()`` (``l(0) = 1``
+    at issue), then the notes' monthly recursion
+    ``l(t+1) = l(t)(1 - q_m(t))(1 - w_m(t))``.  This is the weight on every cash flow of
+    the same ``result_cf()`` row.  Zero outside ``proj_start() .. proj_len() - 1``: the
+    cover has not started or has expired.
     """
     if t < proj_start() or t >= proj_len():
         return 0.0
@@ -622,11 +716,11 @@ def pols_if(t):
 
 
 def pols_if_at(t, timing):
-    """The number of policies in force at a point inside year t.
+    """The number of policies in force at a point inside month t.
 
     ``"BEF_DECR"``
-        l(t), the start of the year, before any decrement; the same number
-        as :func:`pols_if` and the weight on that year's cash flows.
+        l(t), the start of the month, before any decrement; the same number
+        as :func:`pols_if` and the weight on that month's cash flows.
 
     ``"BEF_LAPSE"``
         after deaths, before lapses - the notes' processing order is
@@ -634,73 +728,96 @@ def pols_if_at(t, timing):
         lapses are taken from.
 
     ``"AFT_DECR"``
-        l(t+1), the end-of-year state: what is left once the year's deaths
-        and lapses are taken, and zero from the final year ``t = proj_len() - 1``
+        l(t+1), the end-of-month state: what is left once the month's deaths
+        and lapses are taken, and zero from the final month ``t = proj_len() - 1``
         on because the cover expires at its end.
     """
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
-        return pols_if(t) * (1.0 - mort_rate(t))
+        return pols_if(t) * (1.0 - mort_rate_mth(t))
     if timing == "AFT_DECR":
         if t < proj_start() or t >= proj_len() - 1:
             return 0.0
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
+        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
 def pols_death(t):
-    """D(t) = l(t) q(t): expected death and terminal illness claims in year t.
+    """D(t) = l(t) q_m(t): expected death and terminal illness claims in month t.
 
     One decrement covering both: terminal illness accelerates the death benefit rather
     than adding to it [S1][S6][S8].
     """
-    return pols_if(t) * mort_rate(t)
+    return pols_if(t) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
-    """Lapses at the end of year t, taken from the survivors of mortality.
+    """Lapses at the end of month t, taken from the survivors of mortality.
 
     Pays nothing - there is no surrender value [S6][R8] - so this moves
     :func:`pols_if` and nothing else.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate(t)
+    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
-    """Policies whose cover expires at the end of the term; zero in every other year.
+    """Policies whose cover expires at the end of the term; zero in every other month.
 
-    Non-zero only in the final year ``t = proj_len() - 1``.  Not a decrement and not a
+    Non-zero only in the final month ``t = proj_len() - 1``.  Not a decrement and not a
     benefit - the contract simply runs out, with no maturity value
     [S1][S2][S6][S8][R8] - but needed for the in-force roll-forward to close; see the
     Space docstring and :func:`check_pols_roll_fwd`.
     """
     if t != proj_len() - 1:
         return 0.0
-    return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
+    return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
 
 
 def wop_waived_frac(t):
-    """The fraction of in-force policies with premiums waived at the start of year t.
+    """The fraction of in-force policies with premiums waived at the start of month t.
 
-    A two-state incidence/recovery chain **[std]**,
-    ``u(t+1) = u(t)(1 - rec) + (1 - u(t)) inc``, starting from ``u = 0``.  Both rates
-    are placeholders: no public UK incidence basis for the waiver work-tasks
-    definitions appears in the fetched sources.  Incidence in year ``t`` produces
-    waiver from year ``t + 1``, which is the annual grid's reading of the 26-week
-    deferred period [S1] **[std]**, and mortality and lapse are assumed independent of
-    the waiver state **[std]** - which is what lets the waived population be carried as
-    a fraction of the in-force rather than as its own decrement.  Zero unless the rider
-    is in force.
+    A two-state incidence/recovery chain at monthly rates **[std]**, with the 26-week
+    deferred period [S1] carried explicitly as ``wop_defer_mths`` months between
+    incidence and the first waived premium::
+
+        u(t+1) = u(t)(1 - rec_m) + inc_m (1 - u(t - defer)) (1 - rec_m)^defer
+
+    The entrants of month ``t + 1`` are the lives who became incapacitated ``defer``
+    months earlier and have not recovered since.  That is what the monthly grid buys
+    here: the annual grid could only read the deferred period as "incidence in year
+    ``t``, waiver from year ``t + 1``", rounding 26 weeks to twelve months.
+
+    Both rates are placeholders: no public UK incidence basis for the waiver work-tasks
+    definitions appears in the fetched sources.  Mortality and lapse are assumed
+    independent of the waiver state **[std]** - which is what lets the waived population
+    be carried as a fraction of the in-force rather than as its own decrement.  Zero
+    unless the rider is in force.
     """
     if not wop() or t <= proj_start():
         return 0.0
     u = wop_waived_frac(t - 1)
-    return u * (1.0 - wop_rec_rate) + (1.0 - u) * wop_inc_rate       # noqa: F821
+    src = t - 1 - wop_defer_mths                                     # noqa: F821
+    if src < proj_start():
+        entrants = 0.0
+    else:
+        entrants = (wop_inc_rate_mth() * (1.0 - wop_waived_frac(src))
+                    * (1.0 - wop_rec_rate_mth()) ** wop_defer_mths)  # noqa: F821
+    return u * (1.0 - wop_rec_rate_mth()) + entrants
+
+
+def wop_inc_rate_mth():
+    """inc_m: the monthly waiver incidence rate, ``1 - (1 - inc)^(1/12)`` **[std]**."""
+    return 1.0 - (1.0 - wop_inc_rate) ** (1.0 / 12.0)                # noqa: F821
+
+
+def wop_rec_rate_mth():
+    """rec_m: the monthly waiver recovery rate, ``1 - (1 - rec)^(1/12)`` **[std]**."""
+    return 1.0 - (1.0 - wop_rec_rate) ** (1.0 / 12.0)                # noqa: F821
 
 
 def pols_payer(t):
-    """The number of in-force policies actually paying premium in year t.
+    """The number of in-force policies actually paying premium in month t.
 
     ``l(t)`` less the waived fraction.  Equal to :func:`pols_if` unless the waiver of
     premium rider is in force.
@@ -724,49 +841,58 @@ def idx_increase():
 
 
 def idx_factor(t):
-    """idx(t): the cumulative **cover** indexation factor at the start of year t.
+    """idx(t): the cumulative **cover** indexation factor in month t.
 
-    1 in the first projected year and whenever the option is not elected.
+    Steps on the policy anniversary and is level through the policy year, because the
+    increase is offered at an anniversary and not monthly: 1 in the first projected
+    policy year, then one factor of ``1 + idx_increase()`` per anniversary passed.  1
+    whenever the option is not elected.
     """
-    if not indexation() or t <= proj_start():
+    if not indexation():
         return 1.0
-    return idx_factor(t - 1) * (1.0 + idx_increase())
+    return (1.0 + idx_increase()) ** max(0, duration(t) - duration(proj_start()))
 
 
 def idx_prem_factor(t):
-    """idx_p(t): the cumulative **premium** indexation factor at the start of year t.
+    """idx_p(t): the cumulative **premium** indexation factor in month t.
 
     The premium rises by ``min(1.5 x increase, 15%)`` for a cover increase of
-    ``increase`` [S1][S2][S6].  The 1.5 multiplier is what makes an accepted increase
-    premium-margin-accretive if mortality is proportional to cover - and what reverses
-    the sign of that conclusion if acceptance is selective, impaired lives accepting
-    while healthy ones decline **[std]** concern.  No public take-up data exists.
+    ``increase`` [S1][S2][S6], on the same anniversary step as the cover factor.  The
+    1.5 multiplier is what makes an accepted increase premium-margin-accretive if
+    mortality is proportional to cover - and what reverses the sign of that conclusion
+    if acceptance is selective, impaired lives accepting while healthy ones decline
+    **[std]** concern.  No public take-up data exists.
     """
-    if not indexation() or t <= proj_start():
+    if not indexation():
         return 1.0
-    return idx_prem_factor(t - 1) * (
-        1.0 + min(idx_prem_mult * idx_increase(), idx_prem_cap))     # noqa: F821
+    step = 1.0 + min(idx_prem_mult * idx_increase(), idx_prem_cap)   # noqa: F821
+    return step ** max(0, duration(t) - duration(proj_start()))
 
 
 def premium_pp(t):
-    """P_a idx_p(t): the annualized gross premium per policy in year t.
+    """P_m idx_p(t): the gross premium per policy due in month t.
 
-    ``12 P_m``, indexed if the option is elected, and loaded by
-    ``wop_prem_loading`` where the waiver rider is in force - a **[std]**
+    The contractual monthly premium on a ``monthly`` payer, and ``12 P_m`` in the first
+    month of each policy year and nil in the rest on an ``annual`` one - the timing
+    difference the annual grid could not see.  Indexed if the option is elected, and
+    loaded by ``wop_prem_loading`` where the waiver rider is in force - a **[std]**
     placeholder, since the rider's extra premium is not published either.
     """
-    p = 12.0 * premium_mth_pp() * idx_prem_factor(t)
+    if premium_mode() == "annual":
+        p = 12.0 * premium_mth_pp() if t % 12 == 0 else 0.0
+    else:
+        p = premium_mth_pp()
+    p = p * idx_prem_factor(t)
     return p * (1.0 + wop_prem_loading) if wop() else p              # noqa: F821
 
 
 def premiums(t):
-    """Premium income at the start of year t, an inflow.
+    """Premium income at the start of month t, an inflow.
 
     Carried on :func:`pols_payer`, never on the FIB ledger: premiums stop at death
-    while family income benefit instalments continue.  Annual in advance with no
-    allowance for premiums ceasing at a mid-year death or lapse, which slightly
-    overstates income - the known bias of this convention **[std]**, offset by the
-    mid-year benefit timing of the decreasing shape.
+    while family income benefit instalments continue.  Collected only from the policies
+    still in force at the start of the month, so the annual grid's overstatement - a
+    full year's premium taken from a life that leaves mid-year - does not arise.
     """
     return premium_pp(t) * pols_payer(t)
 
@@ -811,35 +937,36 @@ def annuity_certain_factor(m):
 
 
 def fib_commute_pp(t):
-    """CV: the commuted value of one FIB stream arising from a death in year t **[std]**.
+    """CV: the commuted value of one FIB stream arising from a death in month t **[std]**.
 
-    ``I a(N - k)`` at the mid-year death month ``k = 12t + 6``, so it falls to zero
-    as the term runs out.  Zero on the level and decreasing shapes.
+    ``I a(N - t)`` at the exact death month ``k = t``, so it falls to zero as the term
+    runs out.  The annual grid had to place the death at mid-year, ``k = 12t + 6``; this
+    grid knows the month.  Zero on the level and decreasing shapes.
     """
     if shape() != "fib":
         return 0.0
-    return fib_income() * annuity_certain_factor(term_mths() - (12 * t + 6))
+    return fib_income() * annuity_certain_factor(term_mths() - t)
 
 
 def benefit_pp(t):
-    """DB(t): the death and terminal illness benefit per policy in year t.
+    """DB(t): the death and terminal illness benefit per policy in month t.
 
-    Level: ``SA0 idx(t)``.  Decreasing: the **mid-year** balance ``B(12t + 6)``
-    **[std]**, the annual grid's reading of a schedule that steps down monthly.  FIB:
-    the commuted value of the instalment stream, which is what a commuted claim pays;
-    an uncommuted FIB claim has no lump sum at all and goes through
-    ``claims(t, "FIB")`` instead.
+    Level: ``SA0 idx(t)``.  Decreasing: the exact schedule balance ``B(t)``, the
+    outstanding amount through the month the claim falls in - the annual grid's mid-year
+    reading ``B(12t + 6)`` was an approximation to this and is gone.  FIB: the commuted
+    value of the instalment stream, which is what a commuted claim pays; an uncommuted
+    FIB claim has no lump sum at all and goes through ``claims(t, "FIB")`` instead.
     """
     s = shape()
     if s == "level":
         return sum_assured() * idx_factor(t)
     if s == "decreasing":
-        return benefit_sched(12 * t + 6)
+        return benefit_sched(duration_mth(t))
     return fib_commute_pp(t)
 
 
 def fib_cum(t):
-    """FIBcum(t): the expected FIB streams already in payment at the start of year t.
+    """FIBcum(t): the expected FIB streams already in payment at the start of month t.
 
     ``sum of D(s) for s < t``.  **Not decremented** by mortality or lapse: once a claim
     is admitted the instalments are an annuity-certain to the end of the term whatever
@@ -851,18 +978,19 @@ def fib_cum(t):
 
 
 def claims(t, kind=None):
-    """Benefit outgo in year t, by kind; the total when kind is omitted.
+    """Benefit outgo in month t, by kind; the total when kind is omitted.
 
     ``"DEATH"``
-        the lump sum paid at the end of the year of death: ``DB(t) D(t)`` on
+        the lump sum paid at the end of the month of death: ``DB(t) D(t)`` on
         the level and decreasing shapes, and on the ``fib`` shape only the
         commuted proportion of the streams.
 
     ``"FIB"``
-        the family income benefit instalments falling in year t,
-        ``I [6 D(t) + 12 FIBcum(t)]`` net of the commuted proportion - six
-        instalments in the year of a mid-year death, twelve in each later
-        year.  Zero on the other two shapes.
+        the family income benefit instalments falling in month t,
+        ``I [D(t) + FIBcum(t)]`` net of the commuted proportion - one
+        instalment for every stream in payment, the month's new claims
+        included, since the instalments are in arrears from the month of
+        death.  Zero on the other two shapes.
 
     ``"LAPSE"``
         zero, always.  There is no surrender or paid-up value at any duration
@@ -879,14 +1007,14 @@ def claims(t, kind=None):
         if shape() != "fib":
             return 0.0
         return ((1.0 - fib_commute_rate()) * fib_income()
-                * (6.0 * pols_death(t) + 12.0 * fib_cum(t)))
+                * (pols_death(t) + fib_cum(t)))
     if kind == "LAPSE":
         return 0.0
     raise ValueError("invalid kind")
 
 
 def claim_expenses(t):
-    """ec D(t): the claim handling expense on the year's death and TI claims **[std]**.
+    """ec D(t): the claim handling expense on the month's death and TI claims **[std]**.
 
     £250 per claim, uninflated.  Kept out of :func:`expenses` because the notes' worked
     example prints the two as separate columns.
@@ -895,40 +1023,49 @@ def claim_expenses(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in year t: ``(1 + pi)^t`` **[std]**, 1 at issue."""
-    return (1.0 + inflation_rate) ** t                               # noqa: F821
+    """The expense inflation factor in month t: ``(1 + pi)^duration(t)`` **[std]**.
+
+    Steps on the policy anniversary rather than monthly, which is how the notes write
+    it: ``e(t) = 30 x 1.03^t`` with ``t`` the policy year.  1 in the first policy year.
+    """
+    return (1.0 + inflation_rate) ** duration(t)                     # noqa: F821
 
 
 def expenses(t):
-    """E0 and e(t): acquisition and inflating maintenance expense in year t **[std]**.
+    """E0 and e(t): acquisition and inflating maintenance expense in month t **[std]**.
 
-    £150 per policy at issue (``t = 0``), then £30 per policy per year inflating at 3%,
-    both at the start of the year.  An in-force model point starts after ``t = 0`` and
-    never sees the acquisition charge.  Premiums as low as £5/month against a £30
-    maintenance expense make this assumption solvency-relevant on small-sum-assured
-    blocks, which is why the notes rate expense inflation a first-order lever despite
-    its size.
+    £150 per policy at issue (``t = 0``), then £30 per policy per year - a twelfth of it
+    each month - inflating at 3% on each anniversary, both at the start of the month.  An
+    in-force model point starts after ``t = 0`` and never sees the acquisition charge.
+    Premiums as low as £5/month against a £30 annual maintenance expense make this
+    assumption solvency-relevant on small-sum-assured blocks, which is why the notes rate
+    expense inflation a first-order lever despite its size.
     """
     acq = expense_acq * pols_if(t) if t == 0 else 0.0                # noqa: F821
-    return acq + expense_maint * inflation_factor(t) * pols_if(t)    # noqa: F821
+    return acq + (expense_maint / 12.0                               # noqa: F821
+                  * inflation_factor(t) * pols_if(t))
 
 
 def comm_init_pp():
     """c0: initial commission per policy issued **[std]**.
 
-    150% of the annualized premium of the first year (``t = 0``), paid upfront at
-    issue.  Roughly 96% of protection commission is paid upfront [R9], which with the
-    acquisition expense is what produces the deep first-year new business strain in the
-    worked example.
+    150% of the annualized premium of the first policy year, ``12 P_m`` on an
+    unindexed point, paid upfront at issue.  Roughly 96% of protection commission is
+    paid upfront [R9], which with the acquisition expense is what produces the deep
+    first-month new business strain in the worked example.
     """
-    return comm_init_rate * premium_pp(0)                            # noqa: F821
+    p = 12.0 * premium_mth_pp() * idx_prem_factor(0)
+    if wop():
+        p = p * (1.0 + wop_prem_loading)                             # noqa: F821
+    return comm_init_rate * p                                        # noqa: F821
 
 
 def comm_clawback(t):
     """Initial commission recovered on lapses inside the clawback window **[std]**.
 
-    ``c0 (clawback_mths - 12(t+1))/clawback_mths`` per lapsed policy, linear in months
-    in force: a lapse at the end of year t has ``12(t+1)`` months in force.  Off in the
+    ``c0 (clawback_mths - (t+1))/clawback_mths`` per lapsed policy, linear in months in
+    force: a lapse at the end of month t has ``t + 1`` months in force, which this grid
+    counts exactly where the annual one could only step twelve at a time.  Off in the
     base run (``clawback_mths`` is 0); set it to 48 for the notes' four-year rule.
     Clawback periods of two to four years are evidenced [R9]; the linear formula is a
     standardization.  Inside the window it reverses the sign of the early-lapse
@@ -936,7 +1073,7 @@ def comm_clawback(t):
     """
     if clawback_mths <= 0:                                           # noqa: F821
         return 0.0
-    mths = 12 * (t + 1)
+    mths = t + 1
     if mths >= clawback_mths:                                        # noqa: F821
         return 0.0
     return (comm_init_pp() * (clawback_mths - mths)                  # noqa: F821
@@ -944,19 +1081,19 @@ def comm_clawback(t):
 
 
 def commissions(t):
-    """Commission outgo in year t **[std]**, net of any clawback recovered.
+    """Commission outgo in month t **[std]**, net of any clawback recovered.
 
     The initial commission at issue (``t = 0``), then 2.5% of premium income from the
-    second policy year (``t >= 1``).  Both are levels chosen for the reference
+    second policy year (``t >= 12``).  Both are levels chosen for the reference
     implementation; only the upfront *pattern* is evidenced [R9].
     """
     init = comm_init_pp() * pols_if(t) if t == 0 else 0.0
-    renew = comm_renewal_rate * premiums(t) if t >= 1 else 0.0       # noqa: F821
+    renew = comm_renewal_rate * premiums(t) if t >= 12 else 0.0      # noqa: F821
     return init + renew - comm_clawback(t)
 
 
 def net_cf(t):
-    """CF(t): the net cash flow of year t, **income positive**.
+    """CF(t): the net cash flow of month t, **income positive**.
 
     Premiums less death and terminal illness claims, claim expense, maintenance and
     acquisition expense and commission.  The notes' own sign - they write ``+ = inflow``
@@ -964,8 +1101,8 @@ def net_cf(t):
     annuity models there is no outgo-positive ``liability_cf`` companion to publish.
 
     The shape to expect on guaranteed term is a deep new business strain in the first
-    year (``t = 0``), upfront commission and acquisition expense against a single
-    year's premium, then thin positive margins: the level premium prefunds rising
+    month (``t = 0``), upfront commission and acquisition expense against a single
+    month's premium, then thin positive margins: the level premium prefunds rising
     mortality cost, so early lapses forfeit margin to the insurer and late ones
     relieve it.
     """
@@ -974,11 +1111,11 @@ def net_cf(t):
 
 
 def check_pols_roll_fwd_resid(t):
-    """The in-force roll-forward residual in year t; zero everywhere.
+    """The in-force roll-forward residual in month t; zero everywhere.
 
     ``pols_if(t) - pols_if(t+1) - deaths - lapses - expiries``.  Expiries are non-zero
-    only in the final year ``t = proj_len() - 1``, where the survivors neither die nor
-    lapse: their cover runs out.  Without that term the last year appears to lose lives
+    only in the final month ``t = proj_len() - 1``, where the survivors neither die nor
+    lapse: their cover runs out.  Without that term the last month appears to lose lives
     with no cause.
     """
     return (pols_if(t) - pols_if(t + 1)
@@ -986,11 +1123,11 @@ def check_pols_roll_fwd_resid(t):
 
 
 def check_pols_roll_fwd():
-    """True when the in-force roll-forward closes in every projected policy year.
+    """True when the in-force roll-forward closes in every projected policy month.
 
     The library-wide form of a roll-forward check: no argument, one bool over all t, so
     one test can call it across every model.  :func:`check_pols_roll_fwd_resid` gives
-    the signed residual of the year that failed.  The tolerance scales with
+    the signed residual of the month that failed.  The tolerance scales with
     ``pols_if_init()``, since the residual accumulates rounding on that many policies.
     """
     return all(abs(check_pols_roll_fwd_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
@@ -998,37 +1135,36 @@ def check_pols_roll_fwd():
 
 
 def check_fib_ledger_resid(t):
-    """The family income benefit ledger residual in year t; zero everywhere.
+    """The family income benefit ledger residual in month t; zero everywhere.
 
-    :func:`claims` ``(t, "FIB")`` less an independent rebuild of the same figure: six
-    instalments for a death in year t and twelve for every death in an earlier year,
-    summed straight off the death vector with no reference to the :func:`fib_cum`
-    recursion.  A ledger that was decremented by mortality or lapse - the notes'
-    pitfall - or one that paid only the year-of-death instalments would show up here.
-    Zero by definition on the level and decreasing shapes, which have no ledger.
+    :func:`claims` ``(t, "FIB")`` less an independent rebuild of the same figure: one
+    instalment for every death in month t or any earlier month, summed straight off the
+    death vector with no reference to the :func:`fib_cum` recursion.  A ledger that was
+    decremented by mortality or lapse - the notes' pitfall - or one that paid only the
+    month-of-death instalment would show up here.  Zero by definition on the level and
+    decreasing shapes, which have no ledger.
     """
     if shape() != "fib":
         return 0.0
-    built = 6.0 * pols_death(t) + 12.0 * sum(
-        pols_death(s) for s in range(proj_start(), t))
+    built = sum(pols_death(s) for s in range(proj_start(), t + 1))
     return claims(t, "FIB") - (1.0 - fib_commute_rate()) * fib_income() * built
 
 
 def check_fib_ledger():
-    """True when the family income benefit ledger closes in every projected year.
+    """True when the family income benefit ledger closes in every projected month.
 
     No argument, one bool over all t, the library-wide shape of a ``check_*`` cells;
-    :func:`check_fib_ledger_resid` gives the signed residual of the year that failed.
+    :func:`check_fib_ledger_resid` gives the signed residual of the month that failed.
     """
     return all(abs(check_fib_ledger_resid(t)) <= 1e-10 * max(pols_if_init(), 1.0)
                for t in range(proj_start(), proj_len()))
 
 
 def result_cf():
-    """Result table of cashflows, indexed by year t.
+    """Result table of cashflows, indexed by policy month t.
 
-    One row per year ``t = proj_start(), ..., proj_len() - 1`` - ``proj_len()`` rows
-    for a point projected from issue.  ``pols_if`` is the start-of-year count, which is
+    One row per month ``t = proj_start(), ..., proj_len() - 1`` - ``proj_len()`` rows
+    for a point projected from issue.  ``pols_if`` is the start-of-month count, which is
     the weight applied to every cash flow on the same row.  ``net_cf`` carries the
     notes' own income-positive sign.  ``claims_lapse`` is a column of zeros by product
     design - there is no surrender value - and is published rather than dropped; see
@@ -1052,9 +1188,11 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy counts and decrement rates, indexed by year t.
+    """Result table of policy counts and decrement rates, indexed by policy month t.
 
-    The same rows as :func:`result_cf`: ``t = proj_start(), ..., proj_len() - 1``.
+    The same rows as :func:`result_cf`: ``t = proj_start(), ..., proj_len() - 1``.  The
+    two rate columns are the **monthly** decrements the projection actually applies;
+    the annual rates they come from are :func:`mort_rate` and :func:`lapse_rate`.
     """
     ts = list(range(proj_start(), proj_len()))
     return pd.DataFrame(                                             # noqa: F821
@@ -1065,8 +1203,8 @@ def result_pols():
             "pols_maturity": [pols_maturity(t) for t in ts],
             "pols_payer": [pols_payer(t) for t in ts],
             "fib_cum": [fib_cum(t) for t in ts],
-            "mort_rate": [mort_rate(t) for t in ts],
-            "lapse_rate": [lapse_rate(t) for t in ts],
+            "mort_rate_mth": [mort_rate_mth(t) for t in ts],
+            "lapse_rate_mth": [lapse_rate_mth(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
@@ -1120,6 +1258,8 @@ fib_commute_disc_rate = 0.03
 wop_inc_rate = 0.004
 
 wop_rec_rate = 0.35
+
+wop_defer_mths = 6
 
 wop_prem_loading = 0.05
 
