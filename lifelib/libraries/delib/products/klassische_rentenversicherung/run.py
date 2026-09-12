@@ -3,6 +3,10 @@
     python products/klassische_rentenversicherung/run.py       # anchor cell (point_id = 1)
     python products/klassische_rentenversicherung/run.py 6     # another model point
 
+The frame counts policy **months**.  Three views are printed - the first twelve months of
+``result_cf()``, the whole run summed into policy years by ``result_cf_annual()``, and the
+annual state of ``result_pols()``, which is where the two accounts and their credits live.
+
 Output is ASCII-only so it prints on a Windows console under any code page.
 """
 import sys
@@ -23,25 +27,35 @@ print("model point {}: {} - {}{} issued {}, duration {}, {} EUR {} to age {}".fo
     int(mp["issue_age"]) + n))
 print("premium {:,.2f} EUR p.a. x {} y (freq load {:.3f})   Beitragssumme {:,.2f}   "
       "alpha {:,.2f}".format(
-          proj.prem_pp(int(mp["duration_init"])), mp["prem_term_y"],
+          proj.prem_pp(proj.k_start()), mp["prem_term_y"],
           proj.freq_load(), proj.beitragssumme_pp(), proj.alpha_total_pp()))
 print("Rechnungszins {:.2%}   declared {:.2%}   bonus {:.2%}   charge set {}".format(
-    proj.int_rate_guar(), proj.decl_rate(int(mp["duration_init"])),
-    proj.bonus_rate(int(mp["duration_init"])), mp["charge_id"]))
-print("Rentenbeginn: last accumulation row t = {} (age {}):  capital {:,.2f}  "
+    proj.int_rate_guar(), proj.decl_rate(proj.k_start()),
+    proj.bonus_rate(proj.k_start()), mp["charge_id"]))
+print("Rentenbeginn: last accumulation month t = {} (age {}):  capital {:,.2f}  "
       "Rentenfaktor max({:.2f}, {:.2f}) = {:.2f}  ->  garantierte Rente {:,.2f} "
       "EUR/month".format(
-          n - 1, int(mp["issue_age"]) + n, proj.capital_conv_pp(),
+          12 * n - 1, int(mp["issue_age"]) + n, proj.capital_conv_pp(),
           proj.annuity_rate_guar(), proj.annuity_rate_curr(),
           proj.annuity_rate_appl(), proj.annuity_guar_mth_pp()))
-print("Rentengarantiezeit {} y   Kapitalwahl {:.0%}   payout system {}   "
-      "proj_len {}".format(
-          mp["rgz_years"], float(mp["kapitalwahl_rate"]), mp["payout_system"],
-          proj.proj_len()))
+print("Rentengarantiezeit {} y = {} instalments   Kapitalwahl {:.0%}   payout system {}"
+      .format(mp["rgz_years"], 12 * int(mp["rgz_years"]),
+              float(mp["kapitalwahl_rate"]), mp["payout_system"]))
+print("frame t = {} .. {} months ({} policy years; policy_year = t // 12 + 1)   "
+      "implied Rentenfaktor on the shipped proxy {:.2f}".format(
+          proj.t_start(), proj.proj_len() - 1, proj.proj_len_y(),
+          10000.0 / proj.annuity_due_factor()))
 print()
 
 df = proj.result_cf()
-print(df.head(20).round(2).to_string())
+print("first 12 months")
+print(df.head(12).round(2).to_string())
+print()
+print("summed into policy years")
+print(proj.result_cf_annual().head(12).round(2).to_string())
+print()
+print("annual state")
+print(proj.result_pols().head(12).round(2).to_string())
 print()
 print("totals over t = {} .. {}: premiums {:,.2f}  claims {:,.2f}  annuity {:,.2f}  "
       "expenses {:,.2f}  net_cf {:,.2f}".format(
