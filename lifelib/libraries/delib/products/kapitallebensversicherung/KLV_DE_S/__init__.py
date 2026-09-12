@@ -11,8 +11,8 @@ library. It projects gross best-estimate liability cash flows, **undiscounted**,
 single-policy model point of the classic German endowment — the *gemischte Versicherung
 auf den Todes- und Erlebensfall*, which pays a guaranteed *Erlebensfallleistung* at the
 *Ablauf* if the insured is then alive and a guaranteed *Todesfallleistung* on earlier
-death, both increased by the *Überschussbeteiligung* — on an **annual** grid, which is
-the contract's own operative clock.
+death, both increased by the *Überschussbeteiligung* — on a **monthly** grid, over a
+product whose every contractual mechanic stays on the **annual** clock it is written on.
 
 This is the *Überschussbeteiligung* chassis the other nine delib products reuse in
 modified form, and three things make it the German model rather than a translated one.
@@ -68,18 +68,33 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps. ``t`` is the policy year, **0-based, counted from
-issue**: ``t = 0`` is the first policy year, ``age(t) = issue_age() + t`` and
-``duration(t) = t`` is what every duration-keyed schedule is indexed on, while the
-contractual, 1-based label is ``policy_year(t) = t + 1``. The frame runs
-``t = t_start() ... proj_len() - 1`` contiguously, with ``t_start() = duration_init()`` and
-``proj_len() = policy_term()`` — the **number of policy years counted from ``t = 0``**, so
-the frame's exclusive end, with the *Ablauf* at the end of year ``proj_len() - 1``. There is
-no ``t = proj_len()`` row. *Beiträge* fall at the start of the year in advance; the
-guaranteed *Deckungskapital* rolls forward over the year at the *Rechnungszins*; the
-surplus is declared and credited at the year end on the closing reserve; death, maturity
-and surrender fall at the end of the year, surrender after both the mortality decrement
-and the surplus credit.
+**Projection basis.** Monthly steps, over an annual product. ``t`` is the policy **month**,
+0-based and counted from issue, and the frame runs ``t = t_start() ... proj_len() - 1``
+contiguously with ``t_start() = 12 x duration_init()`` and ``proj_len() = 12 x
+policy_term()`` — the frame's exclusive end, with the *Ablauf* at the end of the last month.
+There is no ``t = proj_len()`` row.
+
+**The model carries two clocks and the argument of a cells says which.** Cells that state an
+**annual account** take ``k``, the 0-based policy year: the whole pricing block, all three
+reserves, the § 169 value, the paid-up purchase and every part of the
+*Überschussbeteiligung*. Cells that state a **month** take ``t``: the in force, the claims,
+the premium instalments and every ``result_cf()`` column. ``duration(t) = t // 12`` is the
+bridge, ``policy_year(t) = duration(t) + 1`` the contractual 1-based label, and
+``is_anniv(t) = (t % 12 == 11)`` the month the annual machinery acts in. The decrement rates
+take ``t`` and return the **year's** annual rate; ``mort_rate_mth`` and ``lapse_rate_mth``
+are what the recursion applies, at ``1 - (1 - r)^(1/12)``, so twelve of each compound back to
+the year's rate and ``pols_if`` at every anniversary is what an annual-step model carries.
+That is what leaves the whole annual layer — every reserve, every declared credit, every
+ledger balance and the *Bruttobeitrag* itself — **bit-identical** to the annual-step model
+this replaced.
+
+A *Beitrag* **instalment** on the *Zahlweise*'s own cycle and a twelfth of the maintenance
+expense fall at the beginning of the month; the guaranteed *Deckungskapital* rolls forward
+over the **policy year** at the *Rechnungszins*; the surplus is declared and credited at the
+**anniversary** on that year's closing reserve; death, maturity and surrender fall at the end
+of the **month**, surrender after the mortality decrement, and each is paid the balances
+standing at the end of that month — the year's own closing figures in an anniversary month,
+and the ones struck at the **last** anniversary in the other eleven.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the surplus
 rate as a percentage of the *Deckungskapital* at the allocation date and the allocation at
@@ -99,14 +114,15 @@ from the output.
 
 **Model points.** Fourteen, covering both premium forms, all four payment frequencies with
 the *echte* and *unechte* readings of a sub-annual one, all three *Überschussverwendung*
-systems, an in-force 2012 cohort on a 1,75 % guarantee opening at ``t = 14``, a successful
+systems, an in-force 2012 cohort on a 1,75 % guarantee opening at ``t = 168``, a successful
 and a failing *Beitragsfreistellung*, a non-*gezillmert* tariff, and a short unequal-sums
 contract at a *Risikozuschlag* on the ``nil`` surplus scenario. Model point 1 is the
 anchor cell of the worked example in the technical notes.
 
 **Verification.** ``tests/test_kapitallebensversicherung_de.py`` asserts every row of the
-notes' twenty-five-year worked example to the cent and ``pols_if`` to six decimals, and
-one test per listed modeling pitfall. Nine ``check_*()`` cells close on every model point,
+notes' twenty-five-year worked example to the cent — on ``result_cf_annual()`` — and the
+twelve months of policy year 1 on the monthly frame beside it, ``pols_if`` to six decimals,
+and one test per listed modeling pitfall. Ten ``check_*()`` cells close on every model point,
 among them ``check_net_cf()`` — this library's first ruling — and ``check_res_roll_fwd()``,
 the Fackler recursion that proves the premium, the first-order mortality, the interest and
 the prospective reserve formula are mutually consistent.

@@ -206,8 +206,9 @@ Footnotes to **[std]** rows:
    "the market default" would still be [unverified]**: two wordings are not a market.
 6. **No German endowment wording located states an age basis.** Age last birthday is the ordinary
    German convention, adopted without a citation; the alternative worth naming is
-   *versicherungstechnisches Alter*. On an annual grid the choice moves the first-year risk premium by
-   up to one year of mortality and nothing else.
+   *versicherungstechnisches Alter*. The choice moves the first-year risk premium by up to one year
+   of mortality and nothing else; the attained age steps at the anniversary whatever the projection
+   step, so a monthly grid does not refine it.
 7. **Nothing in the corpus establishes a waiting period for an underwritten German endowment**; German
    *Wartezeit* constructions belong to *Sterbegeldversicherung* and simplified-issue covers. The only
    period that operates like one is the **three-year *Selbsttötung* window** of § 161 VVG [R4]
