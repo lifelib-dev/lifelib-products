@@ -128,8 +128,9 @@ leaves the Basisrente untouched.
 ## Representative specification
 
 The representative design is a **single-life, individual, *klassisch* (general-account)
-Basisrentenvertrag on an annual grid**, certified under § 5a AltZertG, with a level *laufender
-Beitrag* plus an annual *Zuzahlung*, priced and reserved at the current *Höchstrechnungszins* on a
+Basisrentenvertrag on a monthly grid**, certified under § 5a AltZertG, with a level *laufender
+Beitrag* plus an annual *Zuzahlung* — both annual terms of the contract, the grid being finer than
+the contract because the *Rente* is monthly — priced and reserved at the current *Höchstrechnungszins* on a
 DAV 2004 R first-order basis, *gezillmert* toward the 25 ‰ cap, converting at *Rentenbeginn* into a
 monthly lifelong annuity at `max(garantierter, aktueller) Rentenfaktor`, with **no *Kapitalwahlrecht*,
 no *Teilkapitalauszahlung*, no *Rückkaufswert*, no policy loan and no assignment**. The one

@@ -11,7 +11,7 @@ gross best-estimate liability cash flows, **undiscounted**, for a single model p
 the *Basisrentenvertrag* of § 10 Abs. 1 Nr. 2 Buchst. b EStG — a deferred lifelong
 annuity written on the general account, with an accumulation phase that builds a
 *Deckungskapital* and a payout phase that pays a monthly annuity struck through a
-*Rentenfaktor* — on an **annual** grid, ``t = 0 ... proj_len() - 1``.
+*Rentenfaktor* — on a **monthly** grid, ``t = 0 ... proj_len() - 1``.
 
 **The product is defined by prohibitions, and the model is too.** The entitlement is
 *nicht vererblich*, *nicht übertragbar*, *nicht beleihbar*, *nicht veräußerbar* and
@@ -33,12 +33,15 @@ its only behavioural exit, but it removes the *premium*, not the *policy*: the c
 stays certified, stays protected and still converts at *Rentenbeginn*. The model
 therefore carries two ledgers — a premium-paying cohort per policy and a premium-free
 cohort at fund level — whose account values diverge from the first freeze, and
-``pols_if(t+1) = pols_if(t) x (1 - mort_rate(t))`` with ``bf_rate`` absent from the
-identity. Treating the freeze as an exit is the second listed modeling pitfall.
+``pols_if(t+1) = pols_if(t) x (1 - mort_rate_mth(t))`` with ``bf_rate`` absent from the
+identity. Treating the freeze as an exit is the second listed modeling pitfall. The
+freeze itself stays annual: § 165 VVG takes effect "für den Schluss der laufenden
+Versicherungsperiode" and § 12 Abs. 1 VVG makes that period the *Versicherungsjahr*, so
+``pols_freeze`` is non-zero only in the last month of a projection year.
 
 **The declared rate is the *total* credited rate, not a spread.** A German *laufende
-Verzinsung* already includes the *Rechnungszins*, so ``cred_rate(t) = max(gtd_rate,
-decl_rate(t))``. Adding one to the other is the sixth pitfall, and on a book spanning
+Verzinsung* already includes the *Rechnungszins*, so ``cred_rate(k) = max(gtd_rate,
+decl_rate(k))``. Adding one to the other is the sixth pitfall, and on a book spanning
 seven guarantee vintages it is worth a great deal.
 
 **The conversion basis is not the projection basis.** The whole *Deckungskapital*, plus
@@ -69,18 +72,35 @@ time rather than stored inside the model. The model folder itself holds no data,
 model and its inputs must travel together — copying ``Basis_DE_S`` without its parent's
 CSVs produces a model that reads and then fails on first evaluation.
 
-**Projection basis.** Annual steps, which are the contract's own grid: the
-*Beitragsdynamik* step, the *Zuzahlung*, the annual declaration of
-*Überschussbeteiligung*, the *Beitragsfreistellung* effective at the end of the current
-premium period and the conversion at *Rentenbeginn* all land on a policy anniversary.
-The one genuinely sub-annual mechanic — the annuity is paid monthly — is compressed to
-twelve instalments booked at the start of the payout year, a standardization and the
-twelfth pitfall. Premiums and *Zuzahlungen* are taken at the start of the year, interest
-is credited at the end, deaths fall after crediting and the *Beitragsfreistellung*
-transition after the deaths. ``t`` is **0-based**: ``t = 0`` is the first projected
-year, the policy year is the contractual label ``duration(t) + 1``, and the frame runs
-``t = 0 ... proj_len() - 1`` with ``proj_len() = omega_age() - age(0) + 1`` the number of
-projected years — the end of the mortality table, because the annuity is lifelong.
+**Projection basis.** Monthly steps over a contract that is almost entirely annual, so
+the model runs on **two clocks** and the argument of a cells says which. ``t`` counts
+projection **months** from the valuation date and is **0-based**; ``k = proj_year(t) =
+t // 12`` is the projection **year**, ``duration_y(k) = duration_init + k`` the completed
+policy years and ``policy_year(t) = duration(t) + 1`` the contractual label. The frame
+runs ``t = 0 ... proj_len() - 1`` with ``proj_len() = 12 x proj_len_y()`` and
+``proj_len_y() = omega_age() - age(0) + 1`` — to the end of the mortality table, because
+the annuity is lifelong: 924 months on the anchor cell.
+
+The in force, the decrements, the claims, the expenses and the *Rente* instalments take a
+month. Everything the contract states per *Versicherungsjahr* takes a year: the
+*Beitragsdynamik* step, the *Zuzahlung*, the four account charges, the annual declaration
+of *Überschussbeteiligung*, the *Deckungskapital* and its interest credit, the
+*Beitragsfreistellung* effective at the end of the current premium period, and the
+conversion at *Rentenbeginn*. The *Beitrag* and the *Zuzahlung* fall in the first month of
+a projection year and interest is credited at its end; deaths fall at the end of each
+month and the *Beitragsfreistellung* transition after the deaths of the year's last month.
+
+The decrements carry the library's two speeds — ``mort_rate(t)`` is the **annual** rate of
+the year and ``mort_rate_mth(t)`` its geometric twelfth — so twelve months compound back to
+the annual rate exactly and the whole *Aufschubphase* is **bit-identical** to the
+annual-step model this replaced, on all thirteen model points. What the finer grid buys is
+the *Rente*: a *Rentenfaktor* is quoted in euro a **month**, and where the annual model
+booked twelve instalments at the start of each payout year on the opening count — its own
+twelfth pitfall, and a stated approximation worth 4 290,52 € of the anchor's payout phase —
+the instalment is now paid to whoever is alive at the start of each month. The
+*Rentengarantiezeit* is ``12m`` instalments beginning in the month after the death that
+triggered them, and a mid-year death now bears only the months of maintenance expense it
+was there for.
 
 **What is sourced and what is not.** The contractual mechanics are cited: the five
 prohibitions and the absence of any surrender value, the confinement of survivor cover
@@ -114,8 +134,11 @@ model publishes six ``check_*`` identities — :func:`~.Basis_DE_S.Projection.ch
 :func:`~.Basis_DE_S.Projection.check_av_roll_fwd`,
 :func:`~.Basis_DE_S.Projection.check_conversion`,
 :func:`~.Basis_DE_S.Projection.check_no_capital` and
-:func:`~.Basis_DE_S.Projection.check_annuity_roll_fwd` — each a bool over all ``t`` with
-a per-``t`` residual companion.
+:func:`~.Basis_DE_S.Projection.check_annuity_roll_fwd` — each a bool over the whole
+projection with a per-period residual companion, whose argument follows its cells' clock:
+the cash flow statement, the policy ledgers and the *nicht kapitalisierbar* limb take a
+month, and the *Deckungskapital* roll-forward, the conversion and the *Überschussrente*
+take a projection year, because the quantities they check move once a *Versicherungsjahr*.
 
 Example:
 
