@@ -45,38 +45,50 @@ it implements is specified in [`product-spec.md`](product-spec.md).
 ```bash
 python products/risikolebensversicherung/run.py
 python products/risikolebensversicherung/run.py 7     # the Einmalbeitrag form
-python products/risikolebensversicherung/run.py 8     # the in-force cell, opening at t = 12
+python products/risikolebensversicherung/run.py 8     # the in-force cell, opening at t = 144
 ```
 
 ```python
 import modelx as mx
-model = mx.read_model("products/risikolebensversicherung/RLV_DE_A")
+model = mx.read_model("products/risikolebensversicherung/RLV_DE_S")
 model.Projection[1].result_cf()
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell — entry
 age 35, male, non-smoker, 300 000 € *konstante Versicherungssumme*, 25 years' cover and 25
 years' premium, annual mode, participating. `result_cf()` returns a `DataFrame` indexed by
-the **0-based** period index `t` with eleven columns, and `result_pols()` publishes the
-decrement, rate, benefit, premium and reserve side beside it.
+the **0-based** policy month `t` with eleven columns; `result_cf_annual()` sums it into
+policy years, which is the view the technical notes' worked example is stated on; and
+`result_pols()` publishes the decrement, rate, benefit, premium and reserve side beside the
+monthly frame.
 
-**The time index.** `t` counts policy years from issue and starts at **0**: period `t` runs
-from the anniversary at duration `t` to the anniversary at duration `t + 1`, covers attained
-age `issue_age + t`, and carries the contractual **policy year `t + 1`**. `proj_len()` is
-the **number** of policy years, equal to `policy_term`, and it is the frame's **exclusive
-end**: `result_cf()` runs over `range(proj_start(), proj_len())`, so its last index is
-`proj_len() − 1` and it has `policy_term − duration_y` rows — twenty-five rows `t = 0 … 24`
-on the anchor, eighteen rows `t = 12 … 29` on the in-force point 8. `proj_start()` is
-`duration_y` itself, an elapsed count of completed policy years that is already 0-based, so
-nothing is added to it.
+**The time index.** `t` counts policy **months** from issue and starts at **0**: month `t`
+runs from time `t` to time `t + 1`. `proj_len()` is the number of projected months,
+`12 × policy_term`, and it is the frame's **exclusive end**: `result_cf()` runs over
+`range(proj_start(), proj_len())`, so its last index is `proj_len() − 1` and it has
+`12 × (policy_term − duration_y)` rows — three hundred rows `t = 0 … 299` on the anchor,
+216 rows `t = 144 … 359` on the in-force point 8. `proj_start()` is `12 × duration_y`,
+`duration_y` being an elapsed count of completed policy years that is already 0-based.
+
+**The product is annual and stays annual.** `duration_mth(t) = t`, `duration(t) = t // 12`
+and `policy_year(t) = duration(t) + 1` are derived and never indexed by, and everything the
+contract puts on the anniversary stays there: `age(t) = issue_age + duration(t)`, the
+*Versicherungssumme* schedule, the *Nachversicherungsgarantie* steps, the § 161 three-year
+windows, the *Beitragszahlungsdauer*, the expense inflation, and the whole first-order
+equivalence — whose `G`, `Gn`, `v_d` and *Deckungskapital* are **bit-identical** to the
+annual-step model this replaced. What the finer grid resolves is timing: `mort_rate` and
+`lapse_rate` are the policy year's **annual** rates and `mort_rate_mth` and `lapse_rate_mth`
+the monthly rates derived from them at `1 − (1 − r)^(1/12)`, so twelve of each compound back
+to the year's rate and `pols_if` at every anniversary is the annual model's own figure.
 
 **What the CSVs are keyed on.** `benefit_schedule.csv`, `nvg_schedule.csv` and
 `lapse_table.csv` are keyed on `policy_year`, the contractual **1-based** label, and their
-values are unchanged by the 0-based frame: the readers map through `t + 1`. In
-`model_point_table.csv`, `duration_y` is an elapsed count and is already 0-based, and
-`policy_term` and `prem_term` are counts of years; no column there is a point on the frame's
-time axis, so no model-point value moves either. `mort_table.csv` is keyed on attained age,
-which is not a time index. **No CSV value changed** in the move to the 0-based frame.
+values are unchanged by the monthly frame: the readers map through `policy_year(t)`. In
+`model_point_table.csv`, `duration_y` is an elapsed count of **years** and `policy_term` and
+`prem_term` are counts of years; no column there is a point on the frame's time axis, so no
+model-point value moves either. `mort_table.csv` is keyed on attained age, which is not a
+time index, and its rates stay **annual**. **No CSV value changed** in the move to the
+monthly grid, and none changed in the earlier move to the 0-based frame.
 
 The model and both its Spaces carry
 docstrings: `model.Projection.doc` holds the full mapping between the notes' actuarial
@@ -176,7 +188,9 @@ What is **not** true is that nothing accumulates, and this is the modelling erro
 product invites. A level premium charged against a rising death rate overcharges early and
 undercharges late, and the difference is a *Deckungskapital* that peaks near the middle of
 the term and runs off to exactly zero at expiry — **7 553,29 €**, 2,52 % of the sum
-insured, at `t = 15`. `check_res_roll_fwd()` asserts the Thiele recursion with
+insured, in **policy year 15**. The reserve takes a policy-year argument and stays an annual
+construction on the monthly grid, so every figure here is unmoved by the conversion.
+`check_res_roll_fwd()` asserts the Thiele recursion with
 `res_pp_at(0) = 0` by the equivalence and `res_pp_at(n) = 0` by exhaustion; building on
 "no *Sparanteil*, therefore no reserve" fails it.
 
@@ -204,15 +218,20 @@ wiederhergestellten Teils neu" [S1] § 5 Abs. 3, [S3] § 2 Abs. 4, [S4] § 19 Ab
 applies it as a **benefit switch on death claims only**, tranche by tranche:
 
 ```
-benefit_paid_pp(t) = S0 · f(t) · Σ_j Δu(t_j) · σ_j(t),   σ_j = 1 − suicide_share if t < t_j + 3
+benefit_paid_pp(t) = S0 · f(t) · Σ_j Δu(y_j) · σ_j(t),
+σ_j = 1 − suicide_share  if  duration(t) < y_j + 3
 ```
 
-so `suicide_factor(t) = benefit_paid_pp(t)/benefit_pp(t)` is **0,97 for `t ∈ {0,1,2}` and
-1 thereafter** on the anchor, and a **weighted average strictly between 0,97 and 1** where
-one tranche is inside its window and another is not — 0,995 at `t = 5…7` and 0,9957142857
-at `t = 11…13` on model point 9, whose *Nachversicherungsgarantie* steps the sum to 1.2 at
-policy year 6 (`t = 5`) and 1.4 at policy year 12 (`t = 11`). On the in-force point 8 it is
-1 at every projected `t`.
+so `suicide_factor(t) = benefit_paid_pp(t)/benefit_pp(t)` is **0,97 through the first
+thirty-six months and 1 thereafter** on the anchor, and a **weighted average strictly
+between 0,97 and 1** where one tranche is inside its window and another is not — 0,995
+through policy years 6 to 8 and 0,9957142857 through policy years 12 to 14 on model point 9,
+whose *Nachversicherungsgarantie* steps the sum to 1.2 at policy year 6 (month 60) and 1.4
+at policy year 12 (month 132). On the in-force point 8 it is 1 at every projected `t`.
+
+Both clocks are annual and every window boundary therefore falls on an anniversary, so the
+monthly grid resolves the switch **exactly** rather than approximately: `duration(t) < 3` is
+the same statement as `t < 36`.
 
 **What the model does not do.** It does not model the mental-illness exception, the ground
 on which German *Selbsttötung* claims are actually litigated [R23] and not something a
@@ -259,28 +278,33 @@ and taxation is documented in `product-spec.md` and computed nowhere.
 
 ## The last policy year has no lapse
 
-Lapses fall at the **end** of the period, after the death decrement, and the end of the last
-period `t = n − 1` is the moment cover expires. A lapse and an expiry are then the same event
-paying the same nothing, so `lapse_rate(proj_len() − 1)` is **0** and the surviving cohort
-leaves through `pols_maturity`. The table's own row for policy year `n` still reads 3 %: the
-zero is a property of the last policy year, not of the assumption.
+Lapses fall at the **end** of the month, after the death decrement, and the end of the last
+month `t = proj_len() − 1` is the moment cover expires. A lapse and an expiry are then the
+same event paying the same nothing, so `lapse_rate` is **0 through the whole of the final
+policy year** — `duration(t) ≥ proj_len_y() − 1`, months 288 to 299 on the anchor — and the
+surviving cohort leaves through `pols_maturity`. The zero covers the year rather than merely
+its last month, because that is what the annual-step model this replaced said of it. The
+table's own row for policy year `n` still reads 3 %: the zero is a property of the last
+policy year, not of the assumption.
 
 No cash flow moves either way, but the closure identity is load-bearing: on the anchor it
-divides **0,03305608** deaths, **0,53554078** lapses and **0,43140314** expiries, summing
-to `pols_if_init() = 1` exactly with `pols_if(25) = 0` — which is what lets `result_cf()`
-stop at `proj_len() − 1 = 24` with nothing left over.
+divides **0,03261764** deaths, **0,53597922** lapses and **0,43140314** expiries, summing
+to `pols_if_init() = 1` exactly with `pols_if(300) = 0` — which is what lets `result_cf()`
+stop at `proj_len() − 1 = 299` with nothing left over. The expiring cohort is the annual-step
+model's own figure to the last digit; the split between deaths and lapses moved by 0,00044,
+which is the one thing interleaving the two decrements monthly genuinely changes.
 
 ## Inputs are external files
 
 The six input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `RLV_DE_A/` holds nothing but formulas:
+folder. `RLV_DE_S/` holds nothing but formulas:
 
 ```
 products/risikolebensversicherung/
   model_point_table.csv  mort_table.csv  benefit_schedule.csv     <- inputs live here
   nvg_schedule.csv       lapse_table.csv freq_loading_table.csv
   run.py  model.md  product-spec.md  technical-notes.md  sources.md
-  RLV_DE_A/                    <- formulas only
+  RLV_DE_S/                    <- formulas only
     __init__.py  _system.json  Data/__init__.py  Projection/__init__.py
 ```
 
@@ -307,7 +331,7 @@ projected. The conventions suite counts the reads and asserts the *set* against
 | `lapse_file` | `lapse_table()` | `lapse_table.csv` |
 | `freq_loading_file` | `freq_loading_table()` | `freq_loading_table.csv` |
 
-**The trade-off:** the model is not portable on its own — copy `RLV_DE_A/` without the
+**The trade-off:** the model is not portable on its own — copy `RLV_DE_S/` without the
 CSVs and it reads fine, then fails on first evaluation. What you gain is that a diff shows
 logic changes only, and an input can be swapped in place: point `Data.mort_table_file` at
 another same-schema file and the projection follows, with no formula change. Tests cover
@@ -318,11 +342,11 @@ single exemption, a model point being a *configuration* rather than an assumptio
 
 | File | Contents | Provenance |
 |---|---|---|
-| `model_point_table.csv` | Fourteen model points. **Point 1 is the worked-example anchor cell.** The rest cover both premium forms, all four *Zahlweisen*, all three sum shapes, an in-force point opening at `t = 12`, a *Nachversicherungsgarantie* with two increments, *verbundene Leben*, a *Risikozuschlag* on an impaired smoker, the § 153-excluded tariff, an *abgekürzte Beitragszahlungsdauer*, and two boundary cells | **[std]**; exempt from the provenance rule |
+| `model_point_table.csv` | Fourteen model points. **Point 1 is the worked-example anchor cell.** The rest cover both premium forms, all four *Zahlweisen*, all three sum shapes, an in-force point opening at `t = 144`, a *Nachversicherungsgarantie* with two increments, *verbundene Leben*, a *Risikozuschlag* on an impaired smoker, the § 153-excluded tariff, an *abgekürzte Beitragszahlungsdauer*, and two boundary cells | **[std]**; exempt from the provenance rule |
 | `mort_table.csv` | Second-order annual death rates by `table_id`, `sex`, `smoker` and attained age 18–80 | **[std]** Gompertz proxy `base(sex) × smoker_mult × 1.095^(age−30)`, `base(M) = 0.00040`, `base(F) = 0.00020`, `smoker_mult(R) = 2.20`. **DAV 2008 T / T NR / T R are cited by name and never shipped** [R12] [REG-R48]. The three anchors a replacement must preserve: the 50/50 non-smoker blend `0.00030 × 1.095^(x−30)`, the female-to-male ratio 0.50, and the smoker multiplier 2.20 |
 | `benefit_schedule.csv` | `benefit_factor` by schedule id and **1-based** `policy_year`, read at `t + 1`: `konstant`, `linear_fallend` (`(21 − policy_year)/20`, i.e. `(20 − t)/20`), `annuitaet_fallend_3pct` | **[std]** — the three German shapes are structural [S15]; **no schedule parameter was established** (gap 15) |
 | `nvg_schedule.csv` | Cumulative `sum_uplift`: `keine` ≡ 1.0, `nvg_zwei_erhoehungen` stepping to 1.2 at year 6 and 1.4 at year 12 | **[std]** — the schedule is a mechanics demonstration and take-up is exogenous. **Gap 7 is now closed**: [S3] § 13 gives a nine-item event list, a **twelve-month** exercise window, a per-event cap of **20 % of the original sum insured, at most 50 000 €**, at most **five** occasions in all, and an end above **age 50**. Two 20 % increments are inside those caps; that both are taken is a model assumption no document supports. **The CSV is unchanged** [S3] [S11] [S17] |
-| `lapse_table.csv` | Annual lapse by **1-based** `policy_year`, read at `t + 1`, 6 / 4 / 4 / 3 % | **[std]**, argued from structure, not data: nothing is forfeited by lapsing, exit is frictionless because the *Versicherungsperiode* follows the *Zahlweise* [R8], and the need amortises. The GDV whole-market *Stornoquote* [R18] is **deliberately not used** (gap 13) |
+| `lapse_table.csv` | **Annual** lapse by **1-based** `policy_year`, read at `policy_year(t)`, 6 / 4 / 4 / 3 %; spread to the month by `lapse_rate_mth` | **[std]**, argued from structure, not data: nothing is forfeited by lapsing, exit is frictionless because the *Versicherungsperiode* follows the *Zahlweise* [R8], and the need amortises. The GDV whole-market *Stornoquote* [R18] is **deliberately not used** (gap 13) |
 | `freq_loading_table.csv` | *Ratenzahlungszuschlag* and instalment count by *Zahlweise*: 1.000 / 1.02 / 1.03 / 1.05 | **[std]** — a German market convention with **no carrier attribution** (gap 21). Whether carriers strike it on the *Bruttobeitrag* or the *Zahlbeitrag* was not established; this model loads the **billed** amount |
 
 ## The published identities
@@ -366,7 +390,7 @@ the worked example while the machinery stays visible and testable.
 
 | Module | Switch | Off value | What it does |
 |---|---|---|---|
-| Premium-shock lapse | `shock_lapse_lambda` | `0.0` | `M_shock(t) = 1 + λ_s·max(0, prem_paid_pp(t)/prem_paid_pp(t−1) − 1)`, reference `λ_s = 2.0` **[std]**. Inert in the base run because the billed premium is level there; it bites exactly when `decl_scale` is stressed, which is when it should. A stress that raises the *Zahlbeitrag* toward the *Bruttobeitrag* and leaves lapse unchanged is understating itself |
+| Premium-shock lapse | `shock_lapse_lambda` | `0.0` | `M_shock(t) = 1 + λ_s·max(0, prem_paid_pp(t)/prem_paid_pp(t−12) − 1)`, reference `λ_s = 2.0` **[std]**. The ratio is between **consecutive renewals**, so it reads the annual *Zahlbeitrag* twelve months back and not the instalment one month back. Inert in the base run because the billed premium is level there; it bites exactly when `decl_scale` is stressed, which is when it should. A stress that raises the *Zahlbeitrag* toward the *Bruttobeitrag* and leaves lapse unchanged is understating itself |
 | Selective lapse | `sel_lapse_lambda` | `0.0`, with `sel_lapse_ref = 0.25` | `q₂_eff = q₂·(1 + λ·max(0, w_cum − w_ref))`, reference `λ = 0.30` **[std]**. Healthy lives can re-underwrite into a cheaper contract and impaired lives cannot, so persisters' mortality drifts up. delib does not model it in the base run — one basis for stayers and leavers — a **stated simplification**, not an oversight |
 
 Both are driven off the premium and the lapse table alone, never off `pols_if`, so the
@@ -389,10 +413,13 @@ stream outgo-positive, `liability_cf(t) = −net_cf(t)` exactly, and both are co
 discounts a published cash flow** — the one place a discount rate appears is the pricing
 equivalence and the first-order reserve, neither of which is a cash flow.
 
-The shape to expect on the anchor is a year-one strain of **−359,51 €** — the acquisition
-cost and initial commission together exceed the first year's billed premium — thin
-positive years while the level premium runs ahead of the natural risk premium, and a
-crossover at `t = 13`. The total is **−804,77 €** on model point 1 and **+4 158,46 €** on
+The shape to expect on the anchor, read on `result_cf_annual()`, is a first-year strain of
+**−351,88 €** — the acquisition cost and initial commission together exceed the first year's
+billed premium — thin positive years while the level premium runs ahead of the natural risk
+premium, and a crossover in **policy year 14**. Within policy year 1 the monthly frame shows
+what the annual grid could not: **−108,90 €** in month 0, where the whole year's premium is
+collected against 826,64 € of acquisition cost and commission, then eleven months of about
+−22 € each. The total is **−644,78 €** on model point 1 and **+4 252,82 €** on
 model point 2, the same cell with `sex = F`. Neither is a profit measure: the stream is
 undiscounted, the tariff was struck at 1,00 % on no-lapse survivorship, and no reserve is
 held against the later years. The *difference* is the unisex cross-subsidy the law
@@ -424,7 +451,7 @@ Three differences are named so a reader does not carry one across: the French co
 is **revisable at attained age** and the German *Bruttobeitrag* is **level**; the French
 product carries a **PTIA acceleration** and the German one has no living benefit at all;
 and `expenses` **includes** commission there and **excludes** it here. Within delib,
-`KLV_DE_A` shares the *Überschussbeteiligung* chassis in a different *Überschussverwendung*
+`KLV_DE_S` shares the *Überschussbeteiligung* chassis in a different *Überschussverwendung*
 form — surplus credited to a *Deckungskapital* rather than netted against the premium —
 and the biometric siblings `BU_DE_S` and `Pflege_DE_S` are monthly multi-state models
 sharing no recursion with this one. `issue_date`, `instalments` and `policy_id` are
@@ -460,14 +487,14 @@ checks, not inputs.
 | `claim_expense` | 250 € per death claim | No German figure is public; worth 0,16 € in the anchor's first year |
 | `suicide_share` | 0.03 | No German cause-of-death share was retrieved; stands for "about three per cent of deaths at these ages are suicides", argued range 0,01–0,05 [unverified]. The **three-year window itself is sourced** [R1] |
 | `suicide_years` | 3 | The statutory minimum, extendable by *Einzelvereinbarung* [R1] [REG-R26]. A Reference so an extended window can be modelled. **All three retrieved wordings adopt the statutory three and none extends it** [S1] [S3] [S4] |
-| Lapse table | 6 % / 4 % / 4 % / 3 %, `w(n − 1) = 0` | Argued from three structural features (mechanic 17); **no German figure supports any of it**, argued range 2–8 % in the early durations (gap 13). The final-year zero is a property of the last policy year and lives in the formula, not the table |
+| Lapse table | 6 % / 4 % / 4 % / 3 % **a year**, zero through the final policy year | Argued from three structural features (mechanic 17); **no German figure supports any of it**, argued range 2–8 % in the early durations (gap 13). The final-year zero is a property of the last policy year and lives in the formula, not the table. The annual rate is spread to the month at `1 − (1 − w)^(1/12)` **[std]**: no German instrument states a conversion convention for any decrement, and what is not optional is that twelve of the monthly rates compound back to the year's |
 | `prem_freq_load` | 1.000 / 1.02 / 1.03 / 1.05 | A market convention with no carrier attribution (gap 21), applied to the **billed** amount so the split identity holds at every frequency |
-| Benefit schedules | `(21 − policy_year)/20`, i.e. `(20 − t)/20`; a 3,00 % thirty-year annuity balance | The three shapes are structural; **no schedule parameter was established** (gap 15) |
+| Benefit schedules | `(21 − policy_year)/20`, i.e. `(20 − duration(t))/20`, stepping on the anniversary; a 3,00 % thirty-year annuity balance | The three shapes are structural; **no schedule parameter was established** (gap 15) |
 | NVG schedule | 1.2 at year 6, 1.4 at year 12 | Take-up is exogenous. **Gap 7 is closed and the schedule is not consistent with the one wording that fills it**: [S3] § 13 caps each event at **20 % of the original sum insured, at most 50 000 €**, allows at most **five** occasions and ends the right above age 50, all within a twelve-month window of a listed event. Two increases of +20 % each is within that; but a cumulative 1.4 by year 12 assumes two qualifying events and full take-up, which no document supports. **The schedule is unchanged** — it is a mechanics demonstration, off in the base run — and the carrier's caps are now on the record beside it |
 | `lives = 2` combination | `q_A + q_B − q_A·q_B`, before loading | An independence assumption that **understates** the true first-death rate for a couple; no German figure bounds it (gap 15) |
 | `rating_factor` | 1.00 standard, 1.75 on point 11 | A *Risikozuschlag* is a **mortality** loading on both orders, not a price loading — which is why the `Zahl/Brutto` ratio moves by less than half a point across it. **No German or French *Risikozuschlag* scale is public** |
 | `premium_form = einmal` | Model point 7 | A **[std]** construction exercising the premium engine at `k = 1`. **No German standalone RLV in the corpus is written on it**; the out-of-scope *Restschuldversicherung* is, and it is a different product sold a different way |
-| Timing conventions | Premium and expenses at the start of the year, claims and lapses at the end, acquisition cost at issue only where `duration_y = 0` | An annual grid on a monthly-terminable contract [R8]: the grid books exits at anniversaries and says so. **The approximation is larger than the note assumed**: § 168 Abs. 1 with § 12 VVG gives termination at the end of the *Versicherungsperiode*, but both retrieved carriers allow it "jederzeit zum Ende des laufenden Monats" whatever the *Zahlweise* [S3] § 15 Abs. 9, [S4] § 13 Abs. 1 |
+| Timing conventions | A premium instalment on the *Zahlweise*'s own cycle and the month's expenses at the beginning of the month, claims and lapses at the end, acquisition cost at issue only where `duration_y = 0` | **The approximation this row used to record is gone.** On the annual grid the model booked exits at anniversaries and said so, and the note recorded that the approximation was larger than first assumed: § 168 Abs. 1 with § 12 VVG gives termination at the end of the *Versicherungsperiode*, but both retrieved carriers allow it "jederzeit zum Ende des laufenden Monats" whatever the *Zahlweise* [S3] § 15 Abs. 9, [S4] § 13 Abs. 1. The monthly grid expresses exactly that. What remains **[std]** is the conversion of the annual rates to the month and the placing of claims at the end of the month |
 | `shock_lapse_lambda`, `sel_lapse_lambda` | 0.0 (references 2.0 and 0.30) | Both modules off, so the base run reproduces the worked example |
 | `roll_fwd_tol`, `val_tol` | 1e-10, 1e-9 | Tolerances scaled by `pols_if_init()` and `sum_assured()` respectively |
 | The fourteen model points | — | The anchor is the research file's representative composite; the rest are chosen to exercise the mechanics, not to describe a market |
@@ -490,9 +517,11 @@ approximations** — but they belong in the table above, as standardizations, no
 ## Tests
 
 `tests/test_risikolebensversicherung_de.py` asserts all twenty-five rows of the notes'
-worked example — `t = 0 … 24` on the 0-based frame — to the cent and `pols_if` to six
-decimals, the frame's own shape (`list(result_cf().index) == list(range(25))` on the anchor
-and `range(12, 30)` on the in-force point 8), the totals at full precision, the
+annual worked example — off `result_cf_annual()`, keyed on the 1-based `policy_year` — to
+the cent and `pols_if` to six decimals, the twelve months of policy year 1 on the monthly
+frame beside them, that the annual view **regroups** the monthly frame rather than
+reprojecting it, the frame's own shape (`list(result_cf().index) == list(range(300))` on
+the anchor and `range(144, 360)` on the in-force point 8), the totals at full precision, the
 *Bruttobeitrag* 1 275,411882 € and the *Beitragsverrechnungssatz* 0,42527476 reached two
 independent ways, the notes' three rebuilds and three closure identities, the
 `decl_scale = 0` and *Einmalbeitrag* variant tables, the five `check_*` identities with

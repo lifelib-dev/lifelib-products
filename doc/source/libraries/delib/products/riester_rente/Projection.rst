@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: delib.products.riester_rente.Riester_DE_A.Projection
+.. automodule:: delib.products.riester_rente.Riester_DE_S.Projection
 
 Cells Descriptions
 ------------------
@@ -60,17 +60,41 @@ Cells Descriptions
 
 .. autofunction:: scenario_id
 
+.. autofunction:: proj_len_y
+
 .. autofunction:: proj_len
+
+.. autofunction:: k_conv
 
 .. autofunction:: t_conv
 
+.. autofunction:: proj_year
+
+.. autofunction:: is_anniv
+
+.. autofunction:: prem_due
+
+.. autofunction:: age_y
+
 .. autofunction:: age
+
+.. autofunction:: duration_y
 
 .. autofunction:: duration
 
+.. autofunction:: duration_mth
+
+.. autofunction:: contract_year
+
+.. autofunction:: calendar_year_y
+
 .. autofunction:: calendar_year
 
+.. autofunction:: is_accum_y
+
 .. autofunction:: is_accum
+
+.. autofunction:: is_payout_y
 
 .. autofunction:: is_payout
 
@@ -80,9 +104,15 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate
 
+.. autofunction:: lapse_rate_mth
+
 .. autofunction:: transfer_rate
+
+.. autofunction:: transfer_rate_mth
 
 .. autofunction:: pols_if
 
@@ -227,5 +257,7 @@ Cells Descriptions
 .. autofunction:: check_zulage_lag
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_acct

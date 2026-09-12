@@ -1611,9 +1611,9 @@ what the answer actually is. It is:
     statutory requirement of a *monatliche* annuity is an administrative question whose answer lives
     in the BMF guidance at [R18] and **was not established**. Gap 19.
   - **Consolidation before *Rentenbeginn*** into one contract, which depends on gap 13.
-- **The modelling consequence is a decision, not a deduction.** `Basis_DE_A` does **not** implement
+- **The modelling consequence is a decision, not a deduction.** `Basis_DE_S` does **not** implement
   the commutation branch: the threshold level is contested, whether an AVB offers the *Abfindung*
-  was not established (gap 19), and `Riester_DE_A` already carries the mechanic with the test
+  was not established (gap 19), and `Riester_DE_S` already carries the mechanic with the test
   computed rather than assumed. So every model point annuitises its whole capital, model point 10 —
   300,00 € a year — included, and that is what the test module asserts. **It is a `[std]`
   simplification and a named model risk, and must not be presented as a prohibition.**

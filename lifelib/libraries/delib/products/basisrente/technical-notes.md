@@ -13,7 +13,7 @@ instrument a claim must be checked against rather than a document anyone read, a
 carries keeps its [unverified] or **[std]** tag. See `product-spec.md` for the full statement.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`Basis_DE_A`**, **annual** grid — for the standardized composite German *Basisrente* defined in
+**`Basis_DE_S`**, **monthly** grid over an annual contract — for the standardized composite German *Basisrente* defined in
 `product-spec.md` (same directory). This is not any single insurer's product. [S#]/[R#] tags refer to
 the source list in `sources.md` (numbering carried from `_research/basisrente.md`; frozen); [REG-R#]
 tags refer to the cross-product reference library
@@ -44,40 +44,65 @@ prose, where they are the name of the thing.
   entitlement is *nicht kapitalisierbar*, *nicht veräußerbar* and *nicht beleihbar* [R1] [R14]
   [REG-R39] [REG-R40] — structural absences, not switched-off options, and `check_no_capital()`
   asserts them in code rather than in prose.
-- **Projection grid: annual.** `t` counts **projection years from the valuation date**, and the frame
-  is **0-based**: `t = 0` is the first projected year and the frame runs `t = 0 … proj_len() − 1`.
-  Policy duration at the start of year `t` is `duration(t) = duration_init + t` completed policy
-  years, so the **policy year** — the contractual, 1-based label — is `duration(t) + 1`; attained age
-  is `age(t) = entry_age + duration_init + t`; calendar year is
-  `cal_year(t) = conclusion_year + duration_init + t`. A new-business model point has
-  `duration_init = 0`, so `t = 0` is its first policy year; an in-force point opens at whatever
-  duration it has already run, and **the frame still starts at `t = 0`**.
-- **The annual grid is a choice, and here is the argument for it.** Every contractual event lands on
-  a policy anniversary: the *Beitragsdynamik* step, the *Zuzahlung*, the annual declaration of
-  *Überschussbeteiligung*, the *Beitragsfreistellung* effective at the end of the current premium
-  period [R14], and the conversion at *Rentenbeginn*. The one genuinely sub-annual mechanic — the
-  annuity is paid **monthly** [R1] — is compressed to twelve instalments booked at the start of the
-  payout year, a **[std]** convention and pitfall 12.
+- **Projection grid: monthly, over a contract that is annual.** The model runs on **two clocks** and
+  the argument of a cells says which. `t` counts **projection months from the valuation date** and the
+  frame is **0-based**: `t = 0` is the first projected month and the frame runs
+  `t = 0 … proj_len() − 1` with `proj_len() = 12 × proj_len_y()`. `k = proj_year(t) = t // 12` counts
+  projection **years**. Policy duration at the start of projection year `k` is
+  `duration_y(k) = duration_init + k` completed policy years, so the **policy year** — the
+  contractual, 1-based label — is `policy_year(t) = duration(t) + 1`; attained age is
+  `age_y(k) = entry_age + duration_init + k` and steps on the **anniversary**; calendar year is
+  `cal_year_y(k) = conclusion_year + duration_init + k` and steps with it. `duration_mth(t) =
+  12 duration_init + t` is the completed policy months and `is_anniv(t)` — `t % 12 == 11` — the last
+  month of a projection year. A new-business model point has `duration_init = 0`, so `k = 0` is its
+  first policy year; an in-force point opens at whatever duration it has already run, and **the frame
+  still starts at `t = 0`**.
+- **Which clock, and why the contract keeps the annual one.** The in force, the decrements, the
+  claims, the expenses, the commission and the *Rente* instalments take a **month**. Everything the
+  contract states per *Versicherungsjahr* takes a **year**: the *Beitragsdynamik* step, the
+  *Zuzahlung*, the four account charges, the annual declaration of *Überschussbeteiligung*, the
+  *Deckungskapital* and its interest credit, the *Beitragsfreistellung* effective at the end of the
+  current premium period [R14], and the conversion at *Rentenbeginn*. The decrements carry the
+  library's two speeds — `mort_rate(t)` is the **annual** rate of the year and
+  `mort_rate_mth(t) = 1 − (1 − mort_rate(t))^(1/12)` is what the recursion applies — so twelve months
+  compound back to the annual rate exactly, `pols_if(12k)` is the annual-step model's `pols_if(k)` to
+  the last bit, and the whole *Aufschubphase* is unchanged.
+- **What the monthly grid buys, and it is the *Rente*.** The annuity is paid **monthly** [R1] and the
+  *Rentenfaktor* is quoted in euro a month; the annual-step model these notes were first written for
+  compressed the payment into twelve instalments booked at the start of the payout year on the
+  opening in-force count, which was its pitfall 12 and a stated **[std]** convention generous to the
+  year of death by up to a full year's annuity. `ann_mth_pp(t) = ann_pp(k) / 12` is now paid in
+  advance to whoever is alive at the start of each month, which takes 4 290,52 € — 1,6 % — off the
+  anchor's annuity outgo. The *Rentengarantiezeit* becomes `12m` guaranteed **instalments** beginning
+  in the month after the death that triggered them (+116,29 € on model point 4, +562,91 € on model
+  point 12), and a policy that dies in the third month of a year bears three twelfths of that year's
+  maintenance expense rather than all of it (−35,45 € on the anchor).
 - **Projection horizon.** The annuity is lifelong, so the projection runs to the end of the mortality
-  table: `proj_len() = omega_age() − age(0) + 1`, where `omega_age()` is the last age in
+  table: `proj_len_y() = omega_age() − age(0) + 1`, where `omega_age()` is the last age in
   `mort_table.csv`, where `qx = 1.0`. **The terminal age is absorbing**: `mort_rate(t) = 1.0`
-  wherever `age(t) ≥ omega_age()`, whatever `mort_be_factor` says, so `pols_if(proj_len()) = 0`
-  exactly and the decrement closure identity holds to the last euro. Without that rule the
+  wherever `age(t) ≥ omega_age()`, whatever `mort_be_factor` says, and `mort_rate_mth` puts that
+  certainty in the terminal year's **last** month, so `pols_if(proj_len()) = 0` exactly and the
+  decrement closure identity holds to the last euro. Without that rule the
   generational trend would carry the table's own terminal rate below 1 and leave a residue in force
   after the end of the table. `omega_age = 121` **[std]**, the terminal age German annuity tables
-  are conventionally carried to. For the anchor cell `proj_len() = 121 − 45 + 1 = 77`.
+  are conventionally carried to. For the anchor cell `proj_len_y() = 121 − 45 + 1 = 77` and
+  `proj_len() = 924`.
 - **`proj_len()` is the number of projected periods**, the **exclusive end** of the frame:
   `len(result_cf()) == proj_len()` and `result_cf().index[-1] == proj_len() − 1`. This is the
   library-wide 0-based reading, and the conventions suite asserts it. Where the frame *starts* is a
   product fact and is not asserted; contiguity is.
-- **Timing conventions [std].** The *laufender Beitrag* and the *Zuzahlung* are taken at the **start**
-  of the projection year (annual in advance; a fractionated mode changes the amount through the
-  *Ratenzahlungszuschlag*, not the grid), and the charges on them are struck at the same moment.
-  Interest is credited at the **end** of the year; deaths fall after crediting, so a dying policy
-  carries a full year's interest; the *Beitragsfreistellung* transition falls after the death
-  decrement. Annuity instalments are booked at the **start** of the payout year on the opening
-  in-force count. Acquisition expense and initial commission fall at inception, maintenance expense
-  and renewal commission at the start of each year.
+- **Timing conventions [std].** The *laufender Beitrag* and the *Zuzahlung* are taken in the **first
+  month** of the projection year (annual in advance; a fractionated mode changes the amount through
+  the *Ratenzahlungszuschlag*, not the grid — which is why the monthly frame did not split them), and
+  the charges on them are struck at the same moment. Interest is credited at the **end** of the year;
+  deaths fall at the end of each **month**, so a dying policy carries the whole of its last year's
+  interest and has paid the whole of that year's premium; the *Beitragsfreistellung* transition falls
+  after the death decrement of the year's **last** month, § 165 VVG taking effect for the end of the
+  current *Versicherungsperiode* [R14] and § 12 Abs. 1 VVG making that period the *Versicherungsjahr*.
+  Annuity instalments are booked **monthly in advance** on the count in force at the start of the
+  month. Acquisition expense and initial commission fall at inception; a twelfth of the annual
+  maintenance expense or annuity administration falls in each month, and the renewal commission in
+  the month the contribution it is a percentage of does.
 - **Charges are not cash flows.** The *Zillmerung* amortisation, the premium charge β, the reserve
   charge γ and the *Stückkosten* are **deductions from the policyholder's *Deckungskapital***, hence
   insurer income; the insurer's own **outgo** is the acquisition expense, the commission, the
@@ -96,7 +121,9 @@ prose, where they are the name of the thing.
   anniversary **[std]**: no German convention was established, and here mortality drives the annuity's
   duration rather than any benefit amount, so a half-year offset is second order. `mort_rate` is
   generational and depends on the **calendar** year as well as the age [R17] [REG-R49], which is why
-  `cal_year(t)` is carried.
+  `cal_year_y(k)` is carried. Both the age and the calendar year step on the anniversary, so the
+  twelve months of a projection year share one annual death rate and `mort_rate_mth` is its
+  geometric twelfth.
 
 ### External input files
 
@@ -191,26 +218,28 @@ age-floor cohorts, four guarantee vintages and four boundary cases.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `proj_len` | Number of projected periods, `omega_age() − age(0) + 1`; the frame's exclusive end | once per model point |
-| `ret_t` | The projection year in which *Rentenbeginn* falls, `ret_age − age(0)`; **< 0 for a point that opens in payment** | once per model point |
-| `age(t)`, `duration(t)`, `cal_year(t)` | Attained age, completed policy years and calendar year at the start of year `t` | annual |
-| `pols_if(t)` | Policies in force at the **start** of year `t`, paying and premium-free together; the weight on that same `result_cf()` row | annual recursion |
-| `pols_paying(t)` | The premium-paying subset at the start of year `t` | annual recursion |
-| `pols_paidup(t)` | The premium-free subset, `pols_if(t) − pols_paying(t)` | annual |
-| `pols_if_at(t, timing)` | End-of-period state: `"BEF_DECR"`, `"AFT_DEATH"`, `"AFT_FREEZE"` | within year `t` |
-| `pols_death(t)` | Expected deaths in year `t`, split as `pols_death_paying(t)` and `pols_death_paidup(t)` | annual |
-| `pols_freeze(t)` | Policies going premium-free during year `t` (the *Beitragsfreistellung* transition) | annual |
-| `pols_gtd(t)` | *Rentengarantiezeit* continuations running at the start of year `t` | annual recursion |
-| `av_pp_at(t, timing)` | *Deckungskapital* **per premium-paying policy**: `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_INT"` | within year `t` |
-| `av_pp(t)` | `av_pp_at(t, "BEF_PREM")` | annual |
-| `av_pu_at(t, timing)` | *Deckungskapital* of the **premium-free cohort, at fund level**, same three timings | within year `t` |
-| `av_at(t, timing)` | The whole *Deckungskapital* at fund level, `av_pp_at(t, ·) × pols_paying(t) + av_pu_at(t, ·)` | within year `t` |
-| `av(t)` | `av_at(t, "BEF_PREM")`; **zero for every `t > ret_t()`** | annual |
-| `cred_rate(t)` | The rate credited to the *Deckungskapital*, `max(gtd_rate, decl_rate(t))` | annual |
-| `ann_pp(t)` | Annual annuity per surviving annuitant in year `t`, in the *Rentenphase* only | annual recursion |
+| `proj_len_y` | Number of projected **years**, `omega_age() − age(0) + 1` | once per model point |
+| `proj_len` | Number of projected **months**, `12 × proj_len_y()`; the frame's exclusive end | once per model point |
+| `ret_y`, `ret_t` | The projection **year** in which *Rentenbeginn* falls, `ret_age − age(0)`, and the **month** of the first instalment, `12 × ret_y()`; **< 0 for a point that opens in payment** | once per model point |
+| `age_y(k)`, `duration_y(k)`, `cal_year_y(k)` | Attained age, completed policy years and calendar year in projection year `k`; `age(t)`, `duration(t)` and `cal_year(t)` read the same quantities from a month | annual, stepping on the anniversary |
+| `pols_if(t)` | Policies in force at the **start** of month `t`, paying and premium-free together; the weight on that same `result_cf()` row | monthly recursion |
+| `pols_paying(t)` | The premium-paying subset at the start of month `t` | monthly recursion |
+| `pols_paidup(t)` | The premium-free subset, `pols_if(t) − pols_paying(t)` | monthly |
+| `pols_if_at(t, timing)` | End-of-period state: `"BEF_DECR"`, `"AFT_DEATH"`, `"AFT_FREEZE"` | within month `t` |
+| `pols_death(t)` | Expected deaths in month `t`, split as `pols_death_paying(t)` and `pols_death_paidup(t)` | monthly |
+| `pols_freeze(t)` | Policies going premium-free at the end of month `t` (the *Beitragsfreistellung* transition); non-zero only where `is_anniv(t)` | annual, in the year's last month |
+| `pols_gtd(t)` | *Rentengarantiezeit* continuations running at the start of month `t` | monthly recursion |
+| `av_pp_at(k, timing)` | *Deckungskapital* **per premium-paying policy**: `"BEF_PREM"`, `"AFT_PREM"`, `"AFT_INT"` | within year `k` |
+| `av_pp(k)` | `av_pp_at(k, "BEF_PREM")` | annual |
+| `av_pu_at(k, timing)` | *Deckungskapital* of the **premium-free cohort, at fund level**, same three timings | within year `k` |
+| `av_at(k, timing)` | The whole *Deckungskapital* at fund level, `av_pp_at(k, ·) × pols_paying(12k) + av_pu_at(k, ·)` | within year `k` |
+| `av(k)` | `av_at(k, "BEF_PREM")`; **zero for every `k > ret_y()`** | annual |
+| `cred_rate(k)` | The rate credited to the *Deckungskapital*, `max(gtd_rate, decl_rate(k))` | annual |
+| `ann_pp(k)` | **Annual** annuity per surviving annuitant in year `k`, in the *Rentenphase* only | annual recursion |
+| `ann_mth_pp(t)` | The monthly instalment actually paid, `ann_pp(proj_year(t)) / 12` | monthly |
 | `beitragssumme_pp` | The contract's *Beitragssumme* at inception, the base of the 25 ‰ *Zillmerung* cap | once per model point |
 
-There is **no** account value in the *Rentenphase*: the whole fund converts at `ret_t()` into an
+There is **no** account value in the *Rentenphase*: the whole fund converts at `ret_y()` into an
 annuity obligation, and the reserve that stands behind that obligation is a
 *Deckungsrückstellung*, which delib cites and does not compute.
 
@@ -312,33 +341,36 @@ surrender, no assignment, no provider transfer, no commutation. That is the prod
 
 | Symbol | Cells | Meaning |
 |---|---|---|
-| `t` | — | projection year, **0-based**: `t = 0 … n − 1`, `n = proj_len()`; the contractual policy year is `d(t) + 1` |
-| `x(t)`, `d(t)`, `y(t)` | `age(t)`, `duration(t)`, `cal_year(t)` | attained age, completed policy years, calendar year at the start of year `t` |
-| `T` | `ret_t()` | the projection year in which *Rentenbeginn* falls; `T < 0` for a point that opens in payment |
-| `l(t)`, `lᵖ(t)`, `lᶠ(t)` | `pols_if(t)`, `pols_paying(t)`, `pols_paidup(t)` | in force, premium-paying and premium-free at the start of year `t`; `l = lᵖ + lᶠ` |
-| `q(t)` | `mort_rate(t)` | best-estimate annual death rate, `mort_rate_base(t) × mort_be_factor` |
+| `t` | — | projection **month**, **0-based**: `t = 0 … 12n − 1`, `12n = proj_len()` |
+| `k` | `proj_year(t)` | projection **year**, `t // 12`, **0-based**: `k = 0 … n − 1`, `n = proj_len_y()`; the contractual policy year is `d(k) + 1` |
+| `x(k)`, `d(k)`, `y(k)` | `age_y(k)`, `duration_y(k)`, `cal_year_y(k)` | attained age, completed policy years, calendar year in year `k`; all three step on the anniversary |
+| `T` | `ret_y()` | the projection year in which *Rentenbeginn* falls; `12T = ret_t()` is the month of the first instalment; `T < 0` for a point that opens in payment |
+| `l(t)`, `lᵖ(t)`, `lᶠ(t)` | `pols_if(t)`, `pols_paying(t)`, `pols_paidup(t)` | in force, premium-paying and premium-free at the start of **month** `t`; `l = lᵖ + lᶠ` |
+| `q(t)` | `mort_rate(t)` | best-estimate **annual** death rate of the year month `t` falls in, `mort_rate_base(t) × mort_be_factor` |
+| `q_mth(t)` | `mort_rate_mth(t)` | its geometric twelfth, `1 − (1 − q(t))^(1/12)`; **the rate the recursion applies** |
 | `qᵗ(x, y)` | `mort_rate_at_age(x, y)` | the first-order table rate at age `x` in calendar year `y` |
-| `f(t)` | `bf_rate(t)` | *Beitragsfreistellung* rate, applied **after** the death decrement |
-| `g(t)` | `pols_gtd(t)` | *Rentengarantiezeit* continuations running at the start of year `t` |
-| `A(t)`, `Aᵖ(t)`, `Aᶠ(t)` | `av_at(t, ·)`, `av_pp_at(t, ·)`, `av_pu_at(t, ·)` | *Deckungskapital*: fund level, per paying policy, and premium-free block at fund level |
-| `P(t)`, `Z(t)` | `prem_pp(t)`, `zuz_pp(t)` | the *laufender Beitrag* charged and the *Zuzahlung* paid, per paying policy |
+| `f(t)` | `bf_rate(t)` | *Beitragsfreistellung* rate, **annual**, applied after the death decrement of the year's last month |
+| `g(t)` | `pols_gtd(t)` | *Rentengarantiezeit* continuations running at the start of month `t` |
+| `A(k)`, `Aᵖ(k)`, `Aᶠ(k)` | `av_at(k, ·)`, `av_pp_at(k, ·)`, `av_pu_at(k, ·)` | *Deckungskapital*: fund level, per paying policy, and premium-free block at fund level |
+| `P(k)`, `Z(k)` | `prem_pp(k)`, `zuz_pp(k)` | the *laufender Beitrag* charged and the *Zuzahlung* paid, per paying policy, per year |
 | `P₀`, `δ`, `φ` | `prem_base_pp`, `prem_dyn_rate`, `prem_freq_load()` | base premium at inception, *Beitragsdynamik*, *Ratenzahlungszuschlag* |
 | `S` | `beitragssumme_pp()` | the *Beitragssumme* at inception |
-| `α`, `α_z`, `β`, `γ`, `u(t)` | `alpha_amort_pp(t)`, `alpha_zuz_pp(t)`, `beta_prem`, `gamma_av`, `unit_cost_pp(t)` | the four charges struck against the account |
-| `N(t)` | `prem_to_av_pp(t)` | premium credited to the account after all four charges |
-| `i(t)` | `cred_rate(t)` | credited rate, `max(gtd_rate, decl_rate(t))` |
+| `α`, `α_z`, `β`, `γ`, `u(k)` | `alpha_amort_pp(k)`, `alpha_zuz_pp(k)`, `beta_prem`, `gamma_av`, `unit_cost_pp(k)` | the four charges struck against the account, all annual |
+| `N(k)` | `prem_to_av_pp(k)` | premium credited to the account after all four charges |
+| `i(k)` | `cred_rate(k)` | credited rate, `max(gtd_rate, decl_rate(k))` |
 | `σ` | `terminal_bonus_rate` | *Schlussüberschussanteil* rate at *Rentenbeginn* |
 | `F` | `fund_at_conv()` | the fund converted at *Rentenbeginn*, including the terminal bonus |
 | `R` | `rentenfaktor_applied()` | `max(rentenfaktor_gtd, rf_curr(ret_age)) × rf_option_factor()` |
-| `a(t)` | `ann_pp(t)` | annual annuity per surviving annuitant in year `t` |
-| `b(t)` | `ann_bonus_rate(t)` | the *Überschussrente* uplift applied at the end of payout year `t` |
+| `a(k)` | `ann_pp(k)` | **annual** annuity per surviving annuitant in year `k` |
+| `a(k)/12` | `ann_mth_pp(t)` | the monthly instalment actually paid, in advance, in month `t` |
+| `b(k)` | `ann_bonus_rate(k)` | the *Überschussrente* uplift applied at the end of payout year `k` |
 | `π` | `elig_surv_prob` | probability an eligible survivor exists at the moment of death |
 | `s` | `surv_annuity_rate` | the survivor's annuity as a fraction of the main annuity; `0` = rider off |
 | `G` | `guarantee_period_y` | *Rentengarantiezeit* in years from *Rentenbeginn* |
-| `E(t)`, `C(t)` | `expenses(t)`, `commissions(t)` | insurer expense and commission outgo, fund level |
+| `E(t)`, `C(t)` | `expenses(t)`, `commissions(t)` | insurer expense and commission outgo, fund level, per month |
 
-`q`, `f`, `i`, `b` are per-annum rates; `A`, `P`, `Z`, `F`, `a`, `E`, `C` are EUR; `R` is euro of
-monthly annuity per 10 000 € of capital.
+`q`, `f`, `i`, `b` are per-annum rates and `q_mth` is the only monthly one; `A`, `P`, `Z`, `F`, `a`,
+`E`, `C` are EUR; `R` is euro of monthly annuity per 10 000 € of capital.
 
 ### Premiums
 
@@ -346,28 +378,42 @@ The *Beitragsdynamik* compounds on the base premium from inception, so it is key
 duration**, not the projection year — which is what makes an in-force point work:
 
 ```
-prem_base_pp(t) = prem_base_pp × (1 + δ)^d(t)                for prem_form = "regular"
-P(t)            = prem_base_pp(t) × φ        if t < T and not paid-up and premiums are due
+prem_base_pp(k) = prem_base_pp × (1 + δ)^d(k)                for prem_form = "regular"
+P(k)            = prem_base_pp(k) × φ        if k < T and not paid-up and premiums are due
                 = 0                          otherwise
 ```
 
 with `φ = factor("prem_mode", prem_mode)` from `option_table.csv`. For `prem_form = "single"` the
-*Einmalbeitrag* is paid once, at `t = 0` and only when `duration_init = 0`, and `φ = 1` — a single
-payment carries no *Ratenzahlungszuschlag* (pitfall 8).
+*Einmalbeitrag* is paid once, in year `k = 0` and only when `duration_init = 0`, and `φ = 1` — a
+single payment carries no *Ratenzahlungszuschlag* (pitfall 8).
 
 The *Zuzahlung* is behavioural and carries no frequency loading:
 
 ```
-Z(t) = zuzahlung_pp × zuz_take_up(d(t))      if t < T and d(t) < zuzahlung_end_dur and not paid-up
+Z(k) = zuzahlung_pp × zuz_take_up(d(k))      if k < T and d(k) < zuzahlung_end_dur and not paid-up
      = 0                                     otherwise
 ```
 
-Fund-level premium income is `premiums(t) = P(t) × lᵖ(t)` and `zuzahlungen(t) = Z(t) × lᵖ(t)`. The
+**The contribution keeps the annual grid, and the *Ratenzahlungszuschlag* is the reason.** A German
+tariff prices a half-yearly, quarterly or monthly mode by loading the **amount** through `φ`, not by
+moving the *Versicherungsperiode*, and the account the contribution is credited to is a
+*Deckungskapital* struck per *Versicherungsjahr*. So the whole year's *Beitrag* and *Zuzahlung* fall
+in the first month of the projection year — `prem_due(t)`, `t % 12 == 0` — whatever `prem_mode` says,
+and splitting the cash into instalments while crediting the account annually would make the fund's
+cash and the account's credit disagree inside the year for no gain in fidelity.
+
+```
+premiums(t)    = P(k) × lᵖ(t)     if prem_due(t), else 0,    k = proj_year(t)
+zuzahlungen(t) = Z(k) × lᵖ(t)     if prem_due(t), else 0
+```
+
+The weight is the count at the start of the projection year, which is the annual-step model's own
+`lᵖ(k)`, so both columns sum over a year to that model's figure exactly. The
 BUZ appears only through a reporting cells that reconstructs the **total** contribution the
 policyholder pays:
 
 ```
-prem_total_pp(t) = ( P(t) + Z(t) ) / ( 1 − buz_prem_share )
+prem_total_pp(k) = ( P(k) + Z(k) ) / ( 1 − buz_prem_share )
 ```
 
 `prem_total_pp` **never enters `net_cf`** — the BUZ premium buys a cover this model does not project —
@@ -390,99 +436,121 @@ so an in-force point that is past duration 5 sees none of it:
 
 ```
 alpha_total_pp = zill_rate × S
-α(t)           = alpha_total_pp / zill_spread_y     if d(t) < zill_spread_y and premiums are due
+α(k)           = alpha_total_pp / zill_spread_y     if d(k) < zill_spread_y and premiums are due
                = 0                                  otherwise
-α_z(t)         = alpha_zuz_rate × Z(t)
-u(t)           = unit_cost_pp × (1 + expense_infl)^t
-N(t)           = ( P(t) + Z(t) ) × (1 − β) − α(t) − α_z(t) − u(t)
+α_z(k)         = alpha_zuz_rate × Z(k)
+u(k)           = unit_cost_pp × (1 + expense_infl)^k
+N(k)           = ( P(k) + Z(k) ) × (1 − β) − α(k) − α_z(k) − u(k)
 ```
 
-`N(t)` may be negative in the first years of a heavily zillmerised contract; that is correct and is
+All four charges are annual and fall once a *Versicherungsjahr*, with the contribution they are
+struck on.
+`N(k)` may be negative in the first years of a heavily zillmerised contract; that is correct and is
 the reason a German *Deckungskapital* starts near zero. It is **not** floored, because there is no
 *Rückkaufswert* for a floor to protect [R1] [R14].
 
 ### The Deckungskapital recursion
 
-Per premium-paying policy, in the *Aufschubphase* (`t < T`):
+**The account is annual and takes `k`**: one contribution, one set of charges and one interest credit
+per *Versicherungsjahr*, so it has nothing to say about a month. Per premium-paying policy, in the
+*Aufschubphase* (`k < T`):
 
 ```
-Aᵖ(t, "BEF_PREM") = av_pp(t)
-Aᵖ(t, "AFT_PREM") = Aᵖ(t, "BEF_PREM") + N(t)
-Aᵖ(t, "AFT_INT")  = Aᵖ(t, "AFT_PREM") × ( 1 + i(t) − γ )
-av_pp(t + 1)      = Aᵖ(t, "AFT_INT")
+Aᵖ(k, "BEF_PREM") = av_pp(k)
+Aᵖ(k, "AFT_PREM") = Aᵖ(k, "BEF_PREM") + N(k)
+Aᵖ(k, "AFT_INT")  = Aᵖ(k, "AFT_PREM") × ( 1 + i(k) − γ )
+av_pp(k + 1)      = Aᵖ(k, "AFT_INT")
 ```
 
 The premium-free block is carried at **fund level**, because a policy that froze at duration 5 and one
 that froze at duration 15 hold different reserves and only the aggregate is meaningful:
 
 ```
-Aᶠ(t, "BEF_PREM") = av_pu_at(t, "BEF_PREM")
-Aᶠ(t, "AFT_PREM") = Aᶠ(t, "BEF_PREM") − u(t) × lᶠ(t)
-Aᶠ(t, "AFT_INT")  = Aᶠ(t, "AFT_PREM") × ( 1 + i(t) − γ )
-Aᶠ(t + 1)         = Aᶠ(t, "AFT_INT") × ( 1 − q(t) ) + pols_freeze(t) × Aᵖ(t, "AFT_INT")
+Aᶠ(k, "BEF_PREM") = av_pu_at(k, "BEF_PREM")
+Aᶠ(k, "AFT_PREM") = Aᶠ(k, "BEF_PREM") − u(k) × lᶠ(12k)
+Aᶠ(k, "AFT_INT")  = Aᶠ(k, "AFT_PREM") × ( 1 + i(k) − γ )
+Aᶠ(k + 1)         = Aᶠ(k, "AFT_INT") × ( 1 − q(12k) ) + pols_freeze(12k + 11) × Aᵖ(k, "AFT_INT")
 ```
+
+The freeze and the year's interest credit fall at the same instant — the end of the
+*Versicherungsjahr* — which is why the transfer term reads the last month of year `k`.
 
 A premium-free policy keeps paying the *Stückkosten* and the reserve charge and stops paying β and α,
 which is the whole economic content of *Beitragsfreistellung*. The fund level closes:
 
 ```
-A(t, timing) = Aᵖ(t, timing) × lᵖ(t) + Aᶠ(t, timing)
-A(t + 1)     = A(t, "AFT_INT") × ( 1 − q(t) )
+A(k, timing) = Aᵖ(k, timing) × lᵖ(12k) + Aᶠ(k, timing)
+A(k + 1)     = A(k, "AFT_INT") × ( 1 − q(12k) )
 ```
 
-and that last line is `check_av_roll_fwd()`. It holds **whether or not** the survivor rider is on,
+and that last line — at the year's **annual** death rate, which is exactly what its twelve monthly
+rates compound to — is `check_av_roll_fwd()`. It holds **whether or not** the survivor rider is on,
 because the reserve of a policy terminated by death leaves the fund either way: as a claim where an
 eligible survivor exists, as a mortality profit where none does. That single identity is the
 arithmetic content of *nicht vererblich* [R1].
 
-For `t ≥ T` the *Deckungskapital* is zero: the fund has become an annuity obligation.
+For `k > T` the *Deckungskapital* is zero: the fund has become an annuity obligation.
 
 ### Decrements and the two policy ledgers
 
-Death first, then the *Beitragsfreistellung* on survivors **[std]**:
+The ledgers are **monthly** and the rate they apply is the geometric twelfth. Death first, in every
+month; then the *Beitragsfreistellung* on the survivors of the **year's last** month **[std]**,
+because § 165 VVG takes effect for the end of the current *Versicherungsperiode* [R14] and § 12
+Abs. 1 VVG makes that period the *Versicherungsjahr*:
 
 ```
-pols_death_paying(t) = lᵖ(t) × q(t)
-pols_death_paidup(t) = lᶠ(t) × q(t)
+q_mth(t)             = 1 − ( 1 − q(t) )^(1/12)
+pols_death_paying(t) = lᵖ(t) × q_mth(t)
+pols_death_paidup(t) = lᶠ(t) × q_mth(t)
 pols_death(t)        = pols_death_paying(t) + pols_death_paidup(t)
-pols_freeze(t)       = lᵖ(t) × ( 1 − q(t) ) × f(t)          for t < T, else 0
-lᵖ(t + 1)            = lᵖ(t) × ( 1 − q(t) ) × ( 1 − f(t) )
-lᶠ(t + 1)            = lᶠ(t) × ( 1 − q(t) ) + pols_freeze(t)
-l(t + 1)             = l(t) × ( 1 − q(t) )
+pols_freeze(t)       = lᵖ(t) × ( 1 − q_mth(t) ) × f(t)      if is_anniv(t) and t < 12T, else 0
+lᵖ(t + 1)            = lᵖ(t) × ( 1 − q_mth(t) ) − pols_freeze(t)
+lᶠ(t + 1)            = lᶠ(t) × ( 1 − q_mth(t) ) + pols_freeze(t)
+l(t + 1)             = l(t) × ( 1 − q_mth(t) )
 ```
+
+Twelve geometric twelfths compound back to the annual rate exactly, so `l(12k)` is the annual-step
+model's `l(k)` to the last bit and `lᵖ(12(k+1)) = lᵖ(12k) × (1 − q(12k)) × (1 − f(12k))` still holds
+across the year. The arithmetic twelfth `q(t)/12` would not close: it leaves a residue that grows
+with the rate and is largest exactly where this product's cash flows are, in the tail of a lifelong
+annuity.
 
 The last line is the one to stare at: **`f(t)` does not appear in it**. A *Beitragsfreistellung* is a
 transfer between the two ledgers, not an exit [R14], and `check_pols_roll_fwd()` asserts both that
 `lᵖ + lᶠ = l` and that `l` decrements on mortality alone. The closure identity is therefore simply
 
 ```
-Σ_{t=0..n−1} pols_death(t) + l(n) = pols_if_init              with l(n) = 0
+Σ_{t=0..12n−1} pols_death(t) + l(12n) = pols_if_init          with l(12n) = 0
 ```
 
-because `mort_rate_at_age(omega_age, ·) = 1`.
+because `mort_rate_at_age(omega_age, ·) = 1` and the certainty falls in the terminal year's last
+month.
 
 ### The conversion at Rentenbeginn
 
-The conversion happens at the **start** of projection year `T`, on the fund carried out of year
-`T − 1`, and it is the model's only single-date event:
+The conversion happens at the **start** of projection year `T` — the end of month `12T − 1` — on the
+fund carried out of year `T − 1`, and it is the model's only single-date event:
 
 ```
 fund_at_conv()          = av_at(T, "BEF_PREM") × ( 1 + σ )
 rentenfaktor_applied()  = max( rentenfaktor_gtd , rf_curr(ret_age) ) × rf_option_factor()
 rf_option_factor()      = factor("guarantee_period", G) × factor("survivor", s)
-ann_pp(T)               = fund_at_conv() / pols_if(T) / rf_unit × rentenfaktor_applied() × ann_freq
+ann_pp(T)               = fund_at_conv() / l(12T) / rf_unit × rentenfaktor_applied() × ann_freq
+ann_mth_pp(t)           = ann_pp(k) / ann_freq                        the instalment actually paid
 ```
 
 with `rf_unit = 10 000` and `ann_freq = 12`. `ann_pp(T)` is the **cohort-average** annual annuity per
 annuitant, which is exact at fund level even though the paying and premium-free cohorts arrive with
-different per-policy reserves. `check_conversion()` inverts the identity:
+different per-policy reserves; it is an annual figure and nobody's payment, because the
+*Rentenfaktor* is quoted in euro a **month** and `ann_mth_pp` is what is paid.
+`check_conversion()` inverts the identity:
 
 ```
-check_conversion_resid(T) = ann_pp(T) × pols_if(T) × rf_unit / ( rentenfaktor_applied() × ann_freq )
+check_conversion_resid(T) = ann_pp(T) × l(12T) × rf_unit / ( rentenfaktor_applied() × ann_freq )
                             − fund_at_conv()
 ```
 
-and is zero at every other `t`. For a model point that opens in payment (`T < 0`) the conversion never
+and is zero at every other `k`. For a model point that opens in payment (`T < 0`) the conversion never
 occurs inside the projection, `ann_pp(0) = ann_pp_init`, and the check is vacuously true.
 
 **The conversion basis is not the projection basis, and that is deliberate.** `rentenfaktor_gtd` was
@@ -495,20 +563,29 @@ and, with it, the whole German payout-phase surplus mechanic (pitfall 11).
 ### The annuity in payment, and the Rentengarantiezeit ledger
 
 ```
-ann_pp(t)    = ann_pp_init                              if t = 0 and T < 0
-             = fund_at_conv() / l(T) / rf_unit × R × ann_freq       if t = T ≥ 0
-             = ann_pp(t − 1) × ( 1 + b(t − 1) )         if t > max(0, T)
-             = 0                                        otherwise
+ann_pp(k)     = ann_pp_init                             if k = 0 and T < 0
+              = fund_at_conv() / l(12T) / rf_unit × R × ann_freq    if k = T ≥ 0
+              = ann_pp(k − 1) × ( 1 + b(k − 1) )        if k > max(0, T)
+              = 0                                       otherwise
+ann_mth_pp(t) = ann_pp(proj_year(t)) / ann_freq         for t ≥ max(0, 12T), else 0
 ```
 
+The annuity is struck once and uplifted once a year, so the twelve instalments of a payout year are
+equal and the thirteenth is `(1 + b)` times the twelfth; `check_annuity_roll_fwd()` asserts both the
+compounding and `12 × ann_mth_pp(t) = ann_pp(k)` across each year's months.
+
 The *Rentengarantiezeit* runs `G` years from *Rentenbeginn*, so every continuation ends on the same
-date, `gtd_end_t() = max(0, T) + G − 1`, which makes the ledger a one-line recursion:
+date — on this grid the ``12G``-th **instalment**, `gtd_end_t() = max(0, 12T) + 12G − 1` — which
+makes the ledger a one-line monthly recursion:
 
 ```
 g(t + 1) = 0                                            if t + 1 > gtd_end_t()
-         = g(t) + pols_death(t) × π                     if t ≥ max(0, T) and G > 0
+         = g(t) + pols_death(t) × π                     if t ≥ max(0, 12T) and G > 0
          = 0                                            otherwise
 ```
+
+A continuation therefore begins in the month after the death that triggered it rather than in the
+following year, which is the one place the finer grid puts money **on** the liability.
 
 `π` is what makes this a Schicht-1 guarantee rather than a Schicht-3 one: the instalments continue
 **only to an eligible survivor** [R1], and where none exists the payments simply cease. They are also
@@ -516,16 +593,18 @@ g(t + 1) = 0                                            if t + 1 > gtd_end_t()
 
 ### Benefits and cash flows
 
+Every line here is **monthly**; the per-policy amounts they read are annual, `k = proj_year(t)`.
+
 ```
-db_pp(t)             = Aᵖ(t, "AFT_INT")                            per dying paying policy
-db_pu_pp(t)          = Aᶠ(t, "AFT_INT") / lᶠ(t)                    per dying premium-free policy
-claims(t, "DEATH")   = 1{s > 0} × 1{t < T} × π
-                       × [ db_pp(t) × pols_death_paying(t) + db_pu_pp(t) × pols_death_paidup(t) ]
-claims(t, "ANNUITY") = ann_pp(t) × l(t)                            for t ≥ max(0, T), else 0
-claims(t, "SURVIVOR")= ann_pp(t) × g(t)                            the Rentengarantiezeit stream
+db_pp(k)             = Aᵖ(k, "AFT_INT")                            per dying paying policy
+db_pu_pp(k)          = Aᶠ(k, "AFT_INT") / lᶠ(12k)                  per dying premium-free policy
+claims(t, "DEATH")   = 1{s > 0} × 1{t < 12T} × π
+                       × [ db_pp(k) × pols_death_paying(t) + db_pu_pp(k) × pols_death_paidup(t) ]
+claims(t, "ANNUITY") = ann_mth_pp(t) × l(t)                        for t ≥ max(0, 12T), else 0
+claims(t, "SURVIVOR")= ann_mth_pp(t) × g(t)                        the Rentengarantiezeit stream
 expenses(t)          = acq_expense_pp × pols_if_init × 1{t = 0 and duration_init = 0}
-                       + maint_expense_pp × (1 + expense_infl)^t × l(t)     for t < T
-                       + annuity_admin_pp × (1 + expense_infl)^t × ( l(t) + g(t) )  for t ≥ T
+                       + maint_expense_pp / 12 × (1 + expense_infl)^k × l(t)     for t < 12T
+                       + annuity_admin_pp / 12 × (1 + expense_infl)^k × ( l(t) + g(t) )  for t ≥ 12T
 commissions(t)       = comm_init_rate × S × pols_if_init × 1{t = 0 and duration_init = 0}
                        + comm_renew_rate × ( premiums(t) + zuzahlungen(t) )   for t ≥ 1
 net_cf(t)            = premiums(t) + zuzahlungen(t)
@@ -533,6 +612,15 @@ net_cf(t)            = premiums(t) + zuzahlungen(t)
                        − expenses(t) − commissions(t)
 liability_cf(t)      = − net_cf(t)
 ```
+
+The **amount** released by a death is the annual `db_pp(k)`, struck at the end of the
+*Versicherungsjahr* where the account is struck, so the month decides when the reserve is released
+and not how much, and the year's total is the annual-step model's to the last bit. The expense
+inflation factor steps on the anniversary, so the twelve months of a year carry the same monthly
+amount and a policy that dies in the third month bears three twelfths of it. The renewal commission
+is a percentage of a contribution and so falls in the month the contribution does; `t ≥ 1` excludes
+the first year's premium at `t = 0` and admits every later one at `t = 12, 24, …`, which is the
+annual-step model's rule unchanged.
 
 **The death benefit is booked as a single amount and is not a lump sum to a beneficiary.** [R1]
 requires everything paid to a survivor to be paid **as an annuity**; what the model books at the
@@ -547,83 +635,114 @@ which is how a German tariff prices it.
 
 ### The published frame
 
-`result_cf()` returns a `DataFrame` indexed by `t` (`df.index.name == "t"`), contiguous from `t = 0`
-to `proj_len() − 1`, with these columns **in this order**:
+`result_cf()` returns a `DataFrame` indexed by the projection **month** `t`
+(`df.index.name == "t"`), contiguous from `t = 0` to `proj_len() − 1`, with these columns **in this
+order**:
 
 | # | Column | Content |
 |---|---|---|
-| 1 | `pols_if` | policies in force at the start of the year — the weight on this row |
+| 1 | `pols_if` | policies in force at the start of the month — the weight on this row |
 | 2 | `pols_paying` | the premium-paying subset; the weight on the two premium columns |
-| 3 | `av` | *Deckungskapital* at the start of the year, fund level — a **state variable, reported not summed** |
-| 4 | `premiums` | *laufende Beiträge* |
-| 5 | `zuzahlungen` | *Zuzahlungen*, kept separate because they are a distinct premium form on a distinct charge basis |
-| 6 | `claims_death` | death benefits in the *Aufschubphase*; **structurally 0** where `surv_annuity_rate = 0` |
-| 7 | `claims_annuity` | annuity instalments in the *Rentenphase* |
-| 8 | `claims_survivor` | *Rentengarantiezeit* continuations; **structurally 0** where `guarantee_period_y = 0` |
-| 9 | `expenses` | acquisition, maintenance and annuity administration |
-| 10 | `commissions` | *Abschluss-* and *Bestandsprovision* |
-| 11 | `net_cf` | income-positive |
-| 12 | `liability_cf` | `−net_cf`, the orientation these notes print |
+| 3 | `premiums` | *laufende Beiträge*, in the first month of a projection year and no other |
+| 4 | `zuzahlungen` | *Zuzahlungen*, kept separate because they are a distinct premium form on a distinct charge basis |
+| 5 | `claims_death` | death benefits in the *Aufschubphase*; **structurally 0** where `surv_annuity_rate = 0` |
+| 6 | `claims_annuity` | monthly annuity instalments in the *Rentenphase* |
+| 7 | `claims_survivor` | *Rentengarantiezeit* continuations; **structurally 0** where `guarantee_period_y = 0` |
+| 8 | `expenses` | acquisition, and a twelfth of the annual maintenance or annuity administration |
+| 9 | `commissions` | *Abschluss-* and *Bestandsprovision* |
+| 10 | `net_cf` | income-positive |
+| 11 | `liability_cf` | `−net_cf`, the orientation these notes print |
 
-Columns 4 and 5 enter `net_cf` positively and 6 to 10 negatively; columns 1 to 3 are counts and a
-balance, published because a reader cannot follow the projection without them, and named in
+Columns 3 and 4 enter `net_cf` positively and 5 to 9 negatively; columns 1 and 2 are counts,
+published because a reader cannot follow the projection without them, and named in
 `check_net_cf()`'s docstring as excluded from the identity.
+
+**The *Deckungskapital* is not a column of this frame.** It is a balance on the annual clock — one
+contribution, one set of charges and one interest credit per *Versicherungsjahr* — so it lives in
+`result_pols()`, the annual state, beside the two ledgers, the rates and the per-policy amounts that
+move with it. Putting a balance in a monthly cash flow statement invites exactly the summation that
+is a category error.
+
+Two further frames travel with it. `result_cf_annual()` sums the cash flow columns over the twelve
+months of each projection year and takes the two counts at the year's start, which is the view these
+notes print and the one directly comparable to the annual-step model — its `t` is this model's `k`.
+`result_pols()` is the annual state: the ledgers, `mort_rate` beside `mort_rate_mth`, `bf_rate`,
+`cred_rate`, the per-policy contribution and charges, both account balances, and `ann_pp` beside the
+`ann_mth_pp` it is paid in. Neither is a second projection: both are regroupings of cells the monthly
+frame has already evaluated.
 
 ### The published checks
 
-| Check | The identity it closes |
-|---|---|
-| `check_net_cf()` | `net_cf(t) = premiums + zuzahlungen − claims_death − claims_annuity − claims_survivor − expenses − commissions` at every `t`. **delib ruling 1**, mandatory on every model in the library |
-| `check_pols_roll_fwd()` | `pols_paying(t) + pols_paidup(t) = pols_if(t)`, and `pols_if(t+1) = pols_if(t) × (1 − mort_rate(t))` — the *Beitragsfreistellung* rate does **not** appear |
-| `check_av_roll_fwd()` | `av_at(t+1) = av_at(t, "AFT_INT") × (1 − mort_rate(t))` for `t < ret_t()`; `av_at(ret_t(), "AFT_INT") = 0`, the conversion having emptied the account; and `av(t) = 0` for every `t > ret_t()`. **`av(ret_t())` is not zero** — it is the pre-conversion fund the annuity is struck on, and it is what the `av` column publishes in the conversion year |
-| `check_conversion()` | The whole fund converts exactly once, at `ret_t()`, at `rentenfaktor_applied()`; residual zero at every other `t` |
-| `check_no_capital()` | The *nicht kapitalisierbar* invariant: no payment to the policyholder at any `t` other than an annuity instalment or a permitted survivor benefit; `claims_death = 0` wherever the rider is off and wherever `t ≥ ret_t()` |
-| `check_annuity_roll_fwd()` | `ann_pp(t) = ann_pp(t−1) × (1 + ann_bonus_rate(t−1))` for `t > ret_t()`, and `pols_gtd(t) = 0` for `t > ret_t() + guarantee_period_y − 1` |
+**The residual's argument follows its cells' clock.** Three of the six are statements about payments
+and take a **month**; three are statements about the *Deckungskapital*, the conversion and the
+*Überschussrente*, which move once a *Versicherungsjahr*, and take a projection **year**. Calling one
+with the other's index is a category error rather than a rounding question.
 
-Each returns a `bool` over all `t` and has a per-`t` residual companion `check_*_resid(t)`, compared
-against `roll_fwd_tol = 1e-9`.
+| Check | Clock | The identity it closes |
+|---|---|---|
+| `check_net_cf()` | month | `net_cf(t) = premiums + zuzahlungen − claims_death − claims_annuity − claims_survivor − expenses − commissions` at every `t`. **delib ruling 1**, mandatory on every model in the library |
+| `check_pols_roll_fwd()` | month | `pols_paying(t) + pols_paidup(t) = pols_if(t)`, and `pols_if(t+1) = pols_if(t) × (1 − mort_rate_mth(t))` — the **monthly** rate, and the *Beitragsfreistellung* rate does **not** appear |
+| `check_no_capital()` | month | The *nicht kapitalisierbar* invariant: no payment to the policyholder at any `t` other than a monthly annuity instalment or a permitted survivor benefit; `claims_death = 0` wherever the rider is off and wherever `t ≥ ret_t()` |
+| `check_av_roll_fwd()` | year | `av_at(k+1) = av_at(k, "AFT_INT") × (1 − mort_rate(12k))` for `k < ret_y()`; `av_at(ret_y(), "AFT_INT") = 0`, the conversion having emptied the account; and `av(k) = 0` for every `k > ret_y()`. **`av(ret_y())` is not zero** — it is the pre-conversion fund the annuity is struck on, and it is what `result_pols()` publishes in the conversion year |
+| `check_conversion()` | year | The whole fund converts exactly once, at `ret_y()`, at `rentenfaktor_applied()`; residual zero at every other `k` |
+| `check_annuity_roll_fwd()` | year | `ann_pp(k) = ann_pp(k−1) × (1 + ann_bonus_rate(k−1))` for `k > ret_y()`; `12 × ann_mth_pp(t) = ann_pp(k)` across the year's months, so the uplift steps on the anniversary and nowhere else; and `pols_gtd(t) = 0` for `t > gtd_end_t()` |
+
+Each returns a `bool` over the whole projection and has a per-period residual companion
+`check_*_resid`, compared against `roll_fwd_tol = 1e-9`.
 
 ---
 
-## Annual processing order
+## Processing order
 
-For `t = 0 … n − 1`, in exactly this order:
+The order is stated per *Versicherungsjahr*, because that is the order the **contract** happens in;
+the months sit inside it. For `k = 0 … n − 1`, and within each year for `t = 12k … 12k + 11`, in
+exactly this order:
 
-1. **Open the year.** Compute `age(t)`, `duration(t)`, `cal_year(t)`; determine the phase from
-   `t < ret_t()` (*Aufschubphase*) or `t ≥ ret_t()` (*Rentenphase*).
-2. **Open the ledgers.** `pols_paying(t)` and `pols_paidup(t)` from the previous year's recursion;
-   `pols_if(t)` is their sum. Open the accounts at `"BEF_PREM"`: `av_pp_at(t, "BEF_PREM")` per paying
-   policy and `av_pu_at(t, "BEF_PREM")` at fund level; `av_at(t, "BEF_PREM")` is the total.
-3. **If `t = ret_t()`, convert.** Add the *Schlussüberschussanteil* to the fund carried out of year
-   `t − 1`, strike `rentenfaktor_applied()`, set `ann_pp(t)`, and **zero the account** — from here on
-   there is no *Deckungskapital* in this model. There is no lump sum, no election and no notice
-   period [R1].
-4. ***Aufschubphase* — take the premiums, in advance.** `prem_pp(t)` with its *Ratenzahlungszuschlag*,
-   and `zuz_pp(t)` with its take-up. Weight both by `pols_paying(t)`.
+1. **Open the year.** Compute `age_y(k)`, `duration_y(k)`, `cal_year_y(k)`; determine the phase from
+   `k < ret_y()` (*Aufschubphase*) or `k ≥ ret_y()` (*Rentenphase*); take the year's annual rates —
+   `mort_rate`, `bf_rate`, `cred_rate` — and the monthly death rate `mort_rate_mth` from the first.
+2. **Open the ledgers.** `pols_paying(12k)` and `pols_paidup(12k)` from the previous month's
+   recursion; `pols_if(12k)` is their sum. Open the accounts at `"BEF_PREM"`:
+   `av_pp_at(k, "BEF_PREM")` per paying policy and `av_pu_at(k, "BEF_PREM")` at fund level;
+   `av_at(k, "BEF_PREM")` is the total.
+3. **If `k = ret_y()`, convert.** Add the *Schlussüberschussanteil* to the fund carried out of year
+   `k − 1`, strike `rentenfaktor_applied()`, set `ann_pp(k)` and with it the instalment
+   `ann_mth_pp = ann_pp(k) / 12`, and **zero the account** — from here on there is no
+   *Deckungskapital* in this model. There is no lump sum, no election and no notice period [R1].
+4. ***Aufschubphase*, first month of the year — take the contribution, in advance.** `prem_pp(k)` with
+   its *Ratenzahlungszuschlag* and `zuz_pp(k)` with its take-up, weighted by `pols_paying(12k)`. A
+   fractionated mode changes the amount, not the month.
 5. ***Aufschubphase* — strike the charges and credit the account.** β on premium and *Zuzahlung*, the
    *Zillmerung* instalment α, the *Zuzahlung* acquisition charge α_z, the *Stückkosten* u; the residue
-   `prem_to_av_pp(t)` goes to `av_pp_at(t, "AFT_PREM")`. The premium-free block pays only u.
-6. **Charge the insurer's own expenses and commission.** Acquisition expense and initial commission at
-   inception; maintenance expense per in-force policy; renewal commission on the year's premium and
-   *Zuzahlung*; annuity administration per annuitant and per guarantee continuation in the payout
-   phase.
-7. ***Rentenphase* — pay the year's annuity.** Twelve monthly instalments booked at the start of the
-   year on `pols_if(t)`, plus the *Rentengarantiezeit* stream on `pols_gtd(t)`.
-8. **End of year — credit interest** (*Aufschubphase* only). `cred_rate(t) = max(gtd_rate,
-   decl_rate(t))`, applied net of γ in one step to both blocks, giving `"AFT_INT"`.
-9. **End of year — death.** `pols_death_paying(t)` and `pols_death_paidup(t)` on the opening counts.
-   Where the survivor rider is on and `t < ret_t()`, book `claims(t, "DEATH")` as
-   `elig_surv_prob ×` the released reserve; where it is off, the whole released reserve is a mortality
-   profit and **nothing is paid**.
-10. **End of year — *Beitragsfreistellung*.** `pols_freeze(t)` on the survivors of the death
-    decrement, carrying `av_pp_at(t, "AFT_INT")` per policy from the paying block into the premium-free
-    block. Zero in the *Rentenphase* and zero on a single-premium contract.
-11. **Roll forward.** The two policy ledgers, the two account blocks, the *Rentengarantiezeit* ledger
-    and, in the payout phase, the annuity: `ann_pp(t+1) = ann_pp(t) × (1 + ann_bonus_rate(t))`.
-12. **Assemble.** `net_cf(t)` from the published parts; `liability_cf(t) = −net_cf(t)`.
+   `prem_to_av_pp(k)` goes to `av_pp_at(k, "AFT_PREM")`. The premium-free block pays only u. All four
+   are annual and fall here.
+6. **Each month — charge the insurer's own expenses and commission.** Acquisition expense and initial
+   commission at inception; a twelfth of the annual maintenance expense per in-force policy, or of the
+   annuity administration per annuitant and per guarantee continuation in the payout phase; renewal
+   commission in the month the contribution falls.
+7. ***Rentenphase*, each month — pay the instalment.** `ann_mth_pp(t)` in advance on `pols_if(t)`,
+   plus the *Rentengarantiezeit* stream on `pols_gtd(t)`.
+8. **Each month — death.** `pols_death_paying(t)` and `pols_death_paidup(t)` at `mort_rate_mth(t)` on
+   the counts opening that month. Where the survivor rider is on and `t < ret_t()`, book
+   `claims(t, "DEATH")` as `elig_surv_prob ×` the released reserve — the **annual** `db_pp(k)`, struck
+   at the end of the *Versicherungsjahr*; where it is off, the whole released reserve is a mortality
+   profit and **nothing is paid**. Roll the two ledgers and, inside the guarantee window, `pols_gtd`.
+9. **End of year — credit interest** (*Aufschubphase* only). `cred_rate(k) = max(gtd_rate,
+   decl_rate(k))`, applied net of γ in one step to both blocks, giving `"AFT_INT"`. A policy that died
+   during the year has been credited the whole of it, which is the annual-step convention preserved.
+10. **End of year — *Beitragsfreistellung*.** `pols_freeze(12k + 11)` on the survivors of the last
+    month's death decrement, carrying `av_pp_at(k, "AFT_INT")` per policy from the paying block into
+    the premium-free block. § 165 VVG takes effect for the end of the current *Versicherungsperiode*
+    [R14], so this falls here and in no other month. Zero in the *Rentenphase* and zero on a
+    single-premium contract.
+11. **Roll forward.** The two account blocks and, in the payout phase, the annuity:
+    `ann_pp(k+1) = ann_pp(k) × (1 + ann_bonus_rate(k))`, so the next year's twelve instalments are
+    each `(1 + b)` times this year's.
+12. **Assemble.** `net_cf(t)` from the published parts, in every month; `liability_cf(t) = −net_cf(t)`.
 
-At `t = n − 1` the last survivor dies (`mort_rate(n − 1) = 1`), `pols_if(n) = 0`, and there is no
-tail state, no maturity payment and nothing left to pay.
+At `t = 12n − 1` the last survivor dies — `mort_rate` is 1 in the terminal year and the certainty
+falls in its last month — `pols_if(12n) = 0`, and there is no tail state, no maturity payment and
+nothing left to pay.
 
 ---
 
@@ -639,75 +758,93 @@ a test.
    *Rückkaufswert* internally "for reference" and then floor**ing** the *Deckungskapital* at it, which
    changes the account in the early years even though nothing is ever paid.
 2. **Treating *Beitragsfreistellung* as a lapse.** It removes the premium, not the policy [R14].
-   Assert `pols_if(t+1) = pols_if(t) × (1 − mort_rate(t))` **exactly**, with `bf_rate` absent from the
-   identity, and that a model point run with `bf_rate ≡ 0` has the same `pols_if` series as the base
-   run while its `premiums` series is strictly larger from `t = 1`.
+   Assert `pols_if(t+1) = pols_if(t) × (1 − mort_rate_mth(t))` **exactly**, with `bf_rate` absent
+   from the identity, and that a model point run with `bf_rate ≡ 0` has the same `pols_if` series as
+   the base run while its `premiums` series is strictly larger from `t = 12`. The freeze itself is
+   annual and falls in the year's last month, § 165 VVG taking effect for the end of the current
+   *Versicherungsperiode*, so `pols_freeze(t) = 0` wherever `not is_anniv(t)`.
 3. **Averaging the paying and premium-free account values into one per-policy figure.** They diverge
    from the first freeze, because one keeps receiving `prem_to_av_pp` and the other does not. Assert
-   `av_pp(t) > av_pu_at(t, "BEF_PREM") / pols_paidup(t)` for every `t` after the first freeze on the
-   anchor, and that `check_av_roll_fwd()` fails if the two blocks are collapsed.
+   `av_pp(k) > av_pu_at(k, "BEF_PREM") / pols_paidup(12k)` for every `k` after the first freeze on
+   the anchor, and that `check_av_roll_fwd()` fails if the two blocks are collapsed.
 4. **Double-counting a charge as an expense.** β, γ, the *Stückkosten* and the *Zillmerung*
    amortisation are **account deductions**, i.e. insurer income; the insurer's outgo is the acquisition
    expense, the commission, the maintenance expense and the annuity administration. Assert that
    `expenses(t)` is invariant to `beta_prem`, `gamma_av` and `zill_rate`, and that changing `gamma_av`
-   moves `net_cf` **only** through the annuity that the smaller fund buys at `ret_t()`.
+   moves `net_cf` **only** through the annuity that the smaller fund buys at *Rentenbeginn*.
 5. **Charging the whole *Zillmerung* in year one.** It is spread over `zill_spread_y = 5` premium-paying
    years **[std]** and capped at 25 ‰ of the *Beitragssumme* [R16] [REG-R16]. Assert
-   `alpha_amort_pp(t)` is equal for `t = 0 … 4` and zero from `t = 5`, that
-   `Σ_t alpha_amort_pp(t) = zill_rate × beitragssumme_pp()` to 1e-9, and that an in-force point past
-   duration 5 (model point 6) sees `alpha_amort_pp(t) = 0` at every `t`.
+   `alpha_amort_pp(k)` is equal for `k = 0 … 4` and zero from `k = 5`, that
+   `Σ_k alpha_amort_pp(k) = zill_rate × beitragssumme_pp()` to 1e-9, and that an in-force point past
+   duration 5 (model point 6) sees `alpha_amort_pp(k) = 0` in every year.
 6. **Stacking the declared rate on top of the guarantee.** A German *laufende Verzinsung* is the
-   **total** credited rate, so `cred_rate(t) = max(gtd_rate, decl_rate(t))`, not `gtd_rate +
-   decl_rate(t)` [R15] [R16]. Assert that on model point 8 (`gtd_rate = 2,75 %`, above the whole
-   declared path) `cred_rate(t) = gtd_rate` at every `t`, while on the anchor it equals `decl_rate(t)`.
+   **total** credited rate, so `cred_rate(k) = max(gtd_rate, decl_rate(k))`, not `gtd_rate +
+   decl_rate(k)` [R15] [R16]. Assert that on model point 8 (`gtd_rate = 2,75 %`, above the whole
+   declared path) `cred_rate(k) = gtd_rate` in every year, while on the anchor it equals
+   `decl_rate(k)`.
 7. **Letting premiums or *Zuzahlungen* run past *Rentenbeginn*, or the *Dynamik* run off the policy
-   duration.** Assert `prem_pp(t) = 0` and `zuz_pp(t) = 0` for every `t ≥ ret_t()`, that
-   `zuz_pp(t) = 0` once `duration(t) ≥ zuzahlung_end_dur`, and that on an in-force point the
-   *Beitragsdynamik* is keyed to `duration(t)` and not to `t` — model point 6, at `duration_init = 17`,
-   must open at `prem_base_pp × 1.02^17`, not at `prem_base_pp`.
+   duration.** Assert `prem_pp(k) = 0` and `zuz_pp(k) = 0` for every `k ≥ ret_y()`, that
+   `zuz_pp(k) = 0` once `duration_y(k) ≥ zuzahlung_end_dur`, and that on an in-force point the
+   *Beitragsdynamik* is keyed to `duration_y(k)` and not to `k` — model point 6, at
+   `duration_init = 17`, must open at `prem_base_pp × 1.02^17`, not at `prem_base_pp`. On the monthly
+   frame the same rule says `premiums(t) = 0` for every `t ≥ ret_t()` and in eleven months of twelve
+   before it.
 8. **Applying the *Ratenzahlungszuschlag* twice, or to the wrong thing.** It multiplies the *laufender
-   Beitrag* only. Assert `prem_pp(t) / (prem_base_pp × (1+δ)^d(t)) = φ` exactly at every `t`, that
-   `zuz_pp(t)` is invariant to `prem_mode`, and that a single-premium point carries `φ = 1`.
+   Beitrag* only. Assert `prem_pp(k) / (prem_base_pp × (1+δ)^d(k)) = φ` exactly in every year, that
+   `zuz_pp(k)` is invariant to `prem_mode`, and that a single-premium point carries `φ = 1`. **The
+   monthly grid does not change this**: φ prices a fractionated mode by loading the amount, so
+   `prem_due(t)` still puts the whole year's contribution in the first month of the year, and a model
+   that both split the cash into instalments *and* kept φ would charge for the deferral twice.
 9. **Paying a death benefit with the rider off.** Death before *Rentenbeginn* pays **nothing** in the
    base design; the reserve is released as a mortality profit [R1] [REG-R39]. Assert
    `claims_death(t) == 0.0` at every `t` on every model point with `surv_annuity_rate == 0`, including
-   the anchor, and that `check_av_roll_fwd()` still closes — the released reserve leaves the fund
+   the anchor, and that `check_av_roll_fwd()` still closes in every year — the released reserve leaves the fund
    whether or not anything is paid.
 10. **Paying the death benefit to the estate, or as a lump sum.** With the rider on it is payable only
     where an **eligible survivor** exists and must buy an **annuity** [R1]. Assert
-    `claims_death(t) = elig_surv_prob × av_at(t, "AFT_INT") × mort_rate(t)` on model point 3, that
-    setting `elig_surv_prob = 0` reproduces the rider-off run cash flow for cash flow, and that the
-    model publishes no lump-sum column of any kind.
+    `claims_death(t) = elig_surv_prob × av_at(k, "AFT_INT") × mort_rate_mth(t)` on model point 3 —
+    the **annual** reserve released, the month's share of the deaths — that the twelve months of a
+    year sum to the annual-step model's figure, that setting `elig_surv_prob = 0` reproduces the
+    rider-off run cash flow for cash flow, and that the model publishes no lump-sum column of any
+    kind.
 11. **Converting on the projection's own mortality.** The *Rentenfaktor* is a **contractual** rate
     struck on first-order bases [R17] [S1]; the projection runs on the best estimate. Assert
-    `ann_pp(ret_t())` is invariant to `mort_be_factor` while `claims_annuity` is not, so that the wedge
-    between the two bases shows up as payout-phase margin rather than being silently removed.
-12. **Booking the annuity as one payment a year at the wrong end of the year.** The annuity is
-    **monthly in advance** [R1]; the model books twelve instalments at the **start** of the payout
-    year on `pols_if(t)` **[std]**, so a life that dies during the year has been paid for the whole of
-    it. That is a stated approximation, not an accident (gap 21). Assert
-    `claims_annuity(t) = ann_pp(t) × pols_if(t)` exactly, and that switching to an end-of-year booking
-    is a documented variant rather than the base.
+    `ann_pp(ret_y())` is invariant to `mort_be_factor` while `claims_annuity` is not, so that the
+    wedge between the two bases shows up as payout-phase margin rather than being silently removed.
+12. **Paying the year's annuity on the year's opening count.** The annuity is **monthly in advance**
+    [R1], and this is the one thing the monthly grid was adopted for. The annual-step model these
+    notes were first written for booked twelve instalments together at the start of the payout year
+    on `pols_if(t)`, which paid a life that died in the first month of a year for the whole of it —
+    a stated **[std]** approximation, generous by up to a full year's annuity and concentrated in the
+    high-mortality tail. Assert
+    `claims_annuity(t) = ann_mth_pp(t) × pols_if(t)` with `ann_mth_pp(t) = ann_pp(k) / 12` exactly,
+    that the twelve instalments of a payout year are equal and the thirteenth `(1 + b)` times the
+    twelfth, and that the whole payout phase is **below** the annual booking — 265 725,57 € against
+    270 016,08 € on the anchor, 1,6 % of it.
 13. **Taking the guaranteed *Rentenfaktor* when the current one is higher, or the reverse.** The rule
     is `max(garantiert, aktuell)` [R17] [S1]. Assert the anchor converts at `rf_curr(67)` and model
     point 13 at `rentenfaktor_gtd`, and that `rentenfaktor_applied()` is monotone in both inputs.
 14. **Getting the *Rentengarantiezeit* wrong in either of two ways.** It runs `G` years **from
     *Rentenbeginn***, not from each death, and it pays **only to an eligible survivor** and is **never
-    commutable** [R1]. Assert `pols_gtd(t) = 0` for every `t > ret_t() + guarantee_period_y − 1` on
-    model point 4, that `pols_gtd` is monotone non-decreasing inside the window, and that no cash flow
+    commutable** [R1]. On the monthly grid the window is `12G` **instalments**, so assert
+    `pols_gtd(t) = 0` for every `t > gtd_end_t() = ret_t() + 12 × guarantee_period_y − 1` — `t = 299`
+    on model point 4 — that `pols_gtd` is monotone non-decreasing inside the window, that a
+    continuation starts in the month **after** the death that triggered it, and that no cash flow
     anywhere discounts a continuation into a lump sum.
 15. **Using a period table where the basis is generational.** DAV 2004 R is a *Generationentafel* and
     the improvement lives inside it [R17] [REG-R49]. Assert
     `mort_rate_at_age(x, y2) < mort_rate_at_age(x, y1)` for `y2 > y1` at every age, and that two model
     points at the same attained age but different `conclusion_year` — 6 and 9 both reach age 60 — see
-    different `mort_rate`.
+    different `mort_rate`. Assert too that `mort_rate_mth` is the **geometric** twelfth, so that
+    `(1 − mort_rate_mth(t))^12 = 1 − mort_rate(t)` to 1e-14 and the annual layer is reproduced
+    exactly; `mort_rate(t) / 12` closes neither.
 16. **Applying today's *Höchstrechnungszins* to an in-force contract.** The rate attaches at
     conclusion and stays with the contract [REG-R14] [REG-R15]. Assert that the shipped model points
-    carry four distinct `gtd_rate` values and that `cred_rate(t) ≥ gtd_rate` at every `t` on every
+    carry four distinct `gtd_rate` values and that `cred_rate(k) ≥ gtd_rate` in every year on every
     point.
 17. **Modelling the BUZ as premium income with no benefit.** `prem_base_pp` is the **old-age**
     contribution; the BUZ premium and the *BU-Rente* belong to `BU_DE_S`. Assert `buz_prem_share < 0.50`
-    for every model point [R1], that `prem_total_pp(t) > prem_pp(t) + zuz_pp(t)` exactly where
+    for every model point [R1], that `prem_total_pp(k) > prem_pp(k) + zuz_pp(k)` exactly where
     `buz_prem_share > 0`, and that `prem_total_pp` appears in **no** `result_cf()` column and in
     `net_cf` at no `t`.
 
@@ -747,7 +884,7 @@ any of them, and the research file records the absence as gap 3.
   threshold is settled at 1,5 % of the monthly *Bezugsgröße* [R23], and a carrier's AVB treatment is
   now known — one offers the *Abfindung* [S1] and the GDV model conditions make it the **insurer's**
   right, not the policyholder's [S12], which is itself a reason a projection cannot assume take-up.
-  The remaining reason stands: `Riester_DE_A` already carries the machinery (`is_kleinbetrag()`,
+  The remaining reason stands: `Riester_DE_S` already carries the machinery (`is_kleinbetrag()`,
   `commutation_pp()`) for a reader who wants it. Model point 10 is a small enough contract to reach
   it, and this model annuitises it. The Schicht-3 chassis needs a take-up assumption and a declaration
   window for a *Kapitalwahlrecht*; this product needs neither, which is the cleanest simplification the
@@ -769,27 +906,31 @@ so `prem_freq_load = 1.000`; `prem_dyn_rate = 0.02`; `zuzahlung_pp = 4,000.00 �
 `surv_annuity_rate = 0.00`, so the survivor rider is **off** and `claims_death(t) = 0` at every `t`;
 `buz_prem_share = 0.00`; `tariff_id = de_basis_std`; `beh_table_id = base`;
 `surplus_scenario_id = base`; `rf_scenario_id = base`. Hence `age(0) = 45`,
-`ret_t() = 67 − 45 = 22`, `omega_age() = 121` and `proj_len() = 121 − 45 + 1 = 77`: twenty-two
+`ret_y() = 67 − 45 = 22` and `ret_t() = 264`, `omega_age() = 121`,
+`proj_len_y() = 121 − 45 + 1 = 77` and `proj_len() = 924`: twenty-two
 years of *Aufschubphase* at attained ages 45 to 66, then fifty-five years of *Rentenphase* at attained
-ages 67 to 121. The table below therefore shows **selected rows** — every year of the first five, the
-years in which a lever changes, the conversion year and its neighbours, and a decade sample of the
-payout phase — together with full-precision totals over all seventy-seven.
+ages 67 to 121. The annual table below therefore shows **selected rows** of
+`result_cf_annual()` — every year of the first five, the years in which a lever changes, the
+conversion year and its neighbours, and a decade sample of the payout phase — together with
+full-precision totals over all seventy-seven; a second table opens the first payout year month by
+month, which is the view only the finer grid can give.
 
 **Assumptions, each tagged.** *Mortality*: the shipped `mort_table.csv` is a **[std]** DAV 2004
 R-shaped **first-order** proxy, anchored so that `mort_rate_at_age(67, 2005) = 0.014000` exactly, with
 a flat improvement `trend = 0.015` at every age applied from `mort_base_year = 2005`, so that
 `mort_rate_base(t) = qx(age(t)) × (1 − 0.015)^(cal_year(t) − 2005)`; the best-estimate factor is
-`mort_be_factor = 0.85` **[std]**, giving `mort_rate(t) = 0.85 × mort_rate_base(t)`. The real basis is
+`mort_be_factor = 0.85` **[std]**, giving `mort_rate(t) = 0.85 × mort_rate_base(t)` as the year's
+**annual** rate and `mort_rate_mth(t) = 1 − (1 − mort_rate(t))^(1/12)` as the monthly rate applied. The real basis is
 **DAV 2004 R**, which is the property of the Deutsche Aktuarvereinigung and is **cited by name and
 never shipped** [R17] [REG-R47] [REG-R49]; a replacement must preserve the generational structure, the
 first-order margin and the *Altersverschiebung* convention, and must reproduce the anchor above if the
 worked example is to close. *Interest*: `gtd_rate = 1.00 %` p.a., the *Höchstrechnungszins* for new
 business from 1 January 2025 [R16] [REG-R14] [REG-R15]; declared `decl_rate(t) = 2.60 %` for
-`t = 0…9`, `2.40 %` for `t = 10…19`, `2.20 %` for `t ≥ 20` **[std]**, so
-`cred_rate(t) = max(0.0100, decl_rate(t)) = decl_rate(t)` throughout and the guarantee never binds on
+`k = 0…9`, `2.40 %` for `k = 10…19`, `2.20 %` for `k ≥ 20` **[std]**, so
+`cred_rate(k) = max(0.0100, decl_rate(k)) = decl_rate(k)` throughout and the guarantee never binds on
 this cell. *Surplus at and after conversion*: `terminal_bonus_rate = 4.0 %` of the fund at
 *Rentenbeginn* **[std]**, allocated at that single date because the contract has no earlier exit
-trigger [R15]; `ann_bonus_rate(t) = 1.0 %` p.a. compounding **[std]**, a *teildynamische Rente*.
+trigger [R15]; `ann_bonus_rate(k) = 1.0 %` p.a. compounding **[std]**, a *teildynamische Rente*.
 *Conversion*: `rf_curr(67) = 31.50 €` in scenario `base` **[std]** against the guaranteed 28,00 €
 **[std]**, so `rentenfaktor_applied() = max(28.00, 31.50) × 1.000 = 31.50` — the **current** factor
 binds on this cell, and model point 13 exercises the other branch [R17] [S1]. *Charges*:
@@ -798,7 +939,7 @@ binds on this cell, and model point 13 exercises the other branch [R17] [S1]. *C
 `beta_prem = 7.5 %` **[std]**; `gamma_av = 0.35 %` p.a. **[std]**; `unit_cost_pp = 36.00 €` p.a.
 inflating at `expense_infl = 1.5 %` **[std]**. *Insurer expense and commission*, all **[std]**:
 `acq_expense_pp = 250.00 €` at inception; `comm_init_rate = 2.5 %` of `beitragssumme_pp()` at
-inception; `comm_renew_rate = 1.5 %` of premiums plus *Zuzahlungen* from `t = 1`;
+inception; `comm_renew_rate = 1.5 %` of premiums plus *Zuzahlungen* from the second projection year;
 `maint_expense_pp = 60.00 €` per in-force policy p.a. inflating; `annuity_admin_pp = 36.00 €` per
 annuitant p.a. inflating. *Behaviour*, all **[std]**: `bf_rate = 4.0 %` at durations 1–5, `3.0 %` at
 6–10, `2.0 %` at 11+; `zuz_take_up = 0.70` at durations 1–5, `0.85` at 6–15, `0.90` at 16+;
@@ -810,67 +951,107 @@ All amounts in euros; `pols_if`, `pols_paying` and `av` to the precision shown; 
 cent. The **Total** row is summed at full precision and then rounded, which is not in general the same
 as adding the rounded cells.
 
-### The frame
+### The frame, by projection year
 
-Selected rows of `Projection[1].result_cf()`, transcribed from the model's own output. The two
-columns not shown — `claims_death` and `claims_survivor` — are **structurally zero at every one of
-the seventy-seven years** on this cell, because the survivor rider is off and there is no
+Selected rows of `Projection[1].result_cf_annual()` — the monthly frame summed into projection years
+— with `av` read from `result_pols()`, the annual state. Transcribed from the model's own output. The
+two columns not shown — `claims_death` and `claims_survivor` — are **structurally zero at every one of
+the 924 months** on this cell, because the survivor rider is off and there is no
 *Rentengarantiezeit*; they are published as zero columns rather than dropped, because a column of
 zeros states the product fact where a missing column would only hide it. `liability_cf` is omitted
 for the same reason it is trivial: it is `−net_cf` to the last bit.
 
-`pols_if`, `pols_paying` and `av` are a count, a count and a balance. They are **reported and not
-summed**, which is why the Total row carries an em dash for all three.
+`pols_if`, `pols_paying` and `av` are a count, a count and a balance, read at the **start** of the
+year. They are **reported and not summed**, which is why the Total row carries an em dash for all
+three.
 
-| t | age | `pols_if` | `pols_paying` | `av` | `premiums` | `zuzahlungen` | `claims_annuity` | `expenses` | `commissions` | `net_cf` |
+| k | age | `pols_if` | `pols_paying` | `av` | `premiums` | `zuzahlungen` | `claims_annuity` | `expenses` | `commissions` | `net_cf` |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 45 | 1.000000 | 1.000000 | 0.00 | 6,000.00 | 2,800.00 | 0.00 | 310.00 | 4,094.85 | 4,395.15 |
-| 1 | 46 | 0.998560 | 0.958618 | 7,366.75 | 5,866.74 | 2,684.13 | 0.00 | 60.81 | 128.26 | 8,361.80 |
-| 2 | 47 | 0.997024 | 0.918857 | 14,688.72 | 5,735.87 | 2,572.80 | 0.00 | 61.63 | 124.63 | 8,122.42 |
-| 3 | 48 | 0.995385 | 0.880653 | 21,968.46 | 5,607.33 | 2,465.83 | 0.00 | 62.45 | 121.10 | 7,889.61 |
-| 4 | 49 | 0.993635 | 0.843941 | 29,208.23 | 5,481.05 | 2,363.03 | 0.00 | 63.28 | 117.66 | 7,663.15 |
-| 5 | 50 | 0.991769 | 0.808662 | 36,410.00 | 5,356.97 | 2,749.45 | 0.00 | 64.11 | 121.60 | 7,920.71 |
-| 10 | 55 | 0.980403 | 0.686467 | 78,013.70 | 5,020.79 | 2,333.99 | 0.00 | 68.27 | 110.32 | 7,176.19 |
-| 15 | 60 | 0.964766 | 0.610615 | 119,589.52 | 4,930.84 | 2,198.21 | 0.00 | 72.37 | 106.94 | 6,949.75 |
-| 20 | 65 | 0.943366 | 0.539704 | 162,771.09 | 4,811.83 | 1,942.94 | 0.00 | 76.23 | 101.32 | 6,577.21 |
-| 21 | 66 | 0.938235 | 0.526033 | 171,114.15 | 4,783.75 | 1,893.72 | 0.00 | 76.96 | 100.16 | 6,500.35 |
-| **22** | **67** | 0.932780 | 0.512516 | **179,426.24** | 0.00 | 0.00 | **7,053.60** | 46.59 | 0.00 | −7,100.20 |
-| 23 | 68 | 0.926985 | 0.509331 | 0.00 | 0.00 | 0.00 | 7,079.88 | 47.00 | 0.00 | −7,126.88 |
-| 32 | 77 | 0.856165 | 0.470419 | 0.00 | 0.00 | 0.00 | 7,151.60 | 49.63 | 0.00 | −7,201.23 |
-| 42 | 87 | 0.724266 | 0.397948 | 0.00 | 0.00 | 0.00 | 6,682.78 | 48.73 | 0.00 | −6,731.51 |
-| 52 | 97 | 0.521776 | 0.286689 | 0.00 | 0.00 | 0.00 | 5,318.10 | 40.74 | 0.00 | −5,358.84 |
-| 62 | 107 | 0.272931 | 0.149962 | 0.00 | 0.00 | 0.00 | 3,072.84 | 24.73 | 0.00 | −3,097.57 |
-| 72 | 117 | 0.074193 | 0.040765 | 0.00 | 0.00 | 0.00 | 922.70 | 7.80 | 0.00 | −930.50 |
+| 0 | 45 | 1.000000 | 1.000000 | 0.00 | 6,000.00 | 2,800.00 | 0.00 | 309.96 | 4,094.85 | 4,395.19 |
+| 1 | 46 | 0.998560 | 0.958618 | 7,366.75 | 5,866.74 | 2,684.13 | 0.00 | 60.77 | 128.26 | 8,361.84 |
+| 2 | 47 | 0.997024 | 0.918857 | 14,688.72 | 5,735.87 | 2,572.80 | 0.00 | 61.58 | 124.63 | 8,122.46 |
+| 3 | 48 | 0.995385 | 0.880653 | 21,968.46 | 5,607.33 | 2,465.83 | 0.00 | 62.40 | 121.10 | 7,889.66 |
+| 4 | 49 | 0.993635 | 0.843941 | 29,208.23 | 5,481.05 | 2,363.03 | 0.00 | 63.22 | 117.66 | 7,663.20 |
+| 5 | 50 | 0.991769 | 0.808662 | 36,410.00 | 5,356.97 | 2,749.45 | 0.00 | 64.05 | 121.60 | 7,920.77 |
+| 10 | 55 | 0.980403 | 0.686467 | 78,013.70 | 5,020.79 | 2,333.99 | 0.00 | 68.18 | 110.32 | 7,176.28 |
+| 15 | 60 | 0.964766 | 0.610615 | 119,589.52 | 4,930.84 | 2,198.21 | 0.00 | 72.24 | 106.94 | 6,949.88 |
+| 20 | 65 | 0.943366 | 0.539704 | 162,771.09 | 4,811.83 | 1,942.94 | 0.00 | 76.04 | 101.32 | 6,577.40 |
+| 21 | 66 | 0.938235 | 0.526033 | 171,114.15 | 4,783.75 | 1,893.72 | 0.00 | 76.75 | 100.16 | 6,500.55 |
+| **22** | **67** | 0.932780 | 0.512516 | **179,426.24** | 0.00 | 0.00 | **7,033.50** | 46.46 | 0.00 | −7,079.96 |
+| 23 | 68 | 0.926985 | 0.509331 | 0.00 | 0.00 | 0.00 | 7,058.31 | 46.86 | 0.00 | −7,105.16 |
+| 32 | 77 | 0.856165 | 0.470419 | 0.00 | 0.00 | 0.00 | 7,111.92 | 49.36 | 0.00 | −7,161.28 |
+| 42 | 87 | 0.724266 | 0.397948 | 0.00 | 0.00 | 0.00 | 6,610.57 | 48.20 | 0.00 | −6,658.77 |
+| 52 | 97 | 0.521776 | 0.286689 | 0.00 | 0.00 | 0.00 | 5,205.94 | 39.88 | 0.00 | −5,245.82 |
+| 62 | 107 | 0.272931 | 0.149962 | 0.00 | 0.00 | 0.00 | 2,945.81 | 23.71 | 0.00 | −2,969.52 |
+| 72 | 117 | 0.074193 | 0.040765 | 0.00 | 0.00 | 0.00 | 847.29 | 7.16 | 0.00 | −854.46 |
 | 76 | 121 | 0.032209 | 0.017697 | 0.00 | 0.00 | 0.00 | 416.84 | 3.60 | 0.00 | −420.43 |
-| **Total** | | — | — | — | **113,761.91** | **51,236.28** | **270,016.08** | **3,731.36** | **6,437.82** | **−115,187.08** |
+| **Total** | | — | — | — | **113,761.91** | **51,236.28** | **265,725.57** | **3,695.91** | **6,437.82** | **−110,861.12** |
 
-**The Total row is summed over all seventy-seven years at full precision and then rounded**, which
-is not in general the same as adding the rounded cells. Here it differs in three of the six money
-columns: adding the seventy-seven rounded `claims_annuity` cells gives 270 016,09 € against
-270 016,08 €, the rounded `expenses` cells 3 731,38 € against 3 731,36 €, and the rounded
-`commissions` cells 6 437,83 € against 6 437,82 €. `premiums`, `zuzahlungen` and `net_cf` happen to
-agree at the cent. The differences are one and two cents and they are not errors; they are what
-rounding seventy-seven times before adding costs, and a test that asserted the sum of the printed
+**The whole *Aufschubphase* of this table is the annual-step model's, to the last bit.** The
+premium, the *Zuzahlung*, the commission, both counts and every account balance are unchanged,
+because twelve geometric monthly death rates compound back to the annual rate exactly. What moved is
+the payout phase — 265 725,57 € against 270 016,08 €, because the *Rente* is now paid one instalment
+at a time — and the expenses, 3 695,91 € against 3 731,36 €, because a mid-year leaver bears only
+the months it was there.
+
+**The Total row is summed over all 924 months at full precision and then rounded**, which
+is not in general the same as adding the rounded cells. Here it differs in four of the six money
+columns: adding the seventy-seven rounded `claims_annuity` cells gives 265 725,58 € against
+265 725,57 €, the rounded `expenses` cells 3 695,88 € against 3 695,91 €, the rounded
+`commissions` cells 6 437,83 € against 6 437,82 € and the rounded `net_cf` cells −110 861,14 €
+against −110 861,12 €. `premiums` and `zuzahlungen` happen to
+agree at the cent. The differences are one to three cents and they are not errors; they are what
+rounding before adding costs, and a test that asserted the sum of the printed
 cells would be asserting the wrong number.
+
+### The same conversion year, month by month
+
+The first twelve rows of the *Rentenphase*, straight off `result_cf()`. This is the view the annual
+grid could not give, and the reason the model was moved onto a monthly one.
+
+| t | `pols_if` | `claims_annuity` | `expenses` | `net_cf` |
+|---:|---:|---:|---:|---:|
+| 264 | 0.932780 | 587.80 | 3.88 | −591.68 |
+| 265 | 0.932296 | 587.50 | 3.88 | −591.38 |
+| 266 | 0.931812 | 587.19 | 3.88 | −591.07 |
+| 267 | 0.931328 | 586.89 | 3.88 | −590.76 |
+| 268 | 0.930845 | 586.58 | 3.87 | −590.46 |
+| 269 | 0.930361 | 586.28 | 3.87 | −590.15 |
+| 270 | 0.929878 | 585.97 | 3.87 | −589.84 |
+| 271 | 0.929395 | 585.67 | 3.87 | −589.54 |
+| 272 | 0.928913 | 585.36 | 3.87 | −589.23 |
+| 273 | 0.928430 | 585.06 | 3.86 | −588.92 |
+| 274 | 0.927948 | 584.76 | 3.86 | −588.62 |
+| 275 | 0.927467 | 584.45 | 3.86 | −588.31 |
+| **Year 22** | — | **7,033.50** | **46.46** | **−7,079.96** |
+
+Every instalment is the same 630,16 € per annuitant — `ann_mth_pp = ann_pp(22) / 12` — and what falls
+across the twelve rows is the **count**, from 0,932780 to 0,927467. The annual-step model paid
+`12 × 630,16 × 0,932780 = 7 053,60 €`, the whole year on the opening count; the monthly grid pays
+7 033,50 €, and the 20,11 € between them is the annuity the old convention paid to lives that died
+during the year. Over the fifty-five payout years that is 4 290,52 €.
 
 Four things in the frame are worth reading before the checks below.
 
 - **The first year's strain is the commission, not the *Zillmerung*.** The 818,97 € instalment is a
   deduction from the policyholder's account and hence insurer income; it is absent from `expenses`
   and visible only in `av(1)` being 7 366,75 € rather than the 8 140,00 € that 8 800,00 € less the
-  7,5 % premium charge would otherwise have bought.
-- **`pols_paying` falls far faster than `pols_if`.** By `t = 22` the in-force count has fallen only
+  7,5 % premium charge would otherwise have bought. On the monthly frame the whole strain falls in
+  month 0, which nets +4 450,15 € against the year's +4 395,19 €: the other eleven months carry a
+  twelfth of the maintenance expense and nothing else, at −5,00 € each.
+- **`pols_paying` falls far faster than `pols_if`.** By `k = 22` the in-force count has fallen only
   to 0,932780 while the premium-paying count has fallen to 0,512516: 0,441765 of the cohort has
   passed through a *Beitragsfreistellung* by then, and the 0,420265 of it that has not since died
   is sitting in the premium-free ledger, where it is still in force, still credited and still
   converts. Not one policy has left through a surrender, there being none to leave through.
-- **The `av` column ends at `t = 22` and does not taper.** The whole fund converts in one step;
-  from `t = 23` there is no *Deckungskapital* in this model, only an annuity obligation that a
+- **The `av` column ends at `k = 22` and does not taper.** The whole fund converts in one step;
+  from `k = 23` there is no *Deckungskapital* in this model, only an annuity obligation that a
   *Deckungsrückstellung* stands behind and that delib does not compute.
-- **The annuity rises and the claim falls.** `ann_pp(t)` compounds at 1,0 % — 7 561,91 €,
-  7 637,53 €, 7 713,91 € — while `claims_annuity(t)` peaks at `t = 30` and then falls away as
-  mortality outruns the *Überschussrente*. Nothing is paid *after* `t = 76`: the last survivor dies
-  at the terminal age, and there is no maturity value and no tail state.
+- **The annuity rises and the claim falls.** `ann_pp(k)` compounds at 1,0 % — 7 561,91 €,
+  7 637,53 €, 7 713,91 €, paid as 630,16 €, 636,46 € and 642,83 € a month — while the year's
+  `claims_annuity` peaks at `k = 29` and then falls away as
+  mortality outruns the *Überschussrente*. Nothing is paid *after* `t = 923`: the last survivor dies
+  in the last month of the terminal year, and there is no maturity value and no tail state.
 
 ### Three independent checks and a closure identity
 
@@ -901,30 +1082,43 @@ and crediting it at the declared 2,60 % net of the 0,35 % reserve charge,
 A^p(0, "AFT_INT") = 7,215.0304938362 x (1 + 0.026 - 0.0035) = 7,377.3686799475
 ```
 
-The table's `av` at `t = 1` is 7 366,75 €, which is **not** that number: it is that number after the
-year's death decrement, `7,377.3686799475 x (1 - 0.0014396389) = 7,366.7479330812`. That is the
-fund-level roll-forward `check_av_roll_fwd()` closes, and the fact that it closes with `bf_rate` at
-4 % is the point — a *Beitragsfreistellung* moves reserve between the two blocks and removes none.
+The table's `av` at `k = 1` is 7 366,75 €, which is **not** that number: it is that number after the
+year's death decrement, `7,377.3686799475 x (1 - 0.0014396389) = 7,366.7479330812` — at the
+**annual** rate, because the account is an annual quantity and twelve monthly decrements compound to
+exactly that. That is the fund-level roll-forward `check_av_roll_fwd()` closes, and the fact that it
+closes with `bf_rate` at 4 % is the point — a *Beitragsfreistellung* moves reserve between the two
+blocks and removes none.
 
 **Check 2 — the first year's decrement split, and the rate behind it.** The shipped table's rate at age
 45 is `0.014000 x 1.085^(45 - 67) = 0.0023263433`, improved from the 2005 base to the 2026 calendar
 year by `(1 - 0.015)^21 = 0.7280493868`, giving a first-order `0.0016936928`; the best-estimate
-factor takes it to `q(0) = 0.85 x 0.0016936928 = 0.0014396389`. Then
+factor takes it to the **annual** `q(0) = 0.85 x 0.0016936928 = 0.0014396389`, and the recursion
+applies its geometric twelfth
 
 ```
-pols_death(0)  = 1.000000 x 0.0014396389                    = 0.0014396389
-pols_freeze(0) = 1.000000 x (1 - 0.0014396389) x 0.04       = 0.0399424144
-pols_paying(1) = 1.000000 x (1 - 0.0014396389) x (1 - 0.04) = 0.9586179467
-pols_paidup(1) = 0.0000000000 + 0.0399424144                = 0.0399424144
-pols_if(1)     = 0.9586179467 + 0.0399424144                = 0.9985603611
+q_mth(0) = 1 - (1 - 0.0014396389)^(1/12) = 0.0001200491
 ```
 
-and `0.9985603611 = 1.000000 - 0.0014396389` exactly. **The 4 % *Beitragsfreistellung* rate has
+in each of the year's twelve months. The freeze falls once, in the last of them, on the survivors of
+that month's deaths:
+
+```
+sum_{t=0..11} pols_death(t) = 1.000000 x (1 - (1 - 0.0001200491)^12)  = 0.0014396389
+pols_freeze(11)             = 1.000000 x (1 - 0.0014396389) x 0.04    = 0.0399424144
+pols_paying(12)             = 1.000000 x (1 - 0.0014396389) x (1 - 0.04) = 0.9586179467
+pols_paidup(12)             = 0.0000000000 + 0.0399424144             = 0.0399424144
+pols_if(12)                 = 0.9586179467 + 0.0399424144             = 0.9985603611
+```
+
+Two things to read here. `(1 - 0.0001200491)^12 = 0.9985603611` is `1 - q(0)` to the last bit, which
+is why every annual figure in the table above is the annual-step model's; the arithmetic twelfth
+`0.0014396389 / 12 = 0.0001199699` is a smaller number and closes nothing. And
+`0.9985603611 = 1.000000 - 0.0014396389` exactly: **the 4 % *Beitragsfreistellung* rate has
 cancelled out of `pols_if` entirely**, which is what distinguishes this product's decrement
 structure from a Schicht-3 annuity's and is what `check_pols_roll_fwd()` asserts at every `t`.
 
 **Check 3 — the conversion, and the branch of the `max` that binds.** The fund at the start of
-`t = 22` is 179 426,2405488701 €; the *Schlussüberschussanteil* grosses it up once, at this single date,
+projection year `k = 22`, the end of month 263, is 179 426,2405488701 €; the *Schlussüberschussanteil* grosses it up once, at this single date,
 
 ```
 F = 179,426.2405488701 x 1.04 = 186,603.2901708250
@@ -935,19 +1129,28 @@ annuitant. The applied *Rentenfaktor* is `max(28.00, 31.50) x 1.000 = 31.50` —
 factor binds on this cell — and 31,50 € a month per 10 000 € of capital is 378,00 € a year, so
 
 ```
-ann_pp(22) = 200,050.6219643070 / 10,000 x 378.00 = 7,561.9135102508
+ann_pp(22)     = 200,050.6219643070 / 10,000 x 378.00 = 7,561.9135102508
+ann_mth_pp(264) = 7,561.9135102508 / 12                = 630.1594591876
 ```
 
-The table's `claims_annuity(22)` is that annuity weighted by the opening in-force count,
-`7,561.9135102508 x 0.9327803550 = 7,053.6043684572`, and the next year's is the same annuity
-compounded once and re-weighted, `7,561.9135102508 x 1.01 x 0.9269849437 = 7,079.8777690934`. Had
-the guaranteed 28,00 € bound instead the annuity would have been 6 721,70 €, 11,1 % lower.
+and 630,16 € a month is what is actually paid. The annual table's `claims_annuity` at `k = 22` is
+**not** that annuity times the opening count: it is the twelve instalments each weighted by the
+count in force at the start of **its own** month,
+
+```
+sum_{t=264..275} 630.1594591876 x pols_if(t) = 7,033.4955825855
+```
+
+against the `12 x 630.1594591876 x 0.9327803550 = 7,053.6043684572` an annual booking on the opening
+count would have paid — the 20,11 € difference being the annuity the old convention paid to lives
+that died during the year. Had the guaranteed 28,00 € bound instead the annuity would have been
+6 721,70 €, 11,1 % lower.
 
 **Closure identity — the decrements sum to one, and the cash flow statement closes.** Over the
 whole projection,
 
 ```
-sum_{t=0..76} pols_death(t) + pols_if(77) = 1.0000000000 + 0.0000000000 = 1.0000000000
+sum_{t=0..923} pols_death(t) + pols_if(924) = 1.0000000000 + 0.0000000000 = 1.0000000000
 ```
 
 because the terminal age is absorbing. Not one policy leaves by any other route: there is no lapse
@@ -956,12 +1159,12 @@ went *beitragsfrei* is inside that 1,000000 rather than beside it. And on the mo
 row itself closes,
 
 ```
-113,761.9053943146 + 51,236.2751085046 - 270,016.0832025837 - 3,731.3612934038 - 6,437.8202383614
-    = -115,187.0842315298
+113,761.9053943146 + 51,236.2751085046 - 265,725.5654249013 - 3,695.9135293351 - 6,437.8202383614
+    = -110,861.1186897786
 ```
 
-which is `check_net_cf()` — delib's first ruling — evaluated over all seventy-seven years at once
-rather than one year at a time. A last arithmetic coincidence that is not a coincidence:
+which is `check_net_cf()` — delib's first ruling — evaluated over all 924 months at once
+rather than one month at a time. A last arithmetic coincidence that is not a coincidence:
 `commissions(0) = 0.025 x S = 4,094.8475308191` is **the same number** as
 `alpha_total_pp() = 0.025 x S`, because the initial commission rate and the *Höchstzillmersatz* are
 both 2,5 %. That is the German design rather than an accident — what the insurer pays out at
@@ -974,30 +1177,33 @@ The notes' model point table promises a second premium form, and this is it: mod
 58-year-old paying a single 60 000,00 € *Einmalbeitrag* and deferring to 67, on the same tariff,
 behaviour and surplus scenario as the anchor. `prem_form = single`, so `prem_freq_load() = 1.000`
 — a single payment carries no *Ratenzahlungszuschlag* — `bf_rate(t) = 0` at every `t`, there being
-no premium left to stop, and `ret_t() = 9`, `proj_len() = 64`.
+no premium left to stop, and `ret_y() = 9` (`ret_t() = 108`), `proj_len_y() = 64`,
+`proj_len() = 768`. Rows of `result_cf_annual()`, with `av` from `result_pols()`:
 
-| t | age | `pols_if` | `av` | `premiums` | `claims_annuity` | `expenses` | `commissions` | `net_cf` |
+| k | age | `pols_if` | `av` | `premiums` | `claims_annuity` | `expenses` | `commissions` | `net_cf` |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 0 | 58 | 1.000000 | 0.00 | 60,000.00 | 0.00 | 310.00 | 1,500.00 | 58,190.00 |
-| 1 | 59 | 0.995842 | 56,170.68 | 0.00 | 0.00 | 60.65 | 0.00 | −60.65 |
-| 2 | 60 | 0.991418 | 56,838.16 | 0.00 | 0.00 | 61.28 | 0.00 | −61.28 |
-| 4 | 62 | 0.981702 | 58,157.41 | 0.00 | 0.00 | 62.52 | 0.00 | −62.52 |
-| 8 | 66 | 0.958317 | 61,584.00 | 0.00 | 0.00 | 64.77 | 0.00 | −64.77 |
-| **9** | **67** | 0.951537 | **62,484.63** | 0.00 | **2,456.40** | 39.17 | 0.00 | −2,495.56 |
-| 10 | 68 | 0.944341 | 0.00 | 0.00 | 2,462.20 | 39.45 | 0.00 | −2,501.65 |
-| 19 | 77 | 0.857193 | 0.00 | 0.00 | 2,444.36 | 40.95 | 0.00 | −2,485.31 |
-| 39 | 97 | 0.468265 | 0.00 | 0.00 | 1,629.32 | 30.13 | 0.00 | −1,659.45 |
+| 0 | 58 | 1.000000 | 0.00 | 60,000.00 | 0.00 | 309.89 | 1,500.00 | 58,190.11 |
+| 1 | 59 | 0.995842 | 56,170.68 | 0.00 | 0.00 | 60.52 | 0.00 | −60.52 |
+| 2 | 60 | 0.991418 | 56,838.16 | 0.00 | 0.00 | 61.15 | 0.00 | −61.15 |
+| 4 | 62 | 0.981702 | 58,157.41 | 0.00 | 0.00 | 62.36 | 0.00 | −62.36 |
+| 8 | 66 | 0.958317 | 61,584.00 | 0.00 | 0.00 | 64.56 | 0.00 | −64.56 |
+| **9** | **67** | 0.951537 | **62,484.63** | 0.00 | **2,447.87** | 39.03 | 0.00 | −2,486.90 |
+| 10 | 68 | 0.944341 | 0.00 | 0.00 | 2,453.07 | 39.31 | 0.00 | −2,492.37 |
+| 19 | 77 | 0.857193 | 0.00 | 0.00 | 2,427.85 | 40.67 | 0.00 | −2,468.52 |
+| 39 | 97 | 0.468265 | 0.00 | 0.00 | 1,587.41 | 29.35 | 0.00 | −1,616.77 |
 | 63 | 121 | 0.014921 | 0.00 | 0.00 | 65.92 | 1.37 | 0.00 | −67.29 |
-| **Total** | | — | — | **60,000.00** | **86,163.14** | **2,321.22** | **1,500.00** | **−29,984.36** |
+| **Total** | | — | — | **60,000.00** | **84,666.77** | **2,292.11** | **1,500.00** | **−28,458.88** |
 
 Again summed at full precision and then rounded; adding the sixty-four rounded `net_cf` cells gives
-−29 984,39 € against −29 984,36 €, a three-cent difference.
+−28 458,87 € against −28 458,88 €, a one-cent difference. Every account balance in the column is
+the annual-step model's to the last bit; the annuity is 1 496,37 € lower and the expenses 29,11 €
+lower, for the two reasons the grid changed.
 
 Two features are the whole point of the variant. **The *Beitragssumme* of a single-premium contract
 is the single premium**, so `S = 60,000.00`, the *Zillmerung* is `0.025 x 60,000.00 = 1,500.00` and
 the initial commission is the same 1 500,00 € — an order of magnitude below the anchor's, because
 the anchor's twenty-two escalating premiums sum to 163 793,90 €. And **the five *Zillmerung*
-instalments still run**, 300,00 € a year at `t = 0 ... 4`, so from `t = 1` the account is debited by
+instalments still run**, 300,00 € a year at `k = 0 ... 4`, so from `k = 1` the account is debited by
 an acquisition charge that the one premium has already come and gone without covering. That is
 visible in the first year's account, which checks in one line:
 
@@ -1017,10 +1223,10 @@ Pitfall 13 promises a cell on which the guaranteed factor binds, and model point
 6 000,00 € annual premium as the anchor, no *Dynamik*, no *Zuzahlung*, entry at 46 and
 `rf_scenario_id = low`, so that `rentenfaktor_curr()` is 27,72 € against a guaranteed 34,00 €.
 
-| Cell | `av(T)` | `fund_at_conv()` | per annuitant | `rentenfaktor_gtd` | `rentenfaktor_curr()` | applied | `ann_pp(T)` |
-|---|---:|---:|---:|---:|---:|---:|---:|
-| Anchor, `T = 22` | 179,426.24 | 186,603.29 | 200,050.62 | 28.00 | 31.50 | **31.50** | **7,561.91** |
-| Point 13, `T = 21` | 98,185.81 | 102,113.25 | 109,428.02 | 34.00 | 27.72 | **34.00** | **4,464.66** |
+| Cell | `av(T)` | `fund_at_conv()` | per annuitant | `rentenfaktor_gtd` | `rentenfaktor_curr()` | applied | `ann_pp(T)` | a month |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| Anchor, `T = 22` | 179,426.24 | 186,603.29 | 200,050.62 | 28.00 | 31.50 | **31.50** | **7,561.91** | **630.16** |
+| Point 13, `T = 21` | 98,185.81 | 102,113.25 | 109,428.02 | 34.00 | 27.72 | **34.00** | **4,464.66** | **372.06** |
 
 On the anchor the guarantee is worth nothing and would have given 6 721,70 €; on model point 13 it
 is worth 824,65 € a year, the current factor alone giving 3 640,01 €. The projection is sensitive to
@@ -1038,17 +1244,17 @@ each is now written into the notes at its source rather than only here.
    but the generational trend carries the table's terminal rate below 1 in every calendar year after
    the base year and `mort_be_factor` would take it to 0,85 in any case. The rule now sits on
    `mort_rate(t)`, where it belongs.
-2. **`av(ret_t())` is the pre-conversion fund, not zero.** `check_av_roll_fwd()` now asserts
-   `av_at(ret_t(), "AFT_INT") = 0` — the conversion empties the account — and `av(t) = 0` for every
-   `t > ret_t()`. The old wording would have hidden the one number the conversion is struck on.
+2. **`av(ret_y())` is the pre-conversion fund, not zero.** `check_av_roll_fwd()` now asserts
+   `av_at(ret_y(), "AFT_INT") = 0` — the conversion empties the account — and `av(k) = 0` for every
+   `k > ret_y()`. The old wording would have hidden the one number the conversion is struck on.
 3. **The acquisition expense is a fund-level amount**, `acq_expense_pp × pols_if_init × 1{…}`,
    matching the initial commission beside it. Nothing moves on the shipped points, all of which
    carry `pols_if_init = 1.0`.
 4. **`omega_age_max` is not a Reference.** `omega_age()` is read off the last row of
    `mort_table.csv` and needs no separate cap, so the name is dropped from the scalar list.
-5. **`zuz_take_up(t)` is published as a cells**, alongside `bf_rate(t)`: pitfall 7 turns on it, and
+5. **`zuz_take_up(k)` is published as a cells**, alongside `bf_rate(t)`: pitfall 7 turns on it, and
    hiding it inside `zuz_pp` would have made it untestable.
-6. **`behaviour_table.csv` is keyed by the policy year**, `duration(t) + 1`, so the notes'
+6. **`behaviour_table.csv` is keyed by the policy year**, `policy_year(t)`, so the notes'
    "durations 1–5" reads off the file directly. `duration(t)` itself stays **completed** policy
    years and is 0 in the first projected year of a new-business point.
 7. **Model point 9 carries no *Zuzahlung*.** It exists to sit at the whole *Höchstbetrag*, and a
@@ -1057,6 +1263,19 @@ each is now written into the notes at its source rather than only here.
 8. **The guaranteed *Rentenfaktor* binds on two cells, not one.** Model point 6 is a 2009 tariff
    converting at 60, and an older tariff's guaranteed factor standing above today's current factor
    at that age is the realistic case rather than a contrivance.
+
+A ninth was settled later, when the model moved from an annual step to a monthly one:
+
+9. **The grid is monthly and the contract is not.** `t` counts months and `k = t // 12` projection
+   years, and a cells' argument says which clock it is on. The contribution, the four charges, the
+   declared rate, the *Deckungskapital*, the *Beitragsfreistellung* and the conversion stay annual —
+   they are *Versicherungsjahr* terms, and the *Ratenzahlungszuschlag* is how a German tariff prices
+   a fractionated mode without moving the *Versicherungsperiode* — so the whole *Aufschubphase* is
+   bit-identical to the annual-step model's. What the finer grid was adopted for is the *Rente*,
+   which is quoted and paid **monthly**: pitfall 12's compression is gone and the payout phase falls
+   4 290,52 € because a life that dies in a payout year is no longer paid the whole of it. Gap 21 is
+   **not** closed by it — whether the instalment is *vorschüssig* or *nachschüssig* was still not
+   established, and the model pays in advance **[std]**.
 
 Nothing in the shipped model contradicts a cited fact. Every figure in the tables above is the
 model's own output, and every parameter behind them is **[std]** except the 25 ‰ *Höchstzillmersatz*
@@ -1073,9 +1292,9 @@ grid. The valuation layers consume them and are cited, not reproduced.
   the *Rechnungsgrundlagen* the DeckRV fixes [REG-R14]: the contract's own *Rechnungszins* — capped at
   the *Höchstrechnungszins* in force at conclusion and fixed for the whole term [REG-R15] — and
   first-order DAV 2004 R [REG-R49], with acquisition costs entering through the *Zillmerung* of
-  § 4 DeckRV [REG-R16]. The model's `av_at(t, ·)` and, after conversion, the annuity obligation
-  `ann_pp(t) × pols_if(t)` are what a *Deckungsrückstellung* stands behind; **neither is a reserve and
-  delib computes none**.
+  § 4 DeckRV [REG-R16]. The model's `av_at(k, ·)` and, after conversion, the monthly annuity
+  obligation `ann_mth_pp(t) × pols_if(t)` are what a *Deckungsrückstellung* stands behind; **neither
+  is a reserve and delib computes none**.
 - **The *Zinszusatzreserve*.** The additional HGB reserve arising where the *Referenzzins* of
   § 5 Abs. 3 DeckRV falls below a contract's tariff rate [REG-R17]. It exists in no other jurisdiction
   in this repository and bites hardest on annuity business, because the § 12 MindZV test looks at the
@@ -1146,9 +1365,12 @@ In rough order of leverage for a German Schicht-1 block:
 8. **The eligible-survivor probability.** Inert on the anchor and decisive on model points 3, 4 and
    12: it scales the whole death benefit and the whole *Rentengarantiezeit* stream. 0.55 has nothing
    behind it.
-9. **The annual grid against a monthly annuity, and the living texts around it.** Booking twelve
-   instalments at the start of the payout year is generous to the year of death by up to a full year's
-   annuity, concentrated in the high-mortality tail — a convention, not a result. Separately, the
+9. **The instalment's timing within the month, and the living texts around it.** The compression
+   that the annual grid forced — twelve instalments booked at the start of the payout year, generous
+   to the year of death by up to a full year's annuity — is gone with the monthly step. What remains
+   **[std]** is *vorschüssig* against *nachschüssig*: no German convention was established (gap 21),
+   and the model pays in advance, which is worth about one month's interest on the annuity over the
+   payout phase. Separately, the
    *Höchstbetrag* moves every year with the *Sozialversicherungsrechengrößen-Verordnung* [R20], the
    *Besteuerungsanteil* every year by construction [R4] [R6], and the *Höchstrechnungszins* moved in
    2025 for the first time in about thirty years [REG-R15]: none is a cash flow of this contract, and

@@ -495,8 +495,8 @@ def stornoabzug_rate():
     cannot supply — and model point 10 carries 5 % as a **[std]** illustration.
 
     **Named ``stornoabzug_rate`` and not ``stornoabzug``.**  It is a fraction, and the
-    library gives every rate the ``*_rate`` suffix; ``RV_DE_A``, ``FRV_DE_S`` and
-    ``Riester_DE_A`` all spell this rate the same way.  Bare ``stornoabzug`` is
+    library gives every rate the ``*_rate`` suffix; ``RV_DE_S``, ``FRV_DE_S`` and
+    ``Riester_DE_S`` all spell this rate the same way.  Bare ``stornoabzug`` is
     ``FRV_DE_S``'s *euro amount* retained from surrenders and one of its ``result_cf()``
     columns — a different quantity, which is why the two do not share a name.
     """

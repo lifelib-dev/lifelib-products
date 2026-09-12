@@ -69,7 +69,7 @@ duration as an offset inside `duration_mth(t)` — so both are unchanged.
 
 ## Four ledgers, one return arc, and § 174 in arithmetic
 
-This is what a reader arriving from `RLV_DE_A` or `BasicTerm_S` will get wrong, and it is why
+This is what a reader arriving from `RLV_DE_S` or `BasicTerm_S` will get wrong, and it is why
 the product is worth modelling. A BU contract is a **multi-state model with a return arc**,
 not a decrement model:
 

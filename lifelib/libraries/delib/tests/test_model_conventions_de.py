@@ -188,7 +188,7 @@ def model(name, read_log):
 def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
-    The name is the product's short name, a country tag and a grid tag — ``KLV_DE_A``,
+    The name is the product's short name, a country tag and a grid tag — ``KLV_DE_S``,
     ``BU_DE_S`` — rather than anything derivable from the folder slug, because
     ``fondsgebundene_rentenversicherung`` spelled out is unusable in a model name. Where
     the German market has a settled short form the model takes it (KLV, RLV, BU); where it
@@ -209,6 +209,47 @@ def test_the_name_carries_the_right_grid_suffix(name):
     """
     grid = MODELS[name][1]["grid"]
     assert name.endswith(GRID_SUFFIX[grid]), f"{name} is a {grid}-step model"
+
+
+def test_a_monthly_registry_entry_means_a_monthly_frame(name, model):
+    """The registered grid is asserted against the frame, not only against the name.
+
+    The suffix check above is a check on spelling: it pairs ``_S`` with the metadata row
+    and would pass unchanged on a model whose frame still stepped a year at a time, which
+    is exactly the state six of these models were in before they were converted. So the
+    grid is asserted where it is observable, on the attained age — a shared cells every
+    model publishes. Age is the right probe because its period is fixed by the contract
+    rather than by the model: a policy ages a year in a year on any grid, so the number of
+    periods it takes to do so *is* the grid. An ``annual`` row is asserted the other way
+    round for the same reason, so the registry stays a statement about the model rather
+    than a label the model is free to contradict.
+
+    The window is twelve periods from the frame's own first one rather than from issue,
+    and what it asserts is that the age steps **once** inside it. An in-force point need
+    not open on an anniversary — ``BU_DE_S`` re-bases one onto the valuation month, so its
+    frame is a whole number of years from issue and not from ``t = 0`` — and a check
+    written on ``t % 12`` or on ``proj_len() % 12`` would read that as an annual frame.
+    """
+    grid = MODELS[name][1]["grid"]
+    for point_id in model.Data.model_point_table().index:
+        proj = model.Projection[point_id]
+        t0 = proj.t_start() if "t_start" in model.Projection.cells else 0
+        assert proj.proj_len() - t0 > 12, (
+            f"{name} point {point_id}: the frame is {proj.proj_len() - t0} periods long, "
+            "too short to read a grid off")
+        ages = [proj.age(t0 + i) for i in range(13)]
+        steps = sum(1 for i in range(12) if ages[i + 1] != ages[i])
+        if grid == "annual":
+            assert steps == 12, (
+                f"{name} point {point_id}: the attained age steps {steps} times in twelve "
+                "periods, so the frame is not counting years")
+            continue
+        assert steps == 1, (
+            f"{name} point {point_id}: the attained age steps {steps} times in twelve "
+            "periods; on a monthly frame it steps once, at the anniversary")
+        assert ages[12] == ages[0] + 1, (
+            f"{name} point {point_id}: the attained age is {ages[12]} twelve periods "
+            f"after {ages[0]}, so a period here is not a month")
 
 
 def test_the_name_carries_the_country_tag(name):
@@ -471,7 +512,7 @@ RETIRED_NAMES = {
     # Settled in delib's own cross-model naming review.
     "laufende_verz": (
         "decl_rate — the declared laufende Verzinsung is one quantity under one "
-        "definition, and KLV_DE_A, RV_DE_A and Basis_DE_A already spelled it decl_rate"
+        "definition, and KLV_DE_S, RV_DE_S and Basis_DE_S already spelled it decl_rate"
     ),
 }
 

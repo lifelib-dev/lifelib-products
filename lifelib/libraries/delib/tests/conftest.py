@@ -23,8 +23,8 @@ from de_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 @pytest.fixture(scope="module")
 def kapitallebensversicherung():
-    """The KLV_DE_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("KLV_DE_A"))
+    """The KLV_DE_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("KLV_DE_S"))
     yield model
     model.close()
 
@@ -37,8 +37,8 @@ def de_klv_anchor(kapitallebensversicherung):
 
 @pytest.fixture(scope="module")
 def klassische_rentenversicherung():
-    """The RV_DE_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("RV_DE_A"))
+    """The RV_DE_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("RV_DE_S"))
     yield model
     model.close()
 
@@ -65,8 +65,8 @@ def de_frv_anchor(fondsgebundene_rentenversicherung):
 
 @pytest.fixture(scope="module")
 def indexpolice():
-    """The Index_DE_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Index_DE_A"))
+    """The Index_DE_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Index_DE_S"))
     yield model
     model.close()
 
@@ -83,8 +83,8 @@ def de_index_anchor(indexpolice):
 
 @pytest.fixture(scope="module")
 def basisrente():
-    """The Basis_DE_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Basis_DE_A"))
+    """The Basis_DE_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Basis_DE_S"))
     yield model
     model.close()
 
@@ -97,8 +97,8 @@ def de_basis_anchor(basisrente):
 
 @pytest.fixture(scope="module")
 def riester_rente():
-    """The Riester_DE_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Riester_DE_A"))
+    """The Riester_DE_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Riester_DE_S"))
     yield model
     model.close()
 
@@ -133,8 +133,8 @@ def de_sofort_anchor(sofortrente):
 
 @pytest.fixture(scope="module")
 def risikolebensversicherung():
-    """The RLV_DE_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("RLV_DE_A"))
+    """The RLV_DE_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("RLV_DE_S"))
     yield model
     model.close()
 

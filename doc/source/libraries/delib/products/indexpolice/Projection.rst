@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: delib.products.indexpolice.Index_DE_A.Projection
+.. automodule:: delib.products.indexpolice.Index_DE_S.Projection
 
 Cells Descriptions
 ------------------
@@ -48,9 +48,25 @@ Cells Descriptions
 
 .. autofunction:: surr_charge_on
 
+.. autofunction:: k_start
+
 .. autofunction:: t_start
 
+.. autofunction:: proj_len_y
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: is_anniv
+
+.. autofunction:: policy_year
+
+.. autofunction:: index_month
+
+.. autofunction:: age_y
 
 .. autofunction:: age
 
@@ -74,6 +90,8 @@ Cells Descriptions
 
 .. autofunction:: prem_paid_pp
 
+.. autofunction:: prem_due
+
 .. autofunction:: premiums
 
 .. autofunction:: surplus_rate
@@ -86,9 +104,19 @@ Cells Descriptions
 
 .. autofunction:: surplus_credit_pp
 
+.. autofunction:: pols_surv_year_end
+
+.. autofunction:: pols_death_year
+
+.. autofunction:: pols_lapse_year
+
 .. autofunction:: surplus_credit
 
 .. autofunction:: index_return
+
+.. autofunction:: index_return_mth
+
+.. autofunction:: index_return_capped_mth
 
 .. autofunction:: index_cap
 
@@ -138,9 +166,13 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: pols_if
 
@@ -203,3 +235,7 @@ Cells Descriptions
 .. autofunction:: check_index_credit
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
+
+.. autofunction:: result_index

@@ -44,8 +44,8 @@ charge rate and not one *Rentenfaktor* was established at any carrier.
   cancelling the policyholder's own units, so a gross presentation would count the same money
   twice. `net_cf(t)` is therefore **charges collected, less insurer expenses, less commission,
   less the death strain**. `expenses` **excludes** commission, which is published as its own
-  `commissions` cells and column — the delib convention, stated the same way on `KLV_DE_A`,
-  `Basis_DE_A`, `Riester_DE_A` and `RLV_DE_A`, and the opposite of the frlib chassis. The
+  `commissions` cells and column — the delib convention, stated the same way on `KLV_DE_S`,
+  `Basis_DE_S`, `Riester_DE_S` and `RLV_DE_S`, and the opposite of the frlib chassis. The
   gross flows are still published — `premiums`, `prem_to_av`, `claims_death`,
   `claims_lapse`, `claims_maturity`, `withdrawals` and `av_releases` are all `result_cf()`
   columns — and `check_benefit_funding()` asserts that they net exactly. This is the same

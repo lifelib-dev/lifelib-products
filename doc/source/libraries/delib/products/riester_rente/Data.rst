@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: delib.products.riester_rente.Riester_DE_A.Data
+.. automodule:: delib.products.riester_rente.Riester_DE_S.Data
 
 Cells Descriptions
 ------------------

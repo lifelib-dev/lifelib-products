@@ -630,8 +630,8 @@ the *Zahlungsfrist* and § 166 VVG for the conversion, not § 166 for both [R3] 
 § 168's termination right runs to the end of each *Versicherungsperiode*, which follows the
 *Zahlweise* — so **a monthly-paying contract is terminable monthly**, and **German term-life lapse is
 not concentrated at policy anniversaries** the way an annual-mode book's is: a caution for any model
-assuming anniversary-only exits, and one this annual-grid implementation makes in prose rather than
-in code. What carriers offer instead — *Beitragsstundung*, a temporary *Ruhen*, a reduction of the
+assuming anniversary-only exits, and one the reference implementation now expresses in code rather
+than in prose, the projection having moved to a monthly grid. What carriers offer instead — *Beitragsstundung*, a temporary *Ruhen*, a reduction of the
 sum insured — is [unverified] (gap 10).
 
 ### The *Rechnungsgrundlagen*, and the unisex problem

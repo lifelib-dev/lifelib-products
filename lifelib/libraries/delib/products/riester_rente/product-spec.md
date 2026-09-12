@@ -106,7 +106,7 @@ ordinary solvency question under the VAG [REG-R5] [REG-R6].
 
 | Chassis | Provider | Accumulation | Guarantee met by | Payout | In `delib`? |
 |---|---|---|---|---|---|
-| **Klassische Riester-Rentenversicherung** | life insurer [S2] [S4]–[S8] [S16] | *Deckungskapital* at the *Rechnungszins*, plus *Überschussbeteiligung* | the general account and the guaranteed interest | lifelong annuity at a *Rentenfaktor* | **yes — `riester_rente`, `Riester_DE_A`** |
+| **Klassische Riester-Rentenversicherung** | life insurer [S2] [S4]–[S8] [S16] | *Deckungskapital* at the *Rechnungszins*, plus *Überschussbeteiligung* | the general account and the guaranteed interest | lifelong annuity at a *Rentenfaktor* | **yes — `riester_rente`, `Riester_DE_S`** |
 | Fondsgebundene Riester-Rentenversicherung | life insurer [S1] | *Anlagestock* units plus a **Garantie-Deckungskapital** held in the insurer's other assets | in the GDV model wording, a **static two-pot split** of each contribution and Zulage [S1]; i-CPPI and the *dynamisches Hybridmodell* are carrier variants the model wording does not describe `[unverified]` | lifelong annuity, the *Anlagestock* units moved into the general account at *Rentenzahlungsbeginn* [S1] | chassis in `fondsgebundene_rentenversicherung` |
 | Riester-Fondssparplan; Riester-Banksparplan | *Kapitalverwaltungsgesellschaft* — Union Investment [S9], DWS [S10], Deka [S11]; *Sparkassen* and *Volks- und Raiffeisenbanken* [S12] | fund units; a deposit balance plus a bonus scale | a *Depotsteuerungskonzept* reallocating between a **Sicherungs-** and a **Chancenkomponente** [S9]; trivially on a bank plan, since a deposit cannot fall below its deposits | *Auszahlungsplan* to the 85th year then a lifelong annuity [S9] [S10] | no |
 | Wohn-Riester (*Bausparvertrag*, *Darlehen*) | *Bausparkassen* [S13] | savings, then a loan | not applicable | property use plus the *Wohnförderkonto* | no [R13] [R19] |
@@ -525,7 +525,8 @@ from the ZfA in `t + 1` [R11] [REG-R42]. The reference implementation carries bo
 for the cash. The one-year cash lag is no longer a bare **[std]**: §§ 88 to 90 EStG put the credit in the year
 after the contribution year at the earliest, and **AltvPIBV § 9 Abs. 3 fixes the date at 15 May of
 that year** for every statutory disclosure calculation [R5] [R11] — which closes gap 6. What is
-standardized is only the compression of a mid-May credit onto a start-of-year annual grid.
+standardized is only the compression of a mid-May credit onto the first month of the projection
+year.
 
 One consequence is load-bearing and is a numbered pitfall: **the Zulage for the final contribution
 year arrives after contributions have stopped**, landing in the conversion year itself, where it

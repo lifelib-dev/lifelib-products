@@ -133,8 +133,8 @@ net_cf = charge_acq + charge_admin_prem + charge_admin_fund + charge_policy_fee
 
 Charges in, the insurer's own expenses, its commission and the death strain out, and nothing
 else. `expenses` **excludes** commission and `commissions` is its own cells and its own
-`result_cf()` column — the delib convention, stated the same way on `KLV_DE_A`, `Basis_DE_A`,
-`Riester_DE_A` and `RLV_DE_A`, and the opposite of the frlib chassis, where commission sits
+`result_cf()` column — the delib convention, stated the same way on `KLV_DE_S`, `Basis_DE_S`,
+`Riester_DE_S` and `RLV_DE_S`, and the opposite of the frlib chassis, where commission sits
 inside the expense total. Taking both conventions at once double-counts the commission.
 `check_net_cf_resid(t)` does not restate that formula: it rebuilds the first two terms **by a
 different route**, as `premiums − prem_to_av`, which is what the *Beitragsverrechnung* leaves
@@ -433,7 +433,7 @@ with a statutory definition and no English equivalent that would not mislead:
 `beitragssumme()`, the base of the *Höchstzillmersatz* and not "total premiums";
 `stornoabzug(t)`, a deduction whose validity conditions are statutory and not a "surrender
 charge" — the euro amount retained, with the fraction it is struck at as `stornoabzug_rate()`,
-which is the spelling `RV_DE_A` and `Riester_DE_A` use for that rate too; and the three
+which is the spelling `RV_DE_S` and `Riester_DE_S` use for that rate too; and the three
 `rentenfaktor_*()`, euro per 10 000 € and not an annuity factor. Five further cases needed
 care:
 

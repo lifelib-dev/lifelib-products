@@ -12,9 +12,9 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions_de.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — six products run on an annual grid and four on a monthly one — and records that
-none of them discount.  That last entry is a property of the library, not an omission:
+fails.  The metadata records the projection basis — every model in this library now runs
+on a monthly grid — and records that none of them discount.  That last entry is a property
+of the library, not an omission:
 every ``technical-notes.md`` specifies *gross liability cash flows* and leaves discounting,
 the ``Deckungsrückstellung`` and Solvency II technical provisions to a separate layer that
 consumes them.
@@ -35,14 +35,14 @@ uses a short form the model takes it — ``KLV``, ``RLV``, ``BU`` — and where 
 the name is a short descriptor.  The pairing to the German product is written down in the
 library index rather than inferred.
 
-Four of them are worth naming explicitly.  ``RV_DE_A`` is the *klassische aufgeschobene
+Four of them are worth naming explicitly.  ``RV_DE_S`` is the *klassische aufgeschobene
 private Rentenversicherung*, the deferred annuity written on the general account with a
 guaranteed *Rentenfaktor*; it is not the payout contract, which is ``Sofort_DE_S``.
-``Index_DE_A`` is the *indexgebundene Rentenversicherung* — the German "Indexpolice", whose
+``Index_DE_S`` is the *indexgebundene Rentenversicherung* — the German "Indexpolice", whose
 capital sits in the *Sicherungsvermögen* and whose upside is an annual index participation
 bought out of the *Überschuss* — and not a unit-linked contract, which is ``FRV_DE_S``.
-``Basis_DE_A`` is the *Basisrente* of Schicht 1 (Rürup), whose defining facts are what it
-may **not** do: no surrender, no capital option, no assignment.  And ``Riester_DE_A`` is
+``Basis_DE_S`` is the *Basisrente* of Schicht 1 (Rürup), whose defining facts are what it
+may **not** do: no surrender, no capital option, no assignment.  And ``Riester_DE_S`` is
 the Schicht 2 contract, whose defining facts are a state *Zulage* that is a cash flow and a
 statutory 100 % *Beitragsgarantie* that is a constraint on the projection rather than a
 parameter of it.
@@ -53,6 +53,20 @@ LIB = pathlib.Path(__file__).resolve().parents[1]
 
 ANNUAL = {"grid": "annual", "age_basis": "ALB", "discounted": False}
 MONTHLY = {"grid": "monthly", "age_basis": "ALB", "discounted": False}
+
+# ``ANNUAL`` has no members below, and that is **not** the same as saying the library has no
+# use for it.  The metadata is a statement about a model rather than about the library: a
+# model added or converted to an annual step registers ``ANNUAL`` here, and
+# ``test_the_name_carries_the_right_grid_suffix`` then requires its name to end ``_A``.  The
+# row and the name move together, which is the point of asserting the suffix from the
+# metadata rather than from the folder.
+#
+# The row is checked against the **frame** as well as against the name.  A suffix is
+# spelling, and six of these models spent a while carrying ``_S`` in the registry while
+# still stepping a year at a time; ``test_a_monthly_registry_entry_means_a_monthly_frame``
+# reads the grid off the attained age instead, which steps once every twelve periods on a
+# monthly frame and every period on an annual one.  Mis-registering a model is therefore a
+# failure rather than a rename.
 
 # name -> (path relative to the library root, metadata)
 #
@@ -68,17 +82,17 @@ MONTHLY = {"grid": "monthly", "age_basis": "ALB", "discounted": False}
 # all agree.
 MODELS = {
     # Kapitalbildende Lebensversicherung und private Rentenversicherung (Schicht 3)
-    "KLV_DE_A": ("products/kapitallebensversicherung/KLV_DE_A", ANNUAL),
-    "RV_DE_A": ("products/klassische_rentenversicherung/RV_DE_A", ANNUAL),
+    "KLV_DE_S": ("products/kapitallebensversicherung/KLV_DE_S", MONTHLY),
+    "RV_DE_S": ("products/klassische_rentenversicherung/RV_DE_S", MONTHLY),
     "FRV_DE_S": ("products/fondsgebundene_rentenversicherung/FRV_DE_S", MONTHLY),
-    "Index_DE_A": ("products/indexpolice/Index_DE_A", ANNUAL),
+    "Index_DE_S": ("products/indexpolice/Index_DE_S", MONTHLY),
     # Geförderte Altersvorsorge (Schicht 1 und Schicht 2)
-    "Basis_DE_A": ("products/basisrente/Basis_DE_A", ANNUAL),
-    "Riester_DE_A": ("products/riester_rente/Riester_DE_A", ANNUAL),
+    "Basis_DE_S": ("products/basisrente/Basis_DE_S", MONTHLY),
+    "Riester_DE_S": ("products/riester_rente/Riester_DE_S", MONTHLY),
     # Rentenbezug
     "Sofort_DE_S": ("products/sofortrente/Sofort_DE_S", MONTHLY),
     # Biometrie
-    "RLV_DE_A": ("products/risikolebensversicherung/RLV_DE_A", ANNUAL),
+    "RLV_DE_S": ("products/risikolebensversicherung/RLV_DE_S", MONTHLY),
     "BU_DE_S": ("products/berufsunfaehigkeit/BU_DE_S", MONTHLY),
     "Pflege_DE_S": ("products/pflegerentenversicherung/Pflege_DE_S", MONTHLY),
 }
@@ -100,18 +114,18 @@ INPUT_FILES = {
         "claim_duration_table.csv", "freq_loading_table.csv", "inception_table.csv",
         "lapse_table.csv", "model_point_table.csv", "mortality_table.csv",
         "occupation_table.csv"},
-    "Basis_DE_A": {
+    "Basis_DE_S": {
         "behaviour_table.csv", "charge_table.csv", "model_point_table.csv",
         "mort_table.csv", "option_table.csv", "rentenfaktor_table.csv",
         "surplus_table.csv"},
     "FRV_DE_S": {
         "charge_table.csv", "fund_scenario_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv"},
-    "Index_DE_A": {
+    "Index_DE_S": {
         "election_table.csv", "freq_load_table.csv", "index_param_table.csv",
         "index_return_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv", "surplus_rate_table.csv"},
-    "KLV_DE_A": {
+    "KLV_DE_S": {
         "cost_table.csv", "deckrv_table.csv", "freq_loading_table.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "surplus_rate_table.csv"},
@@ -119,14 +133,14 @@ INPUT_FILES = {
         "basis_table.csv", "benefit_scale_table.csv", "care_table.csv",
         "expense_table.csv", "incidence_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "surrender_table.csv"},
-    "RLV_DE_A": {
+    "RLV_DE_S": {
         "benefit_schedule.csv", "freq_loading_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "nvg_schedule.csv"},
-    "RV_DE_A": {
+    "RV_DE_S": {
         "charge_table.csv", "decl_rate_table.csv", "freq_load_table.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv", "param_table.csv",
         "rentenfaktor_table.csv"},
-    "Riester_DE_A": {
+    "Riester_DE_S": {
         "annuity_mort_table.csv", "freq_loading.csv", "income_schedule.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table_accum.csv",
         "surplus_scenario.csv", "zulage_schedule.csv"},

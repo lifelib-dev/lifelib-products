@@ -56,7 +56,7 @@ def files_read(registry, name):
     **The sweep here must be the sweep the conventions suite performs, not a subset of
     it.**  ``test_every_model_point_projects`` calls ``result_cf()`` *and* every
     ``check_*()`` cells on every model point, and a check can reach an input the cash flow
-    statement never touches -- ``KLV_DE_A``'s ``deckrv_table.csv``, read by the reserve
+    statement never touches -- ``KLV_DE_S``'s ``deckrv_table.csv``, read by the reserve
     check and by nothing in ``result_cf()``, is the case that found this.  A generator that
     projected the frame alone under-recorded the set, and the map it wrote then failed the
     very test it exists to feed.  So the checks are called here too.
