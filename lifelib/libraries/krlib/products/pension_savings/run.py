@@ -24,13 +24,14 @@ form = ("jongsin yeongeumhyeong (life annuity) with a {}-year guarantee".format(
 print("model point {}: {} - yeongeum jeochuk boheom "
       "(tax-qualified pension savings), {}{}".format(
           point_id, proj.model_point()["policy_id"], proj.sex(), proj.issue_age()))
-print("age basis boheom nai (insurance age); t counts completed policy years from issue, "
+print("age basis boheom nai (insurance age); t counts completed policy MONTHS from issue, "
       "0-based")
-print("frame t = 0 .. {} ({} rows); policy year = t + 1".format(
-    proj.proj_len() - 1, proj.proj_len()))
-print("gibon boheomryo (basic premium) = KRW {:,.0f} p.a. for {} years, "
-      "chuga nabip (additional) = KRW {:,.0f}".format(
-          proj.prem_pp(), proj.premium_term_y(), proj.addl_prem_pp()))
+print("frame t = 0 .. {} ({} rows, {} policy years); policy year = t // 12 + 1".format(
+    proj.proj_len() - 1, proj.proj_len(), proj.proj_years()))
+print("gibon boheomryo (basic premium) = KRW {:,.0f}/month ({:,.0f} p.a.) for {} years, "
+      "chuga nabip (additional) = KRW {:,.0f} p.a.".format(
+          proj.prem_mth_pp(), proj.prem_pp(), proj.premium_term_y(),
+          proj.addl_prem_pp()))
 print("premium term ends at t = {}, annuity starts at t = {} (age {}), payout form = {}"
       .format(proj.prem_end_t(), proj.annuitisation_t(), proj.annuity_age_eff(), form))
 print("modules: mortality vintage = {}   100.1% minimum fund = {}   "
@@ -57,19 +58,19 @@ print("yeongeum yeonaek B               = KRW {:,.0f} p.a. "
 print("implied factor F_net / B         = {:.4f}".format(
     proj.annuity_fund_net_pp() / proj.annuity_amount_pp()))
 print("pyojun haeyak gongjeaek (cap)    = KRW {:,.2f}".format(proj.surr_chg_cap_pp()))
-print("haeyak hwangeupgeum CV(1) / prem = {:.2%}".format(
-    proj.cv_pp(1) / proj.cum_prem_pp(1)))
+print("haeyak hwangeupgeum CV(12)/prem  = {:.2%}".format(
+    proj.cv_pp(12) / proj.cum_prem_pp(12)))
 print("seaek gongje (tax credit) p.a.   = KRW {:,.0f}  [not an insurer cash flow]".format(
-    proj.tax_credit_pp(0)))
-print("gita sodeukse on surrender at 10 = KRW {:,.0f}  [not an insurer cash flow]".format(
-    proj.surr_tax_pp(min(10, n))))
+    12 * proj.tax_credit_pp(0)))
+print("gita sodeukse on surrender at 10y= KRW {:,.0f}  [not an insurer cash flow]".format(
+    proj.surr_tax_pp(min(120, n))))
 print()
 
 df = proj.result_cf()
-print("cash flow statement, KRW per policy issued, income positive")
+print("cash flow statement, KRW per policy issued per month, income positive")
 print(df.head(4).round(2).to_string())
 print("...")
-print(df.loc[n - 1:n + 2].round(2).to_string())
+print(df.loc[n - 2:n + 2].round(2).to_string())
 print("...")
 print(df.tail(2).round(2).to_string())
 print()

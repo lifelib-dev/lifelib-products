@@ -12,15 +12,23 @@ model point 1::
     >>> Projection.point_id = 6            # the 상속연금형, retention as designed
     >>> Projection.point_id = 7            # the same contract, retention as ordered
 
-``t`` counts **completed policy years from inception and is 0-based**: ``t = 0`` is the
-first policy year, and the contractual policy year — the 1-based label the 약관 speaks in —
-is the derived ``t + 1``. Period ``t`` runs from time ``t`` to time ``t + 1``; row ``t``
-of :func:`result_cf` carries the cash flows of period ``t``; the
+``t`` counts **completed policy months from inception and is 0-based**: ``t = 0`` is the
+first policy month, and the contractual policy year — the 1-based label the 약관 speaks in —
+is the derived ``policy_year(t) = t // 12 + 1``. Period ``t`` runs from time ``t`` to time
+``t + 1``; row ``t`` of :func:`result_cf` carries the cash flows of month ``t``; the
 single premium falls at time 0 on row 0; and the annuity is payable **in arrears**, so the
-payment shown on row ``t`` falls at time ``t + 1``, on the 계약해당일. ``proj_len()`` is the
-**number of projected periods**, the frame's exclusive end, so the frame is
+payment shown on row ``t`` falls at the end of month ``t``, which is the 연금지급일 —
+「미지급된 연금월액을 **매월** 연금지급일에 드립니다」. ``proj_len()`` is the **number of
+projected months**, the frame's exclusive end and ``12 x proj_years()``, so the frame is
 ``range(proj_len())`` and the last row — the one carrying the last scheduled payment — is
 ``t = proj_len() - 1``.
+
+The contract terms stay in **years**, which is how the 약관 states them, and the assumptions
+stay **annual**, which is how they are filed and published: ``mort_rate(t)``,
+``lapse_rate(t)``, ``decl_rate()``, ``min_guar_rate(t)`` and ``crediting_rate(t)`` are the
+yearly figures, and ``mort_rate_mth``, ``lapse_rate_mth`` and ``crediting_rate_mth`` are
+their uniform-force monthly companions, level inside a policy year and stepping on each
+계약해당일. Twelve of each compound back to the year's figure exactly.
 
 .. rubric:: Age basis
 
@@ -71,10 +79,13 @@ n, g                       annuity_term()                  보험기간 / 연금
 (switch)                   retention_basis()               as_designed or as_ordered
 (basis id)                 crediting_basis()               Row set of crediting_table
 w                          lapse_rate(t)                   Annual surrender rate **[std]**
+w^m                        lapse_rate_mth(t)               Its monthly conversion
 i_d                        decl_rate()                     공시이율
 i_g(t)                     min_guar_rate(t)                최저보증이율, duration-stepped
 i(t)                       crediting_rate(t)               Max[공시이율, 최저보증이율]
+j(t)                       crediting_rate_mth(t)           Its monthly equivalent
 q(x + t)                   mort_rate(t)                    개인연금사망률 at age(t)
+q^m(t)                     mort_rate_mth(t)                Its monthly conversion
 (load)                     acq_charge_rate()               계약체결비용
 (load)                     admin_charge_rate()             계약관리비용
 c                          expense_load_rate()             The two, summed
@@ -90,9 +101,10 @@ CV(t)                      cv_pp(t)                        해약환급금
 (deduction)                surr_chg_pp(t)                  해약공제액, nil at every t
 M                          maturity_benefit()              만기보험금
 a(m, i)                    annuity_factor_certain(m, i)    Annuity-certain in arrears
-s(m, i)                    accum_factor(m, i)              Accumulation of 1 a year
-ae(x, g, i)                annuity_factor()                종신연금형 factor at inception
-A(t)                       annuity_pp(t)                   연금연액 payable at t + 1
+s(m, i)                    accum_factor(m, i)              Accumulation of 1 a period
+ae(x, g, j)                annuity_factor()                종신연금형 factor at inception
+A(t)                       annuity_pp(t)                   연금월액 payable at t + 1
+12 A(t)                    annuity_pp_annual(t)            The 연금연액 it makes up
 R(t)                       retention_pp(t)                 만기보험금 지급재원
 v(t)                       disc_factor(t)                  PV factor on the crediting path
 (dispute)                  retention_shortfall_pp()        PV cost of the 주문 liability
@@ -105,7 +117,8 @@ d(t)                       pols_death(t)                   Deaths in period t
 (exits)                    pols_exit(t)                    Obligations ending in period t
 F(t)                       payment_factor(t)               Weight on the payment at t + 1
 (pricing)                  pricing_factor(t)               The same on the pricing basis
-N                          proj_len()                      Number of projected periods
+N                          proj_len()                      Number of projected months
+N / 12                     proj_years()                    The same horizon in years
 E[PREM(t)]                 premiums(t)                     Single premium income
 E[ANN(t)]                  annuity_payments(t)             생존연금 outgo
 E[DTH(t)]                  claims(t, "DEATH")              사망보험금
@@ -133,9 +146,11 @@ treats them identically: the **보증지급기간** on the life shape, the **보
 inheritance shape and the **연금지급기간** on the certain shape. What differs is what the
 projection does after it, and that is the shape's business, not the term's.
 
-``lapse_rate`` is the **annual** rate, as everywhere in this library; there is no monthly
-one, because the model runs an annual grid. It is nil on the life shape as a matter of
-contract, not of assumption.
+``lapse_rate`` is the **annual** rate, as everywhere in this library, and
+``lapse_rate_mth`` is the monthly conversion the projection applies — the same pairing the
+other monthly models in ``krlib`` use, and for the same reason: the assumption is stated and
+argued annually and only the grid beneath it is monthly. It is nil on the life shape as a
+matter of contract, not of assumption.
 
 ``decl_rate`` is the 공시이율. The romanized name was rejected in the library's naming
 review: 공시이율 is the declared crediting rate under the same definition ``delib`` settled
@@ -161,7 +176,7 @@ carried as a per-model-point scalar so that its effect can be isolated.
 
 .. rubric:: The guarantee is a floor on the obligation, not a second stream
 
-``payment_factor(t) = max(l(t + 1), 1{t + 1 <= g})`` on the life shape. Within the
+``payment_factor(t) = max(l(t + 1), 1{t + 1 <= 12g})`` on the life shape. Within the
 보증지급기간 the full instalment is payable whether or not the annuitant lives, and an
 additive construction — the survival probability *plus* the guarantee — would pay
 ``1 + l(t + 1)`` for the whole guaranteed term. :func:`check_payment_factor` asserts the
@@ -181,9 +196,10 @@ opens at the premium net of the load, so part of each year's interest must be re
 rebuild it. Writing ``M`` for the maturity benefit and ``s(m, i)`` for the accumulation of
 ₩1 a year in arrears over the remaining term,
 
-    ``A(t) = V(t) i(t) - (M - V(t)) / s(m, i(t))``
+    ``A(t) = V(t) j(t) - (M - V(t)) / s(m, j(t))``
 
-decomposes the annuity exactly into interest on the fund less the **만기보험금 지급재원**.
+with ``j`` the monthly crediting rate and ``m`` the remaining term in months, decomposes the
+annuity exactly into interest on the fund less the **만기보험금 지급재원**.
 Both terms move against the policyholder when the rate falls: the interest falls with ``i``
 and the retention *rises*, because ``s`` shrinks. That retention was set out in the
 산출방법서 and not in the 약관, and 금융분쟁조정위원회 조정결정 제2017-17호 held on
@@ -290,13 +306,32 @@ def age_at_entry():
 
 
 def age(t):
-    """x + t: the attained **보험나이** at time t, the key into the mortality table.
+    """x + t // 12: the attained **보험나이** in month t, the key into the mortality table.
 
-    보험나이 increments on each 계약해당일, which is exactly the model's period boundary, so
-    the attained age is the entry age plus the completed policy years and needs no rounding
-    rule of its own.
+    보험나이 increments on each 계약해당일, which on a monthly grid is every twelfth period
+    boundary, so the attained age is the entry age plus the completed policy years and needs
+    no rounding rule and no fractional-age interpolation of its own.
     """
-    return age_at_entry() + t
+    return age_at_entry() + t // 12
+
+
+def policy_year(t):
+    """The contractual policy year containing month t, 1-based.
+
+    ``t // 12 + 1``: the 약관 speaks in policy years and the grid runs in months, so this is
+    the label that translates between them.  「제1보험년도」 is ``t = 0 … 11``.
+    """
+    return t // 12 + 1
+
+
+def annuity_term_mths():
+    """The contractual term of :func:`annuity_term` expressed in months.
+
+    ``12 x annuity_term()``.  The contract states the 보증지급기간, the 보험기간 and the
+    연금지급기간 in whole years and the grid counts months, so every comparison against the
+    term goes through this cells rather than through a bare ``12 *`` at each site.
+    """
+    return 12 * annuity_term()
 
 
 def prem_pp():
@@ -364,16 +399,32 @@ def lapse_rate(t):
     assumption is entirely unsourced and is carried per model point rather than in a table,
     so that its effect can be isolated.
 
-    It is nil in the final period as well, on every shape: a contract in its last year runs
-    to the 만기보험금 or to the last instalment rather than being surrendered a moment
-    before either, and a lapse decrement there would divert the maturity benefit into a
-    surrender value of the same amount for no reason a contract states.
+    It is nil in the final **policy year** as well, on every shape: a contract in its last
+    year runs to the 만기보험금 or to the last instalment rather than being surrendered a
+    moment before either, and a lapse decrement there would divert the maturity benefit into
+    a surrender value of the same amount for no reason a contract states.  Holding it nil
+    over the whole final year rather than the final month is what makes the monthly grid's
+    in-force reproduce the annual-step model's at every 계약해당일.
     """
     if shape() == "life":
         return 0.0
-    if t >= proj_len() - 1:
+    if t >= proj_len() - 12:
         return 0.0
     return float(model_point()["lapse_rate"])
+
+
+def lapse_rate_mth(t):
+    """w^m: the monthly surrender rate actually applied in month t.  **[std]**
+
+    ``1 - (1 - w)^(1/12)`` on the annual rate of :func:`lapse_rate`, the uniform-force
+    conversion: twelve monthly exits compound to exactly the year's annual rate, so the
+    annual assumption is refined onto the grid rather than restated.  Note that it is
+    **larger** than ``w / 12``, which is the convexity a naive division would give away.
+    """
+    w = lapse_rate(t)
+    if w <= 0.0:
+        return 0.0
+    return 1.0 - (1.0 - w) ** (1.0 / 12.0)
 
 
 def pols_if_init():
@@ -490,8 +541,10 @@ def decl_rate():
     """i_d: the 공시이율 (*gongsi iyul*), the declared crediting rate.
 
     2.50% a year on the representative basis, reset on the first of each month and fixed
-    for that month; an annual-grid model projects a rate that in reality steps twelve times
-    a policy year.  It is a **scalar** and not a derived quantity: 감독규정 제7-65조제3항
+    for that month.  It is the **annual** rate, which is how a carrier declares it and how
+    every retrieved illustration quotes it; :func:`crediting_rate_mth` is the monthly
+    equivalent the fund actually rolls on.  It is a **scalar** and not a derived quantity:
+    감독규정 제7-65조제3항
     makes it the product of a 공시기준이율 and a 조정률, with the 공시기준이율 a weighted
     average of an external index and the insurer's own 운용자산이익률 whose weighting the
     two carriers that publish one publish differently.  Any model that claims to derive a
@@ -512,16 +565,19 @@ def min_guar_rate(t):
 
     Duration-stepped, 1.25% in policy years 1 to 5, 1.00% to year 10 and 0.75% thereafter
     on the representative schedule.  Each row of the table gives a half-open band
-    ``[dur_from, dur_to)`` in completed policy years, so period ``t`` — which is policy year
-    ``t + 1`` — falls in the band containing ``t``.  That a floor exists at all is not a
-    commercial courtesy: 감독규정 제7-60조제10호 requires a 금리연동형보험 to set one.
-    Note what it is **not**: a rate on the fund, never a floor on the annuity, which is the
-    substance of the whole 과소지급 dispute.
+    ``[dur_from, dur_to)`` in completed **policy years**, and the table is left in years
+    because that is how the schedule is published: month ``t`` falls in the band containing
+    ``t // 12``, so the floor steps on the 계약해당일 and is level across the twelve months
+    of a policy year.  That a floor exists at all is not a commercial courtesy: 감독규정
+    제7-60조제10호 requires a 금리연동형보험 to set one.  Note what it is **not**: a rate on
+    the fund, never a floor on the annuity, which is the substance of the whole 과소지급
+    dispute.
     """
     tbl = data.crediting_table()                                     # noqa: F821
+    y = t // 12
     for _, row in tbl.iterrows():
         if (str(row["basis_id"]) == crediting_basis()
-                and int(row["dur_from"]) <= t < int(row["dur_to"])):
+                and int(row["dur_from"]) <= y < int(row["dur_to"])):
             return float(row["min_guar_rate"])
     raise ValueError("no 최저보증이율 band for basis %s at t = %s"
                      % (crediting_basis(), t))
@@ -534,9 +590,22 @@ def crediting_rate(t):
     product: 「보험료에 일정한 이율을 곱하여 산출한 금액 … Max [공시이율, 최저보증이율]」.
     On the representative basis the declared rate is above the floor at every duration, so
     the rate is level and the floor is inert; on the ``min_guar`` basis it is the floor that
-    binds, and it steps down at five and ten years.
+    binds, and it steps down at five and ten years — months 60 and 120 on this grid.  It is
+    the **annual** rate; the fund rolls on :func:`crediting_rate_mth`.
     """
     return max(decl_rate(), min_guar_rate(t))
+
+
+def crediting_rate_mth(t):
+    """j(t) = (1 + i(t))^(1/12) - 1: the monthly rate the fund is actually credited with.
+
+    The uniform-force conversion of the annual credited rate, so twelve months compound back
+    to exactly the year's figure and the fund at every 계약해당일 is the annual-step model's.
+    The conversion is the model's, not the contract's: a Korean carrier declares an annual
+    공시이율 and accrues 「일자계산」 beneath it, and this is the monthly reading of that
+    annual rate.
+    """
+    return (1.0 + crediting_rate(t)) ** (1.0 / 12.0) - 1.0
 
 
 def mort_rate(t):
@@ -548,8 +617,32 @@ def mort_rate(t):
     :func:`lives_if` as the **decrement** on every shape, because the inheritance and
     certain shapes both pay a death benefit even though neither prices one into its
     annuity.
+
+    It is the **annual** rate the table publishes, level across the twelve months of a
+    policy year and stepping on each 계약해당일; :func:`mort_rate_mth` is what the monthly
+    grid applies.
     """
     return float(data.mort_table().loc[(sex(), age(t)), "mort_rate"])  # noqa: F821
+
+
+def mort_rate_mth(t):
+    """q^m: the monthly mortality rate applied in month t.
+
+    ``1 - (1 - q)^(1/12)`` on the annual rate at the attained 보험나이, the uniform-force
+    conversion: twelve monthly decrements compound to exactly the year's ``q``, so the
+    annual table is refined onto the grid rather than restated on a monthly base no Korean
+    basis publishes.  The monthly force is **larger** than ``q / 12``, which is the
+    convexity a naive division would give away.
+
+    At the limiting age the table's ``q`` is 1, which cannot be converted that way: the
+    certain death is instead spread uniformly over the twelve months of that policy year,
+    ``1 / (12 - t mod 12)``, so the last of the in-force leaves in the final month of the
+    frame rather than all at once on the 계약해당일.
+    """
+    q = mort_rate(t)
+    if q >= 1.0:
+        return 1.0 / (12 - t % 12)
+    return 1.0 - (1.0 - q) ** (1.0 / 12.0)
 
 
 def risk_prem_pp():
@@ -587,10 +680,12 @@ def maturity_benefit():
 
 
 def annuity_factor_certain(m, i):
-    """a(m, i): the present value of ₩1 a year in arrears for m years at rate i.
+    """a(m, i): the present value of ₩1 a period in arrears for m periods at rate i.
 
     The 확정기간연금형's whole pricing basis, and the annuity part of the inheritance
-    shape's prospective value.  Returns 0 for a non-positive term, which is what makes the
+    shape's prospective value.  On the monthly grid every caller passes a **month** count
+    and a **monthly** rate, so the factor is a monthly annuity-certain and the instalment it
+    produces is the 연금월액.  Returns 0 for a non-positive term, which is what makes the
     fund close to zero at the end of the certain shape's last period.
     """
     if m <= 0:
@@ -601,11 +696,12 @@ def annuity_factor_certain(m, i):
 
 
 def accum_factor(m, i):
-    """s(m, i): the accumulated value of ₩1 a year in arrears over m years at rate i.
+    """s(m, i): the accumulated value of ₩1 a period in arrears over m periods at rate i.
 
-    The denominator of the 만기보험금 지급재원.  Because ``s`` **shrinks** when the rate
-    falls, the retention *rises* as the interest it is deducted from falls — which is why
-    an annuity on the inheritance shape can halve while the guaranteed floor never moves.
+    The denominator of the 만기보험금 지급재원, called with a **month** count and a
+    **monthly** rate.  Because ``s`` **shrinks** when the rate falls, the retention *rises*
+    as the interest it is deducted from falls — which is why an annuity on the inheritance
+    shape can halve while the guaranteed floor never moves.
     """
     if m <= 0:
         return 0.0
@@ -617,11 +713,15 @@ def accum_factor(m, i):
 def annuity_factor():
     """ae(x, g, i): the 종신연금형 annuity factor, struck once at commencement.
 
-    The present value of ₩1 a year in arrears payable while the annuitant aged x lives **or
-    the 보증지급기간 of g years runs, whichever is longer**, discounted at the crediting
-    rate at inception and decremented on the 개인연금사망률.  It is a ``max`` over the two
-    and not a sum: within the guarantee the instalment is due whether or not the annuitant
-    lives, and an additive construction would pay for both.
+    The present value of ₩1 a **month** in arrears payable while the annuitant aged x lives
+    **or the 보증지급기간 of g years runs, whichever is longer**, discounted at the monthly
+    crediting rate at inception and decremented on the monthly conversion of the
+    개인연금사망률.  It is a ``max`` over the two and not a sum: within the guarantee the
+    instalment is due whether or not the annuitant lives, and an additive construction would
+    pay for both.  Because the grid is monthly the factor is a monthly annuity-due-in-arrears
+    of about twelve times the annual one, and the instalment it produces is the 연금월액 the
+    contract actually pays — no ``(f − 1)/(2f)`` frequency correction is needed, because the
+    frequency is the grid.
 
     No carrier publishes a factor and no filed 산출방법서 for an 즉시연금 was retrieved, so
     every annuity factor in this library is computed by the model from a **[std]** table.
@@ -633,8 +733,8 @@ def annuity_factor():
     """
     if shape() != "life":
         raise ValueError("only 종신연금형 converts the fund through an annuity factor")
-    i = crediting_rate(0)
-    v = 1.0 / (1.0 + i)
+    j = crediting_rate_mth(0)
+    v = 1.0 / (1.0 + j)
     return sum(v ** (t + 1) * pricing_factor(t)
                for t in range(proj_len()))
 
@@ -642,11 +742,11 @@ def annuity_factor():
 def retention_pp(t):
     """R(t): the 만기보험금 지급재원 retained out of period t's interest.
 
-    ``(M - V(t)) / s(m, i(t))`` on the inheritance shape under ``as_designed``, with
-    ``m = n - t`` the remaining term, recomputed each year so that the fund still reaches
-    the 만기보험금 exactly at maturity however the rate has moved.  Zero under
-    ``as_ordered``, and zero on the other two shapes, neither of which has a maturity
-    benefit to fund.
+    ``(M - V(t)) / s(m, j(t))`` on the inheritance shape under ``as_designed``, with
+    ``m = 12n - t`` the remaining term **in months** and ``j`` the monthly crediting rate,
+    recomputed each month so that the fund still reaches the 만기보험금 exactly at maturity
+    however the rate has moved.  Zero under ``as_ordered``, and zero on the other two
+    shapes, neither of which has a maturity benefit to fund.
 
     This is the term that was written into the 산출방법서 and not into the 약관, and the
     whole of 조정결정 제2017-17호 is about whether it is part of the contract.
@@ -654,40 +754,52 @@ def retention_pp(t):
     if shape() != "inheritance" or retention_basis() == "as_ordered":
         return 0.0
     return ((maturity_benefit() - av_pp(t))
-            / accum_factor(annuity_term() - t, crediting_rate(t)))
+            / accum_factor(annuity_term_mths() - t, crediting_rate_mth(t)))
 
 
 def annuity_pp(t):
-    """A(t): the 연금연액 payable at the end of period t, per policy and before decrement.
+    """A(t): the 연금월액 payable at the end of month t, per policy and before decrement.
 
-    Three shapes, three constructions:
+    Three shapes, three constructions, all of them on the monthly grid:
 
-    * **life** — ``V(0) / ae(x, g, i)``, struck once at commencement and level thereafter.
+    * **life** — ``V(0) / ae(x, g, j)``, struck once at commencement and level thereafter.
       The 약관 bases it on 「연금개시시의 계약자적립액」, the fund *at commencement*, and the
       annuitant-mortality ratchet is inert on an immediate annuity because there is no
       interval between issue and annuitisation for a table revision to land in.
-    * **inheritance** — ``V(t) i(t) - R(t)``, interest on the fund less the retention,
-      recomputed every year because the annuity moves whenever the declared rate does.
-    * **certain** — ``V(t) / a(m, i(t))``, the fund divided over the remaining term, again
-      recomputed as the rate moves.
+    * **inheritance** — ``V(t) j(t) - R(t)``, a month's interest on the fund less the
+      retention, recomputed every month because the annuity moves whenever the declared
+      rate does.
+    * **certain** — ``V(t) / a(m, j(t))``, the fund divided over the remaining term in
+      months, again recomputed as the rate moves.
 
-    The 연금연액 is what an annual-mode contract pays on the 계약해당일.  A monthly-mode
-    contract splits it into twelve 연금월액 with interest at the declared rate on the
-    deferred portions, which is exactly what makes the two modes equal in value.
+    This is the **연금월액**, which is what the contract actually pays — 「미지급된 연금월액을
+    매월 연금지급일에 드립니다」.  The 연금연액 a Korean illustration quotes is
+    :func:`annuity_pp_annual`, twelve times this figure; the monthly grid pays the monthly
+    amount and needs no sub-annual correction to value it.
     """
     if shape() == "life":
         return av_pp_init() / annuity_factor()
-    i = crediting_rate(t)
+    j = crediting_rate_mth(t)
     if shape() == "certain":
-        return av_pp(t) / annuity_factor_certain(annuity_term() - t, i)
-    return av_pp(t) * i - retention_pp(t)
+        return av_pp(t) / annuity_factor_certain(annuity_term_mths() - t, j)
+    return av_pp(t) * j - retention_pp(t)
+
+
+def annuity_pp_annual(t):
+    """The 연금연액: twelve times the 연금월액 payable in month t.
+
+    Published because every Korean illustration quotes the annual figure and because the
+    0.80% 연금수령기간 중 비용 is disclosed on it, but it is **not** a cash flow: the grid
+    pays :func:`annuity_pp` a row, and twelve of those make this.
+    """
+    return 12.0 * annuity_pp(t)
 
 
 def av_pp(t):
     """V(t): the 계약자적립액 at time t, before period t's crediting.
 
-    The 약관's own recursion, ``V(t + 1) = V(t) (1 + i(t)) - A(t)`` — 「연금개시후에는 생존
-    연금 발생분을 차감한 금액」 — opening at :func:`av_pp_init`.
+    The 약관's own recursion a month at a time, ``V(t + 1) = V(t) (1 + j(t)) - A(t)`` —
+    「연금개시후에는 생존연금 발생분을 차감한 금액」 — opening at :func:`av_pp_init`.
 
     It reaches ``M`` exactly at maturity on the inheritance shape under ``as_designed``,
     stands still at ``V(0)`` under ``as_ordered``, and exhausts to zero at the end of the
@@ -700,7 +812,7 @@ def av_pp(t):
     """
     if t == 0:
         return av_pp_init()
-    return av_pp(t - 1) * (1.0 + crediting_rate(t - 1)) - annuity_pp(t - 1)
+    return av_pp(t - 1) * (1.0 + crediting_rate_mth(t - 1)) - annuity_pp(t - 1)
 
 
 def surr_chg_pp(t):
@@ -741,19 +853,19 @@ def lives_if(t):
     """
     if t == 0:
         return pols_if_init()
-    return lives_if(t - 1) * (1.0 - mort_rate(t - 1))
+    return lives_if(t - 1) * (1.0 - mort_rate_mth(t - 1))
 
 
 def surr_if(t):
     """The probability the contract has not been surrendered by time t.
 
     Identically one on the life shape, where surrender is impossible.  On the other two it
-    is the running product of ``(1 - w)``, with the rate nil in the final period so that a
-    contract in its last year runs to its maturity benefit or its last instalment.
+    is the running product of ``(1 - w^m)``, with the rate nil in the final policy year so
+    that a contract in its last year runs to its maturity benefit or its last instalment.
     """
     if t == 0:
         return pols_if_init()
-    return surr_if(t - 1) * (1.0 - lapse_rate(t - 1))
+    return surr_if(t - 1) * (1.0 - lapse_rate_mth(t - 1))
 
 
 def pols_if(t):
@@ -773,7 +885,7 @@ def pols_if(t):
     ``IF(t)``.
     """
     if shape() == "life":
-        guaranteed = pols_if_init() if t < annuity_term() else 0.0
+        guaranteed = pols_if_init() if t < annuity_term_mths() else 0.0
         return max(lives_if(t), guaranteed)
     if shape() == "certain":
         return surr_if(t)
@@ -783,12 +895,13 @@ def pols_if(t):
 def pols_death(t):
     """d(t): deaths during period t, among contracts still in force at time t.
 
-    Deaths are placed at the **end** of the policy year on this annual grid, after the
-    year's crediting and after the annuity due to the survivors, so the 사망보험금 is paid
-    on the fund carried forward.  That is a **[std]** convention: a real contract settles a
-    death mid-year and pays the 연금월액 to the date of death.
+    Deaths are placed at the **end** of the policy month, after the month's crediting and
+    after the annuity due to the survivors, so the 사망보험금 is paid on the fund carried
+    forward.  That is a **[std]** convention, and on a monthly grid a much cheaper one than
+    it was on an annual grid: the unmodelled lag between the date of death and the period
+    end is now at most a month, not at most a year.
     """
-    return lives_if(t) * surr_if(t) * mort_rate(t)
+    return lives_if(t) * surr_if(t) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
@@ -802,8 +915,9 @@ def pols_lapse(t):
     if shape() == "life":
         return 0.0
     if shape() == "certain":
-        return surr_if(t) * lapse_rate(t)
-    return lives_if(t) * (1.0 - mort_rate(t)) * surr_if(t) * lapse_rate(t)
+        return surr_if(t) * lapse_rate_mth(t)
+    return (lives_if(t) * (1.0 - mort_rate_mth(t)) * surr_if(t)
+            * lapse_rate_mth(t))
 
 
 def pols_exit(t):
@@ -818,7 +932,7 @@ def pols_exit(t):
     the obligation on death would smooth it away.
     """
     if shape() == "life":
-        g = annuity_term()
+        g = annuity_term_mths()
         if t < g - 1:
             return 0.0
         if t == g - 1:
@@ -843,11 +957,11 @@ def payment_factor(t):
     with the death benefit taking the place of the payment for those who die.
     """
     if shape() == "life":
-        guaranteed = pols_if_init() if t + 1 <= annuity_term() else 0.0
+        guaranteed = pols_if_init() if t + 1 <= annuity_term_mths() else 0.0
         return max(lives_if(t + 1), guaranteed)
     if shape() == "certain":
         return surr_if(t)
-    return pols_if(t) * (1.0 - mort_rate(t))
+    return pols_if(t) * (1.0 - mort_rate_mth(t))
 
 
 def pricing_factor(t):
@@ -860,7 +974,7 @@ def pricing_factor(t):
     that :func:`check_annuity_basis` compares two constructions instead of one with itself.
     """
     if shape() == "life":
-        guaranteed = 1.0 if t + 1 <= annuity_term() else 0.0
+        guaranteed = 1.0 if t + 1 <= annuity_term_mths() else 0.0
         return max(lives_if(t + 1) / pols_if_init(), guaranteed)
     return 1.0
 
@@ -879,7 +993,7 @@ def disc_factor(t):
     """
     if t <= 0:
         return 1.0
-    return disc_factor(t - 1) / (1.0 + crediting_rate(t - 1))
+    return disc_factor(t - 1) / (1.0 + crediting_rate_mth(t - 1))
 
 
 def retention_shortfall_pp():
@@ -895,29 +1009,40 @@ def retention_shortfall_pp():
     their cash flow statements is the quantity that was litigated from 2017 to 2025.
     """
     if shape() == "inheritance" and retention_basis() == "as_ordered":
-        return (maturity_benefit() - av_pp_init()) * disc_factor(annuity_term())
+        return ((maturity_benefit() - av_pp_init())
+                * disc_factor(annuity_term_mths()))
     return 0.0
 
 
-def proj_len():
-    """N: the **number of projected periods**, the frame's exclusive end.
+def proj_years():
+    """The projection horizon in **whole policy years**.
 
-    ``result_cf()`` runs ``t = 0 .. proj_len() - 1`` and the frame is ``range(proj_len())``,
-    so the last projected period is ``proj_len() - 1`` and ``len(result_cf())`` is
-    ``proj_len()`` itself — 51 rows, ``t = 0`` to ``t = 50``, on the worked-example anchor.
-
-    On the inheritance and certain shapes the contract ends at a stated term, so there are
-    ``n`` periods, the last of them ``n - 1``, and its payment falls at time ``n`` with the
-    만기보험금 beside it where there is one.  On the life shape the projection runs to the
-    limiting age of the shipped table, at which ``qx`` is 1, so the obligation is exhausted
-    rather than truncated: the last period is ``ω - x``, of which there are ``ω - x + 1``.
-    Where the 보증지급기간 outlives the annuitant's limiting age — which it cannot on any
-    shipped model point but can at a high enough issue age — the guarantee sets the horizon
-    instead.
+    On the inheritance and certain shapes the contract ends at a stated term, so the horizon
+    is that term.  On the life shape the projection runs to the limiting age of the shipped
+    table, at which ``qx`` is 1, so the obligation is exhausted rather than truncated:
+    ``ω - x + 1`` years.  Where the 보증지급기간 outlives the annuitant's limiting age —
+    which it cannot on any shipped model point but can at a high enough issue age — the
+    guarantee sets the horizon instead.
     """
     if shape() == "life":
         return max(annuity_term(), omega_age - age_at_entry() + 1)   # noqa: F821
     return annuity_term()
+
+
+def proj_len():
+    """N: the **number of projected months**, the frame's exclusive end.
+
+    ``12 x proj_years()``.  ``result_cf()`` runs ``t = 0 .. proj_len() - 1`` and the frame is
+    ``range(proj_len())``, so the last projected month is ``proj_len() - 1`` and
+    ``len(result_cf())`` is ``proj_len()`` itself — 612 rows, ``t = 0`` to ``t = 611``, on
+    the worked-example anchor.
+
+    On the inheritance and certain shapes the last row carries the payment falling at time
+    ``12n`` with the 만기보험금 beside it where there is one.  On the life shape the last row
+    is the final month of the limiting age's policy year, where the monthly conversion of
+    ``qx = 1`` pays out the last of the in-force.
+    """
+    return 12 * proj_years()
 
 
 def premiums(t):
@@ -1013,9 +1138,11 @@ def expenses(t):
 
     Two components and they do not overlap.  At t = 0 the acquisition and administration
     expense, taken as the load less the commission so that the charge deducted from the
-    fund exactly meets the outgo.  In every period including the first, the
+    fund exactly meets the outgo.  In every month including the first, the
     연금수령기간 중 비용 of 0.80% of the 연금연액, incurred when a payment is made and
-    therefore carried at the payment's own weight.
+    therefore carried at the payment's own weight — on the monthly grid that is 0.80% of the
+    **연금월액** each month, which over twelve months is exactly the 0.80% of the 연금연액
+    the cost table discloses.
 
     There is no maintenance expense per policy and no expense inflation in this model.  The
     one recurring charge any retrieved 즉시연금 document publishes is measured on the
@@ -1110,7 +1237,7 @@ def check_lives_roll_fwd_resid(t):
     """
     built = pols_if_init()
     for s in range(0, t):
-        built *= (1.0 - mort_rate(s))
+        built *= (1.0 - mort_rate_mth(s))
     return built - lives_if(t)
 
 
@@ -1138,21 +1265,21 @@ def check_av_roll_fwd_resid(t):
     """
     if t == 0:
         return av_pp_init() - av_pp(0)
-    i = crediting_rate(t - 1)
+    j = crediting_rate_mth(t - 1)
     if shape() == "life":
-        i0 = crediting_rate(0)
-        built = (av_pp_init() * (1.0 + i0) ** t
-                 - annuity_pp(0) * accum_factor(t, i0))
+        j0 = crediting_rate_mth(0)
+        built = (av_pp_init() * (1.0 + j0) ** t
+                 - annuity_pp(0) * accum_factor(t, j0))
     elif shape() == "certain":
-        m = annuity_term() - (t - 1)
-        built = (av_pp(t - 1) * annuity_factor_certain(m - 1, i)
-                 / annuity_factor_certain(m, i))
+        m = annuity_term_mths() - (t - 1)
+        built = (av_pp(t - 1) * annuity_factor_certain(m - 1, j)
+                 / annuity_factor_certain(m, j))
     elif retention_basis() == "as_ordered":
         built = av_pp(t - 1)
     else:
-        m = annuity_term() - (t - 1)
+        m = annuity_term_mths() - (t - 1)
         built = av_pp(t - 1) + ((maturity_benefit() - av_pp(t - 1))
-                                / accum_factor(m, i))
+                                / accum_factor(m, j))
     return built - av_pp(t)
 
 
@@ -1203,7 +1330,7 @@ def check_annuity_basis_resid():
     built = sum(annuity_pp(t) * pricing_factor(t) * disc_factor(t + 1)
                 for t in range(proj_len()))
     if shape() == "inheritance":
-        built += maturity_benefit() * disc_factor(annuity_term())
+        built += maturity_benefit() * disc_factor(annuity_term_mths())
     return built - av_pp_init() - retention_shortfall_pp()
 
 
@@ -1265,7 +1392,7 @@ def check_guarantee_certain():
     if shape() != "life":
         return True
     return bool(all(abs(payment_factor(t) - pols_if_init()) < roll_fwd_tol  # noqa: F821
-                    for t in range(0, annuity_term())))
+                    for t in range(0, annuity_term_mths())))
 
 
 def check_payment_factor_resid(t):
@@ -1279,7 +1406,7 @@ def check_payment_factor_resid(t):
     guarantee, shows up here.
     """
     if shape() == "life":
-        guaranteed = pols_if_init() if t + 1 <= annuity_term() else 0.0
+        guaranteed = pols_if_init() if t + 1 <= annuity_term_mths() else 0.0
         built = max(lives_if(t + 1), guaranteed)
     elif shape() == "certain":
         built = pols_if(t)

@@ -85,9 +85,24 @@ before drawing any conclusion from the numbers.
 Model names are `<short name>_<country>_<grid>`: a short descriptor, then `KR`, then `_A` for
 an annual step or `_S` for a monthly one. The grid letters follow lifelib, where
 `annuallife/TradLife_A` is the annual-step model and `basiclife/BasicTerm_S` and
-`savings/CashValue_SE` are the monthly ones. `S` carries a second sense in lifelib — scalar,
+`savings/CashValue_SE` are the monthly ones. **Every model in this library runs on a monthly
+grid**, so every name here carries `_S`; the `_A` half of the convention is still enforced by
+`tests/test_model_conventions_kr.py` against the registry metadata, so a model added on an
+annual step would have to be named for it. `S` carries a second sense in lifelib — scalar,
 one model point at a time, as against the vectorized `_M` models — and that is true of all ten
-here, whether or not they carry the letter.
+here.
+
+**The contract terms and the assumptions stay annual; only the grid underneath them is
+monthly.** Korean bases are filed and published annually — 적용위험률 grids by age, the FSS
+원칙모형 lapse vector by 경과기간, the 공시이율 as an annual declared rate — and the contracts
+state their terms in whole years on the 계약해당일. So every model carries the annual figure
+the source gives and applies a uniform-force monthly companion beside it: `mort_rate` with
+`mort_rate_mth`, `lapse_rate` with `lapse_rate_mth`, `credit_rate` or `crediting_rate` with
+its `_mth` form. Twelve of each compound back to the year's figure exactly, so the in-force at
+every 계약해당일 reproduces the annual-step models these replaced, and the statutory annual
+quantities — 별표 14's 연납순보험료, the 소득세법 세액공제 ceiling, the 연금수령한도 — are
+computed annually and apportioned rather than restated on a monthly base the law does not
+use.
 
 The short names are **English, and chosen rather than found**. Everywhere else in this library
 the English name leads and the Korean follows, which is the arrangement jplib, frlib and delib
@@ -100,9 +115,9 @@ written down here and in `tests/kr_registry.py` rather than inferred.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [whole life (종신보험)](products/whole_life/index.md) | `WholeLife_KR_S` | annual | 종신보험 (*jongsin boheom*), the savings-and-protection chassis: the 계약자적립액, the 해약환급금 as `max(0, V − SC)`, 보험계약대출 as a modelled state, and the 납입면제 with premiums **deemed paid** — which on a suppressed form is the only route to the cliff the policyholder does not have to fund. The 저해지환급형 suppression multiplies a **표준형 comparison twin priced with the lapse assumption switched off and never sold**, so there is one account in the model and the payable value is independent of the sold form's own premium. The step at 납입완료 is exactly `1/k` = 2.0 and falls thirteen years *after* the surrender charge has run off, so it cannot be explained as a surrender-charge effect |
-| [term life (정기보험)](products/term_life/index.md) | `Term_KR_S` | annual | 정기보험 (*jeonggi boheom*), the protection chassis and the most sourced product in the library: the anchor's ₩15,080 a month is published twice independently, and the whole 갱신형 (*gaengsinhyeong*, renewable) ladder ₩9,000 → ₩21,000 → ₩56,000 → ₩201,000 is public. The premium is a function of the **renewal index** and not of the policy year, so the horizon is the 보험나이 80 ceiling rather than the term, and renewal decline is its own decrement taken after mortality and after lapse — 90.7% of everyone who leaves in a boundary year. Both contract-boundary readings ship as model points, and they differ in sign |
-| [critical illness (CI보험)](products/ci_insurance/index.md) | `CI_KR_S` | annual | CI보험 / 중대질병보험 (*jungdae jilbyeong boheom*): 80% accelerated on the first qualifying event, with the contract **surviving** it, because 감독규정 제7-60조제8호 forbids extinguishing a contract while the risk it covers remains. So an acceleration is a **transition and not an exit**, and the post-CI cohort is carried by the policy year it accelerated in. The residual death benefit is `max(20% B, 105% V)` on two different clocks, and the account limb passes the nominal at duration 7 — a model hard-coding 20% of the sum assured understates the post-CI liability by a factor of **4.43** over the anchor's life. The 저해지 suppression here has two exits, 납입완료 and a CI claim, the second a random date correlated with the product's own decrement |
+| [whole life (종신보험)](products/whole_life/index.md) | `WholeLife_KR_S` | monthly | 종신보험 (*jongsin boheom*), the savings-and-protection chassis: the 계약자적립액, the 해약환급금 as `max(0, V − SC)`, 보험계약대출 as a modelled state, and the 납입면제 with premiums **deemed paid** — which on a suppressed form is the only route to the cliff the policyholder does not have to fund. The 저해지환급형 suppression multiplies a **표준형 comparison twin priced with the lapse assumption switched off and never sold**, so there is one account in the model and the payable value is independent of the sold form's own premium. The step at 납입완료 is exactly `1/k` = 2.0 and falls thirteen years *after* the surrender charge has run off, so it cannot be explained as a surrender-charge effect |
+| [term life (정기보험)](products/term_life/index.md) | `Term_KR_S` | monthly | 정기보험 (*jeonggi boheom*), the protection chassis and the most sourced product in the library: the anchor's ₩15,080 a month is published twice independently, and the whole 갱신형 (*gaengsinhyeong*, renewable) ladder ₩9,000 → ₩21,000 → ₩56,000 → ₩201,000 is public. The premium is a function of the **renewal index** and not of the policy year, so the horizon is the 보험나이 80 ceiling rather than the term, and renewal decline is its own decrement taken after mortality and after lapse — 90.7% of everyone who leaves in a boundary year. Both contract-boundary readings ship as model points, and they differ in sign |
+| [critical illness (CI보험)](products/ci_insurance/index.md) | `CI_KR_S` | monthly | CI보험 / 중대질병보험 (*jungdae jilbyeong boheom*): 80% accelerated on the first qualifying event, with the contract **surviving** it, because 감독규정 제7-60조제8호 forbids extinguishing a contract while the risk it covers remains. So an acceleration is a **transition and not an exit**, and the post-CI cohort is carried by the policy year it accelerated in. The residual death benefit is `max(20% B, 105% V)` on two different clocks, and the account limb passes the nominal at duration 7 — a model hard-coding 20% of the sum assured understates the post-CI liability by a factor of **4.43** over the anchor's life. The 저해지 suppression here has two exits, 납입완료 and a CI claim, the second a random date correlated with the product's own decrement |
 
 **제3보험 — third insurance (보험업법 제4조제1항제3호)**
 
@@ -117,9 +132,9 @@ written down here and in `tests/kr_registry.py` rather than inferred.
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [pension savings (연금저축보험)](products/pension_savings/index.md) | `Pension_KR_S` | annual | 연금저축보험 (*yeongeum jeochuk boheom*), the tax-qualified accumulation contract: the whole-life account with a declared 공시이율 over a stepping 최저보증이율 floor, the 100.1%-of-premiums minimum fund at the 연금개시일, and the annuitisation step. There is **no survivorship release** — the 계약자적립액 is a contractual balance, not a net-level-premium reserve, so the deferral-phase mortality strain is exactly zero and `claims_death` and `claims_lapse` pay the same number under two decrements. The payout factor is a **monthly** annuity-due, which is what reconstructs all eight published illustration figures on both interest bases from one formula; and which vintage of the annuitant table it is struck on is a switch, because a one-way ratchet clause makes the base something the evidence does not settle |
+| [pension savings (연금저축보험)](products/pension_savings/index.md) | `Pension_KR_S` | monthly | 연금저축보험 (*yeongeum jeochuk boheom*), the tax-qualified accumulation contract: the whole-life account with a declared 공시이율 over a stepping 최저보증이율 floor, the 100.1%-of-premiums minimum fund at the 연금개시일, and the annuitisation step. There is **no survivorship release** — the 계약자적립액 is a contractual balance, not a net-level-premium reserve, so the deferral-phase mortality strain is exactly zero and `claims_death` and `claims_lapse` pay the same number under two decrements. The payout factor is a **monthly** annuity-due, which is what reconstructs all eight published illustration figures on both interest bases from one formula; and which vintage of the annuitant table it is struck on is a switch, because a one-way ratchet clause makes the base something the evidence does not settle |
 | [variable annuity (변액연금보험)](products/variable_annuity/index.md) | `VA_KR_S` | monthly | 변액연금보험 (*byeonaek yeongeum boheom*), a 특별계정 contract [REG-R6] [REG-R15], and the only model here that has to state a **two-account identity**: `net_cf = net_cf_gen + net_cf_sep`, every internal transfer appearing twice with opposite signs and cancelling. Ten charge lines come off **five bases at three times into two accounts**, and the GMAB charge is 0.30% of *past and future* premium for at most seven years — ₩9,000 a month against ₩57.08 of the asset-based component, a factor of 158, stopping three years before the premiums do. Both guarantees are **written options** and one deterministic path values them at intrinsic only, so `run.py` prints charge collected against cost incurred and labels the gap a single-path residual rather than a profit |
-| [immediate annuity (즉시연금)](products/immediate_annuity/index.md) | `Immediate_KR_S` | annual | 즉시연금 (*jeuksi yeongeum*), the payout phase standing alone: no premium term, no acquisition strain — the charge taken at inception exactly meets the outgo at inception, and `check_premium_split()` asserts it — and `pols_if` redefined as the probability that a **payment obligation remains**, which inside the 보증지급기간 is `max(l(t), 1{t < g})`, a max and not a sum; the additive reading gives an annuity 30.5% too low. Three shapes and only 종신연금형 reads the table at all. The 상속연금형's interest retention is a **switch, because the law could not decide either**: 금융분쟁조정위원회 held in 2017 that it could not be asserted against the policyholder and the 대법원 restored it in 2025, and two shipped model points are the same contract on the two bases |
+| [immediate annuity (즉시연금)](products/immediate_annuity/index.md) | `Immediate_KR_S` | monthly | 즉시연금 (*jeuksi yeongeum*), the payout phase standing alone: no premium term, no acquisition strain — the charge taken at inception exactly meets the outgo at inception, and `check_premium_split()` asserts it — and `pols_if` redefined as the probability that a **payment obligation remains**, which inside the 보증지급기간 is `max(l(t), 1{t < g})`, a max and not a sum; the additive reading gives an annuity 30.3% too low. Three shapes and only 종신연금형 reads the table at all. The 상속연금형's interest retention is a **switch, because the law could not decide either**: 금융분쟁조정위원회 held in 2017 that it could not be asserted against the policyholder and the 대법원 restored it in 2025, and two shipped model points are the same contract on the two bases |
 
 (krlib-one-shape)=
 
@@ -150,15 +165,15 @@ to](#uslib-one-shape), and cells names come from lifelib — `basiclife/BasicTer
 frlib, in delib and in lifelib. The [shared vocabulary table](#uslib-shared-vocabulary) is the
 settled ruling across the libraries, and krlib takes the repository-wide time index with it.
 **The time index `t` is 0-based**: `t = 0` is the first period of a policy projected from
-issue (the issue year on an annual grid, the issue month on a monthly one), period `t` runs
-from time `t` to time `t + 1`, and the attained age is `age_at_entry + t` on an annual grid
-(`age_at_entry + duration(t)`, `duration(t) = t // 12`, on a monthly one). **`proj_len()` is
-the number of periods from `t = 0`**, i.e. the exclusive end of the frame: `result_cf()`
-covers `t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from
-issue and the elapsed periods for an in-force point. This is lifelib's own convention
+issue — the issue **month** in every model here — period `t` runs from time `t` to time
+`t + 1`, and the attained age is `age_at_entry + duration(t)` with `duration(t) = t // 12`,
+which is exact on 보험나이 because it increments on the 계약해당일. **`proj_len()` is the
+number of periods from `t = 0`**, i.e. the exclusive end of the frame: `result_cf()` covers
+`t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from issue and
+the elapsed periods for an in-force point. This is lifelib's own convention
 (`basiclife/BasicTerm_S`, `savings/CashValue_SE`: `for t in range(proj_len())`). A
-contractual policy year is the 1-based label `t + 1` (`duration(t) + 1` on a monthly grid)
-and is derived, never indexed by.
+contractual policy year is the 1-based label `duration(t) + 1` and is derived, never indexed
+by; where a model publishes the horizon in years as well, `proj_len()` is `12 * proj_years()`.
 
 The registry lives in `tests/kr_registry.py` rather than in `conftest.py` for a reason worth
 knowing: `conftest` is a name pytest fixes, so six in-library suites collected in one run put

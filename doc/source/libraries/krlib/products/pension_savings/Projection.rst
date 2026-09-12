@@ -52,7 +52,11 @@ Cells Descriptions
 
 .. autofunction:: annuity_age_eff
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
+
+.. autofunction:: policy_year
 
 .. autofunction:: age
 
@@ -76,7 +80,7 @@ Cells Descriptions
 
 .. autofunction:: credit_rate
 
-.. autofunction:: prem_timing_factor
+.. autofunction:: credit_rate_mth
 
 .. autofunction:: acq_charge_rate
 
@@ -98,11 +102,19 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: on_holiday
 
 .. autofunction:: prem_paying
+
+.. autofunction:: prem_mth_pp
+
+.. autofunction:: addl_prem_mth_pp
 
 .. autofunction:: prem_to_av_pp
 

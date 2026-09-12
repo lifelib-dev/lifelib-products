@@ -40,9 +40,13 @@ Cells Descriptions
 
 .. autofunction:: horizon_ceiling
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
 
 .. autofunction:: age
+
+.. autofunction:: policy_year
 
 .. autofunction:: term_index
 
@@ -66,9 +70,13 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: acc_mort_share
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: renewal_decline_rate
 
@@ -107,6 +115,10 @@ Cells Descriptions
 .. autofunction:: pols_lapse_expire
 
 .. autofunction:: wop_waived_frac
+
+.. autofunction:: wop_inc_rate_mth
+
+.. autofunction:: wop_rec_rate_mth
 
 .. autofunction:: pols_waived
 

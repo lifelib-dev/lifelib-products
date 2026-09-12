@@ -42,8 +42,8 @@ The composite is a **무배당, level monthly basic premium, 금리연동형 (in
 연금저축보험**: 보험나이 (*boheom nai*, insurance age) 40 at issue, 20 years of premiums to 60,
 a five-year gap, and annuity from 65 as a 종신연금형 (*jongsin yeongeumhyeong*, life annuity)
 with a ten-year guarantee. Its two phases — accumulation of a 계약자적립액 (*gyeyakja
-jeongnibaek*, policyholder account value) at the declared rate, then payout — run on one annual
-grid in `Pension_KR_S`. The contract inherits the **surrender-value machinery** of the [whole
+jeongnibaek*, policyholder account value) at the declared rate, then payout — run on one
+monthly grid in `Pension_KR_S`. The contract inherits the **surrender-value machinery** of the [whole
 life chassis (종신보험)](../whole_life/technical-notes.md) — the 해약공제액, its
 표준해약공제액 (*pyojun haeyak gongjeaek*, the statutory cap on the surrender charge) and the
 해약환급금 (*haeyak hwangeupgeum*, surrender value) floor. It does **not** inherit that
@@ -165,7 +165,7 @@ contracts [S1] [S7] [S8] and at 만19세 on one [S11].
 | 연금개시전 보험기간 | Issue to the 연금개시나이 계약해당일 | [S1] [S2] [S4] [S6] |
 | 연금지급기간 | Life, with a 10-year 보증지급기간 (base run); or 10 / 15 / 20 years certain | [S1] [S2]; pick **[std]** (11) |
 | 기본보험료 | **₩500,000 a month (₩6,000,000 a year)** | band [S2]; anchor **[std]** (6) |
-| 납입주기 | 월납 in the contract; annual on the projection grid | [S1] [S2] [S6] [S7]; grid **[std]** (7) |
+| 납입주기 | **월납**, in the contract and on the projection grid | [S1] [S2] [S6] [S7]; grid **[std]** (7) |
 | 추가납입 | 연금저축추가납입특약, ≤ 200% of the year's basic premiums; **off in the base run** | [S2] [S5] [S7] [S8]; scope **[std]** (8) |
 | Annual contribution ceiling | **₩18,000,000 (1,800만원)** across all 연금계좌 at every institution | [R6 제40조의2제2항제1호](#krlib-pension_savings-r6) [R11] [REG-R56] [S1] [S2] [S8] |
 | Currency | KRW | all sources |
@@ -241,13 +241,17 @@ Footnotes to [std] rows:
    product (footnote 13) and the male factor is the one the published illustration gives.
 7. **Grid.** Every retrieved contract is 월납 [S1] [S2] [S6] [S7] [S11], one adding 연납 [S8],
    and interest accrues **by day from the date each premium is received** — 「순보험료 … 를
-   「공시이율」로 납입일부터 일자계산을 하여 적립한 금액」 [S1] [S2]. `Pension_KR_S` runs an
-   **annual** grid, so the twelve monthly instalments of a policy year are collapsed to one
-   payment and the within-year interest is handled by a timing adjustment specified in
-   `technical-notes.md`. The regulation expressly permits an annualised-premium account —
-   「계약자적립액은 … 연납보험료를 기준으로 하여 산출할 수 있다」, 감독규정 제7-65조제2항
-   [REG-R18] — so this is a filed-basis convention, not a modelling shortcut. What the annual
-   grid loses is the sub-annual grace and demand mechanics; footnote 20.
+   「공시이율」로 납입일부터 일자계산을 하여 적립한 금액」 [S1] [S2], with 감독규정
+   제7-66조제1항제4호 accruing the account **monthly before 납입완료** [REG-R19].
+   `Pension_KR_S` runs a **monthly** grid, so each instalment is allocated as the ₩500,000 the
+   contract collects and the account is credited at `(1 + 공시이율)^(1/12) − 1` a month. The
+   **[std]** in the grid is now only that: the day-count inside the month is not modelled, and
+   the assumptions stay annual with uniform-force monthly conversions, both specified in
+   `technical-notes.md`. The earlier annual grid ran instead under the separate permission of
+   감독규정 제7-65조제2항 — 「계약자적립액은 … 연납보험료를 기준으로 하여 산출할 수 있다」
+   [REG-R18], a filed-basis convention rather than a shortcut — which the monthly grid no
+   longer needs. What the monthly grid still collapses is the sub-annual grace and demand
+   mechanics, now into the month rather than the year; footnote 20.
 8. **추가납입.** Written through a 제도성특약, the 연금저축추가납입특약, capped at **200% of
    the year's basic premiums** [S2] [S5] [S8] and payable from a stated point after inception
    to a stated point before annuitisation — 「계약일 이후 [n]개월이 지난 후부터 연금개시나이
@@ -480,7 +484,7 @@ Footnotes to [std] rows:
 | Implied factor, male 65, 2.15%, 20-year guarantee | 24.14 | `[derived]` from [S2] |
 | Implied certain factors, 2.15% | 9.06 / 12.92 / 16.39 at 10 / 15 / 20 years | `[derived]` from [S2] |
 | Annuitant mortality vintage | Struck on the **가입시점** table, with a one-way ratchet to the **연금개시시점** table where a revision *increases* the annuity | clause [S1] [S2] [S4] [S6] [S9]; reading `[derived]` **[std]** (20) |
-| Instalment frequency | 매월 / 매3개월 / 매6개월, with deferred instalments credited at the 공시이율; **annual** on the projection grid | [S1] [S2] [S5] [S6] [S7]; grid **[std]** (7) |
+| Instalment frequency | 매월 / 매3개월 / 매6개월, with deferred instalments credited at the 공시이율; **매월** on the projection grid, which pays `연금연액 ÷ 12` a row | [S1] [S2] [S5] [S6] [S7]; grid **[std]** (7) |
 | Death inside the guarantee period | The unpaid guaranteed instalments are paid, and may be commuted at the 공시이율 | [S1] [S2] [S6] |
 | Death after the guarantee period | Nothing further; the contract ends | [S1] [S2] [S6] |
 | Death during a 확정기간 term | The remaining instalments are paid to the count (10 / 15 / 20회) | [S1] [S2] [S4] [S6] |
@@ -606,14 +610,15 @@ Footnotes to [std] rows:
 | Late-payment interest on benefits | 보험계약대출이율 for 30 days, then **+4.0%**, **+6.0%**, **+8.0%** in successive 30-day bands | [S4 별표2] |
 | 소멸시효 | 3 years | [REG-R25 제37조](#krlib-reg-r25) [REG-R49 제662조](#krlib-reg-r49) |
 
-23. **Grace, lapse and reinstatement, and what the annual grid keeps.** The standard demand
+23. **Grace, lapse and reinstatement, and what the projection grid keeps.** The standard demand
     period is **at least 14 days** (7 where the policy term is under a year), stated in the
     표준약관 and reproduced in the retrieved contracts — 「그 때까지 보험료를 납입하지 않을
     경우 납입최고(독촉)기간이 끝나는 날의 다음날 계약이 해지됩니다」 [S2] [REG-R25 제26조](#krlib-reg-r25). The
     postal insurer uses a longer window keyed to calendar months — 「기본보험료 납입유예 기간은
-    납입기일부터 납입기일이 속하는 달의 다음 다음달의 마지막 날까지」 [S7]. On an annual grid
+    납입기일부터 납입기일이 속하는 달의 다음 다음달의 마지막 날까지」 [S7]. On the monthly grid
     the composite maps this to a **[std]** rule: a premium unpaid at `t` terminates the
-    contract at `t`, with no partial-year grace state. What the grid **must** keep is
+    contract at `t`, with no within-month grace state — a collapse into the month rather than,
+    as on the annual grid, into the year. What the grid **must** keep is
     reinstatement, because Korean policies really do come back: within three years of
     termination, provided the surrender value has not been drawn — and the 표준약관 extends
     this expressly to the case where a policy loan consumed it and to the case where there is
@@ -625,8 +630,8 @@ Footnotes to [std] rows:
     consequence is not the cash flow but the date — the premium due dates and the annuity date
     shift by the lapsed period, and the 100.1% floor at annuitisation is **withdrawn** where
     the shortfall was caused by a one-instalment reinstatement or a payment holiday [S4] [S6]
-    [S7]. Neither 부활 nor 간편부활 is implemented in `Pension_KR_S`: the annual grid has no
-    partial-year state to re-enter from, so **lapse is absorbing** and `lapse_rate` is a
+    [S7]. Neither 부활 nor 간편부활 is implemented in `Pension_KR_S`: there is no partial-month
+    state to re-enter from, so **lapse is absorbing** and `lapse_rate` is a
     net-of-부활 rate by construction, which `technical-notes.md` states as the reason a user
     substituting a gross experience rate will over-decrement. What the model does keep is the
     consequence — the deferred annuity date and the withdrawn floor — as model point 9's
@@ -646,10 +651,11 @@ mechanic survives it: surrender, transfer, policy loans, contributions and the a
 election all stop there, leaving commutation of unpaid guaranteed instalments as the
 annuitant's only remaining lever [S2] [S4] [R6 제40조의2제2항제2호](#krlib-pension_savings-r6).
 
-On the annual grid write `t` for years since issue, `m` for the premium term (20 at the anchor
-cell), `d` for the gap between 납입완료 and 연금개시 (5) and `n = m + d` (25). Premiums fall at
-`t = 0 … m − 1`; the fund accumulates over `t = 0 … n`; the annuity is paid at `t = n, n+1, …`
-for life, with the first ten instalments guaranteed.
+On the monthly grid write `t` for **months** since issue, `m` for the premium term in years
+(20 at the anchor cell), `d` for the gap between 납입완료 and 연금개시 in years (5) and
+`n = 12(m + d)` (300). Premiums fall at `t = 0 … 12m − 1`; the fund accumulates over
+`t = 0 … n`; the annuity is paid at `t = n, n+1, …` for life, with the first 120 instalments
+guaranteed. The contractual policy year is the derived label `t // 12 + 1`.
 
 **Two age bases run through the contract and they differ for half of all issue dates.** The
 약관 age is 보험나이 — computed from the insured's exact age at the 계약일 by discarding a
@@ -674,8 +680,10 @@ anchor cell (65 in 보험나이 is 64 or 65 in 만나이, and both clear 만 55�
 
 The 기본보험료 is level and guaranteed for the whole 납입기간 [S1] [S2] [S4] [S6] [S7]; there
 are no reviews and no re-rating on this chassis. Payment is monthly by direct debit or an
-equivalent route, and the twelve instalments of a policy year are collapsed to one on the
-projection grid under the annualised-premium permission of 감독규정 제7-65조제2항 [REG-R18].
+equivalent route, and the projection grid collects each instalment on its own row, which is
+the 월납 account 감독규정 제7-66조제1항제4호 describes [REG-R19]; the annualised-premium
+permission of 감독규정 제7-65조제2항 [REG-R18] that the earlier annual grid relied on is no
+longer needed.
 
 Two ceilings sit above the premium and they are different in kind.
 
@@ -721,8 +729,9 @@ premium is simply the basic premium net of the two expense charges.
 
 **Interest accrues by day from the date each premium is received**, not from the policy
 anniversary [S1] [S2], so a monthly-premium contract earns a partial year's interest on each
-instalment. The annual grid replaces this with a single timing adjustment; the cross-check that
-the adjustment is right is in the published illustrations, and it closes. Rolling the
+instalment. The monthly grid credits each instalment from the month it is received and leaves
+only the day-count inside the month unmodelled; the cross-check that the treatment is right is
+in the published illustrations, and it closes. Rolling the
 twenty-year surrender value forward the five years from 60 to 65 at the stated rate reproduces
 the published fund at annuitisation: ₩140,811,363 × 1.0215⁵ = ₩156,613,630 against a published
 ₩156,420,000, and ₩120,595,257 × 1.005⁵ = ₩123,640,438 against a published ₩123,460,000
@@ -736,13 +745,17 @@ maintenance charge, with no other moving parts.**
 제7-66조제1항제4호 states 「보험료 납입이 완료되기 이전에는 … 월별 기간경과에 따라 산출한다」
 and 「일별 기간경과에 따라 산출한다」 thereafter [REG-R19]. The two formulas themselves render
 as images in the official text and were not retrieved, which is recorded rather than papered
-over; the annual grid does not need them, but a monthly implementation would.
+over. The model accrues **monthly throughout**, which follows the regulation's own rule up to
+납입완료 and is a **[std]** simplification of the daily accrual after it — the simplification
+being worth at most the within-month day-count on a fund that is no longer receiving premiums.
 
 **The maintenance charge does not stop at 납입완료.** 「보험료 납입 완료 후에는 월계약해당일에
 계약관리비용 중 유지관련비용(납입후)을 적립액에서 차감합니다」 [S5], and the composite prices
-it at 0.67% of the (notional) 기본보험료 a month beyond year 20 [S1]. During the five-year gap
-between 납입완료 and 연금개시 the fund is therefore accumulating at the declared rate and
-paying a charge with no premium arriving — a state the model must carry explicitly.
+it at 0.67% of the 기본보험료 a month beyond year 20 [S1] — ₩3,350 a month at the anchor cell,
+and the monthly grid takes it 월계약해당일에, exactly as the clause says. During the five-year
+gap between 납입완료 and 연금개시 the fund is therefore accumulating at the declared rate and
+paying a charge with no premium arriving — a state the model must carry explicitly, in each of
+the sixty months.
 
 ### The crediting machinery — 공시기준이율, 공시이율 and 최저보증이율
 

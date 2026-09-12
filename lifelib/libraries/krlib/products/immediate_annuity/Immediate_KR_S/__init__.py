@@ -68,15 +68,27 @@ Input data is **external**: plain CSVs in the model folder's parent directory,
 model folder holds nothing but formulas — no ``_data/``, no IOSpec, no embedded values — so
 the model and its inputs must travel together. This follows ``annuallife.TradLife_A``.
 
-**Projection basis.** Annual steps on a **0-based** time index: ``t = 0`` is the first
-policy year. Period ``t`` runs from time ``t`` to time ``t + 1``, row ``t`` of
-``result_cf()`` carries the cash flows of period ``t``, and the annuity is payable **in
-arrears** on each 계약해당일, so the payment shown on row ``t`` falls at time ``t + 1``.
-``proj_len()`` is the **number of projected periods**, so the frame is ``range(proj_len())``
-and runs ``t = 0 … proj_len() - 1``; the contractual policy year is the derived label
-``t + 1``. Ages are **보험나이** throughout. The market default is a monthly 연금월액 and
-the annual mode this model runs is the contract's own 연단위 mode, not an approximation of
-the monthly one; the reconciliation is in the technical notes.
+**Projection basis.** Monthly steps on a **0-based** time index: ``t = 0`` is the first
+policy month. Period ``t`` runs from time ``t`` to time ``t + 1``, row ``t`` of
+``result_cf()`` carries the cash flows of month ``t``, and the annuity is payable **in
+arrears** on each 연금지급일, so the payment shown on row ``t`` falls at the end of month
+``t``. ``proj_len()`` is the **number of projected months**, ``12 x proj_years()``, so the
+frame is ``range(proj_len())`` and runs ``t = 0 … proj_len() - 1``; the contractual policy
+year is the derived label ``policy_year(t) = t // 12 + 1``. Ages are **보험나이** throughout,
+and because 보험나이 increments on the 계약해당일 the attained age is
+``age(t) = x + t // 12`` exactly. **This is the mode the market actually writes**: the
+default election is a 연금월액 paid 매월 — 「미지급된 연금월액을 매월 연금지급일에
+드립니다」 — so the monthly grid pays what the contract pays and needs no reconciliation
+between a projected annual instalment and a contractual monthly one.
+
+**The contract terms and the assumptions stay annual; only the grid is monthly.** The
+보증지급기간, the 보험기간 and the 연금지급기간 are whole years, converted where the grid
+needs a month count by ``annuity_term_mths()``; the 개인연금사망률 is an annual table by
+age; the 공시이율 and the stepped 최저보증이율 are annual rates; and the [std] surrender
+assumption is an annual rate. Each carries a uniform-force monthly companion —
+``mort_rate_mth``, ``lapse_rate_mth`` and ``crediting_rate_mth`` — level inside a policy
+year and stepping on each 계약해당일, with twelve of each compounding back to exactly the
+year's figure.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the premium
 split into 보장계약 보험료, 사업비 and the 연금계약 순보험료 that becomes the opening fund;

@@ -12,9 +12,8 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions_kr.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — five products run on an annual grid and five on a monthly one — the age basis,
-which is *also* not uniform and in Korea cannot be left implicit (see below), and that
+fails.  The metadata records the projection basis, which is now **monthly on all ten**, the
+age basis, which is *not* uniform and in Korea cannot be left implicit (see below), and that
 none of them discount.  That last entry is a property of the library, not an omission:
 every ``technical-notes.md`` specifies *gross liability cash flows* and leaves discounting,
 the ``책임준비금``, the IFRS 17 CSM and the K-ICS 요구자본 to a separate layer that
@@ -50,6 +49,10 @@ import pathlib
 
 LIB = pathlib.Path(__file__).resolve().parents[1]
 
+# ``ANNUAL`` is retained although no model currently carries it: the grid is a property a
+# model declares rather than a property of the library, ``test_model_conventions_kr.py``
+# resolves the name suffix from it, and a model added on an annual step would register here
+# without a change to the suite.
 ANNUAL = {"grid": "annual", "discounted": False}
 MONTHLY = {"grid": "monthly", "discounted": False}
 
@@ -81,9 +84,12 @@ MAN = {"age_basis": "만나이"}        # age last birthday, the public-statisti
 # The name is <short name>_<country>_<grid>: a short English descriptor of the product,
 # then KR, then _A for an annual step or _S for a monthly one.  The grid letters follow
 # lifelib, where annuallife/TradLife_A is the annual-step model and basiclife/BasicTerm_S
-# and savings/CashValue_SE are the monthly ones.  `S` carries a second sense in lifelib —
-# scalar, one model point at a time, as against the vectorized `_M` models — and that is
-# true of all ten here, whether or not they carry the letter.
+# and savings/CashValue_SE are the monthly ones.  Every model in this library is monthly, so
+# every name here carries `_S`; the `_A` half of the convention is still enforced by
+# test_model_conventions_kr.py against the registry metadata, so a model added on an annual
+# step would have to be named for it.  `S` carries a second sense in lifelib — scalar, one
+# model point at a time, as against the vectorized `_M` models — and that is true of all ten
+# here.
 #
 # This pairing is not derivable from the folder slug — "indemnity_medical" spelled out is
 # unusable in a model name — so it lives here, and test_model_conventions_kr.py asserts
@@ -99,9 +105,9 @@ MODELS = {
     "LTC_KR_S": ("products/long_term_care/LTC_KR_S", MONTHLY | MAN),
     "Child_KR_S": ("products/child/Child_KR_S", MONTHLY | BOHEOM),
     # 저축·연금 — savings and annuity
-    "Pension_KR_S": ("products/pension_savings/Pension_KR_S", ANNUAL | BOHEOM),
+    "Pension_KR_S": ("products/pension_savings/Pension_KR_S", MONTHLY | BOHEOM),
     "VA_KR_S": ("products/variable_annuity/VA_KR_S", MONTHLY | BOHEOM),
-    "Immediate_KR_S": ("products/immediate_annuity/Immediate_KR_S", ANNUAL | BOHEOM),
+    "Immediate_KR_S": ("products/immediate_annuity/Immediate_KR_S", MONTHLY | BOHEOM),
 }
 
 

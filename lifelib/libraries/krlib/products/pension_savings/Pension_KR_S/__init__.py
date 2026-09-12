@@ -46,12 +46,24 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps, on 보험나이 (*boheom nai*, insurance age). ``t``
-counts completed policy years since issue, 0-based: premiums fall at ``t = 0 .. m - 1``,
-the 계약자적립액 accumulates over ``t = 0 .. n`` where ``n = m + d``, the annuity is paid
-from ``t = n``, and :func:`~.Pension_KR_S.Projection.proj_len` is the **number** of
-projected periods — the exclusive end of the frame — so ``result_cf()`` runs
-``t = 0 .. proj_len() - 1``. The contractual policy year is the 1-based label ``t + 1``.
+**Projection basis.** Monthly steps, on 보험나이 (*boheom nai*, insurance age). ``t``
+counts completed policy **months** since issue, 0-based: the 기본보험료 falls at
+``t = 0 .. m - 1`` where ``m = 12 x`` the 납입기간 in years, the 계약자적립액 accumulates
+over ``t = 0 .. n`` where ``n =`` :func:`~.Pension_KR_S.Projection.annuitisation_t`, the
+annuity instalment is paid monthly from ``t = n``, and
+:func:`~.Pension_KR_S.Projection.proj_len` is the **number** of projected periods — the
+exclusive end of the frame, ``12 x`` :func:`~.Pension_KR_S.Projection.proj_years` — so
+``result_cf()`` runs ``t = 0 .. proj_len() - 1``. The contractual policy year is the
+derived 1-based label ``policy_year(t) = t // 12 + 1`` and the 보험나이 is
+``age(t) = issue_age() + t // 12``, exact because 보험나이 increments on the 계약해당일.
+Contract terms stay in years: the 납입기간, the 납입유예 and the 연금개시나이 are annual
+quantities the model converts to month counts where the grid needs one, and the annual
+assumptions stay annual — ``credit_rate(t)``, ``mort_rate(t)`` and ``lapse_rate(t)`` are
+the yearly figures the technical notes tabulate, with ``credit_rate_mth``,
+``mort_rate_mth`` and ``lapse_rate_mth`` companions that compound back to them over
+twelve months. Statutory annual figures stay annual too — the 별표 14 표준해약공제액 is
+struck on the 연납보험료 and the 소득세법 세액공제 limit and 연금수령한도 are per-year
+amounts, each apportioned across the twelve months of the year rather than restated.
 
 **The tax layer is carried but is not a cash flow.** 연금저축 relief is a **세액공제** —
 a tax credit of 16.5% or 13.2% of contributions up to ₩6,000,000 a year — and a

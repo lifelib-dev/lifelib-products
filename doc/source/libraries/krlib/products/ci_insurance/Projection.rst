@@ -20,9 +20,13 @@ Cells Descriptions
 
 .. autofunction:: prem_period
 
+.. autofunction:: prem_period_mths
+
 .. autofunction:: prem_end
 
 .. autofunction:: premium_pp
+
+.. autofunction:: premium_mth_pp
 
 .. autofunction:: accel_rate
 
@@ -52,7 +56,11 @@ Cells Descriptions
 
 .. autofunction:: omega_age
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
+
+.. autofunction:: policy_year
 
 .. autofunction:: age
 
@@ -62,19 +70,35 @@ Cells Descriptions
 
 .. autofunction:: mort_rate_base
 
+.. autofunction:: mort_rate_base_mth
+
 .. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
 
 .. autofunction:: mort_rate_ci_base
 
+.. autofunction:: mort_rate_ci_base_mth
+
 .. autofunction:: mort_rate_ci
+
+.. autofunction:: mort_rate_ci_mth
 
 .. autofunction:: ci_rate_at_age
 
 .. autofunction:: ci_wait_factor
 
+.. autofunction:: ci_wait_factor_mth
+
+.. autofunction:: ci_wait_share
+
 .. autofunction:: ci_rate_base
 
+.. autofunction:: ci_rate_mth_base
+
 .. autofunction:: ci_rate
+
+.. autofunction:: ci_rate_mth
 
 .. autofunction:: ci_reduced_share
 
@@ -84,7 +108,19 @@ Cells Descriptions
 
 .. autofunction:: lapse_rate
 
+.. autofunction:: lapse_rate_mth
+
 .. autofunction:: lapse_rate_ci
+
+.. autofunction:: lapse_rate_ci_mth
+
+.. autofunction:: waiver_rate_mth
+
+.. autofunction:: prem_int_rate_mth
+
+.. autofunction:: i_loan_mth
+
+.. autofunction:: disc_factor_mth
 
 .. autofunction:: disc_factor
 
@@ -93,6 +129,8 @@ Cells Descriptions
 .. autofunction:: epv_ben
 
 .. autofunction:: annuity_due
+
+.. autofunction:: prem_net_level_mth_pp
 
 .. autofunction:: prem_net_level_pp
 
@@ -103,6 +141,8 @@ Cells Descriptions
 .. autofunction:: base_benefit_pp
 
 .. autofunction:: surr_chg_cap_pp
+
+.. autofunction:: surr_chg_period_mths
 
 .. autofunction:: surr_chg_pp
 
@@ -121,6 +161,14 @@ Cells Descriptions
 .. autofunction:: resid_nominal_pp
 
 .. autofunction:: resid_db_pp
+
+.. autofunction:: resid_nom_min_pp
+
+.. autofunction:: resid_nom_max_pp
+
+.. autofunction:: resid_nom_total_pp
+
+.. autofunction:: resid_db_total_pp
 
 .. autofunction:: resid_db_avg_pp
 
@@ -141,6 +189,10 @@ Cells Descriptions
 .. autofunction:: pols_ci
 
 .. autofunction:: pols_ci_in
+
+.. autofunction:: ci_cohort_entrants
+
+.. autofunction:: ci_surv
 
 .. autofunction:: pols_if_ci_at
 
