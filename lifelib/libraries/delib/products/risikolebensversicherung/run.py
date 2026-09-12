@@ -3,8 +3,10 @@
     python products/risikolebensversicherung/run.py            # anchor cell (point_id = 1)
     python products/risikolebensversicherung/run.py 8          # another model point
 
-The frame is 0-based: ``t = 0`` is the first policy year, so a new-business point runs
-``t = 0 .. proj_len() - 1`` and the in-force point 8 opens at ``t = duration_y = 12``.
+The frame is 0-based and counts policy **months**: ``t = 0`` is the first policy month, so
+a new-business point runs ``t = 0 .. proj_len() - 1`` and the in-force point 8 opens at
+``t = 12 x duration_y = 144``.  Both views are printed — the first twelve months of the
+monthly frame, then the whole run summed into policy years by ``result_cf_annual()``.
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """
@@ -30,21 +32,26 @@ print("premium form = {}   Zahlweise = {} ({} instalments, load {:.3f})   "
           proj.premium_form(), proj.prem_freq(), proj.instalments(),
           proj.prem_freq_load(), proj.surplus_form()))
 print("rating factor = {:.2f}   NVG schedule = {}   duration = {} y   "
-      "frame t = {} .. {}".format(
+      "frame t = {} .. {} months ({} policy years)".format(
           proj.rating_factor(), proj.nvg_schedule_id(), proj.duration_y(),
-          proj.proj_start(), proj.proj_len() - 1))
+          proj.proj_start(), proj.proj_len() - 1, proj.proj_len_y()))
 print()
 print("Bruttobeitrag  G  = {:,.4f} EUR   Nettopraemie Gn = {:,.4f} EUR".format(
     proj.prem_gross_level_pp(), proj.prem_net_level_pp()))
-print("Beitragsverrechnungssatz v_d = {:.8f}   Zahlbeitrag = {:,.4f} EUR   "
-      "Zahl/Brutto = {:.6f}".format(
-          proj.beitragsverrechnung_rate(), proj.prem_paid_pp(0),
-          proj.prem_paid_pp(0) / proj.prem_gross_pp(0)))
+print("Beitragsverrechnungssatz v_d = {:.8f}   Zahlbeitrag = {:,.4f} EUR/y   "
+      "Zahl/Brutto = {:.6f}   instalment = {:,.4f} EUR".format(
+          proj.beitragsverrechnung_rate(), proj.prem_paid_pp(proj.proj_start()),
+          proj.prem_paid_pp(proj.proj_start()) / proj.prem_gross_pp(proj.proj_start()),
+          proj.prem_inst_pp(proj.proj_start())))
 print()
 df = proj.result_cf()
+print("first 12 months")
 print(df.head(12).round(2).to_string())
 print()
-print("totals over {} years: prem_gross {:,.2f}  premiums {:,.2f}  "
+print("summed into policy years")
+print(proj.result_cf_annual().head(12).round(2).to_string())
+print()
+print("totals over {} months: prem_gross {:,.2f}  premiums {:,.2f}  "
       "prem_rebate {:,.2f}".format(
           len(df), df["prem_gross"].sum(), df["premiums"].sum(),
           df["prem_rebate"].sum()))

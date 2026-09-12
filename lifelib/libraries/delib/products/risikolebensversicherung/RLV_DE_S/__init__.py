@@ -10,7 +10,7 @@
 library. It projects gross best-estimate liability cash flows for a single-policy model
 point of a German standalone term assurance — the *Versicherungssumme* paid as a
 *Todesfallleistung* on death inside the *Versicherungsdauer*, and **nothing at all**
-otherwise — on an **annual** grid, undiscounted.
+otherwise — on a **monthly** grid, undiscounted.
 
 Three things make this the German model rather than a translated French or British one.
 
@@ -69,19 +69,29 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps, matching the contract's level annual *Bruttobeitrag*
-and its annual *Überschussdeklaration*. The time index ``t`` is **0-based** and counts
-policy years from issue, so ``age(t) = issue_age + t`` and the contractual policy year is
-``t + 1``; a new-business point opens at ``t = 0`` and an in-force point at
-``t = duration_y``, which is what lets the § 161 three-year window, the lapse table and
-the acquisition-cost switch all read off one clock. ``proj_len()`` is the **number of
-policy years**, equal to ``policy_term``, and is the frame's exclusive end, so the frame
-is ``t = duration_y … proj_len() - 1``.
-*Zahlbeitrag*, collection cost, sum-related admin and renewal commission fall at the start
-of the period on the opening in-force; acquisition cost and initial commission at
-issue and never on an in-force point, where they are sunk; death claims and the claim
-expense at the end of the period; lapses at the end, after the death decrement; the expiry
-at the end of the last period ``t = n - 1``, paying nothing.
+**Projection basis.** Monthly steps. The time index ``t`` is **0-based** and counts policy
+**months** from issue: ``proj_len() = 12 x policy_term`` is the number of projected months
+and the frame's exclusive end, a new-business point opens at ``t = 0`` and an in-force
+point at ``t = 12 x duration_y``, so the frame is ``t = 12 duration_y … proj_len() - 1``.
+The **product is annual and stays annual**: ``duration(t) = t // 12`` and
+``policy_year(t) = duration(t) + 1`` are derived and never indexed by, and everything the
+contract puts on the anniversary stays there — ``age(t) = issue_age + duration(t)``, the
+*Versicherungssumme* schedule, the § 161 three-year window, the *Beitragszahlungsdauer*
+and the whole first-order equivalence, whose *Bruttobeitrag*, *Nettoprämie*,
+*Beitragsverrechnungssatz* and *Deckungskapital* are unmoved by the conversion. What the
+finer grid resolves is the timing: ``mort_rate`` and ``lapse_rate`` are the policy year's
+**annual** rates and ``mort_rate_mth`` and ``lapse_rate_mth`` the monthly rates derived
+from them at ``1 - (1 - r)^(1/12)``, so twelve of each compound back to the year's rate
+and ``pols_if`` at every anniversary is the annual-step model's own figure.
+
+A *Zahlbeitrag* **instalment** on the *Zahlweise*'s own cycle, its collection cost and the
+renewal commission on it fall at the start of the month; a twelfth of the sum-related
+admin charge accrues each month on the opening in-force; acquisition cost and initial
+commission fall in month 0 and never on an in-force point, where they are sunk; death
+claims and the claim expense at the end of the month of death; lapses at the end of the
+month, after the death decrement; the expiry at the end of the last month
+``t = proj_len() - 1``, paying nothing. ``result_cf_annual()`` sums the monthly frame into
+policy years, which is the view the technical notes' worked example is stated on.
 
 **What is sourced and what is not.** The contractual mechanics are sourced, if only ever
 through inherited corroboration: the guaranteed *Bruttobeitrag* and the non-guaranteed
@@ -106,9 +116,10 @@ Beitragszahlungsdauer*, and two boundary cells at the ends of the issue-age and 
 envelopes. Model point 1 is the anchor cell of the worked example in the technical notes.
 
 **Verification.** ``tests/test_risikolebensversicherung_de.py`` asserts every row of the
-notes' twenty-five-year worked example to the cent and ``pols_if`` to six decimals, the
-*Bruttobeitrag* 1 275,411882 € and the *Beitragsverrechnungssatz* 0,42527476 behind it,
-and one test per listed modeling pitfall.
+notes' twenty-five-year worked example to the cent — on ``result_cf_annual()`` — and the
+twelve months of policy year 1 on the monthly frame beside it, ``pols_if`` to six
+decimals, the *Bruttobeitrag* 1 275,411882 € and the *Beitragsverrechnungssatz*
+0,42527476 behind it, and one test per listed modeling pitfall.
 
 Example:
 
