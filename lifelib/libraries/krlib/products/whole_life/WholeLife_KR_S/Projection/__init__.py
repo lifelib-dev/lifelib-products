@@ -11,24 +11,62 @@ projecting model point 1::
     >>> Projection[1].result_cf()          # the worked example's anchor cell
     >>> Projection.point_id = 5            # or switch the default
 
-``t`` is the **0-based policy-year index**: ``t = 0`` is the first policy year, period
-``t`` runs from anniversary ``t`` to anniversary ``t + 1``, and the frame is
-``range(proj_len())`` with ``proj_len() = omega_age() - age_at_entry() + 1``, so the last
-index is ``proj_len() - 1``. The contractual policy year is the 1-based label
-``policy_year(t) = t + 1``, derived and never indexed by.
+``t`` is the **0-based policy-month index**: ``t = 0`` is the first policy month, period
+``t`` runs from month-end ``t`` to month-end ``t + 1``, and the frame is
+``range(proj_len())`` with ``proj_len() = 12 (omega_age() - age_at_entry() + 1)``, so the
+last index is ``proj_len() - 1`` — 912 on the anchor cell. The contractual policy year is
+the 1-based label ``policy_year(t) = t // 12 + 1``, derived and never indexed by, and the
+attained 보험나이 is ``age_at_entry() + t // 12``.
 
-Values carry a **second index**, the anniversary ``d = 0 … proj_len()`` with ``d = 0`` at
+**Contract terms stay in years; only the grid is monthly.** The 납입기간, the 해약공제기간,
+:func:`loan_year` and :func:`reduce_year` are all written in policy years because that is
+how the contract writes them, and each has a month-count companion — :func:`prem_period_mths`,
+:func:`surr_chg_period_mths` — for the cells that index the grid. Nothing multiplies a
+contractual term by twelve in line.
+
+Values carry a **second index**, the month-end ``d = 0 … proj_len()`` with ``d = 0`` at
 issue: :func:`pol_val_pp`, :func:`surr_chg_pp`, :func:`cv_pp`, :func:`cum_prem_pp`,
 :func:`loan_pp` and their companions are values *at* a point in time rather than flows of a
-period, so the flows of period ``t`` read ``d = t`` as the opening anniversary and
-``d = t + 1`` as the closing one — the anniversary a surrender in that period is paid at.
-That index is 0-based already, and none of these numbers moved when ``t`` did — except
-:func:`loan_pp`, which was a period-opening balance on the 1-based clock and is now the
-anniversary balance itself: old ``loan_pp(t)`` is new ``loan_pp(t - 1)``.
+period, so the flows of month ``t`` read ``d = t`` as the opening month-end and
+``d = t + 1`` as the closing one — the instant a surrender in that month is paid at. A
+계약해당일 is the month-end ``d = 12y``, which is where the published 해약환급금 grids are
+quoted and where :func:`cv_pp` steps up at 납입완료.
 
 A 종신 contract has no maturity date and no 만기보험금, so the horizon is the terminal age of
-the mortality table, every remaining life dies in the last period ``proj_len() - 1``, and
-nothing is paid there but the death benefit. **There are no tail states.**
+the mortality table. Every remaining life dies during the **last twelve months**, at
+attained age ``omega_age()``, where the table rate is 1: :func:`mort_rate_mth` spreads that
+certainty uniformly over the twelve rather than killing the cohort in the first of them, so
+the terminal year is a projected year and not an instant, and nothing is paid there but the
+death benefit. **There are no tail states.**
+
+.. rubric:: What the monthly grid moved, and what it did not
+
+The sourced basis is untouched: both disclosed Korean 적용위험률 grids are **annual** rates
+by age [S2] [S8] and the FSS 원칙모형 lapse vector is an annual rate by 경과기간 [REG-R27],
+so :func:`mort_rate` and :func:`lapse_rate` carry them and the monthly decrements
+:func:`mort_rate_mth` and :func:`lapse_rate_mth` are ``1 - (1 - q)^(1/12)`` **[std]**, level
+inside a policy year and stepping at each 계약해당일. Twelve monthly exits compound to the
+year's annual rate exactly, so **the in-force at every 계약해당일 is unchanged** from the
+annual-step model this replaced, to 1.1e-14 relative across the shipped model points.
+
+The **계약자적립액 does move, by about 1.2%, and that is the conversion's substantive
+gain.** 감독규정 제7-66조제1항제4호 provides that the account accrues **monthly** before
+납입완료 and daily afterwards; an annual grid could carry this product only through
+제7-65조제2항's separate permission to compute it 「연납보험료를 기준으로」, which the model
+used to take and record as a **[std]** departure [REG-R18] [REG-R19]. The monthly grid does
+not need the permission: the account accrues at ``(1 + i)^(1/12) - 1`` a month and is built
+from a **월납순보험료** struck by monthly equivalence, :func:`prem_net_level_mth_pp`. That
+premium is not the 연납순보험료 divided by twelve — a monthly equivalence discounts eleven
+of each year's twelve instalments and exposes them to the year's mortality — and the
+resulting account is about half a year's interest at the 예정이율 above the annual one, which
+is exactly the timing an annual grid gave away. The 연납순보험료 survives beside it as
+:func:`prem_net_level_pp`, because 별표 14 names that quantity and the statutory
+표준해약공제액 is computed from it.
+
+The 유지보너스 lapse spike is the one behavioural rate that is **not** converted: it is 30
+percentage points of additional lapse **at a bonus date**, an election on the day the bonus
+is credited, so it enters whole in the single month whose end is 납입완료 rather than being
+smeared over the last paying year.
 
 .. rubric:: The age basis is 보험나이
 
@@ -36,8 +74,10 @@ Ages are **보험나이** (*boheom nai*, insurance age) throughout — the model
 ``issue_age``, the mortality table's index and :func:`age`. 보험나이 is the 만 나이 at the
 계약일 with a fraction under six months discarded and six months or more rounded up, and it
 increments on each 계약해당일 (policy anniversary) rather than on the birthday [REG-R25
-제21조]. That is exactly what an annual grid stepped on anniversaries does, so the ageing
-is correct by construction. What is **not** correct by construction is the table: the
+제21조]. A monthly grid anchored at issue steps its 계약해당일 exactly twelve months apart,
+so ``t // 12`` counts them and the ageing is correct by construction; the attained age is
+level through the twelve months of a policy year, interpolating it within the year being a
+statement about an age the contract has no concept of. What is **not** correct by construction is the table: the
 public statistics the shipped ``mort_table.csv`` is calibrated against — 국가데이터처
 완전생명표 and its 기대여명 [REG-R38] — are published on **만나이**, and no public mapping
 between the two bases exists, so no conversion is applied **[std]**. The six-month rule
@@ -64,9 +104,9 @@ lapse_table_file        data.lapse_table()              lapse_table.csv
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue — ``pols_*`` for policy counts, plural nouns for
 cash flows, ``*_rate`` for rates, ``*_pp`` for per-policy amounts, ``claims(t, kind)`` with
-an uppercase ``kind`` string, ``pols_if_at(t, timing)`` for the within-year in-force reads.
+an uppercase ``kind`` string, ``pols_if_at(t, timing)`` for the within-month in-force reads.
 The technical notes use the compact actuarial symbols of the product specification instead.
-``t`` below is the 0-based period index and ``d`` the anniversary; a cells taking ``d``
+``t`` below is the 0-based month index and ``d`` the month-end; a cells taking ``d``
 is a value at a point in time and not a flow of a period. The mapping is:
 
 =========================  ==================================  ============================
@@ -74,28 +114,38 @@ Notes symbol               Cells                               Meaning
 =========================  ==================================  ============================
 (none)                     model_point()                       The selected model point row
 x                          age_at_entry()                      가입나이 (보험나이) at issue
-x + t                      age(t)                              Attained 보험나이 in period t
-t + 1                      policy_year(t)                      Contractual policy year, 1-based
+x + t//12                  age(t)                              Attained 보험나이 in month t
+t//12 + 1                  policy_year(t)                      Contractual policy year, 1-based
 omega                      omega_age()                         Terminal age of the table
-T                          proj_len()                          Number of policy years projected
-m                          prem_term(), prem_period()          납입기간; 0 is 전기납
+T_y                        proj_years()                        Policy years spanned
+T                          proj_len()                          Projected months, 12 T_y
+m                          prem_term(), prem_period()          납입기간 in years; 0 is 전기납
+12m                        prem_period_mths()                  납입기간 in months
 (none)                     prem_end()                          Last policy year a premium is due
-n_sc                       surr_chg_period()                   해약공제기간 = min(m, 7)
-SA                         sum_assured(), sum_assured_at(t)     보험가입금액, at issue and in period t
-G                          premium_pp(), premium_at_pp(t)       Annual 영업보험료
+n_sc                       surr_chg_period()                   해약공제기간 = min(m, 7) years
+12 n_sc                    surr_chg_period_mths()              The same, in months
+SA                         sum_assured(), sum_assured_at(t)     보험가입금액, at issue and in month t
+G                          premium_pp(), premium_at_pp(t)       Annual 영업보험료, a reporting figure
+G^m                        premium_mth_pp(), premium_mth_at_pp(t)  Monthly 영업보험료, the month's income
 (none)                     prem_gross_calc_pp()                Loaded premium on the model's own basis
-P                          prem_net_level_pp()                 연납순보험료 over 납입기간
+P                          prem_net_level_pp()                 연납순보험료, the 별표 14 quantity
+P^m                        prem_net_level_mth_pp()             월납순보험료, what the account consumes
 P20                        prem_net_20yr_pp()                  연납순보험료 on the 별표 14 20년납 footing
 i                          prem_int_rate                       예정이율, the pricing rate
+j                          prem_int_rate_mth()                 The same, per month
 (declared)                 decl_rate()                         공시이율 on a 금리연동형 contract
 (floor)                    min_guar_rate                       최저보증이율
 i_acc                      acc_int_rate()                      The rate the account accrues at
-q(x+t)                     mort_rate(t)                        적용위험률 in period t
+j_acc                      acc_int_rate_mth()                  The same, per month
+q(x+t//12)                 mort_rate(t)                        **Annual** 적용위험률 in month t
+q^m(t)                     mort_rate_mth(t)                    The monthly decrement applied
 (table q)                  mort_rate_at_age(y)                 Table rate at attained age y
+(table q^m)                mort_rate_mth_at(u)                 Table monthly rate in month u
 (none)                     mort_be_factor()                    Multiplier on the table rate
-w(t)                       lapse_rate(t)                       Annual 해지율
+w(t)                       lapse_rate(t)                       **Annual** 해지율
+w^m(t)                     lapse_rate_mth(t)                   The monthly decrement applied
 (base w)                   lapse_rate_base(t)                  Before the 유지보너스 spike
-u(t)                       waiver_rate(t)                      납입면제 incidence
+u(t), u^m(t)               waiver_rate(t), waiver_rate_mth(t)  납입면제 incidence, annual and monthly
 s                          lapse_spike()                       Additional lapse at a bonus date
 (감액)                      sa_factor(d)                        Proportion of SA in force at d
 V(d)                       pol_val_pp(d)                       계약자적립액 at anniversary d
@@ -111,15 +161,15 @@ k W(d)                     cv_susp_pp(d)                       Suppressed value 
 (bonus)                    bonus_pp(d)                         유지보너스 credited at 납입완료
 cumprem(d)                 cum_prem_pp(d)                      Premiums paid by anniversary d
 (환급률)                    refund_ratio(d)                     CV(d) / cumprem(d)
-L(d)                       loan_pp(d)                          보험계약대출 balance at anniversary d
-D(t)                       loan_draw(t)                        Amount drawn at the start of period t
-i_L                        loan_int_rate()                     보험계약대출이율 = i + 1.5%
-l(t)                       pols_if(t)                          In force at the start of period t
+L(d)                       loan_pp(d)                          보험계약대출 balance at month-end d
+D(t)                       loan_draw(t)                        Amount drawn at the start of month t
+i_L, j_L                   loan_int_rate(), loan_int_rate_mth()  보험계약대출이율 = i + 1.5%, and per month
+l(t)                       pols_if(t)                          In force at the start of month t
 (paying)                   pols_if_pay(t)                      In force and paying premium
 (waived)                   pols_waived(t)                      In force with premiums waived
 l(t)(1-q), l(t+1)          pols_if_at(t, timing)               BEF_DECR/BEF_LAPSE/AFT_DECR
-(deaths)                   pols_death(t)                       Expected deaths in period t
-(lapses)                   pols_lapse(t)                       Expected 해지 in period t
+(deaths)                   pols_death(t)                       Expected deaths in month t
+(lapses)                   pols_lapse(t)                       Expected 해지 in month t
 (surrenders paid)          pols_surr(t)                        Lapses that are not reinstated
 (부활)                      pols_reinstate(t)                   Reinstatements at the start of t
 G lp(t)                    premiums(t)                         Premium income
@@ -236,8 +286,8 @@ worked example while the machinery stays visible and testable:
   as surrendered** and pays the corresponding 해약환급금 on the basis applying at that
   duration; the sum assured, the premium and the account all restate pro rata, which is
   exact here because every one of them is proportional to the 보험가입금액.
-- **부활**, ``reinstate_rate`` at 0 except on model point 10. A stated proportion of one
-  year's lapses returns to the paying cohort a year later and is **not** paid a surrender
+- **부활**, ``reinstate_rate`` at 0 except on model point 10. A stated proportion of a
+  month's lapses returns to the paying cohort **twelve months** later and is **not** paid a surrender
   value, which is the substantive effect: 부활 requires that the 해약환급금 has not been
   drawn, and the 약관 expressly includes the case where there was none to draw — so a
   무해지 contract is always reinstatable within three years.
@@ -293,8 +343,9 @@ def age_at_entry():
 
     보험나이 (*boheom nai*, insurance age) is the 만 나이 at the 계약일 with a fraction
     under six months discarded and six months or more rounded up, incrementing on each
-    계약해당일 rather than on the birthday [REG-R25 제21조].  An annual grid stepped on
-    anniversaries therefore ages it correctly by construction.  The maximum issue age of 65
+    계약해당일 rather than on the birthday [REG-R25 제21조].  A monthly grid anchored at
+    issue steps its 계약해당일 exactly twelve months apart, so ``t // 12`` counts them and
+    the ageing is correct by construction.  The maximum issue age of 65
     is much lower than Japan's 80, and the minimum of 15 is statutory: 상법 제732조 voids a
     contract on the death of a person under 15.
     """
@@ -327,11 +378,12 @@ def prem_term():
 
 
 def prem_period():
-    """m: the effective 납입기간 **in policy years**, ``proj_len()`` on a 전기납 contract.
+    """m: the effective 납입기간 **in policy years**, ``proj_years()`` on a 전기납 contract.
 
     A count of policy years and so a 1-based contractual quantity: premiums are due in policy
-    years 1 to m, which are the periods ``t = 0 ... m - 1``.  On a 전기납 contract that is
-    every projected year, ``proj_len()`` of them.
+    years 1 to m, which are the months ``t = 0 ... 12m - 1``; :func:`prem_period_mths` is that
+    month count.  On a 전기납 contract the 납입기간 is every projected year,
+    ``proj_years()`` of them.
 
     The suppressed period is identical to the premium-paying period on the composite
     design, so this is also the duration at which :func:`cv_pp` steps up where it steps up
@@ -339,7 +391,19 @@ def prem_period():
     else — at seven years on one and at 납입기간 + 3년 on another — which is why the model
     exposes the date rather than hard-coding it.
     """
-    return prem_term() if prem_term() > 0 else proj_len()
+    return prem_term() if prem_term() > 0 else proj_years()
+
+
+def prem_period_mths():
+    """12 m: the 납입기간 in **months** — the grid's own unit for it.
+
+    The contract states the 납입기간 in years and the projection steps in months, so the two
+    live in separate cells and nothing converts one into the other by hand.  Premiums are due
+    in the months ``t = 0 ... prem_period_mths() - 1``, the suppressed period runs over the
+    anniversaries ``d = 1 ... prem_period_mths() - 1``, and 납입완료 is the month-end
+    ``d = prem_period_mths()`` at which the surrender value steps up.
+    """
+    return 12 * prem_period()
 
 
 def prem_end():
@@ -353,15 +417,19 @@ def prem_end():
 
 
 def premium_pp():
-    """G: the level annual 영업보험료 per policy, payable in advance in years 1 to m.
+    """G: the level **annual** 영업보험료 per policy, a reporting figure and the commission base.
+
+    The month's actual premium income is :func:`premium_mth_pp`, one twelfth of this, paid
+    in advance in the months ``t = 0 ... 12m - 1``.
 
     Level and guaranteed for the whole of 납입기간 on the 금리확정형 composite, with no
     review and no crediting-rate feedback, which puts every year of it inside any
     defensible contract boundary.  On model point 2 the value is **sourced**: ₩257,050 a
     month is published for exactly that cell — 남 40세, 1억원, 종신, 20년납, 월납, 표준형
-    [S4] — and the annual figure is 12 times it **[std]**, no carrier in the set publishing
-    an annual-mode scale, so the modal discount a real 연납 rate would carry is not applied
-    and the annual premium is slightly overstated.  The anchor's own premium is that figure
+    [S4] — and the annual column in the model point table is 12 times it, no carrier in the
+    set publishing an annual-mode scale.  On a monthly grid that multiplication is undone
+    again by :func:`premium_mth_pp`, so the projection collects the published monthly figure
+    itself and the modal discount a real 연납 rate would carry never arises.  The anchor's own premium is that figure
     times **0.900 [std]**, a rounding of the 89.9% one carrier publishes for a 50%
     suppression at its own cell — 남 40세, 5,000만원, 10년납, not this one [S1].  Points 3
     and 6 are built the same way, 6 being the anchor with the loan module on; the other
@@ -488,6 +556,17 @@ def waiver_rate(t):
     return float(model_point()["waiver_rate"])
 
 
+def waiver_rate_mth(t):
+    """u^m(t): the monthly 납입면제 incidence, ``1 - (1 - u(t))^(1/12)`` **[std]**.
+
+    The model point states the incidence annually, because that is the unit a 장해 incidence
+    would be published in if Korea published one.  It is a **probability** over the year, so
+    the constant-force monthly equivalent sits slightly above a twelfth of it and a model
+    dividing by twelve would understate the waived population.
+    """
+    return 1.0 - (1.0 - waiver_rate(t)) ** (1.0 / 12.0)
+
+
 def loan_util():
     """The fraction of the **contractual** 보험계약대출 limit drawn; 0 in the base run.
 
@@ -502,8 +581,9 @@ def loan_year():
     """The **policy year** at whose start the 보험계약대출 is drawn, or 0 for no drawdown.
 
     A contractual, 1-based label read straight from the model point table, so the draw falls
-    in period ``loan_year() - 1``, at the anniversary ``d = loan_year() - 1``; the model maps
-    it through :func:`policy_year` and never indexes by it.  A model point column rather than
+    in the month ``t = 12 (loan_year() - 1)``, at the 계약해당일 ``d = 12 (loan_year() - 1)``
+    that opens it; the model converts the label once, here and in :func:`loan_draw`, and never
+    indexes by it.  A model point column rather than
     a fixed Reference, because *when* the loan is taken is the whole demonstration: a draw
     during 납입기간 on a 저해지 contract is limited to 80% of the **suppressed** value, half
     its 표준형 size, and the same election on a 무해지 contract draws nothing at all.  Policy
@@ -534,8 +614,10 @@ def reduce_year():
     """The **policy year** at whose closing anniversary a 감액 is made, or 0 for none.
 
     A contractual, 1-based label, like :func:`loan_year`: the reduction falls at the end of
-    period ``reduce_year() - 1``, which is the anniversary ``d = reduce_year()``, and the
-    model maps it through :func:`policy_year` rather than indexing by it.
+    the month ``t = 12 reduce_year() - 1``, which is the 계약해당일
+    ``d = 12 reduce_year()``, and the model converts the label once rather than indexing by
+    it.  A monthly grid puts the 감액 on its own date, where an annual one could only put it
+    in its year.
 
     감액 is universal on this chassis and is a **partial surrender**: 「그 감액된 부분은
     해지된 것으로 보며 … 해지환급금을 계약자에게 지급합니다」 [S5 제20조].  On a suppressed
@@ -570,16 +652,18 @@ def reinstate_rate():
     product: the 해약환급금 counts as undrawn 「해지환급금이 없는 경우를 포함」 — so **a
     무해지 contract is always reinstatable**, there having been no value to draw [S5 제26조]
     [REG-R25 제27조].  That makes lapse on this chassis a non-terminal state.  The
-    proportion is **[std]**; no Korean reinstatement statistic is public.  On the annual
-    grid the lag is one year and no premium instalment falls inside it, so the arrears of
-    제27조 produce no separate cash flow **[std]**; what the module does produce is a lapse
-    that is **not** paid a surrender value, which is the substantive effect.
+    proportion is **[std]**; no Korean reinstatement statistic is public.  The lag is
+    **twelve months**, which on a monthly grid is a real interval rather than one step, and
+    the arrears of 제27조 — twelve missed instalments with interest — are still not
+    monetized **[std]**: recognizing them would need a missed-premium ledger, and what the
+    module exists to produce is a lapse that is **not** paid a surrender value, which is the
+    substantive effect.
     """
     return float(model_point()["reinstate_rate"])
 
 
 def pols_if_init():
-    """The number of policies in force at ``t = 0``, the start of the first policy year: one.
+    """The number of policies in force at ``t = 0``, the start of the first policy month: one.
 
     Every model point is a single policy, so the whole ``result_cf()`` frame is a
     per-policy-issued statement and can be scaled by a real portfolio count directly.
@@ -599,33 +683,56 @@ def omega_age():
     return int(tbl.index[tbl["mort_rate"] >= 1.0][0])
 
 
-def proj_len():
-    """T = omega - x + 1: the **number** of policy years projected.
+def proj_years():
+    """T_y = omega - x + 1: the number of policy **years** the projection spans.
 
-    The exclusive end of the frame, counted from ``t = 0``: ``result_cf()`` covers
-    ``t = 0, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``.  There is no
-    maturity date and no 만기보험금, so the horizon is the table's and not the contract's.
-    Every remaining life dies in the last period ``T - 1``, ``pols_if(T)`` is zero, and
-    nothing is paid at the horizon other than the death benefit.  It is also the number of
-    anniversaries after issue, the value index ``d`` running ``0 ... proj_len()``.
+    There is no maturity date and no 만기보험금, so the horizon is the mortality table's and
+    not the contract's: the last projected policy year is the one at attained age
+    ``omega_age()``, whose table rate is 1.  Kept separate from :func:`proj_len` because a
+    종신 contract's own schedules — the 납입기간, the 해약공제기간, :func:`loan_year`,
+    :func:`reduce_year` — are all written in years, while the projection steps in months.
     """
     return omega_age() - age_at_entry() + 1
 
 
-def policy_year(t):
-    """t + 1: the contractual policy year of period t, a 1-based label.
+def proj_len():
+    """T = 12 (omega - x + 1): the **number** of policy months projected.
 
-    Period ``t = 0`` is policy year 1.  The label exists because the contract's own
+    The exclusive end of the frame, counted from ``t = 0``: ``result_cf()`` covers
+    ``t = 0, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``.  912 on the anchor
+    cell, a 보험나이-40 life projected to the table's terminal age 115.  It is also the
+    number of month-ends after issue, the value index ``d`` running ``0 ... proj_len()``.
+
+    Every remaining life dies during the **last twelve months**, at attained age
+    ``omega_age()``, where the table rate is 1: :func:`mort_rate_mth` spreads that certainty
+    uniformly over those twelve months rather than killing the cohort in the first of them,
+    so the terminal year has twelve populated rows and ``pols_if(T)`` is zero exactly.
+    Nothing is paid at the horizon other than the death benefit.
+    """
+    return 12 * proj_years()
+
+
+def policy_year(t):
+    """y(t) = t // 12 + 1: the contractual policy year of month t, a 1-based label.
+
+    Month ``t = 0`` falls in policy year 1.  The label exists because the contract's own
     schedules are quoted in policy years — the 납입기간 ``m``, :func:`loan_year` and
     :func:`reduce_year` — and it is **derived, never indexed by**: every cells of this model
-    is indexed by the 0-based ``t`` or by the anniversary ``d``.
+    is indexed by the 0-based month ``t`` or by the month-end ``d``.
     """
-    return t + 1
+    return t // 12 + 1
 
 
 def age(t):
-    """x + t: the attained 보험나이 during period t, i.e. at its opening anniversary."""
-    return age_at_entry() + t
+    """x + t // 12: the attained 보험나이 in month t.
+
+    보험나이 increments on the **계약해당일** and not on the birthday [REG-R25 제21조], and a
+    monthly grid anchored at issue steps its anniversaries exactly twelve months apart, so
+    ``t // 12`` is the number of 계약해당일 passed and the alignment is exact rather than
+    approximate.  The attained age is level through the twelve months of a policy year:
+    interpolating it within the year would be modelling an age the contract has no concept of.
+    """
+    return age_at_entry() + t // 12
 
 
 def mort_rate_at_age(y):
@@ -662,8 +769,65 @@ def mort_rate(t):
     return min(1.0, mort_rate_base(t) * mort_be_factor())
 
 
+def mort_rate_mth(t):
+    """q^m(t): the mortality decrement actually applied in month t.
+
+    ``1 - (1 - q(t))^(1/12)`` **[std]** — the uniform-force conversion of the annual
+    best-estimate rate of the policy year month ``t`` falls in, which is the conversion every
+    monthly model in this library uses.  The annual rate is the sourced quantity: both
+    disclosed Korean 적용위험률 grids are annual by age [S2] [S8], so the model reads the
+    annual rate and derives the monthly one, never the other way round.  Twelve of these
+    compound back to the year's annual rate exactly, which is what leaves the in-force at
+    every 계약해당일 where the annual rates put it.
+
+    **At the table's terminal age the conversion does not apply**, the annual rate being 1:
+    a uniform-force reading would kill the whole surviving cohort in the first month of the
+    terminal year and leave eleven empty rows behind it.  The certain death is instead
+    spread **uniformly over the twelve months** — ``1 / (12 - j)`` in the ``j``-th of them,
+    so the last month's rate is 1 and nobody survives the year — which is the standard UDD
+    reading and keeps the terminal year a projected year rather than an instant **[std]**.
+    """
+    q = mort_rate(t)
+    if q >= 1.0:
+        return 1.0 / (12 - t % 12)
+    return 1.0 - (1.0 - q) ** (1.0 / 12.0)
+
+
+def mort_rate_mth_at(u):
+    """The **table** monthly rate in month u from issue, before ``mort_be_factor``.
+
+    The contractual basis the 계약자적립액 and the net premium run on, converted to the
+    grid's own step by the same rule :func:`mort_rate_mth` uses — including the uniform
+    spread at the terminal age.  Indexed by the month from issue rather than by attained age,
+    because on a monthly grid the rate of a month depends on how far into the policy year the
+    month sits as well as on the age, and :func:`prosp_val_pp` has to walk the months.
+    """
+    q = mort_rate_at_age(age_at_entry() + u // 12)
+    if q >= 1.0:
+        return 1.0 / (12 - u % 12)
+    return 1.0 - (1.0 - q) ** (1.0 / 12.0)
+
+
+def acc_int_rate_mth():
+    """j_acc = (1 + i_acc)^(1/12) - 1: the rate the account accrues at, per month.
+
+    The 연복리 equivalent, so twelve months of accrual compound to the year's 연복리 rate
+    exactly.  감독규정 제7-66조제1항제4호 provides that the 계약자적립액 accrues **monthly**
+    before 납입완료 and daily afterwards; both formulas render as images in the 고시 and did
+    not extract, so this is still a **[std]** reading of them [REG-R19] — but a monthly step
+    is the reading the regulation actually describes for the paying period, where an annual
+    one was an approximation of it.
+    """
+    return (1.0 + acc_int_rate()) ** (1.0 / 12.0) - 1.0
+
+
+def prem_int_rate_mth():
+    """j = (1 + i)^(1/12) - 1: the 예정이율 per month, for the monthly equivalence."""
+    return (1.0 + prem_int_rate) ** (1.0 / 12.0) - 1.0               # noqa: F821
+
+
 def disc_factor():
-    """v = 1 / (1 + i_acc): the discount factor the account accrues on."""
+    """v = 1 / (1 + i_acc): the annual discount factor the account accrues on."""
     return 1.0 / (1.0 + acc_int_rate())
 
 
@@ -704,24 +868,57 @@ def annuity_due(y, n):
     return 1.0 + disc_factor_prem() * (1.0 - mort_rate_at_age(y)) * annuity_due(y + 1, n - 1)
 
 
-def epv_death_acc(y):
-    """A(y) on the **accrual** rate — the same quantity as :func:`epv_death` on i_acc.
+def epv_death_mth(u):
+    """A^m(u): the EPV at month u from issue of 1 payable at the end of the month of death.
 
-    Identical to :func:`epv_death` on a 금리확정형 contract, where the two rates coincide.
+    On the **pricing** rate and the shipped table, unadjusted by ``mort_be_factor``, walking
+    the monthly grid: ``A(u) = v_m [q^m(u) + (1 - q^m(u)) A(u + 1)]`` with
+    ``A(proj_len()) = 0``.  It terminates because the last month's rate is 1 by construction.
+
+    Indexed by the month from issue rather than by attained age.  On an annual grid the
+    attained age was a sufficient index; on a monthly one it is not, the value at a given age
+    depending on how many months of that policy year remain.
+    """
+    if u >= proj_len():
+        return 0.0
+    q = mort_rate_mth_at(u)
+    return (1.0 / (1.0 + prem_int_rate_mth())) * (
+        q + (1.0 - q) * epv_death_mth(u + 1))
+
+
+def annuity_due_mth(u, n):
+    """a-due^m(u, n): the n-month annuity-due of 1 per month from month u, pricing rate.
+
+    ``1 + v_m p^m(u) a(u + 1, n - 1)``, zero for ``n <= 0``.  Measured in months of premium,
+    so ``SA A^m(0) / a^m(0, 12m)`` is an amount **per month** — the 월납순보험료 by monthly
+    equivalence, which is what the account recursion consumes.
+    """
+    if n <= 0 or u >= proj_len():
+        return 0.0
+    return 1.0 + (1.0 / (1.0 + prem_int_rate_mth())) * (
+        1.0 - mort_rate_mth_at(u)) * annuity_due_mth(u + 1, n - 1)
+
+
+def epv_death_acc_mth(u):
+    """A^m(u) on the **accrual** rate — the same quantity as :func:`epv_death_mth` on i_acc.
+
+    Identical to :func:`epv_death_mth` on a 금리확정형 contract, where the two rates coincide.
     It exists so that :func:`prosp_val_pp` can state the prospective form of the account on
     the rate the account actually accrues at.
     """
-    if y > omega_age():
+    if u >= proj_len():
         return 0.0
-    q = mort_rate_at_age(y)
-    return disc_factor() * (q + (1.0 - q) * epv_death_acc(y + 1))
+    q = mort_rate_mth_at(u)
+    return (1.0 / (1.0 + acc_int_rate_mth())) * (
+        q + (1.0 - q) * epv_death_acc_mth(u + 1))
 
 
-def annuity_due_acc(y, n):
-    """a-due(y, n) on the **accrual** rate; see :func:`epv_death_acc`."""
-    if n <= 0:
+def annuity_due_acc_mth(u, n):
+    """a-due^m(u, n) on the **accrual** rate; see :func:`epv_death_acc_mth`."""
+    if n <= 0 or u >= proj_len():
         return 0.0
-    return 1.0 + disc_factor() * (1.0 - mort_rate_at_age(y)) * annuity_due_acc(y + 1, n - 1)
+    return 1.0 + (1.0 / (1.0 + acc_int_rate_mth())) * (
+        1.0 - mort_rate_mth_at(u)) * annuity_due_acc_mth(u + 1, n - 1)
 
 
 def prem_net_level_pp():
@@ -737,6 +934,24 @@ def prem_net_level_pp():
     """
     return sum_assured() * epv_death(age_at_entry()) / annuity_due(
         age_at_entry(), prem_period())
+
+
+def prem_net_level_mth_pp():
+    """P^m: the 월납순보험료, fixed at issue by equivalence over the 납입기간 in months.
+
+    ``P^m a-due^m(0, 12m) = SA A^m(0)`` on the 예정이율 and the shipped 적용위험률, both
+    converted to the projection's own step.  This is the premium the 계약자적립액 recursion
+    consumes, and it is **not** :func:`prem_net_level_pp` divided by twelve: a monthly
+    equivalence discounts eleven of each year's twelve instalments and exposes them to the
+    year's mortality, which an annual one does not, so the two differ by the timing the
+    annual grid used to give away.
+
+    :func:`prem_net_level_pp` survives beside it as the **연납순보험료**, which is the
+    quantity 별표 14 names and the one :func:`prem_gross_calc_pp` loads; that is a statutory
+    and pricing figure rather than a cash flow, and it stays on its annual footing.
+    """
+    return sum_assured() * epv_death_mth(0) / annuity_due_mth(
+        0, prem_period_mths())
 
 
 def prem_net_20yr_pp():
@@ -801,6 +1016,11 @@ def surr_chg_period():
     return min(prem_period(), surr_chg_max_years)                    # noqa: F821
 
 
+def surr_chg_period_mths():
+    """12 n_sc: the 해약공제기간 in **months**, the unit :func:`surr_chg_pp` runs off."""
+    return 12 * surr_chg_period()
+
+
 def surr_chg_pp(d):
     """SC(d): the 해약공제액 embedded in the surrender value at anniversary d, ``d = 0`` at issue.
 
@@ -812,7 +1032,7 @@ def surr_chg_pp(d):
     real run-off living in the unpublished 산출방법서.  It scales with any 감액, the
     미상각신계약비 of a surrendered portion being written off with it.
     """
-    return (surr_chg_cap_pp() * max(0.0, 1.0 - d / surr_chg_period())
+    return (surr_chg_cap_pp() * max(0.0, 1.0 - d / surr_chg_period_mths())
             * sa_factor(d))
 
 
@@ -859,7 +1079,7 @@ def sa_factor(d):
     proportional to the sum assured — the premium, the account, the surrender charge — is
     scaled by this one factor, which is exact rather than approximate on a level contract.
     """
-    if reduce_year() <= 0 or d <= reduce_year():
+    if reduce_year() <= 0 or d <= 12 * reduce_year():
         return 1.0
     return 1.0 - reduce_frac()
 
@@ -873,41 +1093,62 @@ def sum_assured_at(t):
     return sum_assured() * sa_factor(t + 1)
 
 
+def premium_mth_pp():
+    """G^m: the level **monthly** 영업보험료 per policy, the month's actual premium income.
+
+    ``premium_pp() / 12``, which on model point 2 recovers the published ₩257,050 a month
+    exactly — that is the figure the carrier prints for the cell, and the annual column in the
+    model point table is twelve times it [S4].  So the monthly grid reads the sourced number
+    directly where the annual grid read a figure derived from it.
+    """
+    return premium_pp() / 12.0
+
+
 def premium_at_pp(t):
-    """The annual 영업보험료 due at the start of period t, scaled by any 감액.
+    """The annual 영업보험료 in force in month t, scaled by any 감액; a reporting figure.
 
     Read at ``d = t + 1`` for the same reason as :func:`sum_assured_at`.
     """
     return premium_pp() * sa_factor(t + 1)
 
 
+def premium_mth_at_pp(t):
+    """The **monthly** 영업보험료 due at the start of month t, scaled by any 감액.
+
+    The premium the contract actually collects in the month, and the one
+    :func:`premiums` and :func:`cum_prem_pp` are built from.
+    """
+    return premium_mth_pp() * sa_factor(t + 1)
+
+
 def pol_val_base_pp(d):
     """V(d): the 계약자적립액 at anniversary d on the **issue** sum assured, ``d = 0`` at issue.
 
-    A value **at a point in time** and not a flow of a period, so its index is the
-    anniversary ``d = 0 … proj_len()`` rather than the period index ``t``; the account that
-    opens period ``t`` is ``V(t)`` and the one that closes it ``V(t + 1)``.  The classical net
-    level recursion the product specification states, solved forward on the annual grid::
+    A value **at a point in time** and not a flow of a period, so its index is the month-end
+    ``d = 0 … proj_len()`` rather than the period index ``t``; the account that opens month
+    ``t`` is ``V(t)`` and the one that closes it ``V(t + 1)``.  The classical net level
+    recursion the product specification states, solved forward on the **monthly** grid::
 
         V(0) = 0
-        V(d) (1 - q) = ( V(d-1) + P 1{d <= m} ) (1 + i_acc) - q SA
+        V(d) (1 - q^m) = ( V(d-1) + P^m 1{d <= 12m} ) (1 + j_acc) - q^m SA
 
-    with ``q = q(x + d - 1)``, the rate of the policy year just ended — the period ``d - 1``,
-    whose attained age is ``age(d - 1)``.  ``V(T)`` is defined as zero: at the terminal age
-    ``q = 1``, every remaining life has died and the recursion degenerates.
+    with ``q^m = q^m(d - 1)``, the rate of the month just ended, and ``j_acc`` the monthly
+    accrual rate.  ``V(T)`` is defined as zero: in the last month the rate is 1, every
+    remaining life has died and the recursion degenerates.
 
     감독규정 제7-65조제1항 says only that 「계약자적립액은 … 산출방법서에 따라 계산한
-    금액으로 한다」 and 제2항 permits it to be computed on an **annualised premium** basis,
-    which is the permission that lets an annual grid carry a monthly-premium product's
-    account [REG-R18].  제7-66조제1항제4호 adds that the account accrues **monthly before
-    납입완료 and daily afterwards**; both formulas render as images in the 고시 and did not
-    extract, so the annual accrual here is a **[std]** approximation of them [REG-R19].
+    금액으로 한다」, and 제7-66조제1항제4호 adds that the account accrues **monthly before
+    납입완료 and daily afterwards**.  Both formulas render as images in the 고시 and did not
+    extract, so this is still a **[std]** reading of them — but a monthly accrual is the
+    reading the regulation describes for the paying period, where the annual one this model
+    used to run was an approximation of it, defensible only through 제7-65조제2항's
+    permission to compute the account 「연납보험료를 기준으로」 [REG-R18] [REG-R19].
     """
     if d <= 0 or d >= proj_len():
         return 0.0
-    q = mort_rate_at_age(age(d - 1))
-    prem = prem_net_level_pp() if d <= prem_period() else 0.0
-    return (((pol_val_base_pp(d - 1) + prem) * (1.0 + acc_int_rate())
+    q = mort_rate_mth_at(d - 1)
+    prem = prem_net_level_mth_pp() if d <= prem_period_mths() else 0.0
+    return (((pol_val_base_pp(d - 1) + prem) * (1.0 + acc_int_rate_mth())
              - q * sum_assured()) / (1.0 - q))
 
 
@@ -935,9 +1176,9 @@ def prosp_val_pp(d):
     the prospective form no longer starts at zero — so the check is defined as zero there
     rather than asserted, and this cells is a diagnostic.
     """
-    return (sum_assured() * epv_death_acc(age_at_entry() + d)
-            - prem_net_level_pp() * annuity_due_acc(
-                age_at_entry() + d, max(prem_period() - d, 0)))
+    return (sum_assured() * epv_death_acc_mth(d)
+            - prem_net_level_mth_pp() * annuity_due_acc_mth(
+                d, max(prem_period_mths() - d, 0)))
 
 
 def cv_std_pp(d):
@@ -968,7 +1209,7 @@ def cv_mult(d):
     """
     if prem_term() == 0:
         return cv_floor_ratio()
-    return cv_floor_ratio() if d < prem_period() else 1.0
+    return cv_floor_ratio() if d < prem_period_mths() else 1.0
 
 
 def cum_prem_pp(d):
@@ -982,7 +1223,7 @@ def cum_prem_pp(d):
     """
     if d <= 0:
         return 0.0
-    add = premium_at_pp(d - 1) if d <= prem_end() else 0.0
+    add = premium_mth_at_pp(d - 1) if d <= prem_period_mths() else 0.0
     return cum_prem_pp(d - 1) + add
 
 
@@ -996,9 +1237,9 @@ def bonus_pp(d):
     published crediting formula would be an invention.  Never credited on a 전기납 contract,
     which has no 납입완료 date.
     """
-    if bonus_rate() <= 0.0 or prem_term() == 0 or d < prem_period():
+    if bonus_rate() <= 0.0 or prem_term() == 0 or d < prem_period_mths():
         return 0.0
-    return bonus_rate() * cum_prem_pp(prem_period())
+    return bonus_rate() * cum_prem_pp(prem_period_mths())
 
 
 def cv_pp(d):
@@ -1081,17 +1322,41 @@ def lapse_spike():
 
 
 def lapse_rate(t):
-    """w(t): the annual 해지율 applied at the end of period t.
+    """w(t): the **annual** 해지율 of the policy year month t falls in.
 
-    The base rate plus any bonus-date spike, capped at 1.  This is the **annual** rate;
-    there is no monthly companion on an annual-grid model.  A lapse is not a pure decrement
-    here: unless it is reinstated it pays :func:`cv_pp` net of any 보험계약대출 — and on a
-    무해지 contract during 납입기간 that is nothing at all, the whole of the accumulated
-    value being forfeited to the fund.  That is the consumer-detriment finding behind the
-    2019 소비자경보 [REG-R28].
+    The base rate plus any bonus-date spike, capped at 1 — the rate as the supervisor states
+    it, by policy year.  It is the sourced quantity and the reporting one;
+    :func:`lapse_rate_mth` is what the roll-forward applies.
+
+    A lapse is not a pure decrement here: unless it is reinstated it pays :func:`cv_pp` net
+    of any 보험계약대출 — and on a 무해지 contract during 납입기간 that is nothing at all,
+    the whole of the accumulated value being forfeited to the fund.  That is the
+    consumer-detriment finding behind the 2019 소비자경보 [REG-R28].
     """
     w = lapse_rate_base(t)
     if bonus_rate() > 0.0 and prem_term() > 0 and policy_year(t) == prem_period():
+        w = w + lapse_spike()
+    return min(1.0, w)
+
+
+def lapse_rate_mth(t):
+    """w^m(t): the monthly 해지율 applied at the end of month t.
+
+    ``1 - (1 - w_base(t))^(1/12)`` **[std]** on the base curve, which is level inside a
+    policy year and steps at each 계약해당일 because the vector the FSS 원칙모형 prescribes
+    is written by 경과기간 in years [REG-R27].
+
+    **The 유지보너스 spike is not converted.** It is 30 percentage points of *additional*
+    lapse at a **bonus date** — a discrete election on the day the bonus is credited, not a
+    force acting through a year — so it enters whole, in the single month whose end is
+    납입완료, ``t = prem_period_mths() - 1``, and nowhere else.  The annual grid had to smear
+    it over the twelfth of the contract that is the last paying year; on this grid it sits on
+    its date, which is what the supervisor's requirement of an additional lapse **at any
+    bonus date** actually describes [REG-R27].
+    """
+    w = 1.0 - (1.0 - lapse_rate_base(t)) ** (1.0 / 12.0)
+    if (bonus_rate() > 0.0 and prem_term() > 0
+            and t == prem_period_mths() - 1):
         w = w + lapse_spike()
     return min(1.0, w)
 
@@ -1110,6 +1375,17 @@ def loan_int_rate():
     return acc_int_rate() + loan_spread                              # noqa: F821
 
 
+def loan_int_rate_mth():
+    """j_L = (1 + i_L)^(1/12) - 1: the 보험계약대출이율 per month.
+
+    The 연복리 equivalent of the contractual rate, so twelve months of capitalisation
+    compound to the year's rate exactly.  A Korean policy loan accrues 「일별」 in the 약관
+    and is settled at repayment or at the next exit; a monthly step is the projection's own
+    approximation of that and is one step closer to it than an annual one **[std]**.
+    """
+    return (1.0 + loan_int_rate()) ** (1.0 / 12.0) - 1.0
+
+
 def loan_draw(t):
     """D(t): the 보험계약대출 drawn at the start of period t; zero in the base run.
 
@@ -1124,7 +1400,7 @@ def loan_draw(t):
     its 표준형 size on a 저해지 contract during 납입기간, and **zero on a 무해지 one**.
     """
     if (loan_util() <= 0.0 or loan_year() <= 0
-            or policy_year(t) != loan_year()):
+            or t != 12 * (loan_year() - 1)):
         return 0.0
     room = loan_limit * cv_pp(t) - loan_pp(t)                        # noqa: F821
     return max(0.0, min(1.0, loan_util()) * room)
@@ -1148,7 +1424,7 @@ def loan_pp(d):
     """
     if d <= 0:
         return 0.0
-    return (loan_pp(d - 1) + loan_draw(d - 1)) * (1.0 + loan_int_rate())
+    return (loan_pp(d - 1) + loan_draw(d - 1)) * (1.0 + loan_int_rate_mth())
 
 
 def pols_waiver(t):
@@ -1156,7 +1432,7 @@ def pols_waiver(t):
 
     ``pols_if_pay(t) u(t)``.  Zero in the base run, and zero once no premium is due.
     """
-    return pols_if_pay(t) * waiver_rate(t)
+    return pols_if_pay(t) * waiver_rate_mth(t)
 
 
 def pols_pay_exp(t):
@@ -1180,8 +1456,8 @@ def pols_if_pay(t):
         return 0.0
     if t == 0:
         return pols_if_init()
-    return (pols_pay_exp(t - 1) * (1.0 - mort_rate(t - 1))
-            * (1.0 - lapse_rate(t - 1)) + pols_reinstate(t))
+    return (pols_pay_exp(t - 1) * (1.0 - mort_rate_mth(t - 1))
+            * (1.0 - lapse_rate_mth(t - 1)) + pols_reinstate(t))
 
 
 def pols_waived(t):
@@ -1195,8 +1471,8 @@ def pols_waived(t):
     """
     if t < 1 or t >= proj_len():
         return 0.0
-    return (pols_waived_exp(t - 1) * (1.0 - mort_rate(t - 1))
-            * (1.0 - lapse_rate(t - 1)))
+    return (pols_waived_exp(t - 1) * (1.0 - mort_rate_mth(t - 1))
+            * (1.0 - lapse_rate_mth(t - 1)))
 
 
 def pols_if(t):
@@ -1230,9 +1506,9 @@ def pols_if_at(t, timing):
     if timing == "BEF_DECR":
         return pols_if(t)
     if timing == "BEF_LAPSE":
-        return pols_if(t) * (1.0 - mort_rate(t))
+        return pols_if(t) * (1.0 - mort_rate_mth(t))
     if timing == "AFT_DECR":
-        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate(t))
+        return pols_if_at(t, "BEF_LAPSE") * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
@@ -1243,7 +1519,7 @@ def pols_death(t):
     disability exit: the disability trigger on a Korean 종신보험 waives the premium and the
     contract continues, which is :func:`pols_waiver`.
     """
-    return pols_if(t) * mort_rate(t)
+    return pols_if(t) * mort_rate_mth(t)
 
 
 def pols_lapse(t):
@@ -1252,7 +1528,7 @@ def pols_lapse(t):
     The gross count.  Those that return under 부활 a year later are :func:`pols_reinstate`
     and are **not** paid a surrender value; the rest are :func:`pols_surr`.
     """
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate(t)
+    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
 
 
 def pols_reinstate(t):
@@ -1264,9 +1540,9 @@ def pols_reinstate(t):
     both contestability clocks — none of which produces a cash flow here, so the resetting is
     stated and not modelled.
     """
-    if t < 1 or t >= proj_len() or reinstate_rate() <= 0.0:
+    if t < 12 or t >= proj_len() or reinstate_rate() <= 0.0:
         return 0.0
-    return reinstate_rate() * pols_lapse(t - 1)
+    return reinstate_rate() * pols_lapse(t - 12)
 
 
 def pols_surr(t):
@@ -1277,7 +1553,7 @@ def pols_surr(t):
     out — and the parenthesis 「해지환급금이 없는 경우를 포함」 is what makes a 무해지 contract
     always reinstatable [S5 제26조].
     """
-    return pols_lapse(t) - pols_reinstate(t + 1)
+    return pols_lapse(t) - pols_reinstate(t + 12)
 
 
 def premiums(t):
@@ -1288,9 +1564,9 @@ def premiums(t):
     waiver and the reason it is a state rather than a rate adjustment.  Zero once
     ``policy_year(t)`` passes ``prem_end()``; nothing else about the contract stops there.
     """
-    if t < 0 or policy_year(t) > prem_end():
+    if t < 0 or t >= prem_period_mths():
         return 0.0
-    return premium_at_pp(t) * pols_pay_exp(t)
+    return premium_mth_at_pp(t) * pols_pay_exp(t)
 
 
 def claims(t, kind=None):
@@ -1332,7 +1608,7 @@ def claims(t, kind=None):
     if kind == "LAPSE":
         return max(0.0, cv_pp(t + 1) - loan_pp(t)) * pols_surr(t)
     if kind == "REDUCTION":
-        if reduce_year() <= 0 or policy_year(t) != reduce_year():
+        if reduce_year() <= 0 or t != 12 * reduce_year() - 1:
             return 0.0
         return (reduce_frac() * max(0.0, cv_pp(t + 1) - loan_pp(t))
                 * pols_if_at(t, "AFT_DECR"))
@@ -1360,7 +1636,7 @@ def inflation_factor(t):
     compounds to 4.9, so the assumption is load-bearing on the tail and is held as its own
     parameter for that reason.
     """
-    return (1.0 + inflation_rate) ** t                               # noqa: F821
+    return (1.0 + inflation_rate) ** (t // 12)                       # noqa: F821
 
 
 def expenses(t):
@@ -1368,8 +1644,9 @@ def expenses(t):
 
     At issue, the part of :func:`acq_cost_pp` not paid away as :func:`comm_init_pp`.
     Thereafter the 계약관리비용, which the 약관 subdivides into 유지관련비용 and 기타비용 and
-    quantifies nowhere: ₩60,000 per policy a year inflating at 2%, plus 2% of premium income
-    while premiums are paid.  Maintenance continues **for life**, not to 납입완료 — that is
+    quantifies nowhere: ₩5,000 per policy a **month** — the same ₩60,000 a year — inflating
+    at 2% a year and stepping at the 계약해당일, plus 2% of premium income while premiums are
+    paid.  Maintenance continues **for life**, not to 납입완료 — that is
     the structural point of this product, a contract on which premiums stop after m years and
     obligations do not.  There is no separate surrender expense; it is folded into
     maintenance **[std]**.  The claim handling expense is **not** here: it is
@@ -1383,8 +1660,9 @@ def expenses(t):
 def commissions(t):
     """Commission outgo in period t **[std]**.
 
-    :func:`comm_init_pp` at issue, then 3% of premium income in policy years 2 to
-    ``prem_end()``, the periods ``t = 1 … prem_end() - 1``.
+    :func:`comm_init_pp` at issue, then 3% of premium income from the start of policy year 2
+    — the month ``t = 12`` — to 납입완료.  Renewal commission rides on :func:`premiums`, so it
+    stops when the 납입면제 stops the premium and when the 납입기간 ends.
     Both levels are standardizations; no Korean carrier publishes a commission scale, and
     what regulation supplies instead is a **cap** — first-year remuneration within the first
     year's expected premium, and an obligation to offer an instalment structure paying no
@@ -1466,16 +1744,15 @@ def check_decrement_sum():
 def check_pol_val_roll_fwd_resid(t):
     """The 계약자적립액 recursion residual over period t; zero everywhere.
 
-    ``(V(t) + P 1{policy_year(t) <= m}) (1 + i_acc) - [q SA + (1 - q) V(t+1)]`` on the issue
-    sum assured and the table rate — the roll from the anniversary opening period ``t`` to the
-    one closing it, at the attained age ``age(t)``.  It catches a mis-set 납입기간, a rate
-    applied on the wrong side and an off-by-one in the age the rate is read at.  The last
-    period is excluded: at ``q = 1`` the recursion degenerates and ``V(T)`` is defined as zero
-    rather than solved.
+    ``(V(t) + P^m 1{t < 12m}) (1 + j_acc) - [q^m SA + (1 - q^m) V(t+1)]`` on the issue sum
+    assured and the table rate — the roll from the month-end opening month ``t`` to the one
+    closing it.  It catches a mis-set 납입기간, a rate applied on the wrong side and an
+    off-by-one in the month the rate is read at.  The last month is excluded: there the rate
+    is 1, the recursion degenerates and ``V(T)`` is defined as zero rather than solved.
     """
-    q = mort_rate_at_age(age(t))
-    prem = prem_net_level_pp() if policy_year(t) <= prem_period() else 0.0
-    return ((pol_val_base_pp(t) + prem) * (1.0 + acc_int_rate())
+    q = mort_rate_mth_at(t)
+    prem = prem_net_level_mth_pp() if t < prem_period_mths() else 0.0
+    return ((pol_val_base_pp(t) + prem) * (1.0 + acc_int_rate_mth())
             - q * sum_assured() - (1.0 - q) * pol_val_base_pp(t + 1))
 
 
@@ -1489,9 +1766,12 @@ def check_pol_val_roll_fwd():
 def check_pol_val_prosp_resid(d):
     """The retrospective-to-prospective residual at anniversary d; zero everywhere.
 
-    ``V(d) - [SA A(x+d) - P a-due(x+d, m-d)]``, the substantive cross-check on the account:
-    the forward recursion and the closed-form prospective value must agree, and they do only
-    if the net premium, the payment period and the discount basis are all consistent.
+    ``V(d) - [SA A^m(d) - P^m a-due^m(d, 12m - d)]``, the substantive cross-check on the
+    account: the forward recursion and the closed-form prospective value must agree, and they
+    do only if the net premium, the payment period and the discount basis are all consistent
+    — and, on this grid, only if all three are on the **monthly** footing.  A model that kept
+    an annual net premium in a monthly recursion would fail here rather than quietly running
+    an account nobody priced.
 
     Defined as zero on a **금리연동형** contract, where the account accrues at the 공시이율
     while the net premium is fixed on the 예정이율: the account is then genuinely
@@ -1504,8 +1784,21 @@ def check_pol_val_prosp_resid(d):
 
 
 def check_pol_val_prosp():
-    """True when the account's retrospective and prospective forms agree at every anniversary."""
-    tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
+    """True when the account's retrospective and prospective forms agree at every month-end.
+
+    The tolerance carries a **twelvefold allowance** the annual grid did not need, and the
+    reason is arithmetic rather than modelling.  :func:`pol_val_base_pp` is a forward
+    recursion that divides by ``1 - q^m`` at every step, and in the terminal year
+    :func:`mort_rate_mth` runs ``q^m = 1/(12 - j)`` up to 1, so the twelve divisors
+    multiply out to exactly 12: any rounding already carried in the account is amplified
+    twelvefold over the last twelve month-ends and nowhere else.  On the largest shipped
+    model point — ₩1,000,000,000 of cover — that shows as a residual of about ₩110 against
+    an account near ₩1bn, a relative 1.1e-7, and it is float noise rather than a basis
+    disagreement: every month-end before the terminal year closes to a **hundredth of a
+    won**.  Widening the allowance by the amplification factor keeps the check as strong as
+    it was on the annual grid at every duration that is not the last year of a life table.
+    """
+    tol = 12.0 * val_tol * max(sum_assured(), 1.0)                   # noqa: F821
     return all(abs(check_pol_val_prosp_resid(d)) <= tol
                for d in range(1, proj_len()))
 
@@ -1520,14 +1813,14 @@ def check_surr_chg_cap_resid(d):
     honest.
     """
     over = max(0.0, surr_chg_pp(d) - surr_chg_cap_pp())
-    late = surr_chg_pp(d) if d >= surr_chg_period() else 0.0
+    late = surr_chg_pp(d) if d >= surr_chg_period_mths() else 0.0
     return over + late
 
 
 def check_surr_chg_cap():
     """True when the 해약공제액 stays under the statutory cap and dies at the 해약공제기간.
 
-    Swept over every anniversary of the run, ``d = 0 … proj_len()``, issue and horizon
+    Swept over every month-end of the run, ``d = 0 … proj_len()``, issue and horizon
     included.
     """
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
@@ -1570,7 +1863,7 @@ def check_cv_cliff():
     ok = ok and all(cv_pp(d) - bonus_pp(d) <= cv_std_pp(d) + tol
                     for d in range(proj_len() + 1))
     if prem_term() > 0:
-        m = prem_period()
+        m = prem_period_mths()
         ok = ok and abs(cv_pp(m) - bonus_pp(m) - cv_std_pp(m)) <= tol
     return bool(ok)
 
@@ -1578,18 +1871,18 @@ def check_cv_cliff():
 def check_loan_roll_fwd_resid(t):
     """The 보험계약대출 roll-forward residual over period t; zero everywhere.
 
-    ``L(t + 1) - (L(t) + D(t)) (1 + i_L)`` — the roll from the anniversary opening period
-    ``t`` to the one closing it.  Identically zero in the base run, where there
-    is no loan at all; non-trivial the moment the module is switched on, which is the point
-    of it.  It also catches the 무해지 case, where the draw is zero because the payable value
-    is zero and the balance must therefore stay at zero for ever.
+    ``L(t + 1) - (L(t) + D(t)) (1 + j_L)`` — the roll from the month-end opening month ``t``
+    to the one closing it, on the **monthly** loan rate.  Identically zero in the base run,
+    where there is no loan at all; non-trivial the moment the module is switched on, which is
+    the point of it.  It also catches the 무해지 case, where the draw is zero because the
+    payable value is zero and the balance must therefore stay at zero for ever.
     """
     return (loan_pp(t + 1)
-            - (loan_pp(t) + loan_draw(t)) * (1.0 + loan_int_rate()))
+            - (loan_pp(t) + loan_draw(t)) * (1.0 + loan_int_rate_mth()))
 
 
 def check_loan_roll_fwd():
-    """True when the loan balance accumulates at the 보험계약대출이율 in every period."""
+    """True when the loan balance accumulates at the 보험계약대출이율 in every month."""
     tol = val_tol * max(sum_assured(), 1.0)                          # noqa: F821
     return all(abs(check_loan_roll_fwd_resid(t)) <= tol
                for t in range(proj_len() - 1))
@@ -1681,7 +1974,9 @@ def result_pols():
             "pols_surr": [pols_surr(t) for t in ts],
             "pols_reinstate": [pols_reinstate(t) for t in ts],
             "mort_rate": [mort_rate(t) for t in ts],
+            "mort_rate_mth": [mort_rate_mth(t) for t in ts],
             "lapse_rate": [lapse_rate(t) for t in ts],
+            "lapse_rate_mth": [lapse_rate_mth(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
@@ -1750,7 +2045,7 @@ comm_cap_rate = 1.0
 
 comm_renewal_rate = 0.03
 
-expense_maint_pp = 60000.0
+expense_maint_pp = 5000.0
 
 expense_maint_prem_rate = 0.02
 

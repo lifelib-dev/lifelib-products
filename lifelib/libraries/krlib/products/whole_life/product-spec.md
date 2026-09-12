@@ -219,18 +219,19 @@ Footnotes to [std] rows:
    20년납 / 월납 for both the 표준형 and the suppressed form [S4]. The published pair at that
    cell is a **30%** design; the composite applies its own `k = 0.50` to the same 표준형 curve,
    which is legitimate precisely because the surrender value is defined by reference to the
-   twin and is factor-independent — see *Contractual mechanics*. `WholeLife_KR_S` runs on an
-   annual grid, so the annual premium is 12 × the monthly figure = ₩3,084,600; no carrier in
-   the set publishes an annual-mode scale, so the modal discount a real 연납 scale would carry
-   is not applied, and the resulting overstatement of the annual premium is recorded in
-   `technical-notes.md` rather than hidden.
+   twin and is factor-independent — see *Contractual mechanics*. `WholeLife_KR_S` runs on a
+   **monthly** grid, which is the mode every published scale in the set is quoted in, so the
+   composite collects the published ₩257,050 a month directly; the model point table still
+   carries the annual figure ₩3,084,600 = 12 × it, because a commission scale and a comparison
+   disclosure are written in annual units, and the model divides it back. No carrier in the
+   set publishes an annual-mode scale, so no modal loading is invented in either direction.
 
 ### Premiums
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium basis | Level and guaranteed for the whole of 납입기간; 금리확정형, so no review and no crediting-rate feedback into the premium | [S8]; [S2] |
-| Mode (납입주기) | 월납 / 3개월납 / 6개월납 / 연납; composite **월납, annualized at 12 ×** for the annual grid | [S1] [S2] [S4] [S6] [S8]; default **[std]** (8) |
+| Mode (납입주기) | 월납 / 3개월납 / 6개월납 / 연납; composite **월납**, collected on the monthly grid | [S1] [S2] [S4] [S6] [S8]; default **[std]** (8) |
 | Rating factors | 보험나이, sex, 납입기간, 보험가입금액 (via 고액계약할인), the surrender-value form, and 건강등급 where offered | [S1] [S4] [S6] |
 | Pricing interest rate (예정이율 / 적용이율) | **연복리 2.50%**, flat for the whole term | disclosed range 2.25%–2.75% [S1] [S2] [S5] [S6] [S7] [S8]; level **[std]** (9) |
 | Price of the suppression | The 저해지환급형 premium is **90.0%** of the 표준형's at the anchor cell | observed 81.5%–95.4% [S1] [S2] [S4] [S6]; pick **[std]** (10) |
@@ -307,11 +308,12 @@ Footnotes to the [std] rows above, continuing the numbering:
 
 8. Every published premium scale in the set is quoted **monthly** [S1] [S2] [S4] [S6] [S7]
    [S8], monthly is the 기준연령 요건's own mode [REG-R9], and one carrier bars the annual mode
-   outright for a 납입면제 rider [S1]. `WholeLife_KR_S` is annual-step, so the composite pays
-   annually at 12 × the monthly figure. No carrier publishes the modal loading a real 연납
-   scale carries, so applying one would be an invention; the direction of the resulting error —
-   annual-mode premium slightly overstated, and the first-year interest credit slightly
-   understated — is stated in `technical-notes.md`.
+   outright for a 납입면제 rider [S1]. `WholeLife_KR_S` is **monthly-step**, so the composite
+   pays the published monthly figure in the month it falls due, and the two errors the earlier
+   annual-step composite had to state — an overstated annual premium and an understated
+   first-year interest credit — no longer arise. No carrier publishes the modal loading a real
+   연납 scale carries, so the annual column is exactly 12 × the monthly rate and no loading is
+   invented in either direction.
 9. **Unlike Japan, Korea publishes the pricing rate**, and six values were read from carrier
    documents: **연복리 2.3%** (2022-04) [S1]; **2.3%** on the 예정적립금 of a 유니버셜 contract
    (2021-05) [S5]; **2.25%** (a 2023 vintage) [S2]; **2.25% for ten years then 1.75%** — a term
@@ -443,21 +445,26 @@ Footnotes to the [std] rows above, continuing the numbering:
 Notation used below and carried into `technical-notes.md`:
 
     x       가입나이 (보험나이) at issue
-    t       completed policy years since the 계약일 (the annual grid step)
-    m       보험료 납입기간 in years; m = infinity on a 전기납 (종신납) contract
-    n_sc    해약공제기간 = min(m, 7) years
+    t       completed months since the 계약일 (the monthly grid step); policy year = t // 12 + 1
+    m       보험료 납입기간 in years, 12m in months; m = infinity on a 전기납 (종신납) contract
+    n_sc    해약공제기간 = min(m, 7) years, 12 n_sc in months
     SA      보험가입금액
-    G       annual gross premium (영업보험료), level for t < m, zero for t >= m
-    P       annual net premium (순보험료) on the 표준형 basis
-    i       예정이율, the pricing interest rate
-    q(x+t)  the pricing mortality rate (적용위험률) at attained 보험나이 x+t
-    V(t)    계약자적립액 of the 표준형 twin at t
-    SC(t)   해약공제액 at t, capped at the 표준해약공제액
-    W(t)    표준형 해약환급금 at t = max(0, V(t) - SC(t))
-    CV(t)   the 해약환급금 actually payable at t
+    G       annual gross premium (영업보험료); G^m = G / 12 is the monthly instalment,
+            level for t < 12m and zero for t >= 12m
+    P       annual net premium (순보험료) on the 표준형 basis -- the 연납순보험료 별표 14
+            names; P^m is its monthly equivalent, the one the account consumes
+    i       예정이율, the pricing interest rate per annum; j = (1+i)^(1/12) - 1 per month
+    q(x+t)  the pricing mortality rate (적용위험률) at attained 보험나이 x+t, an ANNUAL
+            probability; q^m = 1 - (1-q)^(1/12) is its monthly conversion
+    d       the month-end the value cells are indexed by, d = 0 at issue; a 계약해당일 is
+            d = 12y, and the flows of month t open at d = t and close at d = t + 1
+    V(d)    계약자적립액 of the 표준형 twin at d
+    SC(d)   해약공제액 at d, capped at the 표준해약공제액
+    W(d)    표준형 해약환급금 at d = max(0, V(d) - SC(d))
+    CV(d)   the 해약환급금 actually payable at d
     k       the suppression factor: 1.00 표준형, 0.50 저해지환급형, 0.00 무해지환급형
-    L(t)    outstanding 보험계약대출 principal and interest at t
-    i_L     the 보험계약대출이율 = i + 1.5%
+    L(d)    outstanding 보험계약대출 principal and interest at d
+    i_L     the 보험계약대출이율 = i + 1.5% per annum; j_L its monthly equivalent
 
 ### The death benefit, and what happens when a benefit is refused
 
@@ -514,18 +521,19 @@ life model computes is the 계약자적립액, and it is a contractual quantity,
 
 감독규정 제7-65조제1항 says only that "계약자적립액은 보험료 및 책임준비금 산출방법서에 따라
 계산한 금액으로 한다" and 제2항 permits it to be computed on an **annualised premium** basis —
-"연납보험료를 기준으로 하여 산출할 수 있다" [REG-R18]. That permission is what lets an annual
-grid carry a monthly-premium product's account, and `WholeLife_KR_S` uses it.
-제7-66조제1항제4호 adds the accrual convention: the account accrues **monthly before 납입완료
-and daily afterwards**; the two formulas render as images in the 고시 and did not extract, so
-the annual grid's treatment of them is a **[std]** approximation stated in `technical-notes.md`
-[REG-R19].
+"연납보험료를 기준으로 하여 산출할 수 있다" [REG-R18]. That permission is what let an annual
+grid carry a monthly-premium product's account; **`WholeLife_KR_S` no longer needs it**.
+제7-66조제1항제4호 states the accrual convention the account is actually owed: it accrues
+**monthly before 납입완료 and daily afterwards**. The two formulas render as images in the
+고시 and did not extract, so a monthly step remains a **[std]** reading of them — but it is
+the step the rule names, and the daily accrual after 납입완료 is the one part still
+approximated [REG-R19].
 
 The composite therefore defines the 표준형 twin's account by the classical net-level recursion,
-on the pricing basis and on the annual grid:
+on the pricing basis and on the monthly grid:
 
     V(0) = 0
-    V(t+1) = ( V(t) + P ) * (1 + i) - q(x+t) * ( SA - V(t+1) )      end-year benefit
+    V(d+1) = ( V(d) + P^m ) * (1 + j) - q^m * ( SA - V(d+1) )       end-month benefit
 
 solved forward, with the net premium `P` fixed at issue by equivalence over the 납입기간 —
 
@@ -827,11 +835,12 @@ carriers [S5 제34조] [REG-R25 제33조](#krlib-reg-r25):
 > ③ 회사는 … 계약이 해지되는 때에는 즉시 해지환급금에서 보험계약대출의 원금과 이자를
 > 차감합니다.
 
-Modelled as a state, on the annual grid, the balance rolls up at compound interest and is
-extinguished against any exit:
+Modelled as a state, on the monthly grid, the balance rolls up at compound interest and is
+extinguished against any exit. The rate is quoted per annum and the roll runs on its monthly
+equivalent `j_L = (1 + i_L)^(1/12) - 1`, so twelve months compound back to exactly `1 + i_L`:
 
     L(0)   = 0
-    L(t+1) = ( L(t) + D(t) - R(t) ) * (1 + i_L)
+    L(t+1) = ( L(t) + D(t) - R(t) ) * (1 + j_L)
     D(t)  <= 0.80 * CV(t-1) - L(t)      the limit, tested at the draw and not after it
     with  claims, surrenders and lapses paid net of L(t), floored at zero
 

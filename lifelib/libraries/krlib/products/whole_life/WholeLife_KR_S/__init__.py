@@ -59,21 +59,37 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps on policy years running 계약해당일 to 계약해당일, on
-**보험나이** (*boheom nai*, insurance age). The time index ``t`` is **0-based**: ``t = 0`` is
-the first policy year, period ``t`` runs from anniversary ``t`` to anniversary ``t + 1``, the
-frame is ``range(proj_len())``, and the contractual policy year is the 1-based label
-``t + 1``. Values *at* a point in time — the 계약자적립액, the 해약공제액, the two surrender
-values, cumulative premiums and the 보험계약대출 balance — carry a second index, the
-anniversary ``d = 0 … proj_len()`` with ``d = 0`` at issue, and the flows of period ``t`` read
-``d = t`` as the opening anniversary and ``d = t + 1`` as the closing one. 감독규정
-제7-65조제2항 expressly permits the 계약자적립액 of a monthly-premium contract to be computed
-on an annualised premium basis — 「연납보험료를 기준으로 하여 산출할 수 있다」 — and that
-permission is what lets an annual grid carry this product. Premium, maintenance expense and
-renewal commission fall at the start of the period; acquisition expense and initial
-commission at issue, in period ``t = 0``; death claims at the end of the period of death;
-surrenders and any 감액 at the end of the period, after deaths, on the value at the
-anniversary that closes it.
+**Projection basis.** Monthly steps, on **보험나이** (*boheom nai*, insurance age). The
+time index ``t`` is **0-based** and counts policy months: ``t = 0`` is the first policy
+month, period ``t`` runs from month-end ``t`` to month-end ``t + 1``, the frame is
+``range(proj_len())`` with ``proj_len() = 12 x proj_years()``, and the contractual policy
+year is the derived 1-based label ``policy_year(t) = t // 12 + 1``. Contract terms stay in
+years — the 납입기간, the 해약공제기간, the 보험계약대출 drawdown year and the 감액 year are
+all annual quantities with month-count companions where the grid needs one. Values *at* a
+point in time — the 계약자적립액, the 해약공제액, the two surrender values, cumulative
+premiums and the 보험계약대출 balance — carry a second index, the month-end
+``d = 0 … proj_len()`` with ``d = 0`` at issue, and the flows of month ``t`` read ``d = t``
+as the opening month-end and ``d = t + 1`` as the closing one; a 계약해당일 is the month-end
+``d = 12y``, which is where the published 해약환급금 grids are quoted. Premium, maintenance
+expense and renewal commission fall at the start of the month; acquisition expense and
+initial commission at issue, in month ``t = 0``; death claims at the end of the month of
+death; surrenders and any 감액 at the end of the month, after deaths, on the value at the
+month-end that closes it.
+
+**What the monthly grid moved.** The sourced decrement basis stays annual — both disclosed
+적용위험률 grids are annual by age and the FSS 원칙모형 lapse vector is annual by 경과기간 —
+and ``mort_rate_mth`` and ``lapse_rate_mth`` are its ``1 - (1 - q)^(1/12)`` conversions, so
+twelve monthly exits compound back to the year's rate exactly and **the in-force at every
+계약해당일 is unchanged** from the annual-step model this replaced. The **계약자적립액 does
+move, by about 1.2%**, and that is the conversion's substantive gain: 감독규정
+제7-66조제1항제4호 provides that the account accrues **monthly** before 납입완료 and daily
+afterwards, and an annual grid could carry this product only through 제7-65조제2항's separate
+permission to compute it 「연납보험료를 기준으로 하여 산출할 수 있다」 — a permission the
+model used to take and record as a [std] departure. The monthly grid does not need it: the
+account accrues at ``(1 + i)^(1/12) - 1`` a month and is built from a **월납순보험료** struck
+by monthly equivalence, which is not the 연납순보험료 divided by twelve. The 연납순보험료
+survives beside it because 별표 14 names that quantity and the statutory 표준해약공제액 is
+computed from it.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the level
 whole-of-life benefit, the identity 해약환급금 = 계약자적립액 − 해약공제액, the

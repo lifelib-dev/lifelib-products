@@ -8,8 +8,8 @@ KRW, the product is written "jongsin boheom (whole life)" rather than in hangul,
 suppressed-surrender-value forms are written "muhaeji hwangeuphyeong" (nil) and "jeohaeji
 hwangeuphyeong" (low).  Ages are boheom nai, the Korean insurance age.
 
-The time index t is 0-based: t = 0 is the first policy year, the frame is
-t = 0 .. proj_len() - 1, and the contractual policy year is t + 1.
+The time index t is 0-based and counts policy months: t = 0 is the first policy month,
+the frame is t = 0 .. proj_len() - 1, and the contractual policy year is t // 12 + 1.
 """
 import sys
 from pathlib import Path
@@ -30,22 +30,23 @@ else:
 term = ("jeongi-nap (whole-of-life premium)" if proj.prem_term() == 0
         else "{}-year premium term".format(proj.prem_term()))
 
-print("WholeLife_KR_S - jongsin boheom (whole life), annual grid, boheom nai")
+print("WholeLife_KR_S - jongsin boheom (whole life), monthly grid, boheom nai")
 print("model point {}: {} - {}{}, cover KRW {:,.0f}, {}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(), proj.age_at_entry(),
     proj.sum_assured(), term))
 print("form: {}   premium ratio to standard form {:.3f}".format(
     form, proj.prem_susp_ratio()))
-print("premium = KRW {:,.2f} p.a. (model rule gives {:,.2f})   projection = {} years "
-      "to attained age {}".format(
-          proj.premium_pp(), proj.prem_gross_calc_pp(), proj.proj_len(),
-          proj.omega_age()))
+print("premium = KRW {:,.2f}/month ({:,.2f} p.a.; model rule gives {:,.2f} p.a.)   "
+      "projection = {} months ({} years) to attained age {}".format(
+          proj.premium_mth_pp(), proj.premium_pp(), proj.prem_gross_calc_pp(),
+          proj.proj_len(), proj.proj_years(), proj.omega_age()))
 print("basis: pricing rate {:.3%}   accrual rate {:.3%}   policy loan rate {:.3%}   "
       "lapse basis {}".format(
           0.025, proj.acc_int_rate(), proj.loan_int_rate(), proj.lapse_basis()))
-print("net level premium P = KRW {:,.2f}   pyojun haeyak gongjeaek (statutory surrender "
-      "charge cap) = KRW {:,.2f}".format(
-          proj.prem_net_level_pp(), proj.surr_chg_cap_pp()))
+print("net level premium: monthly P = KRW {:,.2f} (yeonnap equivalent {:,.2f} p.a.)   "
+      "pyojun haeyak gongjeaek (statutory surrender charge cap) = KRW {:,.2f}".format(
+          proj.prem_net_level_mth_pp(), proj.prem_net_level_pp(),
+          proj.surr_chg_cap_pp()))
 print("acquisition cost = KRW {:,.2f} of which first-year commission KRW {:,.2f}   "
       "surrender-charge period = {} years".format(
           proj.acq_cost_pp(), proj.comm_init_pp(), proj.surr_chg_period()))
@@ -58,17 +59,18 @@ print("modules: waiver rate = {:.3%}   loan utilisation = {:.2f} at year {}   "
 print()
 
 df = proj.result_cf()
-m = proj.prem_period()
-rows = [t for t in (0, 1, 2, 3, 4) if t < proj.proj_len()]
+m = proj.prem_period_mths()
+rows = [t for t in (0, 1, 2, 11, 12) if t < proj.proj_len()]
 rows += [t for t in (m - 2, m - 1, m) if 0 <= t < proj.proj_len() and t not in rows]
-print("cash flow statement - t is 0-based, policy year = t + 1: the first policy years, "
-      "and the years around napip wallyo (completion of premium payment):")
+print("cash flow statement - t is 0-based and counts months, policy year = t // 12 + 1: "
+      "the first months, the turn of the first policy year, and the months around napip "
+      "wallyo (completion of premium payment):")
 print(df.loc[sorted(rows)].round(2).to_string())
 print()
 
 val = proj.result_val()
-print("surrender values on the same rows, at the anniversary d = t + 1 that closes each "
-      "period (KRW per policy):")
+print("surrender values on the same rows, at the month-end d = t + 1 that closes each "
+      "month (KRW per policy):")
 print(val.loc[sorted(rows)].round(2).to_string())
 print()
 

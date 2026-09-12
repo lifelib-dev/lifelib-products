@@ -90,7 +90,7 @@ MAN = {"age_basis": "만나이"}        # age last birthday, the public-statisti
 # that the name, the folder and the model's own _name all agree.
 MODELS = {
     # 보장성 — protection
-    "WholeLife_KR_S": ("products/whole_life/WholeLife_KR_S", ANNUAL | BOHEOM),
+    "WholeLife_KR_S": ("products/whole_life/WholeLife_KR_S", MONTHLY | BOHEOM),
     "Term_KR_S": ("products/term_life/Term_KR_S", MONTHLY | BOHEOM),
     "CI_KR_S": ("products/ci_insurance/CI_KR_S", ANNUAL | BOHEOM),
     # 제3보험 — third insurance (보험업법 제4조제1항제3호)

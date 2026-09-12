@@ -144,9 +144,11 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
 - **What rests on it.** **The anchor cell's premium.** ₩3,084,600 is 12 × the published
   ₩257,050 monthly rate for exactly 남 40세 / 1억원 / 20년납, which prices `point_id = 2`, and
   the anchor is 0.900 of it. `prem_loading = 1.4642` is calibrated once against that number and
-  applied unchanged everywhere. Also the `k = 0.30` model point, and the **0.889–0.911**
-  calibration band of `cv_std_pp(t)` against this carrier's printed 표준형 grid at durations 3
-  to 20 — the one external check on the model's whole value construction. The grid's widening
+  applied unchanged everywhere. On the monthly grid that rate is collected directly: the
+  twin's `premium_mth_pp()` is exactly ₩257,050. Also the `k = 0.30` model point, and the
+  **0.899–0.923** calibration band of `cv_std_pp(12y)` against this carrier's printed 표준형
+  grid at durations 3 to 20 — the one external check on the model's whole value construction,
+  which the monthly account improves at every sourced duration. The grid's widening
   past duration 20 has a stated cause in this document (the 전환나이 step-up) and is recorded
   rather than tuned away.
 

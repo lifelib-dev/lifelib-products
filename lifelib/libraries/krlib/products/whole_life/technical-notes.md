@@ -57,42 +57,62 @@ governs all ten `krlib` products** [REG-R19].
   anywhere else in this repository [REG-R11]. **Discounting, the risk adjustment, the CSM,
   요구자본 and every reserve are out of scope** and are cited, not reproduced — see
   *Valuation and reserve pointers*.
-- **Time index.** `t` is **0-based**: `t = 0` is the first policy year, period `t` runs from
-  anniversary `t` to anniversary `t + 1`, the frame is `t = 0 … proj_len − 1` and the
-  contractual policy year is the 1-based label `t + 1`. Values *at* a point in time — the
-  account `V`, the surrender charge `SC`, the surrender values `W` and `CV`, `cumprem` and
-  the loan balance `L` — carry a second index, the **anniversary** `d = 0 … T` with `d = 0`
-  at issue; the flows of period `t` read `d = t` as the opening anniversary and `d = t + 1`
-  as the closing one. That index is 0-based already, and none of these numbers moved when `t`
-  did — except the loan balance `L`, which was a period-opening balance on the 1-based clock
-  and is now the anniversary balance itself: old `loan_pp(t)` is new `loan_pp(t − 1)`.
-- **Projection frequency.** **Annual**, on policy years running 계약해당일 to 계약해당일
-  (`WholeLife_KR_S`). The permission is explicit rather than assumed: 감독규정
-  제7-65조제2항 allows the 계약자적립액 of a monthly-premium contract to be computed on an
-  annualised premium basis — 「연납보험료를 기준으로 하여 산출할 수 있다」 [REG-R18]. The
-  composite has no intra-year contractual structure on the annual grid: the sum assured is
-  level for life, the premium is level, and the one date inside a year that matters — the
-  **납입완료일** — is an anniversary by construction.
-- **What the annual grid approximates [std].** 제7-66조제1항제4호 accrues the account
-  **monthly before 납입완료 and daily afterwards**; both formulas render as images in the
-  고시 and did not extract, so the annual step is a stated approximation rather than a
-  reproduction [REG-R19]. Two consequences travel with it: the 14-day
-  **납입최고(독촉)기간** collapses into the anniversary, so a lapse is dated to the policy
-  year [S5 제25조] [REG-R25 제26조](#krlib-reg-r25); and **미경과보험료**, required on termination by
-  제7-66조제5항 [REG-R19], is not added, because on an annual grid with premiums in advance
-  and surrenders at the anniversary there is none **[std]**.
-- **Timing conventions [std].** Premium at the **start** of each period, in advance, for
-  policy years 1 … m — the periods `t = 0 … m − 1` — on the paying cohort only; maintenance
-  expense, the premium-related expense and renewal commission at the start of each period;
-  acquisition expense and initial commission at issue, in period `t = 0`; death claims and
-  claim expenses at the **end** of the period of death; surrenders and any 감액 at the
-  **end** of the period, **after** deaths, on the surrender value at the anniversary
-  `d = t + 1` that closes it; 부활 at the **start** of the following period.
+- **Time index.** `t` is **0-based** and counts **policy months**: `t = 0` is the first
+  policy month, period `t` runs from month-end `t` to month-end `t + 1`, the frame is
+  `t = 0 … proj_len − 1` with `proj_len = 12 × proj_years`, and the contractual policy year
+  is the derived 1-based label `policy_year(t) = ⌊t/12⌋ + 1`, which is never indexed by.
+  The anchor projects 912 rows. Values *at* a point in time — the account `V`, the surrender
+  charge `SC`, the surrender values `W` and `CV`, `cumprem` and the loan balance `L` —
+  carry a second index, the **month-end** `d = 0 … T` with `d = 0` at issue; the flows of
+  month `t` read `d = t` as the opening month-end and `d = t + 1` as the closing one. A
+  **계약해당일** is the month-end `d = 12y`, which is where every published 해지환급금 grid
+  is quoted and where the value steps up at 납입완료.
+- **Contract terms stay in years.** The 납입기간 `m`, the 해약공제기간 `n_sc`, the
+  보험계약대출 drawdown year and the 감액 year are all written in policy years, because that
+  is how the contract writes them; each has a month-count companion — `prem_period_mths`,
+  `surr_chg_period_mths` — for the cells that index the grid. Only the grid is monthly.
+- **Projection frequency.** **Monthly** (`WholeLife_KR_S`), and on this product the change
+  of grid is not cosmetic. 감독규정 제7-66조제1항제4호 provides that the 계약자적립액 accrues
+  **monthly** before 납입완료 and daily afterwards [REG-R19]. An annual grid could carry this
+  product only through 제7-65조제2항's separate permission to compute the account on an
+  annualised premium basis — 「연납보험료를 기준으로 하여 산출할 수 있다」 [REG-R18] — a
+  permission the model used to take and to record as a **[std]** departure. The monthly grid
+  does not need it.
+- **What the monthly grid moved, and what it did not.** The sourced decrement basis is
+  untouched and stays **annual**: both disclosed 적용위험률 grids are annual by age [S2]
+  [S8] and the FSS 원칙모형 lapse vector is annual by 경과기간 [REG-R27], so `q(t)` and
+  `w(t)` carry them and the monthly decrements `q^m(t)` and `w^m(t)` are
+  `1 − (1 − q)^(1/12)` **[std]**, level inside a policy year and stepping at each
+  계약해당일. Twelve monthly exits compound to the year's annual rate exactly, so **the
+  in-force at every 계약해당일 reproduces the annual-step model this replaced**, to a
+  relative 1.1e-14 across the shipped model points. The **계약자적립액 does move, by about
+  1.2%**: it now accrues at `(1 + i)^(1/12) − 1` a month and is built from a
+  **월납순보험료** struck by monthly equivalence, which is *not* the 연납순보험료 divided by
+  twelve — a monthly equivalence discounts eleven of each year's twelve instalments and
+  exposes them to the year's mortality, and the difference is about half a year's interest
+  at the 예정이율, which is exactly the timing an annual grid gave away. The 연납순보험료
+  survives beside it, because 별표 14 names that quantity and the statutory 표준해약공제액 is
+  computed from it. Two smaller consequences: the 14-day **납입최고(독촉)기간** still
+  collapses, now into the month rather than the year [S5 제25조]
+  [REG-R25 제26조](#krlib-reg-r25); and **미경과보험료**, required on termination by
+  제7-66조제5항 [REG-R19], is still not added, there being none on a grid with premiums in
+  advance and surrenders at the month-end **[std]** — but the unearned amount a real
+  contract would owe is now at most one month's premium rather than one year's.
+- **Timing conventions [std].** Premium at the **start** of each month, in advance, for the
+  months `t = 0 … 12m − 1`, on the paying cohort only; maintenance expense, the
+  premium-related expense and renewal commission at the start of each month; acquisition
+  expense and initial commission at issue, in month `t = 0`; death claims and claim expenses
+  at the **end** of the month of death; surrenders and any 감액 at the **end** of the month,
+  **after** deaths, on the surrender value at the month-end `d = t + 1` that closes it; 부활
+  **twelve months** after the lapse it follows.
 - **Age basis: 보험나이.** 보험나이 (*boheom nai*, insurance age) is the 만 나이 at the
   계약일 with a fraction under six months discarded and six months or more rounded up, and
   it increments on each **계약해당일** rather than on the birthday [S5 제21조] [REG-R25
-  제21조](#krlib-reg-r25). An annual grid stepped on anniversaries therefore ages the policy correctly by
-  construction, and the attained age in period `t` is `x + t` exactly. **The table does
+  제21조](#krlib-reg-r25). A monthly grid anchored at issue steps its 계약해당일 exactly
+  twelve months apart, so `⌊t/12⌋` counts them, the ageing is correct by construction, and
+  the attained age in month `t` is `x + ⌊t/12⌋` exactly — level through the twelve months of
+  a policy year, because interpolating it within the year would be modelling an age the
+  contract has no concept of. **The table does
   not share that basis and no conversion is applied [std]:** the statistics
   `mort_table.csv` is calibrated against [REG-R38] are on **만나이**, and no public mapping
   exists. The six-month rule means the two differ for **half of all issue dates**, so the
@@ -183,27 +203,29 @@ surrender value. The model's own loading rule reproduces the anchor premium to *
 
 ## State variables
 
-Period quantities are indexed by `t`, anniversary quantities by `d`.
+Month quantities are indexed by `t`, month-end quantities by `d`.
 
 | Variable | Description | Updated |
 |---|---|---|
-| `pols_if(t)` | In-force probability at the **start** of period `t`; `pols_if(0) = 1` | annual recursion |
-| `pols_if_pay(t)` | Of those, the cohort still **paying premium in cash**; the weight on premium and commission | annual recursion |
-| `pols_waived(t)` | Of those, the cohort in the **납입면제** state: in force, paying nothing, accruing value as if paying | annual recursion |
-| `pols_death(t)`, `pols_lapse(t)` | Expected deaths and 해지 in period `t` | decrement |
-| `pols_surr(t)` | Of the lapses, those **paid** a surrender value — `pols_lapse(t)` less next period's 부활 | decrement |
-| `pols_reinstate(t)` | **부활** at the start of period `t`, from period `t − 1`'s lapses | decrement |
-| `mort_rate(t)` | 적용위험률 at attained 보험나이 `x + t`, times `mort_be_factor` | table lookup |
-| `lapse_rate(t)` | Annual 해지율, plus the bonus-date spike where one applies | assumption |
-| `waiver_rate(t)` | 납입면제 incidence, during 납입기간 only | assumption |
-| `pol_val_pp(d)` | `V(d)` — the **계약자적립액**, the 표준형 twin's account at anniversary `d` | forward recursion |
+| `pols_if(t)` | In-force probability at the **start** of month `t`; `pols_if(0) = 1` | monthly recursion |
+| `pols_if_pay(t)` | Of those, the cohort still **paying premium in cash**; the weight on premium and commission | monthly recursion |
+| `pols_waived(t)` | Of those, the cohort in the **납입면제** state: in force, paying nothing, accruing value as if paying | monthly recursion |
+| `pols_death(t)`, `pols_lapse(t)` | Expected deaths and 해지 in month `t` | decrement |
+| `pols_surr(t)` | Of the lapses, those **paid** a surrender value — `pols_lapse(t)` less the 부활 twelve months on | decrement |
+| `pols_reinstate(t)` | **부활** at the start of month `t`, from month `t − 12`'s lapses | decrement |
+| `mort_rate(t)` | The **annual** 적용위험률 at attained 보험나이 `x + ⌊t/12⌋`, times `mort_be_factor` | table lookup |
+| `mort_rate_mth(t)` | Its monthly conversion `1 − (1 − q)^(1/12)`; `1/(12 − t mod 12)` in the terminal year, where `q = 1` | closed form |
+| `lapse_rate(t)` | The **annual** 해지율 of the policy year `t` falls in | assumption |
+| `lapse_rate_mth(t)` | Its monthly conversion, plus the bonus-date spike in the single month one applies | closed form |
+| `waiver_rate(t)`, `waiver_rate_mth(t)` | 납입면제 incidence during 납입기간 only, annual and converted | assumption |
+| `pol_val_pp(d)` | `V(d)` — the **계약자적립액**, the 표준형 twin's account at month-end `d` | forward recursion |
 | `surr_chg_pp(d)` | `SC(d)` — the **해약공제액**, bounded by the 표준해약공제액 | closed form |
 | `cv_std_pp(d)` | `W(d)` — the **표준형 twin's 해약환급금**, `max(0, V − SC)` | closed form |
 | `cv_pp(d)` | `CV(d)` — the **해약환급금 actually payable**, after the multiplier and any 유지보너스 | closed form |
 | `cv_susp_pp(d)` | `k W(d)` — the suppressed value at **every** `d`, published so the step is visible on both sides | closed form |
-| `cum_prem_pp(d)`, `refund_ratio(d)` | Premiums paid by anniversary `d`; the **환급률** `CV(d) / cumprem(d)` | recursion / ratio |
-| `loan_pp(d)`, `loan_draw(t)` | **보험계약대출** balance at anniversary `d`; the draw at the start of period `t` | annual recursion |
-| `sa_factor(d)`, `sum_assured_at(t)` | The 감액 step-down factor at anniversary `d`; the sum assured in period `t` | closed form |
+| `cum_prem_pp(d)`, `refund_ratio(d)` | Premiums paid by month-end `d`; the **환급률** `CV(d) / cumprem(d)` | recursion / ratio |
+| `loan_pp(d)`, `loan_draw(t)` | **보험계약대출** balance at month-end `d`; the draw at the start of month `t` | monthly recursion |
+| `sa_factor(d)`, `sum_assured_at(t)` | The 감액 step-down factor at month-end `d`; the sum assured in month `t` | closed form |
 
 Three of these carry design decisions worth stating explicitly.
 
@@ -303,7 +325,7 @@ filing [REG-R2].
 | Acquisition-cost ratio `a` (`acq_cost_ratio`) | **1.00** — 계약체결비용 set **at** the 표준해약공제액 | **[std]**, bounded by the 1.4 × tolerance of 제7-45조제11항 [REG-R22] |
 | First-year commission share `c₀` (`comm_init_share`) | **0.65** of 계약체결비용, capped at one year's premium | Cap sourced [REG-R22 제4-32조제5항](#krlib-reg-r22); share **[std]** |
 | Renewal commission `c_r` | **3.0%** of premium, years 2 … m | **[std]** |
-| 계약관리비용 per policy `e` | **₩60,000** p.a. for life, inflating at 2.0% | **[std]** |
+| 계약관리비용 per policy `e` | **₩5,000 a month** for life, inflating at 2.0% on each 계약해당일 | **[std]** |
 | 유지관련비용 on premium | **2.0%** of premium collected | **[std]** |
 | Claim handling expense `ec` | **₩300,000** per death claim | **[std]** |
 | Expense inflation | **2.0% p.a.**, the Bank of Korea target | **[std]** |
@@ -410,14 +432,24 @@ policy year — the convergence point is 납입완료, which is a model point at
 | `loglinear` | 0.10 | 0.001 | 0.008 | Endpoints [REG-R27] [R3] and the top of the disclosed 1%~10% envelope [S2]; the interpolation **[std]** |
 | `flat` | 0.04 | 0.04 | 0.04 | **[std]** level comparison basis, inside both disclosed envelopes [S2] [S8] |
 
-Writing `y = t + 1` for the contractual policy year of period `t`:
+Writing `y = t // 12 + 1` for the contractual policy year of month `t`, the **annual** rate is
 
     w(t) = w1 * (wm / w1) ^ ((y - 1) / (m - 1))      for 1 <= y <= m
     w(t) = wu                                        for y > m
 
-On the anchor that is `w(0) = 0.10` exactly, `w(19) = 0.001` exactly at 납입완료, and a flat
-0.008 from `t = 20`. **The 표준형 twin is priced with no lapse assumption at all** [S1], which is why
-the `flat` basis is level rather than shaped: it is a comparison, not a second estimate.
+and the monthly grid applies its uniform-force conversion
+
+    w^m(t) = 1 - (1 - w(t)) ^ (1/12)
+
+so that the twelve months of a policy year compound back to exactly that year's `w(t)`.
+On the anchor that is `w(0) = 0.10` exactly, `w(228) = 0.001` exactly in the policy year
+납입완료 falls in, and a flat 0.008 from `t = 240`; the corresponding monthly rates are
+0.0087416, 0.0000834 and 0.0006691. **Dividing by twelve instead would be wrong here in a way
+it rarely is**: across a vector spanning two orders of magnitude the two conventions disagree
+by 4.9% of the rate in the first year alone, and only the compounding one reproduces the
+supervisor's tabulated annual figure. **The 표준형 twin is priced with no lapse assumption at
+all** [S1], which is why the `flat` basis is level rather than shaped: it is a comparison, not
+a second estimate.
 
 **Everything else in class (c).**
 
@@ -426,7 +458,7 @@ the `flat` basis is level rather than shaped: it is a comparison, not a second e
 | 납입면제 incidence `u(t)` | **0** in the base run; **0.4% p.a.** during 납입기간 on `point_id = 7` | **[std]**. No Korean 장해 incidence at the 50% 장해지급률 threshold was retrieved |
 | 보험계약대출 take-up | **0**; a single draw of 100% of the contractual room at `loan_year` on points 3 and 6 | **[std]**. No Korean take-up data is public |
 | Loan repayment | **None modelled** | **[std]**. Repayment is free of fee at every carrier that states one [S11] [S13], so a real book repays; the model does not |
-| 부활 rate | **0**; **20%** of the prior year's lapses on `point_id = 10`, one year later | **[std]** |
+| 부활 rate | **0**; **20%** of the lapses of twelve months earlier on `point_id = 10` | **[std]** |
 | 감액 | **Off**; 50% of `SA` at duration 15 on `point_id = 10` | **[std]** |
 | 자동대출납입 (APL), 감액완납, 연장정기보험 | **Not modelled, because none was found in any retrieved Korean document** | [unverified] [S5] — see below |
 | 청약철회, 품질보증해지, 위법계약해지권; 우량체 / 건강등급 discounts, 선납, 중도인출, 추가납입 | Out of scope; the projection starts from cover in force, and each is named in `product-spec.md` | **[std]** [REG-R25] [REG-R51] |
@@ -456,35 +488,42 @@ Defined once, used throughout, and identical to `product-spec.md`'s. The
 
 | Symbol | Meaning | Cells |
 |---|---|---|
-| `t` | the 0-based period index, `t = 0 … T − 1`; period `t` is policy year `t + 1` and runs from anniversary `t` to anniversary `t + 1`; the attained 보험나이 in it is `x + t` | `age(t)`, `policy_year(t)` |
-| `d` | the anniversary, `d = 0 … T`, `d = 0` at issue; period `t` opens at `d = t` and closes at `d = t + 1` | (the value cells' argument) |
-| `x`, `T`, `ω` | 가입나이 (보험나이); the **number** of policy years projected, `T = ω − x + 1`; table terminal age | `age_at_entry()`, `proj_len()`, `omega_age()` |
-| `m` | 납입기간 in policy years, a 1-based count; `m = T` on a 전기납 contract | `prem_period()`, `prem_end()` |
-| `n_sc` | 해약공제기간 `= min(m, 7)` | `surr_chg_period()` |
-| `SA`, `SA(t)` | 보험가입금액 at issue, and in period `t` after any 감액 | `sum_assured()`, `sum_assured_at(t)` |
-| `G` | annual 영업보험료, level for `t < m`, zero thereafter | `premium_pp()`, `premium_at_pp(t)` |
-| `P`, `P₂₀` | 연납순보험료 over `m`; the same on the 별표 14 **20년납** footing | `prem_net_level_pp()`, `prem_net_20yr_pp()` |
-| `i`, `i_acc`, `i_L` | 예정이율; the account accrual rate; 보험계약대출이율 `= i_acc + 1.5%` | `prem_int_rate`, `acc_int_rate()`, `loan_int_rate()` |
-| `q(t)`, `w(t)`, `u(t)` | 적용위험률; 해지율; 납입면제 incidence, in period `t` | `mort_rate(t)`, `lapse_rate(t)`, `waiver_rate(t)` |
+| `t` | the 0-based **month** index, `t = 0 … T − 1`; month `t` is in policy year `⌊t/12⌋ + 1` and runs from month-end `t` to month-end `t + 1`; the attained 보험나이 in it is `x + ⌊t/12⌋` | `age(t)`, `policy_year(t)` |
+| `d` | the month-end, `d = 0 … T`, `d = 0` at issue; month `t` opens at `d = t` and closes at `d = t + 1`; a 계약해당일 is `d = 12y` | (the value cells' argument) |
+| `x`, `T_y`, `T`, `ω` | 가입나이 (보험나이); policy years projected, `T_y = ω − x + 1`; **months** projected, `T = 12 T_y`; table terminal age | `age_at_entry()`, `proj_years()`, `proj_len()`, `omega_age()` |
+| `m`, `12m` | 납입기간 in policy years, a 1-based count, `m = T_y` on a 전기납 contract; the same in months | `prem_period()`, `prem_end()`, `prem_period_mths()` |
+| `n_sc`, `12 n_sc` | 해약공제기간 `= min(m, 7)` years; the same in months | `surr_chg_period()`, `surr_chg_period_mths()` |
+| `SA`, `SA(t)` | 보험가입금액 at issue, and in month `t` after any 감액 | `sum_assured()`, `sum_assured_at(t)` |
+| `G`, `G^m` | annual 영업보험료 (a report and the commission base); the **monthly** premium, the month's income, level for `t < 12m` | `premium_pp()`, `premium_mth_pp()`, `premium_mth_at_pp(t)` |
+| `P`, `P^m`, `P₂₀` | 연납순보험료 over `m`, the 별표 14 quantity; the **월납순보험료** the account consumes; the annual premium on the 별표 14 **20년납** footing | `prem_net_level_pp()`, `prem_net_level_mth_pp()`, `prem_net_20yr_pp()` |
+| `i`, `j`, `i_acc`, `j_acc`, `i_L`, `j_L` | 예정이율 and its monthly equivalent; the account accrual rate and its monthly equivalent; 보험계약대출이율 `= i_acc + 1.5%` and its monthly equivalent | `prem_int_rate`, `prem_int_rate_mth()`, `acc_int_rate()`, `acc_int_rate_mth()`, `loan_int_rate()`, `loan_int_rate_mth()` |
+| `q(t)`, `w(t)`, `u(t)` | the **annual** 적용위험률, 해지율 and 납입면제 incidence of the policy year month `t` falls in | `mort_rate(t)`, `lapse_rate(t)`, `waiver_rate(t)` |
+| `q^m(t)`, `w^m(t)`, `u^m(t)` | their monthly conversions `1 − (1 − q)^(1/12)` **[std]** — what the roll-forward applies | `mort_rate_mth(t)`, `lapse_rate_mth(t)`, `waiver_rate_mth(t)` |
 | `A(y)`, `ä(y, n)` | whole-life EPV of 1 at 보험나이 `y`; `n`-year annuity-due, both on `i` and the table | `epv_death(y)`, `annuity_due(y, n)` |
-| `l(t)`, `lp(t)`, `lw(t)` | in force at the start of period `t`; of those, paying; of those, waived | `pols_if(t)`, `pols_if_pay(t)`, `pols_waived(t)` |
+| `A^m(u)`, `ä^m(u, n)` | their **monthly** counterparts, indexed by months from issue and payable monthly, on `j` and the converted table rates | `epv_death_mth(u)`, `annuity_due_mth(u, n)` |
+| `l(t)`, `lp(t)`, `lw(t)` | in force at the start of month `t`; of those, paying; of those, waived | `pols_if(t)`, `pols_if_pay(t)`, `pols_waived(t)` |
 | `D(t)`, `S(t)`, `Sp(t)`, `R(t)` | deaths; 해지; 해지 **paid** a value; 부활 | `pols_death(t)`, `pols_lapse(t)`, `pols_surr(t)`, `pols_reinstate(t)` |
-| `V(d)` | 계약자적립액 at anniversary `d` | `pol_val_pp(d)` |
+| `V(d)` | 계약자적립액 at month-end `d` | `pol_val_pp(d)` |
 | `SC(d)`, `SC*` | 해약공제액 at `d`; the **표준해약공제액** cap | `surr_chg_pp(d)`, `surr_chg_cap_pp()` |
 | `W(d)` | 표준형 twin's 해약환급금, `max(0, V(d) − SC(d))` | `cv_std_pp(d)` |
-| `k`, `κ(d)` | suppression factor; the multiplier actually applied at anniversary `d` | `cv_floor_ratio()`, `cv_mult(d)` |
+| `k`, `κ(d)` | suppression factor; the multiplier actually applied at month-end `d` | `cv_floor_ratio()`, `cv_mult(d)` |
 | `CV(d)` | 해약환급금 payable at `d` | `cv_pp(d)` |
 | `B(d)` | 유지보너스 credited at 납입완료 | `bonus_pp(d)` |
-| `cumprem(d)`, `ρ(d)` | premiums paid by anniversary `d`; **환급률** `CV(d) / cumprem(d)` | `cum_prem_pp(d)`, `refund_ratio(d)` |
-| `L(d)`, `Δ(t)` | 보험계약대출 balance at anniversary `d`; the draw at the start of period `t` | `loan_pp(d)`, `loan_draw(t)` |
+| `cumprem(d)`, `ρ(d)` | premiums paid by month-end `d`; **환급률** `CV(d) / cumprem(d)` | `cum_prem_pp(d)`, `refund_ratio(d)` |
+| `L(d)`, `Δ(t)` | 보험계약대출 balance at month-end `d`; the draw at the start of month `t` | `loan_pp(d)`, `loan_draw(t)` |
 | `AC`, `c₀`, `c_r`, `e`, `ec`, `π` | 계약체결비용; first-year commission share; renewal rate; per-policy 계약관리비용; claim expense; expense inflation | `acq_cost_pp()`, `comm_init_share`, `comm_renewal_rate`, `expense_maint_pp`, `expense_claim_pp`, `inflation_rate` |
-| `CF(t)` | net cash flow of period `t`, **income-positive** | `net_cf(t)` |
+| `CF(t)` | net cash flow of month `t`, **income-positive** | `net_cf(t)` |
 
-**Dimensional check.** `q`, `w`, `u`, `k`, `κ`, `ρ`, `c₀`, `c_r`, `l`, `lp`, `lw` and the
-`sa_factor` are dimensionless; `i`, `i_acc`, `i_L`, `π` are per annum; `A` and `ä` are pure
-numbers (`ä` in years of premium, so `SA × A / ä` is ₩ per year); `SA`, `G`, `P`, `V`, `SC`,
-`W`, `CV`, `B`, `L`, `AC`, `e`, `ec` are ₩; every term of `CF(t)` is ₩ per policy issued per
-year. No term mixes a per-annum rate with a stock without an explicit year count.
+**Dimensional check.** `q`, `q^m`, `w`, `w^m`, `u`, `u^m`, `k`, `κ`, `ρ`, `c₀`, `c_r`, `l`,
+`lp`, `lw` and the `sa_factor` are dimensionless; `i`, `i_acc`, `i_L`, `π` are per annum and
+`j`, `j_acc`, `j_L` are their per-month equivalents; `A` and `ä` are pure numbers, the annual
+pair in years of premium and the monthly pair `A^m`, `ä^m` in months of it, so `SA × A / ä`
+is ₩ per year and `SA × A^m / ä^m` is ₩ per **month**; `SA`, `G`, `G^m`, `P`, `P^m`, `V`,
+`SC`, `W`, `CV`, `B`, `L`, `AC`, `e`, `ec` are ₩; every term of `CF(t)` is ₩ per policy
+issued per **month**. The annual rates are **probabilities** and are converted by compounding,
+never by dividing — the sister model `LTC_KR_S` divides its transition intensities by twelve
+for the opposite reason, those being rates per year and not probabilities. No term mixes a
+per-annum rate with a stock without an explicit period count.
 
 ### The net premium, and the two annuities that are not the same
 
@@ -520,31 +559,51 @@ pricing model, and is not allowed to drive cash flows.
 
 ### 계약자적립액 — the account recursion this chassis defines
 
-The 표준형 twin's account is the classical net-level recursion on the annual grid, with the
-death benefit falling at the **end** of the year:
+The 표준형 twin's account is the classical net-level recursion on the **monthly** grid, with
+the death benefit falling at the **end** of the month:
 
-    V(0)                  = 0
-    V(d) * (1 - q(x+d-1)) = ( V(d-1) + P * 1{d <= m} ) * (1 + i_acc) - q(x+d-1) * SA
-    V(T)                 := 0
+    V(0)                 = 0
+    V(d) * (1 - q^m(d-1)) = ( V(d-1) + P^m * 1{d <= 12m} ) * (1 + j_acc) - q^m(d-1) * SA
+    V(T)                := 0
 
-on the **anniversary** index `d`, solved forward; `q(x+d-1)` is the rate of the policy year
-just ended, which is period `d − 1` at attained age `x + d − 1`. Rearranged as the model
-computes it,
+on the **month-end** index `d`, solved forward; `q^m(d-1)` is the monthly conversion of the
+table rate at attained age `x + ⌊(d−1)/12⌋`, the rate of the policy year the month just ended
+falls in, and `j_acc = (1 + i_acc)^(1/12) − 1`. Rearranged as the model computes it,
 
-    V(d) = ( ( V(d-1) + P * 1{d <= m} ) * (1 + i_acc) - q * SA ) / (1 - q)
+    V(d) = ( ( V(d-1) + P^m * 1{d <= 12m} ) * (1 + j_acc) - q^m * SA ) / (1 - q^m)
 
-Read as a roll over period `t` — the form `check_pol_val_roll_fwd_resid(t)` asserts — the
+Read as a roll over month `t` — the form `check_pol_val_roll_fwd_resid(t)` asserts — the
 same statement is
 
-    ( V(t) + P * 1{t < m} ) * (1 + i_acc) = q(x+t) * SA + (1 - q(x+t)) * V(t+1)
+    ( V(t) + P^m * 1{t < 12m} ) * (1 + j_acc) = q^m(t) * SA + (1 - q^m(t)) * V(t+1)
 
-Three properties are contractual rather than conventional and a model must not lose them.
+**This is the step 감독규정 제7-66조제1항제4호 names.** The rule requires the account to accrue
+**monthly** until 납입완료 and daily after it; the annual-step model this replaced needed
+제7-65조제2항's separate permission to carry a monthly-premium product's account on an annual
+one — 「연납보험료를 기준으로 하여 산출할 수 있다」 [REG-R18] — and the monthly grid does not.
+The account is **1.2% higher at every 계약해당일** in consequence, which is twelve instalments
+earning interest from the month each is paid rather than one notional annual premium earning
+it from the start of the year. Only the daily accrual after 납입완료 remains a **[std]**
+approximation [REG-R19].
+
+**`P` and `P^m` are different numbers and both are needed.** 별표 14 writes the
+표준해약공제액 in terms of the **연납순보험료**, so `prem_net_level_pp()` stays annual and the
+surrender charge is untouched by the conversion; the account consumes
+`prem_net_level_mth_pp()`, solved from `P^m · ä^m(0, 12m) = SA · A^m(0)` on the monthly
+counterparts of the same EPVs. `12 P^m` is **2.4% above** `P`, which is the ordinary modal
+loading of paying monthly in advance, and confusing the two would silently move both the
+account and the statutory cap.
+
+Three further properties are contractual rather than conventional and a model must not lose
+them.
 
 **It is net level premium.** The acquisition cost is **not** Zillmerised into the account;
 it is deducted **from** it, and the deduction is what 별표 14 caps [REG-R20]. The
-consequence is visible in the worked example's first row: `V(1)` is ₩2,076,132.76 while
-`SC(1)` is ₩2,662,886.18, so `W(1) = max(0, V − SC) = 0` and the first-year surrender value
-is nil — which is what every published Korean grid shows at duration 1 [S1] [S4] [S6] [S8].
+consequence is visible in the worked example's first row: `V(1)` is ₩173,073.54 while
+`SC(1)` is ₩3,069,716.01, so `W(1) = max(0, V − SC) = 0` and the surrender value is nil for
+the first fifteen months — which is what every published Korean grid shows at duration 1
+[S1] [S4] [S6] [S8], and the monthly grid dates the crossing to `d = 15` rather than leaving
+it somewhere inside policy year 2.
 
 **It runs on the 표준형 net premium**, not on the sold form's lower one. `CV(d)` is
 therefore **independent of the sold form's own premium**, and that single fact is the whole
@@ -557,17 +616,22 @@ smaller**.
 which case the 해약환급금 is zero and never negative [REG-R19 제7-66조제1항제1호](#krlib-reg-r19).
 
 Two identities are asserted rather than assumed. `check_pol_val_roll_fwd()` re-derives the
-recursion residual over every period. `check_pol_val_prosp()` compares the forward account
-against its **prospective** form at every anniversary,
+recursion residual over every month. `check_pol_val_prosp()` compares the forward account
+against its **prospective** form at every month-end,
 
-    prosp_val_pp(d) = SA * A_acc(x + d) - P * ä_acc(x + d, max(m - d, 0))
+    prosp_val_pp(d) = SA * A^m_acc(d) - P^m * ä^m_acc(d, max(12m - d, 0))
 
-on the accrual rate, and asserts equality to `val_tol × SA`. **It is defined as zero on a
+on the accrual rate, and asserts equality to `val_tol × SA`. Its tolerance carries a factor of
+**twelve** and nothing else: in the terminal policy year `q = 1`, the recursion divides by
+`1 − q^m` twelve times over, and whatever float noise the account carries into that year is
+multiplied by exactly that. Every month-end before it closes to a hundredth of a won, and the
+largest residual over the anchor's 912 months is ₩0.73 on a ₩100,000,000 sum assured.
+**It is defined as zero on a
 금리연동형 point**, and that is not a dodge: once the crediting rate can differ from the
 pricing rate the account is genuinely path-dependent and the retrospective and prospective
 forms are different numbers. On `point_id = 9` — 여 45세, 금리연동형 at 2.75% against a
-2.50% pricing rate — the forward account at `d = 20` runs **9.38% above** its prospective
-form (₩53,524,380.95 against ₩48,934,924.41). A model that asserts the identity
+2.50% pricing rate — the forward account at `d = 240` runs **9.12% above** its prospective
+form (₩54,077,741.85 against ₩49,559,710.78). A model that asserts the identity
 unconditionally will fail there and, worse, may be "fixed" by discounting the account on the
 wrong rate.
 
@@ -597,17 +661,20 @@ with `SA` taken as the 일반사망보험금 **before any 체증 or 체감** [RE
 제8호](#krlib-reg-r21). The *level* of the charge is set at the cap **[std]**, and only its *shape between
 the ends* is standardized — a straight line to `n_sc`:
 
-    SC(d) = SC* * max(0, 1 - d / n_sc) * sa_factor(d),      n_sc = min(m, 7)
+    SC(d) = SC* * max(0, 1 - d / (12 * n_sc)) * sa_factor(d),   n_sc = min(m, 7) years
 
-with `d` the anniversary, so `SC(0) = SC*` at issue and `SC(n_sc) = 0`.
+with `d` the month-end, so `SC(0) = SC*` at issue and `SC(12 n_sc) = 0`. The monthly grid
+runs the line off in 84 steps rather than seven on a 20년납 contract, which puts the balance
+at the month a surrender is actually taken instead of at the last 계약해당일 before it.
 
 **The duration is fixed by regulation and it is short.** 제7-66조제1항제2호: 「해약공제기간은
 보험료 납입기간 또는 신계약비 부가기간으로 하되 … **7년 이상일 때에는 7년으로** 한다」
-[REG-R19]. On the anchor's 20년납 contract the charge is fully amortised by duration 7 —
-**thirteen years before the cliff.** That separation is the single most important structural
-fact in this section, because it means the step at 납입완료 has nothing whatever to do with
-the surrender charge running off: by then it has been gone for over a decade.
-`check_surr_chg_cap()` asserts both limbs — never above `SC*`, and exactly zero from `n_sc`.
+[REG-R19]. On the anchor's 20년납 contract the charge is fully amortised by the month-end
+`d = 84` — **thirteen years before the cliff.** That separation is the single most important
+structural fact in this section, because it means the step at 납입완료 has nothing whatever to
+do with the surrender charge running off: by then it has been gone for over a decade.
+`check_surr_chg_cap()` asserts both limbs — never above `SC*`, and exactly zero from
+`12 n_sc`.
 
 That is the honest position on the three components: the **cap is sourced and exact**, the
 **level is set at the cap** and defended by the four public bounds in class (b), and only
@@ -616,30 +683,33 @@ the **shape between the ends** is [std].
 ### 해약환급금 and the 무해지 / 저해지 cliff
 
     W(d)  = max( 0, V(d) - SC(d) )                          the 표준형 twin's value
-    kappa(d) = k    for d <  m      (and for all d on a 전기납 contract)
-    kappa(d) = 1    for d >= m
+    kappa(d) = k    for d <   12m   (and for all d on a 전기납 contract)
+    kappa(d) = 1    for d >= 12m
     CV(d) = kappa(d) * W(d) + B(d)                          the payable value
     CVs(d) = k * W(d)                                       the suppressed value at every d
 
-on the anniversary index, and the transition at the anniversary `d = m` is a **step, not a
-ramp**. `CV(m) / (k W(m))` is exactly `1 / k` and **anything between is an interpolation the
-contract does not have.** Both quantities exist at `d = m` and the model publishes both,
+on the month-end index, and the transition at `d = 12m` is a **step, not a
+ramp**. `CV(12m) / (k W(12m))` is exactly `1 / k` and **anything between is an interpolation
+the contract does not have.** Both quantities exist at `d = 12m` and the model publishes both,
 `cv_pp` and `cv_susp_pp`, side by side in `result_val()` so the step can be read off one row
-rather than inferred — the row of period `m − 1`, whose closing anniversary that is.
+rather than inferred — the row of month `12m − 1`, whose closing month-end that is. **The
+monthly grid is what makes the claim checkable**: the two month-ends either side of the cliff
+are one month apart, so a doubling between them is visibly a single-row event rather than an
+artefact of comparing two balances a year apart.
 
-**[std] ordering rule.** A surrender occurring in policy year `m` — the period `t = m − 1` —
-is paid at the end of that period on `CV(m)`, the **full** value. The suppressed value
-applies to the anniversaries `d = 1 … m − 1`, closing policy years 1 … m − 1. This
-is a convention on an annual grid and it is stated because it is worth real money: on the
-anchor the difference between the two readings of policy year 20 is a factor of two on
-₩51,428,412.54.
+**[std] ordering rule.** A surrender occurring in the last paying month — `t = 12m − 1` — is
+paid at the end of it on `CV(12m)`, the **full** value. The suppressed value applies to the
+month-ends `d = 1 … 12m − 1`. This
+is a convention and it is stated because it is worth real money: on the
+anchor the difference between the two readings of that one month is a factor of two on
+₩52,023,973.59.
 
-`check_cv_cliff()` asserts three things: that `CV(d) − B(d) = κ(d) W(d)` at every anniversary,
+`check_cv_cliff()` asserts three things: that `CV(d) − B(d) = κ(d) W(d)` at every month-end,
 that the payable value net of any bonus **never exceeds the 표준형 twin's**, and that at
-`d = m` they are **equal**. It deliberately does **not** assert the FSC press-release framing 「전(全)
+`d = 12m` they are **equal**. It deliberately does **not** assert the FSC press-release framing 「전(全)
 보험기간 동안 표준형 보험의 환급률(기납입보험료대비) 이내로」 [REG-R28], because the
 denominators differ and the two statements can disagree: on `point_id = 3` the 무해지 form's
-post-완납 환급률 is **1.068759** against the 표준형's 0.833632, which satisfies
+post-완납 환급률 is **1.081135** against the 표준형's 0.843286, which satisfies
 제7-66조제4항제2호 나목 as recorded in the 고시 [REG-R19] and contradicts the press-release
 reading. `product-spec.md` records both statements as they stand and so does this document;
 neither resolves them, because the operative article text and the press-release sentence
@@ -658,30 +728,40 @@ which the FSS said in terms in its 2019 alert and the 표준약관 repeats as �
 On a 단기납 design the insurer credits a persistency bonus to the 계약자적립액 at 납입완료:
 **10.8% (5년납) / 13.8% (7년납) / 15.0% (10·15년납)** of total 주보험 premiums, with a
 second 18.5% credit at duration 10 on the 5·7년납 forms [S7]. The model carries the first
-credit only, and **as an addition to the payable surrender value from the anniversary
-`d ≥ m`** rather than as a credit inside the account recursion **[std]**, no crediting
+credit only, and **as an addition to the payable surrender value from the month-end
+`d ≥ 12m`** rather than as a credit inside the account recursion **[std]**, no crediting
 formula being published:
 
-    B(d) = bonus_rate * cumprem(m)     for d >= m on a term-pay contract,  else 0
+    B(d) = bonus_rate * cumprem(12m)   for d >= 12m on a term-pay contract,  else 0
 
 **The supervisor requires an additional lapse of at least 30% at any such bonus date**, or a
 rate backed out of the 표준형 product's cumulative persistency, calibrated against the
 29.4%–30.2% eleventh-year lapse observed on single-premium bancassurance savings [REG-R27]
 [R3]. `lapse_spike()` therefore turns on **with** the bonus and cannot be switched on
-separately: on `point_id = 8` the lapse rate of policy year 7 — the period `t = 6` — is
-**0.301** against a base of 0.001.
+separately: on `point_id = 8` the monthly lapse rate of the single month the bonus is credited
+in — `t = 83`, the last month of the 7년납 period — is **0.300083** against a converted base of
+0.000083.
+**The spike is the one decrement that is not converted to a monthly force, and deliberately.**
+It is a lump of elective exits on a date, not a rate spread over a year: the supervisor's
+「30% 이상」 is an additional *lapse*, and spreading it over twelve months would both delay it
+and, through the compounding, change its size. So it is added to that one month's converted
+base rate and to no other — the same treatment the sister model `Term_KR_S` gives its renewal
+decline, and the opposite of what `LTC_KR_S` does with its transition intensities, which are
+rates per year and are divided by twelve.
 Turning the bonus on without the spike would misstate the liability in the insurer's favour,
 which is exactly what the guidance exists to prevent.
 
 ### 보험계약대출 as a modelled state
 
     L(0)     = 0
-    L(t+1)   = ( L(t) + Delta(t) ) * (1 + i_L)
-    Delta(t) = util * max( 0, 0.80 * CV(t) - L(t) )     in period t = loan_year - 1, else 0
+    L(t+1)   = ( L(t) + Delta(t) ) * (1 + j_L)
+    Delta(t) = util * max( 0, 0.80 * CV(t) - L(t) )   in month t = 12 * (loan_year - 1), else 0
 
-`L` is indexed by the anniversary, so `L(t)` is the balance opening period `t` and `L(t+1)`
-the balance closing it; the draw is made at the opening anniversary and reads the payable
-value there. Every payment is made **net of the opening balance and floored at zero**:
+`L` is indexed by the month-end, so `L(t)` is the balance opening month `t` and `L(t+1)`
+the balance closing it; the draw is made at the opening month-end and reads the payable
+value there. The roll runs on `j_L = (1 + i_L)^(1/12) − 1`, so twelve months compound back to
+exactly the annual 보험계약대출이율 the 약관 quotes. Every payment is made **net of the
+opening balance and floored at zero**:
 
     death benefit    = max(0, SA(t) - L(t))
     surrender payout = max(0, CV(t+1) - L(t))
@@ -698,27 +778,29 @@ loan-excess-lapse notice**, so the balance never terminates the contract — it 
 payout instead.
 
 **No repayment is modelled [std]** and the draw is a single event, so the balance compounds
-untouched: on `point_id = 6` a draw of ₩8,167,325.83 at the anniversary `d = 9` — the start
-of policy year 10 — grows to **₩108,712,698.33 by `d = 75`**, above the ₩100,000,000 sum
-assured, so every later payment floors at zero. A real book repays; this one does not, and
-the floor is where it shows.
+untouched: on `point_id = 6` a draw of ₩8,265,310.25 at the month-end `d = 108` — the start
+of policy year 10 — crosses the ₩100,000,000 sum assured at **`d = 871`**, seven months into
+policy year 73, and reaches **₩114,044,264.36 by `d = 911`**, so every later payment floors at
+zero. The crossing month is a number the annual grid could not produce at all; it could only
+say which policy year the balance overtook the cover in. A real book repays; this one does
+not, and the floor is where it shows.
 
-`check_loan_roll_fwd()` asserts the recursion over every period.
+`check_loan_roll_fwd()` asserts the recursion over every month.
 
 ### 보험료 납입면제 as a state transition
 
-Within period `t`, **before** the premium is taken:
+Within month `t`, **before** the premium is taken:
 
-    waiver(t)   = lp(t) * u(t)                      moves out of the paying cohort
-    lp_exp(t)   = lp(t) - waiver(t)                 pays the premium this period
+    waiver(t)   = lp(t) * u^m(t)                    moves out of the paying cohort
+    lp_exp(t)   = lp(t) - waiver(t)                 pays the premium this month
     lw_exp(t)   = lw(t) + waiver(t)                 accrues value, pays nothing
 
 Both cohorts then carry the **same** mortality and the **same** lapse rate **[std]** — no
 Korean source distinguishes the persistency of a waived contract — and both roll forward
 together:
 
-    lp(t+1) = lp_exp(t) * (1 - q(t)) * (1 - w(t)) + R(t+1)
-    lw(t+1) = lw_exp(t) * (1 - q(t)) * (1 - w(t))
+    lp(t+1) = lp_exp(t) * (1 - q^m(t)) * (1 - w^m(t)) + R(t+1)
+    lw(t+1) = lw_exp(t) * (1 - q^m(t)) * (1 - w^m(t))
     l(t)    = lp(t) + lw(t)
 
 The premium is weighted by `lp_exp(t)`, everything else by `l(t)`. **That is the whole
@@ -726,7 +808,10 @@ content of the waiver in cash-flow terms**: a waived policy contributes to the i
 count, to maintenance expense and to every benefit, and to neither premium nor commission.
 The two weights coincide in the base run, where `u ≡ 0`, which is exactly why the
 distinction has to be written down rather than discovered when the module is switched on.
-`point_id = 7` runs it at 0.4% p.a. and reaches `pols_waived(19) = 0.042858`.
+`point_id = 7` runs it at 0.4% p.a. — converted month by month like every other decrement, so
+twelve compound back to it — and reaches `pols_waived(240) = 0.044660`. The monthly grid also
+places the transition in the month of the 장해 rather than at the next 계약해당일, which is
+what the deemed-paid rule actually says.
 
 ### 감액 as a partial surrender
 
@@ -735,70 +820,75 @@ distinction has to be written down rather than discovered when the module is swi
 [S5 제20조]. On a suppressed contract the accompanying warning is the main event rather than
 a caveat: a reduction made during 납입기간 pays at `k W(d)`, and on a 무해지 contract it
 pays **nothing at all**. The reduction falls at the end of policy year `reduce_year` — the
-period `t = reduce_year − 1` — on the anniversary `d = reduce_year` that closes it:
+month `t = 12 × reduce_year − 1` — on the 계약해당일 `d = 12 × reduce_year` that closes it,
+the same contractual date the annual grid used and now located to the month:
 
     claims(t, "REDUCTION") = reduce_frac * max(0, CV(t+1) - L(t)) * l_after_decrements(t)
-                                                        in period t = reduce_year - 1
-    sa_factor(d) = 1 - reduce_frac     for d > reduce_year
+                                                  in month t = 12 * reduce_year - 1
+    sa_factor(d) = 1 - reduce_frac     for d > 12 * reduce_year
 
 The restatement is exact here because **every** quantity carrying the 가입금액 is
 proportional to it: `SA`, `G`, `V(d)`, `SC(d)` and therefore `W(d)` all step down by
-the same factor from the anniversary `reduce_year + 1`. The 약관's pro-rata restatements of 이미 납입한 보험료,
+the same factor from the month-end `12 × reduce_year + 1`. The 약관's pro-rata restatements of 이미 납입한 보험료,
 중도인출 누적액 and 초과납입액 [S5 제20조] matter only on designs whose death benefit is a
 function of premiums paid, which the 평준형 composite is not. `point_id = 10` reduces 50%
 of a ₩1,000,000,000 cover at duration 15.
 
-### 부활 as a one-year re-entry
+### 부활 as a twelve-month re-entry
 
-    R(t) = reinstate_rate * S(t - 1)        into the paying cohort at the start of period t
-    Sp(t) = S(t) - R(t + 1)                 the lapses actually paid a surrender value
+    R(t) = reinstate_rate * S(t - 12)       into the paying cohort at the start of month t
+    Sp(t) = S(t) - R(t + 12)                the lapses actually paid a surrender value
 
 The substantive effect is not the count but the **payment**: a reinstated policyholder is
 not paid a surrender value, because 부활 requires that the 해약환급금 has not been drawn and
 the 약관 expressly includes the case where there was none to draw [S5 제26조] [REG-R25
-제27조](#krlib-reg-r25). A one-year lag is a **[std]** simplification of a three-year window, and no arrears
-cash flow is modelled: on an annual grid with premiums in advance there is no premium
-instalment falling inside a one-year gap. `point_id = 10` runs it at 20%.
+제27조](#krlib-reg-r25). A twelve-month lag is a **[std]** simplification of a three-year
+window — the same year it always was — and no arrears cash flow is modelled for the twelve
+instalments that now fall inside it **[std]**. The monthly grid makes that omission visible as
+twelve missing rows where the annual grid could state it as "no instalment falls inside a
+one-year gap". `point_id = 10` runs it at 20%.
 
-### Processing order (period `t = 0 … T − 1`, i.e. policy years 1 … T)
+### Processing order (month `t = 0 … T − 1`, i.e. policy years 1 … T_y)
 
 The order is explicit because two steps in it are worth money and one is a convention.
 
-1. **Start of the period — the in-force split.** `l(t) = lp(t) + lw(t)`. This is the
+1. **Start of the month — the in-force split.** `l(t) = lp(t) + lw(t)`. This is the
    `result_cf()` row's `pols_if` and the weight on every non-premium cash flow in it.
-2. **Start of the period — 납입면제 transition.** `waiver(t) = lp(t) × u(t)` moves out of the
-   paying cohort **before** the premium is taken.
-3. **Start of the period — premium.** `premiums(t) = G(t) × lp_exp(t)` for `t < m`, in
-   advance, on the paying cohort only. **Zero from `t = m` onwards, for ever.**
-4. **Start of the period — expenses and commission.** Acquisition expense and initial
-   commission at `t = 0` only, on `l(0)`. Maintenance expense `e × (1 + π)^t × l(t)` at the
-   start of **every** period, for life. The premium-related expense on every premium
-   collected, periods `t = 0 … m − 1`; the renewal commission on the premium of periods
-   `t = 1 … m − 1` (policy years 2 … m).
-5. **Start of the period — 보험계약대출 draw**, where one is elected, off `CV(t)`, the value
-   at the opening anniversary.
-6. **Cash values.** `V(t+1)`, `SC(t+1)`, `W(t+1)`, `CV(t+1)` at the anniversary that closes
-   the period.
-7. **End of the period — deaths.** `D(t) = l(t) × q(t)`, paid `max(0, SA(t) − L(t))` each,
+2. **Start of the month — 납입면제 transition.** `waiver(t) = lp(t) × u^m(t)` moves out of
+   the paying cohort **before** the premium is taken.
+3. **Start of the month — premium.** `premiums(t) = G^m(t) × lp_exp(t)` for `t < 12m`, in
+   advance, on the paying cohort only. **Zero from `t = 12m` onwards, for ever.**
+4. **Start of the month — expenses and commission.** Acquisition expense and initial
+   commission at `t = 0` only, on `l(0)`; the commission is computed on the **annualized**
+   premium, because that is the unit a Korean commission scale is written in. Maintenance
+   expense `e × (1 + π)^⌊t/12⌋ × l(t)` at the start of **every** month, for life. The
+   premium-related expense on every premium collected, months `t = 0 … 12m − 1`; the renewal
+   commission on the premium of months `t = 12 … 12m − 1` (policy years 2 … m).
+5. **Start of the month — 보험계약대출 draw**, where one is elected, off `CV(t)`, the value
+   at the opening month-end.
+6. **Cash values.** `V(t+1)`, `SC(t+1)`, `W(t+1)`, `CV(t+1)` at the month-end that closes
+   the month.
+7. **End of the month — deaths.** `D(t) = l(t) × q^m(t)`, paid `max(0, SA(t) − L(t))` each,
    plus `ec × D(t)` of claim expense.
-8. **End of the period — 해지**, on the survivors of mortality — **death before lapse [std
-   order]**: `S(t) = l(t) × (1 − q(t)) × w(t)`, of which `Sp(t) = S(t) − R(t + 1)` is paid
-   `max(0, CV(t + 1) − L(t))`.
-9. **End of the period — 감액**, at the same anniversary, on those continuing after both
+8. **End of the month — 해지**, on the survivors of mortality — **death before lapse [std
+   order]**: `S(t) = l(t) × (1 − q^m(t)) × w^m(t)`, of which `Sp(t) = S(t) − R(t + 12)` is
+   paid `max(0, CV(t + 1) − L(t))`.
+9. **End of the month — 감액**, at the same month-end, on those continuing after both
    decrements.
-10. **End of the period — loan roll-up.** `L(t + 1) = (L(t) + Δ(t)) × (1 + i_L)`.
-11. **Start of period `t + 1` — 부활.** `R(t + 1)` of period `t`'s lapses returns to the
+10. **End of the month — loan roll-up.** `L(t + 1) = (L(t) + Δ(t)) × (1 + j_L)`.
+11. **Start of month `t + 12` — 부활.** `R(t + 12)` of month `t`'s lapses returns to the
     paying cohort, and is **not** paid a surrender value.
 12. **Update in force**, per the two-cohort recursion above.
-13. **At `t = T − 1`** the table's terminal rate is 1, so `l(T) = 0` and the projection ends.
-    `V(T) := 0` by definition. No maturity payment, no tail states.
+13. **In the terminal policy year** the table's rate is 1 and `q^m(t) = 1 / (12 − t mod 12)`
+    spreads that certain death evenly over its twelve months, so `l(T) = 0` at `t = T − 1`
+    and the projection ends. `V(T) := 0` by definition. No maturity payment, no tail states.
 
 **Death before lapse is a [std] ordering** and it is not neutral: reversing it applies the
 lapse rate to the full in-force count instead of to survivors, moving both the surrender
 outgo and the roll-forward. Asserted by `check_pols_roll_fwd()`.
 
-**The account recursion runs on its own clock.** `V(d)` is a function of `d`, `P`, `i_acc`
-and `q` alone — **not of `l(t)`, `w(t)` or `u(t)`** — because it is a per-policy contractual
+**The account recursion runs on its own clock.** `V(d)` is a function of `d`, `P^m`, `j_acc`
+and `q^m` alone — **not of `l(t)`, `w(t)` or `u(t)`** — because it is a per-policy contractual
 quantity. That is why the 표준형 twin can be priced 「해지율을 적용하지 않고」 [S1] and still
 be the same object the sold form's value is a fraction of.
 
@@ -806,16 +896,16 @@ be the same object the sold form's value is a fraction of.
 
 Income-positive, per policy issued:
 
-    CF(t) =   G(t) * lp_exp(t) * 1{t < m}                        (premiums)
+    CF(t) =   G^m(t) * lp_exp(t) * 1{t < 12m}                    (premiums)
             - max(0, SA(t) - L(t)) * D(t)                        (claims_death)
             - max(0, CV(t+1) - L(t)) * Sp(t)                     (claims_lapse)
             - reduce_frac * max(0, CV(t+1) - L(t)) * l_aft(t)    (claims_reduction)
             - ec * D(t)                                          (claim_expenses)
             - ( AC - c0*AC ) * 1{t = 0} * l(0)                   (expenses: acquisition)
-            - e * (1 + pi)^t * l(t)                              (expenses: maintenance)
+            - e * (1 + pi)^floor(t/12) * l(t)                    (expenses: maintenance)
             - 0.02 * premiums(t)                                 (expenses: premium-related)
             - min(c0 * AC, G) * 1{t = 0} * l(0)                  (commissions: initial)
-            - c_r * premiums(t) * 1{1 <= t <= m - 1}             (commissions: renewal)
+            - c_r * premiums(t) * 1{12 <= t <= 12m - 1}          (commissions: renewal)
 
 `result_cf()` publishes these as `pols_if`, `premiums`, `claims_death`, `claims_lapse`,
 `claims_reduction`, `claim_expenses`, `expenses`, `commissions`, `net_cf` — `pols_if` first,
@@ -828,6 +918,7 @@ universal on this chassis. `check_net_cf()` asserts the ledger at every `t`.
 **Two roll-forward identities close the projection.**
 
     l(t) - l(t+1) - D(t) - S(t) + R(t+1) = 0                    check_pols_roll_fwd()
+                                                                (R(t+1) = 0 unless t+1 >= 12)
     l(0) + sum R - sum (D + S) - l(t+1)  = 0                    check_decrement_sum()
 
 Because the table terminates, every policy leaves by one of the two decrements, so
@@ -840,7 +931,7 @@ argument and returns a bool** over all `t`, with the per-`t` signed residual at
 | Module | Switch | Base | Exercised on |
 |---|---|---|---|
 | 보험계약대출 | `loan_util`, `loan_year` | 0 | `point_id = 6` (저해지) and `3` (무해지, draws zero) |
-| 보험료 납입면제 | `waiver_rate` | 0 | `point_id = 7`, 0.4% p.a. |
+| 보험료 납입면제 | `waiver_rate` | 0 | `point_id = 7`, 0.4% p.a., converted monthly |
 | 유지보너스 + the mandatory ≥ 30% lapse spike | `bonus_rate` | 0 | `point_id = 8`, 13.8% on a 7년납 design |
 | 금리연동형 crediting | `int_basis`, `decl_rate` | `fixed` | `point_id = 9`, 공시이율 2.75% |
 | 감액 | `reduce_year`, `reduce_frac` | 0 | `point_id = 10`, 50% at duration 15 |
@@ -876,8 +967,9 @@ absence became a systemic problem.
   reporting and an on-site inspection [REG-R27] [R3]. The shipped `flat` basis runs that
   comparison in one line; it is exercised below.
 - **No dynamic lapse function is implemented [std].** The natural driver here is the 환급률
-  crossing 1, which on the anchor happens at the anniversary `d = 24`, four years after the
-  cliff; a form keyed on `refund_ratio(d)` would generate a spike there endogenously. It is deliberately
+  crossing 1, which on the anchor happens at the month-end `d = 280`, three years and four
+  months after the cliff; a form keyed on `refund_ratio(d)` would generate a spike there
+  endogenously, and the monthly grid would place it in the month it belongs to. It is deliberately
   **not** shipped: the November 2024 decision fixes the base vector, and an overlay on a
   supervised assumption is a departure requiring the disclosure regime above [REG-R27]. The
   hook is `lapse_rate(t)`; adding one changes no other formula.
@@ -921,9 +1013,9 @@ absence became a systemic problem.
 ### The anchor cell
 
 **`point_id = 1`** — 남자, 보험나이 **40세**, 보험가입금액 **₩100,000,000 (1억원)**,
-보험기간 **종신**, 납입기간 **20년**, 월납 annualized, **저해지환급형 `k = 0.50`**, annual
-premium **₩2,776,140**. `T = 115 − 40 + 1 = 76` policy years — the periods `t = 0 … 75` —
-attained 보험나이 40 to 115.
+보험기간 **종신**, 납입기간 **20년**, 월납, **저해지환급형 `k = 0.50`**, monthly premium
+**₩231,345.00** (annual ₩2,776,140). `T_y = 115 − 40 + 1 = 76` policy years and
+`T = 912` months — `t = 0 … 911` — attained 보험나이 40 to 115.
 Every optional module is off: `waiver_rate = loan_util = bonus_rate = reduce_frac =
 reinstate_rate = 0`, `int_basis = fixed`, `lapse_basis = loglinear`, `mort_be_factor = 1.00`.
 
@@ -938,7 +1030,7 @@ comparison twin, same cell, `k = 1.00`.** The two run side by side throughout.
 calibrated to [REG-R38] and [REG-R33]; `w` the `loglinear` vector, endpoints [REG-R27] [R3]
 and [S2], interpolation **[std]**; `SC* ` from 별표 14 [REG-R20] with the 7-year 해약공제기간
 of [REG-R19]; `AC = SC*` and `c₀ = 0.65` **[std]** inside [REG-R22]; `c_r = 3.0%`,
-`e = ₩60,000` p.a. inflating at 2.0%, 2.0% of premium, `ec = ₩300,000` per claim, all
+`e = ₩5,000` a month inflating at 2.0% a year, 2.0% of premium, `ec = ₩300,000` per claim, all
 **[std]**; `i_L = 4.00%` [S9] [S11] [S13], unused here because `loan_pp ≡ 0`.
 
 **Derived scalars, at full precision.**
@@ -946,21 +1038,34 @@ of [REG-R19]; `AC = SC*` and `c₀ = 0.65` **[std]** inside [REG-R22]; `c_r = 3.
 | Quantity | Cells | Value |
 |---|---|---|
 | Terminal age ω | `omega_age()` | 115 |
-| Number of policy years `T` | `proj_len()` | **76** (frame `t = 0 … 75`) |
-| 납입기간 `m` | `prem_period()`, `prem_end()` | 20 |
-| 해약공제기간 `n_sc` | `surr_chg_period()` | **7** |
+| Number of policy years `T_y` | `proj_years()` | **76** |
+| Number of policy months `T` | `proj_len()` | **912** (frame `t = 0 … 911`) |
+| 납입기간 `m`, in years | `prem_period()`, `prem_end()` | 20 |
+| 납입기간 in months | `prem_period_mths()` | 240 |
+| 해약공제기간 `n_sc`, in years | `surr_chg_period()` | **7** |
+| 해약공제기간 in months | `surr_chg_period_mths()` | 84 |
 | `A(40)` | `epv_death(40)` | 0.332153184440 |
 | `ä(40, 20)` | `annuity_due(40, 20)` | 15.766511588794 |
-| 연납순보험료 `P` | `prem_net_level_pp()` | **₩2,106,700.5378440050** |
+| 연납순보험료 `P` — the 별표 14 quantity | `prem_net_level_pp()` | **₩2,106,700.5378440050** |
+| **월납순보험료 `P^m`** — what the account consumes | `prem_net_level_mth_pp()` | **₩179,777.0581452671** |
 | 연납순보험료, 20년납 footing `P₂₀` | `prem_net_20yr_pp()` | ₩2,106,700.5378440050 |
-| 영업보험료 `G` | `premium_pp()` | **₩2,776,140.0000000000** |
+| 영업보험료 `G`, annual | `premium_pp()` | **₩2,776,140.0000000000** |
+| 영업보험료 `G^m`, the month's income | `premium_mth_pp()` | **₩231,345.00** |
 | Loaded premium on the model's own rule | `prem_gross_calc_pp()` | ₩2,776,167.8347600726 |
 | **표준해약공제액** `SC*` | `surr_chg_cap_pp()` | **₩3,106,700.5378440050** |
 | 계약체결비용 `AC` | `acq_cost_pp()` | ₩3,106,700.5378440050 |
 | First-year commission | `comm_init_pp()` | ₩2,019,355.3495986033 |
 | Acquisition **expense** at `t = 0` | `acq_cost_pp() − comm_init_pp()` | ₩1,087,345.1882454017 |
-| Accrual rate `i_acc` | `acc_int_rate()` | 0.025 |
-| Loan rate `i_L` | `loan_int_rate()` | 0.04 |
+| Accrual rate `i_acc`, annual | `acc_int_rate()` | 0.025 |
+| Accrual rate `j_acc`, per month | `acc_int_rate_mth()` | 0.0020598316 |
+| Loan rate `i_L`, annual | `loan_int_rate()` | 0.04 |
+
+**`12 P^m = ₩2,157,324.70` is 2.4% above `P`, and that is not a rounding.** A monthly
+equivalence discounts eleven of each year's twelve instalments and exposes them to the
+year's mortality, where an annual one collects the whole premium at the anniversary; the
+account built from `P^m` is correspondingly about half a year's interest at the 예정이율
+above the one an annual grid produced. `P` survives because 별표 14 names the 연납순보험료
+and the statutory `SC*` is computed from it, and because `prem_gross_calc_pp` loads it.
 
 `P₂₀ = P` here because `m = 20` exactly — the one configuration in which the two annuities
 coincide, and part of why the anchor is the regulator's own reference cell [REG-R9]
@@ -978,36 +1083,39 @@ model computes is `P / G_표준형` = **0.682974**, not the 80% `product-spec.md
 ₩3,106,700.54 differ by 10.5%, entirely because the model derives `P` from equivalence
 rather than assuming a loading ratio. The model's is what is projected.
 
-**The anchor's mortality and lapse rates, `t = 0 … 24`** — the first 25 periods, policy
-years 1 to 25.
+**The anchor's mortality and lapse rates, policy years 1 … 25.** One row per policy year,
+read at its first month `t = 12(y − 1)` and level through all twelve: 보험나이 steps on the
+계약해당일 and both vectors are published by year, so a within-year drift in either would be
+an invention. The **annual** rates are the sourced quantities; `q^m` and `w^m` are their
+`1 − (1 − q)^(1/12)` conversions **[std]**, and are what the roll-forward applies.
 
-| t | attained age | `mort_rate(t)` | `lapse_rate(t)` |
-|---|---|---|---|
-| 0 | 40 | 0.00085000 | 0.1000000000 |
-| 1 | 41 | 0.00092944 | 0.0784759970 |
-| 2 | 42 | 0.00101630 | 0.0615848211 |
-| 3 | 43 | 0.00111127 | 0.0483293024 |
-| 4 | 44 | 0.00121513 | 0.0379269019 |
-| 5 | 45 | 0.00132869 | 0.0297635144 |
-| 6 | 46 | 0.00145286 | 0.0233572147 |
-| 7 | 47 | 0.00158864 | 0.0183298071 |
-| 8 | 48 | 0.00173710 | 0.0143844989 |
-| 9 | 49 | 0.00189944 | 0.0112883789 |
-| 10 | 50 | 0.00207696 | 0.0088586679 |
-| 11 | 51 | 0.00227106 | 0.0069519280 |
-| 12 | 52 | 0.00248330 | 0.0054555948 |
-| 13 | 53 | 0.00271538 | 0.0042813324 |
-| 14 | 54 | 0.00296914 | 0.0033598183 |
-| 15 | 55 | 0.00324662 | 0.0026366509 |
-| 16 | 56 | 0.00355003 | 0.0020691381 |
-| 17 | 57 | 0.00388180 | 0.0016237767 |
-| 18 | 58 | 0.00424458 | 0.0012742750 |
-| **19** | 59 | 0.00464125 | **0.0010000000** |
-| 20 | 60 | 0.00507500 | 0.0080000000 |
-| 21 | 61 | 0.00551816 | 0.0080000000 |
-| 22 | 62 | 0.00600277 | 0.0080000000 |
-| 23 | 63 | 0.00653292 | 0.0080000000 |
-| 24 | 64 | 0.00711315 | 0.0080000000 |
+| y | attained age | `mort_rate` | `mort_rate_mth` | `lapse_rate` | `lapse_rate_mth` |
+|---|---|---|---|---|---|
+| 1 | 40 | 0.00085000 | 0.0000708609 | 0.1000000000 | 0.0087416110 |
+| 2 | 41 | 0.00092944 | 0.0000774863 | 0.0784759970 | 0.0067873987 |
+| 3 | 42 | 0.00101630 | 0.0000847311 | 0.0615848211 | 0.0052828967 |
+| 4 | 43 | 0.00111127 | 0.0000926530 | 0.0483293024 | 0.0041195089 |
+| 5 | 44 | 0.00121513 | 0.0001013173 | 0.0379269019 | 0.0032168852 |
+| 6 | 45 | 0.00132869 | 0.0001107917 | 0.0297635144 | 0.0025147858 |
+| 7 | 46 | 0.00145286 | 0.0001211524 | 0.0233572147 | 0.0019675882 |
+| 8 | 47 | 0.00158864 | 0.0001324832 | 0.0183298071 | 0.0015404689 |
+| 9 | 48 | 0.00173710 | 0.0001448737 | 0.0143844989 | 0.0012066846 |
+| 10 | 49 | 0.00189944 | 0.0001584246 | 0.0112883789 | 0.0009456007 |
+| 11 | 50 | 0.00207696 | 0.0001732450 | 0.0088586679 | 0.0007412367 |
+| 12 | 51 | 0.00227106 | 0.0001894523 | 0.0069519280 | 0.0005811815 |
+| 13 | 52 | 0.00248330 | 0.0002071776 | 0.0054555948 | 0.0004557737 |
+| 14 | 53 | 0.00271538 | 0.0002265638 | 0.0042813324 | 0.0003574797 |
+| 15 | 54 | 0.00296914 | 0.0002477657 | 0.0033598183 | 0.0002804169 |
+| 16 | 55 | 0.00324662 | 0.0002709551 | 0.0026366509 | 0.0002199869 |
+| 17 | 56 | 0.00355003 | 0.0002963183 | 0.0020691381 | 0.0001725919 |
+| 18 | 57 | 0.00388180 | 0.0003240603 | 0.0016237767 | 0.0001354155 |
+| 19 | 58 | 0.00424458 | 0.0003544050 | 0.0012742750 | 0.0001062517 |
+| 20 | 59 | 0.00464125 | 0.0003875960 | 0.0010000000 | 0.0000833716 |
+| 21 | 60 | 0.00507500 | 0.0004239036 | 0.0080000000 | 0.0006691237 |
+| 22 | 61 | 0.00551816 | 0.0004610138 | 0.0080000000 | 0.0006691237 |
+| 23 | 62 | 0.00600277 | 0.0005016124 | 0.0080000000 | 0.0006691237 |
+| 24 | 63 | 0.00653292 | 0.0005460469 | 0.0080000000 | 0.0006691237 |
+| 25 | 64 | 0.00711315 | 0.0005947038 | 0.0080000000 | 0.0006691237 |
 
 `q(40) = 0.00085` and `q(60) = 0.005075` are **ANCHOR** rows — the mean of 하나생명's
 0.000780 [S2] and KDB생명's 0.00092 [S8] at 40, and of 0.004550 and 0.00560 at 60; the rates
@@ -1015,305 +1123,372 @@ are sourced, the mean is **[std]**. Everything between is log-linear in `ln q`. 
 and `w(19) = 0.001` at 납입완료 are exact by construction, and `w(20) = 0.008` is the FSS
 ultimate rate [REG-R27].
 
-### First periods of the base run
+### The first policy year of the base run, and the milestone months
 
 Per policy issued, income-positive, to two decimal places — the precision the tests assert.
+The statement runs to `t = 911`; printed here are the whole of policy year 1 and the turn
+into year 2, then the months around 납입완료 and four spread over the sixty years after it.
 
 | t | age | `pols_if(t)` | premiums | claims_death | claims_lapse | claim_expenses | expenses | commissions | net_cf |
 |---|---|---|---|---|---|---|---|---|---|
-| 0 | 40 | 1.000000 | 2,776,140.00 | 85,000.00 | 0.00 | 255.00 | 1,202,867.99 | 2,019,355.35 | -531,338.34 |
-| 1 | 41 | 0.899235 | 2,496,402.25 | 83,578.50 | 69,772.73 | 250.74 | 104,961.23 | 74,892.07 | 2,162,946.99 |
-| 2 | 42 | 0.827896 | 2,298,356.43 | 84,139.12 | 116,951.51 | 252.42 | 97,647.74 | 68,950.69 | 1,930,414.96 |
-| 3 | 43 | 0.776121 | 2,154,620.59 | 86,248.00 | 135,877.69 | 258.74 | 92,509.96 | 64,638.62 | 1,775,087.58 |
-| 4 | 44 | 0.737791 | 2,048,210.63 | 89,651.18 | 139,216.88 | 268.95 | 88,880.72 | 61,446.32 | 1,668,746.57 |
-| 5 | 45 | 0.708946 | 1,968,133.90 | 94,196.97 | 134,039.01 | 282.59 | 86,326.71 | 59,044.02 | 1,594,244.60 |
-| 6 | 46 | 0.686932 | 1,907,018.11 | 99,801.53 | 124,416.36 | 299.40 | 84,556.15 | 57,210.54 | 1,540,734.11 |
-| 7 | 47 | 0.669912 | 1,859,769.56 | 106,424.90 | 110,022.82 | 319.27 | 83,366.49 | 55,793.09 | 1,503,842.99 |
-| 8 | 48 | 0.656588 | 1,822,780.00 | 114,055.89 | 96,254.81 | 342.17 | 82,613.44 | 54,683.40 | 1,474,830.28 |
-| 9 | 49 | 0.646019 | 1,793,439.41 | 122,707.45 | 83,492.64 | 368.12 | 82,191.94 | 53,803.18 | 1,450,876.07 |
-| 10 | 50 | 0.637513 | 1,769,826.31 | 132,408.97 | 71,912.65 | 397.23 | 82,024.04 | 53,094.79 | 1,429,988.63 |
-| 11 | 51 | 0.630553 | 1,750,504.72 | 143,202.48 | 61,567.69 | 429.61 | 82,050.93 | 52,515.14 | 1,410,738.86 |
-| 14 | 54 | 0.615467 | 1,708,623.01 | 182,740.82 | 37,529.80 | 548.22 | 82,898.21 | 51,258.69 | 1,353,647.28 |
-| 18 | 58 | 0.601249 | 1,669,150.22 | 255,204.77 | 18,419.29 | 765.61 | 84,906.87 | 50,074.51 | 1,259,779.18 |
-| **19** | 59 | 0.597934 | 1,659,947.45 | 277,515.94 | **30,608.06** | 832.55 | 85,463.53 | 49,798.42 | **1,215,728.95** |
-| **20** | 60 | 0.594563 | **0.00** | 301,740.88 | **248,321.14** | 905.22 | 53,009.39 | **0.00** | **-603,976.63** |
-| 23 | 63 | 0.570828 | 0.00 | 372,917.56 | 252,559.60 | 1,118.75 | 54,008.32 | 0.00 | -680,604.24 |
-| 39 | 79 | 0.402873 | 0.00 | 1,084,850.32 | 230,239.97 | 3,254.55 | 52,327.09 | 0.00 | -1,370,671.93 |
-| 59 | 99 | 0.067131 | 0.00 | 1,251,601.30 | 39,891.24 | 3,754.80 | 12,956.36 | 0.00 | -1,308,203.70 |
-| 75 | 115 | 0.000001 | 0.00 | 50.84 | 0.00 | 0.15 | 0.13 | 0.00 | -51.13 |
+| 0 | 40 | 1.000000 | **231,345.00** | **7,086.09** | **0.00** | **21.26** | **1,096,972.09** | **2,019,355.35** | **−2,892,089.79** |
+| 1 | 40 | 0.991188 | 229,306.42 | 7,023.65 | 0.00 | 21.07 | 9,542.07 | 0.00 | 212,719.63 |
+| 2 | 40 | 0.982454 | 227,285.81 | 6,961.76 | 0.00 | 20.89 | 9,457.99 | 0.00 | 210,845.18 |
+| 3 | 40 | 0.973797 | 225,283.00 | 6,900.42 | 0.00 | 20.70 | 9,374.64 | 0.00 | 208,987.24 |
+| 4 | 40 | 0.965216 | 223,297.84 | 6,839.61 | 0.00 | 20.52 | 9,292.04 | 0.00 | 207,145.67 |
+| 5 | 40 | 0.956710 | 221,330.17 | 6,779.34 | 0.00 | 20.34 | 9,210.16 | 0.00 | 205,320.34 |
+| 6 | 40 | 0.948280 | 219,379.84 | 6,719.60 | 0.00 | 20.16 | 9,129.00 | 0.00 | 203,511.08 |
+| 7 | 40 | 0.939924 | 217,446.70 | 6,660.39 | 0.00 | 19.98 | 9,048.55 | 0.00 | 201,717.77 |
+| 8 | 40 | 0.931641 | 215,530.59 | 6,601.70 | 0.00 | 19.81 | 8,968.82 | 0.00 | 199,940.27 |
+| 9 | 40 | 0.923432 | 213,631.37 | 6,543.53 | 0.00 | 19.63 | 8,889.79 | 0.00 | 198,178.42 |
+| 10 | 40 | 0.915295 | 211,748.88 | 6,485.87 | 0.00 | 19.46 | 8,811.45 | 0.00 | 196,432.10 |
+| 11 | 40 | 0.907229 | 209,882.98 | 6,428.71 | 0.00 | 19.29 | 8,733.81 | 0.00 | 194,701.17 |
+| 12 | 41 | 0.899235 | 208,033.52 | 6,967.84 | 0.00 | 20.90 | 8,746.77 | 6,241.01 | 186,057.00 |
 
-The `age` column is `x + t` and the contractual policy year is `t + 1`. The
+| t | age | `pols_if(t)` | premiums | claims_death | claims_lapse | claim_expenses | expenses | commissions | net_cf |
+|---|---|---|---|---|---|---|---|---|---|
+| 60 | 45 | 0.708946 | 164,011.16 | 7,854.53 | 9,201.72 | 23.56 | 7,193.89 | 4,920.33 | 134,817.12 |
+| 120 | 50 | 0.637513 | 147,485.53 | 11,044.60 | 5,535.20 | 33.13 | 6,835.34 | 4,424.57 | 119,612.69 |
+| 228 | 59 | 0.597934 | 138,328.95 | 23,175.67 | 1,223.61 | 69.53 | 7,121.96 | 4,149.87 | 102,588.32 |
+| 239 | 59 | 0.594843 | **137,614.06** | **23,055.90** | **2,579.03** | **69.17** | **7,085.15** | **4,128.42** | **100,696.39** |
+| 240 | 60 | 0.594563 | **0.00** | **25,203.75** | **20,722.80** | **75.61** | **4,417.45** | **0.00** | **−50,419.61** |
+| 241 | 60 | 0.593914 | 0.00 | 25,176.21 | 20,734.74 | 75.53 | 4,412.62 | 0.00 | −50,399.10 |
+| 276 | 63 | 0.570828 | 0.00 | 31,169.90 | 21,116.60 | 93.51 | 4,500.69 | 0.00 | −56,880.71 |
+| 468 | 79 | 0.402873 | 0.00 | 91,539.53 | 19,702.26 | 274.62 | 4,360.59 | 0.00 | −115,877.00 |
+| 708 | 99 | 0.067131 | 0.00 | 114,443.72 | 4,053.15 | 343.33 | 1,079.70 | 0.00 | −119,919.90 |
+| 911 | 115 | 0.000000 | 0.00 | 4.21 | 0.00 | 0.01 | 0.00 | 0.00 | −4.22 |
+
+The `age` column is `x + ⌊t/12⌋` and the contractual policy year is `⌊t/12⌋ + 1`. The
 `claims_reduction` column is identically **0.00** on this cell and is omitted from the
 display; it is published in `result_cf()` rather than dropped, because 감액 is universal on
 this chassis and `point_id = 10` uses it.
 
-**Four rows do something.** `t = 0` carries the whole acquisition cost and is the only
-negative period before 완납. `t = 19` — policy year 20 — is the **cliff**: the payable
-surrender value doubles at the anniversary that closes it. `t = 20` is the **first
-premium-free period**, and it is where the stream turns permanently negative — premium and
-commission both go to zero in the same row while every outgo continues. `t = 75` is the
-horizon: `q = 1`, everyone dies, and nothing is paid but the death benefit.
+**Five rows do something.** `t = 0` carries the whole acquisition cost against **one
+month's** premium and is the only negative month before 완납 — ₩2,892,089.79 of strain,
+12.5 times the month's premium, where an annual step netted the same charge against a year
+and printed ₩531,338. `t = 12` is the 계약해당일 closing policy year 1, where three things
+move at once: the attained 보험나이 turns 41, the expense inflation factor makes its first
+step, and the renewal commission starts. `t = 239` is the last paying month and the
+**cliff**: the payable surrender value doubles at the month-end that closes it. `t = 240` is
+the **first premium-free month**, where the stream turns permanently negative — premium and
+commission both go to zero in the same row while every outgo continues. `t = 911` is the
+horizon: the table's terminal rate has run the surviving cohort to nothing over the last
+twelve months, and nothing is paid but the death benefit.
 
-### Surrender values at the same anniversaries
+### Surrender values at the same month-ends
 
-Keyed by the **anniversary** `d`, not by the period: these are values at a point in time, and
-the row of period `t` in `result_val()` carries the anniversary `d = t + 1` that closes it.
+Keyed by the **month-end** `d`, not by the month: these are values at a point in time, and
+the row of month `t` in `result_val()` carries the month-end `d = t + 1` that closes it. A
+**계약해당일 is `d = 12y`**, which is where every published 해지환급금 grid is quoted;
+`d = 1` and `d = 6` are printed because a monthly account has values **inside** the policy
+year that an annual grid could not state at all.
 
 | d | `pol_val_pp(d)` | `surr_chg_pp(d)` | `cv_std_pp(d)` | `cv_pp(d)` | `cv_susp_pp(d)` | `cum_prem_pp(d)` | `refund_ratio(d)` |
 |---|---|---|---|---|---|---|---|
-| 1 | 2,076,132.76 | 2,662,886.18 | 0.00 | 0.00 | 0.00 | 2,776,140.00 | 0.000000 |
-| 2 | 4,198,362.26 | 2,219,071.81 | 1,979,290.45 | 989,645.22 | 989,645.22 | 5,552,280.00 | 0.178241 |
-| 3 | 6,367,530.69 | 1,775,257.45 | 4,592,273.24 | 2,296,136.62 | 2,296,136.62 | 8,328,420.00 | 0.275699 |
-| 4 | 8,584,499.71 | 1,331,443.09 | 7,253,056.62 | 3,626,528.31 | 3,626,528.31 | 11,104,560.00 | 0.326580 |
-| 5 | 10,850,151.59 | 887,628.73 | 9,962,522.87 | 4,981,261.43 | 4,981,261.43 | 13,880,700.00 | 0.358862 |
-| 6 | 13,165,397.17 | 443,814.36 | 12,721,582.80 | 6,360,791.40 | 6,360,791.40 | 16,656,840.00 | 0.381873 |
-| **7** | 15,531,178.78 | **0.00** | 15,531,178.78 | 7,765,589.39 | 7,765,589.39 | 19,432,980.00 | 0.399609 |
-| 8 | 17,948,475.96 | 0.00 | 17,948,475.96 | 8,974,237.98 | 8,974,237.98 | 22,209,120.00 | 0.404079 |
-| 9 | 20,418,314.57 | 0.00 | 20,418,314.57 | 10,209,157.28 | 10,209,157.28 | 24,985,260.00 | 0.408607 |
-| 10 | 22,941,773.00 | 0.00 | 22,941,773.00 | 11,470,886.50 | 11,470,886.50 | 27,761,400.00 | 0.413196 |
-| 11 | 25,519,993.39 | 0.00 | 25,519,993.39 | 12,759,996.69 | 12,759,996.69 | 30,537,540.00 | 0.417846 |
-| 12 | 28,154,195.14 | 0.00 | 28,154,195.14 | 14,077,097.57 | 14,077,097.57 | 33,313,680.00 | 0.422562 |
-| 15 | 36,406,331.66 | 0.00 | 36,406,331.66 | 18,203,165.83 | 18,203,165.83 | 41,642,100.00 | 0.437134 |
-| 18 | 45,217,000.64 | 0.00 | 45,217,000.64 | 22,608,500.32 | 22,608,500.32 | 49,970,520.00 | 0.452437 |
-| **19** | 48,287,294.99 | 0.00 | 48,287,294.99 | **24,143,647.50** | 24,143,647.50 | 52,746,660.00 | 0.457728 |
-| **20** | 51,428,412.54 | 0.00 | 51,428,412.54 | **51,428,412.54** | 25,714,206.27 | 55,522,800.00 | 0.926258 |
-| 21 | 52,472,922.93 | 0.00 | 52,472,922.93 | 52,472,922.93 | 26,236,461.47 | 55,522,800.00 | 0.945070 |
-| 23 | 54,593,953.41 | 0.00 | 54,593,953.41 | 54,593,953.41 | 27,296,976.71 | 55,522,800.00 | 0.983271 |
-| **24** | 55,669,192.63 | 0.00 | 55,669,192.63 | 55,669,192.63 | 27,834,596.32 | 55,522,800.00 | **1.002637** |
-| 25 | 56,753,302.20 | 0.00 | 56,753,302.20 | 56,753,302.20 | 28,376,651.10 | 55,522,800.00 | 1.022162 |
-| 30 | 62,277,600.33 | 0.00 | 62,277,600.33 | 62,277,600.33 | 31,138,800.17 | 55,522,800.00 | 1.121658 |
-| 40 | 73,413,688.61 | 0.00 | 73,413,688.61 | 73,413,688.61 | 36,706,844.30 | 55,522,800.00 | 1.322226 |
-| 60 | 91,301,421.85 | 0.00 | 91,301,421.85 | 91,301,421.85 | 45,650,710.92 | 55,522,800.00 | 1.644395 |
-| 75 | 97,560,975.81 | 0.00 | 97,560,975.81 | 97,560,975.81 | 48,780,487.91 | 55,522,800.00 | 1.757134 |
-| 76 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 55,522,800.00 | 0.000000 |
+| 1 | 173,073.54 | 3,069,716.01 | 0.00 | 0.00 | 0.00 | 231,345.00 | 0.000000 |
+| 6 | 1,043,988.88 | 2,884,793.36 | 0.00 | 0.00 | 0.00 | 1,388,070.00 | 0.000000 |
+| 12 | 2,101,396.55 | 2,662,886.18 | 0.00 | 0.00 | 0.00 | 2,776,140.00 | 0.000000 |
+| 24 | 4,249,377.45 | 2,219,071.81 | 2,030,305.64 | 1,015,152.82 | 1,015,152.82 | 5,552,280.00 | 0.182835 |
+| 36 | 6,444,786.36 | 1,775,257.45 | 4,669,528.91 | 2,334,764.46 | 2,334,764.46 | 8,328,420.00 | 0.280337 |
+| 48 | 8,688,485.75 | 1,331,443.09 | 7,357,042.66 | 3,678,521.33 | 3,678,521.33 | 11,104,560.00 | 0.331262 |
+| 60 | 10,981,357.96 | 887,628.73 | 10,093,729.24 | 5,046,864.62 | 5,046,864.62 | 13,880,700.00 | 0.363589 |
+| 72 | 13,324,313.14 | 443,814.36 | 12,880,498.78 | 6,440,249.39 | 6,440,249.39 | 16,656,840.00 | 0.386643 |
+| **84** | 15,718,292.14 | 0.00 | 15,718,292.14 | 7,859,146.07 | 7,859,146.07 | 19,432,980.00 | 0.404423 |
+| 96 | 18,164,272.12 | 0.00 | 18,164,272.12 | 9,082,136.06 | 9,082,136.06 | 22,209,120.00 | 0.408937 |
+| 108 | 20,663,275.63 | 0.00 | 20,663,275.63 | 10,331,637.81 | 10,331,637.81 | 24,985,260.00 | 0.413509 |
+| 120 | 23,216,376.79 | 0.00 | 23,216,376.79 | 11,608,188.39 | 11,608,188.39 | 27,761,400.00 | 0.418141 |
+| 132 | 25,824,712.38 | 0.00 | 25,824,712.38 | 12,912,356.19 | 12,912,356.19 | 30,537,540.00 | 0.422836 |
+| 144 | 28,489,495.44 | 0.00 | 28,489,495.44 | 14,244,747.72 | 14,244,747.72 | 33,313,680.00 | 0.427595 |
+| 180 | 36,836,090.86 | 0.00 | 36,836,090.86 | 18,418,045.43 | 18,418,045.43 | 41,642,100.00 | 0.442294 |
+| 216 | 45,745,067.40 | 0.00 | 45,745,067.40 | 22,872,533.70 | 22,872,533.70 | 49,970,520.00 | 0.457721 |
+| 228 | 48,848,924.03 | 0.00 | 48,848,924.03 | 24,424,462.02 | 24,424,462.02 | 52,746,660.00 | 0.463052 |
+| **239** | 51,755,813.04 | 0.00 | 51,755,813.04 | 25,877,906.52 | 25,877,906.52 | 55,291,455.00 | 0.468027 |
+| **240** | 52,023,973.59 | 0.00 | 52,023,973.59 | 52,023,973.59 | 26,011,986.79 | 55,522,800.00 | 0.936984 |
+| 241 | 52,110,834.07 | 0.00 | 52,110,834.07 | 52,110,834.07 | 26,055,417.03 | 55,522,800.00 | 0.938548 |
+| 252 | 53,080,662.78 | 0.00 | 53,080,662.78 | 53,080,662.78 | 26,540,331.39 | 55,522,800.00 | 0.956016 |
+| 276 | 55,226,450.40 | 0.00 | 55,226,450.40 | 55,226,450.40 | 27,613,225.20 | 55,522,800.00 | 0.994663 |
+| 288 | 56,314,255.07 | 0.00 | 56,314,255.07 | 56,314,255.07 | 28,157,127.53 | 55,522,800.00 | 1.014255 |
+| 300 | 57,411,045.18 | 0.00 | 57,411,045.18 | 57,411,045.18 | 28,705,522.59 | 55,522,800.00 | 1.034008 |
+| 360 | 63,000,180.99 | 0.00 | 63,000,180.99 | 63,000,180.99 | 31,500,090.50 | 55,522,800.00 | 1.134672 |
+| 480 | 74,269,001.52 | 0.00 | 74,269,001.52 | 74,269,001.52 | 37,134,500.76 | 55,522,800.00 | 1.337631 |
+| 720 | 92,405,944.03 | 0.00 | 92,405,944.03 | 92,405,944.03 | 46,202,972.01 | 55,522,800.00 | 1.664288 |
+| 900 | 98,673,877.93 | 0.00 | 98,673,877.93 | 98,673,877.93 | 49,336,938.96 | 55,522,800.00 | 1.777178 |
+| 912 | 0.00 | 0.00 | 0.00 | 0.00 | 0.00 | 55,522,800.00 | 0.000000 |
 
-**Read the step off anniversaries 19 and 20.** `cv_pp` goes from **₩24,143,647.50** to
-**₩51,428,412.54** — exactly `1 / k = 2.0` — while `cv_std_pp` moves smoothly from
-₩48,287,294.99 to ₩51,428,412.54, a 6.5% year. The whole of the step is the removal of `k`,
-and **the surrender charge reached zero at `d = 7`, thirteen years earlier**, so nothing
-about it is a surrender-charge effect. `cv_susp_pp` continues on the other side of the
-boundary — ₩25,714,206.27 at `d = 20` — so both quantities are visible at the boundary
-rather than inferred. Both sit on the `result_val()` row of period `t = 19`.
+**Read the step off month-ends 239 and 240.** `cv_pp` goes from **₩25,877,906.52** to
+**₩52,023,973.59** — exactly `1 / k = 2.0` on the same underlying value — while `cv_std_pp`
+moves from ₩51,755,813.04 to ₩52,023,973.59, **one month's accrual of 0.5%**. The whole of
+the step is the removal of `k`, and the monthly grid is what makes that arithmetically
+obvious: an annual step compared the doubling against a 6.5% year and a reader could still
+wonder whether some of it was growth. **The surrender charge reached zero at `d = 84`**,
+thirteen years earlier, so nothing about the step is a surrender-charge effect either.
+`cv_susp_pp` continues on the other side of the boundary — ₩26,011,986.79 at `d = 240` — so
+both quantities are visible at the boundary rather than inferred. Both sit on the
+`result_val()` row of month `t = 239`.
 
-**Anniversary 1 is nil in both columns**, the surrender charge biting exactly as the
-regulation bounds it: `V(1)` = ₩2,076,132.76 against `SC(1)` = ₩2,662,886.18, so
+**The surrender value becomes payable inside a policy year**, which is a statement an annual
+grid could not make: `cv_std_pp` is nil at `d = 12` and positive from **`d = 15`**, the third
+month of policy year 2, because that is when the account overtakes the unamortised
+해약공제액. The suppression applies to it from that instant.
+
+**Month-end 1 is nil in both columns**, the surrender charge biting exactly as the
+regulation bounds it: `V(1)` = ₩173,073.54 against `SC(1)` = ₩3,069,716.01, so
 `max(0, V − SC)` is zero and 「이를 영(零)으로 처리한다」 does the flooring [REG-R19]. Every
 published Korean grid in the set shows nil at duration 1 [S1] [S4] [S6] [S8].
-**Anniversary 76 is zero throughout**: at the terminal age everyone has died and `V(T)` is
-defined as zero, so `refund_ratio(76)` is 0.000000 and not a crossing.
+**Month-end 912 is zero throughout**: at the terminal age everyone has died and `V(T)` is
+defined as zero, so `refund_ratio(912)` is 0.000000 and not a crossing.
 
-**The 환급률 crosses 100% at `d = 24`** (1.002637), from 0.983271 at `d = 23`. The 표준형
-twin, `point_id = 2`, reaches the **identical policy value** and crosses at **`d = 30`**
-(1.009492 against 0.991409 at `d = 29`) — six years later, on the same account, purely
-because its denominator is ₩3,084,600 a year instead of ₩2,776,140. **That is the whole of
-the refund-ratio argument that sells this product**, stated in two numbers.
+**The 환급률 crosses 100% at `d = 280`** — the fourth month-end of policy year 24, a date
+rather than a year. The 표준형 twin, `point_id = 2`, reaches the **identical policy value**
+and crosses at **`d = 347`**, the eleventh month-end of policy year 29 — five and a half years
+later, on the same account, purely because its denominator is ₩257,050 a month instead of
+₩231,345. **That is the whole of the refund-ratio argument that sells this product**, stated
+in two numbers.
 
 ### Hand traces
 
-Five periods, written out term by term, so that a reader with a calculator can reproduce a
-row and watch the processing order do its work. Flows carry the period index `t`; the
-account, the deduction and the surrender values carry the anniversary `d`, and the one that
-closes period `t` is `d = t + 1`. All arithmetic is on the printed rates and on the
-full-precision values above.
+Five months, written out term by term, so that a reader with a calculator can reproduce a
+row and watch the processing order do its work. Flows carry the month index `t`; the
+account, the deduction and the surrender values carry the month-end `d`, and the one that
+closes month `t` is `d = t + 1`. All arithmetic is on the printed rates and on the
+full-precision values above. `j_acc = (1 + 0.025)^(1/12) − 1 = 0.0020598316` and
+`P^m = ₩179,777.0581452671`.
 
-**Trace, period `t = 0` (policy year 1) — the acquisition year.**
 
-    l(0) = 1.000000,  lp(0) = 1.000000,  q(0) = 0.00085,  w(0) = 0.10
-    premiums   = 2,776,140.00 x 1.000000                          = 2,776,140.00
-    D(0)       = 1.000000 x 0.00085                               = 0.0008500000
-    claims_death   = max(0, 100,000,000 - 0) x 0.0008500000       = 85,000.00
-    claim_expenses = 300,000 x 0.0008500000                       = 255.00
-    V(1)  = ( (0 + 2,106,700.5378440050) x 1.025 - 0.00085 x 1e8 ) / (1 - 0.00085)
-          = ( 2,159,368.0512901051 - 85,000 ) / 0.99915           = 2,076,132.7641396238
-    SC(1) = 3,106,700.5378440050 x (1 - 1/7)                      = 2,662,886.1752948617
-    W(1)  = max(0, 2,076,132.7641 - 2,662,886.1753)               = 0.00
-    CV(1) = 0.50 x 0.00                                           = 0.00
-    survivors of mortality = 1 - 0.00085                          = 0.9991500000
-    S(0)  = 0.9991500000 x 0.10                                   = 0.0999150000
-    claims_lapse   = max(0, CV(1) - 0) x 0.0999150000             = 0.00
-    expenses  = (3,106,700.5378440050 - 2,019,355.3495986033)     = 1,087,345.1882454017
-              + 60,000 x 1.02^0 x 1.000000                        = 60,000.00
-              + 0.02 x 2,776,140.00                               = 55,522.80
-                                                                  = 1,202,867.9882454018
-    commissions = min(0.65 x 3,106,700.5378, 1.00 x 2,776,140.00) = 2,019,355.3495986033
-    CF(0) = 2,776,140.00 - 85,000.00 - 0.00 - 255.00
-            - 1,202,867.99 - 2,019,355.35                         = -531,338.34
-    l(1)  = 1.000000 x 0.99915 x 0.90                             = 0.8992350000
+**Trace, month `t = 0` (policy year 1) — the acquisition month.**
 
-The first period is the only negative one before 완납, and the reason is distributional:
-**₩3,106,700.54 of acquisition cost against ₩2,776,140.00 of premium.** The commission cap
-of 제4-32조제5항 does not bind — 0.65 × the cost is ₩2,019,355.35 — and the residual
-₩1,087,345.19 is booked as acquisition expense. The surrender value is nil, so the 10%
-first-year lapse costs nothing in cash: **the first-year lapse benefit is zero by
-construction, on the suppressed and the standard form alike.**
+    l(0) = 1.0000000000,  q^m(0) = 0.0000708609,  w^m(0) = 0.0087416110
+    premiums   = 231,345.00 x 1.0000000000 = 231,345.00
+    D(0)      = 1.0000000000 x 0.0000708609 = 0.0000708609
+    claims_death   = max(0, 100,000,000 - 0) x 0.0000708609 = 7,086.09
+    claim_expenses = 300,000 x 0.0000708609 = 21.26
+    V(1)  = ( (0.0000 + 179,777.0581) x 1.0020598363 - 0.0000708609 x 1e8 )
+            / (1 - 0.0000708609) = 173,073.5392
+    SC(1) = 3,106,700.5378 x (1 - 1/84) = 3,069,716.0076
+    W(1)  = max(0, 173,073.5392 - 3,069,716.0076) = 0.0000
+    CV(1) = 0.50 x 0.0000 = 0.0000
+    survivors of mortality = 1.0000000000 x (1 - 0.0000708609) = 0.9999291390562
+    S(0)  = 0.9999291390562 x 0.0087416110 = 0.0087409915159
+    claims_lapse   = 0.0000 x 0.0087409915159 = 0.00
+    expenses  = 5,000 x 1.0000 x 1.0000000000 = 5,000.00
+              + (3,106,700.5378 - 2,019,355.3496) = 1,087,345.1882   (acquisition)
+              + 0.02 x 231,345.0000 = 4,626.90
+                                             = 1,096,972.09
+    commissions = min(0.65 x 3,106,700.5378, 1.00 x 2,776,140.00) = 2,019,355.35
+    CF(0) = 231,345.00 - 7,086.09 - 0.00 - 21.26 - 1,096,972.09 - 2,019,355.35 = -2,892,089.79
+    l(1)  = 0.9999291390562 x (1 - 0.0087416110) = 0.9911881475403
 
-**Trace, period `t = 1` (policy year 2) — the first period with a payable value.**
+The first month is the only negative one before 완납, and the reason is distributional:
+**₩3,106,700.54 of acquisition cost against ₩231,345.00 of premium.** The commission cap of
+제4-32조제5항 does not bind — 0.65 × the cost is ₩2,019,355.35, inside the first year's
+expected premium of ₩2,776,140 — and the residual ₩1,087,345.19 is booked as acquisition
+expense. The surrender value is nil, so the first month's lapse costs nothing in cash:
+**the first-year lapse benefit is zero by construction, on the suppressed and the standard
+form alike.**
 
-    l(1) = 0.8992350000,  q(1) = 0.00092944,  w(1) = 0.0784759970
-    premiums   = 2,776,140.00 x 0.8992350000                      = 2,496,402.2529
-    D(1)       = 0.8992350000 x 0.00092944                        = 0.0008357850
-    claims_death   = 1e8 x 0.0008357850                           = 83,578.50
-    claim_expenses = 300,000 x 0.0008357850                       = 250.74
-    V(2)  = ( (2,076,132.7641396238 + 2,106,700.5378440050) x 1.025
-              - 0.00092944 x 1e8 ) / (1 - 0.00092944)             = 4,198,362.2603524810
-    SC(2) = 3,106,700.5378440050 x (1 - 2/7)                      = 2,219,071.8127457179
-    W(2)  = 4,198,362.2603524810 - 2,219,071.8127457179           = 1,979,290.4476067631
-    CV(2) = 0.50 x 1,979,290.4476067631                           = 989,645.2238033816
-    survivors = 0.8992350000 x (1 - 0.00092944)                   = 0.8983992150216
-    S(1)  = 0.8983992150216 x 0.0784759970                        = 0.0705027741
-    claims_lapse   = CV(2) x 0.0705027741 = 989,645.2238 x ...    = 69,772.73
-    expenses  = 60,000 x 1.02 x 0.8992350000                      = 55,033.182
-              + 0.02 x 2,496,402.2529                             = 49,928.0451
-                                                                  = 104,961.23
-    commissions = 0.03 x 2,496,402.2529                           = 74,892.07
-    CF(1) = 2,496,402.25 - 83,578.50 - 69,772.73 - 250.74
-            - 104,961.23 - 74,892.07                              = 2,162,946.99
-    l(2)  = 0.8983992150216 x (1 - 0.0784759970)                  = 0.8278964408871874
+The strain is ₩2,892,089.79, **12.5 times the month's premium**. An annual step netted the
+same charge against a whole year's premium and printed ₩531,338, which is a true statement
+about a year and not about the cash flow that happens at issue.
 
-**Trace, period `t = 2` (policy year 3) — the shape settles.**
+**Trace, month `t = 1` — the first ordinary month.**
 
-    l(2) = 0.8278964409,  q(2) = 0.0010163,  w(2) = 0.0615848211
-    premiums   = 2,776,140.00 x 0.8278964409                      = 2,298,356.4254
-    D(2)       = 0.8278964409 x 0.0010163                         = 0.0008413912
-    claims_death   = 1e8 x 0.0008413912                           = 84,139.12
-    claim_expenses = 300,000 x 0.0008413912                       = 252.42
-    V(3)  = ( (4,198,362.2603524810 + 2,106,700.5378440050) x 1.025
-              - 101,630 ) / 0.9989837                             = 6,367,530.6895912290
-    SC(3) = 3,106,700.5378440050 x (1 - 3/7)                      = 1,775,257.4501965743
-    W(3)  = 6,367,530.6895912290 - 1,775,257.4501965743           = 4,592,273.2393946547
-    CV(3) = 0.50 x 4,592,273.2393946547                           = 2,296,136.6196973273
-    survivors = 0.8278964409 x (1 - 0.0010163)                    = 0.8270550497343138
-    S(2)  = 0.8270550497343138 x 0.0615848211                     = 0.0509340373
-    claims_lapse   = CV(3) x 0.0509340373 = 2,296,136.6197 x ...  = 116,951.51
-    expenses  = 60,000 x 1.02^2 x 0.8278964409                    = 51,680.6074
-              + 0.02 x 2,298,356.4254                             = 45,967.1285
-                                                                  = 97,647.74
-    commissions = 0.03 x 2,298,356.4254                           = 68,950.69
-    CF(2) = 2,298,356.43 - 84,139.12 - 116,951.51 - 252.42
-            - 97,647.74 - 68,950.69                               = 1,930,414.96
-    l(3)  = 0.8270550497343138 x (1 - 0.0615848211)               = 0.7761210124511136
+    l(1) = 0.9911881475,  q^m(1) = 0.0000708609,  w^m(1) = 0.0087416110
+    premiums   = 231,345.00 x 0.9911881475 = 229,306.42
+    D(1)      = 0.9911881475 x 0.0000708609 = 0.0000702365
+    claims_death   = max(0, 100,000,000 - 0) x 0.0000702365 = 7,023.65
+    claim_expenses = 300,000 x 0.0000702365 = 21.07
+    V(2)  = ( (173,073.5392 + 179,777.0581) x 1.0020598363 - 0.0000708609 x 1e8 )
+            / (1 - 0.0000708609) = 346,515.8719
+    SC(2) = 3,106,700.5378 x (1 - 2/84) = 3,032,731.4774
+    W(2)  = max(0, 346,515.8719 - 3,032,731.4774) = 0.0000
+    CV(2) = 0.50 x 0.0000 = 0.0000
+    survivors of mortality = 0.9911881475 x (1 - 0.0000708609) = 0.9911179110127
+    S(1)  = 0.9911179110127 x 0.0087416110 = 0.0086639671883
+    claims_lapse   = 0.0000 x 0.0086639671883 = 0.00
+    expenses  = 5,000 x 1.0000 x 0.9911881475 = 4,955.94
+              + 0.02 x 229,306.4220 = 4,586.13
+                                             = 9,542.07
+    commissions = 0.00
+    CF(1) = 229,306.42 - 7,023.65 - 0.00 - 21.07 - 9,542.07 - 0.00 = 212,719.63
+    l(2)  = 0.9911179110127 x (1 - 0.0087416110) = 0.9824539438244
 
-Note what has happened to the surrender outgo between periods 1 and 2: the lapse **rate** has
-fallen by 22% while the payable **value** has risen by 132%, so `claims_lapse` rises from
-₩69,772.73 to ₩116,951.51. It peaks at ₩139,216.88 at `t = 4` and then falls for fourteen
-periods to ₩18,419.29 at `t = 18`, because on the `loglinear` basis the rate collapses faster
-than the value grows.
+Nothing is exceptional in this row and that is what it is for: one month's premium, one
+month's decrements, one month's maintenance expense and **no commission at all**, the
+renewal commission being a policy-year-2 charge that starts at `t = 12`. The account has
+still not overtaken the unamortised 해약공제액, so the surrender value is nil and the
+month's lapses cost nothing.
 
-**Trace, period `t = 19` (policy year 20) — the cliff.**
+**Trace, month `t = 12` — the 계약해당일 closing policy year 1.**
 
-    l(19) = 0.5979336235,  q(19) = 0.00464125,  w(19) = 0.0010000000,  m = 20
-    premiums   = 2,776,140.00 x 0.5979336235                      = 1,659,947.4497
-    D(19)      = 0.5979336235 x 0.00464125                        = 0.0027751594
-    claims_death   = 1e8 x 0.0027751594                           = 277,515.94
-    claim_expenses = 300,000 x 0.0027751594                       = 832.55
-    V(20) = 51,428,412.5364992      SC(20) = 0.00  (d >= n_sc = 7)
-    W(20) = max(0, 51,428,412.5364992 - 0)                        = 51,428,412.5364992
-    kappa(20) = 1  because d >= m
-    CV(20) = 1 x 51,428,412.5364992                               = 51,428,412.5364992
-    CVs(20) = 0.50 x 51,428,412.5364992                           = 25,714,206.2682496
-    survivors = 0.5979336235 x (1 - 0.00464125)                   = 0.5951584641116814
-    S(19) = 0.5951584641116814 x 0.0010000000                     = 0.0005951584641
-    claims_lapse   = 51,428,412.5365 x 0.0005951584641            = 30,608.06
-    expenses  = 60,000 x 1.02^19 x 0.5979336235                   = 52,264.5830
-              + 0.02 x 1,659,947.4497                             = 33,198.9490
-                                                                  = 85,463.53
-    commissions = 0.03 x 1,659,947.4497                           = 49,798.42
-    CF(19) = 1,659,947.45 - 277,515.94 - 30,608.06 - 832.55
-             - 85,463.53 - 49,798.42                              = 1,215,728.95
-    l(20) = 0.5951584641116814 x (1 - 0.0010000000)               = 0.5945633056475697
+    l(12) = 0.8992350000,  q^m(12) = 0.0000774863,  w^m(12) = 0.0067873987
+    premiums   = 231,345.00 x 0.8992350000 = 208,033.52
+    D(12)      = 0.8992350000 x 0.0000774863 = 0.0000696784
+    claims_death   = max(0, 100,000,000 - 0) x 0.0000696784 = 6,967.84
+    claim_expenses = 300,000 x 0.0000696784 = 20.90
+    V(13)  = ( (2,101,396.5549 + 179,777.0581) x 1.0020598363 - 0.0000774863 x 1e8 )
+            / (1 - 0.0000774863) = 2,278,300.3596
+    SC(13) = 3,106,700.5378 x (1 - 13/84) = 2,625,901.6451
+    W(13)  = max(0, 2,278,300.3596 - 2,625,901.6451) = 0.0000
+    CV(13) = 0.50 x 0.0000 = 0.0000
+    survivors of mortality = 0.8992350000 x (1 - 0.0000774863) = 0.8991653215643
+    S(12)  = 0.8991653215643 x 0.0067873987 = 0.0061029935543
+    claims_lapse   = 0.0000 x 0.0061029935543 = 0.00
+    expenses  = 5,000 x 1.0200 x 0.8992350000 = 4,586.10
+              + 0.02 x 208,033.5211 = 4,160.67
+                                             = 8,746.77
+    commissions = 0.03 x 208,033.5211 = 6,241.01
+    CF(12) = 208,033.52 - 6,967.84 - 0.00 - 20.90 - 8,746.77 - 6,241.01 = 186,057.00
+    l(13)  = 0.8991653215643 x (1 - 0.0067873987) = 0.8930623280099
 
-**The ratio the implementation must reproduce exactly is `CV(20) / CVs(20) = 2.0`**, i.e.
-`1 / k`. Both quantities exist at the anniversary `d = 20` and the model publishes both. The
-[std] ordering rule pays the surrenders of policy year 20 — period `t = 19` — on the **full**
-value; paying them on ₩25,714,206.27 instead would halve `claims_lapse` in that row.
+Three things move on this row and on no other: the attained 보험나이 turns 41 and with it
+the annual `q`, the expense inflation factor makes its first step to 1.02, and the renewal
+commission starts at 3% of the month's premium. On an annual grid all three were simply
+"year 2"; here each is a date.
 
-**Trace, period `t = 20` (policy year 21) — the first premium-free period, and where the
-stream turns.**
+`l(12) = 0.899235` is the annual-step model's own `l(1)` **to the last bit**: twelve monthly
+exits at `1 − (1 − q)^(1/12)` compound to the year's annual rate exactly, so the 계약해당일
+survivorship is unchanged and only the exposure inside the year has moved.
 
-    l(20) = 0.5945633056,  q(20) = 0.005075,  w(20) = 0.008
-    premiums   = 0.00                        (t >= m: no premium, ever again)
-    D(20)      = 0.5945633056 x 0.005075                          = 0.0030174088
-    claims_death   = 1e8 x 0.0030174088                           = 301,740.88
-    claim_expenses = 300,000 x 0.0030174088                       = 905.22
-    V(21) = ( (51,428,412.5364992 + 0) x 1.025 - 0.005075 x 1e8 ) / (1 - 0.005075)
-          = ( 52,714,122.8499117 - 507,500 ) / 0.994925           = 52,472,922.9338007
-    CV(21) = 52,472,922.9338007            (kappa = 1 from d = 20 on)
-    survivors = 0.5945633056 x (1 - 0.005075)                     = 0.5915458968714082
-    S(20) = 0.5915458968714082 x 0.008                            = 0.0047323672
-    claims_lapse   = 52,472,922.9338 x 0.0047323672               = 248,321.14
-    expenses  = 60,000 x 1.02^20 x 0.5945633056                   = 53,009.39
-                (no premium-related component: no premium)
-    commissions = 0.00                    (renewal runs 1 <= t <= m - 1 only)
-    CF(20) = 0.00 - 301,740.88 - 248,321.14 - 905.22 - 53,009.39  = -603,976.63
+**Trace, month `t = 239` (the last paying month) — the cliff.**
 
-**Premiums stop at `m` and nothing else does.** In one row the income line goes from
-₩1,659,947.45 to zero, commission from ₩49,798.42 to zero, and every outgo continues:
+    l(239) = 0.5948434384,  q^m(239) = 0.0003875960,  w^m(239) = 0.0000833716
+    premiums   = 231,345.00 x 0.5948434384 = 137,614.06
+    D(239)      = 0.5948434384 x 0.0003875960 = 0.0002305590
+    claims_death   = max(0, 100,000,000 - 0) x 0.0002305590 = 23,055.90
+    claim_expenses = 300,000 x 0.0002305590 = 69.17
+    V(240)  = ( (51,755,813.0357 + 179,777.0581) x 1.0020598363 - 0.0003875960 x 1e8 )
+            / (1 - 0.0003875960) = 52,023,973.5884
+    SC(240) = 0.00   (d >= 12 n_sc = 84)
+    W(240)  = max(0, 52,023,973.5884 - 0.0000) = 52,023,973.5884
+    CV(240) = 1.00 x 52,023,973.5884 = 52,023,973.5884
+    survivors of mortality = 0.5948434384 x (1 - 0.0003875960) = 0.5946128794463
+    S(239)  = 0.5946128794463 x 0.0000833716 = 0.0000495737987
+    claims_lapse   = 52,023,973.5884 x 0.0000495737987 = 2,579.03
+    expenses  = 5,000 x 1.4568 x 0.5948434384 = 4,332.87
+              + 0.02 x 137,614.0553 = 2,752.28
+                                             = 7,085.15
+    commissions = 0.03 x 137,614.0553 = 4,128.42
+    CF(239) = 137,614.06 - 23,055.90 - 2,579.03 - 69.17 - 7,085.15 - 4,128.42 = 100,696.39
+    l(240)  = 0.5946128794463 x (1 - 0.0000833716) = 0.5945633056476
+
+**The ratio the implementation must reproduce exactly is `CV(240) / CVs(240) = 2.0`**,
+i.e. `1 / k`. Both quantities exist at the month-end `d = 240` and the model publishes both.
+The [std] ordering rule pays the surrenders of the last paying month on the **full** value;
+paying them on ₩26,011,986.79 instead would halve `claims_lapse` in that row.
+
+The monthly grid is what makes the step legible for what it is. `cv_std_pp` moves from
+₩51,755,813.04 to ₩52,023,973.59 across the boundary — **one month's accrual, 0.5%** —
+against a payable value that doubles. An annual step compared the doubling against a 6.5%
+year, and a reader could still wonder whether some of the step was growth.
+
+**Trace, month `t = 240` — the first premium-free month, and where the stream turns.**
+
+    l(240) = 0.5945633056,  q^m(240) = 0.0004239036,  w^m(240) = 0.0006691237
+    premiums   = 231,345.00 x 0.5945633056 = 0.00
+    D(240)      = 0.5945633056 x 0.0004239036 = 0.0002520375
+    claims_death   = max(0, 100,000,000 - 0) x 0.0002520375 = 25,203.75
+    claim_expenses = 300,000 x 0.0002520375 = 75.61
+    V(241)  = ( (52,023,973.5884 + 0.0000) x 1.0020598363 - 0.0004239036 x 1e8 )
+            / (1 - 0.0004239036) = 52,110,834.0667
+    SC(241) = 0.00   (d >= 12 n_sc = 84)
+    W(241)  = max(0, 52,110,834.0667 - 0.0000) = 52,110,834.0667
+    CV(241) = 1.00 x 52,110,834.0667 = 52,110,834.0667
+    survivors of mortality = 0.5945633056 x (1 - 0.0004239036) = 0.5943112681279
+    S(240)  = 0.5943112681279 x 0.0006691237 = 0.0003976677418
+    claims_lapse   = 52,110,834.0667 x 0.0003976677418 = 20,722.80
+    expenses  = 5,000 x 1.4859 x 0.5945633056 = 4,417.45
+                                             = 4,417.45
+    commissions = 0.00
+    CF(240) = 0.00 - 25,203.75 - 20,722.80 - 75.61 - 4,417.45 - 0.00 = -50,419.61
+    l(241)  = 0.5943112681279 x (1 - 0.0006691237) = 0.5939136003861
+
+**Premiums stop at `12m` and nothing else does.** In one row the income line goes from
+₩137,614.06 to zero, commission from ₩4,128.42 to zero, and every outgo continues:
 maintenance expense for life, death claims for life, surrender benefits for life on a value
-that is still growing. `net_cf` swings by **₩1,819,705.57** between `t = 19` and `t = 20`,
-and is negative in every one of the remaining 56 periods. A projection that ends at 납입완료
-misses the entire liability.
+that is still growing. `net_cf` swings by **₩151,116.00** between `t = 239` and `t = 240` —
+a month either side, where the annual grid's ₩1,819,705.57 compared two whole years — and is
+negative in every one of the remaining 671 months. A projection that ends at 납입완료 misses
+the entire liability.
 
-### Undiscounted totals per policy issued, `t = 0 … 75`
+Surrender outgo is **eight times** the previous month's, because the annual rate returned
+from its 0.1% convergence point to the 0.8% ultimate against a value that has just doubled.
+### Undiscounted totals per policy issued, `t = 0 … 911`
 
 | Column | Total |
 |---|---|
-| `pols_if` | 28.704474 |
-| `premiums` | 38,202,010.270460 |
-| `claims_death` | 50,813,891.715166 |
-| `claims_lapse` | 9,284,540.176799 |
+| `pols_if` | 338.873413 |
+| `premiums` | 37,680,384.400292 |
+| `claims_death` | 50,620,740.892497 |
+| `claims_lapse` | 9,294,573.995749 |
 | `claims_reduction` | 0.000000 |
-| `claim_expenses` | 152,441.675145 |
-| `expenses` | 4,668,005.848038 |
-| `commissions` | 3,082,131.457712 |
-| **`net_cf`** | **-29,799,000.602401** |
+| `claim_expenses` | 151,862.222677 |
+| `expenses` | 4,604,344.667170 |
+| `commissions` | 3,070,402.823829 |
+| **`net_cf`** | **−30,061,540.201631** |
 
-**Roll-forward check.** Over the full 76 periods `Σ D(t) = 0.5081389172` and
-`Σ S(t) = 0.4918610828`, summing to **1.0000000000** with `l(76) = 0`; every policy leaves by
-one of the two decrements because the table terminates. `pols_if` sums to **28.704474**
-policy-years of exposure. All nine `check_*()` cells return `True`.
+**Roll-forward check.** Over the full 912 months `Σ D(t) = 0.5062074089` and
+`Σ S(t) = 0.4937925911`, summing to **1.0000000000** with `l(912) = 0`; every policy leaves
+by one of the two decrements because the table terminates. `pols_if` sums to **338.873413**
+policy-months of exposure — 28.24 policy-years, against the annual grid's 28.70, because the
+monthly step stops counting a whole year of exposure for a life that leaves in its first
+month. All nine `check_*()` cells return `True`.
+
+**Against the annual grid this replaced.** Premium income falls 1.37%, from ₩38,202,010.27,
+which is the whole of the change and is not a rounding: an annual step collected a full
+year's premium from lives that died or lapsed during the year. Death claims fall 0.38% with
+it, by less, because the benefit is now paid in the month of death rather than a year later
+on a cohort thinned in between. `net_cf` is 0.88% more negative. The **in-force at every
+계약해당일 is unchanged** to a relative 1.1e-14, which is the statement that the change of
+grid re-timed the exposure and left the survivorship the sourced annual rates imply.
 
 ### Reading the shape of the result
 
-`net_cf` is **income-positive**, so the total of **−₩29,799,000.60** says outgo exceeds
-income by ₩29.8m per policy issued over 76 undiscounted years. **That is the expected shape
+`net_cf` is **income-positive**, so the total of **−₩30,061,540.20** says outgo exceeds
+income by ₩30.1m per policy issued over 76 undiscounted years. **That is the expected shape
 of a whole-life stream and not a defect.** The contract must eventually pay ₩100,000,000 to
-someone: expected death claims of ₩50.81m plus surrender benefits of ₩9.28m come to
-₩60.10m of benefit against ₩38.20m of premium, and the ₩21.90m gap is closed by nothing in
+someone: expected death claims of ₩50.62m plus surrender benefits of ₩9.29m come to
+₩59.92m of benefit against ₩37.68m of premium, and the ₩22.23m gap is closed by nothing in
 this model, because everything that closes it — the investment return on the account,
 discounting, the CSM — belongs to a layer this projection deliberately stops before. There
 is no `liability_cf`.
 
 Four features of the stream are worth reading off directly. **The liability is back-ended
-even by whole-life standards:** 69.5% of expected death claims — 0.353404 of 0.508139 —
-fall from `t = 40` on, when the insured is over 79 and has paid no premium for twenty years.
-**The premium-paying period is profitable and the rest is not:** `Σ net_cf` over
-`t = 0 … 19` is **+₩27,935,040.25** and over `t = 20 … 75` is **−₩57,734,040.85**. **The
-surrender benefit is small relative to the death benefit** — ₩9.28m against ₩50.81m —
+even by whole-life standards:** 69.6% of expected death claims — 0.352136 of 0.506207 —
+fall from `t = 480` on, when the insured is over 79 and has paid no premium for twenty
+years. **The premium-paying period is profitable and the rest is not:** `Σ net_cf` over
+`t = 0 … 239` is **+₩27,631,707.90** and over `t = 240 … 911` is **−₩57,693,248.10**. **The
+surrender benefit is small relative to the death benefit** — ₩9.29m against ₩50.62m —
 because the `loglinear` lapse vector empties out long before the value is large; on the
-`flat` basis the same product pays ₩23.68m of surrender benefit and only ₩18.03m of death
+`flat` basis the same product pays ₩23.29m of surrender benefit and only ₩17.70m of death
 claims, which is a different product economically on the same contract. And **expenses are
-dominated by the first year**: ₩1,202,867.99 of the ₩4,668,005.85 total, 25.8% of the
-lifetime expense in policy year one — the period `t = 0` — which is what the 표준해약공제액
-exists to bound.
+dominated by the first month**: ₩1,096,972.09 of the ₩4,604,344.67 total, 23.8% of the
+lifetime expense in a single month — which is what the 표준해약공제액 exists to bound, and
+which the monthly grid states as the one-row cliff it is.
 
 ### Calibration against the published grid
 
 The model's 표준형 surrender value `cv_std_pp(d)` against DB생명's published 1종 표준형 grid
-at the identical cell — 남 40세, 1억원, 20년납, 월납 [S4]. The duration a published grid
-quotes is the **anniversary** `d`, which is what this table is keyed by:
+at the identical cell — 남 40세, 1억원, 20년납, 월납 [S4]. A published grid quotes a
+**policy year**, so this table is keyed by the year and the model is read at the 계약해당일
+`d = 12y`:
 
-| d | model `cv_std_pp(d)` | published 해지환급금 | model / published |
+| policy year | model `cv_std_pp(12y)` | published 해지환급금 | model / published |
 |---|---|---|---|
 | 1 | 0.00 | 0 | — (both nil) |
-| 3 | 4,592,273.24 | 5,087,095 | 0.9027 |
-| 5 | 9,962,522.87 | 10,940,547 | 0.9106 |
-| 10 | 22,941,773.00 | 25,283,000 | 0.9074 |
-| 15 | 36,406,331.66 | 40,501,000 | 0.8989 |
-| 20 | 51,428,412.54 | 57,838,000 | 0.8892 |
-| 40 | 73,413,688.61 | 86,326,000 | 0.8504 |
-| 60 | 91,301,421.85 | 104,604,000 | 0.8728 |
+| 3 | 4,669,528.91 | 5,087,095 | 0.9179 |
+| 5 | 10,093,729.24 | 10,940,547 | 0.9226 |
+| 10 | 23,216,376.79 | 25,283,000 | 0.9183 |
+| 15 | 36,836,090.86 | 40,501,000 | 0.9095 |
+| 20 | 52,023,973.59 | 57,838,000 | 0.8995 |
+| 40 | 74,269,001.52 | 86,326,000 | 0.8603 |
+| 60 | 92,405,944.03 | 104,604,000 | 0.8834 |
 
-**Durations 3 to 20 sit in a 0.889–0.911 band** — a level offset, not a shape error — and
+**The monthly account improves the fit at every sourced duration**, by the same 1.2% it
+raises the whole account. That is not a coincidence and it is worth naming: the published
+grid is a real Korean contract, whose own 계약자적립액 accrues **monthly** as
+제7-66조제1항제4호 requires, and the annual grid was reading it with an annual account.
+
+**Durations 3 to 20 sit in a 0.899–0.923 band** — a level offset, not a shape error — and
 the first year is nil in both, which is the surrender charge biting exactly as 별표 14
 bounds it. The offset is what a construction that sets 계약체결비용 **at** the statutory cap
 should produce against a real product that presumably charges less: a higher deduction and a
@@ -1334,32 +1509,32 @@ changes the product:
 
 | Quantity | `loglinear` (base) | `flat` |
 |---|---|---|
-| `lapse_rate(18)` / `(19)` / `(20)` | 0.0012742750 / 0.0010000000 / 0.0080000000 | 0.04 / 0.04 / 0.04 |
-| `claims_lapse(18)` | 18,419.29 | 444,737.31 |
-| `claims_lapse(19)` | **30,608.06** | **905,221.12** |
-| `claims_lapse(20)` | 248,321.14 | 882,162.09 |
-| `net_cf(19)` | **1,215,728.95** | **16,276.98** |
-| `pols_if(19)` | 0.597934 | 0.442091 |
-| `Σ claims_lapse` | 9,284,540.18 | 23,676,385.94 |
-| `Σ claims_death` | 50,813,891.72 | 18,032,089.04 |
-| `Σ net_cf` | -29,799,000.60 | -10,210,977.48 |
+| `lapse_rate(228)` / `(239)` / `(240)` | 0.0012742750 / 0.0010000000 / 0.0080000000 | 0.04 / 0.04 / 0.04 |
+| `claims_lapse(228)` | 1,223.61 | 36,851.71 |
+| `claims_lapse(239)` | **2,579.03** | **74,889.03** |
+| `claims_lapse(240)` | 20,722.80 | 74,727.62 |
+| `net_cf(239)` | **+100,696.39** | **−1,267.84** |
+| `pols_if(239)` | 0.594843 | 0.424042 |
+| `Σ claims_lapse` | 9,294,573.996 | 23,294,606.96 |
+| `Σ claims_death` | 50,620,740.892 | 17,702,650.52 |
+| `Σ net_cf` | −30,061,540.20 | −10,160,522.69 |
 
 **The cliff moves far less cash than a reader expects on the base vector, and that is the
-finding.** On the `loglinear` basis the payable value doubles at the anniversary `d = 20` but
-the lapse rate of the period closing there, `t = 19`, is **0.1%**, so `claims_lapse` is only
-₩30,608.06 — against ₩18,419.29 the period before and ₩248,321.14 the period after, when the
-rate returns to 0.8% against a value that has already doubled. **The step is in the value, and
-the cash the step moves is set by the rate the supervisor fixed.** On the `flat` basis the
-same step lands on a 4% lapse rate and opens a visible one-period hole: `net_cf(19)` falls
-from ₩1,215,728.95 to **₩16,276.98**, a 98.7% collapse in a single row, and policy year 20
-stops being a profitable year at all. That
-contrast **is** the disclosure the guidance obliges [REG-R27], and it is the reason the base
-vector is not a free choice for a Korean insurer.
+finding.** On the `loglinear` basis the payable value doubles at the month-end `d = 240` but
+the annual lapse rate of the month closing there, `t = 239`, is **0.1%**, so `claims_lapse`
+is only ₩2,579.03 — against ₩1,223.61 eleven months earlier and ₩20,722.80 the month after,
+when the rate returns to 0.8% against a value that has already doubled. **The step is in the
+value, and the cash the step moves is set by the rate the supervisor fixed.** On the `flat`
+basis the same step lands on a 4% annual rate and turns the last paying month **negative**:
+`net_cf(239)` falls from **+₩100,696.39** to **−₩1,267.84**, so the best month of the
+projection becomes a loss-making one. That contrast **is** the disclosure the guidance
+obliges [REG-R27], and it is the reason the base vector is not a free choice for a Korean
+insurer.
 
 One second-order effect is worth naming because a reader may misread the headline. The
-`flat` run's undiscounted `net_cf` is **better** — −₩10.21m against −₩29.80m — but only
+`flat` run's undiscounted `net_cf` is **better** — −₩10.16m against −₩30.06m — but only
 because a 4% lapse rate empties the book before the expensive years: `Σ claims_death` falls
-by 64.5%. A high lapse rate looks profitable undiscounted on a product whose 환급률 has not
+by 65.0%. A high lapse rate looks profitable undiscounted on a product whose 환급률 has not
 yet crossed 1, and the sign reverses once the value exceeds premiums paid — which is exactly
 why the K-ICS 대량해지위험 shock splits by whether surrender **reduces or increases** net
 assets [REG-R36] [R7].
@@ -1368,22 +1543,22 @@ assets [REG-R36] [R7].
 
 | # | Cell | What it demonstrates | Signature number |
 |---|---|---|---|
-| 1 | M40, 1억, 20년납, `k = 0.50` | the anchor | cliff ratio exactly **2.0** at the anniversary `d = 20` |
-| 2 | M40, 1억, 20년납, `k = 1.00` | the 표준형 comparison twin | 환급률 crosses 100% at **`d = 30`** against the anchor's 24, on the identical account |
-| 3 | M40, 1억, 20년납, `k = 0.00`, loan in policy year 10 | 무해지 + **the loan that cannot exist** | `cv_pp(19) = 0.0`; `loan_draw(9) = 0.0` |
-| 4 | F30, 5,000만, 30년납, `k = 0.50` | female, long pay, the long horizon | `proj_len() = 86` |
+| 1 | M40, 1억, 20년납, `k = 0.50` | the anchor | cliff ratio exactly **2.0** at the month-end `d = 240` |
+| 2 | M40, 1억, 20년납, `k = 1.00` | the 표준형 comparison twin | 환급률 crosses 100% at **`d = 347`** against the anchor's 280, on the identical account |
+| 3 | M40, 1억, 20년납, `k = 0.00`, loan in policy year 10 | 무해지 + **the loan that cannot exist** | `cv_pp(239) = 0.0`; `loan_draw(108) = 0.0` |
+| 4 | F30, 5,000만, 30년납, `k = 0.50` | female, long pay, the long horizon | `proj_len() = 1032` |
 | 5 | M65, 1,000만, **전기납**, `k = 0.50` | no 납입완료, so **no cliff at all** | `cv_mult(d) = 0.5` for life |
-| 6 | M40, 1억, 20년납, `k = 0.50`, loan in policy year 10 | the loan on a suppressed value | `loan_draw(9) = 8,167,325.83`; `loan_pp(75) = 108,712,698.33`, above `SA`, so every payment floors at zero |
-| 7 | M45, 1억, 20년납, waiver 0.4% p.a. | 납입면제 as a **state** | `pols_waived(19) = 0.042858` |
-| 8 | M40, 1억, **7년납**, bonus 13.8% | 단기납 유지보너스 + the mandatory spike | `lapse_rate(6) = 0.301` against a base of 0.001; 환급률 0.962906 at 완납 |
-| 9 | F45, 1억, 20년납, **금리연동형** 2.75% | the declared-rate account | `pol_val_pp(20)` runs **9.38%** above its prospective form |
-| 10 | M50, **10억**, 10년납, `k = 0.30`, 감액 in policy year 15, 부활 20%, `flat` lapse, `mort_be_factor` 0.90 | 감액 + 부활 + the level basis + the SA ceiling | `claims_reduction(14) = 163,333,687.53`; `net_cf(14) = -178,134,642.51` |
+| 6 | M40, 1억, 20년납, `k = 0.50`, loan in policy year 10 | the loan on a suppressed value | `loan_draw(108) = 8,265,310.25`; the balance passes `SA` at `d = 871` — the seventh month of policy year 73 — so every payment floors at zero from there |
+| 7 | M45, 1억, 20년납, waiver 0.4% p.a. | 납입면제 as a **state** | `pols_waived(240) = 0.044660` |
+| 8 | M40, 1억, **7년납**, bonus 13.8% | 단기납 유지보너스 + the mandatory spike | `lapse_rate_mth(83) = 0.300083` in **one month** and nowhere else; 환급률 0.972448 at 완납 |
+| 9 | F45, 1억, 20년납, **금리연동형** 2.75% | the declared-rate account | `pol_val_pp(240)` runs **9.12%** above its prospective form |
+| 10 | M50, **10억**, 10년납, `k = 0.30`, 감액 in policy year 15, 부활 20%, `flat` lapse, `mort_be_factor` 0.90 | 감액 + 부활 + the level basis + the SA ceiling | `claims_reduction(179) = 165,583,123.99`; `net_cf(179) = −166,799,687.05` |
 
 Point 3 is the one to read next after the anchor. On a **무해지** contract the payable
 value is zero throughout 납입기간, so the policy loan the point elects **draws exactly
-nothing** — `loan_util = 1.0`, `loan_draw(9) = 0.0` — which is the FSS's 2019 consumer
-alert reproduced as arithmetic [R4] [REG-R28]. At `d = 20` the value steps from zero to the
-full ₩51,428,412.54 and the 환급률 to **1.068759**, above the 표준형 twin's 0.833632:
+nothing** — `loan_util = 1.0`, `loan_draw(108) = 0.0` — which is the FSS's 2019 consumer
+alert reproduced as arithmetic [R4] [REG-R28]. At `d = 240` the value steps from zero to the
+full ₩52,023,973.59 and the 환급률 to **1.081135**, above the 표준형 twin's 0.843286:
 제7-66조제4항제2호 나목 is the article that permits it [REG-R19].
 
 ---
@@ -1464,9 +1639,9 @@ In rough order of leverage on this product:
 
 1. **The lapse vector, and it is not close.** It is the assumption the supervisor took away
    from insurers on exactly this product [REG-R27] [R3], and switching the anchor from
-   `loglinear` to `flat` moves undiscounted `net_cf` from **−₩29,799,000.60 to
-   −₩10,210,977.48**, expected death claims from ₩50.81m to ₩18.03m and surrender benefits
-   from ₩9.28m to ₩23.68m. Two of those move in opposite directions, so no single-signed
+   `loglinear` to `flat` moves undiscounted `net_cf` from **−₩30,061,540.20 to
+   −₩10,160,522.69**, expected death claims from ₩50.62m to ₩17.70m and surrender benefits
+   from ₩9.29m to ₩23.29m. Two of those move in opposite directions, so no single-signed
    intuition survives. The shape between the two regulatory endpoints is **[std]** and no
    Korean lapse curve by duration is public.
 2. **The suppression factor `k` and where the cliff falls.** `k` is a model point column and
@@ -1476,25 +1651,25 @@ In rough order of leverage on this product:
    3년** on a third [S3]. The composite hard-codes 납입완료 and a model reproducing another
    carrier must expose that date as a parameter.
 3. **The expense and acquisition-cost block.** `AC = SC*`, `c₀ = 0.65`, `c_r = 3.0%`,
-   ₩60,000 + 2.0% of premium a year, ₩300,000 a claim, 2.0% inflation — **every one [std],
-   because no Korean expense rate as a percentage of premium was obtained from any source.**
-   `expenses` and `commissions` together total ₩7,750,137.31 of the ₩38.20m premium stream,
-   20.3%, and the first year alone is ₩3,222,223.34 of it; the ₩300,000-a-claim handling
-   expense is a further ₩152,441.68, published in its own column, which takes the block to
-   ₩7,902,578.98 and 20.7%. The four public bounds in class (b) constrain it; nothing
+   ₩5,000 a **month** + 2.0% of premium, ₩300,000 a claim, 2.0% inflation stepping at the
+   계약해당일 — **every one [std], because no Korean expense rate as a percentage of premium
+   was obtained from any source.** `expenses` and `commissions` together total ₩7,674,747.49
+   of the ₩37.68m premium stream, 20.4%, and the first **month** alone is ₩3,116,327.44 of
+   it; the ₩300,000-a-claim handling expense is a further ₩151,862.22, published in its own
+   column, which takes the block to ₩7,826,609.71 and 20.8%. The four public bounds in class (b) constrain it; nothing
    fixes it.
 4. **The mortality table is a construction and `mort_be_factor` is the lever.** Every row of
    `mort_table.csv` is [std]; the two disclosed carrier grids differ by **up to 24%** and
    bracket rather than fix a level [S2] [S8]; and the 제10회 경험생명표 is not published
    [REG-R33] [REG-R34]. Claims move proportionately with `mort_be_factor`, and on a 76-year
-   run they are the largest single outgo at ₩50.81m.
+   run they are the largest single outgo at ₩50.62m.
 5. **The 보험나이 / 만나이 gap.** No conversion is applied and none is public. The table is
    read about half a year of ageing too young, systematically, which understates `q` by
    roughly 4.6% at the ages that matter most on this cell. It is a **one-directional** bias
    and it is not corrected.
-6. **The horizon itself.** ω = 115 is [std]. **69.5% of expected death claims fall from
-   `t = 40` on**, so any truncation of the projection is a direct and large understatement, and
-   moving ω moves the tail rather than the shape.
+6. **The horizon itself.** ω = 115 is [std]. **69.6% of expected death claims fall from
+   `t = 480` on**, so any truncation of the projection is a direct and large understatement,
+   and moving ω moves the tail rather than the shape.
 7. **The 예정이율, and the account's sensitivity to it.** 2.50% is the [std] centre of a
    sourced 2.25%–2.75% band [S1] [S2] [S5] [S6] [S7] [S8]. It enters **twice** — through `P`
    (equivalence) and through the accrual — so it moves the surrender value in the same
@@ -1519,17 +1694,19 @@ The mistakes a modeller would actually make on this product. Each is specific an
 and each is either asserted by a `check_*()` cells or by a test in
 `tests/test_whole_life_kr.py`.
 
-- **The cliff is a step, not a ramp.** `CV(d) = k W(d)` for `d < m` and `W(d)` for `d ≥ m`,
-  with `CV(m) / (k W(m))` exactly `1 / k` — **2.0 on the anchor at the anniversary `d = 20`**
+- **The cliff is a step, not a ramp.** `CV(d) = k W(d)` for `d < 12m` and `W(d)` for
+  `d ≥ 12m`, with `CV(12m) / (k W(12m))` exactly `1 / k` — **2.0 on the anchor at the
+  month-end `d = 240`**, against ₩25,877,906.52 one month earlier
   [S1] [S4] [S6]
   [S8]. Interpolating, grading or smoothing across the boundary is wrong. So is assuming the
   step always exists: on a **전기납** point `m` is the whole projection, `cv_mult(d) = k` for
   life, and the cliff never happens (`point_id = 5`).
-- **Off-by-one at the boundary.** Surrenders in policy year `m` — the period `t = m − 1` —
-  are paid on the **full** value; the suppressed value applies to the anniversaries
-  `d = 1 … m − 1` **[std]**. Both quantities exist at
-  `d = m` — ₩51,428,412.54 and ₩25,714,206.27 — and the model publishes both as `cv_pp` and
-  `cv_susp_pp`. A model that loses either cannot state the ordering rule it is using.
+- **Off-by-one at the boundary.** Surrenders in the last paying month — `t = 12m − 1` —
+  are paid on the **full** value; the suppressed value applies to the month-ends
+  `d = 1 … 12m − 1` **[std]**. Both quantities exist at
+  `d = 12m` — ₩52,023,973.59 and ₩26,011,986.79 — and the model publishes both as `cv_pp` and
+  `cv_susp_pp`. A model that loses either cannot state the ordering rule it is using. On the
+  monthly grid the off-by-one costs one **month**, where on an annual grid it cost a year.
 - **One policy value, one multiplier.** The suppression is a pure haircut on a **common**
   underlying account: at 납입완료 the suppressed and 표준형 values are **identical to the
   won** in every published grid [S1] [S4] [S6]. Running two account recursions, or deriving
@@ -1538,8 +1715,9 @@ and each is either asserted by a `check_*()` cells or by a test in
   the sold premium is the **whole** of the refund-ratio argument.
 - **The step is not the surrender charge running off.** The 해약공제기간 is capped at **7년**
   by 제7-66조제1항제2호 [REG-R19], so on the anchor's 20년납 contract `surr_chg_pp(d) = 0`
-  from `d = 7` — **thirteen years before the cliff**. Attributing the step to amortisation,
-  or grading the charge to `m` instead of to `min(m, 7)`, is a common and detectable error:
+  from `d = 84` — **thirteen years before the cliff**. Attributing the step to amortisation,
+  or grading the charge to `12m` instead of to `12 min(m, 7)`, is a common and detectable
+  error:
   `check_surr_chg_cap()` fails on it.
 - **`P` and `P₂₀` are different annuities.** 별표 14 주3 recomputes the 연납순보험료 on a
   **20년납** footing for a 보험기간 of 20 years or more [REG-R20]. They coincide only when
@@ -1549,11 +1727,12 @@ and each is either asserted by a `check_*()` cells or by a test in
 - **The 보험가입금액 entering the cap is taken before any 체증 or 체감** [REG-R21 별표 15
   제8호](#krlib-reg-r21), and is the 일반사망보험금 for a 보장성보험 covering 일반사망 [REG-R21 제3호](#krlib-reg-r21). On a
   design with a 전환나이 step this is not the benefit in force at duration `d`.
-- **Premiums stop at `m`; nothing else does.** At `t = 20` — policy year 21 — premium and
-  renewal commission go
+- **Premiums stop at `12m`; nothing else does.** At `t = 240` premium and renewal
+  commission go
   to zero in the same row while maintenance expense, death claims and surrender benefits all
-  continue for life. `net_cf` swings by **₩1,819,705.57** across that boundary and is
-  negative in all 56 remaining periods. A projection that stops at 납입완료, or that keeps
+  continue for life. `net_cf` swings by **₩151,116.00** across that boundary — a month either
+  side, where the annual grid compared two whole years and printed ₩1,819,705.57 — and is
+  negative in all 672 remaining months. A projection that stops at 납입완료, or that keeps
   charging renewal commission past it, misses the majority of the liability. So does one that
   keeps the premium-related expense running on zero premium.
 - **The policy loan does not exist on a 무해지 contract during 납입기간.** There is no value
@@ -1564,18 +1743,21 @@ and each is either asserted by a `check_*()` cells or by a test in
 - **Everything is floored at zero, and on this product the floor bites.** `W(d) =
   max(0, V(d) − SC(d))` is zero at `d = 1` on the anchor; the death benefit `SA(t) − L(t)`
   and the surrender payout `CV(t+1) − L(t)` both go negative once an unrepaid loan outgrows
-  the value, which happens on `point_id = 6` where `loan_pp(75) = ₩108,712,698.33` exceeds the
+  the value, which happens on `point_id = 6` at the month-end `d = 871` — the seventh month
+  of policy year 73, a date an annual grid could only place in a year — where the balance exceeds the
   ₩100,000,000 sum assured. None of the three may produce a negative payment.
 - **Booking the 유지보너스 without the mandatory lapse spike.** The supervisor requires an
   **additional lapse of at least 30%** at any bonus date [REG-R27] [R3]; on `point_id = 8`
-  that takes `lapse_rate(6)` — policy year 7, the 납입완료 year — from 0.001 to **0.301**.
+  that takes `lapse_rate_mth(83)` — the single month the bonus is credited in — from 0.000083
+  to **0.300083**. The spike is **not** converted to a monthly force and must not be: it is a
+  lump of exits on a date, so it is added to that one month and spread over no others.
   Turning the bonus on alone misstates
   the liability in the insurer's favour, which is precisely what the guidance exists to
   prevent. `lapse_spike()` is wired to `bonus_rate()` so the pair cannot be separated by
   accident.
 - **The prospective identity does not hold on a 금리연동형 point.** Once the crediting rate
   differs from the pricing rate the account is path-dependent: on `point_id = 9`
-  `pol_val_pp(20)` runs **9.38% above** `prosp_val_pp(20)`. `check_pol_val_prosp()` is
+  `pol_val_pp(240)` runs **9.12% above** `prosp_val_pp(240)`. `check_pol_val_prosp()` is
   defined as zero there rather than asserted. Asserting it unconditionally fails; "fixing" it
   by discounting the account on the pricing rate silently changes the product.
 - **`pol_val_pp` is a 계약자적립액, not a reserve, and never a cash flow.** Under K-IFRS
@@ -1613,10 +1795,19 @@ and each is either asserted by a `check_*()` cells or by a test in
   that the payable **value** never exceeds the 표준형 twin's, which `k ≤ 1` guarantees. It
   does **not** assert the press-release framing 「전(全) 보험기간 동안 표준형 보험의 환급률
   이내로」 [REG-R28], because the denominators differ: on `point_id = 3` the 무해지 form's
-  post-완납 환급률 is **1.068759** against the 표준형's **0.833632**, which satisfies
+  post-완납 환급률 is **1.081135** against the 표준형's **0.843286**, which satisfies
   제7-66조제4항제2호 나목 as recorded in the 고시 [REG-R19] and contradicts the press-release
   reading. Both statements are recorded as they stand and **neither is resolved here**; a
   model that asserts the press-release form will fail on a legal design.
+- **Dividing an annual probability by twelve is not the monthly rate.** Every decrement on
+  this chassis is tabulated as an **annual probability** and converted by
+  `1 − (1 − q)^(1/12)`, so that twelve months compound back to exactly the year's figure.
+  Dividing instead understates the early months and overstates the late ones, and on the
+  `loglinear` lapse vector — which spans two orders of magnitude — the two conventions differ
+  by 4.9% of the first year's rate. The one decrement that is **not** converted is the
+  유지보너스 spike, because it is a date, not a rate; and the one that is **divided** is
+  none of these — the sister model `LTC_KR_S` divides its transition intensities by twelve
+  precisely because they are rates per year rather than probabilities.
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->
 [R3]: #krlib-whole_life-r3
