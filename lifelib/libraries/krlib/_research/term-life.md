@@ -11,7 +11,7 @@ dies inside a stated 보험기간 (policy term) and, on the dominant 순수보�
 form, pays nothing at all otherwise. Its economic role is to be the cheap alternative to
 종신보험 (whole life) — every carrier's own consumer material frames it that way, in the same
 words — and its structural role in this library is to isolate the decrement and premium
-mechanics that the savings chassis (`WholeLife_KR_A`) then wraps a 계약자적립액 around.
+mechanics that the savings chassis (`WholeLife_KR_S`) then wraps a 계약자적립액 around.
 
 Three things make the Korean version of this product worth a library of its own rather than a
 translation of `jplib`'s 定期保険. First, the **무해지환급형 / 저해지환급형** forms — the
@@ -53,7 +53,7 @@ belong to `cancer`, `ci_insurance` and `indemnity_medical`.
 
 **What this file is.** It is the provenance layer behind the `term_life` product's four
 documents — `product-spec.md`, `technical-notes.md`, `model.md` and `sources.md` — and behind
-the `Term_KR_A` model's input CSVs. Source ids **S1..S24** and **R1..R21** below are **frozen
+the `Term_KR_S` model's input CSVs. Source ids **S1..S24** and **R1..R21** below are **frozen
 and are never renumbered**: the product documents cite against them, unused ids are simply
 omitted downstream leaving gaps, and `sources.md` records which are absent and why.
 
@@ -926,7 +926,7 @@ The 순수보장형 주계약 약관 carries only limb 2. Termination is immedia
 - **There is no Korean analogue of Japan's 高度障害保険金.** A Korean term policy does *not*
   pay the sum assured on a defined permanent-total-disability list. What the 장해 state does
   instead is trigger the **premium waiver** (§13). This is the single largest structural
-  difference between `Term_KR_A` and `jplib`'s term chassis, and it simplifies the decrement
+  difference between `Term_KR_S` and `jplib`'s term chassis, and it simplifies the decrement
   model: there is one decrement to the benefit (death) and a second, smaller one that switches
   the premium off without terminating the contract.
 - **Amounts.** 사망보험금 = 보험가입금액 [S1] [S8] [S10] [S11] [S12] [S17]. 만기보험금 = 「이미
@@ -1236,7 +1236,7 @@ proportion if the arrears are not paid; a standard life who quits and passes the
 **upgrade mid-term** and receive a refund of the excess reserve. KB and 교보라이프플래닛 make
 the upgrade path explicit in the same way, by allowing a life originally accepted under a
 특별조건부/표준미달체 rider to move into a preferred class once the health condition improves
-[S11] [S12]. `Term_KR_A` does not model class movement, but the product spec has to say that
+[S11] [S12]. `Term_KR_S` does not model class movement, but the product spec has to say that
 the Korean class is not a fixed attribute of the policy.
 
 **Observed range of the maximum preferred discount** (표준체 → best class, male 40, on each
@@ -1660,7 +1660,7 @@ Both start at **0.1%** and 한화's post-completion rate is **0.8%** — which a
 convergence point and the terminal rate the 2024 IFRS17 계리가정 가이드라인 prescribes:
 로그-선형 원칙모형 with 「수렴점 0.1%」 and 「완납 후 최종해지율 0.8%」 [R13]. The chain from
 supervisory guideline to disclosed pricing parameter is therefore **complete and verifiable**,
-and it is the single most useful thing in this file for setting `Term_KR_A`'s lapse basis.
+and it is the single most useful thing in this file for setting `Term_KR_S`'s lapse basis.
 
 Note what the disclosure does **not** say: the 적용해지율 is the rate used **in pricing the
 무해지 form**, which is deliberately conservative (low), and is not the carrier's best-estimate
@@ -2142,7 +2142,7 @@ effect and a usable sanity check on any constructed table.
 **Consequence for krlib, stated plainly.** Because the 경험생명표 is not published in full,
 **every `mort_table.csv` in this library is a `[std]` construction** anchored on the published
 summary statistics [R14], the 통계청 완전생명표 [R15] and the carriers' disclosed three-point
-예정 경험사망률 (§11), with a `provenance` column on every row. For `Term_KR_A` specifically
+예정 경험사망률 (§11), with a `provenance` column on every row. For `Term_KR_S` specifically
 the three-point disclosures are the best available anchor, because they are *pricing* rates for
 *this product* at *these ages* from seven carriers, and their dispersion (§11) is itself the
 uncertainty measure.

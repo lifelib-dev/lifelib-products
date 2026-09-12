@@ -1,4 +1,4 @@
-"""Golden and structural tests for Immediate_KR_A.
+"""Golden and structural tests for Immediate_KR_S.
 
 The golden values are the worked example in
 products/immediate_annuity/technical-notes.md ("Worked example"), which projects the
@@ -56,7 +56,7 @@ RATE = 5e-9          # mort_rate, displayed to 8 d.p.
 FACTOR = 5e-13       # annuity and accumulation factors, displayed to 12 d.p.
 EXACT = 5e-13        # probabilities the notes print to 12 d.p.
 
-MODEL_DIR = LIB / MODELS["Immediate_KR_A"][0]
+MODEL_DIR = LIB / MODELS["Immediate_KR_S"][0]
 CSV_DIR = MODEL_DIR.parent
 
 # ---------------------------------------------------------------------------
@@ -1504,8 +1504,8 @@ def test_pitfall_the_model_runs_on_boheom_nai_and_not_man_nai(immediate_annuity)
     every row and **raises nothing**, so the basis is recorded in the registry metadata and
     named in the docstring where a reader will meet it.
     """
-    assert MODELS["Immediate_KR_A"][1]["age_basis"] == "보험나이"
-    assert MODELS["Immediate_KR_A"][1]["grid"] == "annual"
+    assert MODELS["Immediate_KR_S"][1]["age_basis"] == "보험나이"
+    assert MODELS["Immediate_KR_S"][1]["grid"] == "annual"
     proj = immediate_annuity.Projection.doc
     assert "보험나이" in proj and "만나이" in proj
     assert "six-month rule" in proj

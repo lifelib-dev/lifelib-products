@@ -1307,9 +1307,9 @@ refusal where the public benefit is restricted under **법 제29조 (장기요�
 - **급여가정간호치료보장특약**, **CDR 검사지원비 특약** [R17] and the 레켐비 (lecanemab)
   covers appearing in 2024–2025 launches [R17].
 - **청약철회** and the new-business funnel [REG-R25 제17조](#krlib-reg-r25) [REG-R51].
-- **The long-term-care acceleration inside `CI_KR_A`** — a critical-illness contract whose
+- **The long-term-care acceleration inside `CI_KR_S`** — a critical-illness contract whose
   장기요양상태 trigger is 1·2등급 with its own 90-day 보장개시일. The two products share a
-  statutory trigger and nothing else: `CI_KR_A` pays **one** accelerated benefit on the first
+  statutory trigger and nothing else: `CI_KR_S` pays **one** accelerated benefit on the first
   of several events, `LTC_KR_S` pays a standalone benefit on the grade alone. See
   [the CI product specification](../ci_insurance/product-spec.md).
 

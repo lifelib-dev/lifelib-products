@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: krlib.products.immediate_annuity.Immediate_KR_A.Data
+.. automodule:: krlib.products.immediate_annuity.Immediate_KR_S.Data
 
 Cells Descriptions
 ------------------

@@ -212,7 +212,7 @@ a named live product and says so once at its head.
 - Accessed: 2026-09-03, Retrieved: **yes** (107 pp.; the annuity-form pages, the surrender
   articles and the summary pages extracted and read)
 - **Scope: a deferred annuity**, cited only for payout-phase machinery — the same machinery
-  `Immediate_KR_A` needs — and never for an issue-age or premium parameter. The richest payout
+  `Immediate_KR_S` needs — and never for an issue-age or premium parameter. The richest payout
   menu retrieved: 종신연금형 기본형 with 10/20/30년/100세/기대여명 guarantees, a 핵심기간집중형
   doubling the annuity for ten years, 확정연금형 out to fifty years, 상속연금형, a
   **proportional split across forms in 5% units**, and a 노후설계자금 lump sum of up to 50% of

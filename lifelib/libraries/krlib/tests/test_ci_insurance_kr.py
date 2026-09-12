@@ -1,4 +1,4 @@
-"""Golden and structural tests for CI_KR_A.
+"""Golden and structural tests for CI_KR_S.
 
 The golden values are the worked example in
 products/ci_insurance/technical-notes.md ("Worked example"), which projects the anchor
@@ -77,7 +77,7 @@ from modelx.core.errors import FormulaError
 
 from kr_registry import LIB, MODELS
 
-MODEL_DIR = LIB / MODELS["CI_KR_A"][0]
+MODEL_DIR = LIB / MODELS["CI_KR_S"][0]
 CSV_DIR = MODEL_DIR.parent
 
 WON = 0.005          # money displayed to 2 d.p.
@@ -2134,7 +2134,7 @@ def test_the_sensitivities_the_notes_quantify(name, setter, expected):
     aggregate while the sign of the behavioural story does.
     """
     values = {"ci_wait_days": 0, "first_year_factor": 1.0, "lapse_ci_factor": 1.0}
-    model = mx.read_model(MODEL_DIR, name="CI_KR_A_sens_" + name)
+    model = mx.read_model(MODEL_DIR, name="CI_KR_S_sens_" + name)
     try:
         setattr(model.Projection, setter, values[setter])
         model.Projection.clear_all()
@@ -2154,7 +2154,7 @@ def test_the_lapse_vector_is_a_third_of_the_liability():
     comparison holds the 0.8% post-완납 ultimate fixed and moves only the paying-period
     shape, which is the part the guideline's functional form governs.
     """
-    model = mx.read_model(MODEL_DIR, name="CI_KR_A_level_lapse")
+    model = mx.read_model(MODEL_DIR, name="CI_KR_S_level_lapse")
     try:
         model.Projection.lapse_ll_first = 0.04
         model.Projection.lapse_ll_target = 0.04
@@ -2342,7 +2342,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     doubled = pd.read_csv(src, index_col=["sex", "age", "cause"])
     doubled["ci_rate"] = (doubled["ci_rate"] * 2).clip(upper=1.0)
 
-    model = mx.read_model(MODEL_DIR, name="CI_KR_A_swap")
+    model = mx.read_model(MODEL_DIR, name="CI_KR_S_swap")
     try:
         alt_name = "ci_incidence_doubled.csv"
         doubled.to_csv(model.Data.input_dir() / alt_name)
@@ -2423,7 +2423,7 @@ def test_the_notes_and_the_model_agree_on_the_worked_example_cell():
 
 def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
-    model = mx.read_model(MODEL_DIR, name="CI_KR_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="CI_KR_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -2434,7 +2434,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in CSV_DIR.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="CI_KR_A_rt")
+    reread = mx.read_model(dest, name="CI_KR_S_rt")
     try:
         anchor = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

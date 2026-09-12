@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: krlib.products.ci_insurance.CI_KR_A.Data
+.. automodule:: krlib.products.ci_insurance.CI_KR_S.Data
 
 Cells Descriptions
 ------------------

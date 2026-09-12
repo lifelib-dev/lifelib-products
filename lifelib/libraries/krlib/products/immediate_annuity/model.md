@@ -40,7 +40,7 @@ fifteen-row statement elided — it is reproduced in full in
 [`technical-notes.md`](technical-notes.md):
 
 ```text
-Immediate_KR_A - jeuksi yeongeum (Korean single-premium immediate annuity)
+Immediate_KR_S - jeuksi yeongeum (Korean single-premium immediate annuity)
 model point 1: IA-000001 - jongsin yeongeum-hyeong (life annuity)
 annuitant M boheom nai 60 (insurance age)   single premium KRW 100,000,000 (10,000 manwon)
 bojeung jigeup gigan (guaranteed period) = 10 years   lapse 0.00%
@@ -80,7 +80,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/immediate_annuity/Immediate_KR_A")
+model = mx.read_model("products/immediate_annuity/Immediate_KR_S")
 model.Projection[1].result_cf()      # the worked example's anchor cell
 model.Projection[6].result_pols()    # the fund, the annuity, the retention, the decrements
 ```
@@ -105,7 +105,7 @@ states as "policy years 1–5" is implemented as the completed-duration band `0 
 
 ## The payout phase standing alone: no premium term, no strain
 
-`Immediate_KR_A` is the library's payout-phase chassis and `Pension_KR_A` is the
+`Immediate_KR_S` is the library's payout-phase chassis and `Pension_KR_S` is the
 accumulation half of the same machinery. A single premium is paid at inception, the whole
 load and — on the shapes that keep a death benefit — the whole 위험보험료 are deducted
 once, and the residue becomes the opening 계약자적립액. Three consequences run through
@@ -384,7 +384,7 @@ products/immediate_annuity/
   product-spec.md              <- the documents this model implements
   technical-notes.md
   sources.md
-  Immediate_KR_A/              <- formulas only
+  Immediate_KR_S/              <- formulas only
     __init__.py                   (the model docstring)
     _system.json
     Data/__init__.py              (reads the four CSVs, once per model)
@@ -393,7 +393,7 @@ products/immediate_annuity/
 
 The model folder holds nothing but formulas — no `_data/`, no IOSpec, no embedded values —
 so a diff of the model shows logic changes only. The consequence worth knowing is that
-**the model is not portable on its own**: copying `Immediate_KR_A/` without its parent's
+**the model is not portable on its own**: copying `Immediate_KR_S/` without its parent's
 CSVs produces a model that reads and then fails on first evaluation.
 
 ### Read once, in `Data`
@@ -580,8 +580,8 @@ decision rather than a translation:
   `lapse_rate_mth`, because the grid is annual; and there is no `mort_rate_mth` for the same
   reason.
 - **`av_pp` and `cv_pp` keep the savings-chassis names** even though this contract has no
-  accumulation phase, because they are the same two quantities `WholeLife_KR_A` and
-  `Pension_KR_A` publish and a reader moving between the three should not have to relearn
+  accumulation phase, because they are the same two quantities `WholeLife_KR_S` and
+  `Pension_KR_S` publish and a reader moving between the three should not have to relearn
   them.
 
 There is deliberately **no** `prem_pp_mth`, `pols_maturity`, `cv_floor_ratio`,

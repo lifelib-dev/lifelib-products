@@ -4,7 +4,7 @@
 
 **Scope note.** These notes turn the standardized composite whole life assurance
 (*jongsin boheom*, 종신보험) of `product-spec.md` (same directory) into a reference
-liability cash-flow projection on paper, and then into `WholeLife_KR_A` beside it. **They
+liability cash-flow projection on paper, and then into `WholeLife_KR_S` beside it. **They
 describe no single insurer's contract.** [S#] and [R#] tags resolve against `sources.md`,
 whose numbering is carried verbatim from `_research/whole-life.md` and is frozen; [REG-R#]
 tags resolve against the cross-product reference library
@@ -67,7 +67,7 @@ governs all ten `krlib` products** [REG-R19].
   did — except the loan balance `L`, which was a period-opening balance on the 1-based clock
   and is now the anniversary balance itself: old `loan_pp(t)` is new `loan_pp(t − 1)`.
 - **Projection frequency.** **Annual**, on policy years running 계약해당일 to 계약해당일
-  (`WholeLife_KR_A`). The permission is explicit rather than assumed: 감독규정
+  (`WholeLife_KR_S`). The permission is explicit rather than assumed: 감독규정
   제7-65조제2항 allows the 계약자적립액 of a monthly-premium contract to be computed on an
   annualised premium basis — 「연납보험료를 기준으로 하여 산출할 수 있다」 [REG-R18]. The
   composite has no intra-year contractual structure on the annual grid: the sum assured is
@@ -438,7 +438,7 @@ provision was found in any Korean document retrieved for this library.** The 생
 표준약관 is understood to contain such an article, but the retrieved 별표 15 extract does not
 carry it [REG-R25], and the one full Korean 약관 in the set handles non-payment through a
 월대체보험료 deduction from the account — a 유니버셜 mechanic, not an APL [S5 제24조].
-`WholeLife_KR_A` therefore models lapse as a **behavioural decrement at the end of a 14-day
+`WholeLife_KR_S` therefore models lapse as a **behavioural decrement at the end of a 14-day
 납입최고기간**, and the absence is tagged **[unverified]**: the highest-value single item for
 the next research pass, because a 표준약관 article found later would change this chassis
 **in kind**. The consumer consequence runs the opposite way to Japan's — in Korea there is
@@ -1424,7 +1424,7 @@ them at once.
   surrender value is zero still enters the test at its 별표-14-floored value.** The reserve
   stood at **₩23.7조 at end-2022 and ₩32.2조 at end-2023** [REG-R36] [R7] and is graded by
   K-ICS ratio, a well-capitalised insurer appropriating only **80%** [REG-R11].
-  `WholeLife_KR_A` does not compute it; it is named because it is why a Korean insurer's
+  `WholeLife_KR_S` does not compute it; it is named because it is why a Korean insurer's
   economics here depend on the **surrender value**, and because `cv_std_pp(t)` is precisely
   the quantity the test needs.
 - **책임준비금.** 보험업법 제120조 delegates the mechanics entirely [REG-R3], and 감독규정

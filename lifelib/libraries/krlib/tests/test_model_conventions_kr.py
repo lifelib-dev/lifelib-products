@@ -122,7 +122,7 @@ ALL = sorted(MODELS)
 # cv_pp and check_cv_roll_fwd across the savings products, the claim-limit ledgers across
 # the 제3보험 ones, pols_lapse wherever there is a lapse decrement — are asserted in the
 # family's own test modules, because their *absence* elsewhere is a product fact rather
-# than a defect: a 무해지환급형 정기보험 has no surrender value at all, and Immediate_KR_A
+# than a defect: a 무해지환급형 정기보험 has no surrender value at all, and Immediate_KR_S
 # has neither premium income nor a lapse decrement, the single premium having been paid
 # over at inception.
 SHARED_CELLS = {
@@ -211,7 +211,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's short name, a country tag and a grid tag — ``Cancer_KR_S``,
-    ``Term_KR_A`` — rather than anything derivable from the folder slug, because
+    ``Term_KR_S`` — rather than anything derivable from the folder slug, because
     ``indemnity_medical`` spelled out is unusable in a model name. Korea offers almost no
     market short form to borrow — it says CI보험 and writes ``CI``, and after that the
     abbreviations run out — so the short names are chosen rather than found, and the

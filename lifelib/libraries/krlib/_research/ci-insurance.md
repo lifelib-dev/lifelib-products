@@ -2,7 +2,7 @@
 
 Research compiled 2026-09-03 for the reference-products library (Korea section). Purpose:
 source library for a Korean **CI보험** (*CI boheom*, critical illness insurance) liability
-cash-flow reference model — `CI_KR_A`, which inherits the `WholeLife_KR_A` savings/protection
+cash-flow reference model — `CI_KR_S`, which inherits the `WholeLife_KR_S` savings/protection
 chassis and adds an accelerated critical-illness payment.
 
 CI보험 is not a Korean invention and it is not a 진단비 (*jindanbi*, fixed diagnosis-benefit)
@@ -35,7 +35,7 @@ Three structural facts make the Korean version distinct from the UK accelerated 
 
 **What this file is.** It is the provenance layer behind `products/ci_insurance/`'s four
 documents — `product-spec.md`, `technical-notes.md`, `model.md` and `sources.md` — and behind
-the `CI_KR_A` model's parameter files. Every quantitative claim in those documents should be
+the `CI_KR_S` model's parameter files. Every quantitative claim in those documents should be
 traceable to a numbered entry here. **The source numbering below is never renumbered**: the
 product documents cite against it, so `S3` means the same document forever. Facts are tagged
 `[S#]` where they come from a retrieved primary product document, `[R#]` where they come from
@@ -442,7 +442,7 @@ Access date for every source: **2026-09-03**.
   발생하는 중대질병에 대해 사망보험금을 선지급(50%, 80%)하며, 80세 이후부터는 사망보험금을
   100% 지급하도록 설계되었다」 [R1]. From 2008 the CI cover itself was extended to **100세**
   while the death cover stayed 종신 [R1] [R13].
-- Because the chassis is whole-life, the CI contract carries everything `WholeLife_KR_A`
+- Because the chassis is whole-life, the CI contract carries everything `WholeLife_KR_S`
   carries: a 계약자적립금 credited at the 공시이율 with a 최저보증이율 floor, a 해지환급금 net
   of 미상각신계약비, a 보험계약대출, and a 납입면제. [S1] articles 34, 37 and 39 and the
   주요내용 요약서 all confirm this. A UK or Australian standalone CI policy has none of it.
@@ -1218,7 +1218,7 @@ Drawn from [S1] unless stated; these are the general 약관 articles, and they f
   of the month is the 계약해당일. The 약관's worked example: born 1980-01-20, joining
   2014-07-10 → 만 34년 5개월 20일 → **보험나이 34세**; joining 2014-12-10 → 만 34년 10개월
   20일 → **보험나이 35세** [S1]. The one exception is 제24조 (계약의 무효), where actual 만나이
-  applies [S1 제26조①]. **This is the age basis `CI_KR_A` must use for pricing.**
+  applies [S1 제26조①]. **This is the age basis `CI_KR_S` must use for pricing.**
 - **가입나이.** [S3]: 만 15세 ~ 최고 **60세**, varying by sex and premium term [S3].
   [S4]: 만 15세 ~ 최고 **60세** [S4]. [R13]: 15–60 [R13]. **Invariant across the sources.**
 - **가입한도**, [S3]: 50% 선지급형 **₩20,000,000–150,000,000** (2,000만–1억5,000만원);
@@ -1306,7 +1306,7 @@ What the morbidity rows say, computed here from [S3]:
 - **Age slope.** Male 중대한 암 rises **×7.1** from 20 to 40 (0.001023 / 0.000144) and
   **×10.8** from 40 to 60 (0.011063 / 0.001023) — the cancer log-slope *steepens*. Male AMI
   rises ×21.8 then ×7.4; male stroke ×23.9 then ×4.4, both flattening. These are slopes a
-  `[std]` CI incidence construction for `CI_KR_A` should reproduce.
+  `[std]` CI incidence construction for `CI_KR_S` should reproduce.
 - **What the rates are not.** They are 예정위험률 — pricing rates carrying a safety margin, not
   best-estimate experience. [R1] records the margin regime around them: 안전할증 on the
   기초발생률 was capped at **30%** in the early 2000s, raised to **50%** by the 2015
@@ -1564,7 +1564,7 @@ does not re-fetch them):
 - **The 건강인우대특약 discount percentage** [S4] — criteria published, discount not.
 - **The 예정사업비율 table in [S3]** — the section header and the explanatory Q&A extract, the
   table itself did not. So **no numeric expense loading appears anywhere in this file**, and
-  every expense assumption in `CI_KR_A` will be `[std]`.
+  every expense assumption in `CI_KR_S` will be `[std]`.
 - **Female 예정 경험 사망률 at ages 40 and 60 in [S3]** — extraction artefact; see §17.
 - **[S5]'s publication date** — see the source entry.
 - **[R11]'s "130% / 180% 선지급"** for 삼성생명 GI플러스종신보험. Percentages above 100% cannot
@@ -1577,21 +1577,21 @@ does not re-fetch them):
   belong to `_research/regulatory-actuarial.md`.
 - **Reinsurance terms and CI lapse experience by duration.** [R1] gives one cession ratio
   (삼성생명, ~40%, 2002) and no lapse data at all. No Korean equivalent of a published
-  protection-lapse table was found, so the lapse basis for `CI_KR_A` must be `[std]`,
+  protection-lapse table was found, so the lapse basis for `CI_KR_S` must be `[std]`,
   constrained by [R3]'s 무·저해지 log-linear standard model.
 
 **Deliberate scope limits (not gaps):**
 
 - 암보험 (`cancer.md`), 실손의료보험 (`indemnity-medical.md`), 간병보험 (`long_term_care`) and
   어린이보험 (`child.md`) are separate products with their own research files. The LTC material
-  in §10 is here only because the LTC state is one of `CI_KR_A`'s acceleration triggers; the
+  in §10 is here only because the LTC state is one of `CI_KR_S`'s acceleration triggers; the
   노인장기요양보험 grade statistics that an LTC incidence basis needs are not gathered here.
 - 다중지급 (multi-pay) CI and Stage/Early CI riders are described in §2 and §8 for context,
-  from [R1] and [R13], but `CI_KR_A` models the **single-payment acceleration** only. The
+  from [R1] and [R13], but `CI_KR_S` models the **single-payment acceleration** only. The
   structure — 7–8 disease groups, a second payment on a different group or a second cancer, a
   **3-year** waiting period on the second cancer, a maximum of three payments overseas — is
   recorded in [R1] and is available if the product is ever extended.
 - 변액CI (variable CI) is out of scope; [R14] is cited for its GI benefit structure only, and
   the separate-account machinery belongs to `variable_annuity`.
-- 당뇨CI보험 and the 유병자 market are described in §13 for completeness; `CI_KR_A` is a
+- 당뇨CI보험 and the 유병자 market are described in §13 for completeness; `CI_KR_S` is a
   standard-underwriting product.

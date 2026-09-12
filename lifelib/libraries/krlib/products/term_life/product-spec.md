@@ -288,12 +288,15 @@ Footnotes to **[std]** rows:
     on seven of the retrieved products, from five carriers [S1] [S6] [S8] [S9] [S12] [S17]
     [S18]; one adds 연납 [S15], one adds 3개월납·6개월납·연납 [S11], one adds 연납 and
     일시납 [S14] [S10]. It is also the disclosure basis [S5] and half of the 기준연령 요건
-    [REG-R9]. `Term_KR_A` runs on an
-    **annual grid**, so the monthly office premium is annualized by a factor of twelve with
-    no discount for the timing difference. That is a **[std]** simplification and it is
-    conservative in the insurer's favour by **half a year's interest on the whole
-    premium** — 1.136% of a year's premium at the 적용이율, the mean deferral of the twelve
-    payments being 5.5/12 of a year; the technical notes derive it.
+    [REG-R9]. `Term_KR_S` runs on a **monthly grid**, which is the frequency the contract
+    is actually paid on, so the published monthly office premium is the projection's own
+    cash flow and no annualization convention stands between the rate card and the
+    statement. `P_a = 12 × P_m` survives as a reporting figure and as the base of the
+    commission scale. An earlier annual-grid version of this model collected the twelve
+    premiums at the start of the year, which was conservative in the insurer's favour by
+    **half a year's interest on the whole premium** — 1.136% of a year's premium at the
+    적용이율, the mean deferral of the twelve payments being 5.5/12 of a year; the technical
+    notes record what removing that convention moved.
 11. **The policy fee gap.** Unlike `jplib`'s オリックス生命 grid, from which a flat ¥248
     monthly policy element could be extracted exactly because the card varies the sum
     assured, **every Korean grid retrieved fixes the sum assured and varies age, sex, rate
@@ -550,7 +553,7 @@ the rider unilaterally, whether or not a claim has arisen. In the other directio
 life who quits and passes the tests may **upgrade mid-term**, paying the discounted premium
 from the application date and receiving back any excess 계약자적립액 released by the
 repricing. The same upgrade path exists at two more carriers for a life originally accepted
-under a substandard rider whose condition improves [S11] [S12]. `Term_KR_A` does not model
+under a substandard rider whose condition improves [S11] [S12]. `Term_KR_S` does not model
 class movement; the specification records that the Korean class is a **state**, not a
 parameter, because a model that later needs it will need a transition and not a relabelling.
 
@@ -569,7 +572,7 @@ The 순수보장형 carries limb 2 alone. Termination is immediate and automatic
 효력이 없습니다」 [S2 제23조].
 
 **One decrement pays one benefit.** This is the single largest structural difference between
-`Term_KR_A` and the Japanese term chassis, and it simplifies the model in a specific way: a
+`Term_KR_S` and the Japanese term chassis, and it simplifies the model in a specific way: a
 Japanese projection carries 死亡 and 高度障害 as competing risks on one sum assured and must
 be careful not to double-count them against a standard table that already includes the
 second inside the first. Korea has no such interlock. What Korea has instead is a **second,
@@ -650,7 +653,7 @@ moved onto the policyholder.
 
 **The premium is a function of the renewal index, not of the policy year.** On a 갱신형 the
 premium at policy year `t` is `P(k)` where `k = 1 + floor((t − 1) / cycle)` is the renewal
-index — 1 in the original 보험기간, as `technical-notes.md` and `Term_KR_A.term_index` both
+index — 1 in the original 보험기간, as `technical-notes.md` and `Term_KR_S.term_index` both
 number it — and `P(k)` is struck at attained age `x + (k − 1) × cycle` on the scale in force
 at that date. A model that indexes the premium by policy year cannot represent the product,
 and a
@@ -660,7 +663,7 @@ model that carries a single level premium across a renewal boundary silently con
 **The horizon is the renewal ceiling, not the term.** The 보험기간 of the contract in force
 is one cycle. The horizon of the *cash flows the contract generates* is the ceiling: at
 흥국생명, 보험나이 80, reached from the anchor issue age of 40 in exactly four cycles [S6]
-[S7]. `Term_KR_A` therefore projects a 갱신형 model point to the ceiling, not to the end of
+[S7]. `Term_KR_S` therefore projects a 갱신형 model point to the ceiling, not to the end of
 the first cycle, and reprices at each boundary.
 
 **The renewal decline is its own decrement, and folding it into the lapse rate hides the
@@ -722,7 +725,7 @@ reading Korean insurers take is **[unverified]** and this document takes neither
   decline is inside it, and the anti-selective drift of the renewing population is a modelled
   quantity.
 
-`Term_KR_A` implements the long reading as its **base**, because it is the one that requires
+`Term_KR_S` implements the long reading as its **base**, because it is the one that requires
 the machinery — the repricing, the ceiling, the decline decrement — and because a model that
 can project to the ceiling can always be truncated to one cycle, while the reverse is not
 true. The horizon is a model parameter and the projection is re-runnable on either reading;
@@ -895,7 +898,7 @@ The same sentence, to the word, appears at seven more carriers [S1] [S6] [S8] [S
 
 The waiver is switched off by the same three intent limbs as the death benefit — 「보험료의
 납입면제 사유가 발생한 때에는 납입을 면제하지 않습니다」 [S2 제6조] — it does not survive a
-renewal [S6], and it forfeits the 무해지 step-up [S2 제33조] [S12]. `Term_KR_A` specifies the
+renewal [S6], and it forfeits the 무해지 step-up [S2 제33조] [S12]. `Term_KR_S` specifies the
 waived state and its transitions and excludes the incidence from the base projection
 **[std]**, for the reason `jplib` gives for the same decision: no Korean document publishes a
 50%-plus 장해 incidence rate, the 참조순보험요율 behind it is not public [REG-R4] [R19], and
@@ -1032,7 +1035,7 @@ because each returns a different amount.
 The third is materially better than an ordinary 해지 and it has **no analogue in any other
 library in this repository**. On the representative 무해지 form the difference is the whole
 value: an ordinary surrender pays nothing, and a 위법계약 termination pays the entire
-계약자적립액. `Term_KR_A` does not model it, there being no published incidence of
+계약자적립액. `Term_KR_S` does not model it, there being no published incidence of
 mis-selling findings, but a Korean model that treated the surrender value as uniformly nil
 would be wrong about a real, if small, cash flow.
 
@@ -1362,7 +1365,7 @@ itself [REG-R33]. **The table itself is not published**, and no numeric
 That is the sharpest contrast in this library with `jplib`, whose 標準生命表2018 is a free
 public PDF with `qx` by single year of age. What *is* public is the 국가데이터처 완전생명표 —
 2024 기대수명 83.7 overall, 80.8 male, 86.6 female; 65세 기대여명 19.5 and 23.7 [REG-R38] —
-and the carriers' three-point 예정 경험사망률 disclosures. `Term_KR_A` therefore ships a
+and the carriers' three-point 예정 경험사망률 disclosures. `Term_KR_S` therefore ships a
 `mort_table.csv` that is a **[std] construction** with a `provenance` column on every row,
 anchored on the three-point disclosures because they are *pricing* rates for *this product*
 at *these ages* from seven carriers, and graduated against the public national table.

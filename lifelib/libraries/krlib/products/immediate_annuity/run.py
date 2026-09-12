@@ -1,4 +1,4 @@
-"""Run the Immediate_KR_A reference model and print its cash flow statement.
+"""Run the Immediate_KR_S reference model and print its cash flow statement.
 
     python products/immediate_annuity/run.py            # the worked-example anchor
     python products/immediate_annuity/run.py 6          # sangsok, retention as designed
@@ -25,11 +25,11 @@ TERM_NAME = {
     "certain": "yeongeum jigeup gigan (payment term)",
 }
 
-model = mx.read_model(Path(__file__).parent / "Immediate_KR_A")
+model = mx.read_model(Path(__file__).parent / "Immediate_KR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 proj = model.Projection[point_id]
 
-print("Immediate_KR_A - jeuksi yeongeum (Korean single-premium immediate annuity)")
+print("Immediate_KR_S - jeuksi yeongeum (Korean single-premium immediate annuity)")
 print("model point {}: {} - {}".format(
     point_id, proj.model_point()["policy_id"], SHAPE_NAME[proj.shape()]))
 print("annuitant {} boheom nai {} (insurance age)   single premium KRW {:,.0f}"

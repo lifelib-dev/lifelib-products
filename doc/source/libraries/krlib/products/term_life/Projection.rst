@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: krlib.products.term_life.Term_KR_A.Projection
+.. automodule:: krlib.products.term_life.Term_KR_S.Projection
 
 Cells Descriptions
 ------------------

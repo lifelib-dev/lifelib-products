@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: krlib.products.ci_insurance.CI_KR_A.Projection
+.. automodule:: krlib.products.ci_insurance.CI_KR_S.Projection
 
 Cells Descriptions
 ------------------

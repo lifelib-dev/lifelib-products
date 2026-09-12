@@ -494,7 +494,7 @@ retrieved** [S5], and it is a 유니버셜 contract rather than a conventional l
   유니버셜 종신 (2004); and a **taxonomy table of the six Korean whole life shapes**.
 - **What rests on it.** The scope decisions of the composite: which of the six shapes the
   reference product is (무배당, 금리확정형, 평준형) and which four are named and excluded, and
-  the statement that this product is the chassis `CI_KR_A` and `Pension_KR_A` inherit.
+  the statement that this product is the chassis `CI_KR_S` and `Pension_KR_S` inherit.
 
 (krlib-whole_life-r9)=
 
@@ -622,7 +622,7 @@ frozen**; it is not this page's R-numbering. Research provenance for those entri
   **Retrieved: no.** The **대량해지위험 shock, including the 고환급형 test**, is therefore
   second-hand through [REG-R36] and [R7] and every claim resting on it carries
   **[unverified]**. This is the instrument-level gap that matters most to this product and to
-  `Term_KR_A`, because the 고환급형 test is about exactly their 무·저해지 forms.
+  `Term_KR_S`, because the 고환급형 test is about exactly their 무·저해지 forms.
 - **REG-R27** — 제4차 보험개혁회의 보도자료 (2024-11), 계리가정·할인율: the **원칙모형**, the
   **0.1% at 납입완료** convergence, the **0.8%** ultimate, and the **30% 이상** additional
   lapse at a bonus date. Retrieved: yes (the 보도자료 PDF and its 별첨; the 「IFRS17 주요

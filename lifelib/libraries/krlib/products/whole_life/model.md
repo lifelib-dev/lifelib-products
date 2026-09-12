@@ -35,7 +35,7 @@ further header fields, the `claims_reduction` and `claim_expenses` columns, more
 whole of `result_val()`:
 
 ```text
-WholeLife_KR_A - jongsin boheom (whole life), annual grid, boheom nai
+WholeLife_KR_S - jongsin boheom (whole life), annual grid, boheom nai
 model point 1: WL-KR-0001 - M40, cover KRW 100,000,000, 20-year premium term
 form: jeohaeji hwangeuphyeong (low surrender value), k = 0.50
 premium = KRW 2,776,140.00 p.a.   projection = 76 years to attained age 115
@@ -75,7 +75,7 @@ Three lines to the same thing, from Python:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/whole_life/WholeLife_KR_A")
+model = mx.read_model("products/whole_life/WholeLife_KR_S")
 model.Projection[1].result_cf()
 ```
 
@@ -431,7 +431,7 @@ reach for them and should not. And the **해약환급금준비금**, the IFRS 17
 Three CSVs live in this directory, beside `run.py`, and the model folder holds nothing but
 formulas — no `_data/`, no IOSpec, no embedded values. This follows `annuallife.TradLife_A`;
 contrast `basiclife.BasicTerm_S`, which stores its inputs inside the model. The consequence
-worth knowing is that **the model is not portable on its own**: copying `WholeLife_KR_A/`
+worth knowing is that **the model is not portable on its own**: copying `WholeLife_KR_S/`
 without its parent's CSVs produces a model that reads and then fails on first evaluation.
 
 Every reader and every `*_file` Reference lives in `Data`, which takes no parameters, so each

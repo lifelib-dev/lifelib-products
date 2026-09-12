@@ -1,4 +1,4 @@
-"""Golden and structural tests for WholeLife_KR_A.
+"""Golden and structural tests for WholeLife_KR_S.
 
 The golden values are the worked example in ``products/whole_life/technical-notes.md``
 ("Worked example"), which projects the anchor cell: 남자, 보험나이 40 on a **보험나이**
@@ -71,7 +71,7 @@ from modelx.core.errors import FormulaError
 
 from kr_registry import model_path
 
-MODEL_DIR = model_path("WholeLife_KR_A")
+MODEL_DIR = model_path("WholeLife_KR_S")
 
 WON = 0.005           # money displayed to 2 d.p.
 INFORCE = 5e-7        # in-force displayed to 6 d.p.
@@ -764,7 +764,7 @@ def test_the_flat_basis_run_is_the_disclosure_the_guidance_obliges(tmp_path):
     98.7% in one row.  Without this test the two bases would be shipped side by side and only
     one ever run.
     """
-    model = product_copy(tmp_path, "WholeLife_KR_A_flat")
+    model = product_copy(tmp_path, "WholeLife_KR_S_flat")
     try:
         table = pd.read_csv(
             model.Data.input_dir() / "model_point_table.csv", index_col="point_id")
@@ -1944,7 +1944,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     a CSV, change no formula.  Doubling every rate doubles the first year's death claims
     and nothing in the model had to be told.
     """
-    model = product_copy(tmp_path, "WholeLife_KR_A_swap")
+    model = product_copy(tmp_path, "WholeLife_KR_S_swap")
     try:
         src = model.Data.input_dir() / "mort_table.csv"
         doubled = pd.read_csv(src, index_col=["sex", "age"])
@@ -1974,7 +1974,7 @@ def test_round_trip_reproduces_the_goldens(tmp_path):
     the statement a reader of the notes actually needs.  The inputs are external, so they
     have to travel with the model for the re-read to project at all.
     """
-    model = mx.read_model(MODEL_DIR, name="WholeLife_KR_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="WholeLife_KR_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -1984,7 +1984,7 @@ def test_round_trip_reproduces_the_goldens(tmp_path):
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="WholeLife_KR_A_rt")
+    reread = mx.read_model(dest, name="WholeLife_KR_S_rt")
     try:
         anchor = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

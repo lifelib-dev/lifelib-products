@@ -1,4 +1,4 @@
-"""Run the Pension_KR_A reference model and print its cash flow statement.
+"""Run the Pension_KR_S reference model and print its cash flow statement.
 
     python products/pension_savings/run.py            # anchor cell (point_id = 1)
     python products/pension_savings/run.py 4          # another model point
@@ -11,7 +11,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "Pension_KR_A")
+model = mx.read_model(Path(__file__).parent / "Pension_KR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

@@ -41,8 +41,8 @@ Four of them are worth naming explicitly.  ``Medical_KR_S`` is 실손의료보�
 hospitalization benefit, and it is the only indemnity product anywhere in this repository;
 the fixed-benefit third-sector chassis is ``Cancer_KR_S``.  ``LTC_KR_S`` is 간병보험,
 private cover written on top of the public 노인장기요양보험 scheme, not that scheme itself,
-and its trigger is the state's own 장기요양등급.  ``Pension_KR_A`` is 연금저축보험, the
-tax-qualified *deferred* contract, and not the payout one, which is ``Immediate_KR_A``.
+and its trigger is the state's own 장기요양등급.  ``Pension_KR_S`` is 연금저축보험, the
+tax-qualified *deferred* contract, and not the payout one, which is ``Immediate_KR_S``.
 And ``Child_KR_S`` is 어린이보험, a bundled child health policy commonly written **in
 utero**, which has no counterpart in any sister library.
 """
@@ -90,18 +90,18 @@ MAN = {"age_basis": "만나이"}        # age last birthday, the public-statisti
 # that the name, the folder and the model's own _name all agree.
 MODELS = {
     # 보장성 — protection
-    "WholeLife_KR_A": ("products/whole_life/WholeLife_KR_A", ANNUAL | BOHEOM),
-    "Term_KR_A": ("products/term_life/Term_KR_A", ANNUAL | BOHEOM),
-    "CI_KR_A": ("products/ci_insurance/CI_KR_A", ANNUAL | BOHEOM),
+    "WholeLife_KR_S": ("products/whole_life/WholeLife_KR_S", ANNUAL | BOHEOM),
+    "Term_KR_S": ("products/term_life/Term_KR_S", MONTHLY | BOHEOM),
+    "CI_KR_S": ("products/ci_insurance/CI_KR_S", ANNUAL | BOHEOM),
     # 제3보험 — third insurance (보험업법 제4조제1항제3호)
     "Medical_KR_S": ("products/indemnity_medical/Medical_KR_S", MONTHLY | MAN),
     "Cancer_KR_S": ("products/cancer/Cancer_KR_S", MONTHLY | MAN),
     "LTC_KR_S": ("products/long_term_care/LTC_KR_S", MONTHLY | MAN),
     "Child_KR_S": ("products/child/Child_KR_S", MONTHLY | BOHEOM),
     # 저축·연금 — savings and annuity
-    "Pension_KR_A": ("products/pension_savings/Pension_KR_A", ANNUAL | BOHEOM),
+    "Pension_KR_S": ("products/pension_savings/Pension_KR_S", ANNUAL | BOHEOM),
     "VA_KR_S": ("products/variable_annuity/VA_KR_S", MONTHLY | BOHEOM),
-    "Immediate_KR_A": ("products/immediate_annuity/Immediate_KR_A", ANNUAL | BOHEOM),
+    "Immediate_KR_S": ("products/immediate_annuity/Immediate_KR_S", ANNUAL | BOHEOM),
 }
 
 
@@ -119,7 +119,7 @@ MODELS = {
 # Regenerate with ``python tools/gen_input_files.py lifelib/libraries/krlib`` rather than
 # editing by hand — a load-bearing map that is hand-transcribed is how it goes stale.
 INPUT_FILES = {
-    "CI_KR_A": {
+    "CI_KR_S": {
         "ci_incidence_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv"},
     "Cancer_KR_S": {
@@ -129,7 +129,7 @@ INPUT_FILES = {
     "Child_KR_S": {
         "av_table.csv", "basis_table.csv", "incidence_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "neonatal_table.csv"},
-    "Immediate_KR_A": {
+    "Immediate_KR_S": {
         "charge_table.csv", "crediting_table.csv", "model_point_table.csv",
         "mort_table.csv"},
     "LTC_KR_S": {
@@ -140,18 +140,18 @@ INPUT_FILES = {
         "claim_shape_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv", "oop_ceiling_table.csv", "severity_table.csv",
         "utilisation_table.csv"},
-    "Pension_KR_A": {
+    "Pension_KR_S": {
         "decl_rate_table.csv", "expense_table.csv", "guar_rate_table.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_anchor_table.csv",
         "mort_table.csv", "pricing_table.csv", "tax_table.csv"},
-    "Term_KR_A": {
+    "Term_KR_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "prem_rate_table.csv", "rate_class_table.csv"},
     "VA_KR_S": {
         "charge_table.csv", "crediting_table.csv", "fund_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "return_scenario.csv",
         "risk_prem_table.csv"},
-    "WholeLife_KR_A": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+    "WholeLife_KR_S": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
 }
 
 

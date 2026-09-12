@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: krlib.products.immediate_annuity.Immediate_KR_A.Projection
+.. automodule:: krlib.products.immediate_annuity.Immediate_KR_S.Projection
 
 Cells Descriptions
 ------------------

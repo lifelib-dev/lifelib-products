@@ -5,7 +5,7 @@
 **Scope note.** These notes turn the standardized composite critical illness assurance
 (*CI boheom*, CI보험, also sold as 중대질병보험 — *jungdae jilbyeong boheom*) of
 `product-spec.md` (same directory) into a reference liability cash-flow projection on
-paper, and then into `CI_KR_A` beside it. **They describe no single insurer's contract.**
+paper, and then into `CI_KR_S` beside it. **They describe no single insurer's contract.**
 [S#] and [R#] tags resolve against `sources.md`, whose numbering is carried verbatim from
 `_research/ci-insurance.md` and is frozen; [REG-R#] tags resolve against the cross-product
 reference library `references/regulatory-and-actuarial-references.md`, whose own R1–R60
@@ -505,7 +505,7 @@ rest are taken out [REG-R40].
 is a condition of the product's legality and not only an earnings assumption. The November
 2024 계리가정 decision makes the **로그-선형 원칙모형** the default, converging to 0.1% at
 납입완료 with a 0.8% ultimate, with departure permitted only against audited disclosure of
-the CSM, BEL, K-ICS and net-income differences [REG-R27] [R3]. `CI_KR_A` uses it and ships
+the CSM, BEL, K-ICS and net-income differences [REG-R27] [R3]. `CI_KR_S` uses it and ships
 the 표준형 `table` basis beside it, which is exactly the comparison the guideline requires an
 insurer to disclose. **The functional form of the guideline's model is [unverified] at
 instrument level**: the 보도자료 values were retrieved and the HWP attachment carrying the
@@ -917,7 +917,7 @@ which appears in no retrieved CI 약관; the 다중지급 (multi-pay) generation
 선지급플러스형, which is not a pure acceleration because it replaces the residual with a
 separately funded 유족위로금 [S4]; the 80세 two-period design of the 2002 product [S6] [R1];
 and the chassis's clawback, whose interaction with the CI carve-out is **[unverified]** —
-`CI_KR_A` assumes it does not gate it. No 요구자본 anywhere.
+`CI_KR_S` assumes it does not gate it. No 요구자본 anywhere.
 
 ---
 
@@ -975,7 +975,7 @@ base is thinner than on the chassis: **no CI lapse experience of any kind was re
 - **부활 is not modelled and the omission is larger here than on the chassis.** 부활 within
   three years restarts the **90-day 중대한 암 보장개시일** [S1 별표1 주1], so a reinstated CI
   contract is uncovered for cancer for ninety days — a decrement the chassis has no
-  counterpart for. There is no reinstatement switch in `CI_KR_A`: omitting 부활 altogether
+  counterpart for. There is no reinstatement switch in `CI_KR_S`: omitting 부활 altogether
   understates later-duration in force and therefore both premium income and claims, and it
   also removes a real ninety-day gap in cover. Both biases are stated rather than corrected
   because no Korean reinstatement rate was retrieved.

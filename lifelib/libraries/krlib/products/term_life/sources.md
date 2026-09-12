@@ -163,7 +163,7 @@ appearing twice independently and not a [std] one.
 - Accessed: 2026-09-03, Retrieved: **yes** (96 KB PDF, extracted cleanly)
 - **The only retrieved document that sets out a 갱신형 term product's renewal rules alongside
   the 비갱신형 alternative in the same product**, and therefore the single source behind most
-  of the renewal machinery in `Term_KR_A`. It establishes: the ten-year 갱신 cycle and the
+  of the renewal machinery in `Term_KR_S`. It establishes: the ten-year 갱신 cycle and the
   **보험나이 80 ceiling**, which is `renew_ceiling()`; the truncation rule 「갱신일부터 최종
   갱신계약의 보험기간 종료일까지가 10년미만일 경우에는 …」, which is `term_len(k)`; the
   clause that a **premium waiver already running does not carry into the renewed contract**,
@@ -262,7 +262,7 @@ appearing twice independently and not a [std] one.
 - Accessed: 2026-09-03, Retrieved: **yes** (335 KB PDF, extracted cleanly)
 - **The anchor carrier**, and the only document retrieved that prints the 무해지 form and its
   표준형 comparator side by side, premium and surrender value, in one table. Nearly every
-  quantitative input to `Term_KR_A` traces here: the twenty published cells of
+  quantitative input to `Term_KR_S` traces here: the twenty published cells of
   `prem_rate_table.csv`, including the anchor `(pure, M, 40, 20) = ₩15,080` and its female
   twin ₩8,010; the four disclosed 예정 경험사망률 tables, one per rate class, whose 표준체
   values at 20/40/60 are the three Makeham anchors of `mort_table.csv` and whose ratios are

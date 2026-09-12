@@ -1,4 +1,4 @@
-"""Golden and structural tests for Pension_KR_A.
+"""Golden and structural tests for Pension_KR_S.
 
 The golden values are the worked example in
 products/pension_savings/technical-notes.md ("Worked example"), which projects the anchor
@@ -29,7 +29,7 @@ pitfalls" earns its own test, named after the pitfall, because each is a way an
 implementation can look right and be wrong:
 
 * a survivorship release in the fund — the 계약자적립액 is an **account**, and the
-  ``/(1 - q)`` of ``WholeLife_KR_A``'s same-named account, or of the Japanese deferred
+  ``/(1 - q)`` of ``WholeLife_KR_S``'s same-named account, or of the Japanese deferred
   annuity, overstates the 연금개시 fund silently;
 * a deferral-phase mortality strain, which on this contract is exactly zero;
 * a death product's best-estimate adjustment, whose **sign** is wrong here;
@@ -69,7 +69,7 @@ INFORCE = 5e-11      # counts and probabilities, displayed to 10 d.p.
 RATE = 5e-11         # decrement and crediting rates, displayed to 10 d.p.
 SAME_DOUBLE = 1e-15  # relative: the notes' full-precision values are these doubles
 
-MODEL_DIR = LIB / MODELS["Pension_KR_A"][0]
+MODEL_DIR = LIB / MODELS["Pension_KR_S"][0]
 CSV_DIR = MODEL_DIR.parent
 
 # ---------------------------------------------------------------------------
@@ -330,7 +330,7 @@ SURR_CAP_WORKINGS = {
 
 def _reread(suffix):
     """A private copy of the model, for tests that move a Reference or rewrite an input."""
-    return mx.read_model(MODEL_DIR, name="Pension_KR_A_" + suffix)
+    return mx.read_model(MODEL_DIR, name="Pension_KR_S_" + suffix)
 
 
 @contextlib.contextmanager

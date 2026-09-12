@@ -23,10 +23,10 @@ in the `provenance` column of the CSV it lives in. [unverified] marks a claim th
 pass could not confirm against a retrieved document. Parameter values are identical to
 those in `product-spec.md`.
 
-The model these notes are implemented as is **`Immediate_KR_A`**, on an **annual** grid,
+The model these notes are implemented as is **`Immediate_KR_S`**, on an **annual** grid,
 with every age in **보험나이** (*boheom nai*, insurance age). It is the library's
-**payout-phase chassis**: the accumulation half of the same machinery is `Pension_KR_A`'s
-subject, and the interest-crediting mechanic it shares with `WholeLife_KR_A` is specified
+**payout-phase chassis**: the accumulation half of the same machinery is `Pension_KR_S`'s
+subject, and the interest-crediting mechanic it shares with `WholeLife_KR_S` is specified
 there and not redeveloped here. Amounts are in Korean won; because Korean documents quote
 in 만원 (10,000) and 억원 (100,000,000), both forms are given where a Korean reader would
 expect one — ₩100,000,000 (1억원).
@@ -461,7 +461,7 @@ V(0) = P (1 − c − b)                    연금계약 순보험료 = the open
 with, on the representative basis, `V(0) = 0.9650 P` on the life shape and `0.9503 P` on
 the other two. `check_premium_split()` asserts `P = P κ + P ε + B + V(0)` with nothing
 left over in either direction. **That identity is the statement that this product has no
-acquisition strain**, and it is the structural difference between `Immediate_KR_A` and
+acquisition strain**, and it is the structural difference between `Immediate_KR_S` and
 every other model in `krlib`: there is no unamortised 신계약비 to recover, which is why
 the 해약공제액 can be nil at every duration without the insurer giving anything away
 [S1 §VIII] [S10], and why the statutory 표준해약공제액 cap of 별표 14 binds nothing here
@@ -843,7 +843,7 @@ Behaviour therefore enters the *choice of model point*, not the projection.
 
 ## Worked example
 
-Everything in this section was read off `Immediate_KR_A` and can be reproduced by running
+Everything in this section was read off `Immediate_KR_S` and can be reproduced by running
 it. `tests/test_immediate_annuity_kr.py` asserts these figures against the model cell by
 cell to the precision shown, so a discrepancy between this document and the model is a
 failure of the library and not a rounding matter.

@@ -600,7 +600,7 @@ Footnotes to the [std] rows:
     basis is that 1.70% with the 2.50% 평균공시이율 and the 0.30% floor [S2], and recovers the
     계약자적립액 from it, so the three rates are recorded as the basis of the shipped grid and
     are not read by any formula. Both the recursion and the 공시이율 reset are carried by
-    reference to `WholeLife_KR_A`. The 평균공시이율 of 2.50% enters only
+    reference to `WholeLife_KR_S`. The 평균공시이율 of 2.50% enters only
     through the surrender-charge and disclosure computations [S2] [REG-R9] [REG-R48].
 19. **The lapse basis, and the one carrier that published its own.** [S1] discloses the
     **적용해지율** actually used to price each suppressed form — a step function at 5.0% / 3.0%

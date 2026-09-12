@@ -51,7 +51,7 @@ five select years, calibrated to Korea's published 5년 상대생존율.
 **Paying a benefit neither terminates nor exhausts the contract.** Cover for the other tiers,
 for the event modules and for the waiver runs on to the 100세 계약해당일 [S1] [S3] [S4], and
 nothing is paid at expiry. That is the sharpest structural contrast with the accelerated
-design of ``CI_KR_A``, where the critical-illness payment reduces the death benefit carrying
+design of ``CI_KR_S``, where the critical-illness payment reduces the death benefit carrying
 it.
 
 **Spaces.** The model contains two:

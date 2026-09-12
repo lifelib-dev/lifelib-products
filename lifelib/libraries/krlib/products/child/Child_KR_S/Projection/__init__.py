@@ -1525,7 +1525,7 @@ def av_pp(t):
     It accrues monthly before 납입완료 and daily afterwards, credited at the 공시이율 and
     floored at the 최저보증이율 [REG-R19 제7-66조제1항제4호]; the model reads the published
     progression rather than running the recursion, and does **not** implement the 공시이율
-    reset, which it carries by reference to ``WholeLife_KR_A``.
+    reset, which it carries by reference to ``WholeLife_KR_S``.
 
     **The published grid does not determine it in the first two years and this is where the
     [std] enters.**  What the 상품요약서 publishes is 「순보험료식 계약자적립액에서

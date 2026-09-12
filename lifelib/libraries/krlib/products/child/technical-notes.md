@@ -204,7 +204,7 @@ family buys the indemnity layer as `Medical_KR_S` and the fixed-benefit layer as
   가족일상생활배상책임 at 3년만기 [S2], and named riders at one to three years [S3] [S5] —
   reprice at attained age at each renewal, which would ordinarily close the boundary there.
   `krlib` projects them to final expiry and **records the tension rather than resolving it**,
-  exactly as `Term_KR_A`, `Cancer_KR_S` and `Medical_KR_S` do. It is a K-IFRS 1117 question
+  exactly as `Term_KR_S`, `Cancer_KR_S` and `Medical_KR_S` do. It is a K-IFRS 1117 question
   [REG-R60] this model does not answer.
 - **Currency.** KRW throughout. There is no minor unit in the contract, but expected values
   are fractional; displayed to the precision each table states.
@@ -901,7 +901,7 @@ capped instead at the cumulative **net** premium, `0.75 × cum_prem_pp(t)`, whic
 therefore starts at nil, as it must, rather than at the surrender charge.**
 `check_av_bounds()` asserts `CV(t) <= A(t) <= cv_std_pp(t) + X(t)` and `A(t) >= 0` in every
 month. The **공시이율 reset is not implemented**; it is carried by reference to
-`WholeLife_KR_A`.
+`WholeLife_KR_S`.
 
 **The 표준해약공제액 (*pyojun haeyak gongjeaek*, the statutory cap on the surrender charge),
 and how a product with no death benefit acquires a face amount.**
@@ -1569,7 +1569,7 @@ once and live.
 - **책임준비금** under 감독규정 제6-11조 [REG-R10] and the 계약자적립액 under 제7-65조 and
   제7-66조 [REG-R18] [REG-R19]. This model **reads a published surrender value and recovers
   the account from it**: it runs neither the 순보험료식 recursion nor the 공시이율 reset, both
-  of which are carried by reference to `WholeLife_KR_A`.
+  of which are carried by reference to `WholeLife_KR_S`.
 - **The 표준해약공제액 and the 해약공제기간** are computed here, at [별표 14] and 제7-66조
   제1항제2호 [REG-R20] [REG-R19], because they bound the surrender value and the deductible
   acquisition cost and therefore change the cash flows. They are the only regulatory

@@ -1,4 +1,4 @@
-"""Run the WholeLife_KR_A reference model and print its cash flow statement.
+"""Run the WholeLife_KR_S reference model and print its cash flow statement.
 
     python products/whole_life/run.py            # anchor cell (point_id = 1)
     python products/whole_life/run.py 8          # another model point
@@ -16,7 +16,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "WholeLife_KR_A")
+model = mx.read_model(Path(__file__).parent / "WholeLife_KR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
@@ -30,7 +30,7 @@ else:
 term = ("jeongi-nap (whole-of-life premium)" if proj.prem_term() == 0
         else "{}-year premium term".format(proj.prem_term()))
 
-print("WholeLife_KR_A - jongsin boheom (whole life), annual grid, boheom nai")
+print("WholeLife_KR_S - jongsin boheom (whole life), annual grid, boheom nai")
 print("model point {}: {} - {}{}, cover KRW {:,.0f}, {}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(), proj.age_at_entry(),
     proj.sum_assured(), term))

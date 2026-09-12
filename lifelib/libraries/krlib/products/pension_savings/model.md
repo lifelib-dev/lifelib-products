@@ -19,7 +19,7 @@ product as a liability cash flow projection on paper) and [`product-spec.md`](pr
 > standardizations. Replace them all with company data, and the mortality with the filed
 > 산출방법서 basis, before drawing any conclusion from the numbers.
 
-`Pension_KR_A` is the annual-grid model of the tax-qualified pension savings composite
+`Pension_KR_S` is the annual-grid model of the tax-qualified pension savings composite
 (*yeongeum jeochuk boheom*, 연금저축보험). It inherits the **surrender-value machinery** of
 the [whole life chassis (종신보험)](../whole_life/model.md) — the 해약공제액, its statutory
 cap and the 해약환급금 floor — but **not** that chassis's 계약자적립액 recursion, which is a
@@ -97,7 +97,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/pension_savings/Pension_KR_A")
+model = mx.read_model("products/pension_savings/Pension_KR_S")
 model.Projection[1].result_cf()
 ```
 
@@ -118,7 +118,7 @@ repository, and it is not a parameter difference. `Annuity_JP_S`'s 保険料積�
 net-level-premium reserve with a **survivorship release**: the premiums of those who die go
 to the survivors net of the death benefit paid, so the recursion divides by `(1 - q')`. So —
 and this is the trap, because it is the nearer neighbour and shares the Korean name — does
-`WholeLife_KR_A`'s own 계약자적립액, which runs
+`WholeLife_KR_S`'s own 계약자적립액, which runs
 `V(d) = ((V(d-1) + P·1{d <= m})(1 + i) - q·SA)/(1 - q)`, on **that** model's anniversary
 index `d` (`d = 0` at issue), not on this model's period index `t`. **This** 계약자적립액
 does none of that. It is a contractual balance:
@@ -383,7 +383,7 @@ only direct evidence of the margin's size is that the two carriers who publish a
 rates differ by about 9% at age 60 [S1] [S7] `[derived]`; 1.15 sits a little above that and
 is a standardization.
 
-**This table must not be shared with `WholeLife_KR_A`.** One is loaded for survival and the
+**This table must not be shared with `WholeLife_KR_S`.** One is loaded for survival and the
 other for death, and using either for both is wrong in a known direction.
 
 ## Two decrements that pay the same amount, and three columns that are zero
@@ -543,7 +543,7 @@ never hard-coded, which is what lets a licensed or company table drop in as a sa
 with no formula change.
 
 The trade-off, stated in both Space docstrings: **the model is not portable on its own.**
-Copying `Pension_KR_A/` without its parent's CSVs produces a model that reads and then fails
+Copying `Pension_KR_S/` without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
 ### The tables, and why each is [std] or sourced

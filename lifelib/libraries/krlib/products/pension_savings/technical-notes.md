@@ -4,7 +4,7 @@
 
 **Scope note.** These notes turn the standardized composite tax-qualified pension savings
 contract (*yeongeum jeochuk boheom*, 연금저축보험) of `product-spec.md` (same directory)
-into a reference liability cash-flow projection on paper, and then into `Pension_KR_A`
+into a reference liability cash-flow projection on paper, and then into `Pension_KR_S`
 beside it. **They describe no single insurer's contract.** [S#] and [R#] tags resolve
 against `sources.md`, whose numbering is carried verbatim from
 `_research/pension-savings.md` and is frozen; [REG-R#] tags resolve against the
@@ -53,7 +53,7 @@ contract** [S1] [S2] [S5] [S6] [S7], and the factor is therefore the annuity-due
 twelve times a year. With that one change the same formula and the same 0.5% charge
 recover all eight published figures on both interest bases. The evidence is in *The
 annuitisation transition* below; `product-spec.md` now states the monthly form and
-resolves the residual in its footnote 10, `Pension_KR_A` implements it, and the worked
+resolves the residual in its footnote 10, `Pension_KR_S` implements it, and the worked
 example is struck on it.
 
 Parameters introduced **here** that the specification does not carry — each because the
@@ -80,7 +80,7 @@ treatment of the 연금수령한도 평가액; and the decision not to round the
   **Discounting, the risk adjustment, the CSM, 요구자본 and every reserve are out of
   scope** and are cited, not reproduced — see *Valuation and reserve pointers*.
 - **Projection frequency.** **Annual**, on policy years running 계약해당일 to 계약해당일
-  (`Pension_KR_A`). The permission is explicit rather than assumed: 감독규정
+  (`Pension_KR_S`). The permission is explicit rather than assumed: 감독규정
   제7-65조제2항 allows the 계약자적립액 of a monthly-premium contract to be computed on an
   annualised premium basis — 「계약자적립액은 … 연납보험료를 기준으로 하여 산출할 수
   있다」 [REG-R18]. This is therefore a filed-basis convention, not a modelling shortcut.
@@ -412,7 +412,7 @@ little above that. A model that carries a death product's downward adjustment he
 sign wrong.
 
 **The table is used in exactly two places** — the annuity factor at the 연금개시일, and the
-in-force decrement — and it **must not be shared with `WholeLife_KR_A`**: one table is
+in-force decrement — and it **must not be shared with `WholeLife_KR_S`**: one table is
 loaded for survival and the other for death, and using either for both is wrong in a known
 direction.
 
@@ -586,7 +586,7 @@ contractual balance and the death benefit *is* the balance, so there is no survi
 release to credit and no death strain to subtract; and the surrender release that a
 deduction would produce is nil, because the 해약공제액 is nil. That is the single largest
 structural difference from **both** of the neighbouring accumulation models, and the nearer
-of the two is the dangerous one. `WholeLife_KR_A`, the chassis whose surrender-value
+of the two is the dangerous one. `WholeLife_KR_S`, the chassis whose surrender-value
 machinery this product does inherit, runs the classical net-level recursion
 `V(d) = ((V(d−1) + P·1{d <= m})(1 + i) − q·SA)/(1 − q)` under the same Korean name,
 계약자적립액 — on **that** model's anniversary index `d` (`d = 0` at issue), not on this
@@ -1271,7 +1271,7 @@ them and is cited, not reproduced.
   duration**, so the aggregate contractual surrender value is the whole of the fund, and
   the whole of the gap between it and an IFRS 17 measurement is the earnings profile. The
   reserve stood at ₩23.7tn at end-2022 and ₩32.2tn at end-2023 [REG-R11] [REG-R36].
-  `Pension_KR_A` computes none of it, and `cv_pp(t)` is the input it would need.
+  `Pension_KR_S` computes none of it, and `cv_pp(t)` is the input it would need.
 - **보증준비금 (guarantee reserve).** 감독규정 제6-11조의5 requires one inside retained
   earnings for expected losses on benefit guarantees, junior to the 해약환급금준비금
   [REG-R10]. The **100.1% minimum fund is a benefit guarantee**, so this product sits
@@ -1298,7 +1298,7 @@ them and is cited, not reproduced.
 - **Policyholder protection.** 예금자보호법 시행령 제18조제7항 sets the limit at
   **₩100,000,000** from 2025-09-01 and applies it to four separate buckets, the second of
   which is the combined total of **연금저축계좌 claims** [REG-R52] [REG-R32]. A
-  `Pension_KR_A` policyholder's protection is therefore separate from the ₩100,000,000
+  `Pension_KR_S` policyholder's protection is therefore separate from the ₩100,000,000
   covering their other insurance claims against the same insurer. Not a cash flow in this
   model.
 
@@ -1371,7 +1371,7 @@ Each of these is a mistake a competent modeller would actually make on this prod
 each is checkable against the shipped model.
 
 1. **Putting a survivorship release into the fund.** The 계약자적립액 is an account:
-   `AV(t+1) = (AV(t) + NP(t) − C(t))(1 + i_c(t))`, full stop. **`WholeLife_KR_A`'s
+   `AV(t+1) = (AV(t) + NP(t) − C(t))(1 + i_c(t))`, full stop. **`WholeLife_KR_S`'s
    계약자적립액 is not** — it divides by `(1 − q)` and subtracts a death benefit — and
    neither is the deferred annuity on the Japanese page. Two neighbours carry the same name
    and a different recursion, and porting either shape here **overstates the 연금개시 fund

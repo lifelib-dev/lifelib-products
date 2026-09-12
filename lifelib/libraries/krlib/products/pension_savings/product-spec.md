@@ -43,7 +43,7 @@ The composite is a **무배당, level monthly basic premium, 금리연동형 (in
 a five-year gap, and annuity from 65 as a 종신연금형 (*jongsin yeongeumhyeong*, life annuity)
 with a ten-year guarantee. Its two phases — accumulation of a 계약자적립액 (*gyeyakja
 jeongnibaek*, policyholder account value) at the declared rate, then payout — run on one annual
-grid in `Pension_KR_A`. The contract inherits the **surrender-value machinery** of the [whole
+grid in `Pension_KR_S`. The contract inherits the **surrender-value machinery** of the [whole
 life chassis (종신보험)](../whole_life/technical-notes.md) — the 해약공제액, its
 표준해약공제액 (*pyojun haeyak gongjeaek*, the statutory cap on the surrender charge) and the
 해약환급금 (*haeyak hwangeupgeum*, surrender value) floor. It does **not** inherit that
@@ -55,7 +55,7 @@ not have: monthly crediting at the 공시이율 (*gongsi iyul*, declared rate) o
 floor); the 세액공제 (*seaek gongje*, tax credit) as a behavioural driver rather than an
 insurer cash flow; the statutory 연금수령 conditions as constraints on the projection; and a
 punitive 기타소득세 (*gita sodeukse*, other income tax) of 16.5% on any withdrawal that misses
-them. 변액연금보험 (`VA_KR_S`), 즉시연금 (`Immediate_KR_A`) and the non-qualified 연금보험 are
+them. 변액연금보험 (`VA_KR_S`), 즉시연금 (`Immediate_KR_S`) and the non-qualified 연금보험 are
 out of scope and appear below as scope boundaries.
 
 ---
@@ -241,7 +241,7 @@ Footnotes to [std] rows:
    product (footnote 13) and the male factor is the one the published illustration gives.
 7. **Grid.** Every retrieved contract is 월납 [S1] [S2] [S6] [S7] [S11], one adding 연납 [S8],
    and interest accrues **by day from the date each premium is received** — 「순보험료 … 를
-   「공시이율」로 납입일부터 일자계산을 하여 적립한 금액」 [S1] [S2]. `Pension_KR_A` runs an
+   「공시이율」로 납입일부터 일자계산을 하여 적립한 금액」 [S1] [S2]. `Pension_KR_S` runs an
    **annual** grid, so the twelve monthly instalments of a policy year are collapsed to one
    payment and the within-year interest is handled by a timing adjustment specified in
    `technical-notes.md`. The regulation expressly permits an annualised-premium account —
@@ -401,7 +401,7 @@ Footnotes to [std] rows:
     ends at 60. The consequence for the model is exact and should be stated as a testable
     property: **before annuitisation the insurer carries no mortality risk on this product at
     all**, because the death payment equals the surrender payment equals the fund. Mortality
-    enters `Pension_KR_A` in one place only — the annuity factor at the commencement date — and
+    enters `Pension_KR_S` in one place only — the annuity factor at the commencement date — and
     a projection that applies a decrement-weighted death strain in deferral is projecting a
     strain of exactly zero. The floor variant is carried as a model-point flag so the postal
     design can be run.
@@ -541,7 +541,7 @@ Footnotes to [std] rows:
     [S6] [S5] [S9] [S10] [S7]) but not in the clause. A model that struck the factor on the
     개시시점 table instead would understate the annuity, and a model that ignored the ratchet
     entirely would be right in the base run and wrong under an improvement scenario;
-    `Pension_KR_A` exposes the vintage as a switch and `technical-notes.md` shows both.
+    `Pension_KR_S` exposes the vintage as a switch and `technical-notes.md` shows both.
 
 ### Options
 
@@ -625,7 +625,7 @@ Footnotes to [std] rows:
     consequence is not the cash flow but the date — the premium due dates and the annuity date
     shift by the lapsed period, and the 100.1% floor at annuitisation is **withdrawn** where
     the shortfall was caused by a one-instalment reinstatement or a payment holiday [S4] [S6]
-    [S7]. Neither 부활 nor 간편부활 is implemented in `Pension_KR_A`: the annual grid has no
+    [S7]. Neither 부활 nor 간편부활 is implemented in `Pension_KR_S`: the annual grid has no
     partial-year state to re-enter from, so **lapse is absorbing** and `lapse_rate` is a
     net-of-부활 rate by construction, which `technical-notes.md` states as the reason a user
     substituting a gross experience rate will over-decrement. What the model does keep is the
@@ -665,7 +665,7 @@ This is not a rounding detail on a product whose annuity date is a statutory thr
 carrier states the consequence as a product rule: 「다만, 피보험자가 55세 계약해당일에 만55세
 이상이 아닌 경우에는 연금개시나이를 56세부터 선택할 수 있음」 [S1]. The minimum-payout tables
 that translate the 연금수령한도 into a term are footnoted 「만나이 기준」 [S3], and the
-withholding-rate age bands are on the pensioner's 만나이 [R5] [R9]. `Pension_KR_A` runs on
+withholding-rate age bands are on the pensioner's 만나이 [R5] [R9]. `Pension_KR_S` runs on
 **보험나이** and declares it in the registry metadata; where a statutory age test enters the
 projection the notes state which basis is used and why the difference does not bite at the
 anchor cell (65 in 보험나이 is 64 or 65 in 만나이, and both clear 만 55세 by a decade).
@@ -769,7 +769,7 @@ capped at 60%** and held constant through the business year [REG-R24]. A Korean 
 is therefore **majority-weighted to the insurer's own realised investment return**, not to
 market yields. The retrieved evidence matches: one carrier's published thirteen-month history
 runs 3.55% down to 2.98% in steps of 2 to 7 basis points, never once reversing — **57 basis
-points over twelve months** [S5] `[derived]`. `Pension_KR_A` therefore treats the crediting
+points over twelve months** [S5] `[derived]`. `Pension_KR_S` therefore treats the crediting
 rate as a **slow-moving exogenous scalar**, not as a function of a yield curve, and the 조정률
 — a discretionary carrier margin whose permitted range lives in an unpublished 사업방법서 [S1]
 [S8] — is not modelled at all.
@@ -918,7 +918,7 @@ sizes at year 1 (86.6% against 87.1%) showing the fixed component of the charge 
 ### Death before annuitisation, and the absence of mortality risk
 
 The death payment is the fund and nothing more (footnote 15). Three consequences are worth
-stating as model properties, because each is a testable assertion about `Pension_KR_A`:
+stating as model properties, because each is a testable assertion about `Pension_KR_S`:
 
 1. **Death and surrender pay the same amount at every duration**, since the surrender charge is
    zero. The two decrements differ only in their rate, not in their payment.
@@ -1020,7 +1020,7 @@ years on the 제9회, with 65세 기대여명 남 23.7년 / 여 27.1년 [REG-R33
 press-release page is JavaScript-driven and the release itself could not be opened [R17]
 [REG-R34]; the KIDI big-data portal refused connections on its port [R24]. **Every
 `mort_table.csv` in `krlib` is therefore a `[std]` construction with a `provenance` column on
-every row, and `Pension_KR_A`'s is no exception.**
+every row, and `Pension_KR_S`'s is no exception.**
 
 What *is* public, and what the composite's table is anchored on, are the annuitant rates two
 carriers publish in their statutory product summaries. These are the only annuitant-mortality
@@ -1048,7 +1048,7 @@ birth 남 80.8 / 여 86.6 and 65세 기대여명 남 19.5 / 여 23.7 [REG-R38], 
 for men and 3.4 for women at 65**.
 
 Three modelling instructions follow, and they are stated here rather than left to the notes
-because they are product facts. **The annuitant table cannot be shared with `WholeLife_KR_A`**:
+because they are product facts. **The annuitant table cannot be shared with `WholeLife_KR_S`**:
 one is loaded for survival, the other for death, and using one for both is wrong in a known
 direction. **The table must reproduce the implied factor of 23.70 at 2.15% for a 65-year-old
 male with a ten-year guarantee**, which is the only calibration target the public record
@@ -1276,7 +1276,7 @@ discovery [REG-R25 제15조](#krlib-reg-r25) [S1] [S7]; premiums are returned wi
 
 ### Expiry and termination
 
-The contract can end in five ways, and `Pension_KR_A` must be able to reach each of them:
+The contract can end in five ways, and `Pension_KR_S` must be able to reach each of them:
 
 1. **Surrender before annuitisation** — the fund is paid, less any surrender charge (nil on the
    composite) and any policy loan, plus 미경과보험료 [REG-R19 제7-66조제5항](#krlib-reg-r19) [S1] [S8].
@@ -1456,7 +1456,7 @@ before transitional measures was 130% or more at the previous quarter-end approp
 IFRS 17 liability materially below the aggregate contractual surrender value, and distributing
 the difference would leave the insurer short if policyholders actually surrendered. On this
 product the gap is the whole earnings profile: the 계약자적립액 is a contractual, guaranteed,
-daily-accruing quantity and the IFRS 17 liability is not. `Pension_KR_A` does not compute it;
+daily-accruing quantity and the IFRS 17 liability is not. `Pension_KR_S` does not compute it;
 the reserve stood at **₩23.7tn at end-2022 and ₩32.2tn at end-2023** [REG-R11] [REG-R36].
 
 **Product design is prescribed, and three of the prescriptions shape this contract directly.**
@@ -1522,7 +1522,7 @@ five conditions including that any guarantee period fall **within the 국가데�
 
 **Depositor protection.** 예금자보호법 시행령 제18조제7항 sets the limit at **₩100,000,000**,
 in force from **2025-09-01**, and applies it to four separate buckets, of which the second is
-the combined total of **연금저축계좌 claims** [REG-R52] [REG-R32]. A `Pension_KR_A`
+the combined total of **연금저축계좌 claims** [REG-R52] [REG-R32]. A `Pension_KR_S`
 policyholder's protection is therefore separate from the ₩100,000,000 covering their other
 insurance claims against the same insurer — exactly what the 2026-vintage carrier documents
 state [S2] [S6] [S11] and what the 2024 and 2016 documents, still quoting ₩50,000,000, do not
@@ -1537,7 +1537,7 @@ display — 암 발생률 and 질병입원율 by age and sex — on another page
 [REG-R61], which is why morbidity elsewhere in `krlib` can be sourced where this product's
 mortality cannot. The 제10회 경험생명표, applied to new
 business from 2024-04, is public only as summary statistics [REG-R33] [R18]. **No qx
-table of any Korean industry basis was retrieved in either research pass.** `Pension_KR_A`'s
+table of any Korean industry basis was retrieved in either research pass.** `Pension_KR_S`'s
 `mort_table.csv` is therefore a **[std]** construction on the annuitant basis, carrying a
 `provenance` column on every row. It is fitted to the six carrier-published annuitant rates
 above [S1] [S7] and calibrated so that the implied factor for a 65-year-old male at 2.15% with

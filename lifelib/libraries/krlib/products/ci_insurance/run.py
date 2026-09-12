@@ -1,4 +1,4 @@
-"""Run the CI_KR_A reference model and print its cash flow statement.
+"""Run the CI_KR_S reference model and print its cash flow statement.
 
     python products/ci_insurance/run.py            # anchor cell (point_id = 1)
     python products/ci_insurance/run.py 4          # another model point
@@ -13,7 +13,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "CI_KR_A")
+model = mx.read_model(Path(__file__).parent / "CI_KR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
@@ -22,7 +22,7 @@ form = ("gibon hwangeup-hyeong (k = 1.00)" if k >= 1.0
         else "muhaeji hwangeup-hyeong (k = 0.00)" if k <= 0.0
         else "jeohaeji hwangeup-hyeong, k = {:.2f}".format(k))
 
-print("CI_KR_A - CI boheom (jungdae jilbyeong boheom, critical illness), annual grid")
+print("CI_KR_S - CI boheom (jungdae jilbyeong boheom, critical illness), annual grid")
 print("age basis: boheom nai (insurance age, six-month rounding)")
 print("model point {}: {} - {}{}, cover KRW {:,.0f}, {}-year premium term, {}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(), proj.age_at_entry(),

@@ -2,7 +2,7 @@
 
 Research compiled 2026-09-03 for the reference-products library (Korea section). Purpose:
 source library for the Korean single-premium immediate annuity, 즉시연금 (*jeuksi
-yeongeum*), and for `Immediate_KR_A`, the library's annuity-in-payment model. Unlike every
+yeongeum*), and for `Immediate_KR_S`, the library's annuity-in-payment model. Unlike every
 other product in krlib, this one has no accumulation phase to speak of: a lump sum is paid,
 the insurer deducts an acquisition and administration load once, and the residue — the
 연금계약 적립액 — is credited monthly at a declared rate and drawn down as an annuity from
@@ -179,7 +179,7 @@ Access date for every fetch in this file: **2026-09-03**.
 - Retrieved: **yes** (107 pp.; the annuity-form pages, the surrender articles and the
   summary pages extracted and read)
 - Note on scope: this is a **deferred** annuity, not an 즉시연금. It is cited only for its
-  payout-phase machinery, which is the same machinery `Immediate_KR_A` needs, and never for
+  payout-phase machinery, which is the same machinery `Immediate_KR_S` needs, and never for
   an issue-age or premium parameter.
 - What it is good for: the richest payout-phase menu retrieved — 종신연금형 기본형 with
   10/20/30년/100세/기대여명 guarantees, a 핵심기간집중형 that doubles the annuity for ten
@@ -655,9 +655,9 @@ Access date for every fetch in this file: **2026-09-03**.
   amount is the **연금연액** and the monthly amount the **연금월액** [S1] [S3] [S7] [R1].
 - **Two selling modes** are offered on almost every product: 1종/즉시형, which annuitises a
   month after inception, and 2종/거치형, which defers by 1–5 years (교보, 삼성, 동양) or up
-  to the annuitant's chosen 연금개시나이 (ABL) [S3] [S4] [S5] [S6]. `Immediate_KR_A`
+  to the annuitant's chosen 연금개시나이 (ABL) [S3] [S4] [S5] [S6]. `Immediate_KR_S`
   models the 즉시형 only; the 거치형 is the accumulation chassis and belongs to
-  `Pension_KR_A`.
+  `Pension_KR_S`.
 - **Sales channel.** Every retrieved 즉시연금 document is a **방카슈랑스** (bancassurance)
   leaflet or a bank-channel summary — 하나은행 [S2] [S4] [S5], SC제일은행 [S3], 우체국
   [R27]. The product is sold across a bank counter to a customer with a large deposit,
@@ -1379,7 +1379,7 @@ residual again being risk premium and management charge.
 
 **Conclusion for the model.** The 상속연금형 만기형 annuity is *not* `V × i`. It is
 `V × i − (maturity funding)`, and the funding term rises as `i` falls, which is why the
-applicant's annuity fell 55% while the floor never moved. `Immediate_KR_A` must implement
+applicant's annuity fell 55% while the floor never moved. `Immediate_KR_S` must implement
 the deduction as an explicit term with a switch, because the whole legal history of the
 product is about whether that term is part of the contract.
 
@@ -1486,7 +1486,7 @@ product is about whether that term is part of the contract.
 - `[derived]` gradient: q70/q50 = **3.24 for men and 2.59 for women**, i.e. a constant-force
   ageing gradient of about **5.97% p.a. for men and 4.86% p.a. for women** over ages 50–70.
 - `[derived]` comparison with the annuitant rates published in the sister file for
-  `Pension_KR_A` (ABL: 남 0.00150 / 여 0.00052 at 60; 우체국: 남 0.00164 / 여 0.00056 at 60):
+  `Pension_KR_S` (ABL: 남 0.00150 / 여 0.00052 at 60; 우체국: 남 0.00164 / 여 0.00056 at 60):
   the 하나생명 즉시연금 rate at 60 is **2.2× the ABL rate for men and 2.3× for women**. The
   two are not the same table. A plausible reading is that the 즉시연금 table is loaded on the
   *mortality* side because the contract also carries a death benefit of 10% of premiums,
@@ -1510,7 +1510,7 @@ product is about whether that term is part of the contract.
     연금지급형태는 …」 [S8 주15].
 - **The ratchet is inert on an 즉시형.** [S6] confines it expressly to the 거치형, and on an
   immediate annuity there is no interval between issue and annuitisation for a revision to
-  land in. `Immediate_KR_A` therefore fixes the annuitant basis at issue and needs no
+  land in. `Immediate_KR_S` therefore fixes the annuitant basis at issue and needs no
   ratchet logic; the sister deferred model does. `[derived from [S6 §10-라]]`
 - **The 경험생명표 is not public.** No qx-by-age table for the 제10회 was located in this
   session, and the house position stated in the brief holds: every `mort_table.csv` in krlib
@@ -1645,7 +1645,7 @@ product is about whether that term is part of the contract.
   지급합니다」 [S8 주14]. On 즉시연금 the monthly frequency is the default and often the only
   one offered [S1 주1] [S3].
 - **Annual vs monthly.** [S1 주1] gives both: 연단위 pays from the first policy anniversary,
-  월단위 from one month after the 보장개시일. `Immediate_KR_A` is an **annual-grid** model
+  월단위 from one month after the 보장개시일. `Immediate_KR_S` is an **annual-grid** model
   per the library's product table, so it projects the 연금연액 and treats the monthly split
   as a presentational sub-division; the technical notes must say so.
 
@@ -1662,7 +1662,7 @@ product is about whether that term is part of the contract.
 
 - So 보험나이 is age nearest birthday computed on a six-month rule, and it differs from 만나이
   for half of all issue dates. The model and the registry metadata must state which is used;
-  for `Immediate_KR_A` the pricing age is **보험나이** and any population statistic quoted
+  for `Immediate_KR_S` the pricing age is **보험나이** and any population statistic quoted
   against it is 만나이.
 - 「청약서류상 피보험자의 나이 또는 성별에 관한 기재사항이 신분증에 기재된 사실과 다른
   경우에는 신분증에 기재된 나이 또는 성별로 정정하고, 정정된 나이 또는 성별에 해당하는
@@ -1773,7 +1773,7 @@ is old, and it is the only such dataset that is public.
 - **The 거치형 (deferred) selling mode.** Several sources here are deferred contracts cited
   for payout-phase machinery only ([S7]–[S9], [S13], [S14]). Anything about premium payment,
   추가납입, 중도인출 before annuitisation or the accumulation of a fund over years belongs to
-  `_research/pension-savings.md` and `Pension_KR_A`, not here.
+  `_research/pension-savings.md` and `Pension_KR_S`, not here.
 - **변액즉시연금** (a separate-account immediate annuity). Not retrieved and not modelled;
   `VA_KR_S` covers separate-account business.
 - **연금저축 즉시연금.** The tax-qualified wrapper cannot be written as a single-premium

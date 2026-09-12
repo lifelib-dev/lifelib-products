@@ -38,7 +38,7 @@ romanized. Real output, with the cash-flow rows elided — they are reproduced i
 [`technical-notes.md`](technical-notes.md):
 
 ```text
-CI_KR_A - CI boheom (jungdae jilbyeong boheom, critical illness), annual grid
+CI_KR_S - CI boheom (jungdae jilbyeong boheom, critical illness), annual grid
 age basis: boheom nai (insurance age, six-month rounding)
 model point 1: CI-KR-0001 - M40, cover KRW 100,000,000, 20-year premium term, jeohaeji hwangeup-hyeong, k = 0.50
 seonjigeup biyul a = 0.80   residual r = 0.20   account floor c = 1.05   first-year reduction: breast
@@ -79,7 +79,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/ci_insurance/CI_KR_A")
+model = mx.read_model("products/ci_insurance/CI_KR_S")
 model.Projection[1].result_cf()      # the worked example's anchor cell
 model.Projection[1].result_val()     # the account, both surrender values, the benefits
 ```
@@ -413,7 +413,7 @@ Four CSVs sit beside `run.py`, in the model folder's **parent**; the model folde
 IOSpec, no embedded values — so a diff of the model shows logic changes only. This is the
 `annuallife.TradLife_A` layout; contrast `basiclife.BasicTerm_S`, which keeps its inputs
 *inside* the model. The consequence worth knowing: **the model is not portable on its own.**
-Copying `CI_KR_A` without its parent's CSVs produces a model that reads and then fails on
+Copying `CI_KR_S` without its parent's CSVs produces a model that reads and then fails on
 first evaluation.
 
 | File | Reference | Reader | Index | Contents |

@@ -15,7 +15,7 @@ National Health Insurance) reimbursement of the main contract, the 비급여
 3대비급여 classes, maintenance and claim-handling expense, and commission.
 
 **This product stands alone in ``krlib``.** It inherits nothing from
-``WholeLife_KR_A``, ``Term_KR_A`` or ``Cancer_KR_S``, and nothing states a delta
+``WholeLife_KR_S``, ``Term_KR_S`` or ``Cancer_KR_S``, and nothing states a delta
 against it. The reason is structural: it is the only contract in this repository
 whose benefit is a **reimbursement of an incurred cost** — the 실손해 (*silsonhae*,
 actual loss) branch of 보험업감독규정 제7-63조 — rather than a stated sum. There is no

@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: krlib.products.pension_savings.Pension_KR_A.Projection
+.. automodule:: krlib.products.pension_savings.Pension_KR_S.Projection
 
 Cells Descriptions
 ------------------

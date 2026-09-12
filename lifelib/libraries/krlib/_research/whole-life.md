@@ -12,8 +12,8 @@ and turned it into the life industry's biggest single seller of the early 2000s 
 has since absorbed almost every product innovation the Korean market has produced: 변액종신
 (2001), CI 선지급 종신 (2002), 유니버셜 종신 (2004), and from the mid-2010s the
 무·저해지환급형 forms that now dominate protection sales [R8] [R7]. In `krlib` it is the
-**savings/protection chassis**: `CI_KR_A` inherits it and adds accelerated critical-illness
-payment, and `Pension_KR_A` inherits the accumulation half.
+**savings/protection chassis**: `CI_KR_S` inherits it and adds accelerated critical-illness
+payment, and `Pension_KR_S` inherits the accumulation half.
 
 What makes the Korean product structurally different from its Japanese, French or German
 cousins is not the death benefit — that is ordinary whole-of-life cover — but the **surrender
@@ -1379,7 +1379,7 @@ universal chassis (§15) and 감액 (above).
 ### 15. 중도인출 and the 유니버셜 chassis
 
 KDB생명's universal 약관 is the only full statement of this machinery retrieved, and it is
-worth setting out because `Pension_KR_A` and `VA_KR_S` inherit it.
+worth setting out because `Pension_KR_S` and `VA_KR_S` inherit it.
 
 **Free premium payment and payment holidays** [S5, art. 24(1)]: for the first 24 monthly
 premiums the basic premium must be paid on time; thereafter 「「계약자적립금에서 해지공제액을
@@ -1692,7 +1692,7 @@ exhibit the cliff.
   known here only as they appear in one carrier's 약관 [S5]. In particular, **자동대출납입
   (the Korean automatic premium loan) is not evidenced by any retrieved document** and is
   marked **[unverified]** wherever it matters. Since Japan's APL is a load-bearing feature of
-  that library's whole life model, its Korean status must be settled before `WholeLife_KR_A`
+  that library's whole life model, its Korean status must be settled before `WholeLife_KR_S`
   claims either way.
 - **`https://pub.insure.or.kr/` (생명보험협회 공시실) — reached but not usable.** The
   navigation renders and the path 상품비교공시 → 보장성보험 → 종신보험 is visible, but every
@@ -1735,7 +1735,7 @@ exhibit the cliff.
   상품요약서 in the set define 계약체결비용 and 계약관리비용 and then give no number [S2]
   [S8]; the 약관 defines 부가보험료 and 해지공제액 by reference to the 산출방법서, which is
   not a public document [S5]. The 보험가격지수 (§9) and the 표준해약공제액 (§8) are the only
-  quantitative handles, and both are indirect. **Every 사업비 parameter in `WholeLife_KR_A` is
+  quantitative handles, and both are indirect. **Every 사업비 parameter in `WholeLife_KR_S` is
   therefore [std].**
 - **No Korean lapse curve by duration was obtained.** What exists is (i) two disclosed
   *pricing* envelopes — 1%~10% [S2] and 0%~13.4% / 1.0%~11.3% [S8] — with no shape, and (ii)
@@ -1761,7 +1761,7 @@ exhibit the cliff.
 - **감액완납 and 연장정기보험 are not evidenced.** Neither appears in the only full 약관
   retrieved [S5] nor in any 상품요약서 in the set. Search results describe both as generally
   available Korean maintenance options. Until a 약관 article is retrieved, treating either as
-  a feature of a Korean 종신보험 is **[unverified]**, and `WholeLife_KR_A` should not model
+  a feature of a Korean 종신보험 is **[unverified]**, and `WholeLife_KR_S` should not model
   them.
 - **The DB생명 cumulative-premium column does not reconcile at durations 10, 15 and 20** to
   the quoted monthly premium (§3), and the brochure's 「고액계약할인 및 장기납입계약할인」

@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: krlib.products.term_life.Term_KR_A.Data
+.. automodule:: krlib.products.term_life.Term_KR_S.Data
 
 Cells Descriptions
 ------------------

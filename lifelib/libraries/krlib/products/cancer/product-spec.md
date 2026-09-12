@@ -388,7 +388,7 @@ Footnotes to the [std] rows:
     both ends are recorded: one non-life product credits its 계약자적립액 at 「연복리
     **1.5%**」 [S8], another the 공시이율 with a 최저보증이율 of 「연단위 복리 **0.5%**」 [S1].
     On a 금리연동형 design the 공시이율 is reset off a published 공시기준이율 under
-    제7-65조제3항 [REG-R18]; that machinery belongs to `WholeLife_KR_A` and `Cancer_KR_S` does
+    제7-65조제3항 [REG-R18]; that machinery belongs to `WholeLife_KR_S` and `Cancer_KR_S` does
     not implement it.
 13. **Expenses.** No retrieved document quantifies any expense item for this product. [S1]
     names 계약체결비용 and 계약관리비용 without amounts; [S8] states the surrender value is
@@ -705,7 +705,7 @@ the shipped anchor cell does.
     / 13.7% / 13.9% / 0.0% on its richest [S8]. The value **peaks at years 5–7 and returns to
     nil**, a pure-protection signature rather than a savings one, and the **환급률 falls as the
     plan gets richer**, which is what a fixed 해약공제액 does when spread over a larger
-    premium. So the 무해지 form removes a small number here where on `WholeLife_KR_A` it
+    premium. So the 무해지 form removes a small number here where on `WholeLife_KR_S` it
     removes a large one, and the 환급률 cap of 제7-66조제4항제2호 — which requires the
     post-payment 환급률 to exceed 100% — binds **weakly** on a product whose 표준형 환급률
     never approaches 100% at any duration [S8] [REG-R19]. How the exact-50% wording of [S3] and
@@ -978,7 +978,7 @@ carries **four once-only flags and five 유사암 member flags**, not one.
 Payment **does not terminate the contract and does not exhaust it**: cover for the other
 tiers, for the event benefits and for the premium waiver runs on to the 100세 계약해당일 [S1]
 [S3] [S4]. A cancer contract on this chassis cannot pay itself out of existence, which is the
-sharpest structural contrast with the accelerated design of `CI_KR_A`, where the
+sharpest structural contrast with the accelerated design of `CI_KR_S`, where the
 critical-illness payment reduces the death benefit that carries it.
 
 ### The inpatient benefit
