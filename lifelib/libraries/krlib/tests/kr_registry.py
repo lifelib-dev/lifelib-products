@@ -92,7 +92,7 @@ MODELS = {
     # 보장성 — protection
     "WholeLife_KR_S": ("products/whole_life/WholeLife_KR_S", MONTHLY | BOHEOM),
     "Term_KR_S": ("products/term_life/Term_KR_S", MONTHLY | BOHEOM),
-    "CI_KR_S": ("products/ci_insurance/CI_KR_S", ANNUAL | BOHEOM),
+    "CI_KR_S": ("products/ci_insurance/CI_KR_S", MONTHLY | BOHEOM),
     # 제3보험 — third insurance (보험업법 제4조제1항제3호)
     "Medical_KR_S": ("products/indemnity_medical/Medical_KR_S", MONTHLY | MAN),
     "Cancer_KR_S": ("products/cancer/Cancer_KR_S", MONTHLY | MAN),

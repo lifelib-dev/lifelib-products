@@ -19,8 +19,9 @@ payment) of ``accel_rate`` times the 기본보험금 at the CI date, and the res
 benefit ``1 - accel_rate`` times the same base whenever death follows. Between them the
 contract is still in force with no premium, a surrender value that has jumped to its
 unsuppressed level and a reserve that has to carry the residual, so the projection runs
-**two cohorts** — pre-CI and post-CI — and the post-CI one is indexed by the anniversary
-it accelerated at, because the residual it carries was fixed at that date.
+**two cohorts** — pre-CI and post-CI — and the post-CI one is indexed by the **month** it
+accelerated in, because the residual it carries was fixed at that date and 「지급사유 발생
+당시」 is a date rather than a policy year.
 
 It states its deltas against the whole life chassis (종신보험) and does not restate it.
 The 계약자적립액 recursion, the 해약환급금 built from it net of a 해약공제액 capped by the
@@ -51,26 +52,41 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Annual steps on policy years running anniversary to anniversary,
-the notes' grid, on 보험나이 (*boheom nai*, insurance age). The time index ``t`` is
-**0-based**: ``t = 0`` is the first policy year, period ``t`` runs from time ``t`` to time
-``t + 1``, the attained age is ``age_at_entry() + t``, the contractual policy year label is
-``t + 1``, and ``proj_len()`` is the **number** of projected years, so the frame is
+**Projection basis.** **Monthly** steps, on 보험나이 (*boheom nai*, insurance age). The
+time index ``t`` is
+**0-based and counts months**: ``t = 0`` is the first policy month, month ``t`` runs from
+time ``t`` to time ``t + 1``, the attained age is ``age_at_entry() + t // 12`` — 보험나이
+increments on the 계약해당일, so the floor division is exact — the contractual policy year
+label is ``t // 12 + 1``, and ``proj_len()`` is the **number of months**, twelve times
+``proj_years()``, so the frame is
 ``range(proj_len())`` and ``result_cf()`` carries ``proj_len()`` rows indexed
 ``0 … proj_len() - 1``. The contract's *state* — the 계약자적립액, the 해약공제액, the
-해약환급금, the 기본보험금, the 보험계약대출 limit — is carried on a second, **anniversary**
-index running ``0 … proj_len()`` with 0 at issue, which does not move with the frame; period
-``t`` opens at anniversary ``t`` and closes at anniversary ``t + 1``.
+해약환급금, the 기본보험금, the 보험계약대출 limit — is carried on a second, **month-end**
+index running ``0 … proj_len()`` with 0 at issue, which does not move with the frame; month
+``t`` opens at month-end ``t`` and closes at month-end ``t + 1``, and a 계약해당일 is the
+month-end ``12 y``.
+
+**Annual assumptions stay annual.** Every rate the sources tabulate — the 적용위험률, the
+CI incidence, the 해지율, the 납입면제 incidence — holds the annual figure of the policy
+year the month falls in, and its ``_mth`` companion applies ``1 - (1 - q)^(1/12)`` so that
+twelve months compound back to exactly that figure. Contractual terms quoted in policy
+years — the 납입기간, the 해약공제기간, the CI cover period to the 100세 계약해당일, the
+first-year 감액 — are unchanged and multiplied out into months where the grid needs them.
+The two exceptions are named: the table's terminal age, where ``q = 1`` admits no twelfth
+root and the certain death is spread uniformly over the year; and the **90-day
+보장개시일**, which is a date and now falls where the contract puts it rather than being
+smeared across the whole first year.
 
 Premium, maintenance expense
-and renewal commission fall at the start of the year; acquisition expense and initial
+and renewal commission fall at the start of the month; acquisition expense and initial
 commission at issue; the CI acceleration, death claims and claim expense at the end of
-the year of the event; surrenders at the end of the year, after the CI transition and
-after deaths. A life accelerating in policy year ``t`` joins the post-CI cohort at the
-start of year ``t + 1``, so the two payments are at least one step apart — which is the
-grid's version of the 약관's own finding that a 중대한 뇌졸중 is not assessable for
-twelve months. That cohort is labelled by the anniversary its acceleration was paid at,
-``t + 1``, which leaves label 0 free for the first-year 감액 cohort.
+the month of the event; surrenders at the end of the month, after the CI transition and
+after deaths. A life accelerating in month ``t`` joins the post-CI cohort at the
+start of month ``t + 1``, so the two payments are at least one step apart — a **month**
+where the annual grid made it a year, which is the single largest number the conversion
+moves on this product. That cohort is labelled by the month-end its acceleration was paid
+at, ``t + 1``; the first policy year's reduced 감액 cohorts take the negative labels
+``-(t + 1)``, one for each of the twelve months.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 acceleration and its exact complement, the once-only rule across the whole trigger set,
