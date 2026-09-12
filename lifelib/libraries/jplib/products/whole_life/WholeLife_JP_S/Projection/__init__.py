@@ -98,93 +98,93 @@ in-force reads, ``cv_pp`` rather than ``av_pp`` because this is a cash surrender
 and not an account value. The technical notes use compact actuarial symbols instead. The
 mapping is:
 
-=========================  ==================================  ============================
-Notes symbol               Cells                               Meaning
-=========================  ==================================  ============================
-(none)                     model_point()                       The selected model point row
-x                          age_at_entry()                      契約年齢 at issue, 満年齢
-x + floor(t/12)            age(t)                              Attained age in month t
-floor(t/12)                duration(t)                         Completed policy years
-y(t) = 1 + floor(t/12)     policy_year(t)                      Contractual policy year
-omega                      omega_age()                         Terminal age of the table
-T_y                        proj_years()                        Policy years, the span of d
-T                          proj_len()                          Number of months projected
-m                          prem_term(), prem_period()          保険料払込期間; 0 is 終身払
-12m                        prem_period_months()                     払込満了, in policy months
-(none)                     prem_end()                          Last policy year a premium is due
+=========================  ===================================  ============================
+Notes symbol               Cells                                Meaning
+=========================  ===================================  ============================
+(none)                     model_point()                        The selected model point row
+x                          age_at_entry()                       契約年齢 at issue, 満年齢
+x + floor(t/12)            age(t)                               Attained age in month t
+floor(t/12)                duration(t)                          Completed policy years
+y(t) = 1 + floor(t/12)     policy_year(t)                       Contractual policy year
+omega                      omega_age()                          Terminal age of the table
+T_y                        proj_years()                         Policy years, the span of d
+T                          proj_len()                           Number of months projected
+m                          prem_term(), prem_period()           保険料払込期間; 0 is 終身払
+12m                        prem_period_months()                 払込満了, in policy months
+(none)                     prem_end()                           Last policy year a premium is due
 SA                         sum_assured(), sum_assured_at(t)     保険金額 at issue, in month t
-P                          premium_pp()                        Annual premium
-k                          low_cv_rate()                       解約払戻金支払割合
-q(t)                       mort_rate(t)                        Mortality incl. 高度障害, annual
-q_m(t)                     mort_rate_mth(t)                    The same, per month
-(table q)                  mort_rate_at_age(y)                 Table rate at attained age y
-(none)                     mort_rate_base(t)                   Table rate in month t, annual
-(none)                     mort_be_factor()                    Multiplier on the table rate
-w(t)                       lapse_rate(t)                       Surrender rate, annual
-w_m(t)                     lapse_rate_mth(t)                   The same, per month
-(table w)                  lapse_rate_base(t)                  Before the dynamic factor
-s                          lapse_spike()                       Cliff surge, the parameter
-s(t)                       lapse_spike_rate(t)                 The surge, in its one month
-beta                       lapse_beta                          Dynamic-surrender slope
-w_dyn(t) / w(t)            lapse_dyn_factor(t)                 Dynamic-surrender multiplier
-cumprem(d)                 cum_prem_pp(d)                      Premiums paid by anniversary d
-cumprem at month u         cum_prem_pp_m(u)                    The same, by elapsed month
-u(t)                       default_rate(t)                     Premium-default rate
-(none)                     apl_active()                        Whether any cohort can exist
-l(t)                       pols_if(t)                          In force at the start of month t
-(within-month)             pols_if_at(t, timing)               BEF_DECR/BEF_LAPSE/BEF_SPIKE/...
-(paying cohort)            pols_if_pay(t)                      In force and paying premium
-lp(t)                      pols_pay_bef_decr(t)                Payers after the default exit
-(none)                     pols_default(t)                     Movers into the APL state
-D(t)                       pols_death(t)                       Expected deaths in month t
-S(t)                       pols_lapse(t)                       Expected surrenders in month t
-(ordinary part)            pols_lapse_base(t)                  Surrenders before the surge
-(cliff part)               pols_lapse_spike(t)                 The surge itself
-(cumulative)               pols_exit_cum(t)                    Every exit to month t
-(APL failure)              pols_apl_exit(t)                    Exits on APL exhaustion
-(loan excess)              pols_loan_exit(t)                   Exits on loan excess
-i_cv                       i_cv                                Cash-value basis rate
-i_std                      i_std                               Reference valuation rate
-i_L                        i_loan                              APL / 契約者貸付 rate
-alpha                      acq_dedn_rate                       Acquisition-deduction rate
-(none)                     disc_factor(), disc_factor_std()    1 / (1 + i)
-A(y)                       epv_death(y)                        Whole-life EPV of 1 at age y
-a-double-dot(y, n)         annuity_due(y, n)                   n-year annuity-due at age y
-A*(y), a*(y, n)            epv_death_std(y), annuity_due_std   The same on i_std
-pi                         prem_net_level_pp()                 Net level premium on i_cv
-pi*                        prem_net_level_std_pp()             Net level premium on i_std
-W(d)                       prosp_val_pp(d)                     Prospective policy value
-SC(d)                      surr_charge_pp(d)                   解約控除
-V(d)                       pol_val_pp(d)                       Ordinary surrender value
-V at month u               pol_val_at_m(u)                     The same, interpolated [std]
-CV(d)                      cv_pp(d)                            Payable 解約返戻金
-CV at month u              cv_at_m(u)                          The same, at elapsed month u
-k V(d)                     cv_pp_susp(d)                       Suppressed value at every d
-k V at month u             cv_susp_at_m(u)                     The same, at elapsed month u
-(none)                     cv_mult(d)                          1 or k, by anniversary
-(none)                     cv_mult_at_m(u)                     1 or k, by elapsed month
-(reserve)                  reserve_pp(d)                       平準純保険料式 reserve
-L(d)                       loan_pp(d)                          Main-cohort balance at d
-L(d) by cohort             loan_apl_pp(d, s)                   APL balance by entry year s
-A(d)                       apl_advance_due(d)                  Premium advanced at d
-(trigger)                  apl_fires(d, s)                     APL continuation test
-CV*(d)                     apl_test_val(d)                     Value the APL test runs on
-CV* at month u             apl_test_val_m(u)                   The same, at elapsed month u
-(exhaustion)               apl_fail_year(s)                    Anniversary the cohort ends at
-(exhaustion)               apl_fail_month(s)                   The same, as a month
-(advances)                 apl_advances(s)                     Number of advances made
-(loan excess)              loan_fail_year(), loan_fail_month() Where the loan outgrows CV
-(none)                     pol_loan_year()                     Policy year the 契約者貸付 is drawn
-(none)                     pua_sum_assured()                   払済保険金額 after conversion
-P lp(t)                    premiums(t)                         Premium income, once a year
-(SA - L)D, (CV - L)S       claims(t, kind)                     Benefit outgo by kind
-ec D(t)                    claim_expenses(t)                   Claim expense
-E0, e_m(t)                 expenses(t)                         Acquisition and maintenance
-(none)                     inflation_factor(t)                 Expense inflation factor
-c0, c_r                    commissions(t)                      Commission outgo
-(dividend)                 dividends(t)                        5年ごと利差配当 outgo
-CF(t)                      net_cf(t)                           Net cash flow, income positive
-=========================  ==================================  ============================
+P                          premium_pp()                         Annual premium
+k                          low_cv_rate()                        解約払戻金支払割合
+q(t)                       mort_rate(t)                         Mortality incl. 高度障害, annual
+q_m(t)                     mort_rate_mth(t)                     The same, per month
+(table q)                  mort_rate_at_age(y)                  Table rate at attained age y
+(none)                     mort_rate_base(t)                    Table rate in month t, annual
+(none)                     mort_be_factor()                     Multiplier on the table rate
+w(t)                       lapse_rate(t)                        Surrender rate, annual
+w_m(t)                     lapse_rate_mth(t)                    The same, per month
+(table w)                  lapse_rate_base(t)                   Before the dynamic factor
+s                          lapse_spike()                        Cliff surge, the parameter
+s(t)                       lapse_spike_rate(t)                  The surge, in its one month
+beta                       lapse_beta                           Dynamic-surrender slope
+w_dyn(t) / w(t)            lapse_dyn_factor(t)                  Dynamic-surrender multiplier
+cumprem(d)                 cum_prem_pp(d)                       Premiums paid by anniversary d
+cumprem at month u         cum_prem_pp_m(u)                     The same, by elapsed month
+u(t)                       default_rate(t)                      Premium-default rate
+(none)                     apl_active()                         Whether any cohort can exist
+l(t)                       pols_if(t)                           In force at the start of month t
+(within-month)             pols_if_at(t, timing)                BEF_DECR/BEF_LAPSE/BEF_SPIKE/...
+(paying cohort)            pols_if_pay(t)                       In force and paying premium
+lp(t)                      pols_pay_bef_decr(t)                 Payers after the default exit
+(none)                     pols_default(t)                      Movers into the APL state
+D(t)                       pols_death(t)                        Expected deaths in month t
+S(t)                       pols_lapse(t)                        Expected surrenders in month t
+(ordinary part)            pols_lapse_base(t)                   Surrenders before the surge
+(cliff part)               pols_lapse_spike(t)                  The surge itself
+(cumulative)               pols_exit_cum(t)                     Every exit to month t
+(APL failure)              pols_apl_exit(t)                     Exits on APL exhaustion
+(loan excess)              pols_loan_exit(t)                    Exits on loan excess
+i_cv                       i_cv                                 Cash-value basis rate
+i_std                      i_std                                Reference valuation rate
+i_L                        i_loan                               APL / 契約者貸付 rate
+alpha                      acq_dedn_rate                        Acquisition-deduction rate
+(none)                     disc_factor(), disc_factor_std()     1 / (1 + i)
+A(y)                       epv_death(y)                         Whole-life EPV of 1 at age y
+a-double-dot(y, n)         annuity_due(y, n)                    n-year annuity-due at age y
+A*(y), a*(y, n)            epv_death_std(y), annuity_due_std    The same on i_std
+pi                         prem_net_level_pp()                  Net level premium on i_cv
+pi*                        prem_net_level_std_pp()              Net level premium on i_std
+W(d)                       prosp_val_pp(d)                      Prospective policy value
+SC(d)                      surr_charge_pp(d)                    解約控除
+V(d)                       pol_val_pp(d)                        Ordinary surrender value
+V at month u               pol_val_at_m(u)                      The same, interpolated [std]
+CV(d)                      cv_pp(d)                             Payable 解約返戻金
+CV at month u              cv_at_m(u)                           The same, at elapsed month u
+k V(d)                     cv_pp_susp(d)                        Suppressed value at every d
+k V at month u             cv_susp_at_m(u)                      The same, at elapsed month u
+(none)                     cv_mult(d)                           1 or k, by anniversary
+(none)                     cv_mult_at_m(u)                      1 or k, by elapsed month
+(reserve)                  reserve_pp(d)                        平準純保険料式 reserve
+L(d)                       loan_pp(d)                           Main-cohort balance at d
+L(d) by cohort             loan_apl_pp(d, s)                    APL balance by entry year s
+A(d)                       apl_advance_due(d)                   Premium advanced at d
+(trigger)                  apl_fires(d, s)                      APL continuation test
+CV*(d)                     apl_test_val(d)                      Value the APL test runs on
+CV* at month u             apl_test_val_m(u)                    The same, at elapsed month u
+(exhaustion)               apl_fail_year(s)                     Anniversary the cohort ends at
+(exhaustion)               apl_fail_month(s)                    The same, as a month
+(advances)                 apl_advances(s)                      Number of advances made
+(loan excess)              loan_fail_year(), loan_fail_month()  Where the loan outgrows CV
+(none)                     pol_loan_year()                      Policy year the 契約者貸付 is drawn
+(none)                     pua_sum_assured()                    払済保険金額 after conversion
+P lp(t)                    premiums(t)                          Premium income, once a year
+(SA - L)D, (CV - L)S       claims(t, kind)                      Benefit outgo by kind
+ec D(t)                    claim_expenses(t)                    Claim expense
+E0, e_m(t)                 expenses(t)                          Acquisition and maintenance
+(none)                     inflation_factor(t)                  Expense inflation factor
+c0, c_r                    commissions(t)                       Commission outgo
+(dividend)                 dividends(t)                         5年ごと利差配当 outgo
+CF(t)                      net_cf(t)                            Net cash flow, income positive
+=========================  ===================================  ============================
 
 Six names needed care.
 
