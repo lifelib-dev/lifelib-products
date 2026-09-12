@@ -525,7 +525,8 @@ from the ZfA in `t + 1` [R11] [REG-R42]. The reference implementation carries bo
 for the cash. The one-year cash lag is no longer a bare **[std]**: §§ 88 to 90 EStG put the credit in the year
 after the contribution year at the earliest, and **AltvPIBV § 9 Abs. 3 fixes the date at 15 May of
 that year** for every statutory disclosure calculation [R5] [R11] — which closes gap 6. What is
-standardized is only the compression of a mid-May credit onto a start-of-year annual grid.
+standardized is only the compression of a mid-May credit onto the first month of the projection
+year.
 
 One consequence is load-bearing and is a numbered pitfall: **the Zulage for the final contribution
 year arrives after contributions have stopped**, landing in the conversion year itself, where it

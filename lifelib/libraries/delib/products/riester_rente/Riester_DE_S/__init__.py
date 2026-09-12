@@ -9,7 +9,7 @@
 ``products/riester_rente/technical-notes.md`` in the lifelib-products delib library. It
 projects gross best-estimate liability cash flows, undiscounted, for a single-policy
 model point of a **certified Altersvorsorgevertrag under the AltZertG** — Schicht 2 of
-the German pension system — on an **annual** grid, through both phases of the contract:
+the German pension system — on a **monthly** grid, through both phases of the contract:
 the accumulation of a *Deckungskapital* with *Überschussbeteiligung*, and the lifelong
 *Leibrente* the capital is converted into at *Rentenbeginn*.
 
@@ -24,22 +24,23 @@ entitlement is driven by two **different** lags — the *Mindesteigenbeitrag* lo
 *calendar* year for income, the cash arrives one *projection* year late — and collapsing
 them into one is the first listed modeling pitfall.
 
-**There is a 100 % Beitragsgarantie, and it is tested exactly once.** ``guar_pp(t)``
+**There is a 100 % Beitragsgarantie, and it is tested exactly once.** ``guar_pp(k)``
 accumulates every *Altersvorsorgebeitrag* credited — the saver's own contribution, the
 Zulagen, and any unsubsidised contribution above the § 10a ceiling — less the biometric
 carve-out capped at 20 % of total contributions. It is compared with the account **only**
 at *Rentenbeginn*, where ``garantieluecke_conv_pp()`` is the shortfall the insurer funds.
-``garantieluecke_pp(t)`` is published for every ``t`` as a **diagnostic**: it is normally
+``garantieluecke_pp(k)`` is published for every ``k`` as a **diagnostic**: it is normally
 positive in the early durations of any charged contract, and flooring a death, surrender
 or transfer benefit at it is a modeling error, not prudence.
 
-**The payout phase is part of the liability.** Conversion at ``t_conv()`` strikes the
+**The payout phase is part of the liability.** Conversion at ``k_conv()`` strikes the
 capital, the *Schlussüberschussanteil*, the *Bewertungsreserven* share and the applied
 *Rentenfaktor*, elects the *Teilkapitalauszahlung* of up to 30 %, and applies the
 *Kleinbetragsrente* test — which is **computed rather than assumed**, so the commutation
 rate on a book is an output. The annuity then runs on a **generational** second-order
-annuitant basis to ``omega_age``, with the *Rentengarantiezeit* changing who is paid and
-never how much.
+annuitant basis to ``omega_age``, one **monthly** instalment at a time, with the
+*Rentengarantiezeit* — ``12m`` guaranteed instalments — changing who is paid and never how
+much.
 
 **Spaces.** The model contains two:
 
@@ -63,18 +64,36 @@ run time rather than stored inside the model. The model folder itself holds no d
 ``_data/``, no IOSpec, no embedded values — so a diff of the model shows logic changes
 only, and the model and its inputs must travel together.
 
-**Projection basis.** Annual steps, 0-based, which is the contract's own grid in every
-respect that matters: the Zulage is an annual entitlement determined on a calendar year,
-the *Überschuss* is declared annually, and the *Beitragsgarantie* is tested once. The
-period index ``t`` runs ``0 ... proj_len() - 1``, with ``proj_len() = omega_age - age(0)
-+ 1`` the number of projected periods and ``t = 0`` opening at the 1 January 2027
-valuation date; the contractual contract year is ``duration(t) + 1 = duration_init() + t
-+ 1``, which is ``t + 1`` only on a point projected from its own inception
-(``duration_init() == 0``). The one genuinely sub-annual
-element, the monthly *Leibrente*, is compressed to one annual payment at the start of the
-payout year; the *level* of the annuity is still right, because the conversion factor
-carries the Woolhouse ``-11/24`` correction. ``products/sofortrente/`` runs monthly for
-exactly that reason.
+**Projection basis.** Monthly steps over a contract that is almost entirely annual, so the
+model runs on **two clocks** and the argument of a cells says which. ``t`` counts projection
+**months** from the 1 January 2027 valuation date and is **0-based**, running
+``0 ... proj_len() - 1`` with ``proj_len() = 12 x proj_len_y()`` and
+``proj_len_y() = omega_age - age(0) + 1``; ``k = proj_year(t) = t // 12`` is the projection
+**year**, and the contractual contract year is ``duration_y(k) + 1 = duration_init() + k
++ 1``, which is ``k + 1`` only on a point projected from its own inception
+(``duration_init() == 0``).
+
+The annual clock is the contract's own in every respect that matters: the Zulage is an
+annual entitlement determined on a calendar year and paid once by the ZfA, the *Überschuss*
+is declared annually, the two charges and the interest credit fall once a year, and the
+*Beitragsgarantie* is tested once. The *Eigenbeitrag* keeps it too, because the
+*Ratenzuschlag* prices a fractionated payment mode by loading the **amount** rather than by
+moving the contribution year. The monthly clock carries the in force, the three decrements,
+the claims, the expenses, the commission and the *Rente* instalments.
+
+The decrements carry the library's two speeds — ``mort_rate``, ``lapse_rate`` and
+``transfer_rate`` are the **annual** rates and ``*_mth`` their geometric twelfths — so
+twelve months compound back to each annual rate exactly and the whole accumulation is
+**bit-identical** to the annual-step model this replaced, on all thirteen model points:
+every contribution, both balances, the guarantee accumulator, the capital at *Rentenbeginn*,
+the *Garantielücke* and the *Kleinbetragsrente* verdict are unchanged. What the finer grid
+buys is the *Leibrente*, which the AltZertG requires to be lifelong and monthly and which
+the annual model compressed into one payment at the start of each payout year on that
+year's opening count — worth 361,74 € of the anchor's annuity outgo and 573,50 € of model
+point 12's, which has no *Rentengarantiezeit* to hold the count still. It also dates the
+three accumulation exits, which now compete month by month instead of running in sequence
+at one year end: 5,62 € moves off the anchor's death outgo and 2,64 € off its surrender
+outgo onto 8,30 € of transfers.
 
 **What is sourced and what is not.** The statutory mechanics are cited: who is
 *zulageberechtigt*, the *Grundzulage* / *Kinderzulage* / *Berufseinsteiger-Bonus*
@@ -107,7 +126,9 @@ the cent and ``pols_if`` to six decimals, and one test per listed modeling pitfa
 model publishes six ``check_*`` identities — ``check_net_cf``, ``check_av_roll_fwd``,
 ``check_guar_roll_fwd``, ``check_pols_roll_fwd``, ``check_conversion`` and
 ``check_zulage_lag`` — and the library's conventions suite calls all six on every model
-point.
+point. Their residuals follow their cells' clock: the cash flow statement and the policy
+ledger take a **month**, and the account, the guarantee accumulator, the conversion and the
+ZfA lag take a projection **year**, because the quantities they check move once a year.
 
 Example:
 
