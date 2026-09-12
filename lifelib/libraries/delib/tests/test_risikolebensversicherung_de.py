@@ -992,7 +992,7 @@ def test_docstrings_describe_the_current_structure(risikolebensversicherung):
 
 
 def test_the_shared_protection_vocabulary_is_present(risikolebensversicherung):
-    """The names this model shares with frlib's TD_FR_A, the same product in France --
+    """The names this model shares with frlib's TD_FR_S, the same product in France --
     and the German delta beside them: two premium streams, and the rate between them.
     """
     shared = {

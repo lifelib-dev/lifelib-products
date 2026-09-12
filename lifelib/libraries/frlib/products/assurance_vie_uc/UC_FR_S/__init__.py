@@ -41,7 +41,7 @@ credited rate net of its own management charge, because that is all the UC leg n
 for — the euro balance sizes the `capital sous risque` and is the first source the
 plancher premium is levied from. `Taux minimum garanti`, `participation aux bénéfices`,
 the `provision pour participation aux bénéfices` and the `effet cliquet` belong to
-``products/assurance_vie_euro/`` and model ``Euro_FR_A``, and are neither restated nor
+``products/assurance_vie_euro/`` and model ``Euro_FR_S``, and are neither restated nor
 re-implemented here. Reading ``net_cf`` as the contract's total margin is therefore a
 modeling error: it is the UC leg plus the rider, and the euro leg's margin must be added
 from outside.

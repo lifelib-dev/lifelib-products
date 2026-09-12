@@ -21,15 +21,17 @@ is English `lower_snake_case`; French terms of art are kept in French.
   and expenses — for a single-policy model point of French *assurance emprunteur* on a
   **monthly** grid. Reserves are not computed (see Valuation and reserve pointers).
 - **What this model inherits, and where it deviates.** The death leg is the
-  `temporaire_deces` chassis (`TD_FR_A`, `products/temporaire_deces/technical-notes.md`):
+  `temporaire_deces` chassis (`TD_FR_S`, `products/temporaire_deces/technical-notes.md`):
   the same non-annuity mortality basis — TH 00-02 / TF 00-02 with the annexed *décalage
   d'âge* [REG-R22] [REG-R23], never shipped, replaced by an INSEE-derived **[std]** proxy
   [REG-R24] — the same annual-to-monthly conversion, the same "no surrender value, so lapse
   generates no cash flow" rule, and the same income-positive `net_cf` sign convention. Four
   deviations define ADE: (i) the sum insured is not a level *capital garanti* but the
   **capital restant dû** of an amortising loan, recomputed every month from the loan's own
-  parameters; (ii) the grid is **monthly**, because the benefit dominating the incapacity
-  side is a monthly *échéance*; (iii) the state space is **healthy / ITT / IPT / dead**, the
+  parameters; (ii) the monthly grid the chassis also runs on is here forced by the product
+  rather than chosen for resolution, because the benefit dominating the incapacity side is a
+  monthly *échéance* and the *franchise* is counted in days; (iii) the state space is
+  **healthy / ITT / IPT / dead**, the
   `income_protection` three-state chassis (`IP_UK_S`) with a fourth state and a
   duration-triggered forced transition; (iv) every guarantee carries **its own cover-end
   age**, so the decrements switch off at different times and the premium does not.

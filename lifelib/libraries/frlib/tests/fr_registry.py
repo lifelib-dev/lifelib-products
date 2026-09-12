@@ -12,9 +12,8 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions_fr.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — some products run on an annual grid and some on a monthly one — and records
-that none of them discount.  That last entry is a property of the library, not an
+fails.  The metadata records the projection basis — every model in this library now runs
+on a monthly grid — and records that none of them discount.  That last entry is a property of the library, not an
 omission: every ``technical-notes.md`` specifies *gross liability cash flows* and leaves
 discounting and reserves to a separate layer that consumes them.
 
@@ -37,8 +36,8 @@ rather than inferred.
 Two of them are worth naming explicitly.  ``ADE_FR_S`` is *assurance des emprunteurs*,
 mortgage borrower's protection: a death, PTIA, ITT and IPT cover written against an
 amortising loan, and the largest individual protection market in France.  It is not term
-assurance in ``TD_FR_A``'s sense, where the sum assured is a level or freely chosen
-capital rather than the loan balance.  And ``EC_FR_A`` is *eurocroissance*, the hybrid
+assurance in ``TD_FR_S``'s sense, where the sum assured is a level or freely chosen
+capital rather than the loan balance.  And ``EC_FR_S`` is *eurocroissance*, the hybrid
 support whose capital guarantee bites only at a stated term — not a second euro fund.
 """
 import pathlib
@@ -47,6 +46,13 @@ LIB = pathlib.Path(__file__).resolve().parents[1]
 
 ANNUAL = {"grid": "annual", "age_basis": "ALB", "discounted": False}
 MONTHLY = {"grid": "monthly", "age_basis": "ALB", "discounted": False}
+
+# ``ANNUAL`` has no members below, and that is **not** the same as saying the library has no
+# use for it.  The metadata is a statement about a model rather than about the library: a
+# model added or converted to an annual step registers ``ANNUAL`` here, and
+# ``test_the_name_carries_the_right_grid_suffix`` then requires its name to end ``_A``.  The
+# row and the name move together, which is the point of asserting the suffix from the
+# metadata rather than from the folder.
 
 # name -> (path relative to the library root, metadata)
 #
@@ -61,14 +67,14 @@ MONTHLY = {"grid": "monthly", "age_basis": "ALB", "discounted": False}
 # that the name, the folder and the model's own _name all agree.
 MODELS = {
     # Épargne (savings)
-    "Euro_FR_A": ("products/assurance_vie_euro/Euro_FR_A", ANNUAL),
+    "Euro_FR_S": ("products/assurance_vie_euro/Euro_FR_S", MONTHLY),
     "UC_FR_S": ("products/assurance_vie_uc/UC_FR_S", MONTHLY),
-    "EC_FR_A": ("products/eurocroissance/EC_FR_A", ANNUAL),
+    "EC_FR_S": ("products/eurocroissance/EC_FR_S", MONTHLY),
     # Retraite (retirement)
-    "PER_FR_A": ("products/per_assurance/PER_FR_A", ANNUAL),
+    "PER_FR_S": ("products/per_assurance/PER_FR_S", MONTHLY),
     "Rente_FR_S": ("products/rente_viagere/Rente_FR_S", MONTHLY),
     # Prévoyance (protection)
-    "TD_FR_A": ("products/temporaire_deces/TD_FR_A", ANNUAL),
+    "TD_FR_S": ("products/temporaire_deces/TD_FR_S", MONTHLY),
     "ADE_FR_S": ("products/assurance_emprunteur/ADE_FR_S", MONTHLY),
     "Obseques_FR_S": ("products/obseques/Obseques_FR_S", MONTHLY),
     "Dep_FR_S": ("products/dependance/Dep_FR_S", MONTHLY),
@@ -91,21 +97,21 @@ INPUT_FILES = {
         "cause_mix_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv", "prevalence_table.csv", "reduction_table.csv",
         "revision_table.csv", "severity_share_table.csv"},
-    "EC_FR_A": {
+    "EC_FR_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "scenario_table.csv", "tec_curve.csv"},
-    "Euro_FR_A": {
+    "Euro_FR_S": {
         "fin_rate_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv"},
     "Obseques_FR_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "select_table.csv", "single_prem_table.csv", "surr_scale_table.csv"},
-    "PER_FR_A": {
+    "PER_FR_S": {
         "allocation_grid.csv", "annuity_factor.csv", "exit_table.csv",
         "model_point_table.csv", "mort_table.csv"},
     "Rente_FR_S": {
         "model_point_table.csv", "mort_table.csv", "reversion_coeff_table.csv"},
-    "TD_FR_A": {
+    "TD_FR_S": {
         "benefit_schedule.csv", "freq_loading_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "premium_rate_table.csv"},
     "UC_FR_S": {

@@ -24,8 +24,8 @@ from fr_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 @pytest.fixture(scope="module")
 def assurance_vie_euro():
-    """The Euro_FR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Euro_FR_A"))
+    """The Euro_FR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Euro_FR_S"))
     yield model
     model.close()
 
@@ -52,8 +52,8 @@ def fr_uc_anchor(assurance_vie_uc):
 
 @pytest.fixture(scope="module")
 def eurocroissance():
-    """The EC_FR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("EC_FR_A"))
+    """The EC_FR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("EC_FR_S"))
     yield model
     model.close()
 
@@ -70,8 +70,8 @@ def fr_ec_anchor(eurocroissance):
 
 @pytest.fixture(scope="module")
 def per_assurance():
-    """The PER_FR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("PER_FR_A"))
+    """The PER_FR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("PER_FR_S"))
     yield model
     model.close()
 
@@ -102,8 +102,8 @@ def fr_rente_anchor(rente_viagere):
 
 @pytest.fixture(scope="module")
 def temporaire_deces():
-    """The TD_FR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("TD_FR_A"))
+    """The TD_FR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("TD_FR_S"))
     yield model
     model.close()
 

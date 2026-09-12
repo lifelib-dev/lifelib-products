@@ -388,7 +388,7 @@ needed care:
 | `red` and its frozen `G(y) c(n)` | `pols_red` / `red_rente_pp` | The ledger holds a **distribution** of frozen amounts, so the model carries a probability-weighted value and its mean — exact in expectation, and what the notes license |
 | `carence_exit(t)` | `pols_carence_exit` / `refunds_carence` | The count is a `pols_*`; the cash flow keeps the notes' own name because it is a refund of premiums and not a claim |
 | `rente_total_monthly`, `premium_monthly` | `rente_total_mth`, `premium_mth` | The library spells a monthly amount `*_mth` |
-| `P(y)` | `premium_mth_pp` — with `premium_pp` for `12 P(y)` | Library-wide `premium_pp` is the **annual** premium per policy, which is how `PER_FR_A` reads it. This contract is projected monthly, so every recursion here uses `premium_mth_pp`; `premium_pp` is published alongside it so the two periodicities cannot be confused |
+| `P(y)` | `premium_mth_pp` — with `premium_pp` for `12 P(y)` | Library-wide `premium_pp` is the **annual** premium per policy, which is how `PER_FR_S` reads it — that model is projected monthly too, and its annual *versement* falls whole in the month that opens each plan year. This contract's premium is genuinely monthly, so every recursion here uses `premium_mth_pp`; `premium_pp` is published alongside it so the two periodicities cannot be confused |
 
 ## Standardizations used
 

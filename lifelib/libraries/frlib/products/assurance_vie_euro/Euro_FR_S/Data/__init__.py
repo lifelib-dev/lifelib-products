@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The four input CSVs are read here, **once per model**, and referenced from
-:mod:`~.Euro_FR_A.Projection` as ``data``. :mod:`~.Euro_FR_A.Projection` is
+:mod:`~.Euro_FR_S.Projection` as ``data``. :mod:`~.Euro_FR_S.Projection` is
 parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
 its own cells cache; if the readers lived there, every model point would re-read every
 file. Holding them in an unparameterized Space reads each file once no matter how many
@@ -20,7 +20,7 @@ values — so a diff of the model shows logic changes only. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``Euro_FR_A`` folder without its parent's CSVs produces a model that reads and then
+``Euro_FR_S`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
@@ -128,8 +128,10 @@ def fin_rate_table():
 
     Three scenarios by projection year: the fund's `taux de rendement de l'actif`
     ``r_fin`` and the market reference rate ``ref_rate`` the dynamic surrender term keys
-    off.  The ``t`` column is the model's own time index, so it is **0-based**: ``t = 0``
-    is the first projected year and the file runs 0 to 39.
+    off.  The key column is ``y``, the model's own **projection year**, 0-based: ``y = 0``
+    is the first projected year and the file runs 0 to 39.  It is named ``y`` and not
+    ``t`` because ``t`` is a policy **month** everywhere else in this model - the table is
+    an annual path and ``Projection.r_fin`` reads it at ``proj_year(t) = t // 12``.
     The base path runs 3.30% down to 2.30% over twelve years and stays there,
     anchored to the ACPR's observed asset return - 2.8% in 2025, 2.5% in 2024, half of
     undertakings between 2.4% and 3.3% - and to the reinvestment picture behind it.
@@ -138,7 +140,7 @@ def fin_rate_table():
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / fin_rate_file,                                 # noqa: F821
-        index_col=["scenario_id", "t"]).sort_index()
+        index_col=["scenario_id", "y"]).sort_index()
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-scenario_id,t,r_fin,ref_rate,provenance
+scenario_id,y,r_fin,ref_rate,provenance
 base,0,0.0330,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,1,0.0325,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"
 base,2,0.0320,0.0220,"[std] anchored to the ACPR taux de rendement de l'actif, 2.8% in 2025 [R14]"

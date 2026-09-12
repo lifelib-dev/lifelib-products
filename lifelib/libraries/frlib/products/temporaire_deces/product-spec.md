@@ -194,9 +194,10 @@ Footnotes to **[std]** rows:
 | Expiry | Cover ceases at the age limit; nothing is payable; no maturity value, no renewal beyond the age limit, no conversion into a savings contract | [S3] [S5] [S11] [S15] [S16] |
 
 9. *Avances* and *acomptes* are advances on a benefit already due, not a separate cover
-   [S2] [S3] [S6] [S8]; on an annual grid they change the timing inside a single year and
-   are ignored. Post-death revalorisation is likewise ignored in the base projection: it
-   runs between death and settlement, a sub-annual window on this product.
+   [S2] [S3] [S6] [S8]; they change the timing inside the settlement of a claim already
+   incurred, a window shorter than the model's month, and are ignored. Post-death
+   revalorisation is likewise ignored in the base projection: it runs between death and
+   settlement, a sub-monthly window on this product.
 
 ### Underwriting and rating
 
@@ -400,7 +401,9 @@ boundary [S3] [S5] [S11] [S15] [S16]. The age driving both the tariff and the li
 ***différence de millésime***: "pour une personne née en 1967, l'âge retenu en 2019 est :
 2019 − 1967 = 52 ans" [S2] — an integer age that increments on 1 January rather than on the
 policyholder's birthday [S1] [S2] [S6] [S7], and the single most important convention to get
-right in a French annual-step model. The non-payment path is the whole of the lapse machinery,
+right in a French life model. The reference model steps monthly, and the age nevertheless steps
+at the **policy anniversary** and not monthly: a finer projection grid does not make the age
+basis finer. The non-payment path is the whole of the lapse machinery,
 because there is no value to forfeit: the cotisation is due within 10 days; a registered *mise en
 demeure* follows; resiliation takes effect 40 days after the letter under the Code des assurances
 [S1] [S2] [S3] [S6] [S7], or cover is suspended 30 days after it under the Code de la mutualité

@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: frlib.products.per_assurance.PER_FR_A.Projection
+.. automodule:: frlib.products.per_assurance.PER_FR_S.Projection
 
 Cells Descriptions
 ------------------
@@ -46,7 +46,11 @@ Cells Descriptions
 
 .. autofunction:: pols_if_init
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration_mth
 
 .. autofunction:: age
 
@@ -55,6 +59,10 @@ Cells Descriptions
 .. autofunction:: plan_year
 
 .. autofunction:: years_to_horizon
+
+.. autofunction:: is_plan_boy
+
+.. autofunction:: is_anniv
 
 .. autofunction:: alloc_euro
 
@@ -67,6 +75,10 @@ Cells Descriptions
 .. autofunction:: switch_pp
 
 .. autofunction:: arbitrage_charge_pp
+
+.. autofunction:: return_euro_mth
+
+.. autofunction:: return_uc_mth
 
 .. autofunction:: av_euro_pp_at
 
@@ -96,9 +108,15 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: early_release_rate
 
+.. autofunction:: early_release_rate_mth
+
 .. autofunction:: transfer_out_rate
+
+.. autofunction:: transfer_out_rate_mth
 
 .. autofunction:: transfer_indemnity_rate
 
@@ -174,6 +192,10 @@ Cells Descriptions
 
 .. autofunction:: result_cf
 
+.. autofunction:: result_cf_annual
+
 .. autofunction:: result_state
+
+.. autofunction:: result_state_annual
 
 .. autofunction:: result_settlement

@@ -330,7 +330,7 @@ forced out. **Where this product deviates**, in four places:
    result on the annuities, including the TGF05 prudence margin every male life carries
    under the unisex rule [R3] [R17] — which is what makes the revalorisation of an annuity
    book structurally different from that of a savings book.
-3. **ν is an input, not an output.** `Euro_FR_A` derives the credited rate from the
+3. **ν is an input, not an output.** `Euro_FR_S` derives the credited rate from the
    constrained allocation and uses the PPB as a lever; this model carries no *provision
    mathématique* ledger, no average-provision base and no PPB vintage ledger, so ν is an
    exogenous **[std]** scalar (assumption (b), note (i)). Substituting the euro model's

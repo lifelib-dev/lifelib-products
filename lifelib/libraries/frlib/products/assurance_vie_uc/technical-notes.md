@@ -19,7 +19,7 @@ of the account value that sizes the `capital sous risque`, and it is the first s
 which the `garantie plancher` premium is levied [S1] [S3] [S4]. `Taux minimum garanti`,
 `participation aux bénéfices`, the `provision pour participation aux bénéfices`, the `effet
 cliquet` and the euro leg's own margin are specified and implemented in
-`products/assurance_vie_euro/technical-notes.md` (model `Euro_FR_A`) and are **not restated,
+`products/assurance_vie_euro/technical-notes.md` (model `Euro_FR_S`) and are **not restated,
 not re-derived and not re-implemented here**. `net_cf` from UC_FR_S is therefore the UC-leg
 and rider result, not the contract's total margin.
 
@@ -79,7 +79,7 @@ and rider result, not the contract's total margin.
 | `euro_alloc` | share to the euro support, = 1 − `uc_alloc` | 0.30 **[std]** |
 | `unit_price_init` | liquidation value of the UC support at issue | 100.00 **[std]** |
 | `mgmt_fee_rate_uc` | annual UC `frais de gestion sur encours` | 0.0088 **[std]** [R13] |
-| `euro_credit_rate` | annual rate credited to the euro leg, **net** of the euro charge | 0.0250 **[std]** — pointer to `Euro_FR_A` |
+| `euro_credit_rate` | annual rate credited to the euro leg, **net** of the euro charge | 0.0250 **[std]** — pointer to `Euro_FR_S` |
 | `arbitrage_fee_rate` | rate on the amount switched | 0.0050 [S13] |
 | `plancher_flag` | bool — rider elected | True **[std]** (base cell); the rider itself is [S1] [S3] [S4] [S7] |
 | `plancher_basis` | enum {`simple`, `indexee`, `cliquet`} | `simple` **[std]** (spec footnotes 14–15) |
@@ -154,7 +154,7 @@ model holds the snapshot.
 | `Frais sur versement` `e` | 1.00% | **[std]**; range nil–4.50% [S1] [S3] [S4] [S6]–[S8] [S10] [S11] [S13] |
 | `Frais d'arbitrage` `φ` | 0.50% of the amount switched | [S13]; level **[std]**; range nil [S11] to 2% [S10] |
 | Plancher tariff `PA(a)` | The Spirica published table, annual premium per 10,000 € of `capital sous risque`, ages 12–74 | [S4 Annexe I]; shipped as `plancher_rate_table.csv` |
-| `euro_credit_rate` | 2.50% p.a., net of the euro management charge | **[std]** — the euro leg's `participation aux bénéfices` machinery and its citations live in `Euro_FR_A` |
+| `euro_credit_rate` | 2.50% p.a., net of the euro management charge | **[std]** — the euro leg's `participation aux bénéfices` machinery and its citations live in `Euro_FR_S` |
 | Indexation of an `indexee` floor | 3.50% p.a. | [S1] [S3]; the PRO BTP form sets it annually at the insurer's discretion [S12] [S13 art. 8.2] |
 | `Gestion pilotée` surcharge | Off (0 bp); +29 bp when enabled | [R13]; **[std]** |
 | Fund-level recurring costs | 1.60% p.a., inside `unit_price` — **not** insurer income | [R13]; **[std]** |
@@ -294,9 +294,16 @@ years [S3 art. 21], and at 0.25% a quarter Himalia prints 99.0037 → 98.0174 [S
                  − 1{plancher_levy_source = euro_first} × plancher_charge(t)
 
 `i_e` is credited **net of the euro management charge**, so the euro leg produces no margin
-line in UC_FR_S. The euro fund's real machinery — annual crediting with the `effet cliquet`,
-`participation aux bénéfices`, the PPB — is `Euro_FR_A`'s; the 1/12 accrual here is a
-**[std]** smoothing of an annual credit onto a monthly grid.
+line in UC_FR_S. The euro fund's real machinery — the `participation aux bénéfices`, the
+PPB and its eight-year vintage ledger, the `effet cliquet`, all of it fixed for the closing
+financial year and credited at 31 December — is `Euro_FR_S`'s. The 1/12 accrual here is a
+**[std]** smoothing of that annual credit across the months, and it is a simplification
+rather than a grid artefact: `Euro_FR_S` runs on the **same monthly grid** as this model
+and does not smooth, landing the whole year's `taux servi` in the anniversary month.
+Because twelve monthly factors compound to exactly `1 + i_e`, the two readings agree at
+every anniversary and differ only for a mid-year exit — which `Euro_FR_S` pays the
+contractual floor rate `pro rata temporis` and this model pays a pro-rated share of the
+year's credit.
 
 ### Withdrawals and arbitrages
 
@@ -360,7 +367,7 @@ nothing else.
 ### Prélèvements sociaux
 
 The UC leg is taxed only at `dénouement` [R8 II, 3°, c)](#frlib-assurance_vie_uc-r8); the euro leg is taxed annually as
-interest is credited [R8 II, 3°, a)](#frlib-assurance_vie_uc-r8) and that flow belongs to `Euro_FR_A`. On an outflow of
+interest is credited [R8 II, 3°, a)](#frlib-assurance_vie_uc-r8) and that flow belongs to `Euro_FR_S`. On an outflow of
 `X` from the UC leg (partial surrender, surrender or death):
 
     B(t) = B_open(t) + A(t)(1 − φ)                        on investments, with
@@ -388,7 +395,7 @@ the model puts it outside and flags the treatment [unverified] (spec footnote 21
 | Maintenance expense | `E(t)` | − | `l(t)` |
 | Acquisition expense | 400 **[std]** at t = 0 | − | 1 |
 | Account-value benefits (death, surrender, withdrawal) | funded by unit cancellation and the euro balance — no non-unit flow | 0 | — |
-| Euro-leg margin | out of scope; produced by `Euro_FR_A` | 0 | — |
+| Euro-leg margin | out of scope; produced by `Euro_FR_S` | 0 | — |
 | Fund-level recurring costs | inside `unit_price`, accrue to the fund manager | 0 | — |
 | `Prélèvements sociaux` | withheld and remitted — pass-through | 0 | — |
 
@@ -486,7 +493,7 @@ a test.
   1,152.86 €; putting that figure against a weighted `net_cf` overstates the distortion by
   about 16 €, and is the same weighted/unweighted trap as the 630.20 / 621.33 split.
 - **Reading `net_cf` as the contract's total margin.** It is the UC leg plus the rider. The
-  euro leg's margin is `Euro_FR_A`'s output and must be added outside this model.
+  euro leg's margin is `Euro_FR_S`'s output and must be added outside this model.
 - **Letting the guarantee run past the cessation age.** `K(t)` is zero from attained age 75
   [S1] [S3] [S4], and the tariff table stops at 74 — an implementation that extrapolates the
   tariff instead of switching the cover off will silently invent a price.

@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: frlib.products.per_assurance.PER_FR_A.Data
+.. automodule:: frlib.products.per_assurance.PER_FR_S.Data
 
 Cells Descriptions
 ------------------

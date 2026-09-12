@@ -1,7 +1,7 @@
-The **EC_FR_A** Model
+The **EC_FR_S** Model
 =====================
 
-.. automodule:: frlib.products.eurocroissance.EC_FR_A
+.. automodule:: frlib.products.eurocroissance.EC_FR_S
 
 .. toctree::
    :hidden:

@@ -383,7 +383,7 @@ library-wide sign. `liability_cf` publishes the same stream outgo-positive,
 verifiable in the frame rather than only in prose. A Solvency II best estimate is
 `Σ v(t) × liability_cf(t)` over the relevant risk-free term structure, plus a risk margin
 [REG-R1] [REG-R2] [REG-R6]; nothing here discounts, and no *Deckungsrückstellung*,
-*Zinszusatzreserve* or SCR is computed [REG-R14] [REG-R17]. Unlike `TD_FR_A`, `expenses` does
+*Zinszusatzreserve* or SCR is computed [REG-R14] [REG-R17]. Unlike `TD_FR_S`, `expenses` does
 **not** include the commission: the notes' cash flow statement carries them as two lines and
 `net_cf` subtracts each once. The shape to expect on the anchor is a first-year strain that is
 **all commission** — the *Zillmerung* instalment of 818,97 € is an account deduction and costs

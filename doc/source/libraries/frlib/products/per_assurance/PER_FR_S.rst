@@ -1,7 +1,7 @@
-The **PER_FR_A** Model
+The **PER_FR_S** Model
 ======================
 
-.. automodule:: frlib.products.per_assurance.PER_FR_A
+.. automodule:: frlib.products.per_assurance.PER_FR_S
 
 .. toctree::
    :hidden:

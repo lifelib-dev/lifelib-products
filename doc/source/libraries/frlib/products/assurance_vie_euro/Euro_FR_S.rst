@@ -1,7 +1,7 @@
-The **Euro_FR_A** Model
+The **Euro_FR_S** Model
 =======================
 
-.. automodule:: frlib.products.assurance_vie_euro.Euro_FR_A
+.. automodule:: frlib.products.assurance_vie_euro.Euro_FR_S
 
 .. toctree::
    :hidden:

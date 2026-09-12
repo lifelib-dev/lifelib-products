@@ -5,12 +5,12 @@
 
 """Reference liability cash flow model for the French assurance temporaire décès.
 
-:mod:`~.TD_FR_A` is the executable counterpart of
+:mod:`~.TD_FR_S` is the executable counterpart of
 ``products/temporaire_deces/technical-notes.md`` in the lifelib-products library. It
 projects gross best-estimate liability cash flows for a single-policy model point of a
 French standalone term death cover — *capital décès* on death from any cause, with
-*perte totale et irréversible d'autonomie* (PTIA) accelerating the same capital — on an
-**annual** grid, with **no tail state of any kind**: cover ceases at the *échéance*
+*perte totale et irréversible d'autonomie* (PTIA) accelerating the same capital — on a
+**monthly** grid, with **no tail state of any kind**: cover ceases at the *échéance*
 following ``cover_end_age``, nothing is payable there, and there is no maturity value,
 no renewal option and no conversion.
 
@@ -42,14 +42,14 @@ both, on every model point.
 
 **Spaces.** The model contains two:
 
-:mod:`~.TD_FR_A.Data`
+:mod:`~.TD_FR_S.Data`
     Reads the six input CSVs and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.TD_FR_A.Projection`
+:mod:`~.TD_FR_S.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.TD_FR_A.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.TD_FR_S.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -60,17 +60,40 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Annual steps, which are the *contract's own* grid rather than an
-approximation of a finer one: the cover is a one-year risk renewed by *tacite
-reconduction* and repriced at each renewal. The time index ``t`` is **0-based**, the
-library-wide convention: ``t = 0`` is the first projected year, the attained age is
-``issue_age() + t``, and ``proj_len() = cover_end_age() - issue_age()`` is the number of
-projected years, so the frame runs ``t = 0, 1, ..., proj_len() - 1``. The contractual
-policy year is the derived 1-based label ``policy_year(t) = t + 1``. Cotisations,
-maintenance expense and commission fall at the start of the year; death and PTIA claims
-and their claim expense at the end; lapses at the end, on the survivors of both insured
-decrements. Acquisition expense and the initial commission fall at issue. The sibling
-model ``ADE_FR_S`` runs monthly instead, because an amortising loan schedule forces it.
+**Projection basis.** Monthly steps, on lifelib's 0-based time index — the clock
+``basiclife/BasicTerm_S`` and the rest of this library's monthly models run on. ``t = 0``
+is the first policy month and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len() = 12 * (cover_end_age() - issue_age())`` is the number of policy months
+projected (204 on the worked configuration). A monthly grid is not a monthly product:
+everything *contractual* here is annual — the one-year risk renewed by *tacite
+reconduction* and repriced at each renewal, the benefit schedule, the art. L. 132-7
+suicide year, the first-year commission rate, the ``constante`` equivalence — and the
+model keeps all of it on the anniversary. So the policy year is derived and used as a
+lookup key: ``duration(t) = t // 12`` is the completed policy years,
+``policy_year(t) = duration(t) + 1`` the contractual 1-based label, and the attained age
+is ``issue_age() + duration(t)``, stepping at the anniversary. The cotisation instalment,
+maintenance expense and commission fall at the beginning of the month; death and PTIA
+claims and their claim expense at the end of the month of claim; lapses at the end, on the
+survivors of both insured decrements. Acquisition expense and the initial commission rate
+fall at issue.
+
+Decrements follow suit in two speeds. ``mort_rate(t)``, ``ptia_rate(t)`` and
+``lapse_rate(t)`` are the **annual** rates of the policy year containing month ``t`` — the
+vectors the technical notes tabulate — and ``mort_rate_mth(t)``, ``ptia_rate_mth(t)`` and
+``lapse_rate_mth(t)`` are the monthly rates actually applied, at ``1 - (1 - r)^(1/12)``.
+The death and PTIA rates are dependent rates of one two-decrement table and are therefore
+**additive**, so it is their *sum* that is converted to the month and split back in their
+own proportion; converting each apart would miss the annual decrement factor by 2.6e-6 in
+the first year alone.
+
+Because those monthly rates compound back to the annual ones, the in-force **at every
+policy anniversary** is exactly what an annual-step model would carry, and so is every
+annual contractual quantity — the tariff rate, the cotisation, the capital and the level
+premium. The cash flows are not, and are not meant to be: claims fall at the end of the
+month of claim, maintenance expense accrues a twelfth a month on the in-force of that
+month, and a fractionated cotisation is collected on the mode's own cycle, on a block that
+has already lost lives. That is what the finer grid is for. ``result_cf_annual()`` sums
+the frame into policy years so the two can be read side by side.
 
 **What a sibling may inherit.** This is the protection chassis behind ``ADE_FR_S``
 (``products/assurance_emprunteur/``) and ``Obseques_FR_S`` (``products/obseques/``). The
@@ -80,10 +103,12 @@ annual decrements, ``pols_death`` / ``pols_ptia`` / ``pols_lapse`` for the exits
 produce, ``benefit_pp`` for the contractual capital and ``benefit_death_pp`` /
 ``benefit_ptia_pp`` for what is actually payable once the exclusions bite,
 ``suicide_factor`` for the art. L. 132-7 first-year void, and ``claims(t, kind)`` with
-``"DEATH"`` / ``"PTIA"`` / ``"LAPSE"``. What they must *not* inherit is the benefit
-shape: ``TD_FR_A``'s capital is level and freely chosen, while an ADE capital follows
-the outstanding loan balance and an obsèques capital is a small fixed sum with a
-lifetime horizon.
+``"DEATH"`` / ``"PTIA"`` / ``"LAPSE"``. All three run the same monthly grid and the same
+``duration_mth`` / ``duration`` / ``policy_year`` vocabulary, so ``mort_rate_mth`` /
+``ptia_rate_mth`` / ``lapse_rate_mth`` and ``prem_inst_pp`` carry over too. What they must
+*not* inherit is the benefit shape: ``TD_FR_S``'s capital is level and freely chosen,
+while an ADE capital follows the outstanding loan balance and an obsèques capital is a
+small fixed sum with a lifetime horizon behind a twelve-month *carence*.
 
 **What is sourced and what is not.** The contractual mechanics are sourced: the
 attained-age revision rule and the published rate grid, PTIA as an acceleration whose
@@ -106,21 +131,23 @@ from age 30, and a capital small enough that the acquisition expense decides whe
 cell is viable. Model point 1 is the anchor cell of the worked example in the technical
 notes.
 
-**Verification.** ``tests/test_temporaire_deces_fr.py`` asserts every row of the notes'
-seventeen-year worked example to the cent and ``pols_if`` to six decimals, the level
-premium 3 914,3891 € and the annuity-due factor behind it, and one test per listed
-modeling pitfall.
+**Verification.** ``tests/test_temporaire_deces_fr.py`` asserts the twelve months of the
+notes' first policy year and every row of their seventeen-year worked example, restated on
+``result_cf_annual()``, to the cent and ``pols_if`` to six decimals; the level premium
+3 914,3891 € and the annuity-due factor behind it, both unmoved by the conversion; that
+twelve monthly rates compound back to exactly the annual ones; that the in-force at every
+anniversary is what the annual recursion gives; and one test per listed modeling pitfall.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/temporaire_deces/TD_FR_A")
+    >>> model = mx.read_model("products/temporaire_deces/TD_FR_S")
     >>> model.Projection[1].result_cf()
 """
 
 from modelx.serialize.jsonvalues import *
 
-_name = "TD_FR_A"
+_name = "TD_FR_S"
 
 _allow_none = False
 

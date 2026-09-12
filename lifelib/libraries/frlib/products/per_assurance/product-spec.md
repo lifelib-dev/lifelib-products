@@ -19,7 +19,7 @@ against a retrieved document are flagged [unverified]. The mechanics anchors are
 retrieved *notices* / *conditions générales* [S1] [S2] [S3] [S4] [S7] and the two Cardif
 documents published under the fee-transparency arrêté [S8] [S9]; the first of these is
 called *the anchor contract* below. French terms of art stay French, glossed on first use.
-The model built from this specification is **PER_FR_A**, on an annual grid.
+The model built from this specification is **PER_FR_S**, on a monthly grid.
 
 ---
 
@@ -182,7 +182,7 @@ records the same exclusion.
 | Glide-path grid | The regulatory minimum grid above: euro share 0 % / 20 % / 50 % / 70 % | [R6] [S2] [S7] |
 | Band-edge convention | The tighter minimum applies at a boundary: k > 10 → 0 %, 10 ≥ k > 5 → 20 %, 5 ≥ k > 2 → 50 %, k ≤ 2 → 70 %, with k the years to the declared horizon | **[std]** (7) |
 | "Low risk" realised as | The euro support in full | **[std]** (7) |
-| Rebalancing | Annual, at the start of the plan year, on both the new *versement* and the existing balance | frequency **[std]** (8); scope [S1] |
+| Rebalancing | Annual, in the month that starts the plan year, on both the new *versement* and the existing balance | frequency **[std]** (8); scope [S1] |
 | *Frais d'arbitrage* on the rebalancing | 0,30 % of the amount switched | [S1]; adoption **[std]** (9) |
 | Holder arbitrage under a horizon profile | Not permitted | [S1] [S2] [S4] |
 | Change of declared retirement date | Immediate re-allocation of the whole balance | [S3] [S4] |
@@ -205,8 +205,15 @@ records the same exclusion.
    support is the most conservative reading of both and keeps the model to two supports.
 8. Observed frequencies: semi-annual in Q2 and Q4 [S1]; semi-annual [S2]; semi-annual on
    15 March and 15 September [S3]; threshold-driven and at least semi-annual [S4];
-   **quarterly** [S7]. Annual is the coarsest and is forced by the grid; it understates
-   the glide path's tracking accuracy and overstates each switch.
+   **quarterly** [S7]. Annual is the coarsest, and on the monthly projection grid it is no
+   longer forced — it is chosen. The reference model keeps it because the de-risking grid
+   is keyed by whole **years** to the horizon, so a sub-annual rebalancing re-imposes the
+   *same* target inside the year: it corrects drift rather than de-risking faster, and
+   turning it on is an assumption change rather than a finer grid. It still understates the
+   glide path's tracking accuracy and overstates each switch, and the cost is now
+   measurable rather than merely arguable — on the anchor cell, quarterly rebalancing
+   changes the final balance by **−0,0142 %** and the twelve-year arbitrage charge from
+   95,75 to 96,21; on the 32-year model point 12, by −0,0343 %.
 9. Horizon arbitrage is free at [S2] [S3] [S4] [S5] [S7]; the anchor contract charges
    0,30 % of amounts switched [S1] and Cardif 1 % with no free arbitrages [S8]. The
    non-nil rate makes the cost of the glide path a visible line; zero reproduces the
@@ -242,8 +249,17 @@ Every figure below is a **maximum** stated in a *notice* or in a regulated fee t
 12. Charge timing differs and is load-bearing: end-of-month balance, monthly [S1];
     quarterly on UC, annually on the euro fund at value date 31 December pro rata temporis
     [S2]; annually at 31 December on both [S3]; accrued daily, levied annually on the euro
-    fund and monthly on UC [S7]. An annual grid can carry only one; end-of-year on the
-    post-crediting balance is the [S3] convention. The 15 % transfer-value reduction is
+    fund and monthly on UC [S7]. The monthly projection grid can now carry more than one of
+    them, and the reference model deliberately keeps the [S3] convention — the charge
+    levied whole at the plan-year end on the post-crediting balance — because that is what
+    keeps the *garantie plancher* base exact. The base accumulates a **sum** of charges
+    rather than a product of factors, so twelve monthly charges do not add to the annual
+    one: measured, a monthly levy leaves the account value at every anniversary unchanged
+    but moves the base by up to €71,95 on the anchor cell and €531,57 on model point 12.
+    [S1]'s monthly levy on an end-of-month balance is the documented variant and is a new
+    assumption rather than a finer grid. The price of the convention is that a mid-year
+    exit is valued gross of the plan year's charge, 0,387 % above the anniversary value in
+    the anchor cell's last plan year. The 15 % transfer-value reduction is
     nil in the base for a different reason — it is a management action conditional on a
     market state the base scenario does not produce, and in a rising-rate scenario it
     dominates the 1 % fee by an order of magnitude [S3] [S8].
@@ -268,7 +284,14 @@ Every figure below is a **maximum** stated in a *notice* or in a regulated fee t
 14. Observed crediting: **weekly**, at a rate from a quarterly prospective PB assessment,
     definitively acquired each Friday [S1]; daily compounding with the annual PB at value
     date 31 December [S2]; annual at 31 December [S3]; annual with partial exits revalued
-    pro rata temporis at the served rate [S7]. Annual is forced by the grid.
+    pro rata temporis at the served rate [S7]. The reference model credits both supports
+    at `(1 + r)^(1/12) − 1` a month, so twelve months compound back to the published annual
+    rate **exactly** and no anniversary balance moves. That is the monthly realisation of
+    the one thing every sampled contract agrees on for a **mid-year exit**: [S7]'s pro rata
+    temporis revaluation at the served rate, [S1]'s weekly crediting definitively acquired
+    each Friday, and [S2]'s daily compounding. Crediting the whole year at the anniversary
+    instead would pay every mid-year death, release and transfer on a balance carrying no
+    return since the last one.
 
 Note what the [S9] triple says: 3,38 % gross less a 0,70 % charge is 2,68 %, yet the rate
 served was **2,75 %** — the extra seven basis points came from somewhere other than the
@@ -337,8 +360,11 @@ the cessation at 70 — the *Cessation* and *Cap* rows above.
     [R12], were not extracted and are not shipped [REG-R21]. At a 0 % technical rate the
     factor collapses to the tariff table's expected number of instalments, so 22,0000
     asserts 22 further annual payments to a male aged 64 — a placeholder, to be replaced
-    by a TGH05 computation before any quantitative use. Annual payment in arrears is
-    forced by the grid; the model applies the commutation test on the monthly equivalent.
+    by a TGH05 computation before any quantitative use. Annual payment in arrears is fixed
+    by `annuity_factor.csv`, which holds an undiscounted **count of annual instalments** —
+    not by the projection grid, which is monthly: paying quarterly or monthly means
+    replacing that table, not changing a step. The model applies the commutation test on
+    the monthly equivalent for exactly that reason.
 
 ### Anchor model cell
 

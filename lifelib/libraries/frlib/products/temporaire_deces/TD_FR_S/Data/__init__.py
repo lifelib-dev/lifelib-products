@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The six input CSVs are read here, **once per model**, and referenced from
-:mod:`~.TD_FR_A.Projection` as ``data``. :mod:`~.TD_FR_A.Projection` is parameterized
+:mod:`~.TD_FR_S.Projection` as ``data``. :mod:`~.TD_FR_S.Projection` is parameterized
 by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its own cells
 cache; if the readers lived there, every model point would re-read every file. Holding
 them in an unparameterized Space reads each file once no matter how many policies are
@@ -20,7 +20,7 @@ values — so a diff of the model shows logic changes only. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``TD_FR_A`` folder without its parent's CSVs produces a model that reads and then fails
+``TD_FR_S`` folder without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so
@@ -97,9 +97,10 @@ def model_point_table():
 def premium_rate_table():
     """The tariff rates by rate id and attained age, from *premium_rate_table.csv*.
 
-    Held as the decimal fraction of the guaranteed capital, so the published 1,05 %
-    at age 58 is stored as ``0.0105`` and ``sum_assured x prem_rate`` is the cotisation
-    before the *surprime* and the fractionation loading.
+    An **annual** *tarif de base* by attained age, held as the decimal fraction of the
+    guaranteed capital, so the published 1,05 % at age 58 is stored as ``0.0105`` and
+    ``sum_assured x prem_rate`` is the annual cotisation before the *surprime* and the
+    fractionation loading.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / premium_rate_file,                             # noqa: F821
@@ -107,7 +108,7 @@ def premium_rate_table():
 
 
 def mort_table():
-    """The annual death rates by attained age, from *mort_table.csv*.
+    """The **annual** death rates by attained age, from *mort_table.csv*.
 
     A **[std]** proxy, not a homologated table; see the Space docstring for what it is
     and what a replacement must preserve.
@@ -119,9 +120,10 @@ def mort_table():
 def lapse_table():
     """The lapse rates by policy year, read from *lapse_table.csv*.
 
-    ``policy_year`` is the **contractual 1-based** label, 1 to 4, not the model's 0-based
-    time index: ``Projection.lapse_rate_base`` reads it through
-    ``Projection.policy_year(t) = t + 1``.
+    The rates are **annual** rates by policy year; ``Projection.lapse_rate_mth`` converts
+    them to the month.  ``policy_year`` is the **contractual 1-based** label, 1 to 4, not
+    the model's 0-based month index: ``Projection.lapse_rate_base`` reads it through
+    ``Projection.policy_year(t) = t // 12 + 1``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / lapse_file, index_col="policy_year")           # noqa: F821
@@ -130,10 +132,12 @@ def lapse_table():
 def freq_loading_table():
     """The fractionation loadings and fees by payment frequency.
 
-    Read from *freq_loading_table.csv*: the multiplier ``prem_freq_load`` embedded in
-    the cotisation TTC and the fixed annual *frais d'échéance* ``prem_freq_fee``, which
-    is a euro amount and not a second percentage.  These are the only disclosed charge
-    figures in the whole source corpus.
+    Read from *freq_loading_table.csv*: the number of ``instalments`` per policy year,
+    the multiplier ``prem_freq_load`` embedded in the cotisation TTC and the fixed annual
+    *frais d'échéance* ``prem_freq_fee``, which is a euro amount and not a second
+    percentage.  The last two are the only disclosed charge figures in the whole source
+    corpus, and the first is what ``Projection.prem_cycle`` and
+    ``Projection.prem_inst_pp`` collect them on.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / freq_loading_file, index_col="prem_freq")      # noqa: F821
@@ -148,8 +152,8 @@ def benefit_schedule():
     gives one, so none is shipped.
 
     ``policy_year`` is the **contractual 1-based** label, 1 to 57, not the model's 0-based
-    time index: ``Projection.benefit_factor`` reads it through
-    ``Projection.policy_year(t) = t + 1``.
+    month index: ``Projection.benefit_factor`` reads it through
+    ``Projection.policy_year(t) = t // 12 + 1``.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / benefit_schedule_file,                         # noqa: F821

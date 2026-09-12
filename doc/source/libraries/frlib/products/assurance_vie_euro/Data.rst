@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: frlib.products.assurance_vie_euro.Euro_FR_A.Data
+.. automodule:: frlib.products.assurance_vie_euro.Euro_FR_S.Data
 
 Cells Descriptions
 ------------------

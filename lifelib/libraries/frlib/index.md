@@ -81,28 +81,44 @@ then `FR`, then `_A` for an annual step or `_S` for a monthly one. The grid lett
 lifelib, where `annuallife/TradLife_A` is the annual-step model and `basiclife/BasicTerm_S`
 and `savings/CashValue_SE` are the monthly ones. `S` carries a second sense in lifelib —
 scalar, one model point at a time, as against the vectorized `_M` models — and that is true
-of all nine here, whether or not they carry the letter.
+of all nine here.
+
+All nine run on a **monthly** grid, the euro fund, eurocroissance, PER and temporaire décès
+models included since their conversion.
+
+Where a product's contractual drivers *are* annual — the *cotisation révisable par âge*
+repriced at each renewal, the *taux servi* an insurer declares for the closing financial
+year and the PPB's eight-year release clock, eurocroissance's annual rebalancing and its
+guarantee at the *échéance*, the *gestion pilotée* allocation grid keyed by years to the
+horizon — the model keeps those events on the policy anniversary and derives the policy
+year from `t` (`duration(t) = t // 12`), rather than stepping annually. A monthly grid is
+not the same thing as a monthly product: what the finer grid resolves is everything that is
+*not* a contractual event — mortality, PTIA and *rachat* falling in the month they happen,
+provisions accruing month by month so a mid-year exit is valued on the balance it actually
+has, and expenses and the elected *fractionnement* falling where they are incurred. The two
+grids agree on the in-force at every anniversary and on every anniversary-dated contractual
+quantity; they differ on cash flow timing, which is what the monthly grid is for.
 
 **Épargne**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Assurance vie — fonds en euros](products/assurance_vie_euro/index.md) | `Euro_FR_A` | annual | The guaranteed support: *épargne acquise* rolled forward at a *taux servi* the insurer declares each year, floored by the statutory participation aux bénéfices and by a TMG that modern contracts set at zero, with the **effet cliquet** asserted as an invariant and the **PPB** carried as a per-vintage ledger so its eight-year release clock is a real deadline rather than an average. *Prélèvements sociaux* fall **au fil de l'eau** |
-| [Assurance vie — unités de compte](products/assurance_vie_uc/index.md) | `UC_FR_S` | monthly | Modern *multisupport* contract on the classic **unit / non-unit** decomposition: the insurer guarantees the number of units and not their value, charges are taken by cancelling units, and the **garantie plancher** is a net-amount-at-risk cover whose charge is levied on the NAR and whose NAR is zero whenever the units sit above the floor. The euro leg is an allocation share pointing at `Euro_FR_A`, not a second implementation |
-| [Eurocroissance](products/eurocroissance/index.md) | `EC_FR_A` | annual | The statutory hybrid: a *provision mathématique* accumulating at the *taux technique* toward a guarantee that bites **only at the échéance**, and a *provision de diversification* carrying the upside in parts, rebalanced annually. A surrender before term pays the current part value with **no guarantee at all** — the fact an implementation is most likely to floor away |
+| [Assurance vie — fonds en euros](products/assurance_vie_euro/index.md) | `Euro_FR_S` | monthly | The guaranteed support: *épargne acquise* rolled forward at a *taux servi* the insurer declares each year, floored by the statutory participation aux bénéfices and by a TMG that modern contracts set at zero, with the **effet cliquet** asserted as an invariant and the **PPB** carried as a per-vintage ledger so its eight-year release clock is a real deadline rather than an average. *Prélèvements sociaux* fall **au fil de l'eau**. The crediting machinery is a financial-year statement and lands whole at 31 December; the account movements, the expenses and the decrements are monthly, so a mid-year exit takes the announced floor rate *pro rata temporis* — nil at the TMG every shipped model point carries |
+| [Assurance vie — unités de compte](products/assurance_vie_uc/index.md) | `UC_FR_S` | monthly | Modern *multisupport* contract on the classic **unit / non-unit** decomposition: the insurer guarantees the number of units and not their value, charges are taken by cancelling units, and the **garantie plancher** is a net-amount-at-risk cover whose charge is levied on the NAR and whose NAR is zero whenever the units sit above the floor. The euro leg is an allocation share pointing at `Euro_FR_S`, not a second implementation |
+| [Eurocroissance](products/eurocroissance/index.md) | `EC_FR_S` | monthly | The statutory hybrid: a *provision mathématique* accumulating at the *taux technique* toward a guarantee that bites **only at the échéance**, and a *provision de diversification* carrying the upside in parts, rebalanced annually. A surrender before term pays the current part value with **no guarantee at all** — the fact an implementation is most likely to floor away. The *provision de diversification* is re-struck monthly at a fractional remaining term, as art. A. 134-5 requires; the two levies, the *versements* and the *apport* stay on the anniversary |
 
 **Retraite**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [PER assurantiel](products/per_assurance/index.md) | `PER_FR_A` | annual | The *loi PACTE* plan on the *assurance vie* chassis: three compartments, **gestion pilotée par horizon** shipped as an allocation grid keyed by years to the horizon, and two exits that are decrements but are **not lapses** — *déblocage anticipé* and transfer out, the second capped at 1% and free after five years |
+| [PER assurantiel](products/per_assurance/index.md) | `PER_FR_S` | monthly | The *loi PACTE* plan on the *assurance vie* chassis: three compartments, **gestion pilotée par horizon** shipped as an allocation grid keyed by years to the horizon, and two exits that are decrements but are **not lapses** — *déblocage anticipé* and transfer out, the second capped at 1% and free after five years. The glide path is keyed by years to the horizon and so rebalances on the anniversary, while the account value, the charges and all three decrements run monthly |
 | [Rente viagère immédiate](products/rente_viagere/index.md) | `Rente_FR_S` | monthly | Immediate life annuity on the payout chassis this library shares with `PA_UK_S` and `SPIA_US_S`: *terme échu* or *terme à échoir*, *réversion*, *annuités garanties* as an annuity-certain floor, *frais d'arrérages* on every *quittance*, and revalorisation out of the participation aux bénéfices — discretionary, and therefore not an escalation guarantee. Priced on a **generational** table, so no improvement scale sits on top of it |
 
 **Prévoyance**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Temporaire décès](products/temporaire_deces/index.md) | `TD_FR_A` | annual | Individual term cover in the French form: the premium is a **cotisation annuelle révisable par âge** that rises each year with attained age, with the level alternative as a model point column; PTIA accelerates the death capital and is never paid twice; the first-year suicide void; and no surrender or paid-up value of any kind |
+| [Temporaire décès](products/temporaire_deces/index.md) | `TD_FR_S` | monthly | Individual term cover in the French form: the premium is a **cotisation annuelle révisable par âge** that rises each year with attained age, with the level alternative as a model point column; PTIA accelerates the death capital and is never paid twice; the first-year suicide void; and no surrender or paid-up value of any kind. Contractually annual end to end, so the tariff, the suicide year and the *délai d'attente* sit on the anniversary and the finer grid buys the *fractionnement* and the timing of claims |
 | [Assurance emprunteur](products/assurance_emprunteur/index.md) | `ADE_FR_S` | monthly | The cover sold with a mortgage, over a **deterministic amortising loan** the model computes: décès and PTIA paying `CRD × quotité`, ITT paying the *échéance* after a *franchise* and for at most 1 095 days, IPT beyond the 66% threshold — with age limits that differ **by guarantee**, so cover can end before the loan does, and *résiliation à tout moment* under the *loi Lemoine* as the behavioural heart |
 | [Contrat obsèques](products/obseques/index.md) | `Obseques_FR_S` | monthly | Small guaranteed-acceptance *vie entière* on three premium forms — *prime unique*, *primes temporaires*, *primes viagères* — the last of which can and does pay in more than the capital. The *délai de carence* is two benefits, not one: a refund of premiums on death by illness inside it, the full capital on accidental death from day one. The capital is revalued annually and is a state variable |
 | [Dépendance](products/dependance/index.md) | `Dep_FR_S` | monthly | Individual LTC paying a *rente viagère* on entry into dependence, with *dépendance partielle* at half the *rente totale* and a *capital d'équipement* paid once. A multi-state projection with **state-dependent mortality**, a *carence* that varies by cause and a *franchise* that runs from recognition, and *mise en réduction* — a lapsing policyholder keeps a reduced *rente* rather than nothing |
@@ -135,19 +151,20 @@ here, in uslib, in uklib and in lifelib. The
 across the libraries.
 
 The time index is the one every library shares, and the conventions suite asserts it for
-every model point. **The time index `t` is 0-based**: `t = 0` is the first period of a
-policy projected from issue (the issue year on an annual grid, the issue month on a monthly
-one), period `t` runs from time `t` to time `t + 1`, and the attained age is
-`age_at_entry + t` on an annual grid (`age_at_entry + duration(t)`, `duration(t) = t // 12`,
-on a monthly one). **`proj_len()` is the number of periods from `t = 0`**, i.e. the
+every model point. **The time index `t` is 0-based and counts policy months**: `t = 0` is
+the issue month of a policy projected from issue, period `t` runs from time `t` to time
+`t + 1`, and the attained age is `age_at_entry + duration(t)` with `duration(t) = t // 12`,
+so it steps on the policy anniversary rather than on the birthday and rather than monthly.
+The convention is written to hold on either grid, because the registry still admits an
+annual one: there `duration(t)` is `t` and the attained age is `age_at_entry + t`. **`proj_len()` is the number of periods from `t = 0`**, i.e. the
 exclusive end of the frame: `result_cf()` covers `t = t_first, ..., proj_len() - 1`, where
 `t_first` is 0 for a point projected from issue and the elapsed periods for an in-force
-point — `EC_FR_A`'s in-force model points open partway through the term, at the duration the
-policy has already run, which is why the frame's start is asserted as contiguity from
-`t_first` rather than pinned to 0. This is lifelib's own convention
+point — `EC_FR_S`'s in-force model points open partway through the term, at twelve times the
+years the policy has already run, which is why the frame's start is asserted as contiguity
+from `t_first` rather than pinned to 0. This is lifelib's own convention
 (`basiclife/BasicTerm_S`, `savings/CashValue_SE`: `for t in range(proj_len())`). A
-contractual policy year is the 1-based label `t + 1` (`duration(t) + 1` on a monthly grid)
-and is derived, never indexed by.
+contractual policy year is the 1-based label `duration(t) + 1` and is derived, never indexed
+by.
 
 (frlib-france-specific)=
 
@@ -172,12 +189,12 @@ credit a contractual rate; they credit a *taux servi* the insurer declares, floo
 statutory participation aux bénéfices — 85% of the *compte financier* and the technical
 result less the insurer's share of the greater of 10% of the credit balance and 4.5% of
 premiums [REG-R15] — and smoothed through a *provision pour participation aux bénéfices*
-that must be released within eight years [REG-R16]. `Euro_FR_A` carries that whole
-machinery, including the PPB as a per-vintage ledger, and `EC_FR_A`, `Obseques_FR_S` and
+that must be released within eight years [REG-R16]. `Euro_FR_S` carries that whole
+machinery, including the PPB as a per-vintage ledger, and `EC_FR_S`, `Obseques_FR_S` and
 `Rente_FR_S` consume a revalorisation that comes out of it. A model that treats the
 crediting rate as an input rather than as an output of a constrained allocation has
 modelled the wrong product — with one deliberate exception, stated here rather than left
-to be discovered: `PER_FR_A` does exactly that. It carries no PPB stock and sets the euro
+to be discovered: `PER_FR_S` does exactly that. It carries no PPB stock and sets the euro
 credit at the asset return, because a retirement model's interesting mechanic is the glide
 path rather than the crediting rule. Its notes tag the simplification **[std]** and point
 at the euro-fund notes for what it is standing in for.
@@ -188,15 +205,15 @@ sex — while TH 00-02 / TF 00-02 and TGH05 / TGF05 remain sex-distinct. Insurer
 the two with a portfolio mix assumption, and this library carries that reconciliation
 explicitly as a **[std]** input rather than quietly pricing on one table: see
 `Rente_FR_S`, where the difference between the unisex rate and the annuitant's own table is
-about 13% of income, and `TD_FR_A`. The reconciliation is a real French mechanic and each of
+about 13% of income, and `TD_FR_S`. The reconciliation is a real French mechanic and each of
 the two models writes it up as a modelling pitfall.
 
 **Scope limits are stated and validated against, not faked.** Where a deterministic run
-cannot reach a mechanic, that is said rather than smoothed over. `Euro_FR_A` ships no
+cannot reach a mechanic, that is said rather than smoothed over. `Euro_FR_S` ships no
 positive-TMG model point, because the notes' two statements of the TMG are consistent only
 at zero and the model implements the notes verbatim rather than tuning to a formula the
 notes themselves flag as inactive. The *loi Sapin 2* power to suspend surrenders
-[REG-R13] exists, is out of the projection's scope, and is said to be. `EC_FR_A` rejects a
+[REG-R13] exists, is out of the projection's scope, and is said to be. `EC_FR_S` rejects a
 model point electing the *rente viagère* option by name, because such a point would have to
 run past the *échéance* at which the projection stops.
 
@@ -209,7 +226,7 @@ restating it, and each pointer states what it inherits and where it deviates:
   contract's euro leg, the *obsèques* capital revalorisation and the *rente*'s
   revalorisation reference the
   [assurance vie euro technical notes](products/assurance_vie_euro/technical-notes.md) for
-  the participation aux bénéfices mechanics rather than restating them. `PER_FR_A` points
+  the participation aux bénéfices mechanics rather than restating them. `PER_FR_S` points
   at the same file for the opposite reason — to say what it deliberately does *not*
   implement, its euro credit being a flat rate rather than an output of the PB
   allocation.
@@ -250,7 +267,7 @@ or read it and take the cash flow statement:
 ```python
 >>> import modelx as mx
 
->>> model = mx.read_model("products/assurance_vie_euro/Euro_FR_A")
+>>> model = mx.read_model("products/assurance_vie_euro/Euro_FR_S")
 
 >>> model.Projection[1].result_cf()
 ```

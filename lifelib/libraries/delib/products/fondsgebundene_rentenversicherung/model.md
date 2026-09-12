@@ -283,7 +283,7 @@ surrender and an annuitisation are the same event releasing the same *Fondsgutha
 whole surviving cohort is booked as `pols_maturity`. No cash flow moves either way; the
 convention decides only the split between the lapse total and the maturity count, and it is
 what the closure identity reproduces — deaths 0,04377181 plus lapses 0,65322937 plus maturity
-0,30299882 = 1,00000000. It is frlib's convention on `TD_FR_A` and delib adopts it.
+0,30299882 = 1,00000000. It is frlib's convention on `TD_FR_S` and delib adopts it.
 
 `age(proj_len() − 1) = annuity_age − 1`, because the annuity begins at the **end** of that month,
 and the *Rentenfaktor* is read at `annuity_age`: **25,00 at 67 on the anchor, not the 24,45 an

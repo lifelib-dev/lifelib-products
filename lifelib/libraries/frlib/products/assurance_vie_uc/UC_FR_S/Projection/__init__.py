@@ -164,7 +164,7 @@ on the anchor cell's last month.
 ``net_cf`` on this product is the **non-unit** cash flow of the UC leg and the rider, not
 a gross liability total and not the contract's margin. Every benefit is funded by
 cancelling units and by drawing the euro balance, so a gross presentation adds the same
-money to both sides; and the euro leg's own margin is ``Euro_FR_A``'s output, which must
+money to both sides; and the euro leg's own margin is ``Euro_FR_S``'s output, which must
 be added from outside. The gross flows are still published — ``claims_death``,
 ``claims_lapse``, ``withdrawals`` and ``av_releases`` are ``result_cf`` columns — and
 :func:`check_benefit_funding` asserts that they net exactly against the account value plus
@@ -247,7 +247,9 @@ interest is credited; II, 3°, c) levies it on the unit-linked component only at
 death, and on a loss it is zero — at ``t = 11`` on the anchor cell the UC leg is
 17,284.34 € under water and the levy is nil. Accruing it annually on the UC leg is a
 listed pitfall: it would understate the account value throughout and shrink the base the
-management charge is levied on. The euro leg's annual component belongs to ``Euro_FR_A``.
+management charge is levied on. The euro leg's annual component belongs to ``Euro_FR_S``,
+where - on the same monthly grid as this model - it lands whole in the anniversary month
+beside the interest it is struck on.
 Whether the plancher top-up above the account value sits inside the levy base is stated in
 no retrieved document; the model puts it outside.
 
@@ -378,7 +380,7 @@ def euro_credit_rate():
 
     A **[std]** pointer, not a model.  `Taux minimum garanti`, `participation aux
     benefices`, the `provision pour participation aux benefices` and the `effet cliquet`
-    are specified and implemented in ``Euro_FR_A``, and the euro leg therefore produces no
+    are specified and implemented in ``Euro_FR_S``, and the euro leg therefore produces no
     margin line here at all.
     """
     return float(model_point()["euro_credit_rate"])
@@ -642,8 +644,15 @@ def mgmt_fee_rate_uc_mth():
 def euro_credit_factor_mth():
     """(1 + i_e)^(1/12): the monthly accrual factor of the euro leg **[std]**.
 
-    A smoothing of an annual credit onto a monthly grid.  The euro fund really credits
-    once a year with the `effet cliquet`; that machinery is ``Euro_FR_A``'s.
+    A smoothing of an annual credit across the months of the year, and it is a
+    **[std]** simplification rather than a grid artefact: ``Euro_FR_S`` runs on this same
+    monthly grid and does *not* smooth, crediting the whole of the year's `taux servi` in
+    the anniversary month with the `effet cliquet`.  The euro leg here is a per-model-point
+    rate and not a model, so the twelfth-of-a-year accrual is the cheapest reading that
+    keeps the two legs on one clock; the real crediting machinery - the `participation aux
+    benefices`, the PPB and its eight-year vintage ledger - is ``Euro_FR_S``'s.  Twelve of
+    these factors compound to exactly ``1 + i_e``, so a full policy year of the euro leg is
+    unaffected by the smoothing and only a mid-year exit sees it.
     """
     return (1.0 + euro_credit_rate()) ** (1.0 / 12.0)
 
@@ -1140,7 +1149,7 @@ def av_euro_at(t):
     """The in-force euro account value.
 
     Published for completeness; the euro engagement's own reserve and its `provision pour
-    participation aux benefices` belong to ``Euro_FR_A``.
+    participation aux benefices` belong to ``Euro_FR_S``.
     """
     return av_euro_pp(t) * pols_if_at(t, "AFT_DECR")
 
@@ -1492,7 +1501,7 @@ def net_cf(t):
     1,262.66 EUR, both weighted at the same start-of-month exposure.  (The unweighted
     per-policy sum is 1,152.86 EUR and is not comparable with a weighted ``net_cf``.)  And
     the euro leg's credited interest is a policyholder credit whose margin is
-    ``Euro_FR_A``'s output: reading this stream as the contract's total margin is a listed
+    ``Euro_FR_S``'s output: reading this stream as the contract's total margin is a listed
     pitfall.
     """
     return (prem_charge(t) + mgmt_fee_uc(t) + arbitrage_fee(t) + plancher_charge(t)

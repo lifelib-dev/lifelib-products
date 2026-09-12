@@ -6,7 +6,7 @@
 """Input data shared by every by-policy projection.
 
 The five input CSVs are read here, **once per model**, and referenced from
-:mod:`~.EC_FR_A.Projection` as ``data``. :mod:`~.EC_FR_A.Projection` is parameterized by
+:mod:`~.EC_FR_S.Projection` as ``data``. :mod:`~.EC_FR_S.Projection` is parameterized by
 ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its own cells
 cache; if the readers lived there, every model point would re-read every file. Holding
 them in an unparameterized Space reads each file once no matter how many policies are
@@ -20,7 +20,7 @@ contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model th
 modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``EC_FR_A`` folder without its parent's CSVs produces a model that reads and then fails
+``EC_FR_S`` folder without its parent's CSVs produces a model that reads and then fails
 on first evaluation.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so
@@ -41,11 +41,16 @@ Two of these are **scenario** files rather than assumption files, and that is a 
 statement. The A. 134-1 discount rate is 90% of the *taux de l'échéance constante* at the
 remaining maturity, so the level *and the slope* of the TEC curve drive the *provision
 mathématique* directly: in the notes' worked example a 150 bp fall in the TEC adds 587.44
-to the *provision mathématique* at the end of policy year 6 — ``pm(5)`` on the model's
-0-based period index — more than twice the year's time effect. A model that carried a flat TEC
+to the *provision mathématique* at the anniversary closing policy year 6 — ``pm(71)`` on
+the model's 0-based policy-month index — more than twice the year's time effect. A model that carried a flat TEC
 assumption in a Reference would not be modelling this product's dominant risk, so the
 curve is a table with a maturity dimension and ``Projection.tec_rate`` interpolates
 across it exactly as the article requires.
+
+The projection steps **monthly**, and the two time-keyed tables are read accordingly: a
+table keyed by the contractual policy year is read at ``Projection.policy_year(t)``, and
+the TEC curve — published once per elapsed year — is read at the most recently published
+row while the maturity it is interpolated at shortens month by month.
 
 Every decrement table shipped here is a **[std]** proxy and says so in its own
 ``provenance`` column. The regulatory tables the code points to — TH 00-02 / TF 00-02 for
@@ -104,7 +109,10 @@ def lapse_table():
     """The base annual *rachat* rates by policy year, from *lapse_table.csv*.
 
     Keyed by the contractual **policy year**, 1-based and running from 1 to 40, so the
-    projection's 0-based period ``t`` reads row ``t + 1``.
+    projection reads row ``Projection.policy_year(t) = t // 12 + 1`` for policy month
+    ``t``.  Both columns are **annual** rates and reach the month through
+    ``Projection.lapse_rate_mth`` and ``Projection.wd_rate_mth``, which convert them at
+    ``1 - (1 - w)^(1/12)``.
 
     Two columns: ``lapse_rate``, the full surrender (*rachat total*), level at 2.5% p.a.;
     and ``wd_rate``, the partial surrender (*rachat partiel*), 6% of the provision in
@@ -123,9 +131,11 @@ def scenario_table():
     """The gross asset return by scenario and projection year, from *scenario_table.csv*.
 
     Keyed by the elapsed **year end** at which the return is credited: row ``k`` is the
-    return earned over the year ending ``k`` years after issue, so the projection's
-    0-based period ``t``, which ends at time ``t + 1``, reads row ``t + 1``.  Row 0 is the
-    inception placeholder and is never read.
+    return earned over the year ending ``k`` years after issue, so policy month ``t``,
+    whose policy year ends ``duration(t) + 1`` years after issue, reads row
+    ``duration(t) + 1``.  Row 0 is the inception placeholder and is never read.  It is an
+    **annual** return, spread over its twelve months by
+    ``Projection.asset_return_mth`` at ``(1 + r)^(1/12) - 1``.
 
     Net of asset management fees (0.20% equities, 0.10% bonds), which is the basis the
     notes quote ``r(t)`` on.  Five paths: ``shock`` is the worked example's — 4.00%
@@ -144,14 +154,20 @@ def scenario_table():
 def tec_curve():
     """The TEC term structure by scenario, projection year and maturity, from *tec_curve.csv*.
 
-    Keyed by the elapsed year since issue — a **time point** ``k``, ``k`` = 0 at issue —
-    which is how ``Projection.tec_rate`` is indexed: a period ``t`` splits a
-    start-of-period *versement* at row ``t`` and strikes its provisions at row ``t + 1``.
+    Keyed by the elapsed year since issue — one published curve per year — which is how
+    ``Projection.tec_rate`` reads it: for a **month boundary** ``m``, ``m`` = 0 at issue,
+    the row is ``m // 12``, the **most recently published** curve, and a month ``t`` splits
+    a beginning-of-month *versement* at boundary ``t`` and strikes its provisions at
+    boundary ``t + 1``.
 
     The *taux de l'échéance constante* at maturities 1, 2, 5, 10, 20 and 30 years.
     ``Projection.i_pm`` takes 90% of the rate at the *remaining* maturity, interpolating
     linearly between the bracketing maturities and holding the longest rate beyond the
-    curve, with a floor at zero.  The haircut, the interpolation and the floor are
+    curve, with a floor at zero.  On a monthly grid that remaining maturity is
+    **fractional** — ``Projection.rem_term(m) = (proj_len() - m) / 12`` years — so the
+    interpolation moves month by month while the curve row moves only at anniversaries:
+    the *provision mathématique*'s time effect accrues monthly and its rate effect lands
+    whole on the anniversary.  The haircut, the interpolation and the floor are
     art. A. 134-1; reading the index maturity as the remaining term is **[std]**, and
     ``Projection.tec_rate`` says why.  Levels are **[std]** too: the
     ACPR's revaluation study records the 10-year OAT averaging 3.0% in 2023 and 2024, and

@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: frlib.products.temporaire_deces.TD_FR_A.Projection
+.. automodule:: frlib.products.temporaire_deces.TD_FR_S.Projection
 
 Cells Descriptions
 ------------------
@@ -44,7 +44,13 @@ Cells Descriptions
 
 .. autofunction:: pols_if_init
 
+.. autofunction:: proj_len_y
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
 
 .. autofunction:: policy_year
 
@@ -55,6 +61,12 @@ Cells Descriptions
 .. autofunction:: prem_freq_load
 
 .. autofunction:: prem_freq_fee
+
+.. autofunction:: prem_instalments
+
+.. autofunction:: prem_cycle
+
+.. autofunction:: prem_due
 
 .. autofunction:: prem_tariff_pp
 
@@ -70,6 +82,8 @@ Cells Descriptions
 
 .. autofunction:: prem_pp
 
+.. autofunction:: prem_inst_pp
+
 .. autofunction:: mort_rate_base
 
 .. autofunction:: sel_lapse_factor
@@ -80,11 +94,21 @@ Cells Descriptions
 
 .. autofunction:: ptia_rate
 
+.. autofunction:: decr_rate
+
+.. autofunction:: decr_rate_mth
+
+.. autofunction:: mort_rate_mth
+
+.. autofunction:: ptia_rate_mth
+
 .. autofunction:: lapse_rate_base
 
 .. autofunction:: shock_lapse_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: lapse_cum
 
@@ -147,5 +171,7 @@ Cells Descriptions
 .. autofunction:: check_no_cash_value
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_pols

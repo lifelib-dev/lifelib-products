@@ -17,7 +17,7 @@ What the house style is, and why, is written up in
 * every Space and every cells carries a docstring, and the ``Projection`` docstring
   carries the mapping from the technical notes' actuarial symbols to the cells names.
 
-``TD_FR_A`` also asserts several of these for itself, in more specific form (it names its
+``TD_FR_S`` also asserts several of these for itself, in more specific form (it names its
 own input files, its own docstring phrases). That overlap is deliberate: the checks here
 are the general contract, the ones there are that model's particulars.
 
@@ -154,7 +154,7 @@ def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
     The name is the product's short name, a country tag and a grid tag — ``ADE_FR_S``,
-    ``Euro_FR_A`` — rather than anything derivable from the folder slug, because
+    ``Euro_FR_S`` — rather than anything derivable from the folder slug, because
     ``assurance_emprunteur`` spelled out is unusable in a model name. Where the French
     market has a settled short form the model takes it (UC, PER, ADE, EC); where it has
     none the short name is chosen rather than found. Either way the pairing lives in
@@ -349,10 +349,10 @@ def test_cells_names_are_lower_snake_case(model):
 # provenance, not a stale reference: the name lost there, and it stays lost here.
 #
 # frlib added none of its own. It did not need to: two of the inherited entries fired
-# against the nine models as they were first written — EC_FR_A had reintroduced
+# against the nine models as they were first written — EC_FR_S had reintroduced
 # premium_net_pp and Rente_FR_S mort_rate_table — which is the register earning its keep
 # rather than merely recording history. Neither of the names the register offered fitted
-# EC_FR_A's quantity, a versement net of the entry charge and a real cash flow rather than
+# EC_FR_S's quantity, a versement net of the entry charge and a real cash flow rather than
 # a pricing one, so it is spelled prem_after_charge_pp; the rule the register enforces is
 # that the retired spelling stays retired, not that a replacement must already exist.
 RETIRED_NAMES = {
@@ -381,7 +381,7 @@ RETIRED_NAMES = {
         "prem_net_level_pp — a net *level* premium is a pricing quantity that never "
         "becomes a cash flow, while WholeLife_US_S.premium_net_pp is the premium actually "
         "collected after the dividend offset; where the quantity is neither, as in "
-        "EC_FR_A, name it for what the charge did to it — prem_after_charge_pp"
+        "EC_FR_S, name it for what the charge did to it — prem_after_charge_pp"
     ),
     "premium_net_at": "prem_net_level_at",
     "prem_pp_mth": "premium_mth_pp (monthly), with premium_pp for the annual amount",
@@ -499,7 +499,7 @@ def test_pols_if_is_the_start_of_period_count(name, model):
     **What this cannot catch, stated rather than glossed.** A model that published an
     outset state as its first row rather than a projected period would open at
     ``pols_if_init()`` under *either* reading, so the check would pass on a model that has
-    the defect; ``EC_FR_A`` was once exactly that case and had to be found by reading the
+    the defect; ``EC_FR_S`` was once exactly that case and had to be found by reading the
     docstrings instead, and it is the sweep's frame assertions — ``t = 0`` is period 0 and
     ``pols_if(0)`` is its opening count — together with each model's docstrings that rule
     it out now. A test that identified the exposure weighting itself would need to know
@@ -563,14 +563,14 @@ def _ade_cover_may_end_before_the_loan(proj, df):
 
 
 def _euro_opens_on_the_whole_policy(proj, df):
-    """Euro_FR_A: the frame opens with the whole policy in force."""
+    """Euro_FR_S: the frame opens with the whole policy in force."""
     assert (df["pols_if"] >= 0.0).all()
     assert df["pols_if"].iloc[0] == pytest.approx(proj.pols_if_init())
 
 
 EXTRA_POINT_ASSERTIONS = {
     "ADE_FR_S": _ade_cover_may_end_before_the_loan,
-    "Euro_FR_A": _euro_opens_on_the_whole_policy,
+    "Euro_FR_S": _euro_opens_on_the_whole_policy,
 }
 
 
@@ -592,7 +592,7 @@ def test_every_model_point_projects(name, model):
     ``t = t_first, ..., proj_len() - 1`` and its last index is ``proj_len() - 1``. Where the
     frame *starts* is not pinned to 0, because it is not fixed per model: ``t_first`` is 0
     for a point projected from issue and the elapsed periods for an in-force point —
-    ``EC_FR_A``'s in-force model points open partway through the term, at the duration the
+    ``EC_FR_S``'s in-force model points open partway through the term, at the duration the
     policy has already run. The frame is checked for **contiguity** from ``t_first`` to the
     exclusive end, which is the property that actually matters — a gap in ``t`` means a
     period was dropped, and neither end of the frame would reveal it.
