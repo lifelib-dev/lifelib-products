@@ -62,7 +62,7 @@ the 갱신형 / 비갱신형 split; the [whole life technical notes
 [REG-R19]. What changes here, and changes the *shape* of the model rather than a parameter
 in it:
 
-1. **A three-state model, not a one-state model.** `Term_KR_A` projects a single in-force
+1. **A three-state model, not a one-state model.** `Term_KR_S` projects a single in-force
    population and reads a death rate off it. A cancer model cannot: the premium waiver, the
    inpatient, surgery and treatment limbs and the 계약자적립액 payable on a later death all
    run on **how long the insured lives after diagnosis**, and the 특정소액암 tier does not
@@ -164,7 +164,7 @@ in it:
   reprices at the attained age on the rate basis then in force [S4 제2-11조의6], which would
   ordinarily close the boundary at each renewal; `krlib` projects that flag to final expiry
   and **records the tension rather than resolving it**, which is a K-IFRS 1117 question
-  [REG-R60] this model does not answer. Exactly as `Term_KR_A` and `Medical_KR_S` do.
+  [REG-R60] this model does not answer. Exactly as `Term_KR_S` and `Medical_KR_S` do.
 - **Rounding.** Intermediates at full double precision. The worked example displays policy
   counts to ten decimals and cash flows to ten decimals in the first-year table, six in the
   milestone table and four in the aggregates. **Monthly rows rounded for display do not
@@ -344,7 +344,7 @@ This class is **nearly empty, and its emptiness is the product fact.** The compo
 **무배당** wherever the dividend basis is stated [S1] [S3] [S8], so there is no 계약자배당
 and the surplus-distribution machinery of 감독규정 제6-11조의7 and 제6-13조 does not attach
 [REG-R12]. The design is **금리확정형**, so there is no 공시이율 to reset and no
-최저보증이율 to bind — that machinery belongs to `WholeLife_KR_A`. There is no premium review
+최저보증이율 to bind — that machinery belongs to `WholeLife_KR_S`. There is no premium review
 on the 비갱신형 chassis and no MVA. What remains:
 
 | Input | Snapshot value | Basis |

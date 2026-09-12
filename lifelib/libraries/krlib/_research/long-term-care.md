@@ -529,8 +529,8 @@ of §5 and §6 below. Access date for every source: **2026-09-03**.
   an *annuity* form as well as a lump-sum form, and (iii) the state is **not absorbing for
   cash-flow purposes** — an annuity benefit runs while the insured survives, so a post-onset
   mortality basis is required that `Cancer_KR_S` does not need. The LTC trigger also appears
-  inside `CI_KR_A` as one of the acceleration events; see `_research/ci-insurance.md` §10 for
-  that treatment. The two are deliberately not merged: `CI_KR_A` pays *one* benefit on the
+  inside `CI_KR_S` as one of the acceleration events; see `_research/ci-insurance.md` §10 for
+  that treatment. The two are deliberately not merged: `CI_KR_S` pays *one* benefit on the
   first of several triggers, whereas `LTC_KR_S` is a standalone contract whose only trigger is
   the grade.
 
@@ -2085,10 +2085,10 @@ lost.
 - **치매 통원급여금 and the 노인성 질환 riders** (관절염수술, 인공관절치환, 대상포진, 통풍,
   중증무릎관절연골손상) [S2] are recorded in §13.1's rate card for completeness and are outside
   scope.
-- **The LTC acceleration inside `CI_KR_A`** — a CI product whose 장기요양상태 trigger is
+- **The LTC acceleration inside `CI_KR_S`** — a CI product whose 장기요양상태 trigger is
   장기요양 1등급 또는 2등급 with its own 90-day 보장개시일 — is documented in
   `_research/ci-insurance.md` §10 and is deliberately not duplicated here. The two products
-  share a statutory trigger and nothing else: `CI_KR_A` pays one accelerated benefit on the
+  share a statutory trigger and nothing else: `CI_KR_S` pays one accelerated benefit on the
   first of several events, `LTC_KR_S` pays a standalone benefit on the grade alone.
 - **표준해약공제액, 표준책임준비금, K-ICS, IFRS 17 CSM and 해약환급금준비금** belong to
   `_research/regulatory-actuarial.md` and are referenced here only where a specific LTC

@@ -1283,16 +1283,16 @@ it has no US or UK analogue at this level of prescription. Two layers.
 표준해약공제액 is computed once and deducted from the 계약자적립액 during the 해약공제기간,
 which is the premium-paying period capped at seven years. Product by product:
 
-- `Term_KR_A`, `WholeLife_KR_A`, `CI_KR_A`, `Child_KR_S` (protection portion),
+- `Term_KR_S`, `WholeLife_KR_S`, `CI_KR_S`, `Child_KR_S` (protection portion),
   `Cancer_KR_S`, `LTC_KR_S`: 보장성보험. Coefficient = policy term, capped at 20. Annual
   net premium recomputed on a whole-term-pay basis (20-year pay where the term is 20
   years or more). Plus 10/1000 of the sum assured.
 - `Medical_KR_S`: 보장성보험, but note 7 replaces the sum-assured term with **15% of the
   annual risk premium** — the only product-specific override in the schedule, and it
   exists precisely because an indemnity product has no 보험가입금액 in the ordinary sense.
-- `Pension_KR_A`: 연금저축보험. **4% of the annual net premium** (3% if 무배당), coefficient
+- `Pension_KR_S`: 연금저축보험. **4% of the annual net premium** (3% if 무배당), coefficient
   = premium-paying period capped at 12.
-- `Immediate_KR_A`: a whole-life 생존연금 that is not a 연금저축보험 — note 4 gives **6% of
+- `Immediate_KR_S`: a whole-life 생존연금 that is not a 연금저축보험 — note 4 gives **6% of
   the annual net premium**, subject to the 5% × 12-year ceiling, and a single-premium
   contract takes a coefficient of **1**. Note the interaction: a single-premium immediate
   annuity's cap is therefore very small relative to premium.
@@ -1320,7 +1320,7 @@ which is the premium-paying period capped at seven years. Product by product:
   product covers both death and non-death risks) [S3].
 
 That 1.4× tolerance is a useful outer bound for a `[std]` acquisition-cost assumption on
-`WholeLife_KR_A`: an insurer may load up to 1.4 × 표준해약공제액 on a whole-life death
+`WholeLife_KR_S`: an insurer may load up to 1.4 × 표준해약공제액 on a whole-life death
 product without triggering index disclosure, so a reference implementation that sets
 계약체결비용 at or below the 표준해약공제액 is conservative and defensible.
 
@@ -1665,7 +1665,7 @@ demonstration that the co-payment structure, not the insured population, drives 
 - 제5-6조제6항: for classes 1 and 5 the applied rate follows the 공시이율 machinery of
   제7-65조제3항 [S3] — so a **연금저축보험 is a separate-account product whose account
   credits at the 공시이율**, which is the single most important structural fact about
-  `Pension_KR_A`.
+  `Pension_KR_S`.
 - 제5-7조 lists the only permitted transfers between the separate and general accounts:
   premium receipt and benefit/dividend/refund payment; transfer to the general account of
   amounts needed for risk cover and for contract acquisition, maintenance and
@@ -1848,7 +1848,7 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   insurer's terms, "그러나 **순수보장성보험 등** 보험상품의 종류에 따라 보험계약대출이
   제한될 수도 있습니다"; unpaid principal and interest are deducted from any benefit or
   surrender value [S8]. So a 무해지 protection product may have no policy loan at all — a
-  point `WholeLife_KR_A` and `Term_KR_A` must state.
+  point `WholeLife_KR_S` and `Term_KR_S` must state.
 - **계약자적립액**, defined in a box beside 제22조: "장래의 해약환급금 등을 지급하기 위하여
   계약자가 납입한 보험료 중 일정액을 기준으로 보험료 및 해약환급금 산출방법서에서 정한
   방법에 따라 계산한 금액" [S8].
@@ -2000,7 +2000,7 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   lifetime-payment contract [S10]. **The age-band table in 가목 is an image and did not
   extract**; the commonly quoted 5% / 4% / 3% by age band is therefore **[unverified]** here.
   What is verified is that a **lifetime annuity attracts the lowest band, 3%**, which is a
-  real product-design incentive for `Pension_KR_A` and `Immediate_KR_A`.
+  real product-design incentive for `Pension_KR_S` and `Immediate_KR_S`.
 
 **Protection premiums — 보장성보험료 세액공제** [S10]:
 
@@ -2056,7 +2056,7 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
   original first-premium date is preserved [S11].
 
   That last provision is the tax basis of the Korean "**연금전환**" feature that many
-  종신보험 carry, and `WholeLife_KR_A`'s product spec should record it.
+  종신보험 carry, and `WholeLife_KR_S`'s product spec should record it.
 
 **Death benefits — 상속세 및 증여세법** [S12]:
 
@@ -2091,7 +2091,7 @@ All from the 생명보험 표준약관, 별표 15 to the 시행세칙 [S8].
     because the policy term has ended** ("보험기간이 종료되어 지급되는 보험금은 제외");
   - 라. everything else.
   ISA claims are combined with bucket 라, per account holder [S14 제18조제7항제2호].
-- Two consequences for `krlib`: a `Pension_KR_A` policyholder's protection is in bucket 나 and
+- Two consequences for `krlib`: a `Pension_KR_S` policyholder's protection is in bucket 나 and
   is **separate** from the ₩100,000,000 covering their other insurance claims; and a maturity
   benefit is expressly outside bucket 다, so a maturing 저축성 contract falls into bucket 라
   with the depositor's other claims. Neither point is modelled, both are worth a line in the
@@ -2552,7 +2552,7 @@ expression is a picture and did not extract. Every one is a live gap.
   종신계약 rate of 3% (다목) extracted; the age bands did not. The commonly quoted
   5%/4%/3% is **[unverified]**.
 - **소득세법 시행령 제25조제4항제5호** — the **annual-annuity ceiling formula** for a
-  tax-exempt 종신형 연금보험. The other four conditions extracted in full. `Immediate_KR_A`
+  tax-exempt 종신형 연금보험. The other four conditions extracted in full. `Immediate_KR_S`
   cannot verify a design against the ceiling.
 - **소득세법 시행령 제40조의2제3항제3호** — the **연금수령한도 formula**. The 55-and-five
   test and the "no limit from year 11" rule extracted; the formula did not.

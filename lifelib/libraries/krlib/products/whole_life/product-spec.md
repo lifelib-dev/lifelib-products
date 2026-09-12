@@ -164,7 +164,7 @@ Footnotes to [std] rows:
    10 — but Korean retail protection is overwhelmingly non-participating and **`krlib` models
    no dividend** [REG-R12]. 금리확정형 is taken over 금리연동형 for the same evidential reason:
    the 상품요약서 that publish complete cash values are 금리확정형 [S8], and the one 금리연동형
-   contract retrieved is a 유니버셜 chassis whose account mechanics belong to `Pension_KR_A`
+   contract retrieved is a 유니버셜 chassis whose account mechanics belong to `Pension_KR_S`
    and `VA_KR_S` [S5]. The 금리연동형 variant is parameterized, not dropped — see *Riders and
    options*.
 2. **0.50 is the modal factor and the only one that does not trigger the extra statutory
@@ -219,18 +219,19 @@ Footnotes to [std] rows:
    20년납 / 월납 for both the 표준형 and the suppressed form [S4]. The published pair at that
    cell is a **30%** design; the composite applies its own `k = 0.50` to the same 표준형 curve,
    which is legitimate precisely because the surrender value is defined by reference to the
-   twin and is factor-independent — see *Contractual mechanics*. `WholeLife_KR_A` runs on an
-   annual grid, so the annual premium is 12 × the monthly figure = ₩3,084,600; no carrier in
-   the set publishes an annual-mode scale, so the modal discount a real 연납 scale would carry
-   is not applied, and the resulting overstatement of the annual premium is recorded in
-   `technical-notes.md` rather than hidden.
+   twin and is factor-independent — see *Contractual mechanics*. `WholeLife_KR_S` runs on a
+   **monthly** grid, which is the mode every published scale in the set is quoted in, so the
+   composite collects the published ₩257,050 a month directly; the model point table still
+   carries the annual figure ₩3,084,600 = 12 × it, because a commission scale and a comparison
+   disclosure are written in annual units, and the model divides it back. No carrier in the
+   set publishes an annual-mode scale, so no modal loading is invented in either direction.
 
 ### Premiums
 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Premium basis | Level and guaranteed for the whole of 납입기간; 금리확정형, so no review and no crediting-rate feedback into the premium | [S8]; [S2] |
-| Mode (납입주기) | 월납 / 3개월납 / 6개월납 / 연납; composite **월납, annualized at 12 ×** for the annual grid | [S1] [S2] [S4] [S6] [S8]; default **[std]** (8) |
+| Mode (납입주기) | 월납 / 3개월납 / 6개월납 / 연납; composite **월납**, collected on the monthly grid | [S1] [S2] [S4] [S6] [S8]; default **[std]** (8) |
 | Rating factors | 보험나이, sex, 납입기간, 보험가입금액 (via 고액계약할인), the surrender-value form, and 건강등급 where offered | [S1] [S4] [S6] |
 | Pricing interest rate (예정이율 / 적용이율) | **연복리 2.50%**, flat for the whole term | disclosed range 2.25%–2.75% [S1] [S2] [S5] [S6] [S7] [S8]; level **[std]** (9) |
 | Price of the suppression | The 저해지환급형 premium is **90.0%** of the 표준형's at the anchor cell | observed 81.5%–95.4% [S1] [S2] [S4] [S6]; pick **[std]** (10) |
@@ -269,7 +270,7 @@ Footnotes to [std] rows:
 | Loan on a suppressed form | **None at all during 납입기간 on a 무해지환급형 contract** — there is no value to lend against — and only 80% of the *suppressed* value on a 저해지환급형 one | [R4] [REG-R28] [REG-R25 제33조](#krlib-reg-r25) |
 | Automatic premium loan (자동대출납입) | **Not evidenced in any retrieved Korean document, and not modelled.** The 표준약관 is understood to contain such an article but the retrieved extract does not carry it, and the one full 약관 in the set handles non-payment through a 월대체보험료 mechanism instead | [S5]; **[unverified]**; scope **[std]** (16) |
 | Sum-assured reduction (감액) | Permitted; the reduced portion is **treated as surrendered** and pays the corresponding 해약환급금, on the suppressed basis if made during 납입기간 | [S5 제20조] [REG-R25] |
-| Partial withdrawal (중도인출) and 추가납입 | Belong to the 유니버셜 chassis — 12 withdrawals a 보험년도, a 50% single-withdrawal cap and a residual-account floor — and to an 추가납입특약 on a conventional one. Specified for inheritance by `Pension_KR_A` and `VA_KR_S`; not modelled here | [S1] [S5 제33조]; scope **[std]** (16) |
+| Partial withdrawal (중도인출) and 추가납입 | Belong to the 유니버셜 chassis — 12 withdrawals a 보험년도, a 50% single-withdrawal cap and a residual-account floor — and to an 추가납입특약 on a conventional one. Specified for inheritance by `Pension_KR_S` and `VA_KR_S`; not modelled here | [S1] [S5 제33조]; scope **[std]** (16) |
 | Annuity conversion (연금전환특약) | A **제도성특약** — attachable at no extra premium. The annuity basis (연금사망률, 계약관리비용, 공시이율, 최저보증이율) is the **rider's at conversion**, not the base contract's at issue. Eligibility gates of 7 or 10 years elapsed and age 45–80 appear at one carrier | [S2] [S3] [S6]; tax basis [REG-R58 시행령 제25조제9항·제10항](#krlib-reg-r58) |
 | Persistency bonus (유지보너스) | A 단기납 feature: **10.8% (5년납) / 13.8% (7년납) / 15.0% (10·15년납)** of total 주보험 premiums credited to the 계약자적립액 at 납입완료, with a second 18.5% credit at duration 10 on 5·7년납. Parameterized, **off in the base run** | [S7]; scope **[std]** (17) |
 | Reduced paid-up (감액완납) and extended term (연장정기보험) | **Do not appear in any retrieved Korean 약관 or 상품요약서.** Not offered, not modelled | [S5]; **[unverified]** |
@@ -307,11 +308,12 @@ Footnotes to the [std] rows above, continuing the numbering:
 
 8. Every published premium scale in the set is quoted **monthly** [S1] [S2] [S4] [S6] [S7]
    [S8], monthly is the 기준연령 요건's own mode [REG-R9], and one carrier bars the annual mode
-   outright for a 납입면제 rider [S1]. `WholeLife_KR_A` is annual-step, so the composite pays
-   annually at 12 × the monthly figure. No carrier publishes the modal loading a real 연납
-   scale carries, so applying one would be an invention; the direction of the resulting error —
-   annual-mode premium slightly overstated, and the first-year interest credit slightly
-   understated — is stated in `technical-notes.md`.
+   outright for a 납입면제 rider [S1]. `WholeLife_KR_S` is **monthly-step**, so the composite
+   pays the published monthly figure in the month it falls due, and the two errors the earlier
+   annual-step composite had to state — an overstated annual premium and an understated
+   first-year interest credit — no longer arise. No carrier publishes the modal loading a real
+   연납 scale carries, so the annual column is exactly 12 × the monthly rate and no loading is
+   invented in either direction.
 9. **Unlike Japan, Korea publishes the pricing rate**, and six values were read from carrier
    documents: **연복리 2.3%** (2022-04) [S1]; **2.3%** on the 예정적립금 of a 유니버셜 contract
    (2021-05) [S5]; **2.25%** (a 2023 vintage) [S2]; **2.25% for ten years then 1.75%** — a term
@@ -409,13 +411,13 @@ Footnotes to the [std] rows above, continuing the numbering:
     such an article, but the retrieved 별표 15 extract does not carry it [REG-R25] and three
     independent routes to the standard-form text failed; the one full Korean 약관 in the set
     handles non-payment through a 월대체보험료 deduction from the account, which is a 유니버셜
-    mechanic and not an APL [S5]. `WholeLife_KR_A` therefore **does not implement an automatic
+    mechanic and not an APL [S5]. `WholeLife_KR_S` therefore **does not implement an automatic
     premium loan**, and Korean lapse is modelled as a behavioural decrement acting at the end
     of a 14-day demand period. The claim that Korea has no APL is **[unverified]** and is the
     highest-value single item for the next research pass, because if a 표준약관 article is
     found the lapse mechanics of this chassis change in kind. 중도인출 and 추가납입 are
     excluded for a different reason: they are evidenced [S1] [S5] but belong to the 유니버셜
-    chassis, which `Pension_KR_A` and `VA_KR_S` inherit and specify.
+    chassis, which `Pension_KR_S` and `VA_KR_S` inherit and specify.
 17. The 유지보너스 (*yuji boneoseu*) is parameterized and off by default because it is a
     **단기납** feature, not a whole-life one: it appears on 5년납 and 7년납 designs and is the
     thing that produced the 2023–24 refund-ratio competition. Its published rates are 주보험
@@ -443,21 +445,26 @@ Footnotes to the [std] rows above, continuing the numbering:
 Notation used below and carried into `technical-notes.md`:
 
     x       가입나이 (보험나이) at issue
-    t       completed policy years since the 계약일 (the annual grid step)
-    m       보험료 납입기간 in years; m = infinity on a 전기납 (종신납) contract
-    n_sc    해약공제기간 = min(m, 7) years
+    t       completed months since the 계약일 (the monthly grid step); policy year = t // 12 + 1
+    m       보험료 납입기간 in years, 12m in months; m = infinity on a 전기납 (종신납) contract
+    n_sc    해약공제기간 = min(m, 7) years, 12 n_sc in months
     SA      보험가입금액
-    G       annual gross premium (영업보험료), level for t < m, zero for t >= m
-    P       annual net premium (순보험료) on the 표준형 basis
-    i       예정이율, the pricing interest rate
-    q(x+t)  the pricing mortality rate (적용위험률) at attained 보험나이 x+t
-    V(t)    계약자적립액 of the 표준형 twin at t
-    SC(t)   해약공제액 at t, capped at the 표준해약공제액
-    W(t)    표준형 해약환급금 at t = max(0, V(t) - SC(t))
-    CV(t)   the 해약환급금 actually payable at t
+    G       annual gross premium (영업보험료); G^m = G / 12 is the monthly instalment,
+            level for t < 12m and zero for t >= 12m
+    P       annual net premium (순보험료) on the 표준형 basis -- the 연납순보험료 별표 14
+            names; P^m is its monthly equivalent, the one the account consumes
+    i       예정이율, the pricing interest rate per annum; j = (1+i)^(1/12) - 1 per month
+    q(x+t)  the pricing mortality rate (적용위험률) at attained 보험나이 x+t, an ANNUAL
+            probability; q^m = 1 - (1-q)^(1/12) is its monthly conversion
+    d       the month-end the value cells are indexed by, d = 0 at issue; a 계약해당일 is
+            d = 12y, and the flows of month t open at d = t and close at d = t + 1
+    V(d)    계약자적립액 of the 표준형 twin at d
+    SC(d)   해약공제액 at d, capped at the 표준해약공제액
+    W(d)    표준형 해약환급금 at d = max(0, V(d) - SC(d))
+    CV(d)   the 해약환급금 actually payable at d
     k       the suppression factor: 1.00 표준형, 0.50 저해지환급형, 0.00 무해지환급형
-    L(t)    outstanding 보험계약대출 principal and interest at t
-    i_L     the 보험계약대출이율 = i + 1.5%
+    L(d)    outstanding 보험계약대출 principal and interest at d
+    i_L     the 보험계약대출이율 = i + 1.5% per annum; j_L its monthly equivalent
 
 ### The death benefit, and what happens when a benefit is refused
 
@@ -514,18 +521,19 @@ life model computes is the 계약자적립액, and it is a contractual quantity,
 
 감독규정 제7-65조제1항 says only that "계약자적립액은 보험료 및 책임준비금 산출방법서에 따라
 계산한 금액으로 한다" and 제2항 permits it to be computed on an **annualised premium** basis —
-"연납보험료를 기준으로 하여 산출할 수 있다" [REG-R18]. That permission is what lets an annual
-grid carry a monthly-premium product's account, and `WholeLife_KR_A` uses it.
-제7-66조제1항제4호 adds the accrual convention: the account accrues **monthly before 납입완료
-and daily afterwards**; the two formulas render as images in the 고시 and did not extract, so
-the annual grid's treatment of them is a **[std]** approximation stated in `technical-notes.md`
-[REG-R19].
+"연납보험료를 기준으로 하여 산출할 수 있다" [REG-R18]. That permission is what let an annual
+grid carry a monthly-premium product's account; **`WholeLife_KR_S` no longer needs it**.
+제7-66조제1항제4호 states the accrual convention the account is actually owed: it accrues
+**monthly before 납입완료 and daily afterwards**. The two formulas render as images in the
+고시 and did not extract, so a monthly step remains a **[std]** reading of them — but it is
+the step the rule names, and the daily accrual after 납입완료 is the one part still
+approximated [REG-R19].
 
 The composite therefore defines the 표준형 twin's account by the classical net-level recursion,
-on the pricing basis and on the annual grid:
+on the pricing basis and on the monthly grid:
 
     V(0) = 0
-    V(t+1) = ( V(t) + P ) * (1 + i) - q(x+t) * ( SA - V(t+1) )      end-year benefit
+    V(d+1) = ( V(d) + P^m ) * (1 + j) - q^m * ( SA - V(d+1) )       end-month benefit
 
 solved forward, with the net premium `P` fixed at issue by equivalence over the 납입기간 —
 
@@ -733,7 +741,7 @@ appropriates the shortfall inside 이익잉여금 [REG-R11]. So a 무해지 cont
 surrender value is zero still enters the test at its 별표-14-floored value. The reserve stood
 at **₩23.7조 at end-2022 and ₩32.2조 at end-2023** [REG-R36] [R7], it is graded by the
 insurer's K-ICS ratio, and a well-capitalised insurer (K-ICS ≥ 130% before transitionals at the
-previous quarter-end) appropriates only **80%** of the shortfall [REG-R11]. **`WholeLife_KR_A`
+previous quarter-end) appropriates only **80%** of the shortfall [REG-R11]. **`WholeLife_KR_S`
 does not compute it**; it is named because it is the reason a Korean insurer's economics on
 this product depend on the surrender value and not only on the fair-valued liability.
 
@@ -763,7 +771,7 @@ on-site inspection; and on a **단기납 종신** design carrying a bonus, an **
 at least 30%** must be assumed at the bonus date [REG-R27] [R3] [R7]. Effective from the 2024
 year-end close.
 
-`WholeLife_KR_A` therefore carries a **log-linear decay to 0.1% at 납입완료 and 0.8%
+`WholeLife_KR_S` therefore carries a **log-linear decay to 0.1% at 납입완료 and 0.8%
 thereafter** as its [std] base vector, with a switch to a flat 표준형 assumption so that the
 two can be run side by side — which is exactly the comparison the guidance obliges an insurer
 to disclose [REG-R27]. **No Korean lapse curve by duration was obtained from any public
@@ -827,11 +835,12 @@ carriers [S5 제34조] [REG-R25 제33조](#krlib-reg-r25):
 > ③ 회사는 … 계약이 해지되는 때에는 즉시 해지환급금에서 보험계약대출의 원금과 이자를
 > 차감합니다.
 
-Modelled as a state, on the annual grid, the balance rolls up at compound interest and is
-extinguished against any exit:
+Modelled as a state, on the monthly grid, the balance rolls up at compound interest and is
+extinguished against any exit. The rate is quoted per annum and the roll runs on its monthly
+equivalent `j_L = (1 + i_L)^(1/12) - 1`, so twelve months compound back to exactly `1 + i_L`:
 
     L(0)   = 0
-    L(t+1) = ( L(t) + D(t) - R(t) ) * (1 + i_L)
+    L(t+1) = ( L(t) + D(t) - R(t) ) * (1 + j_L)
     D(t)  <= 0.80 * CV(t-1) - L(t)      the limit, tested at the draw and not after it
     with  claims, surrenders and lapses paid net of L(t), floored at zero
 
@@ -879,8 +888,8 @@ than a binary event; and it covers **both 재해 (accident) and non-accident cau
 장해분류표 itself is 부표 3 to the 생명보험 표준약관, which defines 장해 as "상해 또는 질병에
 대하여 치유된 후 신체에 남아 있는 **영구적인** 정신 또는 육체의 훼손상태 및 기능상실 상태",
 expressly excluding temporary states during treatment [REG-R25]. It is the common percentage
-scale behind premium waiver in every Korean protection product, which is why `Term_KR_A`,
-`CI_KR_A`, `Cancer_KR_S` and `Child_KR_S` can all state a waiver without re-defining one.
+scale behind premium waiver in every Korean protection product, which is why `Term_KR_S`,
+`CI_KR_S`, `Cancer_KR_S` and `Child_KR_S` can all state a waiver without re-defining one.
 
 **The "deemed paid" rule is what makes it a modelling problem**: 「그러나 이 경우에도 보험료가
 보험료 납입기간 종료일까지 월계약해당일에 정상적으로 납입된 것으로 하여 사망보험금 및
@@ -936,7 +945,7 @@ Korean document.** The 60-article 약관 in the set has no such article — 제2
 보험가입금액, 계약자 and 「기타 계약의 내용」 as variables — and every 상품요약서 in the set is
 silent [S5]. Search results describe both as generally available Korean maintenance options,
 but neither was confirmed against a primary document, so both are **[unverified]** as features
-of a Korean 종신보험 and `WholeLife_KR_A` does not model them. This is the clearest case in the
+of a Korean 종신보험 and `WholeLife_KR_S` does not model them. This is the clearest case in the
 file where a reader arriving from `jplib` — where 払済保険 and 延長定期保険 are both in the
 約款 — would import a feature Korea has not been shown to have. What Korea offers in that slot,
 and what *is* sourced, is 감액 above and the payment holiday on a 유니버셜 chassis.
@@ -1064,7 +1073,7 @@ attribute it to the current regulation.**
   mandatory ≥ 30% additional lapse at the bonus date, off in the base run [S7] [REG-R27].
 - **연금전환특약** — specified and priced at zero, as it is in the market; not modelled as a
   cash flow, because the annuity basis is the rider's at conversion and belongs to
-  `Immediate_KR_A` and `Pension_KR_A` [S2] [S3] [S6].
+  `Immediate_KR_S` and `Pension_KR_S` [S2] [S3] [S6].
 
 **Out of scope, and named so that a reader meeting them knows they are real:** 건강등급 할인, a
 premium re-rated annually on a health measure, up to 8% on the 주계약 [S6]; 선납 [S2] [S3] [S5]
@@ -1219,7 +1228,7 @@ is bound them by published caps and by published cash values.
 — ten paragraphs of the pre-2023 article, which carried accumulation rules, were deleted on
 2022-12-21, which is the visible trace of the switch from a locked-in statutory reserve to a
 current-estimate one [REG-R10]. On top sits the **해약환급금준비금** [REG-R11], described in
-the cliff section above. `WholeLife_KR_A` computes **none** of these. What it does compute —
+the cliff section above. `WholeLife_KR_S` computes **none** of these. What it does compute —
 the **계약자적립액** and the **해약환급금** — it computes because both are contractual
 quantities with a **published bound**, 별표 14 [REG-R20], and because the surrender-value
 reserve cannot be discussed at all without them.

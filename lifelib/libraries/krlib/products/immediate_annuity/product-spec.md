@@ -4,7 +4,7 @@
 
 **Scope note.** This is a *standardized composite specification* of the Korean
 single-premium immediate annuity, 즉시연금 (*jeuksi yeongeum*), assembled for reference
-liability cash-flow modelling as `Immediate_KR_A`. It does not describe any single
+liability cash-flow modelling as `Immediate_KR_S`. It does not describe any single
 insurer's contract. Facts carrying a source tag — [S#] (primary product documents:
 약관 (*yakgwan*, policy conditions), 상품요약서 (*sangpum yoyakseo*, the statutory
 product summary), 상품안내장 (sales leaflet), 사업방법서 (*saeop bangbeopseo*, business
@@ -60,7 +60,7 @@ declared rate and drawn down as an annuity from one month after the 보장개시
 commencement date). There is no premium term, no accumulation phase, no lapse decrement
 and no acquisition strain after t = 0. Everything the liability does happens on the
 payout side, which is exactly why this product sits in `krlib` alongside — and not
-inside — `Pension_KR_A`, whose subject is the accumulation half of the same machinery.
+inside — `Pension_KR_S`, whose subject is the accumulation half of the same machinery.
 
 Contractually the product is **two contracts sold as one**: 「계약자는 다음에 정하는
 보장계약과 연금계약을 동시에 체결하여야 합니다」 — a 보장계약 (protection contract)
@@ -180,7 +180,7 @@ Footnotes to [std] rows:
 3. Almost every retrieved product is sold in both modes [S3] [S4] [S5] [S6]. The 거치형
    is an accumulation contract with a payout election attached, and its 추가납입
    (top-up premium), 중도인출 (partial withdrawal) and pre-annuitisation 사망보험금 are
-   `Pension_KR_A`'s subject, not this one's. Excluding it keeps `Immediate_KR_A` to the
+   `Pension_KR_S`'s subject, not this one's. Excluding it keeps `Immediate_KR_S` to the
    payout phase standing alone, which is what this product exists in the library to
    demonstrate.
 4. Observed bands: **45–80** at 하나생명 [S1], 교보생명 [S2] [S3], 동양생명 [S4] and
@@ -330,7 +330,7 @@ representative set; the arithmetic that produces each annuity is in Contractual 
 | Parameter | Representative value | Basis |
 |---|---|---|
 | Benefit taxonomy | **생존연금** (the periodic annuity), **사망보험금** (death benefit) and, on the inheritance shape only, **만기보험금** (maturity benefit) | [S1] [S3] [S7 별표1] [R1 별표1](#krlib-immediate_annuity-r1) |
-| Payment grid | **Annual, in arrears.** On the annual mode the first 연금연액 falls due on the first 계약해당일; the market default is monthly, the first 연금월액 (*yeongeum wolaek*) falling due one month after the 보장개시일 | [S1 주1] [S3] [R2 §1](#krlib-immediate_annuity-r2); grid **[std]** (18) |
+| Payment grid | **Monthly, in arrears** — the market default: the first 연금월액 (*yeongeum wolaek*) falls due one month after the 보장개시일. The 연단위 alternative pays the 연금연액 from the first 계약해당일 | [S1 주1] [S3] [R2 §1](#krlib-immediate_annuity-r2); grid **[std]** (18) |
 | 종신연금형 — 생존연금 | 연금개시시의 계약자적립액 ÷ an annuity factor computed from the annuitant mortality table and the 공시이율, payable while the annuitant lives and **guaranteed for the 보증지급기간 whether or not the annuitant lives** | [S7 별표1] [S1] |
 | 종신연금형 — 보증지급기간 | **10 years** | [R12 표7](#krlib-immediate_annuity-r12); adoption **[std]** (19) |
 | 종신연금형 — 사망보험금 | **None after annuitisation.** The unpaid guaranteed instalments continue on their original dates, or may be commuted | [S5] [S1 주5] [S3] |
@@ -355,10 +355,13 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     quarterly and half-yearly appear on the deferred contracts, with interest added on
     the deferred portions — 「연금을 매월, 3개월, 6개월로 분할하여 지급하는 경우
     신공시이율로 계산한 이자를 가산합니다」 [S9 주11], and identically [S8 주14].
-    `Immediate_KR_A` is an **annual-grid** model per the library's product table, so it
-    projects the 연금연액 and treats the monthly split as a presentational sub-division;
-    the annual-in-arrears convention is the contract's own annual mode and not an
-    approximation of the monthly one. The technical notes carry the reconciliation.
+    `Immediate_KR_S` is a **monthly-grid** model per the library's product table, so it
+    projects the 연금월액 the market default actually pays and publishes the 연금연액 beside
+    it. The earlier annual-grid model projected the 연금연액 and reconciled to the monthly
+    mode through the interest addition above; that reconciliation is **exact only where no
+    mortality enters the annuity** — the 확정기간연금형 — and on the 종신연금형 the monthly
+    mode is genuinely worth 1.06% more, because it pays part-year instalments to a life that
+    dies inside a policy year. The technical notes carry the arithmetic.
 19. 97.3% of 종신형 buyers chose ten years and 2.7% chose twenty, a mean of 10.3 years
     [R12 표7](#krlib-immediate_annuity-r12). The US comparator in the same paper is a mean guarantee of 13 years. Ten
     years is also the tax-minimum shape: 소득세법 시행령 제25조제4항제3호 requires any
@@ -431,7 +434,7 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     presented as the 경험생명표**. One property of the anchors is worth recording here
     because it constrains any construction: the male/female ratio runs 2.32 at 50, 2.99
     at 60 and 2.90 at 70, and the 하나생명 rate at 60 is roughly twice the deferred-
-    annuity rates published in the sister research for `Pension_KR_A` — the two are not
+    annuity rates published in the sister research for `Pension_KR_S` — the two are not
     the same table, and the reason (a table loaded on the mortality side because the
     contract also carries a death benefit) is an inference and is **[unverified]**.
 24. Every retrieved carrier carries a ratchet clause: 「종신연금형의 경우 연금지급 개시전
@@ -440,7 +443,7 @@ representative set; the arithmetic that produces each annuity is in Contractual 
     [S3] and [S8 주15]. One states its scope expressly — 「**거치형에 한하여**, 종신연금형의
     경우 연금개시전에 연금생명표의 개정 등에 따라 …」 [S6 §10-라]. On an immediate annuity
     there is no interval between issue and annuitisation for a table revision to land in,
-    so the ratchet is inert and `Immediate_KR_A` needs no ratchet logic; the deferred
+    so the ratchet is inert and `Immediate_KR_S` needs no ratchet logic; the deferred
     sibling does. The one-way character of the clause — it operates only where the
     annuity would **increase** — is why the sister model needs it. A 2024 table revision
     is reported to have cut the annuity on a fixed fund by about 15% [R13, a news
@@ -624,20 +627,21 @@ representative basis:
 Thereafter the fund runs a single recursion, stated in the 약관 for both phases —
 「연금개시 전에는 연금계약순보험료를 … 공시이율로 납입일부터 일자계산에 의하여 적립한
 금액이며, 연금개시후에는 생존연금 발생분을 차감한 금액」 [R1, quoting the 약관 서두](#krlib-immediate_annuity-r1). On
-the annual grid, with the annuity payable in arrears:
+the monthly grid, with the annuity payable in arrears:
 
 ```
-V(t+1) = V(t) × (1 + i(t)) − A(t),       i(t) = Max[공시이율, 최저보증이율(t)]
+V(t+1) = V(t) × (1 + j(t)) − A(t),
+j(t)   = ( 1 + Max[공시이율, 최저보증이율(t)] )^(1/12) − 1
 ```
 
-A(t) is `technical-notes.md`'s own index convention: the 연금연액 struck in period t and
-falling **at time t + 1**, in arrears on the 계약해당일. Everything that distinguishes the
-three shapes is the definition of A(t) out of V(t), and everything the model does after
-t = 0 is that recursion plus a decrement. There is no
+A(t) is `technical-notes.md`'s own index convention: the 연금월액 struck in month t and
+falling **at the end of that month**, in arrears on the 연금지급일. Everything that
+distinguishes the three shapes is the definition of A(t) out of V(t), and everything the
+model does after t = 0 is that recursion plus a decrement. There is no
 premium income after t = 0, no acquisition strain to amortise, and — because the whole
 load was taken at inception and the surrender deduction is nil — no unamortised
 acquisition cost bounded by 별표 14 [REG-R20]. That is what makes this the library's
-payout-phase chassis: the accumulation half of the machinery is `Pension_KR_A`'s.
+payout-phase chassis: the accumulation half of the machinery is `Pension_KR_S`'s.
 
 ### The crediting rate — 공시이율, 공시기준이율 and 최저보증이율
 
@@ -647,9 +651,11 @@ The rate applied to the fund is the higher of the declared rate and the guarante
 
 **It is reset monthly and fixed within the month.** 「이 계약의 공시이율은 매월 1일 회사가
 정한 이율로 하며, 당월 말일까지 1개월간 확정 적용한다」 [S6 §9-나], identically at
-[S1 주6], [S3], [S5] and [S7 제7조]. An annual-grid model therefore projects a rate that
-in reality steps twelve times a policy year; `technical-notes.md` records the
-approximation.
+[S1 주6], [S3], [S5] and [S7 제7조]. `Immediate_KR_S` carries one **annual** declared rate a
+policy year and credits its monthly equivalent, so the grid is finer than the rate is: a rate
+that in reality steps twelve times a policy year is projected as one level figure.
+`technical-notes.md` records the approximation, which is exact wherever the declared rate is
+level — as on the representative basis it is.
 
 **It is regulated in construction but not in level.** 감독규정 제7-65조제3항 makes the
 공시이율 the product of a **공시기준이율** and a 조정률, and requires the 공시기준이율 to
@@ -681,7 +687,7 @@ with a 조정율 of 89.16% giving an annuity 적용이율 of **2.55%** [S12]. Th
 80%–120% corridor [R1, quoting 약관 제16조](#krlib-immediate_annuity-r1). The internal/external split therefore ranges
 over 50/50, 60/40 and 65/35 on the retrieved evidence. **Any model that treats the
 공시이율 as an exogenous scalar is defensible; any model that claims to derive it is
-not**, and `Immediate_KR_A` exposes it as a scalar.
+not**, and `Immediate_KR_S` exposes it as a scalar.
 
 **The floor is a rate on the fund, never a floor on the annuity.** That single sentence
 is the substance of the whole dispute. A policyholder reading 「10년 이내 연복리 2.5% 최저
@@ -969,10 +975,11 @@ representative first-day deduction of 4.97% gives, all **[std]**:
 
 Four terms, one basis, a maximum error of 1.4%, on a carrier and a document entirely
 independent of the 하나생명 expense disclosure the load was taken from [S1]. The certain
-shape is also where the annual grid costs least: annual and monthly instalments of the
-same present value differ by the within-year interest, and the advance convention would
-move the figures above by about 0.2 points, so the grid choice is a presentational matter
-here in a way it is not on the life shape.
+shape is also **the one shape on which the choice of grid changes nothing at all**: it
+carries no mortality in its annuity, so the monthly instalment the model now solves for
+directly is exactly the annual-step model's 연금연액 converted through the within-year
+interest, to the won. The advance convention would move the figures above by about 0.2
+points, which is the only timing question left open on this shape.
 
 One consequence of the shape has nothing to do with cash flow and belongs in the
 specification anyway: the **modal 확정기간연금형 term does not qualify for the interest-
@@ -1118,7 +1125,7 @@ decrements are mortality — on the life shape alone — and a voluntary surrend
 other two shapes for which **no source gives a rate at all**; the assumption is **[std]**
 and its level and sensitivity live in `technical-notes.md`.
 
-### 선지급 — commutation, instalment frequency, and the annual grid
+### 선지급 — commutation and instalment frequency
 
 **Commutation of unpaid instalments is available on every retrieved product**, and — the
 point a reader from another market will not expect — on survival as well as on death:
@@ -1144,10 +1151,11 @@ simplification and the technical notes say so.
 interest at the declared rate on the deferred portions — 「연금을 매월, 3개월, 6개월로
 분할하여 지급하는 경우 신공시이율로 계산한 이자를 가산합니다」 [S9 주11], and
 identically [S8 주14]. On an 즉시연금 monthly is the default and often the only frequency
-offered [S1 주1] [S3]. `Immediate_KR_A` runs the **annual** mode the same documents
-describe — 연단위 paying from the first 계약해당일 [S1 주1] — so the split is
-presentational and the interest addition is exactly what makes the two modes equivalent
-in value.
+offered [S1 주1] [S3]. `Immediate_KR_S` runs that **monthly** mode: it strikes the annuity
+on a monthly factor and pays the 연금월액 a row, with `annuity_pp_annual()` publishing the
+연금연액 an illustration quotes. The quarterly and half-yearly splits, and the 연단위 mode
+[S1 주1], are not separately projected — the interest addition above is what makes them
+equivalent in value, and only the monthly one is the market default.
 
 ### Expiry and 계약의 소멸
 
@@ -1204,7 +1212,7 @@ contract whose annuitant may lose capacity while the contract still has to pay.
   a deterministic step on an annuity the model already computes; excluded because no
   source publishes the factor adjustment that pays for the step.
 - **The 거치형 (deferred) selling mode** — a 1–5 year deferral at 교보, 삼성 and 동양
-  [S3] [S4] [S5], or to a chosen 연금개시나이 at ABL [S6]. This is `Pension_KR_A`'s
+  [S3] [S4] [S5], or to a chosen 연금개시나이 at ABL [S6]. This is `Pension_KR_S`'s
   subject, and with it go 추가납입, 중도인출 and the pre-annuitisation death benefit of
   Max[이미 납입한 보험료, 사망당시의 계약자적립액] [S7 제24조제2항].
 - **The proportional split across shapes in 5% units** and the 노후설계자금 lump-sum
@@ -1414,7 +1422,7 @@ whose 2024 edition gives 기대수명 at birth of 남 80.8년 / 여 86.6년 and 
 through KOSIS and not downloaded in this pass [REG-R39]. The gap between the two — about
 4.2 years for men and 3.4 for women at 65 — is the insured-versus-population margin any
 annuitant table must reproduce. On top of those sit the only carrier-published annuitant
-rates in the corpus [S1 §IV-2]. **`Immediate_KR_A`'s `mort_table.csv` is therefore a
+rates in the corpus [S1 §IV-2]. **`Immediate_KR_S`'s `mort_table.csv` is therefore a
 [std] construction with a `provenance` column on every row, it is used by the 종신연금형
 alone, and it must never be presented as the 경험생명표.** A revision of the industry table
 does not touch a contract in payment: 「기가입자는 보험료 변동 영향을 받지 않는다」
@@ -1457,7 +1465,7 @@ different parts of the product:
   [S5 주4] — and why every retrieved carrier forbids surrender of a 종신연금형 in payment.
 
 **The product is not a 연금계좌**, and that boundary is worth stating because it is the
-line between this product and `Pension_KR_A`. The 연금저축 regime — the 12%/15% tax credit
+line between this product and `Pension_KR_S`. The 연금저축 regime — the 12%/15% tax credit
 of 소득세법 제59조의3, the ₩6,000,000 and ₩9,000,000 caps, the 연금수령한도 and the
 withholding rates including the **3% rate for a 종신계약** — applies to a 연금계좌
 [REG-R56]. An 즉시연금 written as an ordinary 저축성보험 is outside it: its income is
@@ -1482,7 +1490,7 @@ retrieved. This is why the 상속연금형 exists at all: 「상속연금형(만
 IFRS 17 balance sheet distributing earnings the contractual surrender-value floor would
 later demand [REG-R11], and a 보증준비금 taken after it [REG-R10]. 책임준비금 under
 보험업법 제120조 and 감독규정 제6-11조 is a current-estimate quantity delegated to the
-FSS Governor [REG-R3] [REG-R10]. **None of it is computed here.** `Immediate_KR_A`
+FSS Governor [REG-R3] [REG-R10]. **None of it is computed here.** `Immediate_KR_S`
 projects gross best-estimate liability cash flows; the reserving and capital layers are
 cited, not implemented, in the same way `uklib` treats the SCR. What the library does
 compute is the **계약자적립액** and the **해약환급금**, because those are contractual

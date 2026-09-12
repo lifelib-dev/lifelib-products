@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: krlib.products.immediate_annuity.Immediate_KR_A.Projection
+.. automodule:: krlib.products.immediate_annuity.Immediate_KR_S.Projection
 
 Cells Descriptions
 ------------------
@@ -16,6 +16,10 @@ Cells Descriptions
 
 .. autofunction:: age
 
+.. autofunction:: policy_year
+
+.. autofunction:: annuity_term_mths
+
 .. autofunction:: prem_pp
 
 .. autofunction:: annuity_term
@@ -25,6 +29,8 @@ Cells Descriptions
 .. autofunction:: crediting_basis
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: pols_if_init
 
@@ -52,7 +58,11 @@ Cells Descriptions
 
 .. autofunction:: crediting_rate
 
+.. autofunction:: crediting_rate_mth
+
 .. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
 
 .. autofunction:: risk_prem_pp
 
@@ -69,6 +79,8 @@ Cells Descriptions
 .. autofunction:: retention_pp
 
 .. autofunction:: annuity_pp
+
+.. autofunction:: annuity_pp_annual
 
 .. autofunction:: av_pp
 
@@ -95,6 +107,8 @@ Cells Descriptions
 .. autofunction:: disc_factor
 
 .. autofunction:: retention_shortfall_pp
+
+.. autofunction:: proj_years
 
 .. autofunction:: proj_len
 

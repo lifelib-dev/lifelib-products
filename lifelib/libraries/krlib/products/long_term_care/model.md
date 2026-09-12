@@ -503,7 +503,7 @@ against the published 86.3, and **90.3** for women against 90.7. That is a cross
 shape, not evidence about any insurer's experience, and **no conclusion about Korean insured
 mortality should be drawn from the file**. There is no best-estimate factor — the anchor is an
 experience statistic, not a valuation margin — which is where this model differs from
-`Term_KR_A`, built from disclosed *pricing* rates and carrying a `mort_be_factor`.
+`Term_KR_S`, built from disclosed *pricing* rates and carrying a `mort_be_factor`.
 
 Two impaired-life bases sit on top of it as multiples, because **no retrieved source gives a
 post-certification mortality table by grade**:

@@ -124,10 +124,10 @@ release that was not retrieved; and 「계약체결 후 적립금이 납입한 �
 
 **Where it sits in `krlib`.** This is the library's only product on which the policyholder
 bears the investment risk, the only one carrying an option written on **investment
-performance** — `Pension_KR_A`, `WholeLife_KR_A` and `Immediate_KR_A` each write a
+performance** — `Pension_KR_S`, `WholeLife_KR_S` and `Immediate_KR_S` each write a
 최저보증이율 floor on a *declared* rate, and this product writes one of those too in its
 payout phase — and the only one that **models** the 특별계정 / 일반계정 boundary. 감독규정
-제5-6조제1항 also makes a separate account mandatory for the 연금저축계좌 of `Pension_KR_A`
+제5-6조제1항 also makes a separate account mandatory for the 연금저축계좌 of `Pension_KR_S`
 (제1호, against 변액보험계약 at 제3호) [REG-R15], but that product neither cites the article
 nor represents the boundary, so the two account ledgers below have no counterpart elsewhere
 in the library. It is also the only product in the library **barred by regulation from the

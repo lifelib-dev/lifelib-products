@@ -12,9 +12,8 @@ nothing.
 
 :data:`MODELS` is the registry ``test_model_conventions_kr.py`` is parametrized over, so
 registering a model here subjects it to the whole house style: it then either conforms or
-fails.  The metadata records the projection basis, which is not uniform across the
-library — five products run on an annual grid and five on a monthly one — the age basis,
-which is *also* not uniform and in Korea cannot be left implicit (see below), and that
+fails.  The metadata records the projection basis, which is now **monthly on all ten**, the
+age basis, which is *not* uniform and in Korea cannot be left implicit (see below), and that
 none of them discount.  That last entry is a property of the library, not an omission:
 every ``technical-notes.md`` specifies *gross liability cash flows* and leaves discounting,
 the ``책임준비금``, the IFRS 17 CSM and the K-ICS 요구자본 to a separate layer that
@@ -41,8 +40,8 @@ Four of them are worth naming explicitly.  ``Medical_KR_S`` is 실손의료보�
 hospitalization benefit, and it is the only indemnity product anywhere in this repository;
 the fixed-benefit third-sector chassis is ``Cancer_KR_S``.  ``LTC_KR_S`` is 간병보험,
 private cover written on top of the public 노인장기요양보험 scheme, not that scheme itself,
-and its trigger is the state's own 장기요양등급.  ``Pension_KR_A`` is 연금저축보험, the
-tax-qualified *deferred* contract, and not the payout one, which is ``Immediate_KR_A``.
+and its trigger is the state's own 장기요양등급.  ``Pension_KR_S`` is 연금저축보험, the
+tax-qualified *deferred* contract, and not the payout one, which is ``Immediate_KR_S``.
 And ``Child_KR_S`` is 어린이보험, a bundled child health policy commonly written **in
 utero**, which has no counterpart in any sister library.
 """
@@ -50,6 +49,10 @@ import pathlib
 
 LIB = pathlib.Path(__file__).resolve().parents[1]
 
+# ``ANNUAL`` is retained although no model currently carries it: the grid is a property a
+# model declares rather than a property of the library, ``test_model_conventions_kr.py``
+# resolves the name suffix from it, and a model added on an annual step would register here
+# without a change to the suite.
 ANNUAL = {"grid": "annual", "discounted": False}
 MONTHLY = {"grid": "monthly", "discounted": False}
 
@@ -81,27 +84,30 @@ MAN = {"age_basis": "만나이"}        # age last birthday, the public-statisti
 # The name is <short name>_<country>_<grid>: a short English descriptor of the product,
 # then KR, then _A for an annual step or _S for a monthly one.  The grid letters follow
 # lifelib, where annuallife/TradLife_A is the annual-step model and basiclife/BasicTerm_S
-# and savings/CashValue_SE are the monthly ones.  `S` carries a second sense in lifelib —
-# scalar, one model point at a time, as against the vectorized `_M` models — and that is
-# true of all ten here, whether or not they carry the letter.
+# and savings/CashValue_SE are the monthly ones.  Every model in this library is monthly, so
+# every name here carries `_S`; the `_A` half of the convention is still enforced by
+# test_model_conventions_kr.py against the registry metadata, so a model added on an annual
+# step would have to be named for it.  `S` carries a second sense in lifelib — scalar, one
+# model point at a time, as against the vectorized `_M` models — and that is true of all ten
+# here.
 #
 # This pairing is not derivable from the folder slug — "indemnity_medical" spelled out is
 # unusable in a model name — so it lives here, and test_model_conventions_kr.py asserts
 # that the name, the folder and the model's own _name all agree.
 MODELS = {
     # 보장성 — protection
-    "WholeLife_KR_A": ("products/whole_life/WholeLife_KR_A", ANNUAL | BOHEOM),
-    "Term_KR_A": ("products/term_life/Term_KR_A", ANNUAL | BOHEOM),
-    "CI_KR_A": ("products/ci_insurance/CI_KR_A", ANNUAL | BOHEOM),
+    "WholeLife_KR_S": ("products/whole_life/WholeLife_KR_S", MONTHLY | BOHEOM),
+    "Term_KR_S": ("products/term_life/Term_KR_S", MONTHLY | BOHEOM),
+    "CI_KR_S": ("products/ci_insurance/CI_KR_S", MONTHLY | BOHEOM),
     # 제3보험 — third insurance (보험업법 제4조제1항제3호)
     "Medical_KR_S": ("products/indemnity_medical/Medical_KR_S", MONTHLY | MAN),
     "Cancer_KR_S": ("products/cancer/Cancer_KR_S", MONTHLY | MAN),
     "LTC_KR_S": ("products/long_term_care/LTC_KR_S", MONTHLY | MAN),
     "Child_KR_S": ("products/child/Child_KR_S", MONTHLY | BOHEOM),
     # 저축·연금 — savings and annuity
-    "Pension_KR_A": ("products/pension_savings/Pension_KR_A", ANNUAL | BOHEOM),
+    "Pension_KR_S": ("products/pension_savings/Pension_KR_S", MONTHLY | BOHEOM),
     "VA_KR_S": ("products/variable_annuity/VA_KR_S", MONTHLY | BOHEOM),
-    "Immediate_KR_A": ("products/immediate_annuity/Immediate_KR_A", ANNUAL | BOHEOM),
+    "Immediate_KR_S": ("products/immediate_annuity/Immediate_KR_S", MONTHLY | BOHEOM),
 }
 
 
@@ -119,7 +125,7 @@ MODELS = {
 # Regenerate with ``python tools/gen_input_files.py lifelib/libraries/krlib`` rather than
 # editing by hand — a load-bearing map that is hand-transcribed is how it goes stale.
 INPUT_FILES = {
-    "CI_KR_A": {
+    "CI_KR_S": {
         "ci_incidence_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv"},
     "Cancer_KR_S": {
@@ -129,7 +135,7 @@ INPUT_FILES = {
     "Child_KR_S": {
         "av_table.csv", "basis_table.csv", "incidence_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "neonatal_table.csv"},
-    "Immediate_KR_A": {
+    "Immediate_KR_S": {
         "charge_table.csv", "crediting_table.csv", "model_point_table.csv",
         "mort_table.csv"},
     "LTC_KR_S": {
@@ -140,18 +146,18 @@ INPUT_FILES = {
         "claim_shape_table.csv", "lapse_table.csv", "model_point_table.csv",
         "mort_table.csv", "oop_ceiling_table.csv", "severity_table.csv",
         "utilisation_table.csv"},
-    "Pension_KR_A": {
+    "Pension_KR_S": {
         "decl_rate_table.csv", "expense_table.csv", "guar_rate_table.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_anchor_table.csv",
         "mort_table.csv", "pricing_table.csv", "tax_table.csv"},
-    "Term_KR_A": {
+    "Term_KR_S": {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "prem_rate_table.csv", "rate_class_table.csv"},
     "VA_KR_S": {
         "charge_table.csv", "crediting_table.csv", "fund_table.csv", "lapse_table.csv",
         "model_point_table.csv", "mort_table.csv", "return_scenario.csv",
         "risk_prem_table.csv"},
-    "WholeLife_KR_A": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
+    "WholeLife_KR_S": {"lapse_table.csv", "model_point_table.csv", "mort_table.csv"},
 }
 
 

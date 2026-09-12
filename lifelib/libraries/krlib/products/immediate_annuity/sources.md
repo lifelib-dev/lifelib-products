@@ -212,14 +212,15 @@ a named live product and says so once at its head.
 - Accessed: 2026-09-03, Retrieved: **yes** (107 pp.; the annuity-form pages, the surrender
   articles and the summary pages extracted and read)
 - **Scope: a deferred annuity**, cited only for payout-phase machinery — the same machinery
-  `Immediate_KR_A` needs — and never for an issue-age or premium parameter. The richest payout
+  `Immediate_KR_S` needs — and never for an issue-age or premium parameter. The richest payout
   menu retrieved: 종신연금형 기본형 with 10/20/30년/100세/기대여명 guarantees, a 핵심기간집중형
   doubling the annuity for ten years, 확정연금형 out to fifty years, 상속연금형, a
   **proportional split across forms in 5% units**, and a 노후설계자금 lump sum of up to 50% of
   the fund — all recorded in `product-spec.md` as available and in `technical-notes.md` as not
   modelled. 주14 gives the instalment-frequency interest rule that makes the annual and monthly
-  modes equal in value, the basis of every annual-to-monthly conversion here; 제33조 gives the
-  surrender article.
+  modes equal in value, which is the warrant for the monthly mode `Immediate_KR_S` projects
+  and the basis of every annual-to-monthly comparison here; 제33조 gives the surrender
+  article.
 
 (krlib-immediate_annuity-s9)=
 
@@ -236,8 +237,8 @@ a named live product and says so once at its head.
   with **no 상속연금형 at all**, guarantees of 20년/30년/90세/100세 and no ten-year option, a
   조기집중연금형 paying 200% or 300%, 확정기간연금형 of 5/10/15/20/30년, the 신공시이율
   vocabulary, the 100.1% floor at annuitisation, 주7 on death not accelerating a certain term,
-  and 주11's 「신공시이율로 계산한 이자를 가산합니다」 — the other half of the
-  annual-to-monthly reconciliation.
+  and 주11's 「신공시이율로 계산한 이자를 가산합니다」 — the other half of the warrant for
+  the monthly payment mode.
 
 (krlib-immediate_annuity-s10)=
 

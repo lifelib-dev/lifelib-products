@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: krlib.products.whole_life.WholeLife_KR_A.Projection
+.. automodule:: krlib.products.whole_life.WholeLife_KR_S.Projection
 
 Cells Descriptions
 ------------------
@@ -17,6 +17,8 @@ Cells Descriptions
 .. autofunction:: prem_term
 
 .. autofunction:: prem_period
+
+.. autofunction:: prem_period_mths
 
 .. autofunction:: prem_end
 
@@ -38,6 +40,8 @@ Cells Descriptions
 
 .. autofunction:: waiver_rate
 
+.. autofunction:: waiver_rate_mth
+
 .. autofunction:: loan_util
 
 .. autofunction:: loan_year
@@ -54,6 +58,8 @@ Cells Descriptions
 
 .. autofunction:: omega_age
 
+.. autofunction:: proj_years
+
 .. autofunction:: proj_len
 
 .. autofunction:: policy_year
@@ -66,6 +72,14 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
+.. autofunction:: mort_rate_mth_at
+
+.. autofunction:: acc_int_rate_mth
+
+.. autofunction:: prem_int_rate_mth
+
 .. autofunction:: disc_factor
 
 .. autofunction:: disc_factor_prem
@@ -74,11 +88,17 @@ Cells Descriptions
 
 .. autofunction:: annuity_due
 
-.. autofunction:: epv_death_acc
+.. autofunction:: epv_death_mth
 
-.. autofunction:: annuity_due_acc
+.. autofunction:: annuity_due_mth
+
+.. autofunction:: epv_death_acc_mth
+
+.. autofunction:: annuity_due_acc_mth
 
 .. autofunction:: prem_net_level_pp
+
+.. autofunction:: prem_net_level_mth_pp
 
 .. autofunction:: prem_net_20yr_pp
 
@@ -87,6 +107,8 @@ Cells Descriptions
 .. autofunction:: surr_chg_cap_pp
 
 .. autofunction:: surr_chg_period
+
+.. autofunction:: surr_chg_period_mths
 
 .. autofunction:: surr_chg_pp
 
@@ -98,7 +120,11 @@ Cells Descriptions
 
 .. autofunction:: sum_assured_at
 
+.. autofunction:: premium_mth_pp
+
 .. autofunction:: premium_at_pp
+
+.. autofunction:: premium_mth_at_pp
 
 .. autofunction:: pol_val_base_pp
 
@@ -126,7 +152,11 @@ Cells Descriptions
 
 .. autofunction:: lapse_rate
 
+.. autofunction:: lapse_rate_mth
+
 .. autofunction:: loan_int_rate
+
+.. autofunction:: loan_int_rate_mth
 
 .. autofunction:: loan_draw
 

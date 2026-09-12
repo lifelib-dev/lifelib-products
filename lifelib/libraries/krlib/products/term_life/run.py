@@ -1,4 +1,4 @@
-"""Run the Term_KR_A reference model and print its cash flow statement.
+"""Run the Term_KR_S reference model and print its cash flow statement.
 
     python products/term_life/run.py            # anchor cell (point_id = 1)
     python products/term_life/run.py 3          # another model point
@@ -10,15 +10,15 @@ attained insurance age) and "bi-gaengsin" (non-renewable), the age basis is roma
 "boheom nai" (insurance age, the six-month rounding rule), and amounts are labelled KRW
 rather than carrying a currency sign.
 
-The printed frame is 0-based: t = 0 is the first policy year and the statement runs to
-t = proj_len() - 1.
+The printed frame is 0-based: t = 0 is the first policy month and the statement runs to
+t = proj_len() - 1, so a 20-year contract prints 240 rows.
 """
 import sys
 from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "Term_KR_A")
+model = mx.read_model(Path(__file__).parent / "Term_KR_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]
@@ -26,19 +26,20 @@ shape = ("gaengsin (renewable)" if proj.renewal_type() == "gaengsin"
          else "bi-gaengsin (non-renewable)")
 form = ("sunsu bojanghyeong (pure protection)" if proj.maturity_form() == "pure"
         else "mangi hwangeuphyeong (return of premium)")
-pay = ("jeongi-nap (whole-term pay)" if proj.pay_term() >= proj.proj_len()
+pay = ("jeongi-nap (whole-term pay)" if proj.pay_term() >= proj.proj_years()
        else "{}-year pay".format(proj.pay_term()))
 
-print("Term_KR_A - jeonggi boheom (level term life), KRW, annual grid, boheom nai")
+print("Term_KR_S - jeonggi boheom (level term life), KRW, monthly grid, boheom nai")
 print("model point {}: {} - {}{}, {}".format(
     point_id, proj.model_point()["policy_id"], proj.sex(),
     proj.age_at_entry(), shape))
 print("  {}-year term, {}, {}, {} class, cover KRW {:,.0f}".format(
     proj.policy_term(), pay, form, proj.rate_class(), proj.sum_assured()))
-print("  premium = KRW {:,.0f}/month ({:,.0f} p.a.)   horizon = {} years to "
-      "boheom nai {}   boundary = {}".format(
+print("  premium = KRW {:,.0f}/month ({:,.0f} p.a.)   horizon = {} months "
+      "({} years) to boheom nai {}   boundary = {}".format(
           proj.premium_mth_pp(0), proj.prem_pp(0), proj.proj_len(),
-          proj.age(proj.proj_len() - 1) + 1, proj.contract_boundary()))
+          proj.proj_years(), proj.age(proj.proj_len() - 1) + 1,
+          proj.contract_boundary()))
 print("  modules: acc_death = {}   waiver = {}   accel = {}   "
       "reinstatement = {}".format(
           proj.acc_death(), proj.waiver(), proj.accel(), proj.reinstatement()))
@@ -47,7 +48,7 @@ print()
 df = proj.result_cf()
 print(df.head(12).round(2).to_string())
 if len(df) > 12:
-    print("... {} further years to t = {}".format(
+    print("... {} further months to t = {}".format(
         len(df) - 12, proj.proj_len() - 1))
 print()
 print("undiscounted totals: premiums {:,.2f}   claims {:,.2f}   "

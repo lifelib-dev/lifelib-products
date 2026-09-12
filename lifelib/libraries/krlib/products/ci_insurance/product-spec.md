@@ -184,7 +184,7 @@ document and tagged, or marked **[std]** with a numbered footnote.
 | Sex | Male and female rated separately. Female premium runs **0.808–0.872** of male across the published grid; the CI incidence relation is the opposite at young ages — see *Premiums* footnote (10) | [S4] [S3] |
 | Lives basis | Single life; the insured is normally the policyholder. Third-party contracts require the insured's written consent | [S1 제24조] |
 | Underwriting | 일반심사 (full underwriting). 간편심사 and 무심사 forms exist on other Korean products and are a different axis from GI | [R2]; scope **[std]** (7) |
-| **Anchor model cell** | 남자, 보험나이 **40**, 80% 선지급형, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 종신 (CI 보장 100세), 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 월보험료 **₩306,740** (annualized **₩3,680,880**) | [S4]; construction and annualization **[std]** (8) |
+| **Anchor model cell** | 남자, 보험나이 **40**, 80% 선지급형, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 종신 (CI 보장 100세), 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 월보험료 **₩306,740**, which the monthly grid collects directly; the model point column carries the annualization **₩3,680,880** for the commission scale | [S4]; construction **[std]** (8) |
 | Anchor cell against the chassis's | The chassis anchors the identical cell — 남 40, 1억원, 종신, 20년납, 월납, `k = 0.50` — at a **published** 표준형 월보험료 of ₩257,050, and its own 저해지 model point at ₩231,345, that figure at the chassis's **[std]** 90.0% suppression discount. **The acceleration and the CI cover therefore cost about a third more than the same whole-life contract**: 306,740 / 231,345 = **1.33** (published over constructed), or **1.19** against the published 표준형 | computed across [S4] and the chassis's anchor; comparability caveat in footnote (8) |
 
 Footnotes to [std] rows:
@@ -288,7 +288,7 @@ Footnotes to [std] rows:
    Both are also across **different carriers and eight years apart** (a 2019 GI product
    against a whole-life scale of a different vintage), so each is an order-of-magnitude
    statement about what the CI cover costs and not a like-for-like price comparison;
-   `technical-notes.md` reproduces the split from the model instead. `CI_KR_A` runs an
+   `technical-notes.md` reproduces the split from the model instead. `CI_KR_S` runs an
    **annual** grid, so the annual premium is standardized as 12 × the monthly figure =
    **₩3,680,880**; no carrier publishes an
    annual-mode premium for this cell, so the modal discount a real 연납 scale would carry is
@@ -472,7 +472,7 @@ this table, and is reproduced because it is the cleanest published statement of 
 16. 중도인출 and 추가납입 belong to the universal (유니버셜) chassis and are specified there.
     They are named in this table only because they are **arguments of the 기본보험금
     formula** [S1 별표1 주7], so a model that ignores them must say it holds them at zero
-    rather than silently dropping them from the definition — which is what `CI_KR_A` does.
+    rather than silently dropping them from the definition — which is what `CI_KR_S` does.
 
 ### Termination and values
 
@@ -570,7 +570,7 @@ competing risk set**, not a sum of marginal incidences — and Korea's superviso
 exactly that in pricing. [R1] records it: overseas practice ignores the correlation between
 CI causes for rate stability, whereas 「국내의 경우 위험률과 담보 간 일치에 대한 규제가
 강하고 … CI 질병들 간 중복해서 발생할 수 있는 확률을 최대한 반영한 최종 위험률로 검증받고
-사용하였다」 [R1]. A `CI_KR_A` incidence table built by adding published site-specific
+사용하였다」 [R1]. A `CI_KR_S` incidence table built by adding published site-specific
 incidences would therefore be wrong in the direction the Korean regulator specifically
 legislated against, and `technical-notes.md` states the overlap adjustment it applies.
 
@@ -701,7 +701,7 @@ rider claim, because the diagnosis carried the KCD code **C18** (결장의 악�
 allowed the surgery benefit for the endoscopic polypectomy — award ₩13,000,000 [R5]. **The
 same histology is 암 for the rider and not 중대한 암 for the main contract.** That sentence
 is the product's defining consumer problem in one line, and it is why the incidence basis for
-`CI_KR_A` cannot be the national cancer registry's headline rate.
+`CI_KR_S` cannot be the national cancer registry's headline rate.
 
 The gap is quantifiable from public data, and `technical-notes.md` sizes it: on the 2023
 registry, 갑상선 is 12.3% of all cancers and 전립선 7.8%, so those two exclusions alone
@@ -819,8 +819,9 @@ Two further features of the gate that a projection must respect. **Timing**: 「
 뇌손상, 척수 및 신경계의 질환 등은 발병 또는 외상 후 **12개월** 동안 지속적으로 치료한 후에
 장해를 평가한다」, with a further six-month deferral where function is still improving or
 death is expected shortly [S1 별표3, 13-나-1)-라)] — so a CI stroke claim is, by
-construction, **not assessable for a year**, and on an annual grid the payment lags the event
-by one step. And **who assesses**: a 재활의학과, 신경외과 or 신경과 전문의 [S1 별표3]. An
+construction, **not assessable for a year**, and on this model's monthly grid the payment
+lags the event by one step — one month, where an annual grid made it a year, which remains
+well inside the twelve months the 장해분류표 defers the assessment by. And **who assesses**: a 재활의학과, 신경외과 or 신경과 전문의 [S1 별표3]. An
 independent loss adjuster records the insurer's working rule as **six months or more of
 rehabilitation with an ADL-based rating of 25% or higher** [R16]; that six-month practice
 point is the adjuster's, not the 약관's, and is recorded as practice.
@@ -956,7 +957,7 @@ the 재해 carve-out [S1 별표1 주2]. The same 1·2등급 trigger is carried i
 For the incidence basis, `LTC_KR_S` is the library's home for the 등급별 인정자 statistics
 [REG-R42] [REG-R43] and, on its own primary sources, for a **disclosed** 요양 1·2등급
 발생률 grid at ages 40, 50 and 60 by sex — so a Korean 1·2등급 inception rate at insured ages
-*is* published, in a 상품요약서, and this product does not use it. `CI_KR_A` runs a **[std]**
+*is* published, in a 상품요약서, and this product does not use it. `CI_KR_S` runs a **[std]**
 ramp of its own instead, nil below 65 and calibrated only to the order of magnitude implied by
 [REG-R42]; the consequence, stated in `technical-notes.md` rather than hidden, is that the
 장기요양 limb of this model's CI decrement is **nil at every insured age below 65** where the
@@ -1073,7 +1074,7 @@ Three consequences follow, and each is a modelling requirement rather than a nic
 3. **The premium waiver fires at the same date too**, so from `t_CI` the contract pays no
    premium, holds a full-value surrender right, and owes only the residual death benefit.
    That combination is what makes the post-CI state a genuinely different liability rather
-   than a scaled-down version of the pre-CI one, and it is why `CI_KR_A` carries the two
+   than a scaled-down version of the pre-CI one, and it is why `CI_KR_S` carries the two
    states separately rather than netting the acceleration off the death benefit.
 
 The chassis's **"waived premiums count as paid"** rule reinforces the carve-out rather than
@@ -1083,12 +1084,12 @@ together mean **a CI claimant is never worse off on surrender than a 표준형 p
 the same duration**, which is a consumer-protection design and not an actuarial accident. The
 chassis's **clawback** — unpaid premiums in the suppressed period must be made good before
 the post-cliff basis applies — is stated in neither CI 약관, and whether it also gates the CI
-carve-out is **[unverified]**; `CI_KR_A` assumes it does not, and says so.
+carve-out is **[unverified]**; `CI_KR_S` assumes it does not, and says so.
 
 **The suppression is a haircut on one underlying value, not a second reserve run.** The
 chassis establishes this from published grids on which the suppressed and 표준형 products
 have *identical* surrender values from 납입완료 onward, and on which the suppression ratio is
-exact at every earlier duration. `CI_KR_A` therefore needs one `W(t)` and one multiplier, and
+exact at every earlier duration. `CI_KR_S` therefore needs one `W(t)` and one multiplier, and
 — the consequence the chassis draws and this product inherits — `CV(t)` is **independent of
 the sold form's own premium**, which is the whole of the 환급률 arithmetic that sells the
 form.
@@ -1118,7 +1119,7 @@ post-완납 ultimate rate of **0.8%**; departure from the 원칙모형 is permit
 closed list of alternatives and only on disclosure, in the audit report and the 경영공시, of
 the CSM, best-estimate liability, K-ICS and net-income differences against the principle
 model, plus quarterly reporting to the FSS and an on-site inspection [REG-R27] [R3].
-`CI_KR_A` uses the principle model, tagged **[std]** with that entry as its rationale, and
+`CI_KR_S` uses the principle model, tagged **[std]** with that entry as its rationale, and
 carries a switch to a 표준형 assumption so the two can be compared — which is exactly the
 comparison the guideline requires an insurer to disclose.
 
@@ -1130,7 +1131,7 @@ share of 보장성 first-year premium ran 11.4% (2018) → 30.4% (2021) → 47.0
 (2024 H1)** [REG-R27], so this is the majority of the Korean protection market.
 
 **No CI lapse experience of any kind was retrieved** — [R1] gives one cession ratio and no
-lapse data at all — so every duration-by-duration lapse rate in `CI_KR_A` is **[std]**
+lapse data at all — so every duration-by-duration lapse rate in `CI_KR_S` is **[std]**
 bounded by [REG-R27]. What the chassis *does* supply is a real bound from Korean disclosure:
 상품요약서 publish the **적용해지율** used in pricing, in envelope form, and one carrier's
 protection product discloses 0%–13.4% during the payment period and 1.0%–11.3% after it,
@@ -1239,7 +1240,7 @@ cause whose log-slope *steepens* with age, where male AMI runs ×21.8 then ×7.4
 stroke ×23.9 then ×4.4, both flattening. 중대한 급성심근경색증 is the most male-skewed cause
 (4.0× at 40, 2.4× at 60); 중대한 뇌졸중 is close
 to unisex at 20 and runs 2.3× male at 40 and 1.45× at 60. A **[std]** CI incidence
-construction for `CI_KR_A` must reproduce those slopes, and `technical-notes.md` states the
+construction for `CI_KR_S` must reproduce those slopes, and `technical-notes.md` states the
 interpolation and the extrapolation beyond 60 explicitly.
 
 The narrowness of the 중대한 definitions relative to ordinary 진단비 cover **belongs in this
@@ -1312,7 +1313,7 @@ not simply dominate CI**, and a model should not assume it does: GI's cerebrovas
 often *narrower*, covering 뇌출혈 I60–I62 only and leaving 뇌경색 to a rider, where 중대한
 뇌졸중 covers I60–I63 behind the gate [R9] [S4] [S5]; its headline disease count is smaller
 unless the full 17대보장형 menu is bought; and the four 중대한 수술 survive into it unchanged,
-because GI de-defines diseases, not surgeries [S4]. `CI_KR_A` models the **CI trigger set**;
+because GI de-defines diseases, not surgeries [S4]. `CI_KR_S` models the **CI trigger set**;
 the GI variant is a different incidence table on the same machinery.
 
 ---
@@ -1477,17 +1478,17 @@ table [REG-R4] [REG-R34]. The exception is the **장기손해보험 참조순보
 보험개발원 does publish, whose 「기타피부암 및 갑상선암 이외의 암 발생률」 and 질병입원율
 grids [REG-R61] are what `Cancer_KR_S` and `Medical_KR_S` source from; it carries no
 중대한 질병 item and its insured-cancer definition is not this product's, so nothing on it
-reaches `CI_KR_A`. **For mortality the chassis can at least bracket the level from two
+reaches `CI_KR_S`. **For mortality the chassis can at least bracket the level from two
 carriers' published 적용위험률 grids; for CI morbidity there is exactly one disclosed table
 in the whole of Korea, and it is [S3]'s, fifteen years old.** Consequently every mortality,
-morbidity and incidence rate in `CI_KR_A` is a **[std]** construction with a `provenance`
+morbidity and incidence rate in `CI_KR_S` is a **[std]** construction with a `provenance`
 column on every row, anchored on the public 국가데이터처 생명표 [REG-R38] [REG-R39], on the
 national cancer registry [REG-R40], on `LTC_KR_S`'s 등급 inception construction [REG-R42]
 [REG-R43] and on [S3]. **The library's tables must never be presented as the 경험생명표 or as
 a 참조순보험요율.** Nothing in the file supplies a numeric expense loading either: [S1] names
 the components as 계약체결비용 and 계약관리비용, the latter split into 유지관련비용 and
 기타비용, deducted as part of the 월대체보험료 [S1], and [S3]'s 예정사업비율 table did not
-extract — so **every 사업비 parameter in `CI_KR_A` is [std]**, bounded above by the
+extract — so **every 사업비 parameter in `CI_KR_S` is [std]**, bounded above by the
 표준해약공제액 [REG-R20] and by the 보험료지수 of 130.1% [S3].
 
 **Contract law and conduct.** 보험업법 supervises the undertaking; **상법 제4편 보험**

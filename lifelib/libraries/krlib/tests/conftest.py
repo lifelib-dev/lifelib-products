@@ -28,8 +28,8 @@ from kr_registry import LIB, ANNUAL, MONTHLY, BOHEOM, MAN, MODELS, model_path  #
 
 @pytest.fixture(scope="module")
 def whole_life():
-    """The WholeLife_KR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("WholeLife_KR_A"))
+    """The WholeLife_KR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("WholeLife_KR_S"))
     yield model
     model.close()
 
@@ -42,8 +42,8 @@ def kr_whole_life_anchor(whole_life):
 
 @pytest.fixture(scope="module")
 def term_life():
-    """The Term_KR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Term_KR_A"))
+    """The Term_KR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Term_KR_S"))
     yield model
     model.close()
 
@@ -56,8 +56,8 @@ def kr_term_anchor(term_life):
 
 @pytest.fixture(scope="module")
 def ci_insurance():
-    """The CI_KR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("CI_KR_A"))
+    """The CI_KR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("CI_KR_S"))
     yield model
     model.close()
 
@@ -134,8 +134,8 @@ def kr_child_anchor(child):
 
 @pytest.fixture(scope="module")
 def pension_savings():
-    """The Pension_KR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Pension_KR_A"))
+    """The Pension_KR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Pension_KR_S"))
     yield model
     model.close()
 
@@ -162,8 +162,8 @@ def kr_va_anchor(variable_annuity):
 
 @pytest.fixture(scope="module")
 def immediate_annuity():
-    """The Immediate_KR_A model, closed after the module finishes."""
-    model = mx.read_model(model_path("Immediate_KR_A"))
+    """The Immediate_KR_S model, closed after the module finishes."""
+    model = mx.read_model(model_path("Immediate_KR_S"))
     yield model
     model.close()
 

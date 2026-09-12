@@ -604,7 +604,7 @@ on being absent is in `RETIRED_COLUMNS`.
 
 - **`renewal_decline_rate`, not `renew_rate`.** The proportion who *decline* a 갱신 is a
   decrement, and the shorter name read as its complement to half the models that tried it.
-  [`Term_KR_A`](../term_life/model.md) uses the same name for the same event on a ten-year
+  [`Term_KR_S`](../term_life/model.md) uses the same name for the same event on a ten-year
   cycle; this product uses it on a one-year cycle, which is where it matters most.
 - **`claims_np_three` as a column and a limb of its own.** The three 3대비급여 classes sit
   inside the 특별약관 but carry their own money and count limits **instead of** the

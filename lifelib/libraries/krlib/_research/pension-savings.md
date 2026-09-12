@@ -3,7 +3,7 @@
 Research compiled 2026-09-03 for the reference-products library (Korea section). Purpose:
 source library for the Korean tax-qualified individual pension contract, 연금저축보험
 (*yeongeum jeochuk boheom*), and for the deferred-annuity accumulation chassis that
-`Pension_KR_A` builds on. The product is one leg of a three-legged statutory wrapper —
+`Pension_KR_S` builds on. The product is one leg of a three-legged statutory wrapper —
 연금저축신탁 (bank), 연금저축펀드 (asset manager) and 연금저축보험 (insurer) — all three
 defined by the same article of the income tax code and distinguished only by who writes them
 and what they credit. What makes the insurance leg an actuarial object rather than a savings
@@ -1530,8 +1530,8 @@ session and are the anchors the `[std]` table must reproduce.
 - **These rates are extremely light.** A male annuitant rate of 0.00164 at exactly age 60 and
   0.01346 at 80 is far below any plausible Korean population level, which is what one expects
   from a table loaded on the *survival* side for a longevity product. `mort_table.csv` for
-  `Pension_KR_A` must be built on the annuitant basis, not the assurance basis, and the two
-  cannot be shared with `WholeLife_KR_A`.
+  `Pension_KR_S` must be built on the annuitant basis, not the assurance basis, and the two
+  cannot be shared with `WholeLife_KR_S`.
 
 ### 21. Derived annuity factors — reading the basis off the illustrations
 
@@ -1768,7 +1768,7 @@ By seller [R22]: 보험회사 114.3조원 (57.7%), 금융투자회사 55.4조원
 - **변액연금보험 is a separate library product** (`VA_KR_S`, `_research/variable-annuity.md`).
   [S10] is cited here only for annuitisation machinery (§19, §20).
 - **즉시연금 (single-premium immediate annuity)** is a separate library product
-  (`Immediate_KR_A`, `_research/immediate-annuity.md`). Nothing in this file is about the
+  (`Immediate_KR_S`, `_research/immediate-annuity.md`). Nothing in this file is about the
   payout phase standing alone.
 - **IRP (개인형퇴직연금)** shares the ₩9,000,000 credit envelope and the 연금수령 rules, and a
   연금저축 may be transferred into one (§9), but it is a 퇴직연금 product under

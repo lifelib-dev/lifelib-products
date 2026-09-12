@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: krlib.products.pension_savings.Pension_KR_A.Data
+.. automodule:: krlib.products.pension_savings.Pension_KR_S.Data
 
 Cells Descriptions
 ------------------

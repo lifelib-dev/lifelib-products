@@ -709,10 +709,12 @@ page alone can resolve every tag, with a note on what this product uses each for
   benefits must **exceed** premiums paid — why 100.1% and not 100%), 제9호 (the death-benefit
   exemption for a premium term ending at 80 or below), 제10호 (a floor is compulsory).
 - **REG-R18** — 감독규정 제7-64조·제7-65조 (산출방법서, 계약자적립액). 제7-65조제1항's
-  계약자적립액, **제2항's annualised-premium permission** — the licence for the annual grid —
-  and 제3항's 공시이율 construction.
-- **REG-R19** — 감독규정 제7-66조 등 (해약환급금). 제1항제1호 is `check_cv_floor`'s identity;
-  제1항제2호 the seven-year 해약공제기간 cap; 제1항제3호 the reference to 별표 14.
+  계약자적립액, **제2항's annualised-premium permission** — the licence the earlier annual grid
+  ran under, and which the monthly grid no longer needs — and 제3항's 공시이율 construction.
+- **REG-R19** — 감독규정 제7-66조 등 (해약환급금, 계약자적립액의 적립). 제1항제1호 is
+  `check_cv_floor`'s identity; 제1항제2호 the seven-year 해약공제기간 cap; 제1항제3호 the
+  reference to 별표 14; **제1항제4호 the monthly accrual of the account before 납입완료**,
+  which is what the monthly grid follows directly.
 - **REG-R20** — 감독규정 [별표 14] 표준해약공제액. The cross-product retrieval of the same
   schedule as [R14]; 주2, 주3, 주5 and 주6 are what `surr_chg_cap_pp` implements.
 - **REG-R22** — 감독규정 제4-32조·제7-45조·제7-51조 (수수료, 공시, 신고). The commission ring

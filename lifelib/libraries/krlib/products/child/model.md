@@ -502,7 +502,7 @@ the second of which the composite replaces with the waiver — because a benefit
 are not the same cash flow, and their expected values differ by more than an order of
 magnitude; **다태아** plans [R4] [R5]; the named-cancer riders and the 후유장해 생활지원금
 annuity forms [S1] [S11]; **일반상해사망 from 만 15세** [S1] [S4]; **부활**; the **공시이율
-reset**, which the model carries by reference to `WholeLife_KR_A`; and **실손의료비 riders of
+reset**, which the model carries by reference to `WholeLife_KR_S`; and **실손의료비 riders of
 any kind**, which have not been attachable to a child policy since April 2018 and are a
 statutory impossibility rather than a design choice [R9] [R10] [REG-R17]. No exclusion
 decrement is modelled: the general 보험금을 지급하지 않는 사유 articles were not read in full
@@ -781,7 +781,7 @@ product most of them bound nothing at all — which is said rather than papered 
 | 해약공제액 release | linear over the 해약공제기간 | the regulation caps the **amount** and not the shape [REG-R19] [REG-R20] | the seven-year cap is sourced [REG-R19 제7-66조제1항제2호](#krlib-reg-r19) |
 | `av_pp` before the grid opens | capped at `max(cv_std_pp, net_prem_ratio x cum_prem_pp)` | the published grid is 「순보험료식 계약자적립액에서 해약공제액을 공제한 금액」, already net and floored at zero [S2], so the identity gives only `0 <= AV <= 해약공제액` there | none; the constraint is that `av_pp(0)` must be 0 |
 | `taper` calibration | node 0.95 set so 1.589 x 0.1007 = 16.0% | one shipped grid must serve a 30세, a 100세 and a 110세 만기 | the published nodes it reproduces [S2] |
-| `prem_int_rate`, `decl_rate`, `min_guar_rate`, `avg_decl_rate` | 2.75%, 1.70%, 0.30%, 2.50% | the modal value of each published column is the standardization; the columns themselves are sourced. Only `prem_int_rate` is read by a formula — `pv_factor()`. The other three are **declared and not used**: they are the interest basis on which [S2] computed the 환급률 grid the model reads, recorded so a reader can see what the shipped account is priced on, and the 공시이율 reset itself is carried by reference to `WholeLife_KR_A` | 2.50–3.00%, 1.60–2.20%, 0.20–0.50% [S2] [S11] |
+| `prem_int_rate`, `decl_rate`, `min_guar_rate`, `avg_decl_rate` | 2.75%, 1.70%, 0.30%, 2.50% | the modal value of each published column is the standardization; the columns themselves are sourced. Only `prem_int_rate` is read by a formula — `pv_factor()`. The other three are **declared and not used**: they are the interest basis on which [S2] computed the 환급률 grid the model reads, recorded so a reader can see what the shipped account is priced on, and the 공시이율 reset itself is carried by reference to `WholeLife_KR_S` | 2.50–3.00%, 1.60–2.20%, 0.20–0.50% [S2] [S11] |
 | the ten office premiums | ₩3,026 to ₩71,000 | model point inputs, not computed quantities; no carrier publishes a rate table by age and duration [REG-R2] [REG-R4] | the board's specimen premiums for a male 5-year-old run ₩21,502 to ₩148,250, a factor of seven, because carriers quote different compulsory sets [S11] |
 | `roll_fwd_tol`, `val_tol` | 1e-10, 1e-7 | one closes an identity between cells evaluated in one expression; the other re-reads won amounts of order 1e8 back out of a `DataFrame` | both far below one won |
 
