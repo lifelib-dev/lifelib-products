@@ -12,13 +12,31 @@ Cells Descriptions
 
 .. autofunction:: omega_age
 
+.. autofunction:: proj_len_y
+
 .. autofunction:: proj_len
+
+.. autofunction:: proj_year
+
+.. autofunction:: is_anniv
+
+.. autofunction:: age_y
 
 .. autofunction:: age
 
+.. autofunction:: duration_y
+
 .. autofunction:: duration
 
+.. autofunction:: duration_mth
+
+.. autofunction:: policy_year
+
+.. autofunction:: cal_year_y
+
 .. autofunction:: cal_year
+
+.. autofunction:: ret_y
 
 .. autofunction:: ret_t
 
@@ -48,6 +66,8 @@ Cells Descriptions
 
 .. autofunction:: prem_to_av_pp
 
+.. autofunction:: prem_due
+
 .. autofunction:: premiums
 
 .. autofunction:: zuzahlungen
@@ -57,6 +77,8 @@ Cells Descriptions
 .. autofunction:: mort_rate_base
 
 .. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
 
 .. autofunction:: bf_rate
 
@@ -104,6 +126,8 @@ Cells Descriptions
 
 .. autofunction:: ann_pp
 
+.. autofunction:: ann_mth_pp
+
 .. autofunction:: db_pp
 
 .. autofunction:: db_pu_pp
@@ -143,5 +167,7 @@ Cells Descriptions
 .. autofunction:: check_annuity_roll_fwd
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_pols

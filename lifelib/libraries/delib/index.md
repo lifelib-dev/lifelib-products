@@ -128,9 +128,10 @@ Model names are `<product>_<country>_<grid>`: the short form the German market i
 where there is one — `KLV`, `RLV`, `BU` — a short descriptor where there is none, then
 `DE`, then `_A` for an annual step or `_S` for a monthly one. The grid letters follow
 lifelib, where `annuallife/TradLife_A` is the annual-step model and `basiclife/BasicTerm_S`
-and `savings/CashValue_SE` are the monthly ones. `S` carries a second sense in lifelib —
-scalar, one model point at a time, as against the vectorized `_M` models — and that is true
-of all ten here, whether or not they carry the letter.
+and `savings/CashValue_SE` are the monthly ones. **All ten models here are `_S`: every model
+in this library steps monthly**, which is why the `Grid` column below reads `monthly` on every
+row. `S` carries a second sense in lifelib — scalar, one model point at a time, as against the
+vectorized `_M` models — and that is true of all ten here as well.
 
 **Kapitalbildende Lebensversicherung und private Rentenversicherung (Schicht 3)**
 
@@ -185,13 +186,57 @@ ruling across the libraries, and the time index is the same in all of them. The 
 `t` is 0-based: `t = 0` is the first period of a policy projected from issue (the issue year
 on an annual grid, the issue month on a monthly one), period `t` runs from time `t` to time
 `t + 1`, and the attained age is `age_at_entry + t` on an annual grid
-(`age_at_entry + duration(t)`, `duration(t) = t // 12`, on a monthly one). **`proj_len()` is
-the number of periods from `t = 0`**, i.e. the exclusive end of the frame: `result_cf()`
-covers `t = t_first, ..., proj_len() - 1`, where `t_first` is 0 for a point projected from
-issue and the elapsed periods for an in-force point. This is lifelib's own convention
-(`basiclife/BasicTerm_S`, `savings/CashValue_SE`: `for t in range(proj_len())`). A
+(`age_at_entry + duration(t)`, `duration(t) = t // 12`, on a monthly one) — and here `t` is
+always a **month**. **`proj_len()` is the number of periods from `t = 0`**, i.e. the exclusive
+end of the frame: `result_cf()` covers `t = t_first, ..., proj_len() - 1`, where `t_first` is
+0 for a point projected from issue and the elapsed periods for an in-force point. This is
+lifelib's own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
+`for t in range(proj_len())`). A
 contractual policy year is the 1-based label `t + 1` (`duration(t) + 1` on a monthly grid)
 and is derived, never indexed by.
+
+(delib-monthly-grid)=
+
+### Every model steps monthly; no product is thereby a monthly product
+
+The grid is the model's, not the product's. A mechanic the contract states in years stays
+annual and is placed in the month the contract places it, which is why five of these models —
+`KLV_DE_S`, `RV_DE_S`, `Index_DE_S`, `Basis_DE_S` and `Riester_DE_S` — run on **two clocks**
+and say so in their `Projection` docstring: an annual coordinate — `k`, the policy or
+projection year — for anything struck per *Versicherungsjahr*, and `t`, the month, for
+anything that happens on a date. A cells' argument is the statement of which clock it is on,
+and the bridge between them is one cells — `policy_year(t)`, `proj_year(t)`. The *Beitrag* of
+a contract written annually is one instalment in month 0 of each policy year rather than a
+twelfth every month, because § 12 Abs. 1 VVG makes the *Versicherungsperiode* the year and
+the *Beitrag* is payable in advance for it; the declared *laufende Verzinsung* is credited
+once a policy year; `Index_DE_S`'s *Wahlrecht* is exercised once, at an anniversary; a
+§ 169 Abs. 3 VVG surrender value is struck *zum Schluss der laufenden Versicherungsperiode*
+and not at the cancellation date; a § 165 VVG *Beitragsfreistellung* takes effect "für den
+Schluss der laufenden Versicherungsperiode" and so falls at an anniversary; and
+`Riester_DE_S`'s *Zulage* still reaches the account in the year after the contribution year
+it is claimed for.
+
+What the finer grid changes is **when** things happen inside the year. Every annual decrement
+is applied twelve times at the **geometric** twelfth `1 − (1 − r)^(1/12)` and never at
+`r / 12`, so twelve months compound back to the year's rate exactly and the in force at every
+anniversary is the annual-step model's own figure to the last bit; a rate that is a certainty
+rather than a probability — the terminal `q = 1` that closes a mortality table — is not
+twelfth-rooted but placed whole in the anniversary month. That exactness is what makes the
+figures that *do* move readable as product effects rather than discretisation noise: a *Rente*
+quoted in euro a month is now paid monthly in advance (`RV_DE_S` −369,14 €, `Basis_DE_S`
+−4 290,52 €, `Riester_DE_S` −361,74 €); deaths and surrenders compete month by month, so a
+year's total exits are unchanged and their split is not; a policy leaving mid-year bears
+administration only for the months it was there; a *Rentengarantiezeit* is a count of monthly
+instalments; and the twelve capped monthly observations of `Index_DE_S`'s *Indexjahr* —
+always the mechanic the product is named for, but buried inside one cells — are rows on the
+frame, where *capped above and not floored below* can be read month by month.
+
+Six models — the five above and `RLV_DE_S` — publish `result_cf_annual()`, which **regroups
+the same months** into policy or projection years and is never a second projection, so an
+annual comparison is a sum of the frame that was actually run. The balances that an annual
+`result_cf()` used to carry — account values, credited interest, in-force counts — live in an
+annual **state** frame instead (`result_pols()`, `result_acct()`, `result_index()`,
+`result_surplus()`), so a balance cannot be summed down a cash flow statement.
 
 (delib-own-rulings)=
 
@@ -450,7 +495,11 @@ or read it and take the cash flow statement:
 ```
 
 `Projection` takes a `point_id`; `Projection[1]` is each model's worked-example anchor cell.
-`result_cf()` returns a tidy `DataFrame` indexed by `t` with one column per cash flow line.
+`result_cf()` returns a tidy `DataFrame` indexed by `t` — a projection **month**, in every
+model — with one column per cash flow line. Where a model also publishes
+`result_cf_annual()`, that is the same frame summed into policy or projection years, and its
+annual **state** frame (`result_pols()`, `result_acct()`, `result_index()`,
+`result_surplus()`, `result_fund()`, `result_states()`) is where the balances are.
 
 The tests ship inside the library and run against *your* copy:
 

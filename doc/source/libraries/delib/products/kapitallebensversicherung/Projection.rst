@@ -52,21 +52,35 @@ Cells Descriptions
 
 .. autofunction:: bfz_year
 
+.. autofunction:: proj_len_y
+
 .. autofunction:: proj_len
 
 .. autofunction:: t_start
 
-.. autofunction:: age
+.. autofunction:: k_start
+
+.. autofunction:: duration_mth
 
 .. autofunction:: duration
 
+.. autofunction:: is_anniv
+
+.. autofunction:: age
+
+.. autofunction:: age_y
+
 .. autofunction:: policy_year
+
+.. autofunction:: policy_year_y
 
 .. autofunction:: mort_rate_at_age
 
 .. autofunction:: mort_rate_base
 
 .. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_mth
 
 .. autofunction:: disc_factor_1st
 
@@ -162,9 +176,21 @@ Cells Descriptions
 
 .. autofunction:: prem_paid_pp
 
+.. autofunction:: prem_cycle
+
+.. autofunction:: prem_due
+
+.. autofunction:: prem_charged_inst_pp
+
+.. autofunction:: prem_inst_pp
+
 .. autofunction:: premiums
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: bfz_fails
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: storno_rate
 
@@ -177,6 +203,14 @@ Cells Descriptions
 .. autofunction:: pols_lapse
 
 .. autofunction:: pols_maturity
+
+.. autofunction:: av_sur_close_pp
+
+.. autofunction:: bonus_si_close_pp
+
+.. autofunction:: term_bonus_close_pp
+
+.. autofunction:: res_guar_close_pp
 
 .. autofunction:: benefit_full_pp
 
@@ -226,6 +260,10 @@ Cells Descriptions
 
 .. autofunction:: check_surr_floor
 
+.. autofunction:: check_surr_nonneg_resid
+
+.. autofunction:: check_surr_nonneg
+
 .. autofunction:: check_equivalence_resid
 
 .. autofunction:: check_equivalence
@@ -239,5 +277,7 @@ Cells Descriptions
 .. autofunction:: check_zillmer_cap
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_surplus

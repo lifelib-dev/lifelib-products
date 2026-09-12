@@ -52,7 +52,15 @@ Cells Descriptions
 
 .. autofunction:: proj_start
 
+.. autofunction:: proj_len_y
+
 .. autofunction:: proj_len
+
+.. autofunction:: duration_mth
+
+.. autofunction:: duration
+
+.. autofunction:: policy_year
 
 .. autofunction:: age
 
@@ -68,9 +76,13 @@ Cells Descriptions
 
 .. autofunction:: mort_rate
 
+.. autofunction:: mort_rate_mth
+
 .. autofunction:: mort_rate_tar
 
 .. autofunction:: benefit_factor
+
+.. autofunction:: sum_uplift_y
 
 .. autofunction:: sum_uplift
 
@@ -85,6 +97,8 @@ Cells Descriptions
 .. autofunction:: shock_lapse_factor
 
 .. autofunction:: lapse_rate
+
+.. autofunction:: lapse_rate_mth
 
 .. autofunction:: lapse_cum
 
@@ -108,11 +122,21 @@ Cells Descriptions
 
 .. autofunction:: instalments
 
+.. autofunction:: prem_cycle
+
+.. autofunction:: prem_due
+
 .. autofunction:: prem_gross_pp
 
 .. autofunction:: prem_rebate_pp
 
 .. autofunction:: prem_paid_pp
+
+.. autofunction:: prem_gross_inst_pp
+
+.. autofunction:: prem_rebate_inst_pp
+
+.. autofunction:: prem_inst_pp
 
 .. autofunction:: res_pp_at
 
@@ -173,5 +197,7 @@ Cells Descriptions
 .. autofunction:: check_no_cash_value
 
 .. autofunction:: result_cf
+
+.. autofunction:: result_cf_annual
 
 .. autofunction:: result_pols

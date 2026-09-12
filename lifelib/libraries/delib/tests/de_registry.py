@@ -60,6 +60,13 @@ MONTHLY = {"grid": "monthly", "age_basis": "ALB", "discounted": False}
 # ``test_the_name_carries_the_right_grid_suffix`` then requires its name to end ``_A``.  The
 # row and the name move together, which is the point of asserting the suffix from the
 # metadata rather than from the folder.
+#
+# The row is checked against the **frame** as well as against the name.  A suffix is
+# spelling, and six of these models spent a while carrying ``_S`` in the registry while
+# still stepping a year at a time; ``test_a_monthly_registry_entry_means_a_monthly_frame``
+# reads the grid off the attained age instead, which steps once every twelve periods on a
+# monthly frame and every period on an annual one.  Mis-registering a model is therefore a
+# failure rather than a rename.
 
 # name -> (path relative to the library root, metadata)
 #
