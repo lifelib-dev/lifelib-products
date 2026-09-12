@@ -184,7 +184,7 @@ document and tagged, or marked **[std]** with a numbered footnote.
 | Sex | Male and female rated separately. Female premium runs **0.808–0.872** of male across the published grid; the CI incidence relation is the opposite at young ages — see *Premiums* footnote (10) | [S4] [S3] |
 | Lives basis | Single life; the insured is normally the policyholder. Third-party contracts require the insured's written consent | [S1 제24조] |
 | Underwriting | 일반심사 (full underwriting). 간편심사 and 무심사 forms exist on other Korean products and are a different axis from GI | [R2]; scope **[std]** (7) |
-| **Anchor model cell** | 남자, 보험나이 **40**, 80% 선지급형, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 종신 (CI 보장 100세), 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 월보험료 **₩306,740** (annualized **₩3,680,880**) | [S4]; construction and annualization **[std]** (8) |
+| **Anchor model cell** | 남자, 보험나이 **40**, 80% 선지급형, 보험가입금액 **₩100,000,000 (1억원)**, 보험기간 종신 (CI 보장 100세), 납입기간 **20년**, 월납, 저해지환급형 `k = 0.50`. 월보험료 **₩306,740**, which the monthly grid collects directly; the model point column carries the annualization **₩3,680,880** for the commission scale | [S4]; construction **[std]** (8) |
 | Anchor cell against the chassis's | The chassis anchors the identical cell — 남 40, 1억원, 종신, 20년납, 월납, `k = 0.50` — at a **published** 표준형 월보험료 of ₩257,050, and its own 저해지 model point at ₩231,345, that figure at the chassis's **[std]** 90.0% suppression discount. **The acceleration and the CI cover therefore cost about a third more than the same whole-life contract**: 306,740 / 231,345 = **1.33** (published over constructed), or **1.19** against the published 표준형 | computed across [S4] and the chassis's anchor; comparability caveat in footnote (8) |
 
 Footnotes to [std] rows:
@@ -819,8 +819,9 @@ Two further features of the gate that a projection must respect. **Timing**: 「
 뇌손상, 척수 및 신경계의 질환 등은 발병 또는 외상 후 **12개월** 동안 지속적으로 치료한 후에
 장해를 평가한다」, with a further six-month deferral where function is still improving or
 death is expected shortly [S1 별표3, 13-나-1)-라)] — so a CI stroke claim is, by
-construction, **not assessable for a year**, and on an annual grid the payment lags the event
-by one step. And **who assesses**: a 재활의학과, 신경외과 or 신경과 전문의 [S1 별표3]. An
+construction, **not assessable for a year**, and on this model's monthly grid the payment
+lags the event by one step — one month, where an annual grid made it a year, which remains
+well inside the twelve months the 장해분류표 defers the assessment by. And **who assesses**: a 재활의학과, 신경외과 or 신경과 전문의 [S1 별표3]. An
 independent loss adjuster records the insurer's working rule as **six months or more of
 rehabilitation with an ADL-based rating of 25% or higher** [R16]; that six-month practice
 point is the adjuster's, not the 약관's, and is recorded as practice.
