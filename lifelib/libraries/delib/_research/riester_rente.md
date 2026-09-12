@@ -1409,7 +1409,7 @@ they are these, with every specific `[unverified]`:
 
 | Form | Provider | Accumulation | Guarantee met by | Payout | In delib? |
 |---|---|---|---|---|---|
-| **Klassische Riester-Rentenversicherung** | life insurer | *Deckungskapital* at the *Rechnungszins* + *Überschuss* | the general account and the guaranteed interest | lifelong annuity at a *Rentenfaktor* | **yes — `riester_rente`, `Riester_DE_A`** |
+| **Klassische Riester-Rentenversicherung** | life insurer | *Deckungskapital* at the *Rechnungszins* + *Überschuss* | the general account and the guaranteed interest | lifelong annuity at a *Rentenfaktor* | **yes — `riester_rente`, `Riester_DE_S`** |
 | Fondsgebundene Riester-Rentenversicherung | life insurer | unit funds + a guarantee asset | dynamic reallocation (section 18) | lifelong annuity at a *Rentenfaktor* | no — chassis documented in `fondsgebundene_rentenversicherung` |
 | Riester-Fondssparplan | *Kapitalverwaltungsgesellschaft* [S9]–[S11] | fund units | rule-based reallocation between an equity and a bond fund | *Auszahlungsplan* + *Restverrentung* from 85 | no |
 | Riester-Banksparplan | bank / *Sparkasse* [S12] | deposit balance + bonus scale | trivially — a deposit cannot fall | *Auszahlungsplan* + *Restverrentung* from 85 | no |

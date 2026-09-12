@@ -1,4 +1,4 @@
-"""Golden and structural tests for Riester_DE_A.
+"""Golden and structural tests for Riester_DE_S.
 
 The golden values are the worked example in
 products/riester_rente/technical-notes.md ("Worked example"), which is a **configuration**
@@ -81,7 +81,7 @@ def model_files(folder):
 CENT = 0.005          # money displayed to 2 d.p.
 SIX_DP = 0.0000005    # pols_if displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["Riester_DE_A"][0]
+MODEL_DIR = LIB / MODELS["Riester_DE_S"][0]
 INPUT_DIR = MODEL_DIR.parent
 
 CLAIM_KINDS = ("DEATH", "LAPSE", "TRANSFER", "LUMPSUM", "COMMUTATION", "ANNUITY")
@@ -792,7 +792,7 @@ def test_setting_the_declared_rate_to_the_guaranteed_rate_empties_the_surplus_le
     """
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_A_flat_j")
+    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_flat_j")
     alt = None
     try:
         scenario = pd.read_csv(model.Data.input_dir() / "surplus_scenario.csv")
@@ -848,7 +848,7 @@ def test_removing_the_loading_moves_premiums_and_nothing_else():
     """
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_A_flat_phi")
+    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_flat_phi")
     alt = None
     try:
         p, ts = model.Projection[3], (0, 1, 2)
@@ -1273,7 +1273,7 @@ def test_docstrings_describe_the_current_structure(riester_rente):
 
 
 def test_the_savings_chassis_vocabulary_is_present(riester_rente):
-    """Names shared with RV_DE_A, Basis_DE_A and Sofort_DE_S must mean the same thing.
+    """Names shared with RV_DE_S, Basis_DE_S and Sofort_DE_S must mean the same thing.
 
     The second set is the Schicht-2 apparatus this product adds to that chassis.
     """
@@ -1361,7 +1361,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     """
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_A_swap")
+    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_swap")
     alt = None
     try:
         base_factor = model.Projection[1].ann_factor()
@@ -1395,7 +1395,7 @@ def test_round_trip_is_stable(tmp_path):
     """
     import shutil
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -1405,7 +1405,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in INPUT_DIR.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="Riester_DE_A_rt")
+    reread = mx.read_model(dest, name="Riester_DE_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

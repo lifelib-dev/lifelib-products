@@ -1,4 +1,4 @@
-"""Golden and structural tests for RLV_DE_A, the German Risikolebensversicherung.
+"""Golden and structural tests for RLV_DE_S, the German Risikolebensversicherung.
 
 The golden values are the worked example in
 ``products/risikolebensversicherung/technical-notes.md`` ("Worked example"), which is a
@@ -61,7 +61,7 @@ AP = pytest.approx        # used throughout, so an assertion fits on one line
 CENT = 0.005              # money displayed to 2 d.p.
 SIX_DP = 0.0000005        # pols_if displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["RLV_DE_A"][0]
+MODEL_DIR = LIB / MODELS["RLV_DE_S"][0]
 PRODUCT_DIR = MODEL_DIR.parent
 
 
@@ -402,7 +402,7 @@ def test_the_declaration_withdrawn_variant_row(risikolebensversicherung, t):
     moves -- ``pols_if``, ``claims_death`` and ``prem_gross`` to the last bit.
     """
     pols, gross, prem, rebate, cd, exp, comm, net = DECL_WITHDRAWN[t]
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_A_decl0")
+    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_decl0")
     try:
         model.Projection.decl_scale = 0.0
         model.Projection.clear_all()
@@ -505,8 +505,8 @@ def test_pitfall_3_only_the_bruttobeitrag_is_guaranteed():
     a 74,0 % increase in the bill for no change in cover.  Only the flows that scale with
     the *billed* premium follow -- collection at 3 % and renewal commission at 1 %.
     """
-    base = mx.read_model(MODEL_DIR, name="RLV_DE_A_decl_base")
-    stressed = mx.read_model(MODEL_DIR, name="RLV_DE_A_decl_str")
+    base = mx.read_model(MODEL_DIR, name="RLV_DE_S_decl_base")
+    stressed = mx.read_model(MODEL_DIR, name="RLV_DE_S_decl_str")
     try:
         stressed.Projection.decl_scale = 0.0
         stressed.Projection.clear_all()
@@ -618,7 +618,7 @@ def test_pitfall_7_q1_prices_and_q2_projects(risikolebensversicherung):
     assert male.mort_rate_tar(0) == AP(2.25 * blend, rel=1e-12)
     base_claims = male.result_cf()["claims_death"].sum()
     seen = {}
-    for value, name in ((1.0, "RLV_DE_A_m100"), (1.5, "RLV_DE_A_m150")):
+    for value, name in ((1.0, "RLV_DE_S_m100"), (1.5, "RLV_DE_S_m150")):
         model = mx.read_model(MODEL_DIR, name=name)
         try:
             model.Projection.sicherheitszuschlag_m = value
@@ -810,7 +810,7 @@ def test_pitfall_15_only_the_mortality_margin_is_returned(de_rlv_anchor):
     ``net_cf`` and stays there.  A stated simplification, not an oversight.
     """
     base = de_rlv_anchor.result_cf()
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_A_cost")
+    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_cost")
     try:
         model.Projection.maint_prem_pct = 0.06
         model.Projection.comm_rate_renew = 0.02
@@ -852,7 +852,7 @@ def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit()
     loaded, so an impaired life pays more *and* claims more, the *Zahl/Brutto* ratio moves
     by 0,4835 of a percentage point, and the benefit is untouched.
     """
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_A_rating")
+    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_rating")
     try:
         rated = model.Projection[11]
         assert rated.rating_factor() == 1.75 and rated.smoker() == "R"
@@ -1069,7 +1069,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     lighter = pd.read_csv(PRODUCT_DIR / "mort_table.csv",
                           index_col=["table_id", "sex", "smoker", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_A_swap")
+    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_swap")
     try:
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)
@@ -1097,7 +1097,7 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -1105,7 +1105,7 @@ def test_round_trip_is_stable(tmp_path):
         model.close()
     for csv in PRODUCT_DIR.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
-    reread = mx.read_model(dest, name="RLV_DE_A_rt")
+    reread = mx.read_model(dest, name="RLV_DE_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

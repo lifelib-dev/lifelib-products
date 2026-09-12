@@ -4,7 +4,7 @@
 documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`Index_DE_A`**, **annual** grid — for the standardized composite German *Indexpolice* defined in
+**`Index_DE_S`**, **annual** grid — for the standardized composite German *Indexpolice* defined in
 `product-spec.md` (same directory). This is not any single insurer's contract. [S#]/[R#] tags refer to
 the source list in `sources.md` (numbering carried from `_research/indexpolice.md`; frozen); [REG-R#]
 tags refer to the cross-product reference library `references/regulatory-and-actuarial-references.md`
@@ -48,7 +48,7 @@ shipped index path so that the mechanics are asserted against them cell by cell.
   months, the surplus is declared once a year, the *Wahlrecht* is exercised once a year and the credit
   is struck once a year — so the annual grid is the product's grid, not an approximation of a finer one.
   The **twelve monthly index observations live inside the annual step**, read from a wide external table
-  with one row per year and twelve return columns. That is the whole reason `Index_DE_A` is `_A` while
+  with one row per year and twelve return columns. That is the whole reason `Index_DE_S` is `_A` while
   the genuinely unit-linked `FRV_DE_S` is `_S`: a unit-linked contract has a unit price every day, an
   Indexpolice has a value at one date a year.
 - **The frame is 0-based and `t` counts policy years from issue.** `t = 0` is the first policy year:
@@ -354,7 +354,7 @@ what other IndexSelect policyholders with the same *Indexstichtag* most often ch
 **delib's `w` paths are exogenous and model neither default**, which for a book-level projection is a
 real simplification: an inert population does not stay where it was put. Four **[std]** paths are
 shipped: `always_index` (`w = 1`, the base run, because a base run in the safe
-arm would reduce the product to `RV_DE_A`), `always_safe` (`w = 0`), `half_half` (`w = 0,5`) and
+arm would reduce the product to `RV_DE_S`), `always_safe` (`w = 0`), `half_half` (`w = 0,5`) and
 `switch_at_15` (`w = 1` through policy year 15, i.e. `t ≤ 14`, then 0).
 
 **Expenses (insurer outgo) and contractual charges (deductions from the account).** These are two
@@ -734,7 +734,7 @@ them, and none for this product specifically.
   to *Rentenbeginn*.
 - **The *Wahlrecht* election.** Four shipped paths, base run `w = 1`. **The base run is a modelling
   choice, not a claim about behaviour**: the product exists to demonstrate the index mechanic, and a
-  base run in the safe arm would reduce it to `RV_DE_A`. The alternative belief — that policyholders are
+  base run in the safe arm would reduce it to `RV_DE_S`. The alternative belief — that policyholders are
   inert and never revisit an election made at inception — is equally unevidenced and is the reason
   `switch_at_15` and `half_half` are shipped rather than described.
 - **Dynamic surrender is not modeled, and the reason is specific to this product.** On a

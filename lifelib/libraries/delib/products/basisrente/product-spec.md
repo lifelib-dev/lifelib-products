@@ -581,11 +581,11 @@ monthly *Bezugsgröße* [R23]. Whether a Basisrente AVB offers the *Abfindung*, 
 no longer unestablished either: one carrier's wording offers it [S1] and the GDV model conditions draft
 it as the **insurer's** right, not the policyholder's [S12] — which is itself a reason a projection
 model cannot simply assume it is taken. The *Abfindung* remains a contract term, not an automatic
-statutory consequence. And the mechanic is already carried once in this library, on `Riester_DE_A`,
+statutory consequence. And the mechanic is already carried once in this library, on `Riester_DE_S`,
 where the § 93 Abs. 3 threshold is native, is computed rather than assumed, and a model point trips
 it. **This is a named model risk, not a claim about the law**: a Basisrente model asked to value a
 book of very small contracts needs the branch, and a delib user adding it should take
-`Riester_DE_A`'s `is_kleinbetrag()` / `commutation_pp()` pair as the pattern. Model point 10 — 300,00 €
+`Riester_DE_S`'s `is_kleinbetrag()` / `commutation_pp()` pair as the pattern. Model point 10 — 300,00 €
 a year, the market's minimum recurring premium — is the boundary case that would trip it, and in the
 base run it projects a small annuity.
 

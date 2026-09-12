@@ -1105,7 +1105,7 @@ reason. Structural statements are made plainly; levels are either sourced, `[unv
   (i) **the capital cannot fall** — there is no mark-to-market of an account, a bad year credits zero
   rather than taking anything away; (ii) **there is no unit-pricing timing** — values are struck at
   the *Indexjahr* boundary, annually, which is why the delib model is on an **annual** grid
-  (`Index_DE_A`) while the genuinely unit-linked product 3 is monthly; (iii) **the surrender value is
+  (`Index_DE_S`) while the genuinely unit-linked product 3 is monthly; (iii) **the surrender value is
   a reserve, not a unit value** [R2].
 - **What the policyholder actually risks is the opportunity cost of one year's surplus**: if the
   *Indexjahr* ends at or below zero, the surplus that would have been credited under the *sichere

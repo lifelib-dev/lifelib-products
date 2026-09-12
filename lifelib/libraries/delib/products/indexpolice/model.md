@@ -43,7 +43,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/indexpolice/Index_DE_A")
+model = mx.read_model("products/indexpolice/Index_DE_S")
 model.Projection[1].result_cf()
 ```
 
@@ -151,7 +151,7 @@ case. It is a **behavioural** assumption and not a contractual one, and its path
 an external table: `always_index` (the base run), `always_safe`, `half_half`, `switch_at_15`.
 The base run's `w = 1` is a **modelling choice made so that the model demonstrates the index
 mechanic**, not a claim about behaviour: a base run in the safe arm would reduce this model to
-`RV_DE_A`, and model point 11 is exactly that comparison. The model deliberately carries no
+`RV_DE_S`, and model point 11 is exactly that comparison. The model deliberately carries no
 optimal-election rule, no inertia model, no distribution over paths and no within-year
 switching: none is established for this product family, and a switching rule would put an
 unevidenced behavioural assumption at the centre of the result.
@@ -233,7 +233,7 @@ against what must be **paid** — and conflating them is a numbered pitfall [R2]
 ## Inputs are external files
 
 The eight input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `Index_DE_A/` holds nothing but formulas:
+folder. `Index_DE_S/` holds nothing but formulas:
 
 ```
 products/indexpolice/
@@ -250,7 +250,7 @@ products/indexpolice/
   product-spec.md              <- the documents this model implements
   technical-notes.md
   sources.md
-  Index_DE_A/                  <- formulas only
+  Index_DE_S/                  <- formulas only
     __init__.py                   (model docstring)
     _system.json
     Data/__init__.py              (reads the CSVs, once per model)
@@ -283,7 +283,7 @@ is checked out.
 | `lapse_file` | `lapse_table()` | `lapse_table.csv` |
 | `freq_load_file` | `freq_load_table()` | `freq_load_table.csv` |
 
-**The trade-off:** the model is not portable on its own. Copy `Index_DE_A/` without the CSVs
+**The trade-off:** the model is not portable on its own. Copy `Index_DE_S/` without the CSVs
 and it will read fine, then fail on first evaluation. What you gain is that a diff of the
 model shows logic changes only, and an input can be swapped in place — point
 `Data.index_return_file` at another same-schema file and the whole *Indexjahr* mechanic
@@ -359,7 +359,7 @@ example while the machinery stays visible and testable.
 | Module | Switch | Off value | What it does |
 |---|---|---|---|
 | The *Partizipationsquote* payoff | `payoff_form` (model point column) | `"cap"` | Credits `max(q(t)·Y(t), 0)` on the compounded year return instead of the capped monthly sum. Model points 2 and 3 switch it on; the two designs fail differently and a specification may not describe one and price the other |
-| The *sichere Verzinsung* arm | `elect_id` → `elect_index(t)` | `1.0` (full index) | Directs `1 − w(t)` of the declared surplus to `surplus_credit_pp`, guaranteed from the moment it is credited. At `w = 0` (model point 11) the contract *is* a `RV_DE_A` |
+| The *sichere Verzinsung* arm | `elect_id` → `elect_index(t)` | `1.0` (full index) | Directs `1 − w(t)` of the declared surplus to `surplus_credit_pp`, guaranteed from the moment it is credited. At `w = 0` (model point 11) the contract *is* a `RV_DE_S` |
 | The *Stornoabzug* | `surr_charge_on` (model point column) | `1` on twelve points, `0` on point 13 | 2 % of the floored base **[std]**. A tariff without the clause is a real configuration, not a special case: a deduction is effective only if agreed, appropriate and **quantified in the contract** [R2] |
 | The max-of-two *Rentenfaktor* | `rentenfaktor_curr` | `25.0`, equal to `rentenfaktor_guar` | `max(guaranteed, current)` — a guarantee with upside. The two are set equal in the base run **[std]** so the rule is exercised by a test rather than by the base path |
 
@@ -408,10 +408,10 @@ symbols; the full mapping lives in the `Projection` Space docstring. Six cases n
 | `K(t)`, `Γ(t)` | `credit_cum_pp` / `guar_cap_pp` | The ledger of credits and the guaranteed capital. `av_pp` is neither, and the lock-in check is written on `guar_cap_pp` |
 | `w_l(t)` | `lapse_rate` / `lapse_rate_base` | The table rate and the rate applied are different in the final period `t = n − 1`, where a surrender and a maturity would be the same event at the same instant — and here, unlike on a term product, they pay different amounts |
 
-**The chassis this model shares.** Inside delib, `RV_DE_A` (*klassische aufgeschobene
+**The chassis this model shares.** Inside delib, `RV_DE_S` (*klassische aufgeschobene
 Rentenversicherung*) is the same accumulation chassis with the surplus credited as interest,
-and `KLV_DE_A` is the *Überschussbeteiligung* chassis both inherit; model point 11 is the
-`RV_DE_A` comparison run inside this model. `FRV_DE_S` is the contrast rather than the
+and `KLV_DE_S` is the *Überschussbeteiligung* chassis both inherit; model point 11 is the
+`RV_DE_S` comparison run inside this model. `FRV_DE_S` is the contrast rather than the
 sibling — it is genuinely unit-linked, and treating this product as that one is pitfall 1.
 Across the repository the nearest relatives are `uslib`'s `FIA_US_S` and `RILA_US_S`, which
 share the cap/participation-rate vocabulary and the annual reset but not the German
@@ -507,7 +507,7 @@ and is not repeated here.
 
 ```bash
 python -m pytest lifelib/libraries/delib/tests/test_indexpolice_de.py -q
-python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Index_DE_A
+python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Index_DE_S
 ```
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->

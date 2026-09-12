@@ -1,4 +1,4 @@
-"""Golden and structural tests for Index_DE_A, the German *Indexpolice*.
+"""Golden and structural tests for Index_DE_S, the German *Indexpolice*.
 
 The golden values are the worked example in
 ``products/indexpolice/technical-notes.md`` ("Worked example"), which is a
@@ -61,7 +61,7 @@ def model_files(folder):
 CENT = 0.005          # money displayed to 2 d.p.
 SIX_DP = 0.0000005    # pols_if displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["Index_DE_A"][0]
+MODEL_DIR = LIB / MODELS["Index_DE_S"][0]
 
 # The eight external CSVs the model reads, all in the model folder's parent.
 INPUT_CSVS = {
@@ -987,7 +987,7 @@ def test_the_shared_library_vocabulary_is_present(indexpolice):
         assert retired not in names, retired
     assert indexpolice.Projection.parameters == ("point_id",)
     assert set(indexpolice.spaces) == {"Data", "Projection"}
-    assert indexpolice.name == "Index_DE_A"
+    assert indexpolice.name == "Index_DE_S"
 
 
 def test_the_shipped_tables_mark_their_own_provenance():
@@ -1056,7 +1056,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
                         index_col=["index_id", "t"])
     bleak[months] = -0.01
 
-    model = mx.read_model(MODEL_DIR, name="Index_DE_A_swap")
+    model = mx.read_model(MODEL_DIR, name="Index_DE_S_swap")
     try:
         alt_name = "index_return_table_bleak.csv"
         bleak.to_csv(model.Data.input_dir() / alt_name)
@@ -1082,7 +1082,7 @@ def test_round_trip_is_stable(tmp_path):
     """read -> write -> re-read reproduces the goldens and the same file set."""
     import shutil
 
-    model = mx.read_model(MODEL_DIR, name="Index_DE_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="Index_DE_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -1092,7 +1092,7 @@ def test_round_trip_is_stable(tmp_path):
     for csv in MODEL_DIR.parent.glob("*.csv"):
         shutil.copy(csv, tmp_path / csv.name)
 
-    reread = mx.read_model(dest, name="Index_DE_A_rt")
+    reread = mx.read_model(dest, name="Index_DE_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

@@ -4,7 +4,7 @@
 primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`RV_DE_A`**, **annual** grid — for the standardized composite German *klassische aufgeschobene
+**`RV_DE_S`**, **annual** grid — for the standardized composite German *klassische aufgeschobene
 private Rentenversicherung* defined in `product-spec.md` (same directory). This is not any single
 insurer's contract. [S#]/[R#] tags refer to the source list in `sources.md` (numbering carried from
 `_research/klassische_rentenversicherung.md`; frozen); [REG-R#] tags refer to the cross-product
@@ -879,7 +879,7 @@ the payout phase, both inflating at 2,0 % p.a., plus 120,00 € per death, surre
 event. `omega_age = 121` **[std]**. No *Dynamik*, no *Beitragsfreistellung*, no
 *guar_capital_pp* floor, no behavioural modules.
 
-**The frame.** Every figure below is transcribed from `RV_DE_A.Projection[1].result_cf()`, money to
+**The frame.** Every figure below is transcribed from `RV_DE_S.Projection[1].result_cf()`, money to
 the cent and `pols_if` to six decimals. The index is the model's own 0-based `t`, so row `t` is
 policy year `t + 1`. Rows 0–16 are the whole accumulation phase; rows 17, 26, 27, 39, 54 and 70
 sample the payout at the first annuity year, the last guaranteed year, the first survivor-weighted

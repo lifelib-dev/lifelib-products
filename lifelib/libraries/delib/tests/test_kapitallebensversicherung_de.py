@@ -1,4 +1,4 @@
-"""Golden and structural tests for KLV_DE_A.
+"""Golden and structural tests for KLV_DE_S.
 
 The golden values are the worked example in
 ``products/kapitallebensversicherung/technical-notes.md`` ("Worked example"), which is a
@@ -65,7 +65,7 @@ from de_registry import MODELS, LIB
 CENT = 0.005          # money displayed to 2 d.p.
 SIX_DP = 0.0000005    # pols_if displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["KLV_DE_A"][0]
+MODEL_DIR = LIB / MODELS["KLV_DE_S"][0]
 PRODUCT_DIR = MODEL_DIR.parent
 
 # The seven external CSVs, the annuallife/TradLife_A layout.
@@ -561,7 +561,7 @@ def test_the_negative_reserve_guard(de_klv_anchor, tmp_path):
     assert all(p.surplus_base_pp(t) >= 0.0 for t in range(25))
     assert [t for t in range(25) if p.res_pp_at(t, "AFT_INT") < 0.0] == []
     assert p.res_pp(0) < 0.0 < p.res_pp_at(0, "AFT_INT")
-    model = variant_model(tmp_path, "KLV_DE_A_zill40", [
+    model = variant_model(tmp_path, "KLV_DE_S_zill40", [
         ("cost_table.csv", "std_2026,0.0250,", "std_2026,0.0400,"),
         ("model_point_table.csv",
          "1,DE-KLV-0001,M,N,2026,37,0,1.0,25,25,50000.0,1.0,annual,unecht,0.01,1,",
@@ -843,7 +843,7 @@ def test_the_risikozuschlag_reaches_the_price_and_not_the_benefit(
     assert rated.prem_gross_pp() == pytest.approx(2611.4527, abs=5e-4)
     assert rated.pv_death_1st() == pytest.approx(2495.0595, abs=5e-4)
     assert rated.benefit_full_pp(4) == pytest.approx(rated.sum_death(), rel=1e-12)
-    model = variant_model(tmp_path, "KLV_DE_A_rate100", [
+    model = variant_model(tmp_path, "KLV_DE_S_rate100", [
         ("model_point_table.csv", ",ansammlung,nil,1.5,", ",ansammlung,nil,1.0,")])
     try:
         std = model.Projection[14]
@@ -915,7 +915,7 @@ def test_the_two_mortality_bases_are_not_crossed(kapitallebensversicherung, de_k
     assert p.mort_rate(0) < p.mort_rate_at_age(37) < p.mort_rate_base(0)
     reserves = [p.res_pp(t) for t in (0, 4, 11, 24)]
     premium, deaths = p.prem_gross_pp(), p.pols_death(4)
-    model = mx.read_model(MODEL_DIR, name="KLV_DE_A_be90")
+    model = mx.read_model(MODEL_DIR, name="KLV_DE_S_be90")
     try:
         model.Projection.mort_be_factor = 0.90
         model.Projection.clear_all()
@@ -989,7 +989,7 @@ def test_the_zahlbeitrag_is_not_guaranteed_under_beitragsverrechnung(
     assert bv.commissions(4) > 0.015 * bv.prem_paid_pp(4) * bv.pols_if(4)
     assert bv.result_cf()["commissions"].sum() == pytest.approx(
         TOTALS["commissions"], abs=CENT)
-    model = variant_model(tmp_path, "KLV_DE_A_bv_nil", [
+    model = variant_model(tmp_path, "KLV_DE_S_bv_nil", [
         ("model_point_table.csv",
          ",beitragsverrechnung,base,", ",beitragsverrechnung,nil,")])
     try:
@@ -1371,7 +1371,7 @@ def test_the_bewertungsreserven_switch_is_reachable():
     and that need has routinely exhausted them -- a fact about the market rather than about
     the contract, so the parameter stays rather than the branch being deleted.
     """
-    model = mx.read_model(MODEL_DIR, name="KLV_DE_A_bwr")
+    model = mx.read_model(MODEL_DIR, name="KLV_DE_S_bwr")
     try:
         model.Projection.bwr_rate = 0.02
         model.Projection.clear_all()
@@ -1398,7 +1398,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     lighter["mort_rate_1st"] = lighter["mort_rate_1st"] * 0.5
     alt = tmp_path / "mort_table_light.csv"
     lighter.to_csv(alt, index=False)
-    model = mx.read_model(MODEL_DIR, name="KLV_DE_A_swap")
+    model = mx.read_model(MODEL_DIR, name="KLV_DE_S_swap")
     try:
         target = model.Data.input_dir() / alt.name
         shutil.copy(alt, target)
@@ -1428,7 +1428,7 @@ def test_round_trip_is_stable(tmp_path):
     parent before re-reading. That is exactly the trade-off this layout makes, and the reason
     it is worth asserting in both directions.
     """
-    model = mx.read_model(MODEL_DIR, name="KLV_DE_A_rt_src")
+    model = mx.read_model(MODEL_DIR, name="KLV_DE_S_rt_src")
     try:
         dest = tmp_path / MODEL_DIR.name
         mx.write_model(model, str(dest), backup=False)
@@ -1436,7 +1436,7 @@ def test_round_trip_is_stable(tmp_path):
         model.close()
     for csv_path in PRODUCT_DIR.glob("*.csv"):
         shutil.copy(csv_path, tmp_path / csv_path.name)
-    reread = mx.read_model(dest, name="KLV_DE_A_rt")
+    reread = mx.read_model(dest, name="KLV_DE_S_rt")
     try:
         p = reread.Projection[1]
         for t, row in WORKED_EXAMPLE.items():

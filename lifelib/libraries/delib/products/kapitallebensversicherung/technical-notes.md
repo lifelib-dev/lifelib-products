@@ -3,7 +3,7 @@
 **Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`KLV_DE_A`**, **annual** grid — for the standardized composite German *kapitalbildende
+**`KLV_DE_S`**, **annual** grid — for the standardized composite German *kapitalbildende
 Lebensversicherung* defined in `product-spec.md` (same directory). **This is not any single insurer's
 product.** [S#] / [R#] tags refer to the source list in `sources.md` (numbering carried from
 `_research/kapitallebensversicherung.md`; frozen); [REG-R#] tags refer to the cross-product library
@@ -880,7 +880,7 @@ the two annuities coinciding because the *Beitragszahlungsdauer* is the whole
 
 ### The projection, cell by cell
 
-Transcribed from `KLV_DE_A.Projection[1].result_cf()`. `pols_if` is the count at the **start** of
+Transcribed from `KLV_DE_S.Projection[1].result_cf()`. `pols_if` is the count at the **start** of
 the policy year and is the weight on that same row's cash flows; every other column is that
 year's euro flow. `expenses` **excludes** commission, so the six flow columns sum to `net_cf`
 exactly. The index `t` is **0-based** — policy year `t` + 1 — so the frame is the whole

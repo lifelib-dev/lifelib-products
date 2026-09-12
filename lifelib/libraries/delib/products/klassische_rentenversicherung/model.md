@@ -32,7 +32,7 @@ Three lines to the same thing:
 
 ```python
 import modelx as mx
-model = mx.read_model("products/klassische_rentenversicherung/RV_DE_A")
+model = mx.read_model("products/klassische_rentenversicherung/RV_DE_S")
 model.Projection[1].result_cf()
 ```
 
@@ -274,14 +274,14 @@ outside the guarantee window and carry an `expense_claim_pp` settlement cost, an
 ## Inputs are external files
 
 The eight input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `RV_DE_A/` holds nothing but formulas:
+folder. `RV_DE_S/` holds nothing but formulas:
 
 ```
 products/klassische_rentenversicherung/
   model_point_table.csv  mort_table.csv  decl_rate_table.csv   <- inputs live here,
   rentenfaktor_table.csv  charge_table.csv  lapse_table.csv       beside run.py and
   freq_load_table.csv  param_table.csv  run.py                    the four documents
-  RV_DE_A/                     <- formulas only
+  RV_DE_S/                     <- formulas only
     __init__.py  _system.json     (model docstring)
     Data/__init__.py              (reads the CSVs, once per model)
     Projection/__init__.py        (the by-policy projection)
@@ -313,7 +313,7 @@ repository is checked out.
 | `freq_load_file` | `freq_load_table()` | `freq_load_table.csv` | The *Ratenzahlungszuschlag*: 1,000 / 1,020 / 1,030 / 1,050 **[std]**, and `n_instalments` for documentation |
 | `param_file` | `param_table()` | `param_table.csv` | Every scalar that is neither a charge nor a rate table — the four expense levels and their inflation, `mort_be_factor`, `mort_base_year`, `omega_age`, `val_reserve_rate`, the three *Überschussrente* parameters and `roll_fwd_tol`. They live in a file rather than in References so that each carries its own provenance tag, which a Reference cannot |
 
-**The trade-off:** the model is not portable on its own — copy `RV_DE_A/` without the CSVs and
+**The trade-off:** the model is not portable on its own — copy `RV_DE_S/` without the CSVs and
 it reads fine, then fails on first evaluation. What you gain is that a diff of the model shows
 logic changes only, and an input can be swapped in place: point `Data.mort_file` at another
 same-schema file and the projection follows, with no formula change. Every file but the model
@@ -398,12 +398,12 @@ symbols; the full mapping lives in the `Projection` Space docstring. Four cases 
 | `V(t)`, `A(t)` | `av_pp` / `av_sur_pp` | Two accounts, not one balance split in two. The *Deckungskapital* carries the guarantee and is credited at `int_rate_guar()`; the *Ansammlungsguthaben* is the *verzinsliche Ansammlung* side account, credited at `decl_rate(t)` on its own balance plus `bonus_rate(t)` on the *Deckungskapital*'s post-premium base. Each has its own roll-forward check |
 | `l(t)`, `a(t)` | `pols_if` / `pols_annuity` | They differ inside the *Rentengarantiezeit* and nowhere else. `pols_if(t)` is the start-of-year count and the weight on every accumulation-phase cash flow of the same row; `pols_annuity(t)` is the count the instalment is *paid on* |
 
-**The chassis this model shares.** `KLV_DE_A` (`products/kapitallebensversicherung`) is the
+**The chassis this model shares.** `KLV_DE_S` (`products/kapitallebensversicherung`) is the
 same *Überschussbeteiligung* and *Deckungskapital* machinery with a maturity benefit where
 this one has a conversion, and is the primary home of the four-component surplus split.
 `Sofort_DE_S` (`products/sofortrente`) is this model's payout phase as a product in its own
 right — which is why an immediate-annuity document is direct evidence for a deferred
-contract's conversion basis [S13] [S16]. `Index_DE_A` and `FRV_DE_S` replace the crediting
+contract's conversion basis [S13] [S16]. `Index_DE_S` and `FRV_DE_S` replace the crediting
 mechanic and keep the conversion. Names that mean the same thing across all of them:
 `model_point`, `proj_len`, `age`, `calendar_year`, `pols_if`, `pols_if_at`, `pols_death`,
 `pols_lapse`, `mort_rate`, `lapse_rate`, `prem_pp`, `premiums`, `av_pp`, `av_pp_at`,
@@ -486,7 +486,7 @@ because a model point's first evaluation is the most expensive thing in the run.
 
 ```bash
 python -m pytest lifelib/libraries/delib/tests/test_klassische_rentenversicherung_de.py -q
-python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k RV_DE_A
+python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k RV_DE_S
 ```
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->

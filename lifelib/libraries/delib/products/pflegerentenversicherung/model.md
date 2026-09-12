@@ -71,7 +71,7 @@ not frame indices, so they do not shift either: the gate stays `t < wartezeit_mo
 
 ## Nine states, and only two of them absorbing
 
-This is what a reader arriving from `RLV_DE_A`, `BasicTerm_S` or any single-decrement protection
+This is what a reader arriving from `RLV_DE_S`, `BasicTerm_S` or any single-decrement protection
 model will get wrong, and it is why the product is worth modelling. A *Pflegerente* is a
 **multi-state contract whose benefit is a step function of the state**, not a cover paying on an
 event:
@@ -404,7 +404,7 @@ Six names needed care:
 | `q_A(x)` vs `q_g(x)` | `mort_rate` / `mort_rate_care(t, g)` | The active-life table rate and the in-care rate derived from its force. Publishing one rate for both states is the error the pair exists to prevent |
 | `i(x)` vs `ι(t)` | `inc_rate` / `inc_force` | The table rate, which stays tariff-comparable at every age, and the force the *Wartezeit* gates to zero |
 | `pols_entry` vs `pols_grad` | `pols_entry(t, g)` / `pols_grad(t, g)` | Onsets and graduations out of the *Karenz* ledger. Equal when `K = 0`; their gap **is** the cost of a *Karenzzeit* |
-| `σ` | `stornoabzug_rate()` | The *Stornoabzug* is a **fraction** here, so it takes the `*_rate` name the library gives every rate — the spelling `RV_DE_A`, `FRV_DE_S` and `Riester_DE_A` already use for it. Bare `stornoabzug` is `FRV_DE_S`'s euro cash flow and its `result_cf()` column, a different quantity, and the two must not share a name |
+| `σ` | `stornoabzug_rate()` | The *Stornoabzug* is a **fraction** here, so it takes the `*_rate` name the library gives every rate — the spelling `RV_DE_S`, `FRV_DE_S` and `Riester_DE_S` already use for it. Bare `stornoabzug` is `FRV_DE_S`'s euro cash flow and its `result_cf()` column, a different quantity, and the two must not share a name |
 
 `policy_id`, `duration_mth(t)` and `pols_if_init()` drive little or nothing here and are exposed as
 documented cells rather than dropped: a silently missing column is worse than an inert one.

@@ -41,7 +41,7 @@ python products/basisrente/run.py 13      # the cell where the guaranteed Renten
 Three lines to the same thing:
 ```python
 import modelx as mx
-model = mx.read_model("products/basisrente/Basis_DE_A")
+model = mx.read_model("products/basisrente/Basis_DE_S")
 model.Projection[1].result_cf()
 ```
 `Projection` takes a `point_id`; `Projection[1]` is the worked-example anchor cell.
@@ -63,7 +63,7 @@ is and, for the mortality table, what it is **not**.
 
 ## The product is a list of prohibitions, and the model is too
 
-This is the one thing a reader arriving from `KLV_DE_A` or `RV_DE_A` will get wrong, and it is a
+This is the one thing a reader arriving from `KLV_DE_S` or `RV_DE_S` will get wrong, and it is a
 set of **absences** rather than a parameter, so nothing in the output points at it. The
 entitlement is *nicht vererblich*, *nicht übertragbar*, *nicht beleihbar*, *nicht veräußerbar*
 and *nicht kapitalisierbar* [R1] [REG-R39] — arithmetically:
@@ -254,7 +254,7 @@ decrements sum to 1,000000, and there is no tail state and nothing left to pay.
 
 ## Inputs are external files
 
-The seven input CSVs live **in this directory**, beside `run.py`; `Basis_DE_A/` holds only
+The seven input CSVs live **in this directory**, beside `run.py`; `Basis_DE_S/` holds only
 formulas:
 
 ```
@@ -262,7 +262,7 @@ products/basisrente/
   model_point_table.csv  mort_table.csv  surplus_table.csv    <- inputs live here
   rentenfaktor_table.csv  charge_table.csv  behaviour_table.csv  option_table.csv
   run.py  model.md  product-spec.md  technical-notes.md  sources.md
-  Basis_DE_A/  <- formulas only: __init__.py  _system.json  Data/  Projection/
+  Basis_DE_S/  <- formulas only: __init__.py  _system.json  Data/  Projection/
 ```
 
 This follows lifelib's `annuallife/TradLife_A`, which keeps its input file beside the model and
@@ -288,7 +288,7 @@ suite counts the reads and asserts the file set.
 | `option_file` | `option_table()` | `option_table.csv` |
 `Data.input_dir()` resolves the location from `_model.path.parent` when the model is read, so it
 works wherever the repository is checked out. **The trade-off:** the model is not portable on its
-own — copy `Basis_DE_A/` without the CSVs and it reads fine, then fails on first evaluation —
+own — copy `Basis_DE_S/` without the CSVs and it reads fine, then fails on first evaluation —
 and what you gain is that a diff shows logic changes only and an input can be swapped in place.
 **Every file but `model_point_table.csv` carries a final `provenance` column**, one tag per row —
 delib's second ruling, asserted by the conventions suite; a model point is a *configuration*
@@ -368,10 +368,10 @@ puts it at **1,5 % of the monthly *Bezugsgröße* of § 18 SGB IV** [R23]. Wheth
 offers the *Abfindung*, and on whose election, is no longer unknown: one retrieved wording offers it
 [S1], and the GDV model conditions draft it as the **insurer's** right and not the policyholder's
 [S12] — which is itself a reason a projection cannot assume take-up. The reason that stands is the
-third: `Riester_DE_A` already carries the mechanic, computing the test rather than assuming it. So every model point here annuitises
+third: `Riester_DE_S` already carries the mechanic, computing the test rather than assuming it. So every model point here annuitises
 its whole capital, model point 10 — 300,00 € a year — included. **`check_no_capital()` is
 therefore a statement about this implementation and not about German law**, and a user who needs
-the branch should copy `Riester_DE_A`'s `is_kleinbetrag()` / `commutation_pp()` pair. This is a
+the branch should copy `Riester_DE_S`'s `is_kleinbetrag()` / `commutation_pp()` pair. This is a
 named model risk.
 
 ## Sign convention
@@ -408,12 +408,12 @@ needed care:
 | `q^t(x, y)`, `q(t)` | `mort_rate_at_age` / `mort_rate_base` / `mort_rate` | The generational table rate at an age and calendar year, that rate in projection year `t`, and the best estimate after `mort_be_factor`. The conversion is struck on the first family and the projection runs on the last |
 
 **The chassis, and who else in delib is on it.** The mechanics here are those of an ordinary
-German deferred annuity: `RV_DE_A` (`klassische_rentenversicherung`) is the same chassis
+German deferred annuity: `RV_DE_S` (`klassische_rentenversicherung`) is the same chassis
 without the Schicht-1 constraints — full *Kapitalwahlrecht*, a *Rückkaufswert*, free
-beneficiary designation — and `KLV_DE_A` carries the *Überschussbeteiligung* machinery both
+beneficiary designation — and `KLV_DE_S` carries the *Überschussbeteiligung* machinery both
 inherit. The survivor's single premium this model books and does not project is an immediate
 annuity, `Sofort_DE_S`; the BUZ it carries only as a premium share is `BU_DE_S`; the asset
-forms it does not model are `FRV_DE_S` and `Index_DE_A`. `Riester_DE_A` is the other certified
+forms it does not model are `FRV_DE_S` and `Index_DE_S`. `Riester_DE_S` is the other certified
 layer and the useful contrast: a statutory *Beitragserhaltungsgarantie* and a permitted 30 %
 *Teilkapitalauszahlung*, neither of which this product has, and a *Kleinbetragsrenten*
 commutation, which it **does** have in law [REG-R42] and does not have in this model.
@@ -447,7 +447,7 @@ proprietary or unreachable. Nothing here is a market observation.
 | Annuity timing | Twelve instalments booked at the **start** of the payout year on `pols_if(t)` | A monthly annuity on an annual grid; generous to the year of death by up to a full year's annuity, concentrated in the tail. No German *vorschüssig*/*nachschüssig* convention was established (gap 21) |
 | Processing order and age basis | Premiums in advance, interest at year end, death after interest, freeze after death; age last birthday at conclusion, stepping on the anniversary | The order is declared once and asserted, because every roll-forward identity depends on it. No German age convention was established, and mortality here drives the annuity's duration rather than a benefit amount, so a half-year offset is second order |
 | The thirteen model points | — | Configurations, not observations: no carrier's entry ages, premium minima, permitted *Rentenbeginn* range or option terms were established (gap 1, gap 8) |
-| The *Kleinbetragsrenten-Abfindung* left unimplemented | — | Schicht 1 permits the commutation at 1,5 % of the monthly *Bezugsgröße* [R23] [REG-R42]; the model omits it because `Riester_DE_A` carries the mechanic, and because the retrieved wordings make it the **insurer's** election rather than the policyholder's [S12], so there is no take-up assumption to make. The only absence in this model that German law does not compel |
+| The *Kleinbetragsrenten-Abfindung* left unimplemented | — | Schicht 1 permits the commutation at 1,5 % of the monthly *Bezugsgröße* [R23] [REG-R42]; the model omits it because `Riester_DE_S` carries the mechanic, and because the retrieved wordings make it the **insurer's** election rather than the policyholder's [S12], so there is no take-up assumption to make. The only absence in this model that German law does not compel |
 
 The only quantities that are **not** standardizations are the 25 ‰ and 40 ‰ *Höchstzillmersätze*
 [R16] [REG-R16] [REG-R20], the `gtd_rate` ladder of *Höchstrechnungszins* vintages [R16]
@@ -493,7 +493,7 @@ carried as a premium share that reaches no cash flow.
 
 ```bash
 python -m pytest lifelib/libraries/delib/tests/test_basisrente_de.py -q
-python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Basis_DE_A
+python -m pytest lifelib/libraries/delib/tests/test_model_conventions_de.py -q -k Basis_DE_S
 ```
 
 <!-- BEGIN generated citation links -- regenerate with tools/gen_citation_links.py -->

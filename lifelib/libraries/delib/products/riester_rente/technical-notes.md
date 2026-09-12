@@ -3,7 +3,7 @@
 **Status:** Draft, 2026-08-29 (access date for every citation below).
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`Riester_DE_A`**, **annual** grid — for the standardized composite German **klassische
+**`Riester_DE_S`**, **annual** grid — for the standardized composite German **klassische
 Riester-Rentenversicherung** defined in `product-spec.md` (same directory). This is not any single
 insurer's product; **no carrier level was established at any house for any year** — three retrieved
 wordings now fix the *shapes* [S2] [S4] [S6], but one tariff is not a market — so every carrier

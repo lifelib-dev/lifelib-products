@@ -1,4 +1,4 @@
-"""Golden and structural tests for Basis_DE_A, the German Basisrente (Rürup, Schicht 1).
+"""Golden and structural tests for Basis_DE_S, the German Basisrente (Rürup, Schicht 1).
 
 The golden values are the worked example in
 ``products/basisrente/technical-notes.md`` ("Worked example"), which is a **configuration**
@@ -64,7 +64,7 @@ from de_registry import MODELS, LIB
 CENT = 0.005          # money displayed to 2 d.p.
 SIX_DP = 0.0000005    # pols_if / pols_paying displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["Basis_DE_A"][0]
+MODEL_DIR = LIB / MODELS["Basis_DE_S"][0]
 INPUT_DIR = MODEL_DIR.parent
 
 # The seven external CSVs, which live beside run.py and not inside the model folder.
@@ -526,7 +526,7 @@ def test_pitfall_1_the_account_is_never_floored_at_a_surrender_value():
     charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
     charges.loc["de_basis_std", "unit_cost_pp"] = 400.00
     alt = INPUT_DIR / "charge_table_costly.csv"
-    model = alt_model("Basis_DE_A_floor")
+    model = alt_model("Basis_DE_S_floor")
     try:
         assert model.Projection[10].prem_to_av_pp(0) > 0.0
         charges.to_csv(alt)
@@ -573,7 +573,7 @@ def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged():
     beh = pd.read_csv(INPUT_DIR / "behaviour_table.csv", index_col=["beh_table_id", "dur"])
     beh["bf_rate"] = 0.0
     alt = INPUT_DIR / "behaviour_table_nobf.csv"
-    model = alt_model("Basis_DE_A_nobf")
+    model = alt_model("Basis_DE_S_nobf")
     try:
         base = model.Projection[1].result_cf()
         beh.to_csv(alt)
@@ -643,7 +643,7 @@ def test_pitfall_4_the_account_charges_are_income_and_never_an_expense():
     charges.loc["de_basis_std", "gamma_av"] = 0.006
     charges.loc["de_basis_std", "zill_rate"] = 0.040
     alt = INPUT_DIR / "charge_table_alt.csv"
-    model = alt_model("Basis_DE_A_charges")
+    model = alt_model("Basis_DE_S_charges")
     try:
         base = model.Projection[1].result_cf()
         charges.to_csv(alt)
@@ -817,7 +817,7 @@ def test_pitfall_10_with_no_eligible_survivor_nothing_is_paid():
     The annuity stays reduced by the option factor, because a German tariff pays for the cover
     out of the annuity whether or not a survivor is found -- so this is not a rider-off run.
     """
-    model = alt_model("Basis_DE_A_nosurv")
+    model = alt_model("Basis_DE_S_nosurv")
     try:
         base = model.Projection[3].result_cf()
         assert base["claims_death"].sum() == pytest.approx(3828.51, abs=CENT)
@@ -845,7 +845,7 @@ def test_pitfall_11_the_conversion_is_invariant_to_the_best_estimate_mortality()
     The wedge between the contractual first-order basis and the projection's best estimate is
     the payout phase's *Risikoüberschuss*; converting on its own mortality would abolish it.
     """
-    model = alt_model("Basis_DE_A_mort")
+    model = alt_model("Basis_DE_S_mort")
     try:
         base_ann = model.Projection[1].ann_pp(22)
         base_claims = model.Projection[1].result_cf()["claims_annuity"].sum()

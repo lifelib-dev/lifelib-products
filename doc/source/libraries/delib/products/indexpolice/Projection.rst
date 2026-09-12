@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: delib.products.indexpolice.Index_DE_A.Projection
+.. automodule:: delib.products.indexpolice.Index_DE_S.Projection
 
 Cells Descriptions
 ------------------

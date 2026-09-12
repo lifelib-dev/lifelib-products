@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: delib.products.klassische_rentenversicherung.RV_DE_A.Projection
+.. automodule:: delib.products.klassische_rentenversicherung.RV_DE_S.Projection
 
 Cells Descriptions
 ------------------

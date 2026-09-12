@@ -131,8 +131,8 @@ presentation would count the same money twice::
 
 Charges in, expenses, commission and the death strain out. ``expenses`` **excludes**
 commission, which is :func:`commissions` and its own :func:`result_cf` column: that is the
-library-wide split, stated on ``KLV_DE_A``, ``Basis_DE_A``, ``Riester_DE_A`` and
-``RLV_DE_A`` too, and the opposite of the frlib chassis, where commission sits inside the
+library-wide split, stated on ``KLV_DE_S``, ``Basis_DE_S``, ``Riester_DE_S`` and
+``RLV_DE_S`` too, and the opposite of the frlib chassis, where commission sits inside the
 expense total. Whichever convention a model takes, taking both at once double-counts the
 commission.
 

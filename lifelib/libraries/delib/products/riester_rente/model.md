@@ -35,7 +35,7 @@ python products/riester_rente/run.py 5      # the cell that commutes rather than
 Three lines to the same thing:
 ```python
 import modelx as mx
-model = mx.read_model("products/riester_rente/Riester_DE_A")
+model = mx.read_model("products/riester_rente/Riester_DE_S")
 model.Projection[1].result_cf()
 ```
 
@@ -252,7 +252,7 @@ split, and the notes say so under *Key sensitivities*.
 ## Inputs are external files
 
 The eight input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `Riester_DE_A/` holds nothing but formulas:
+folder. `Riester_DE_S/` holds nothing but formulas:
 
 ```
 products/riester_rente/
@@ -260,7 +260,7 @@ products/riester_rente/
   lapse_table.csv  zulage_schedule.csv  income_schedule.csv
   surplus_scenario.csv  freq_loading.csv
   run.py  model.md  product-spec.md  technical-notes.md  sources.md
-  Riester_DE_A/                <- formulas only
+  Riester_DE_S/                <- formulas only
     __init__.py  _system.json
     Data/__init__.py            (reads the CSVs, once per model)
     Projection/__init__.py      (the by-policy projection)
@@ -286,7 +286,7 @@ Each file has one string Reference and one reader cells on `Data`, named alike:
 `zulage_schedule()`, `income_file` → `income_schedule()`, `surplus_file` →
 `surplus_scenario()` and `freq_loading_file` → `freq_loading()`.
 
-**The trade-off:** the model is not portable on its own — copy `Riester_DE_A/` without the CSVs
+**The trade-off:** the model is not portable on its own — copy `Riester_DE_S/` without the CSVs
 and it reads fine, then fails on first evaluation. What you gain is a diff that shows logic
 changes only, and an input that can be swapped in place: point `Data.freq_loading_file` at
 another same-schema file and the projection follows with no formula change, which is how the
@@ -313,7 +313,7 @@ placed on one side or the other of that line, and this is where it landed.
 | `zulage_schedule.csv` | `t` | The model's own index; values run **0 … 59** | `zulage_entitlement_pp(t)` reads the row at `t` directly, so the key *is* the frame's `t` |
 | `income_schedule.csv` | `t` | The model's own index; values run **0 … 59** | `income_ref(t)` reads the row at `t − 1`, the previous period, and `income_init` supplies `t = 0`; the key is still the frame's `t`, offset by the calendar lag inside the formula |
 | `surplus_scenario.csv` | `t` | The model's own index; values run **0 … 89** | `decl_rate(t)` reads the row at `t` directly |
-| `lapse_table.csv` | `duration` | **Unchanged, 1 … 60** | It is a contractual **contract-year band**, not the frame's `t`. The projection maps into it with `duration(t) + 1 = duration_init() + t + 1`, which is 4 on the anchor's first period exactly as before; the cells `duration(t)` is itself the 0-based count of completed contract years, as in `Basis_DE_A` and `KLV_DE_A` |
+| `lapse_table.csv` | `duration` | **Unchanged, 1 … 60** | It is a contractual **contract-year band**, not the frame's `t`. The projection maps into it with `duration(t) + 1 = duration_init() + t + 1`, which is 4 on the anchor's first period exactly as before; the cells `duration(t)` is itself the 0-based count of completed contract years, as in `Basis_DE_S` and `KLV_DE_S` |
 | `mort_table_accum.csv`, `annuity_mort_table.csv` | `age` | Unchanged | Attained age, not a time index |
 | `freq_loading.csv` | `prem_freq` | Unchanged | Not a time index |
 | `model_point_table.csv` | `duration_init` | **Unchanged** | An elapsed count of completed contract years, 0-based by nature |
@@ -408,15 +408,15 @@ in the `Projection` docstring. Seven cases needed care:
 | `Z*(t)`, `Ẑ(t)`, `Z(t)`; `C(t)` | `zulage_entitlement_pp` / `zulage_granted_pp` / `zulage_pp`; `contrib_total_pp` | Three subsidy amounts and the product turns on the difference between them; and the notes' `C` is the contribution *credited* while the cells is the cash **received**, so it carries the *Ratenzuschlag* that `admin_charge_pp` takes back out |
 | `S(t)` | `prem_to_av_pp` | The lifelib name for the premium credited to an account value. **May be negative**, which is the point of model point 10 |
 | `D`, `U` | `dk_pp` / `surplus_acct_pp` | Guarantee accounting, not two strategies. Kept apart because `check_av_roll_fwd` needs both and because `j ≥ i` is only visible when they are |
-| `A(t) = D(t) + U(t)` | `av_total_pp`, `av_total_pp_at`, `av_total_at` | **Not `av_pp`.** Library-wide `av_pp` is the *principal* balance on its own — `RV_DE_A`'s and `Basis_DE_A`'s *Deckungskapital*, `FRV_DE_S`'s *Fondsguthaben* — with the *verzinsliche Ansammlung* beside it as `av_sur_pp`. What this product's death, surrender and transfer benefits are struck on is the **sum** of the two, a third quantity, so it is named apart rather than reusing the column name `RV_DE_A` gives to one half of it |
+| `A(t) = D(t) + U(t)` | `av_total_pp`, `av_total_pp_at`, `av_total_at` | **Not `av_pp`.** Library-wide `av_pp` is the *principal* balance on its own — `RV_DE_S`'s and `Basis_DE_S`'s *Deckungskapital*, `FRV_DE_S`'s *Fondsguthaben* — with the *verzinsliche Ansammlung* beside it as `av_sur_pp`. What this product's death, surrender and transfer benefits are struck on is the **sum** of the two, a third quantity, so it is named apart rather than reusing the column name `RV_DE_S` gives to one half of it |
 | `G(t)`, `Λ` | `guar_pp` / `garantieluecke_conv_pp` | An accumulator tested once, and the shortfall it produces. `garantieluecke_pp(t)` is the *running* gap, a diagnostic no benefit reads |
 | `l(t)` in payout | `pols_if` / `pols_annuity_pay` | Inside the *Rentengarantiezeit* the instalment is paid on a count that is not the in-force |
 
 Three sister models share a chassis and the names mean the same thing on all of them.
-`RV_DE_A`, the *klassische aufgeschobene private Rentenversicherung*, is the same
+`RV_DE_S`, the *klassische aufgeschobene private Rentenversicherung*, is the same
 general-account accumulation and the same conversion at a guaranteed *Rentenfaktor* with none
 of the Schicht-2 apparatus, and is the primary home for the `dk_pp` / `surplus_acct_pp`
-recursion and for § 169 VVG. `Basis_DE_A` is the Schicht-1 sibling — same *nachgelagerte
+recursion and for § 169 VVG. `Basis_DE_S` is the Schicht-1 sibling — same *nachgelagerte
 Besteuerung*, same annuitisation constraint, no Zulagen, no *Beitragsgarantie*, no lump sum.
 `Sofort_DE_S` is the payout contract this model's second phase compresses onto an annual grid.
 Two model point columns drive nothing and are carried anyway: `sex`, which is reporting only

@@ -13,7 +13,7 @@ instrument a claim must be checked against rather than a document anyone read, a
 carries keeps its [unverified] or **[std]** tag. See `product-spec.md` for the full statement.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`Basis_DE_A`**, **annual** grid — for the standardized composite German *Basisrente* defined in
+**`Basis_DE_S`**, **annual** grid — for the standardized composite German *Basisrente* defined in
 `product-spec.md` (same directory). This is not any single insurer's product. [S#]/[R#] tags refer to
 the source list in `sources.md` (numbering carried from `_research/basisrente.md`; frozen); [REG-R#]
 tags refer to the cross-product reference library
@@ -747,7 +747,7 @@ any of them, and the research file records the absence as gap 3.
   threshold is settled at 1,5 % of the monthly *Bezugsgröße* [R23], and a carrier's AVB treatment is
   now known — one offers the *Abfindung* [S1] and the GDV model conditions make it the **insurer's**
   right, not the policyholder's [S12], which is itself a reason a projection cannot assume take-up.
-  The remaining reason stands: `Riester_DE_A` already carries the machinery (`is_kleinbetrag()`,
+  The remaining reason stands: `Riester_DE_S` already carries the machinery (`is_kleinbetrag()`,
   `commutation_pp()`) for a reader who wants it. Model point 10 is a small enough contract to reach
   it, and this model annuitises it. The Schicht-3 chassis needs a take-up assumption and a declaration
   window for a *Kapitalwahlrecht*; this product needs neither, which is the cleanest simplification the

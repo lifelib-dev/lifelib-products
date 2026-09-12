@@ -50,7 +50,7 @@ python products/risikolebensversicherung/run.py 8     # the in-force cell, openi
 
 ```python
 import modelx as mx
-model = mx.read_model("products/risikolebensversicherung/RLV_DE_A")
+model = mx.read_model("products/risikolebensversicherung/RLV_DE_S")
 model.Projection[1].result_cf()
 ```
 
@@ -273,14 +273,14 @@ stop at `proj_len() − 1 = 24` with nothing left over.
 ## Inputs are external files
 
 The six input CSVs live **in this directory**, beside `run.py` — not inside the model
-folder. `RLV_DE_A/` holds nothing but formulas:
+folder. `RLV_DE_S/` holds nothing but formulas:
 
 ```
 products/risikolebensversicherung/
   model_point_table.csv  mort_table.csv  benefit_schedule.csv     <- inputs live here
   nvg_schedule.csv       lapse_table.csv freq_loading_table.csv
   run.py  model.md  product-spec.md  technical-notes.md  sources.md
-  RLV_DE_A/                    <- formulas only
+  RLV_DE_S/                    <- formulas only
     __init__.py  _system.json  Data/__init__.py  Projection/__init__.py
 ```
 
@@ -307,7 +307,7 @@ projected. The conventions suite counts the reads and asserts the *set* against
 | `lapse_file` | `lapse_table()` | `lapse_table.csv` |
 | `freq_loading_file` | `freq_loading_table()` | `freq_loading_table.csv` |
 
-**The trade-off:** the model is not portable on its own — copy `RLV_DE_A/` without the
+**The trade-off:** the model is not portable on its own — copy `RLV_DE_S/` without the
 CSVs and it reads fine, then fails on first evaluation. What you gain is that a diff shows
 logic changes only, and an input can be swapped in place: point `Data.mort_table_file` at
 another same-schema file and the projection follows, with no formula change. Tests cover
@@ -424,7 +424,7 @@ Three differences are named so a reader does not carry one across: the French co
 is **revisable at attained age** and the German *Bruttobeitrag* is **level**; the French
 product carries a **PTIA acceleration** and the German one has no living benefit at all;
 and `expenses` **includes** commission there and **excludes** it here. Within delib,
-`KLV_DE_A` shares the *Überschussbeteiligung* chassis in a different *Überschussverwendung*
+`KLV_DE_S` shares the *Überschussbeteiligung* chassis in a different *Überschussverwendung*
 form — surplus credited to a *Deckungskapital* rather than netted against the premium —
 and the biometric siblings `BU_DE_S` and `Pflege_DE_S` are monthly multi-state models
 sharing no recursion with this one. `issue_date`, `instalments` and `policy_id` are

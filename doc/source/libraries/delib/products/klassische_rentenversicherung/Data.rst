@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: delib.products.klassische_rentenversicherung.RV_DE_A.Data
+.. automodule:: delib.products.klassische_rentenversicherung.RV_DE_S.Data
 
 Cells Descriptions
 ------------------

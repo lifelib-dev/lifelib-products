@@ -1,4 +1,4 @@
-"""Run the Riester_DE_A reference model and print its cash flow statement.
+"""Run the Riester_DE_S reference model and print its cash flow statement.
 
     python products/riester_rente/run.py            # anchor cell (point_id = 1)
     python products/riester_rente/run.py 11         # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "Riester_DE_A")
+model = mx.read_model(Path(__file__).parent / "Riester_DE_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

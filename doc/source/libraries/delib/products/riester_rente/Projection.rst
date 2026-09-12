@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: delib.products.riester_rente.Riester_DE_A.Projection
+.. automodule:: delib.products.riester_rente.Riester_DE_S.Projection
 
 Cells Descriptions
 ------------------

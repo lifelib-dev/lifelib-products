@@ -571,7 +571,7 @@ RETIRED_NAMES = {
     "check_cf_ledger_resid": "check_net_cf_resid",
     "laufende_verz": (
         "decl_rate — the declared laufende Verzinsung is one quantity under one "
-        "definition, and KLV_DE_A, RV_DE_A and Basis_DE_A already spelled it decl_rate"
+        "definition, and KLV_DE_S, RV_DE_S and Basis_DE_S already spelled it decl_rate"
     ),
     # Settled in krlib's own cross-model naming review. Every one of these was a real
     # collision found across the ten models, not a matter of taste.

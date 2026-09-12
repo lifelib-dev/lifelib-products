@@ -1,4 +1,4 @@
-"""Run the RV_DE_A reference model and print its cash flow statement.
+"""Run the RV_DE_S reference model and print its cash flow statement.
 
     python products/klassische_rentenversicherung/run.py       # anchor cell (point_id = 1)
     python products/klassische_rentenversicherung/run.py 6     # another model point
@@ -10,7 +10,7 @@ from pathlib import Path
 
 import modelx as mx
 
-model = mx.read_model(Path(__file__).parent / "RV_DE_A")
+model = mx.read_model(Path(__file__).parent / "RV_DE_S")
 point_id = int(sys.argv[1]) if len(sys.argv) > 1 else 1
 
 proj = model.Projection[point_id]

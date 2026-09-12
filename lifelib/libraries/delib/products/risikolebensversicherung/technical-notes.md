@@ -3,7 +3,7 @@
 **Status:** Draft, 2026-08-29; citations re-verified against the primary documents 2026-08-30.
 
 **Scope note.** These notes specify a reference liability cash-flow projection model — model name
-**`RLV_DE_A`**, **annual** grid — for the standardized composite German *Risikolebensversicherung*
+**`RLV_DE_S`**, **annual** grid — for the standardized composite German *Risikolebensversicherung*
 defined in `product-spec.md` (same directory). This is not any single insurer's product. [S#]/[R#]
 tags refer to the source list in `sources.md` (numbering carried from
 `_research/risikolebensversicherung.md`; frozen); [REG-R#] tags refer to the cross-product reference

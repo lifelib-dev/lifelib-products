@@ -1,7 +1,7 @@
 The **Projection** Space
 ========================
 
-.. automodule:: delib.products.kapitallebensversicherung.KLV_DE_A.Projection
+.. automodule:: delib.products.kapitallebensversicherung.KLV_DE_S.Projection
 
 Cells Descriptions
 ------------------

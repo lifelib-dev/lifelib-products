@@ -1,4 +1,4 @@
-"""Golden and structural tests for RV_DE_A.
+"""Golden and structural tests for RV_DE_S.
 
 The golden values are the worked example in
 products/klassische_rentenversicherung/technical-notes.md ("Worked example"), which is a
@@ -74,7 +74,7 @@ def flat(doc):
 CENT = 0.005          # money displayed to 2 d.p.
 SIX_DP = 0.0000005    # pols_if displayed to 6 d.p.
 
-MODEL_DIR = LIB / MODELS["RV_DE_A"][0]
+MODEL_DIR = LIB / MODELS["RV_DE_S"][0]
 INPUT_DIR = MODEL_DIR.parent
 
 CSV_FILES = {"model_point_table.csv", "mort_table.csv", "decl_rate_table.csv",
@@ -623,7 +623,7 @@ def test_pitfall_6_the_kostenbeitrag_is_not_an_expense(de_rv_anchor, tmp_path):
     alt = tmp_path / "charge_table_doubled.csv"
     charges.to_csv(alt, index=False)
 
-    with model_reading("charge_file", alt, "RV_DE_A_charges") as model:
+    with model_reading("charge_file", alt, "RV_DE_S_charges") as model:
         q = model.Projection[1]
         assert q.charge_prem_pp(0) == pytest.approx(0.08 * 3000.00, abs=CENT)
         assert all(q.expenses(t) == pytest.approx(p.expenses(t), rel=1e-12)
@@ -683,7 +683,7 @@ def test_pitfall_8_the_stornoabzug_cannot_recover_acquisition_costs(de_rv_anchor
     alt = tmp_path / "charge_table_storno.csv"
     charges.to_csv(alt, index=False)
 
-    with model_reading("charge_file", alt, "RV_DE_A_storno") as model:
+    with model_reading("charge_file", alt, "RV_DE_S_storno") as model:
         q = model.Projection[1]
         assert q.cv_tariff_pp(9) < q.cv_floor_pp(9)
         assert all(q.cv_pp(t) == pytest.approx(q.cv_floor_pp(t), rel=1e-12)
@@ -862,7 +862,7 @@ def test_pitfall_15_the_guarantee_vintage_is_a_model_point_attribute(
     alt = tmp_path / "model_point_table_one_rate.csv"
     points.to_csv(alt)
 
-    with model_reading("model_point_file", alt, "RV_DE_A_one_rate") as model:
+    with model_reading("model_point_file", alt, "RV_DE_S_one_rate") as model:
         q = model.Projection[6]
         assert q.int_rate_guar() == 0.0100
         for name, value in (("av_global", q.av_pp_at(24, "AFT_INT")),
@@ -896,7 +896,7 @@ def test_pitfall_16_sex_never_reaches_the_tariff(klassische_rentenversicherung, 
     alt = tmp_path / "model_point_table_unisex.csv"
     points.to_csv(alt)
 
-    with model_reading("model_point_file", alt, "RV_DE_A_unisex") as model:
+    with model_reading("model_point_file", alt, "RV_DE_S_unisex") as model:
         male, female = model.Projection[1], model.Projection[99]
         assert male.model_point()["sex"] == "M" and female.model_point()["sex"] == "F"
         assert female.prem_pp(0) == male.prem_pp(0) == 3000.00
@@ -1122,7 +1122,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(de_rv_anchor, tmp_pat
     lighter.to_csv(alt)
 
     base = de_rv_anchor.result_cf()
-    with model_reading("mort_file", alt, "RV_DE_A_swap") as model:
+    with model_reading("mort_file", alt, "RV_DE_S_swap") as model:
         light = model.Projection[1].result_cf()
         # Lighter mortality: fewer death claims, more premium collected, a longer annuity.
         assert light["claims_death"].sum() < base["claims_death"].sum()

@@ -188,7 +188,7 @@ def model(name, read_log):
 def test_the_model_name_matches_its_folder(name, model):
     """The registry name, the folder on disk and the model's own ``_name`` agree.
 
-    The name is the product's short name, a country tag and a grid tag — ``KLV_DE_A``,
+    The name is the product's short name, a country tag and a grid tag — ``KLV_DE_S``,
     ``BU_DE_S`` — rather than anything derivable from the folder slug, because
     ``fondsgebundene_rentenversicherung`` spelled out is unusable in a model name. Where
     the German market has a settled short form the model takes it (KLV, RLV, BU); where it
@@ -471,7 +471,7 @@ RETIRED_NAMES = {
     # Settled in delib's own cross-model naming review.
     "laufende_verz": (
         "decl_rate — the declared laufende Verzinsung is one quantity under one "
-        "definition, and KLV_DE_A, RV_DE_A and Basis_DE_A already spelled it decl_rate"
+        "definition, and KLV_DE_S, RV_DE_S and Basis_DE_S already spelled it decl_rate"
     ),
 }
 

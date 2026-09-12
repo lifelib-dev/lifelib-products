@@ -1,7 +1,7 @@
 The **Data** Space
 ==================
 
-.. automodule:: delib.products.basisrente.Basis_DE_A.Data
+.. automodule:: delib.products.basisrente.Basis_DE_S.Data
 
 Cells Descriptions
 ------------------
