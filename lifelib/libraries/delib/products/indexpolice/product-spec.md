@@ -204,8 +204,9 @@ Footnotes to **[std]** rows:
    [R14] [REG-R45] rather than a product limit.
 3. The German market's own *Eintrittsalter* convention is frequently the calendar year of inception less
    the year of birth, stepping on 1 January rather than on the birthday. delib runs **age last birthday**
-   across all ten products, the registry fixing one age basis for the library; on an annual grid the two
-   differ by at most one year, and mortality here is a **timing** rather than an amount assumption.
+   across all ten products, the registry fixing one age basis for the library; with the attained age
+   stepping on the policy anniversary the two differ by at most one year, and mortality here is a
+   **timing** rather than an amount assumption.
 4. No underwriting rule of any carrier was established; the reasoning is structural. The *Aufschubphase*
    death benefit is a return of capital rather than a sum at risk, so the *Risikoüberschuss* is small and
    § 161 VVG (*Selbsttötung*, three years) is close to inoperative [R6] [REG-R26].
@@ -343,8 +344,9 @@ level is **[std]**.
     surrender Allianz adds only a pro-rata *Schlussüberschussanteil* and *Sockelbetrag* [S2]
     Ziffer 9.2 Absatz 4 — **no pro-rata index credit and no refund of the unspent budget**. The
     behavioural consequence stands: the product rewards surrendering just after an *Indexjahr* end and
-    penalises surrendering just before one, so an annual grid with exits at year end implicitly
-    assumes the favourable convention.
+    penalises surrendering just before one. A model stepping annually puts every exit at a year end and
+    so implicitly assumes the favourable convention; the monthly grid dates the forfeiture instead,
+    though the payoff is still not pro-rated and the surrender rate is still unconditional.
 19. **Confirmed for Allianz**: the participation runs "**vor Beginn der Rentenzahlung**" only [S2]
     Ziffer 3.3, so the *Wahlrecht* lapses at *Rentenbeginn* and payout-phase surplus is applied to the
     annuity in payment. Whether any other carrier offers index participation in the payout phase is

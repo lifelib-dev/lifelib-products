@@ -11,7 +11,7 @@ gross best-estimate liability cash flows, undiscounted, for a single-policy mode
 of an *indexgebundene Rentenversicherung* — the deferred private annuity whose capital
 sits in the insurer's *Sicherungsvermögen* under a guarantee and whose annually declared
 *Überschuss* is not credited as interest but **spent as an option budget** buying one
-year of index participation — on an **annual** grid, from inception (or from the
+year of index participation — on a **monthly** grid, from inception (or from the
 valuation date of an in-force point) to *Rentenbeginn*.
 
 Four things make this the *Indexpolice* model rather than a re-labelled unit-linked one.
@@ -28,7 +28,7 @@ return is capped above at ``C`` and **not floored below**; the twelve are **summ
 compounded**; and the sum alone is floored at zero. The asymmetry is the whole product:
 truncating every right tail while leaving every left tail intact means a year in which
 the index *rose* can credit **nothing**. The shipped index path reproduces the research
-file's two constructed *Indexjahre* at ``t = 8`` and ``t = 9`` (policy years 9 and 10) —
+file's two constructed *Indexjahre* at ``k = 8`` and ``k = 9`` (policy years 9 and 10) —
 Example A credits 8.90 % of the base, and Example B credits zero on a year whose
 compounded index return was +6.4402 %.
 
@@ -65,17 +65,38 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Annual steps, which are the *contract's own* grid rather than an
-approximation of a finer one: the *Indexjahr* is twelve months, the surplus is declared
-once a year, the *Wahlrecht* is exercised once a year and the credit is struck once a
-year. The twelve monthly index observations live **inside** the annual step, read from a
-wide external table with one row per year and twelve return columns. The period index
-``t`` counts policy years from issue and is **0-based**: a new-business point starts at
-``t = 0`` and an in-force point at ``t = dur_init``, the contractual label is ``policy
-year = t + 1``, and ``proj_len() = ann_start_age - entry_age`` is the **number** of
-projected policy years in both cases, so the frame ends at ``proj_len() - 1``. Premiums
-fall at the start of the year, decrements
-and benefits at the end, and the *Indexjahr* credit at the end to the **survivors only**.
+**Projection basis.** Monthly steps over an annual contract, so the model runs on **two
+clocks** and the argument of a cells says which. ``t`` counts **policy months** from issue
+and is 0-based; ``duration(t) = t // 12`` is the 0-based policy year ``k``,
+``policy_year(t) = duration(t) + 1`` the contractual label, and
+``proj_len() = 12 x proj_len_y()`` the exclusive end of the frame, with
+``proj_len_y() = ann_start_age - entry_age``. A new-business point starts at ``t = 0``, an
+in-force point at ``t = 12 x dur_init``.
+
+**Everything that makes this product what it is stays annual and takes ``k``**, because the
+contract is annual: the *Indexjahr* is twelve months, the surplus is declared once a year,
+the *Wahlrecht* is exercised once a year and the credit is struck once a year, at its end,
+to the **survivors only**. The premium falls at the start of the policy year — the
+*Versicherungsperiode* of this tariff — and the account, the ledger and the guaranteed
+capital roll once a year. The in force, the two decrements, the claims and the expenses take
+``t``, so a death or a surrender now falls in the month it happens and is paid the policy
+year's own amount.
+
+What the finer grid earns here is the *Indexjahr* itself: its twelve monthly returns were
+always the mechanic but lived inside a single cells, and ``index_month(t)``,
+``index_return_mth(t)`` and ``index_return_capped_mth(t)`` now put them on the frame, one
+row each, so *capped above and not floored below* can be read month by month. It also dates
+the forfeiture — a surrender in month 7 of an *Indexjahr* loses that year's credit, and the
+incentive to surrender just after a year closes rather than just before is now in the
+projection instead of only in the prose.
+
+The decrements carry the library's two speeds — ``mort_rate(t)`` and ``lapse_rate(t)`` are
+the **annual** rates of the policy year, ``mort_rate_mth`` and ``lapse_rate_mth`` the
+geometric twelfths the recursion applies — so the annual layer is **bit-identical** to the
+annual-step model this replaced on all thirteen model points: the account, every
+*Indexgutschrift*, the *Höchststandsicherung* ledger, the guaranteed capital, the surrender
+value and premium income are unchanged. What moved is the split of a year's exits between
+death and surrender, and the expenses a mid-year leaver bears.
 
 **What is sourced and what is not, stated without softening.** The *mechanics* are firm
 and are cited to the statutes that govern them: the index participation is a form of
@@ -97,14 +118,16 @@ both payoff designs, all three index paths, all four election paths, both *Kapit
 elections, both *Stornoabzug* settings, two in-force points, four *Rechnungszins* cohorts
 and four *Garantieniveaus*. Model point 1 is the anchor cell of the worked example in the
 technical notes; model point 8 is an in-force cell whose first projected *Indexjahr* is
-``t = 8``, so it reproduces the research file's Examples A and B on a 50,000.00 EUR base.
+``k = 8``, so it reproduces the research file's Examples A and B on a 50,000.00 EUR base.
 
 **Verification.** ``tests/test_indexpolice_de.py`` asserts the notes' twenty-seven-year
-worked example to the cent and ``pols_if`` to six decimals, and one test per listed
+worked example to the cent off ``result_cf_annual()`` and ``pols_if`` to six decimals, the
+twelve months of an *Indexjahr* on the monthly frame beside it, and one test per listed
 modeling pitfall. Six ``check_*()`` cells travel with the model and are called on every
-model point by the library's conventions suite: ``check_net_cf``, ``check_av_roll_fwd``,
-``check_pols_roll_fwd``, ``check_surplus_alloc``, ``check_lock_in`` and
-``check_index_credit``.
+model point by the library's conventions suite: ``check_net_cf`` and
+``check_pols_roll_fwd`` monthly, and ``check_av_roll_fwd``, ``check_surplus_alloc``,
+``check_lock_in`` and ``check_index_credit`` per policy **year**, because the constructions
+they check are annual.
 
 Example:
 
