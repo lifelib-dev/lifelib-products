@@ -26,13 +26,12 @@ jobs:
     name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     # The suites are slow: better than six thousand tests, every model reproducing its
-    # technical notes' worked example cell by cell. On a four-core Linux box the whole run
-    # takes 28 minutes on 3.11, and 3.14 is about four times slower on this workload --
-    # the same three modules time 4m54s on 3.11, 5m06s on 3.13 and 21m48s on 3.14 -- so
-    # the budget here is sized for a 3.14 cell on the slowest runner rather than for the
-    # quick ones. A cell that reaches it has hung, and should fail rather than hold a
-    # runner for the six-hour default.
-    timeout-minutes: 240
+    # technical notes' worked example cell by cell. Measured over the first full matrix
+    # run, a cell takes between 15m45s (macOS, 3.14) and 33m25s (Windows, 3.12), with no
+    # interpreter an outlier. This is about three times the slowest of those: a cell that
+    # reaches it has hung, and should fail rather than hold a runner for the six-hour
+    # default.
+    timeout-minutes: 90
     strategy:
       fail-fast: false
       matrix:
