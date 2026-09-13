@@ -1,0 +1,67 @@
+# Run the reference-model suites the way lifelib's own CI will run them.
+#
+# The models here are drafted for merging into lifelib, so the gate in this repository is
+# the gate they will meet there: a bare `pytest` from the repository root, which collects
+# every library's in-library `tests/` directory in one process. That single-process
+# collection is the condition the per-library registry modules exist to survive
+# (MERGE.md section 7), so running the suites any other way -- one library at a time --
+# would pass while proving less than upstream requires.
+
+name: Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    # The suites are slow: better than six thousand tests, every model reproducing its
+    # technical notes' worked example cell by cell. On a four-core Linux box the whole run
+    # takes 28 minutes on 3.11, and 3.14 is about four times slower on this workload --
+    # the same three modules time 4m54s on 3.11, 5m06s on 3.13 and 21m48s on 3.14 -- so
+    # the budget here is sized for a 3.14 cell on the slowest runner rather than for the
+    # quick ones. A cell that reaches it has hung, and should fail rather than hold a
+    # runner for the six-hour default.
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        # 3.11 is the floor, and nothing here is held back to an older interpreter:
+        # `requirements.txt` asks for pandas >= 2.2 and numpy >= 1.26, whose current
+        # releases require 3.11 or later themselves.
+        python-version: ['3.11', '3.12', '3.13', '3.14']
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install dependencies
+      # There is no package to install: this repository is a staging ground, not a
+      # distribution, and the models are plain modelx that the suites read from the
+      # working tree. `requirements.txt` is the whole environment, pytest included.
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run the model suites with pytest
+      # Bare `pytest` from the root, as lifelib's CI runs it. The suites are slow --
+      # every model reproduces its technical notes' worked example, cell by cell -- so
+      # report the slowest tests to keep an eye on which models dominate the run.
+      run: pytest -q --durations=10
