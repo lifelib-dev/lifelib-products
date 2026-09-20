@@ -109,77 +109,77 @@ The technical notes use the compact actuarial symbols of the product specificati
 ``t`` below is the 0-based month index and ``d`` the month-end; a cells taking ``d``
 is a value at a point in time and not a flow of a period. The mapping is:
 
-=========================  ==================================  ============================
-Notes symbol               Cells                               Meaning
-=========================  ==================================  ============================
-(none)                     model_point()                       The selected model point row
-x                          age_at_entry()                      가입나이 (보험나이) at issue
-x + t//12                  age(t)                              Attained 보험나이 in month t
-t//12 + 1                  policy_year(t)                      Contractual policy year, 1-based
-omega                      omega_age()                         Terminal age of the table
-T_y                        proj_years()                        Policy years spanned
-T                          proj_len()                          Projected months, 12 T_y
-m                          prem_term(), prem_period()          납입기간 in years; 0 is 전기납
-12m                        prem_period_mths()                  납입기간 in months
-(none)                     prem_end()                          Last policy year a premium is due
-n_sc                       surr_chg_period()                   해약공제기간 = min(m, 7) years
-12 n_sc                    surr_chg_period_mths()              The same, in months
-SA                         sum_assured(), sum_assured_at(t)     보험가입금액, at issue and in month t
-G                          premium_pp(), premium_at_pp(t)       Annual 영업보험료, a reporting figure
+=========================  ======================================  ============================
+Notes symbol               Cells                                   Meaning
+=========================  ======================================  ============================
+(none)                     model_point()                           The selected model point row
+x                          age_at_entry()                          가입나이 (보험나이) at issue
+x + t//12                  age(t)                                  Attained 보험나이 in month t
+t//12 + 1                  policy_year(t)                          Contractual policy year, 1-based
+omega                      omega_age()                             Terminal age of the table
+T_y                        proj_years()                            Policy years spanned
+T                          proj_len()                              Projected months, 12 T_y
+m                          prem_term(), prem_period()              납입기간 in years; 0 is 전기납
+12m                        prem_period_mths()                      납입기간 in months
+(none)                     prem_end()                              Last policy year a premium is due
+n_sc                       surr_chg_period()                       해약공제기간 = min(m, 7) years
+12 n_sc                    surr_chg_period_mths()                  The same, in months
+SA                         sum_assured(), sum_assured_at(t)        보험가입금액, at issue and in month t
+G                          premium_pp(), premium_at_pp(t)          Annual 영업보험료, a reporting figure
 G^m                        premium_mth_pp(), premium_mth_at_pp(t)  Monthly 영업보험료, the month's income
-(none)                     prem_gross_calc_pp()                Loaded premium on the model's own basis
-P                          prem_net_level_pp()                 연납순보험료, the 별표 14 quantity
-P^m                        prem_net_level_mth_pp()             월납순보험료, what the account consumes
-P20                        prem_net_20yr_pp()                  연납순보험료 on the 별표 14 20년납 footing
-i                          prem_int_rate                       예정이율, the pricing rate
-j                          prem_int_rate_mth()                 The same, per month
-(declared)                 decl_rate()                         공시이율 on a 금리연동형 contract
-(floor)                    min_guar_rate                       최저보증이율
-i_acc                      acc_int_rate()                      The rate the account accrues at
-j_acc                      acc_int_rate_mth()                  The same, per month
-q(x+t//12)                 mort_rate(t)                        **Annual** 적용위험률 in month t
-q^m(t)                     mort_rate_mth(t)                    The monthly decrement applied
-(table q)                  mort_rate_at_age(y)                 Table rate at attained age y
-(table q^m)                mort_rate_mth_at(u)                 Table monthly rate in month u
-(none)                     mort_be_factor()                    Multiplier on the table rate
-w(t)                       lapse_rate(t)                       **Annual** 해지율
-w^m(t)                     lapse_rate_mth(t)                   The monthly decrement applied
-(base w)                   lapse_rate_base(t)                  Before the 유지보너스 spike
-u(t), u^m(t)               waiver_rate(t), waiver_rate_mth(t)  납입면제 incidence, annual and monthly
-s                          lapse_spike()                       Additional lapse at a bonus date
-(감액)                      sa_factor(d)                        Proportion of SA in force at d
-V(d)                       pol_val_pp(d)                       계약자적립액 at anniversary d
-(unreduced V)              pol_val_base_pp(d)                  계약자적립액 before any 감액
-(prospective V)            prosp_val_pp(d)                     The same value, prospectively
-SC(d)                      surr_chg_pp(d)                      해약공제액
-(cap)                      surr_chg_cap_pp()                   표준해약공제액, 별표 14
-W(d)                       cv_std_pp(d)                        표준형 twin's 해약환급금
-k                          cv_floor_ratio()                    Suppression factor
-(none)                     cv_mult(d)                          k before 납입완료, 1 after it
-CV(d)                      cv_pp(d)                            해약환급금 actually payable
-k W(d)                     cv_susp_pp(d)                       Suppressed value at every d
-(bonus)                    bonus_pp(d)                         유지보너스 credited at 납입완료
-cumprem(d)                 cum_prem_pp(d)                      Premiums paid by anniversary d
-(환급률)                    refund_ratio(d)                     CV(d) / cumprem(d)
-L(d)                       loan_pp(d)                          보험계약대출 balance at month-end d
-D(t)                       loan_draw(t)                        Amount drawn at the start of month t
-i_L, j_L                   loan_int_rate(), loan_int_rate_mth()  보험계약대출이율 = i + 1.5%, and per month
-l(t)                       pols_if(t)                          In force at the start of month t
-(paying)                   pols_if_pay(t)                      In force and paying premium
-(waived)                   pols_waived(t)                      In force with premiums waived
-l(t)(1-q), l(t+1)          pols_if_at(t, timing)               BEF_DECR/BEF_LAPSE/AFT_DECR
-(deaths)                   pols_death(t)                       Expected deaths in month t
-(lapses)                   pols_lapse(t)                       Expected 해지 in month t
-(surrenders paid)          pols_surr(t)                        Lapses that are not reinstated
-(부활)                      pols_reinstate(t)                   Reinstatements at the start of t
-G lp(t)                    premiums(t)                         Premium income
-(SA - L)D, (CV - L)S       claims(t, kind)                     Benefit outgo by kind
-ec D(t)                    claim_expenses(t)                   Claim handling expense
-E0, e(t)                   expenses(t)                         Acquisition and maintenance
-(none)                     acq_cost_pp()                       계약체결비용 at issue
-c0, c_r                    commissions(t)                      Commission outgo
-CF(t)                      net_cf(t)                           Net cash flow, income positive
-=========================  ==================================  ============================
+(none)                     prem_gross_calc_pp()                    Loaded premium on the model's own basis
+P                          prem_net_level_pp()                     연납순보험료, the 별표 14 quantity
+P^m                        prem_net_level_mth_pp()                 월납순보험료, what the account consumes
+P20                        prem_net_20yr_pp()                      연납순보험료 on the 별표 14 20년납 footing
+i                          prem_int_rate                           예정이율, the pricing rate
+j                          prem_int_rate_mth()                     The same, per month
+(declared)                 decl_rate()                             공시이율 on a 금리연동형 contract
+(floor)                    min_guar_rate                           최저보증이율
+i_acc                      acc_int_rate()                          The rate the account accrues at
+j_acc                      acc_int_rate_mth()                      The same, per month
+q(x+t//12)                 mort_rate(t)                            **Annual** 적용위험률 in month t
+q^m(t)                     mort_rate_mth(t)                        The monthly decrement applied
+(table q)                  mort_rate_at_age(y)                     Table rate at attained age y
+(table q^m)                mort_rate_mth_at(u)                     Table monthly rate in month u
+(none)                     mort_be_factor()                        Multiplier on the table rate
+w(t)                       lapse_rate(t)                           **Annual** 해지율
+w^m(t)                     lapse_rate_mth(t)                       The monthly decrement applied
+(base w)                   lapse_rate_base(t)                      Before the 유지보너스 spike
+u(t), u^m(t)               waiver_rate(t), waiver_rate_mth(t)      납입면제 incidence, annual and monthly
+s                          lapse_spike()                           Additional lapse at a bonus date
+(감액)                      sa_factor(d)                             Proportion of SA in force at d
+V(d)                       pol_val_pp(d)                           계약자적립액 at anniversary d
+(unreduced V)              pol_val_base_pp(d)                      계약자적립액 before any 감액
+(prospective V)            prosp_val_pp(d)                         The same value, prospectively
+SC(d)                      surr_chg_pp(d)                          해약공제액
+(cap)                      surr_chg_cap_pp()                       표준해약공제액, 별표 14
+W(d)                       cv_std_pp(d)                            표준형 twin's 해약환급금
+k                          cv_floor_ratio()                        Suppression factor
+(none)                     cv_mult(d)                              k before 납입완료, 1 after it
+CV(d)                      cv_pp(d)                                해약환급금 actually payable
+k W(d)                     cv_susp_pp(d)                           Suppressed value at every d
+(bonus)                    bonus_pp(d)                             유지보너스 credited at 납입완료
+cumprem(d)                 cum_prem_pp(d)                          Premiums paid by anniversary d
+(환급률)                    refund_ratio(d)                           CV(d) / cumprem(d)
+L(d)                       loan_pp(d)                              보험계약대출 balance at month-end d
+D(t)                       loan_draw(t)                            Amount drawn at the start of month t
+i_L, j_L                   loan_int_rate(), loan_int_rate_mth()    보험계약대출이율 = i + 1.5%, and per month
+l(t)                       pols_if(t)                              In force at the start of month t
+(paying)                   pols_if_pay(t)                          In force and paying premium
+(waived)                   pols_waived(t)                          In force with premiums waived
+l(t)(1-q), l(t+1)          pols_if_at(t, timing)                   BEF_DECR/BEF_LAPSE/AFT_DECR
+(deaths)                   pols_death(t)                           Expected deaths in month t
+(lapses)                   pols_lapse(t)                           Expected 해지 in month t
+(surrenders paid)          pols_surr(t)                            Lapses that are not reinstated
+(부활)                      pols_reinstate(t)                        Reinstatements at the start of t
+G lp(t)                    premiums(t)                             Premium income
+(SA - L)D, (CV - L)S       claims(t, kind)                         Benefit outgo by kind
+ec D(t)                    claim_expenses(t)                       Claim handling expense
+E0, e(t)                   expenses(t)                             Acquisition and maintenance
+(none)                     acq_cost_pp()                           계약체결비용 at issue
+c0, c_r                    commissions(t)                          Commission outgo
+CF(t)                      net_cf(t)                               Net cash flow, income positive
+=========================  ======================================  ============================
 
 Three names needed care.
 
