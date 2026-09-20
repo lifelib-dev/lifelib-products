@@ -1625,6 +1625,8 @@ each is checkable against the shipped model.
 [REG-R36]: #krlib-reg-r36
 [REG-R38]: #krlib-reg-r38
 [REG-R4]: #krlib-reg-r4
+[REG-R41]: #krlib-reg-r41
+[REG-R42]: #krlib-reg-r42
 [REG-R48]: #krlib-reg-r48
 [REG-R5]: #krlib-reg-r5
 [REG-R52]: #krlib-reg-r52
