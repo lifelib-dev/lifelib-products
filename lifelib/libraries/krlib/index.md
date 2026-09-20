@@ -16,7 +16,7 @@ one, the product specification and technical notes the model was built from.
 
 The coverage differs in kind from [jplib](../jplib/index.md), the closest market, and from
 [uslib](../uslib/index.md), [uklib](../uklib/index.md), [frlib](../frlib/index.md) and
-[delib](../delib/index.md), because the Korean market does. **제3보험** (*je-sam boheom*,
+delib, because the Korean market does. **제3보험** (*je-sam boheom*,
 "third insurance") is not a market label here but a **statutory licence category**: 보험업법
 제4조제1항제3호 names 상해보험, 질병보험 and 간병보험, and 제4조제3항 deems a fully licensed
 life insurer *or* a fully licensed non-life insurer to hold it [REG-R1]. Four of the ten
