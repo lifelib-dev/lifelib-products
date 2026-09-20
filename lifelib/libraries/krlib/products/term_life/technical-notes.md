@@ -1740,6 +1740,7 @@ each is checkable against the shipped model.
 [REG-R26]: #krlib-reg-r26
 [REG-R27]: #krlib-reg-r27
 [REG-R28]: #krlib-reg-r28
+[REG-R29]: #krlib-reg-r29
 [REG-R3]: #krlib-reg-r3
 [REG-R32]: #krlib-reg-r32
 [REG-R33]: #krlib-reg-r33
