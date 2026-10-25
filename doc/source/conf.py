@@ -66,10 +66,11 @@ extensions = [
 source_suffix = ".rst"
 master_doc = "index"
 
-# _research/ ships with the library -- it is the evidence behind the documents -- but it is
-# not rendered: it carries its own deliberately independent [S#] numbering, and a second,
-# conflicting S1 in front of a reader is worse than not publishing it (D6).  With the page
-# tree written out rather than mirrored, that is simply a matter of giving it no pages.
+# _research/ stays in the repository -- it is the evidence behind the documents, but it quotes
+# third-party material and is not packaged (D6) -- and it is not rendered: it carries its own
+# deliberately independent [S#] numbering, and a second, conflicting S1 in front of a reader
+# is worse than not publishing it (D6).  With the page tree written out rather than mirrored,
+# that is simply a matter of giving it no pages.
 exclude_patterns = ["_build"]
 
 # Deliberately empty, matching lifelib.  Enabling `dollarmath` would read the corpus's

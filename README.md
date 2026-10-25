@@ -96,7 +96,8 @@ python -m pytest lifelib/libraries/uslib/tests lifelib/libraries/uklib/tests \
   access dates, and whether the document was actually retrieved.
 - **`_research/`** holds the underlying research notes. Every sourced fact in the
   product documents traces back to a source entry in these files. They are provenance:
-  keep them, do not renumber their source lists.
+  keep them, do not renumber their source lists. They stay in the repository and are not
+  packaged with lifelib, because they quote third-party documents.
 
 ## Citation conventions
 

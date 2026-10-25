@@ -269,6 +269,15 @@ deliberately independent of the product `sources.md` numbering (see §7), they a
 them from the build with `exclude_patterns += ['libraries/uslib/_research/*']`, and refer to
 them by repository path rather than by doc link.
 
+**Revised 2026-10-25: `_research/` no longer ships.** The argument above held only while the
+notes were the project's own words. They are not: they carry verbatim extracts from
+insurers' producer-only guides and from the NAIC AP&P Manual, whose licence forbids
+integration "into any software or other publication", and a release cannot be edited once it
+is on PyPI. So the notes stay in the repository, which still carries the evidence for every
+document, and `get_package_data` prunes them from the wheel and the sdist
+([MERGE.md §2](MERGE.md#2-setuppy--ship-the-markdown)). A `create()` copy carries the
+documents and the tests; the provenance is a repository path away.
+
 ### D7 — Tests keep their current shape, with rewritten paths
 
 `tests/` stays a repo-root suite here — 14 files, `conftest.py` plus twelve per-product
@@ -285,11 +294,11 @@ lifelib has two test conventions:
 | central, flat | fastlife, nestedlife, simplelife, solvency2, tradlife_a | `lifelib/tests/libraries/test_<lib>.py`, locating models via `Path(__file__).parents[2] / "libraries"` |
 | in-library | ifrs17a | `lifelib/libraries/ifrs17a/tests/` with its own `conftest.py` and `expected/` |
 
-**The decision is in-library**, and the deciding argument is the same one that keeps
-`_research/` in the library (D6): `lifelib.create()` is a bare `shutil.copytree` of the
-library directory, so the copy an actuary receives is complete — the models, the documents
-that specify them, the provenance behind those documents, and the assertions that the
-models reproduce what the documents claim. The suite is 14 files: `conftest.py`, twelve
+**The decision is in-library**, and the deciding argument is the one D6 first made for
+`_research/`: `lifelib.create()` is a bare `shutil.copytree` of the library directory, so
+the copy an actuary receives is complete — the models, the documents that specify them, and
+the assertions that the models reproduce what the documents claim. (The provenance behind
+the documents no longer travels with them: D6 as revised keeps it in the repository.) The suite is 14 files: `conftest.py`, twelve
 per-product modules, and `test_model_conventions.py`.
 
 What this buys, beyond consistency with D2:
@@ -792,7 +801,7 @@ All questions raised in the first draft are now settled:
 | Do `[std]` / `[unverified]` become links? | Yes | D5a |
 | Is `uk/` destined for `uklib`? | Yes — so every convention here is a house convention and every script is parameterized | D8 |
 | Where do the tests live? | Inside the library, `libraries/uslib/tests/` | D7 |
-| Does `_research/` ship? | Yes, in the library; not rendered | D6 |
+| Does `_research/` ship? | No (revised): it stays in the repository, neither rendered nor packaged | D6 |
 | Do the models get autodoc API pages? | Yes — a `model-api.md` per product | D9 |
 
 Nothing is blocking. One item is deliberately deferred rather than open:
