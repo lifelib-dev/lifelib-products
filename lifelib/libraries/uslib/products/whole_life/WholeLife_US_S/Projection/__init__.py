@@ -98,7 +98,7 @@ at the anniversary so that no anniversary quantity moves:
     Straight-line between the schedule's anniversary values, ``(k + 1) / 12`` of the
     way from the value at the anniversary opening the policy year to the value at the
     one closing it, ``k = duration_mth(t) % 12``. Contractual cash value tables are
-    printed at anniversaries only [S1] [S3]; pro-rating for elapsed time is the
+    printed at anniversaries only [unverified]; pro-rating for elapsed time is the
     ordinary policy-form convention and the Standard Nonforfeiture Law requires *some*
     adjustment for it.
 ``nsp_mth(t)``
@@ -755,7 +755,7 @@ def cv_pp(t):
     no anniversary quantity — the dividend's interest margin, the net amount at risk,
     the anniversary surrender value — moves by a cent against the annual grid.
 
-    Contractual tables are printed at anniversaries only [S1] [S3]; pro-rating for
+    Contractual tables are printed at anniversaries only [unverified]; pro-rating for
     elapsed time is the ordinary policy-form convention, and it is what makes a mid-year
     surrender value mean anything on this grid.
     """
@@ -1080,8 +1080,9 @@ def div_accum(t):
     initialization. The balance now accrues interest monthly, so twelve months of it
     compound to exactly the annual credit the notes state, and the dividend lands on it
     at the anniversary. The credit rate reuses the dividend interest rate **[std]**:
-    carriers declare an accumulation rate annually with the scale but publish no
-    separate figure. The balance adds to the death, surrender and maturity proceeds.
+    one carrier announces its accumulation rate annually with the dividend scale [S2],
+    and no separate figure is published. The balance adds to the death, surrender and
+    maturity proceeds.
     """
     if t < proj_start() or t >= proj_len() or dividend_option() != "ACCUM":
         return 0.0
