@@ -64,6 +64,28 @@ hands the user a library with no documentation — and for these libraries the d
 is the point. `.py` and `.csv` are already covered, so the models, their inputs and the
 tests travel as they are.
 
+**Then keep `_research/` out.** With `'md'` in the list — upstream already has it — the walk
+also ships every library's research notes, and those notes quote third-party documents
+(insurers' producer-only guides, the NAIC AP&P Manual) that the libraries may cite but not
+redistribute. Prune the directory in `get_package_data`, and in `MANIFEST.in` so the sdist
+matches:
+
+```python
+        for root, dirs, files in os.walk(topd):
+            # Each library's _research/ notes stay in the repository and out of the
+            # distributions: they quote third-party documents verbatim.
+            dirs[:] = [d for d in dirs if d != '_research']
+```
+
+```
+prune lifelib/libraries/*/_research
+```
+
+Built from the 0.17.2 sources, this drops exactly the 69 `_research/` files from the wheel,
+and the same files from the sdist, and changes nothing else; `lifelib.create("uslib", …)`
+still copies the models, the documents and the tests. It does not reach releases already on
+PyPI: 0.14.0 to 0.17.2 carry the notes.
+
 ## 3. `setup.py` — raise the modelx floor
 
 ```python
@@ -101,9 +123,10 @@ following `annuallife/TradLife_A.rst` — which deliberately do **not** live in 
 they are Sphinx plumbing, and a `lifelib.create()` copy is better without them.
 
 `_research/` is excluded by simply having no pages, so there is no `exclude_patterns` entry
-to add either. It still ships with each library — it is the evidence behind the documents —
-but it carries its own deliberately independent `[S#]` numbering, and a second, conflicting
-`S1` in front of a reader is worse than not publishing it.
+to add either. It stays in the repository rather than shipping with each library (§2),
+because it quotes third-party documents, and it carries its own deliberately independent
+`[S#]` numbering: a second, conflicting `S1` in front of a reader is worse than not
+publishing it.
 
 **Do not enable `myst_enable_extensions = ["dollarmath"]`.** These documents are full of
 currency: `$100,000`, `£100,000`, `¥10,000,000` — and `jplib`'s foreign-currency whole life

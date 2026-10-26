@@ -230,7 +230,8 @@ def premium_mode():
 
 
 def band():
-    """Face-amount band 1-4 **[std]**; the anchor cell is band 1."""
+    """Face-amount band 1-4: boundaries at $250,000 / $500,000 / $1,000,000 [S5], the
+    four-band choice **[std]**; the anchor cell is band 1."""
     f = sum_assured()
     return 1 if f < 250000 else 2 if f < 500000 else 3 if f < 1000000 else 4
 

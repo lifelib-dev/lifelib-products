@@ -551,7 +551,7 @@ def wd_pp(t):
     """W(t): the partial withdrawal per policy at BOM of policy month t.
 
     Withdrawals are allowed on and after the first policy anniversary and not after
-    attained age 121 [S2][S3].  The amount is the constant monthly figure in the model
+    attained age 121 [S3].  The amount is the constant monthly figure in the model
     point's ``wd_pp`` column, **0 in every shipped model point**: the notes give no
     withdrawal utilization pattern, so the mechanics are implemented and the behaviour
     is left to the data **[std]**.

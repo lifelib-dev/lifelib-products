@@ -927,7 +927,8 @@ def credit_rate_on(r, method):
         is where ``par_rate`` = 80% comes from, and the case
         ``test_crediting_engine_reproduces_the_R1_worked_case`` asserts.
     ``spread``
-        ``max(f, p x R - s)``, the index-margin form [S8][R1].
+        ``max(f, p x R - s)``, the spread form [R1]; one carrier names its methods
+        "with Index Margin" [S8].
     ``trigger``
         ``d x 1{R >= 0}``, a declared rate credited whenever the return is non-negative
         [R1]; the floor applies when it is not.
@@ -1502,8 +1503,8 @@ def rollup_pp(t):
 def stack_pp(t):
     """stack(t) = m x max(0, IC(t) + FI(t)): the stacking credit at the anniversary.
 
-    On **realised dollar credits**, net of any strategy fee (zero here) and floored at
-    zero [S8][S9] — one specimen's separately named stacking credit.  The gross index
+    On **realised dollar credits** [S8] [S9], net of any strategy fee (zero here) and
+    floored at zero [S9] — one specimen's separately named stacking credit.  The gross index
     credit is used, so the pure stacking design can credit 250% to the base while
     ``kappa`` sends only 50% to the account value [S3][S4].  ``FI`` here is the **annual**
     fixed interest of the contract year, :func:`fixed_interest_ann_pp`, not the
