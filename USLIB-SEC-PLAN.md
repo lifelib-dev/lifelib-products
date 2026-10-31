@@ -280,7 +280,16 @@ and `spec_sec.py`, mx2cy's two inputs. The SEC table holds:
 
 Rows of the second kind are written by `tools/gen_sec_points.py` from state definitions
 that live in the test helpers, and a test regenerates them and compares, so the committed
-table cannot drift from what the S model computes.
+table cannot drift from what the S model computes. The generator writes the other two kinds
+too, from the S model and its table as they stand: a twin from its S row, a future row from
+an S new-business row. No row is typed by hand, so the test covers the whole table, text
+included.
+
+This matters because S rows do change after the fact. MYGA points 5 and 6, RILA point 9 and
+VA point 6 have had their `provenance` reworded under `CLAUDE.md`'s rule, and FIA point 3's
+roll-up key has been renamed. A hand-copied twin of FIA point 3 would now raise `KeyError`
+against the shared roll-up table, and no projected number would ever reveal the four stale
+`provenance` cells.
 
 Some SEC rows need inputs S never had:
 - a scenario re-based to the row's valuation date (VA, FIA);
@@ -288,6 +297,11 @@ Some SEC rows need inputs S never had:
 
 These go in SEC-only companion files (`*_sec.csv`), never into the shared S inputs. Where
 they derive from S data they are generated the same way, under the same test.
+
+The SEC table and its companions are input files as `CLAUDE.md` defines them, so none of
+their columns may name a company or product. Every text cell the generator writes — id,
+label or `provenance` — is either copied from S, a copy T6 keeps current, or composed from
+S's own keys (an S `policy_id` or scenario id) and a month. It adds no name of its own.
 
 ### D9 — Documentation
 
@@ -457,7 +471,10 @@ One PR, before any model:
 7. Reporting: `result_cf()` with the S columns; `result_pols()`.
 8. Docstrings: rewrite the time-axis prose — every "t = 0 is the issue month" — add the
    new cells to the symbol map, and keep the house disclaimers the conventions assert.
-9. `model-sec.md`, `run_sec.py`, `model_point_table_sec.csv` (D8).
+9. `model-sec.md`, `run_sec.py` and the SEC input files: `model_point_table_sec.csv` and
+   any `*_sec.csv` companion (D8). Before each commit that adds or changes one, search it
+   case-insensitively for every publisher and product the product's `sources.md` cites, as
+   `CLAUDE.md` requires. T6 keeps the files in step with S, but it does not look for names.
 
 ### 5.2 Tests
 
@@ -489,8 +506,11 @@ conventions suite.
 - **T4 — Count algebra.** `BEF_DECR = BEF_NB + pols_new_biz`; the roll-forward closes;
   doubling `policy_count` doubles every cash flow and leaves every per-policy value alone.
 - **T5 — Validation.** Each malformed in-force row raises in `Data`, naming its point.
-- **T6 — Regeneration.** The committed derived rows equal what `gen_sec_points.py`
-  produces.
+- **T6 — Regeneration.** The committed SEC table and its generated companions, every row
+  and column, equal what `gen_sec_points.py` produces from the S model and its inputs as
+  committed. So an edit to an S row that an SEC file copies or derives from — a reworded
+  `provenance` cell, a renamed lookup key — fails T6 until the SEC files are regenerated,
+  in the same commit.
 
 ### 5.3 Order
 
