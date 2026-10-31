@@ -904,9 +904,9 @@ def test_the_rollup_schedule_steps_down_in_year_eleven(fixed_indexed_annuity):
         assert q.rollup_rate(anniv(year)) == 0.0
     assert q.rollup_pp(anniv(20)) == pytest.approx(
         0.02 * q.rollup_base_pp(anniv(19)), abs=CENT)
-    # The Nassau schedule is a flat 3% over fifteen anniversaries instead [S9].
+    # The simple schedule is a flat 3% over fifteen anniversaries instead [S9].
     p = fixed_indexed_annuity.Projection[3]
-    assert p.rollup_id() == "nassau"
+    assert p.rollup_id() == "simple"
     assert p.rollup_rate(anniv(1)) == pytest.approx(0.03, abs=RATE)
     assert p.rollup_rate(anniv(15)) == pytest.approx(0.03, abs=RATE)
     assert p.rollup_rate(anniv(16)) == 0.0
