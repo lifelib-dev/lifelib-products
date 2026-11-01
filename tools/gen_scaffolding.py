@@ -9,14 +9,16 @@ scaffolding that only Sphinx cares about:
     which is what keeps the authored relative links working: ``[sources](sources.md)`` in
     ``technical-notes.md`` resolves against the stub's own location, and the sibling stub is
     there.  Citation links survive too -- a document's link reference definitions and the
-    tags that use them are in the same included file, so they resolve together.
+    tags that use them are in the same included file, so they resolve together.  A product
+    with an SEC model also has a ``model-sec.md`` beside its ``model.md``, stubbed the same
+    way.
 
 ``products/<slug>/index.md``
     the product landing page, written **in place** rather than included.  It is a title, a
-    sentence of orientation and a toctree -- Sphinx scaffolding with nothing in it a reader
+    paragraph of orientation and a toctree -- Sphinx scaffolding with nothing in it a reader
     of a ``lifelib.create()`` copy would want.
 
-``<Model>.rst`` and ``<Space>.rst``
+``products/<slug>/<Model>/<Model>.rst`` and ``products/<slug>/<Model>/<Space>.rst``
     the autodoc pages, following ``annuallife/TradLife_A.rst``: the model page carries the
     model docstring and a hidden toctree of its Spaces, and each Space page carries the
     Space docstring followed by one ``autofunction`` per cells.
@@ -25,15 +27,44 @@ The autodoc pages are RST for the same reason the landing pages are written in p
 are Sphinx plumbing, not library content -- a reader wants the model, not a file whose whole
 purpose is to tell Sphinx how to render it.
 
+**A folder per model.**  A product can hold two models.  Under USLIB-SEC-PLAN.md each
+uslib product keeps its ``<Name>_US_S`` and gains, beside it, the ``<Name>_US_SEC`` derived
+from it, which also projects model points already in force and compiles (D1).  Both have a
+``Data`` and a ``Projection`` Space, so pages written flat into the product directory, as
+they were until then, would collide: the second model's ``Data.rst`` would overwrite the
+first's.  In a folder of its own, no model's pages can meet another's, and a page's URL
+names the model it documents.
+
+The folders are the layout for every model, including every product that has only one.
+The layout belongs to this tool, which writes all six libraries' page trees, and one rule
+is simpler to read, to link to and to merge than a rule with an exception.  Adopting it
+moved every autodoc page once -- ``products/<slug>/<Model>.html`` became
+``products/<slug>/<Model>/<Model>.html``, and each Space page moved into the folder with
+it -- and it was done before the lifelib merge, while nothing linked to the pages by path
+and the move cost nothing (USLIB-SEC-PLAN.md D9).
+
+The models are the directories holding a ``_system.json``, sorted by name, which puts
+``_S`` before ``_SEC``.  This used to take ``next()`` over the product directory, which is
+filesystem order: harmless with one model, but with two the page tree would have depended
+on the machine that generated it (USLIB-SEC-PLAN.md F8).  The landing page lists the S
+model's notes and cells reference, then the SEC model's, then the sources.
+
 Usage::
 
     python tools/gen_scaffolding.py lifelib/libraries/uslib --dry-run
     python tools/gen_scaffolding.py lifelib/libraries/uslib
+
+A dry run lists the files that would be written and the files that would be removed, so a
+change of layout shows up as the move it is rather than as a set of additions.  A run that
+cannot remove a stale page -- a file Windows is still holding -- lists it as
+``NOT removed`` and exits 1: Sphinx would build it beside the page that replaced it.
 """
 import ast
 import os
+import re
 import shutil
 import sys
+import textwrap
 import pathlib
 
 
@@ -134,10 +165,6 @@ TITLES = {
 
 DOC_ROOT = pathlib.Path("doc") / "source" / "libraries"
 
-# The documents each product page lists, in reading order.  `_MODEL_` stands in for the
-# model's own name, which is only known per product.
-PRODUCT_PAGES = ["product-spec", "technical-notes", "model", "_MODEL_", "sources"]
-
 PRODUCT_INDEX = """\
 # {title}
 
@@ -150,12 +177,25 @@ PRODUCT_INDEX = """\
 ```
 """
 
+# The landing page's paragraph is the S model's text and then the sentence on the sources,
+# which comes last because every document before it cites into them.  A product with an SEC
+# model gets one sentence more, between the two, so the paragraph reads in the toctree's
+# order; without one, the two pieces join into exactly the text the page had before SEC
+# models existed.
 BLURB = """\
 [Product Specification](product-spec.md) defines the representative product and
 [Technical Notes](technical-notes.md) derive its liability cash flow model.
 [Implementation Notes](model.md) explain how `{model}` implements those notes and what was
 standardized to do so; the cells reference generated from the model's own docstrings
-follows it. Every source any of them cites is in [Sources](sources.md)."""
+follows it."""
+
+# Worded so that no verb has to agree with `{title}`: the title is model-sec.md's own H1,
+# which Phase 1 chooses, and it may be singular or plural.
+SEC_BLURB = (
+    "How `{sec}` extends `{model}` is explained in [{title}](model-sec.md), and the cells "
+    "reference of `{sec}` follows it.")
+
+SOURCES_BLURB = "Every source any of them cites is in [Sources](sources.md)."
 
 STUB = "```{{include}} {relpath}\n```\n"
 
@@ -184,6 +224,8 @@ Cells Descriptions
 {cells}
 """
 
+H1 = re.compile(r"^# +(.+?)(?: +#+)? *$")
+
 
 def cells_of(space_dir):
     """Cells names in definition order -- `autodoc_member_order` is 'bysource'."""
@@ -206,6 +248,128 @@ def relative(target, start):
 def spaces_of(model_dir):
     return [d for d in sorted(model_dir.iterdir())
             if d.is_dir() and (d / "__init__.py").exists()]
+
+
+def models_of(product):
+    """The product's S model folder, and its SEC sibling or ``None``.
+
+    The models are the directories holding a ``_system.json``, sorted by name -- never
+    taken in filesystem order, which differs between machines -- and the sort puts
+    ``<Name>_S`` before ``<Name>_SEC``.  Anything else stops the run: no model, two S
+    models, an SEC model whose name is not its S model's plus ``EC``, or a suffix this does
+    not know.  What a landing page says about a model is editorial, and the blurb states
+    that the SEC model extends the S one, so a pairing the names do not show is not
+    guessed at.
+
+    An SEC model and its ``model-sec.md`` come together (USLIB-SEC-PLAN.md D8, D9), and
+    one without the other stops the run too.  The landing page links the notes and lists
+    the model's pages, so the model alone would leave it linking notes that are not there,
+    and the notes alone would put a page about a missing model in front of a reader.
+    """
+    models = sorted((d for d in product.iterdir()
+                     if d.is_dir() and (d / "_system.json").exists()),
+                    key=lambda d: d.name)
+    names = [d.name for d in models]
+    if not (names and names[0].endswith("_S")
+            and names[1:] in ([], [names[0] + "EC"])):
+        sys.exit(f"{product}: expected one *_S model, alone or with its *_SEC beside it;"
+                 f" found {', '.join(names) or 'no model'}")
+    sec = models[1] if len(models) > 1 else None
+    notes = (product / "model-sec.md").exists()
+    if sec and not notes:
+        sys.exit(f"{product}: {sec.name} has no model-sec.md beside it -- write the notes"
+                 " that explain it, and its pages come with them")
+    if notes and not sec:
+        sys.exit(f"{product}: model-sec.md is there but no *_SEC model is -- the notes"
+                 " would explain a model the page tree does not have")
+    return models[0], sec
+
+
+def title_of(path):
+    """The H1 of a markdown document: the title its toctree entry shows.
+
+    Fenced code is skipped, since a ``# comment`` in a shell block is not a heading.  A
+    document without an H1 stops the run; ``md_lint.py`` requires exactly one, and the
+    toctree would have no title to show for it either.
+    """
+    fenced = False
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.lstrip().startswith(("```", "~~~")):
+            fenced = not fenced
+        elif not fenced and (m := H1.match(line)):
+            return m.group(1)
+    sys.exit(f"{path} has no H1 -- the landing page links it by its title")
+
+
+def blurb(model, sec=None, sec_title=None):
+    """The landing page's paragraph of orientation.
+
+    With one model it is the text the landing pages had before SEC models existed, byte
+    for byte, so a product without one regenerates unchanged.  With an SEC model, the
+    paragraph's last line is refilled to take the SEC sentence ahead of the sources.
+    ``break_on_hyphens`` is off because a line break after the hyphen of ``in-force``
+    renders as a space, and inside ``(model-sec.md)`` it would end the link.
+    """
+    text = BLURB.format(model=model)
+    if sec is None:
+        return f"{text} {SOURCES_BLURB}"
+    head, last = text.rsplit("\n", 1)
+    tail = " ".join([last, SEC_BLURB.format(sec=sec, model=model, title=sec_title),
+                     SOURCES_BLURB])
+    return head + "\n" + textwrap.fill(tail, width=92, break_long_words=False,
+                                       break_on_hyphens=False)
+
+
+def model_pages(lib, product, model_dir, out):
+    """One model's autodoc pages, as ``{path: text}``: the model page, then one per Space.
+
+    ``out`` is the model's own folder.  The model page's toctree names its Spaces
+    unqualified -- ``Data``, ``Projection`` -- and Sphinx resolves a toctree entry against
+    the page that holds it, so each model's entries find that model's pages and no other's.
+    """
+    model = model_dir.name
+    spaces = spaces_of(model_dir)
+    dotted = f"{lib}.products.{product.name}.{model}"
+    pages = {out / f"{model}.rst": MODEL_PAGE.format(
+        model=model, underline="=" * (len(model) + 14), dotted=dotted,
+        spaces="\n".join(f"   {s.name}" for s in spaces))}
+    for space in spaces:
+        cells = "\n\n".join(f".. autofunction:: {c}" for c in cells_of(space))
+        pages[out / f"{space.name}.rst"] = SPACE_PAGE.format(
+            space=space.name, underline="=" * (len(space.name) + 14),
+            dotted=f"{dotted}.{space.name}", cells=cells)
+    return pages
+
+
+def product_pages(lib, product, docs):
+    """Every page of one product, as ``{path: text}``, in the order they are written."""
+    s_model, sec_model = models_of(product)
+    page_dir = docs / "products" / product.name
+
+    # The toctree, in reading order: the product's documents, then each model's notes
+    # followed by its cells reference -- the S model, then the SEC model derived from it --
+    # and the sources last.  An entry with a slash is a model page in the model's folder;
+    # every other entry is a library document, and its page is an include stub.
+    entries = ["product-spec", "technical-notes", "model", f"{s_model.name}/{s_model.name}"]
+    if sec_model:
+        entries += ["model-sec", f"{sec_model.name}/{sec_model.name}"]
+    entries.append("sources")
+
+    if sec_model:
+        about = blurb(s_model.name, sec_model.name, title_of(product / "model-sec.md"))
+    else:
+        about = blurb(s_model.name)
+
+    # Written in place, not included: the landing page is scaffolding, and the library is
+    # better off without it.
+    pages = {page_dir / "index.md": PRODUCT_INDEX.format(
+        title=TITLES[(lib, product.name)], blurb=about, entries="\n".join(entries))}
+    for name in (e for e in entries if "/" not in e):
+        pages[page_dir / f"{name}.md"] = STUB.format(
+            relpath=relative(product / f"{name}.md", page_dir))
+    for model_dir in filter(None, (s_model, sec_model)):
+        pages.update(model_pages(lib, product, model_dir, page_dir / model_dir.name))
+    return pages
 
 
 def write(path, text, dry, log):
@@ -233,6 +397,24 @@ def main(argv):
     if not (library / "products").is_dir():
         sys.exit(f"no library at {library} -- expected a products/ directory under it")
 
+    # Every page is composed before the old tree is removed, for the same reason.  Whatever
+    # stops the run -- a model folder `models_of` will not guess about, notes without a
+    # title, a product with no entry in TITLES, a formula file that does not parse -- stops
+    # it here, while the committed tree is still whole.
+    pages = {}
+    for product in sorted(d for d in (library / "products").iterdir() if d.is_dir()):
+        pages.update(product_pages(lib, product, docs))
+    # The library index and the reference bibliography sit at the library root.
+    pages[docs / "index.md"] = STUB.format(relpath=relative(library / "index.md", docs))
+    refs = pathlib.PurePosixPath("references/regulatory-and-actuarial-references.md")
+    pages[docs / refs] = STUB.format(
+        relpath=relative(library / refs, (docs / refs).parent))
+
+    # What regenerating deletes: the files of the current tree that the new one does not
+    # have.  Listed in a dry run as well, so that a change of layout previews as a move,
+    # from the old paths to the new, and not as additions alone.
+    stale = sorted(p for p in docs.rglob("*") if p.is_file() and p not in pages)
+
     if not dry:
         # Regenerated wholesale; nothing here is hand-edited.  Removal must not be fatal:
         # a previous doc build leaves files Windows can still be holding.
@@ -241,54 +423,27 @@ def main(argv):
             if not docs.exists():
                 break
 
-    products = sorted(d for d in (library / "products").iterdir() if d.is_dir())
+    for path, text in pages.items():
+        write(path, text, dry, log)
 
-    for product in products:
-        model_dir = next(d for d in product.iterdir()
-                         if d.is_dir() and (d / "_system.json").exists())
-        model = model_dir.name
-        spaces = spaces_of(model_dir)
-
-        page_dir = docs / "products" / product.name
-        entries = "\n".join(model if page == "_MODEL_" else page
-                            for page in PRODUCT_PAGES)
-        # Written in place, not included: the landing page is scaffolding, and the library
-        # is better off without it.
-        write(page_dir / "index.md",
-              PRODUCT_INDEX.format(title=TITLES[(lib, product.name)],
-                                   blurb=BLURB.format(model=model),
-                                   entries=entries),
-              dry, log)
-
-        for name in ("product-spec", "technical-notes", "model", "sources"):
-            write(page_dir / f"{name}.md",
-                  STUB.format(relpath=relative(
-                      product / f"{name}.md", page_dir)), dry, log)
-
-        dotted = f"{lib}.products.{product.name}.{model}"
-        write(page_dir / f"{model}.rst",
-              MODEL_PAGE.format(model=model, underline="=" * (len(model) + 14),
-                                dotted=dotted,
-                                spaces="\n".join(f"   {s.name}" for s in spaces)),
-              dry, log)
-        for space in spaces:
-            cells = "\n\n".join(f".. autofunction:: {c}" for c in cells_of(space))
-            write(page_dir / f"{space.name}.rst",
-                  SPACE_PAGE.format(space=space.name,
-                                    underline="=" * (len(space.name) + 14),
-                                    dotted=f"{dotted}.{space.name}", cells=cells),
-                  dry, log)
-
-    # The library index and the reference bibliography sit at the library root.
-    write(docs / "index.md",
-          STUB.format(relpath=relative(library / "index.md", docs)), dry, log)
-    refs = pathlib.PurePosixPath("references/regulatory-and-actuarial-references.md")
-    write(docs / refs,
-          STUB.format(relpath=relative(library / refs, (docs / refs).parent)), dry, log)
-
+    # Removal is not fatal, but a stale page that survives it is.  Sphinx builds every page
+    # it finds, so a page left behind is built as if it were current -- an old model page
+    # beside its replacement documents the same module twice -- and the strict build fails
+    # on it.  Every new page is written either way; the status says the tree on disk is
+    # not yet the one composed above.
+    left = set() if dry else {path for path in stale if path.exists()}
     for action, path in log:
-        print(f"  {action:11} {path}")
-    print(f"\n{len(log)} files{' (dry run)' if dry else ''}")
+        print(f"  {action:12} {path}")
+    for path in stale:
+        action = "would remove" if dry else "NOT removed" if path in left else "removed"
+        print(f"  {action:12} {path}")
+    removed = len(stale) - len(left)
+    removed = f", {removed} removed" if removed else ""
+    print(f"\n{len(log)} files{removed}{' (dry run)' if dry else ''}")
+    if left:
+        print(f"{len(left)} stale files could not be removed -- delete them before"
+              " building", file=sys.stderr)
+        return 1
     return 0
 
 

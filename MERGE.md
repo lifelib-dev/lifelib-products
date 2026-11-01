@@ -118,9 +118,13 @@ carry is already the one lifelib needs — `../../../../../../lifelib/libraries/
 counted from the stub by `os.path.relpath` rather than written by hand — because the
 libraries sit at that same path in this repository. Nothing here needs regenerating.
 
-Those trees also carry the autodoc pages — `<Model>.rst` and one `<Space>.rst` per Space,
-following `annuallife/TradLife_A.rst` — which deliberately do **not** live in the libraries:
-they are Sphinx plumbing, and a `lifelib.create()` copy is better without them.
+Those trees also carry the autodoc pages — `<Model>/<Model>.rst` and one
+`<Model>/<Space>.rst` per Space, following `annuallife/TradLife_A.rst` — which deliberately
+do **not** live in the libraries: they are Sphinx plumbing, and a `lifelib.create()` copy is
+better without them. Each model has a folder of its own, in every library, because a uslib
+product can hold two models whose Spaces share their names: its `<Name>_US_S` and the
+`<Name>_US_SEC` beside it (USLIB-SEC-PLAN.md D9). A model page's URL is therefore
+`libraries/<lib>/products/<slug>/<Model>/<Model>.html`.
 
 `_research/` is excluded by simply having no pages, so there is no `exclude_patterns` entry
 to add either. It stays in the repository rather than shipping with each library (§2),
@@ -221,8 +225,8 @@ ids out of the built pages instead.
   already assumed by the other libraries. `pytest` stays a development dependency and is
   deliberately not added to `install_requires`, even though the tests now ship.
 - **The models' autodoc pages** are already written and building, at
-  `doc/source/libraries/<lib>/products/<slug>/<Model>.rst` and one `<Space>.rst` beside
-  each. Nothing further is required to publish them.
+  `doc/source/libraries/<lib>/products/<slug>/<Model>/<Model>.rst` and one `<Space>.rst`
+  beside each, in the model's own folder. Nothing further is required to publish them.
 
 ---
 

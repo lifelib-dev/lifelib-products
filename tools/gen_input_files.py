@@ -45,6 +45,26 @@ def load_registry(library):
     return module, path
 
 
+def point_keys(model):
+    """The key of each model point's ``Projection`` ItemSpace, in table order.
+
+    Positions ``0 .. n-1`` when ``Projection`` is parameterized by ``idx``, the
+    ``basiclife/BasicTerm_SC`` form uslib's SEC models take once they compile
+    (USLIB-SEC-PLAN.md R4); the table labels for any other parameter, which is every model
+    in all six libraries today.  Indexing an ``idx`` model by its labels, which start at 1,
+    would skip its first point and then fail past the end of its vectors.
+
+    The choice is read off the model rather than asked of the registry, because the six
+    registries do not all carry a helper for it, and this is the one tool they share.  It
+    matches ``us_registry.point_keys`` on both parameters it knows; where that raises on an
+    unknown parameter, this falls back to labels, which is what the tool always did.
+    """
+    table = model.Data.model_point_table()
+    if tuple(model.Projection.parameters or ()) == ("idx",):
+        return range(len(table))
+    return table.index
+
+
 def files_read(registry, name):
     """Every input file the model reads over a full sweep of its model point table.
 
@@ -78,8 +98,8 @@ def files_read(registry, name):
         try:
             checks = [c for c in model.Projection.cells
                       if c.startswith("check_") and not c.endswith("_resid")]
-            for point_id in model.Data.model_point_table().index:
-                proj = model.Projection[point_id]
+            for key in point_keys(model):
+                proj = model.Projection[key]
                 proj.result_cf()
                 for check in checks:
                     getattr(proj, check)()

@@ -1,9 +1,10 @@
 # Plan — `*_US_SEC`: uslib models that run in force, then compile
 
-**Status:** Accepted, 2026-11-01; drafted 2026-10-31. Its open decisions (§8.2) are settled
-but one, and implementation has begun with Phase 0. Like USLIB-MERGE-PLAN.md, this document
-is both the specification and the record: each phase records what it actually did,
-including where the implementation departed from the plan.
+**Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
+and Phase 1 starts with Term (M1). Its open decisions (§8.2) are settled but one, which is
+needed only before Phase 1 reaches RILA. Like USLIB-MERGE-PLAN.md, this document is both the
+specification and the record: each phase records what it actually did, including where the
+implementation departed from the plan.
 
 Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
 modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
@@ -150,10 +151,14 @@ every CSV beside a model is read by *that* model. `.gitignore` already anticipat
 ### D1 — Name, place, derivation
 
 `<Name>_US_SEC` lives in `products/<product>/`, beside `<Name>_US_S`. It is created by
-reading the S model and writing it back under the new name, so its **first commit is the S
-model with only `_name` changed**: every later diff in that folder is an enhancement, and
-nothing else. It reads the same assumption CSVs as the S model — one copy of each table —
-and adds its own model point table, `model_point_table_sec.csv`.
+copying the S model's folder, without `__pycache__`, and changing `_name` in its top-level
+`__init__.py`, so its **first commit is the S model with only `_name` changed**: every later
+diff in that folder is an enhancement, and nothing else. (Reading the S model and writing it
+back under the new name, as first planned, does more: under modelx 0.33.0 it also restamps
+`_system.json` from modelx 0.31.1 to 0.33.0 and rewrites the trailing newlines of two
+`__init__.py` files. The first write by modelx, in a later commit, brings that restamp,
+where it is one line among real changes.) It reads the same assumption CSVs as the S model
+— one copy of each table — and adds its own model point table, `model_point_table_sec.csv`.
 
 *Rejected:* modelx space inheritance from the S model (bases must live in the same model);
 a separate product directory with copied CSVs (two copies of every table drift apart).
@@ -361,10 +366,11 @@ every library's model pages move with uslib's. Nothing links to them by path; `c
 
 `us_registry.MODELS` gains twelve SEC entries whose metadata adds `"twin"` (the S name),
 `"param"` (`"point_id"`, then `"idx"`) and `"stage"` (`"E"`, then `"EC"`), and
-`INPUT_FILES` gains their file sets. `test_model_conventions.py` is generalized rather than
-forked:
+`INPUT_FILES` gains their file sets. SPIA's entry also carries D5's `"closing_pols_if"`.
+`test_model_conventions.py` is generalized rather than forked:
 
-- the suffix rule becomes `_S` followed by the capability letters the metadata grants;
+- the suffix is `_S`, or `_SEC` for a model registered with a `"twin"`, at either stage:
+  the name is the family's from the first commit and never moves with the stage (D2);
 - the parameter is the one the metadata names;
 - model points are enumerated through one helper that yields labels or positions;
 - "every CSV beside the model is read" becomes "by some model in the directory";
@@ -463,12 +469,19 @@ build into a temporary directory, which keeps the tree clean, exactly as
 `test_round_trip_is_stable` already copies CSVs. modelx-cython goes in a new
 `requirements-cython.txt`, because it needs a C compiler; `requirements.txt` is unchanged.
 
+As built (§4, *Record*), the tool refuses an `<out>` inside the repository, other than the
+product directory itself, and any `<out>` that holds a modelx model: copying the CSVs there
+once overwrote another product's tracked inputs. It exports and compiles in child processes,
+and clears its previous outputs before a rebuild.
+
 ### D13 — CI
 
 The existing matrix runs every pure-modelx suite, S and SEC alike. A new `cython` job —
 ubuntu-latest and windows-latest, one Python each — installs `requirements-cython.txt` and
 runs `pytest -m cython`. The compile tests **skip** when modelx-cython or a compiler is
-absent, so lifelib's own bare `pytest` stays green after the merge.
+absent, so lifelib's own bare `pytest` stays green after the merge. In the `cython` job
+itself, which installs both, a skip is a failure (`USLIB_REQUIRE_CYTHON=1`), and so is a run
+that selects no test.
 
 ---
 
@@ -493,6 +506,94 @@ One PR, before any model:
 6. **Housekeeping**: `.gitignore` additions; `requirements-cython.txt`; a `cython` pytest
    marker registered in `uslib/tests/conftest.py`; the CI job, defined but allowed to find
    no tests.
+
+### Record — M0, done 2026-11-01
+
+Built as specified, in one commit. Each component was written by one agent and reviewed by a
+second, which re-ran its checks and tried to break it. The reviews found 22 defects, 13 in
+behaviour and 9 in wording, and all were fixed before the commit.
+
+**What exists now.**
+- `us_registry.py`: the SEC keys (D10, and D5's `closing_pols_if`), plus `meta`, `is_sec`,
+  `point_keys` and `projection`. No SEC model is registered yet.
+- `test_model_conventions.py`: generalized as D10 says, with every S model passing unchanged
+  (289 passed before and after). Its SEC section, conventions (a)–(h) with T1 among them, is
+  parametrized over the registered SEC models, so it stays inert until M1. It was exercised
+  on a stand-in library, Term_US_S beside a crude Term_US_SEC at stage E and at stage EC,
+  where each of six injected faults failed the test meant to catch it.
+- `tests/sec_support.py`, with its own suite `test_sec_support.py` (35 tests, about 16 s, on
+  Term_US_S and synthetic models): `sweep` and `twin_mismatches` (T1); `temp_inputs`,
+  `shift_months` and `frame_mismatches` (T2, T3); `SecSpec`, `SEC_SPECS`, `build_sec_table`,
+  `write_generated` and `check_generated` (T6). Each S model compared with a second read of
+  itself, on every point of all twelve, gives 0 mismatches over 5.4 million cached values.
+- `tools/gen_sec_points.py <SEC model> [--check]`, a command line over the T6 functions.
+  Those live in the tests because `lifelib.create()` copies `tests/` but not `tools/`, and
+  T6 must run in such a copy too.
+- `tools/gen_scaffolding.py`: several models per product, taken in name order, and
+  per-model page folders in all six libraries. 171 pages moved byte for byte, and 57 landing
+  pages changed by their one toctree line. doccheck reports 473 pages and 0 warnings, as
+  before, and all 65,255 internal anchors still resolve.
+- `tools/build_sec_cy.py`, `requirements-cython.txt` (modelx-cython 0.1.0), the ignore
+  rules, and the `cython` CI job. `test_cython_toolchain.py` gives the job a test from the
+  start: it compiles Term_US_S and checks it against modelx on both points (largest
+  difference 0.0), in about 31 s on Linux with gcc. It also checks that the spec's cache
+  sizes reached the generated `.pxd`, since mx2cy ignores a misspelled spec key without a
+  word.
+
+**Departures and precisions.**
+- The `cython` job is stricter than item 6 allows: it fails on a skip and on a run that
+  selects nothing (D13).
+- D1's derivation is a folder copy and an edit of `_name`, not a read and write (D1).
+- The suffix rule is the family's: `_SEC` at either stage (D10).
+- `build_sec_cy.py` refuses an `<out>` where copying the CSVs could overwrite inputs (D12).
+- T6 reads a float cell by its value, to 1e-12 (§5.2). The generator writes each float as
+  text that the models' own parser reads back exactly, wherever such text exists. For some
+  computed doubles none does: about one count in six between 0.9 and 1, under pandas 3.0.5.
+  Those come back within two ulps. The chosen text also depends on the platform's parser and
+  libm, so a byte comparison would fail, on macOS, a file written on Linux.
+- `source_mth` and `t_offset` run one way throughout: SEC month `t` is S month
+  `t + source_mth`, and `twin_mismatches` and `frame_mismatches` both take the row's
+  `source_mth` as `t_offset`. A twin's `source_mth` is the first row of its S frame, which
+  is 108 for WholeLife point 1. A derived row's `duration_mth` is its twin's plus
+  `d - source_mth`. A future row's `duration_mth` and `source_mth` are both `-k`.
+- `SecSpec.twin_state` fills the opening-state columns S lacks on twin rows, such as UL's
+  `cum_prem_init`. A spec may not write `provenance`, or any column the generator owns.
+- `frame_mismatches` also fails frames that end apart. Both run to the end of cover, so a
+  differing end means `proj_len()` is wrong.
+- T1 removes its own reads from the read-once log. Under pytest older than 9.2 the SEC
+  section runs before its model's generic tests, and T1, which evaluates beyond the base
+  sweep, would otherwise change what the read-once test sees.
+
+**Measured for K6.** T1 costs one more sweep of the paired S points plus the comparison,
+measured S against S. Term: 0.6–0.8 s of sweep and 0.17 s comparing 40,361 cached values.
+WholeLife: 7–8 s and 3.1 s over 524,780 values. UL: 4.3–7.5 s and 1.2 s over 217,341. So T1
+about doubles the sweep of the points it pairs. The splice sweeps of T2 are the larger
+unknown; they are measured on Term at M1. The uslib suite went from 1,025 passed and
+11 skipped in 4 min 26 s to 1,061 passed and 19 skipped in 4 min 53 s. The new passes are
+the 35 harness tests and the compile test, which accounts for 32 s of the difference. The
+new skips are the eight SEC conventions, each skipped for want of a model.
+
+**Carried into Phase 1.**
+- `CHECK_EXEMPTIONS` and `EXTRA_POINT_ASSERTIONS` are keyed by model name, so an SEC model
+  inherits neither of them:
+  - IUL_US_SEC's twin of point 5 needs its own `check_margin` exemption.
+  - The DIA, FIA, SPIA and VA product facts need SEC entries.
+  - DIA's check reads `income_start_mth()`, a policy month (R1a), so it needs an SEC form.
+- `gen_scaffolding.py` refuses a library in which an SEC folder lacks a `model-sec.md`, so
+  regenerate the pages once that file exists. Its H1 becomes the landing page's link text.
+- The first `gen_input_files.py --write` rewraps the ULSG and WholeLife entries, a cosmetic
+  change.
+- T6 projects every S point unless it is handed the S model T1 has already swept, through
+  `s_model=`.
+- At stage EC:
+  - T1 needs an `arg_map` (R9).
+  - The skip-or-fail logic of `USLIB_REQUIRE_CYTHON` moves into `sec_support.py`, for the
+    per-product compile tests.
+  - Term's `spec_sec.py` sizes the `plt_mort_factor` cache from the contract, not from
+    the sample.
+- The `cython` job has not yet run on GitHub. It runs on a pull request to `main` or on a
+  manual dispatch, and its first Windows run is the outstanding check on MSVC and the 1 MB
+  stack.
 
 ---
 
@@ -554,7 +655,9 @@ conventions suite.
   and column, equal what `gen_sec_points.py` produces from the S model and its inputs as
   committed. So an edit to an S row that an SEC file copies or derives from — a reworded
   `provenance` cell, a renamed lookup key — fails T6 until the SEC files are regenerated,
-  in the same commit.
+  in the same commit. "Equal" is exact for text and integers, and to 1e-12 for a float
+  cell, which is read by its value: the text chosen for a computed float depends on the
+  platform's pandas parser and libm (§4, *Record*).
 
 ### 5.3 Order
 
@@ -1172,6 +1275,8 @@ valuation clock these part.
     roughly double the projected volume.
   - Measure it on Term in Phase 0. If it threatens the limit, the splice sweeps move behind
     an opt-in marker before the timeout is raised.
+  - *Phase 0:* T1 about doubles the sweep of the points it pairs; Term pays under a second
+    (§4, *Record*). T2 is measured on Term at M1.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares numbers only.
@@ -1208,7 +1313,7 @@ is needed only before Phase 1 reaches RILA.
 
 | # | Milestone | Content | Gate |
 |---|---|---|---|
-| M0 | Phase 0 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
+| M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
 | M1–M12 | Phase 1, one PR per product, in §5.3's order | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero |
 | M13 | Phase 1 freeze | Fingerprints for every SEC point; `index.md`'s SEC conventions | the whole matrix green under its timeout |
 | M14–M25 | Phase 2, one PR per product, same order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |

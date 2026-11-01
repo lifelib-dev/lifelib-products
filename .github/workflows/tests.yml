@@ -6,6 +6,11 @@
 # collection is the condition the per-library registry modules exist to survive
 # (MERGE.md section 7), so running the suites any other way -- one library at a time --
 # would pass while proving less than upstream requires.
+#
+# The second job, `cython`, is this repository's own rather than a rehearsal of upstream's.
+# It runs the compile tests, which need modelx-cython and a C compiler. lifelib's CI will
+# not install modelx-cython, and there, as in the `test` job here, those tests skip
+# (USLIB-SEC-PLAN.md D13).
 
 name: Tests
 
@@ -64,3 +69,57 @@ jobs:
       # every model reproduces its technical notes' worked example, cell by cell -- so
       # report the slowest tests to keep an eye on which models dominate the run.
       run: pytest -q --durations=10
+
+  cython:
+    # The tests marked `cython`, which compile a model with modelx-cython and check the
+    # compiled model against modelx (USLIB-SEC-PLAN.md D13). The job above skips them:
+    # modelx-cython needs a C compiler, so it is not in `requirements.txt` but in
+    # `requirements-cython.txt`. Linux and Windows, because the compiler is what differs,
+    # gcc on one and MSVC on the other, and Windows is where a compiled model differs most:
+    # MSVC, and a main thread with a 1 MB C stack (the plan's F7). One Python each: the job
+    # above already runs every interpreter, and a compile failure belongs to the compiler
+    # and the generated C rather than to an interpreter's minor version.
+    name: Compile with Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    # Phase 0 compiles one model, in about 30 seconds on Linux. Phase 2 adds a build per
+    # product, and a larger model took a minute (UL_US_S, the plan's F2), more under MSVC.
+    # An hour is room for all twelve on Windows, and still fails a hung build long before
+    # the six-hour default.
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.13']
+    env:
+      # Here a skip is a failure. The compile tests skip without modelx-cython or a
+      # compiler, which keeps the job above and lifelib's own bare `pytest` green; in this
+      # job, which installs both, a skip would be a green run that compiled nothing.
+      USLIB_REQUIRE_CYTHON: '1'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+        cache-dependency-path: |
+          requirements.txt
+          requirements-cython.txt
+
+    - name: Install dependencies
+      # The base environment and modelx-cython, which brings Cython. No step installs a
+      # compiler: both runner images carry one, and setuptools finds MSVC on its own.
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-cython.txt
+
+    - name: Run the compile tests with pytest
+      # Only uslib has compile tests, so only its suite is collected, and `-m cython`
+      # selects them. Until Phase 2 that is test_cython_toolchain.py, which compiles
+      # Term_US_S. A run that selects nothing exits 5 and fails, which is wanted for the
+      # same reason a skip is.
+      run: pytest -q -m cython --durations=10 lifelib/libraries/uslib/tests

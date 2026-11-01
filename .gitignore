@@ -24,7 +24,14 @@ __pycache__/
 *_nomx/
 *_nomx_cy/
 *.pyd
+*.so
 *.mx
+# The rest of what tools/build_sec_cy.py leaves when it builds in place, in the product
+# directory (USLIB-SEC-PLAN.md D12): the setup.py mx2cy writes, and setuptools' build/
+# tree, which holds the build's log too.  Anchored to the product directories, because a
+# setup.py or a build/ anywhere else can be source: lifelib's own setup.py is, at its root.
+lifelib/libraries/*/products/*/setup.py
+lifelib/libraries/*/products/*/build/
 
 # doc-check build tree (tools/doccheck.py)
 .doccheck/

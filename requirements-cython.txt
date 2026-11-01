@@ -1,0 +1,18 @@
+# modelx-cython, for compiling the SEC models (USLIB-SEC-PLAN.md D12).
+#
+# Install it alongside the base requirements, never instead of them:
+#
+#     pip install -r requirements.txt -r requirements-cython.txt
+#
+# It is kept out of requirements.txt because it needs a C compiler, which pip cannot
+# supply: MSVC on Windows (the Visual Studio Build Tools, with "Desktop development with
+# C++"), gcc or clang elsewhere (on macOS, the Xcode command line tools).  Without one it
+# installs, and then fails at the first build.  Cython comes with it -- 0.1.0 asks for
+# Cython >= 3.2 -- as do the setuptools that runs the build and the libcst and MonkeyType
+# that mx2cy uses to read the model and trace a sample run.
+#
+# Pinned exactly (the plan's risk K1): the release is young, and a new one can change how a
+# cell is typed, which Phase 2's typing guard (C3) would meet as a failure rather than as a
+# choice.  Move the pin on purpose, with the cython suite green.  Measured with modelx
+# 0.33.0, which requirements.txt admits.
+modelx-cython==0.1.0
