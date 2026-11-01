@@ -24,6 +24,10 @@ T6, regeneration
     :data:`SEC_SPECS` holds one per product, :func:`build_sec_table` builds the table and
     its companions, and :func:`write_generated` and :func:`check_generated` write them, or
     report cell by cell where the committed files have drifted from S.
+C2, the Phase 1 fingerprint
+    :func:`fingerprint` takes, in brief, what an SEC model computes on every point,
+    :func:`fingerprint_text` writes it out as the literal a product module freezes, and
+    :func:`fingerprint_mismatches` holds a later version of the model to it (§5.4).
 
 **Why the generator lives in the tests.**  ``tools/gen_sec_points.py`` is only a command
 line over :func:`write_generated` and :func:`check_generated`.  The logic is here because
@@ -1454,4 +1458,169 @@ def check_generated(spec_name, product_dir=None, *, s_model=None):
     lines = []
     for name, text in texts.items():
         lines += _file_drift(name, product_dir / name, text)
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# C2 -- the Phase 1 fingerprint
+
+
+FINGERPRINT_REPORTS = ("result_cf", "result_pols")
+"""The reports a fingerprint freezes: the cash flows, and the counts behind them (§5.4).
+
+``result_pols`` carries what no ``result_cf`` column shows, the decrements one by one and
+the expiries, and it is cheap, so it is frozen beside the cash flows.
+"""
+
+FINGERPRINT_RTOL = 1e-12
+"""C2's tolerance: relative, floored at the same fraction of the column's own magnitude."""
+
+
+def fingerprint_months(rows):
+    """The months a fingerprint holds a column's values at, for a frame of ``rows`` months.
+
+    The first and the last month of the frame and the three quartiles between them,
+    ``(k * (rows - 1)) // 4`` for ``k = 0 .. 4``, without repeats: ``(0, 179, 359, 539,
+    719)`` for a 720-month frame, ``(0,)`` for a one-month frame.  The rule knows nothing
+    of the product, so every SEC model freezes its points the same way.
+    """
+    return tuple(sorted({(k * (rows - 1)) // 4 for k in range(5)}))
+
+
+def _report_print(df, months):
+    """``{column: (sum, scale, values)}`` for one report frame, at ``months``."""
+    return {column: (float(df[column].sum()), float(df[column].abs().max()),
+                     tuple(float(df[column].iloc[t]) for t in months))
+            for column in df.columns}
+
+
+def _point_frames(model):
+    """``(label, {report: frame})`` for every model point of ``model``, in table order."""
+    from us_registry import point_keys, projection
+    labels = model.Data.model_point_table().index
+    for key, label in zip(point_keys(model), labels):
+        proj = projection(model, key)
+        yield int(label), {name: proj.cells[name]() for name in FINGERPRINT_REPORTS}
+
+
+def fingerprint(model):
+    """What ``model`` computes on each model point, in brief: ``{point_id: {...}}`` (§5.4).
+
+    Each point is keyed by its table label, which names the same point whether
+    ``Projection`` is indexed by label or by position.  Its entry holds ``"rows"``, the
+    frame's length; ``"months"``, :func:`fingerprint_months` of it; and, for each report
+    of :data:`FINGERPRINT_REPORTS`, ``{column: (sum, scale, values)}`` in the report's
+    column order: the column's sum over the frame, its largest absolute value, which is the
+    magnitude its tolerance is measured against, and its values at the months, each a
+    Python float.  A report must be indexed ``t = 0 .. rows - 1``, as every SEC frame is.
+    """
+    out = {}
+    for label, frames in _point_frames(model):
+        rows = len(frames[FINGERPRINT_REPORTS[0]])
+        months = fingerprint_months(rows)
+        entry = {"rows": rows, "months": months}
+        for name, df in frames.items():
+            if list(df.index) != list(range(rows)):
+                raise ValueError(f"{model.name} point {label}: {name}() is not indexed "
+                                 f"t = 0 .. {rows - 1}")
+            entry[name] = _report_print(df, months)
+        out[label] = entry
+    return out
+
+
+def _wrapped(text, indent, width=92):
+    """``text`` wrapped at its spaces alone, within ``width`` columns, under ``indent``.
+
+    Never inside a word: ``textwrap`` would break ``1.99e-05`` at its hyphen, and the
+    literal would no longer read back as the number.
+    """
+    import textwrap
+    return textwrap.wrap(text, width=width, initial_indent=indent,
+                         subsequent_indent=indent, break_long_words=False,
+                         break_on_hyphens=False)
+
+
+def fingerprint_text(name, frozen):
+    """``frozen`` written out as the literal a product module holds, its markers included.
+
+    One entry per point, one item per column: ``(sum, scale, (values at the months))``,
+    the values wrapped beneath within the house's 92 columns.  Every float is its shortest
+    ``repr``, which Python reads back as the same double, so the literal is the freeze
+    exactly; that is checked here, by reading the text back, before it is returned.
+    """
+    out = [f"# BEGIN generated fingerprint: {name} -- tools/gen_sec_fingerprint.py",
+           "FINGERPRINT = {"]
+    for label, entry in frozen.items():
+        out.append(f"    {label}: {{\"rows\": {entry['rows']}, "
+                   f"\"months\": {entry['months']!r},")
+        for report in (k for k in entry if k not in ("rows", "months")):
+            out.append(f"        \"{report}\": {{")
+            for column, (total, scale, values) in entry[report].items():
+                out.append(f"            \"{column}\": ({total!r}, {scale!r}, (")
+                text = ", ".join(repr(v) for v in values)
+                out += _wrapped(text + (",)),"  if len(values) == 1 else ")),"), " " * 16)
+            out.append("        },")
+        out.append("    },")
+    out += ["}", f"# END generated fingerprint: {name}"]
+    text = "\n".join(out) + "\n"
+    long = [line for line in out if len(line) > 92]
+    namespace = {}
+    exec(text, namespace)                       # the text this function has just written
+    if long or namespace["FINGERPRINT"] != frozen:
+        raise ValueError(f"the fingerprint of {name} does not write out exactly: "
+                         f"{len(long)} lines over 92 columns, or a value that reads back "
+                         f"as another")
+    return text
+
+
+def _fp_close(a, b, floor):
+    """C2's comparison: within :data:`FINGERPRINT_RTOL` of the larger, or of ``floor``."""
+    return abs(a - b) <= FINGERPRINT_RTOL * max(abs(a), abs(b), floor)
+
+
+def fingerprint_mismatches(frozen, model):
+    """C2: where ``model`` departs from the fingerprint ``frozen``, a line per departure.
+
+    The same points in the same order, frames of the same length, and the same reports
+    with the same columns in the same order, exactly.  Then each column, at the months the
+    freeze names: its values, each held to ``1e-12 * scale``, its scale held the same way,
+    so that a spike in a month the freeze does not name is still seen, and its sum to
+    ``1e-12 * rows * scale``; and each to 1e-12 of the larger of the two where that is
+    larger still (:data:`FINGERPRINT_RTOL`).  So a frozen zero is compared as finely as
+    the column's own magnitude allows and no finer, and a column whose scale is 0, such as
+    the conversion credits at the shipped zero conversion rates, must stay exactly 0.
+
+    Returns readable lines, empty when the model reproduces the freeze.
+    """
+    lines = []
+    found = list(_point_frames(model))
+    if [label for label, _ in found] != list(frozen):
+        return [f"points: frozen {list(frozen)}, now {[label for label, _ in found]}"]
+    for label, frames in found:
+        entry = frozen[label]
+        rows = len(frames[FINGERPRINT_REPORTS[0]])
+        if rows != entry["rows"]:
+            lines.append(f"point {label}: {rows} rows, frozen {entry['rows']}")
+            continue
+        for report in (k for k in entry if k not in ("rows", "months")):
+            df = frames.get(report)
+            if df is None or list(df.columns) != list(entry[report]):
+                got = None if df is None else list(df.columns)
+                lines.append(f"point {label}: {report} columns {got}, frozen "
+                             f"{list(entry[report])}")
+                continue
+            if list(df.index) != list(range(rows)):
+                lines.append(f"point {label}: {report} is not indexed t = 0 .. {rows - 1}")
+                continue
+            now = _report_print(df, entry["months"])
+            for column, (total, scale, values) in entry[report].items():
+                where = f"point {label}: {report}[{column!r}]"
+                n_total, n_scale, n_values = now[column]
+                if not _fp_close(total, n_total, rows * scale):
+                    lines.append(f"{where} sums to {n_total!r}, frozen {total!r}")
+                if not _fp_close(scale, n_scale, scale):
+                    lines.append(f"{where} reaches {n_scale!r}, frozen {scale!r}")
+                for t, want, have in zip(entry["months"], values, n_values):
+                    if not _fp_close(want, have, scale):
+                        lines.append(f"{where} at t={t} is {have!r}, frozen {want!r}")
     return lines

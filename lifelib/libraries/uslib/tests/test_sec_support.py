@@ -24,6 +24,10 @@ What each test pins, against the plan (its §4 item 3 and §5.2):
   composed from S's keys and a month (``CLAUDE.md``); :func:`write_generated` is a no-op on
   a rerun; and :func:`check_generated` reports an edited S row cell by cell, but reads a
   float by its value, so a file written on another platform checks clean.
+* C2's fingerprint: :func:`fingerprint_months` names the frame's first, last and quartile
+  months; :func:`fingerprint_text` writes a literal that reads back as the freeze exactly,
+  within 92 columns; and :func:`fingerprint_mismatches` reports every kind of departure,
+  a spike in a month the freeze does not name and a zero column that moves included.
 
 modelx keeps every model in one registry, and ``conftest.term_life`` already holds the
 default name, so every model here is read under a name of its own and closed.
@@ -40,8 +44,9 @@ import pandas as pd
 import pytest
 
 from sec_support import (
-    SEC_SPECS, TWIN_EXEMPT_DEFAULT, SecSpec, build_sec_table, check_generated,
-    frame_mismatches, shift_months, sweep, temp_inputs, twin_mismatches, write_generated)
+    SEC_SPECS, TWIN_EXEMPT_DEFAULT, SecSpec, build_sec_table, check_generated, fingerprint,
+    fingerprint_mismatches, fingerprint_months, fingerprint_text, frame_mismatches,
+    shift_months, sweep, temp_inputs, twin_mismatches, write_generated)
 from us_registry import model_path
 
 TERM = "Term_US_S"
@@ -793,3 +798,122 @@ def _respellings(model, path, product_dir):
 def test_an_unregistered_spec_name_is_refused():
     with pytest.raises(KeyError, match="Term_US_SEC_nonesuch"):
         check_generated("Term_US_SEC_nonesuch")
+
+
+# ---------------------------------------------------------------------------
+# C2 -- fingerprint, fingerprint_text and fingerprint_mismatches
+
+
+_FP_RESULT_CF = """def result_cf():
+    ts = list(range(rows))
+    flows = [100.0 * point_id + t + (lift if t == 4 else 0.0)
+             + (spike if t == 1 else 0.0) - (spike if t == 3 else 0.0) for t in ts]
+    return pd.DataFrame({"pols_if": [1.0] * rows, "net_cf": flows,
+                         "conv_credits": [zero] * rows}, index=pd.Index(ts, name="t"))
+"""
+
+_FP_RESULT_POLS = """def result_pols():
+    ts = list(range(rows))
+    return pd.DataFrame({"pols_death": [1.9988090701711986e-05 * (t + 1) for t in ts]},
+                        index=pd.Index(ts, name="t"))
+"""
+
+
+def _fp_model(tag, rows):
+    """A synthetic model the fingerprint reads as it reads an SEC model: two points.
+
+    ``net_cf`` moves with three References: ``lift`` at month 4, which a nine-month frame's
+    fingerprint names, and ``spike`` up at month 1 and down at month 3, which it names
+    not, so that the sum and the named months stand still and only the largest value
+    moves.  ``conv_credits`` is ``zero`` throughout, a column whose scale is 0, as Term's
+    conversion credits are at the shipped rates.  ``pols_death`` holds small counts whose
+    shortest ``repr`` carries an exponent, and so a hyphen.
+    """
+    model = mx.new_model(_name(tag))
+    data = model.new_space("Data")
+    data.pd = pd
+    data.new_cells("model_point_table", formula=(
+        "lambda: pd.DataFrame({'x': [0.0, 0.0]}, index=pd.Index([1, 2], name='point_id'))"))
+    proj = model.new_space("Projection", formula=lambda point_id: None)
+    proj.pd = pd
+    proj.rows, proj.lift, proj.spike, proj.zero = rows, 0.0, 0.0, 0.0
+    proj.new_cells("result_cf", formula=_FP_RESULT_CF)
+    proj.new_cells("result_pols", formula=_FP_RESULT_POLS)
+    return model
+
+
+def test_fingerprint_months_are_the_first_last_and_quartile_months():
+    """Five months a frame holds, fewer where a short frame has fewer, never repeated."""
+    assert fingerprint_months(720) == (0, 179, 359, 539, 719)
+    assert fingerprint_months(723) == (0, 180, 361, 541, 722)
+    assert fingerprint_months(9) == (0, 2, 4, 6, 8)
+    assert fingerprint_months(3) == (0, 1, 2)
+    assert fingerprint_months(1) == (0,)
+
+
+def test_a_fingerprint_writes_out_and_reads_back_exactly():
+    """The literal is the freeze exactly, within 92 columns, a one-month frame included.
+
+    The counts' exponents put hyphens in the wrapped lines, where ``textwrap`` would break
+    a number in two unless told not to, and a one-month tuple needs its trailing comma.
+    """
+    for rows in (9, 1):
+        model = _fp_model(f"fp_text{rows}", rows)
+        try:
+            frozen = fingerprint(model)
+        finally:
+            model.close()
+        assert list(frozen) == [1, 2]
+        assert frozen[2]["rows"] == rows
+        assert frozen[2]["months"] == fingerprint_months(rows)
+        assert list(frozen[2]["result_cf"]) == ["pols_if", "net_cf", "conv_credits"]
+        total, scale, values = frozen[2]["result_cf"]["net_cf"]
+        assert (total, scale) == (sum(200.0 + t for t in range(rows)), 200.0 + rows - 1)
+        assert values == tuple(200.0 + t for t in fingerprint_months(rows))
+        text = fingerprint_text("Synthetic", frozen)
+        lines = text.splitlines()
+        assert lines[0] == ("# BEGIN generated fingerprint: Synthetic -- "
+                            "tools/gen_sec_fingerprint.py")
+        assert lines[-1] == "# END generated fingerprint: Synthetic"
+        assert max(len(line) for line in lines) <= 92
+        namespace = {}
+        exec(text, namespace)
+        assert namespace["FINGERPRINT"] == frozen
+    assert any(line.strip().endswith(",)),") for line in lines)
+
+
+def test_every_departure_from_a_fingerprint_is_reported():
+    """A value at a named month, the largest value alone, a zero column, the frame, the
+    columns and the points: each departure is a line, and the unchanged model has none."""
+    model = _fp_model("fp_mismatch", 9)
+    try:
+        frozen = fingerprint(model)
+        found = {"unchanged": fingerprint_mismatches(frozen, model)}
+        for case, ref, value in (("lift", "lift", 1e-8), ("spike", "spike", 50.0),
+                                 ("zero", "zero", 1e-300), ("rows", "rows", 10)):
+            setattr(model.Projection, ref, value)
+            found[case] = fingerprint_mismatches(frozen, model)
+            setattr(model.Projection, ref, 9 if ref == "rows" else 0.0)
+        renamed = {1: {**frozen[1], "result_pols": {"pols_lapse": (0.0, 0.0, (0.0,))}},
+                   2: frozen[2]}
+        found["columns"] = fingerprint_mismatches(renamed, model)
+        found["points"] = fingerprint_mismatches({1: frozen[1]}, model)
+    finally:
+        model.close()
+    assert found["unchanged"] == []
+    assert found["lift"] == [
+        "point 1: result_cf['net_cf'] sums to 936.00000001, frozen 936.0",
+        "point 1: result_cf['net_cf'] at t=4 is 104.00000001, frozen 104.0",
+        "point 2: result_cf['net_cf'] sums to 1836.00000001, frozen 1836.0",
+        "point 2: result_cf['net_cf'] at t=4 is 204.00000001, frozen 204.0"]
+    assert found["spike"] == [
+        "point 1: result_cf['net_cf'] reaches 151.0, frozen 108.0",
+        "point 2: result_cf['net_cf'] reaches 251.0, frozen 208.0"]
+    assert found["zero"][:3] == [
+        "point 1: result_cf['conv_credits'] sums to 9e-300, frozen 0.0",
+        "point 1: result_cf['conv_credits'] reaches 1e-300, frozen 0.0",
+        "point 1: result_cf['conv_credits'] at t=0 is 1e-300, frozen 0.0"]
+    assert found["rows"] == ["point 1: 10 rows, frozen 9", "point 2: 10 rows, frozen 9"]
+    assert found["columns"] == ["point 1: result_pols columns ['pols_death'], frozen "
+                                "['pols_lapse']"]
+    assert found["points"] == ["points: frozen [1], now [1, 2]"]
