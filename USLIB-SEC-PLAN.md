@@ -1,8 +1,10 @@
 # Plan — `*_US_SEC`: uslib models that run in force, then compile
 
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
-and so is Term, the first of Phase 1 (M1, §7.1, *Record*); WholeLife (M2) is next. Its open
-decisions (§8.2) are settled but one, which is needed only before Phase 1 reaches RILA.
+and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
+and §7.2). The other ten run in three streams (§5.3), and Term's compile step (M14) runs
+beside them (D2). The open decisions of §8.2 are settled but one, which is needed only
+before Phase 1 reaches RILA.
 Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
 phase records what it actually did, including where the implementation departed from the
 plan.
@@ -164,18 +166,28 @@ where it is one line among real changes.) It reads the same assumption CSVs as t
 *Rejected:* modelx space inheritance from the S model (bases must live in the same model);
 a separate product directory with copied CSVs (two copies of every table drift apart).
 
-### D2 — Strict sequence: E for all twelve, then C for all twelve
+### D2 — Sequence: E before C, Term's C first
 
-Phase 1 (E) is completed and merged for every product before Phase 2 (C) starts on any.
-Phase 1 changes semantics and no representation; Phase 2 changes representation and **no
-number**. Within each phase Term goes first, as the template, and the others follow in
-chassis order (§5.3). Between the phases the `_SEC` models carry `stage: "E"` in the
-registry, and the C-only conventions switch on at `stage: "EC"`.
+A product's Phase 1 (E) lands before its Phase 2 (C) starts. Phase 1 changes semantics and
+no representation; Phase 2 changes representation and **no number**. Phase 2 starts on the
+other eleven products once Phase 1 is complete and frozen for all twelve (M13). Within each
+phase Term goes first, as the template, and the others follow the streams of §5.3. Between
+the phases the `_SEC` models carry `stage: "E"` in the registry, and the C-only conventions
+switch on at `stage: "EC"`.
+
+Term's C step (M14) is brought forward (changed at M2): it runs beside Phase 1's streams,
+not after M13. Its first commit freezes Term's Phase 1 fingerprint, as M13 freezes the
+others', and the compiled Term must reproduce it (C2). A finding of M14's that a Phase 1
+model must follow goes to the products in progress as it is made, and binds every product
+that lands after it. A product that landed before it takes it up in its own C step.
 
 *Why:* two reviewable diffs per product — "what running in force needs" and "how it is made
 C" — and Phase 2 is gated by the Phase 1 suite, unchanged in substance. Phase 1 nonetheless
 obeys the compile-neutral rules R1–R3 and R1a (D11), which constrain how in-force logic is
 written without changing what it computes, so Phase 2 never has to restructure a recursion.
+Those rules were written before any SEC model compiled. Compiling Term while the other
+products are written tests them on a real model while a gap still costs a change to the
+products in progress, not a restructure of ten finished ones.
 
 *Rejected:* an intermediate `_SE` model per product. It would put 36 models in the library
 for a final state of 24; the stage key carries the same information.
@@ -286,6 +298,20 @@ for an account value is the `BEF_PREM` instant of the CashValue_SE timing vocabu
 defining property is operational: it is exactly what the S model carries into month `d`,
 and the splice identity of §5.2 tests it.
 
+- A product whose annual quantities read the balance entering the policy year, as
+  WholeLife's dividend, term blend and loan interest do, needs that balance at a second
+  instant (precised at M2): **the anniversary on or before the valuation date**, the one
+  that opened the policy year under way. Its column is `<cell>_prev_anniv_init`, after
+  `WholeLife_US_S`'s `div_prev_anniv`, where `prev_anniv` is the anniversary that opened
+  the year and `anniv` alone the one that ends it. On a point valued on an anniversary the
+  two instants are one, and `Data` checks that the columns agree. In the first policy year
+  the year opened at issue, so each such column equals the issue value: 0 for WholeLife's
+  additions and loan, the premium for an account value. A contract-year-to-date
+  accumulator is measured at the start of month 0 like any balance, and where its cell's
+  name does not say that it restarts each year, its column adds `_ytd_init`, as VA's do
+  (§7.7). WholeLife's dividend credited at the anniversary, which `div_prev_anniv` returns
+  through the year under way, is `div_prev_anniv_init`, a `<cell>_init` like the others
+  (§7.2 names it `div_prev_init`).
 - A quantity fixed at issue and not re-derivable from static data (a payout amount, a
   locked rate, a solved premium, an index level at term start) is a column too, for the
   reason BasicTerm_SE reads its premium from a table.
@@ -426,6 +452,19 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   `t` takes it from a non-recursive form — an explicit loop in one cell, or a vector built
   in `Data` — as DIA's month-0 pricing must, since it reads survival out to the payout
   date.
+
+  One read further ahead is allowed (precised at M2): a cell may read a per-policy
+  quantity at `anniv_mth(t)`, the anniversary that closes the policy year of `t`, so at
+  most 11 months ahead, where that quantity depends on no count, on nothing after the
+  anniversary, and not on what the reading cell holds in that policy year; what it held in
+  earlier years may reach the quantity. Such a read opens no chain past the anniversary,
+  and the depth it adds is bounded by the policy year. Each product's rules test admits it
+  by its reader and the cell it reads, at `anniv_mth(t)` and nowhere else, and checks that
+  the month read is inside the frame, so `spec_sec.py` sizes no cache beyond the frame for
+  it. WholeLife's term-blend layer reads the year's dividend so (`oyt_face` reads
+  `div_credited`, §7.2), and FIA's `lapse_rate` the state closing the contract year
+  (§7.11). Under `pua_div_on = True`, the layers of WholeLife's earlier years reach that
+  dividend through the paid-up additions entering the year, which their cost reduced.
 - **R3** Phase 1 adds no new Python-object machinery: no new string-valued cells, no new
   Series or tuple returns, no new per-`t` pandas lookup in `Projection`. A model-point
   accessor cell, one `int(...)` or `float(...)` of one `model_point()` subscript, is S's
@@ -695,15 +734,43 @@ conventions suite.
 
 ### 5.3 Order
 
-Term → WholeLife → UL → VUL → ULSG → IUL → MYGA → FIA → VA → RILA → SPIA → DIA.
+Term goes first, as the template, then WholeLife, the first product with an opening state
+beyond its count (M1, M2). The other ten then run in three streams, one product at a time
+in each (changed at M2):
 
-- The template goes first.
-- Then each chassis — life, deferred annuity, payout — comes before the products that
-  build on it.
+- **Life:** UL → VUL → ULSG → IUL (M3–M6).
+- **Deferred annuity:** MYGA → FIA → VA (M7–M9).
+- **Payout:** SPIA → DIA → RILA (M11, M12, M10).
+
+The M-numbers stay as identifiers, so RILA keeps M10. The order within a stream is set by
+these reasons:
+
+- Each chassis — UL for life, MYGA for the deferred annuities, SPIA for payout — comes
+  before the products that build on it.
 - Within a chassis, the product nearest to BasicTerm_SE comes first and the largest last.
   VUL already keys issue events on `duration_mth`; IUL needs the segment ladder.
+- RILA closes the payout stream. Its annuitization builds on SPIA's chassis, and the
+  deferred chassis it accumulates on, MYGA's, lands first in its own stream.
 
-One PR per product. §7 gives each product's size.
+Until M2 a single chain ran the twelve: Term → WholeLife → UL → VUL → ULSG → IUL → MYGA →
+FIA → VA → RILA → SPIA → DIA. Its reasons order a product after its own chassis, and
+nothing in them orders products on different chassis: a deferred annuity reads nothing a
+life product builds. Three things do tie the products together, and the streams keep each:
+
+- *The template.* Each product follows the *Records* of §7.1 and §7.2, and each later
+  record lists what it carries forward. A finding that binds later products goes to the
+  products in progress as it is made, not only when its own product lands.
+- *Shared files.* A product adds what it needs to the shared files — `sec_support.py`,
+  `us_registry.py`, `conftest.py`, `test_model_conventions.py`, uslib's `index.md` and
+  `README.md` — where it belongs, and reformats, reorders or changes nothing already there.
+- *Landing.* Products land one at a time, each in its own two commits (D1). A product is
+  rebased onto the branch as it then stands, keeping every product's additions to a shared
+  file. Before it is pushed, the full uslib suite, doccheck and `gen_sec_points.py --check`
+  for every registered SEC model run on the rebased tree.
+
+Term's C step (M14) runs beside the streams (D2). One PR per product. §7 gives each
+product's size. Times taken while the streams share a machine are noisy, so each record
+says when it measured under load, and K6 is measured again on the merged branch at M13.
 
 ### 5.4 Exit criteria
 
@@ -1058,6 +1125,187 @@ Splice months: 12, 108, 120, 600, and one mid-year month.
 - `cv_pp_anniv` (y 0..55) and `nsp` (y 45..100) share the `('y',)` cache, so one size
   covers both. A test calls `cv_pp_anniv(-1)`.
 
+#### Record — M2, done 2026-11-01
+
+Built in two commits, as D1 requires: `WholeLife_US_S` copied with only `_name` changed,
+then the enhancement, by M1's process: a design prototyped and critiqued before the build,
+tests written against the build and checked by injected faults, then a review under the
+three lenses. The review found 22 defects, 5 of them major, and a re-review of the fixes
+found one more, in the R2 text the fixes had added to this plan. All 23 are fixed. Those
+that `WholeLife_US_S` shares are fixed in `WholeLife_US_SEC` only, and carried below.
+
+**What exists now.**
+- `WholeLife_US_SEC` at stage `E`. Of `WholeLife_US_S`'s 97 `Projection` cells, 40 are
+  unchanged, 9 have a new docstring only, 44 are rewritten, 2 are renamed and 2 removed.
+  It adds 11: `policy_count`, `duration_mth_init`, `t_entry`, `is_active`, `maturity_mth`,
+  `pols_new_biz` and five opening-state accessors, 106 cells in all. `Data` keeps S's
+  seven cells, adds `future_horizon_mth = 120`, and checks its own table as it reads it.
+- `model_point_table_sec.csv`, 22 rows generated from WholeLife's `SecSpec`:
+  - S's 15 points as twins, S's in-force point 1 among them at its month 108;
+  - six derived rows: ACCUM (S point 4) and REDUCE_PREM (5) on the anniversary at month
+    108, the funded term blend (8) at 78, the loan variant (6) at 114, graded final
+    expense (12) at 18, and REDUCE_PREM in its last covered month, 659;
+  - S point 2 issued 3 months after the valuation date.
+  A case-insensitive search for every publisher, product, form number and host that
+  `whole_life/sources.md` cites finds none of them in it.
+- `tests/test_whole_life_us_sec.py`, 27 tests and 208 cases: T2 on 105 splices, the
+  in-force twin among them, T3 on 31 future points, T4, T5 on 47 malformed rows and its
+  edges, T6, the rules test, and the product's own facts. By default a core of 32 splices
+  and 8 future points runs, and a test asserts that the core reaches every branch the full
+  grid does; the other cases carry `sec_full` (K6). The SEC conventions pass on the model.
+- `run_sec.py`; `model-sec.md`, with a section of its own, *The opening state*; the
+  registry entry with its `INPUT_FILES`; and four generated pages. doccheck reports 481
+  pages and 0 warnings.
+- Shared files, added to in place: WholeLife's spec and its state extractors in
+  `sec_support.py`; the `sec_full` marker in `conftest.py`; the entry in `us_registry.py`;
+  the models table and the SEC sentences of uslib's `index.md`; and one leg of
+  `.github/workflows/tests.yml` that sets `USLIB_SEC_FULL=1`.
+
+**Departures and precisions.**
+- *The opening state* is seven columns, three of them at a second instant that D6 now
+  names (precised in place):
+  - the paid-up additions, the loan and the accumulation balance entering month 0,
+    `pua_face_init`, `loan_bal_init` and `div_accum_init`;
+  - the additions and the loan at the anniversary on or before the valuation date,
+    `pua_face_prev_anniv_init` and `loan_bal_prev_anniv_init`, which the year's dividend,
+    term-blend gap and loan interest read, and the dividend credited there,
+    `div_prev_anniv_init`, which this section calls `div_prev_init`;
+  - the gross premium paid before the valuation date, `prem_cum_init`.
+  D6's `<cell>_prev_anniv_init` renames VA's and RILA's year-opening columns too (§7.7,
+  §7.8). `SecSpec.state` reads each column off S as S's own formulas read it. A balance
+  entering month `d` is the close of month `d - 1`, or S's opening value where month `d`
+  opens S's frame, and a balance at the year's opening anniversary is read the same way
+  at the month whose close opened the year.
+- *Two S cells are removed, and two renamed.* `proj_start()` goes, because every SEC frame
+  opens at `t = 0` (D3), so the reports and checks run over `range(proj_len())`, as
+  Term's do. `duration_inforce()` goes, replaced by `duration_mth` (D6). `puaf_inforce`
+  and `loan_inforce` become `pua_face_init` and `loan_bal_init`, so that the seven
+  accessors share one vocabulary. T1 exempts all four, and `result_pols`, each with its
+  reason in the spec.
+- *Twelve sites rebased* (R1, R1a): §7.2's seven, and five more found by reading every cell:
+  `prem_cum` bases at `t_entry()` on `prem_cum_init`; `premium_pp_ann`, `cv_pp` and
+  `pua_cv` test `is_active(t)`, not `t < 0`; the maturity tests in `div_to_pua`,
+  `claim_pp`, `pols_maturity` and `pols_if_at` move to the policy clock, though still
+  correct on the valuation clock; the nine cells that S guards by its frame,
+  `t < proj_start() or t >= proj_len()`, are guarded by cover; and
+  `check_pols_roll_fwd_resid` reads the next month's `BEF_NB`. Of §7.2's own,
+  `pua_face_rider`'s `nsp_mth(t - 1)` is inlined, the same arithmetic bit for bit, so
+  that a mid-year valuation reads no month `-1`.
+- *Reads at the last anniversary.* A balance as it stood at the anniversary that opened
+  the year (`pua_face`, `loan_bal`, `div_credited`) is read at `anniv_mth(t) - 12`, or from
+  its `_prev_anniv_init` column where that month is before `t_entry()`. A schedule stays a
+  policy-year cell: `div_int` reads `cv_pp_anniv(duration(t))`, and is 0 off the
+  anniversary, where S's gives a value that nothing reads.
+- *One read 11 months ahead* (R2, precised in place). The term-blend layer `oyt_face(t)`
+  reads the dividend at the anniversary that closes its policy year,
+  `div_credited(anniv_mth(t))`, because the layer in force through a year is bought with
+  that year's dividend. The rules test admits that read alone, by reader, cell and month,
+  inside the frame. The re-review corrected R2's condition: the quantity read may depend on
+  what the reader held in earlier years, as WholeLife's does through the additions
+  entering the year.
+- *Acquisition* is per policy issued, as M1 made it. S already weights its acquisition by
+  the count issued, so T1 holds at any count, and M1's one-policy caveat does not apply.
+- *`result_pols`* exists in S. SEC's keeps the template's columns, with `pols_new_biz`
+  second, then S's four decrement rates, written 0 outside cover. T1 exempts the report,
+  and the module compares it with S's, column by column.
+- *Data's checks.* Six of the product's follow the template's five:
+  - each opening-state column is a number, zero or more;
+  - a point not yet in force has no opening state;
+  - final expense has no additions and no dividend;
+  - only the ACCUM option has an accumulation balance;
+  - on an anniversary valuation the year-opening columns equal the entering ones;
+  - in the first policy year they, and `div_accum_init`, hold their issue values, 0.
+  A row whose additions at the anniversary exceed those entering month 0 is accepted, as a
+  partial surrender the model does not implement, and a test pins that.
+- *The splice* (§5.2). `SPLICED_REFS` also switches on `pua_div_on`, `prem_offset_on` and
+  `dyn_lapse_on`, with `competitor_rate` 0.08. It sets `int_rate_loan` to 0.08, apart from
+  the dividend rate, so that direct recognition, zero at S's shipped rates, shows, and
+  inflation to 0. T2 and T3 also exempt `anniv_mth`, a month on the valuation clock. Three
+  variants are spliced: the PUA rider paid monthly, REDUCE_PREM semi-annually and the graded
+  plan quarterly. This section's "one mid-year month" became 115 and 119, so the months
+  are:
+  - 12, 108, 115, 119, 120 and 600 for the participating points;
+  - 12, 18, 23, 24, 115 and 400 for final expense;
+  - 78 and 83 as well for the funded blend;
+  - the last covered month for ACCUM, REDUCE_PREM and level final expense.
+  Future business is issued 1 and 12 months on.
+- *The K6 remedy* (K6, *M2*): the core grid by default, the rest behind `sec_full`, and
+  one CI leg that runs it. The design left the leg to M3; the review asked for it now.
+- *`model-sec.md`*'s new section shows each opening-state column on a derived row, with
+  what the row gives when the column is zeroed: REDUCE_PREM then collects 1,800.00 instead
+  of 1,511.34, and the ACCUM point's maturity claims fall 1,060.82 short.
+
+**Measured for K6 and F7.** Every time below was taken with other workflows' builds and
+tests sharing the machine.
+- *Time.* By default the module ran 111 passed and 97 skipped in 2 min 46 s to 3 min 01 s
+  over three runs, and over its full grid 208 passed in 4 min 57 s and 4 min 59 s. Its peak
+  is 2.7 GB in one process, because each splice row is released once compared; before
+  that change it was 5.4 GB. Beyond the splices, four tests take about 96 s together: the
+  count doubling, the extract, the clock test's fresh read and `run_sec.py`'s
+  subprocesses. The uslib suite went from 1,154 passed and 12 skipped in 5 min 54 s (M1)
+  to 1,298 passed and 109 skipped in 9 min 02 s to 9 min 18 s over four runs, the last
+  on the tree as it landed.
+- *Depth.* A cold `net_cf` of the last month runs 669 cells deep on a 660-month frame,
+  against 3,304 in `WholeLife_US_S`, and 669 too on the 780-month frame of a point issued
+  120 months on, because every chain starts at `t_entry()`. An ascending sweep reaches 29
+  cells, on graded final expense, and runs under a recursion limit of 28, as S's reports
+  do; `CALL_DEPTH` is 60. In the modelx export the cold call needs a recursion limit of
+  1,361, or 1,145 on the in-force twin, and the ascending sweep 128.
+
+**Faults.** The tests stage injected 67 faults and the review 74, each alone into its own
+copy of the library. Ten of the review's survived the default grid. After the fixes, the
+fix stage ran 86 faults, those ten among them, and all 86 fail the default run; the
+re-review re-ran the ten and two more, and all fail. A control that changes no value, the
+`BEF_DECR` count formed by a second cell, passes.
+
+**Carried into M3 and after: the template.** M1's fourteen items stand, with these
+changes:
+- Item 6 gains the year-opening read: a balance at the last anniversary is read at
+  `anniv_mth(t) - 12`, or from its `<cell>_prev_anniv_init` column before `t_entry()`
+  (D6). A read at `anniv_mth(t)` itself is allowed only as R2 now says, and the rules test
+  admits it by name.
+- Item 7: where S already charges acquisition per policy issued, T1 holds at any count.
+- Item 9: the product's state checks follow the template's five. The year-opening columns
+  equal the entering ones on an anniversary, and hold their issue values in the first
+  policy year.
+- Item 11 gains the K6 pattern and its memory rule:
+  - a core grid runs by default, and a test asserts that it reaches every branch,
+    opening-state column, kind of valuation month and premium mode the full grid reaches;
+  - the other cases carry `sec_full` and skip, with the reason, unless `USLIB_SEC_FULL=1`,
+    which the CI leg sets; `SEC_FULL`, `FULL_ONLY` and `_case` in
+    `test_whole_life_us_sec.py` are the code to copy;
+  - each splice row is released once compared.
+- Item 13: `model-sec.md` gains *The opening state* wherever the state is more than the
+  count.
+- S cells that the valuation clock makes redundant, such as `proj_start` and
+  `duration_inforce`, are removed and exempted from T1 with their reasons, and an S column
+  that becomes an opening-state accessor takes D6's name.
+
+**Carried into Phase 2.**
+- `spec_sec.py` sizes `t` from the contract. Level pay issues from age 0 (product-spec),
+  so the longest frame is 12 × 100 + 120 = 1,320 months, plus one month for the `t + 1`
+  read. The shipped mortality and NSP tables start at age 18, so they price frames of at
+  most 1,104 months. The anniversary read stays inside the frame and needs no cache beyond
+  it.
+- The C note above that a test calls `cv_pp_anniv(-1)` is about S's tests. SEC calls it
+  at no negative year (R1): on the committed points its keys run from 0 to 55, and those
+  of `nsp` from 45 to 100, so the shared `('y',)` cache starts at 0.
+- The cells meant to run only in cover (`IN_COVER_ONLY`) have no guard of their own. No
+  formula reaches them outside cover, and a caller must not either (F4).
+- The depths above size `sample_sec.py`, `run_sec.py --cython` and the Windows job's
+  stack.
+- M14's critique read this model for Phase 2: `run_sec.py` indexes `Projection` by label
+  at five sites, and the test module passes 25 timing and kind strings literally. Both
+  change in WholeLife's own C step (D2); the products after M2 write them for both stages
+  from the start.
+
+**Carried, outside the SEC models.** Three S-side items for §8.2 item 4, all in
+`WholeLife_US_S`'s `Projection` docstrings and fixed in `WholeLife_US_SEC` only:
+- `claim_pp`'s three kinds render as a broken definition list;
+- three lines exceed 92 characters, the summaries of `mort_rate_guar_at` and `mort_rate`
+  and `dyn_lapse_factor`'s return;
+- "this cells", in `oyt_face` and in `pols_if`.
+
 ### 7.3 Universal life — `UL_US_SEC` (E: S, C: M)
 
 *Today:* already on the projection clock, with `duration_mth_init()` and `av_pp_init` /
@@ -1212,7 +1460,7 @@ because these are missing:
   `sum_wd_pp`, `free_wd_used_cum_pp`, `gmdb_dfd_acc_pp` and `gmdb_factor_acc`, as
   `*_ytd_init`;
 - `wd_this_year_init`, because `is_wd_year` scans `t >= 0` only;
-- `rb_prior_anniv_init`;
+- `rb_prev_anniv_init`, the RB at the anniversary on or before the valuation date (D6);
 - the highest quarterly contract value so far this contract year, the step-up base;
 - `phi_glwb_init`, the VIX-linked fee in force, which S recurses from quarter 1;
 - `depleted_init`. S opens through `depleted_flag(-1)`, which is also an `IndexError` once
@@ -1263,7 +1511,8 @@ ignores them, and the Performance Lock is not implemented.
     budget alone under straight-line amortisation;
   - `cap_init`, because the cap is re-solved at renewal under `nge_reset`;
   - `fa_init`, `ha_init`, `rop_init`;
-  - `av_anniv_init`, because the free-withdrawal base reads the absolute month `12*cy - 1`;
+  - `av_prev_anniv_init`, the AV at the anniversary on or before the valuation date (D6),
+    because the free-withdrawal base reads the absolute month `12*cy - 1`;
   - `fw_remain_init`, `av_init`;
   - a term-start month, if terms need not align with issue.
 - The market scenario, keyed from issue in S, moves to `t`, with term-start values from the
@@ -1502,6 +1751,24 @@ valuation clock these part.
   - *M1:* T2 takes about 11 s on Term's 23 splices, fixture included, and Term's whole
     module 32 to 37 s; the uslib suite grew by about a minute (§7.1, *Record*). WholeLife's
     sweep is about ten times Term's, so M2 is the next measurement.
+  - *M2:* WholeLife's module over its full splice grid, 105 T2 cases and 31 T3 cases,
+    runs in 4 min 57 s, so by default it runs a core of 32 and 8 cases, which a test
+    asserts reaches every branch, opening-state column, kind of valuation month and premium
+    mode the full grid reaches. The other 73 and 23, and the rules test's scan of their
+    rows, carry a `sec_full` marker and skip unless `USLIB_SEC_FULL=1`. The module then
+    runs in 2 min 46 s to 3 min 01 s, 111 passed and 97 skipped, at a peak of 2.7 GB in
+    one process, because each splice row is released once compared. The limit is not
+    threatened yet, so the split is not this risk's remedy. It bounds the module's time on
+    every leg but one: `ubuntu-latest` with Python 3.13 sets `USLIB_SEC_FULL=1`, so every
+    CI run runs the full grid, for about two minutes more on that leg. The uslib suite
+    went from 1,154 passed and 12 skipped in 5 min 54 s (M1) to 1,298 passed and 109
+    skipped in 9 min 02 s to 9 min 18 s; the 144 new passes are the module's 111 and the
+    SEC conventions' 33. These times were taken with other workflows sharing the machine.
+    WholeLife added about 3 min 20 s to the suite. If each of the ten products still to
+    come added as much, every leg would run about half an hour longer and the full-grid
+    leg about 20 minutes more again, which on local times would bring the slowest leg near
+    the 90-minute limit. So each record compares its module's cost with WholeLife's, and
+    M13 measures the matrix.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares numbers only.
@@ -1539,7 +1806,8 @@ is needed only before Phase 1 reaches RILA.
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product, in §5.3's order; M1, Term, **done**, 2026-11-01 (§7.1) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero |
-| M13 | Phase 1 freeze | Fingerprints for every SEC point; `index.md`'s SEC conventions | the whole matrix green under its timeout |
-| M14–M25 | Phase 2, one PR per product, same order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
+| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions | the whole matrix green under its timeout |
+| M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |

@@ -976,6 +976,48 @@ class SecSpec:
         object.__setattr__(self, "exempt", frozenset(self.exempt))
 
 
+def _wl_entering(name, opening):
+    """What ``WholeLife_US_S`` carries into month ``d`` in cells ``name``.
+
+    The closing value of month ``d - 1``, or, where month ``d`` opens S's frame, the
+    opening value S's own formulas read there: ``pua_face(t - 1) if t > proj_start() else
+    puaf_inforce()``, and the same for the loan and the accumulation balance.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > s.proj_start() else opening(s)
+    return extract
+
+
+def _wl_at_prev_anniv(name, opening):
+    """``WholeLife_US_S``'s cells ``name`` at the anniversary on or before month ``d``.
+
+    The close of S's month ``anniv_mth(d) - 12``, the month whose end opened the policy year
+    containing ``d``, or S's opening value where that month is before S's frame: S's own
+    ``x(t - 12) if t - 12 >= proj_start() else <opening>``, read at the year's anniversary.
+    """
+    def extract(s, d):
+        m = s.anniv_mth(d) - 12
+        return getattr(s, name)(m) if m >= s.proj_start() else opening(s)
+    return extract
+
+
+# WholeLife_US_SEC's opening state (D6): what WholeLife_US_S carries into month d, each read
+# as S's own formulas read it.  The paid-up additions, the loan and the accumulation balance
+# entering the month; the additions and the loan at the anniversary that opened its policy
+# year, which the year's dividend, OYT gap and loan interest read; the dividend credited
+# there, S's div_prev_anniv(d); and the gross premiums since issue, which S's prem_cum sums
+# from issue whatever its frame.  S's accumulation balance opens its frame at 0.
+_WL_STATE = {
+    "pua_face_init": _wl_entering("pua_face", lambda s: s.puaf_inforce()),
+    "loan_bal_init": _wl_entering("loan_bal", lambda s: s.loan_inforce()),
+    "pua_face_prev_anniv_init": _wl_at_prev_anniv("pua_face", lambda s: s.puaf_inforce()),
+    "loan_bal_prev_anniv_init": _wl_at_prev_anniv("loan_bal", lambda s: s.loan_inforce()),
+    "div_accum_init": _wl_entering("div_accum", lambda s: 0.0),
+    "div_prev_anniv_init": lambda s, d: s.div_prev_anniv(d),
+    "prem_cum_init": lambda s, d: s.prem_cum(d - 1) if d > 0 else 0.0,
+}
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -996,6 +1038,46 @@ SEC_SPECS: dict[str, SecSpec] = {
         column_map={"duration_inforce": None},
         derived=((2, 12), (1, 126), (1, 719)),
         future=((1, 3),),
+    ),
+    # WholeLife's state is seven columns (_WL_STATE above).  S's own columns are renamed in
+    # place, puaf_inforce and loan_inforce to pua_face_init and loan_bal_init, and
+    # duration_inforce, S's elapsed policy years, is dropped for duration_mth, 108 on S's
+    # in-force point 1.  On the twins the five columns S has no column for take what S
+    # itself assumes, so each twin reproduces S: on point 1 the paid-up additions at the
+    # anniversary are its 4,100, the loan 0, the accumulation balance and last year's
+    # dividend 0, S's "before the frame", and the premiums since issue S's prem_cum(107).
+    # The derived rows are the two S points that do not reproduce from S's own in-force
+    # state (§7.2), REDUCE_PREM and ACCUM, on the anniversary that opens policy year 10;
+    # the funded term blend mid-year before its crossover and the loan variant mid-year,
+    # whose anniversary values differ from their current ones; the graded final-expense
+    # point inside its graded years; and REDUCE_PREM in the last covered month.  The future
+    # row is issued off a valuation anniversary.  T2's splice grid is built from this spec
+    # in a temporary table, not committed.
+    #
+    # T1 holds on WholeLife at any count: S already weights its acquisition by the count
+    # issued, as SEC charges it.  It skips five S cells besides the default three:
+    #   puaf_inforce, loan_inforce: renamed pua_face_init and loan_bal_init, one name for
+    #     each opening-state column (D6, §7.2).  Every cell that read them reads the
+    #     renamed cells, which T1 compares, and both are 0 on S's new business.
+    #   proj_start: S's first projected month on the policy clock, 108 on S's point 1.
+    #     Every SEC frame opens at t = 0 (D3), which the conventions assert.
+    #   duration_inforce: S's elapsed policy years, which duration_mth replaces (D6).
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_whole_life_us_sec.py compares the
+    #     report itself with S's, on every column both hold.
+    "WholeLife_US_SEC": SecSpec(
+        twin="WholeLife_US_S",
+        column_map={"duration_inforce": None, "puaf_inforce": "pua_face_init",
+                    "loan_inforce": "loan_bal_init"},
+        duration_of=lambda row: 12 * int(row["duration_inforce"]),
+        derived=((5, 108), (4, 108), (8, 78), (6, 114), (12, 18), (5, 659)),
+        future=((2, 3),),
+        state=_WL_STATE,
+        twin_state={c: f for c, f in _WL_STATE.items()
+                    if c not in ("pua_face_init", "loan_bal_init")},
+        exempt=frozenset({"puaf_inforce", "loan_inforce", "proj_start",
+                          "duration_inforce", "result_pols"}),
     ),
 }
 

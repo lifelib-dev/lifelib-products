@@ -89,6 +89,8 @@ MODELS = {
     "Term_US_SEC": ("products/term_life/Term_US_SEC",
                     {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
     "WholeLife_US_S": ("products/whole_life/WholeLife_US_S", MONTHLY),
+    "WholeLife_US_SEC": ("products/whole_life/WholeLife_US_SEC",
+                         {**MONTHLY, "twin": "WholeLife_US_S", "stage": "E"}),
     "UL_US_S": ("products/universal_life/UL_US_S", MONTHLY),
     "IUL_US_S": ("products/indexed_ul/IUL_US_S", MONTHLY),
     "VUL_US_S": ("products/variable_ul/VUL_US_S", MONTHLY),
@@ -168,6 +170,9 @@ INPUT_FILES = {
     "WholeLife_US_S": {
         "cv_table.csv", "model_point_table.csv", "mort_table.csv", "np_guar_table.csv",
         "nsp_table.csv", "premium_rates.csv"},
+    "WholeLife_US_SEC": {
+        "cv_table.csv", "model_point_table_sec.csv", "mort_table.csv",
+        "np_guar_table.csv", "nsp_table.csv", "premium_rates.csv"},
 }
 
 

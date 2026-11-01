@@ -66,9 +66,11 @@ A product may also carry a second model, `<product>_US_SEC`, derived from its `_
 model point, and a model point may be a policy issued at that date, one already in force at
 it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
 `basiclife/BasicTerm_SC` does, a step still to come. On the `_S` model's new-business
-points, issued at the valuation date, an `_SEC` model reproduces its `_S` model's worked
-example cell by cell, and its `model-sec.md` says what running in force changes.
-`Term_US_SEC` is the first.
+points, issued at the valuation date, an `_SEC` model reproduces its `_S` model cell by
+cell. Where the worked example's point is already in force, as whole life's is, the
+`_SEC` twin of that point continues the `_S` projection from the month it is valued at,
+its expenses apart, which inflate from the valuation date. Each `model-sec.md` says what
+running in force changes. `Term_US_SEC` and `WholeLife_US_SEC` are the first two.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -91,7 +93,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
 | [Level premium term](products/term_life/index.md) | `Term_US_S`, `Term_US_SEC` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
-| [Whole life](products/whole_life/index.md) | `WholeLife_US_S` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
+| [Whole life](products/whole_life/index.md) | `WholeLife_US_S`, `WholeLife_US_SEC` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
 | [Universal life](products/universal_life/index.md) | `UL_US_S` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
 | [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
 | [Variable UL](products/variable_ul/index.md) | `VUL_US_S` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
@@ -217,10 +219,10 @@ and its `model-sec.md` sets out the two clocks.
 
 Where a model publishes `result_cf_annual()` — `Term_US_S` and `WholeLife_US_S`, the two
 products whose contractual quantities are annual — it is the same frame summed into policy
-years, with `pols_if` the count entering each year. `Term_US_SEC` publishes it too: for a
-point already in force at the valuation date, the first row holds the rest of the policy
-year the point is in, with `pols_if` the count at the valuation date, and for a point
-issued later, the months before issue are left out.
+years, with `pols_if` the count entering each year. `Term_US_SEC` and `WholeLife_US_SEC`
+publish it too: for a point already in force at the valuation date, the first row holds
+the rest of the policy year the point is in, with `pols_if` the count at the valuation
+date, and for a point issued later, the months before issue are left out.
 
 The tests ship inside the library and run against *your* copy:
 

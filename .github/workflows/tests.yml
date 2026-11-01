@@ -45,6 +45,14 @@ jobs:
         # `requirements.txt` asks for pandas >= 2.2 and numpy >= 1.26, whose current
         # releases require 3.11 or later themselves.
         python-version: ['3.11', '3.12', '3.13', '3.14']
+        # One leg also runs the SEC models' full splice grids. Every leg runs a core of
+        # each grid that reaches every branch the full one does, and the cases beyond it
+        # skip unless USLIB_SEC_FULL is 1 (USLIB-SEC-PLAN.md K6), so without this leg they
+        # would run nowhere. On WholeLife, measured locally, it adds about two minutes.
+        include:
+          - os: ubuntu-latest
+            python-version: '3.13'
+            sec-full: '1'
 
     steps:
     - name: Checkout code
@@ -68,6 +76,10 @@ jobs:
       # Bare `pytest` from the root, as lifelib's CI runs it. The suites are slow --
       # every model reproduces its technical notes' worked example, cell by cell -- so
       # report the slowest tests to keep an eye on which models dominate the run.
+      # USLIB_SEC_FULL is '1' on the one leg the matrix gives `sec-full`, and empty on
+      # every other, where the full splice grids' cases skip.
+      env:
+        USLIB_SEC_FULL: ${{ matrix.sec-full }}
       run: pytest -q --durations=10
 
   cython:

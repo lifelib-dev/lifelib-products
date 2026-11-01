@@ -1,4 +1,4 @@
-"""Shared fixtures for the reference-model tests, and the suite's one pytest marker.
+"""Shared fixtures for the reference-model tests, and the suite's two pytest markers.
 
 The registry these fixtures read — :data:`MODELS`, :data:`LIB` and :func:`model_path` —
 lives in :mod:`us_registry` rather than here, and the test modules import it from there.
@@ -13,6 +13,12 @@ compile tests by (USLIB-SEC-PLAN.md D13), and registering it keeps them free of 
 unknown-mark warning.  The tests themselves skip when modelx-cython or a C compiler is
 absent, so a bare ``pytest`` stays green on a machine that has neither.  The ``cython`` CI
 job, which installs both, sets ``USLIB_REQUIRE_CYTHON=1``, and there such a skip fails.
+
+The ``sec_full`` marker is registered here for the same reason.  It marks the cases of an
+SEC model's full splice grid beyond the core that runs by default, which skip, with the
+reason shown, unless ``USLIB_SEC_FULL=1`` is set (USLIB-SEC-PLAN.md K6), and
+``pytest -m sec_full`` selects them.  One leg of the CI matrix sets it, so they run in
+every CI run, on that leg.
 """
 import modelx as mx
 import pytest
@@ -21,11 +27,15 @@ from us_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 
 def pytest_configure(config):
-    """Register the ``cython`` marker the compile tests carry."""
+    """Register the ``cython`` marker the compile tests carry, and ``sec_full``."""
     config.addinivalue_line(
         "markers",
         "cython: compiles a model with modelx-cython; skips without modelx-cython or a C "
         "compiler")
+    config.addinivalue_line(
+        "markers",
+        "sec_full: a case of an SEC model's full splice grid; skips unless "
+        "USLIB_SEC_FULL=1")
 
 
 @pytest.fixture(scope="module")
