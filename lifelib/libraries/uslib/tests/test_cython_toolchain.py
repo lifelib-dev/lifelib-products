@@ -8,9 +8,10 @@ together turn a uslib model into a compiled package, and that the package comput
 modelx computes.  A job with nothing to run would stay green on a Windows runner where no
 MSVC build had ever succeeded, and Phase 2 would find that out on its first model.
 
-**What it compiles.**  ``Term_US_S``.  No SEC model exists yet, and mx2cy compiles any
-export, an S model's included (F2); typing a model well is Phase 2's representation work,
-while compiling one at all is what is proved here.  mx2cy's two inputs are written by the
+**What it compiles.**  ``Term_US_S``.  No SEC model is written for the compiler before
+Phase 2 (``Term_US_SEC`` is at stage ``"E"``), and mx2cy compiles any export, an S
+model's included (F2); typing a model well is Phase 2's representation work, while
+compiling one at all is what is proved here.  mx2cy's two inputs are written by the
 test rather than added to the product directory.  The sample runs ``result_cf()`` on every
 point of the shipped table, both of them.  The spec sizes the ``t`` caches for the longest
 frame any issue age can have, because a compiled cache raises ``IndexError`` past its end

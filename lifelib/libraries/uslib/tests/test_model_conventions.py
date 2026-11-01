@@ -38,9 +38,8 @@ model indexed by position (``idx``) is enumerated as correctly as one indexed by
 
 The last section holds the conventions of the SEC family alone — the frame on the valuation
 clock, the count timings, new business, the in-force columns, the twin identity with S,
-and the registry's own consistency — parametrized over the SEC models registered.  Until
-Phase 1 registers the first there are none: pytest reports each of those tests once,
-skipped for an empty parameter set, and the section runs nothing.
+and the registry's own consistency — parametrized over the SEC models registered.  Phase 1
+registers them one product at a time, Term first.
 """
 import math
 import re
@@ -760,10 +759,9 @@ def test_round_trip_is_stable(name, model, tmp_path):
 # read-once window can tell the two orders apart, and only through T1, which evaluates the
 # model beyond the base sweep; T1 takes those reads back out of the log (see there).
 #
-# The section is inert until Phase 1 registers the first SEC model. SEC_MODELS is empty, so
-# pytest reports each test once, skipped for an empty parameter set, and runs none of them.
-# The conventions of stage "EC" — the typing guard, no pandas in Projection — are Phase 2's
-# and are not here.
+# Phase 1 registers the SEC models one product at a time, Term_US_SEC first, and each meets
+# this section from the commit that registers it. The conventions of stage "EC" — the
+# typing guard, no pandas in Projection — are Phase 2's and are not here.
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
 
@@ -974,11 +972,20 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
     """T1, the twin identity: on new business the SEC model is its S model (§5.2).
 
     For every SEC row that is the ``"twin"`` of an S row and issued at ``t = 0``, where the
-    two clocks coincide, every cell the two models share must agree at every argument tuple
-    the S cell cached in the S model's own sweep. The cells whose meaning SEC changes by
-    design are exempt: ``sec_support.TWIN_EXEMPT_DEFAULT``, and the product's own in
-    ``sec_support.SEC_SPECS``. Through this, every S worked example, its intermediate cells
-    included, becomes an SEC assertion with no golden restated.
+    two clocks coincide, every cell of the S model must agree with the SEC model's at every
+    argument tuple the S cell cached inside its frame in the S model's own sweep, and an S
+    cell the SEC model lacks fails. The cells whose meaning SEC changes by design are
+    exempt: ``sec_support.TWIN_EXEMPT_DEFAULT``, and the product's own in
+    ``sec_support.SEC_SPECS``, where a cell SEC drops is named too. Through this, every S
+    worked example, its intermediate cells included, becomes an SEC assertion with no golden
+    restated.
+
+    The identity presumes what every S table in the library holds: each S point counts one
+    policy. An SEC model charges per policy issued what its S model may charge once per
+    model point, as Term's acquisition (USLIB-SEC-PLAN.md §7.1), and on a point counting
+    any other number the two then differ by design, in cells no exemption can drop without
+    dropping most of what is compared. A product whose S model does so says it in its
+    ``SecSpec`` comment, and its module asserts the count.
 
     The twin of an S row already in force, on the policy clock (WholeLife, FIA) or the
     projection clock (UL's point 3), is not compared here. Its SEC frame starts at the

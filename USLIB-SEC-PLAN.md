@@ -1,10 +1,11 @@
 # Plan — `*_US_SEC`: uslib models that run in force, then compile
 
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
-and Phase 1 starts with Term (M1). Its open decisions (§8.2) are settled but one, which is
-needed only before Phase 1 reaches RILA. Like USLIB-MERGE-PLAN.md, this document is both the
-specification and the record: each phase records what it actually did, including where the
-implementation departed from the plan.
+and so is Term, the first of Phase 1 (M1, §7.1, *Record*); WholeLife (M2) is next. Its open
+decisions (§8.2) are settled but one, which is needed only before Phase 1 reaches RILA.
+Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
+phase records what it actually did, including where the implementation departed from the
+plan.
 
 Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
 modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
@@ -238,9 +239,15 @@ month the policy is on the books, and every recursion's base moves from S's `t =
 `t == t_entry()`: the opening state from the model point when in force, the issue values
 otherwise. `is_active(t)` is false before issue and after cover ends.
 
+Future new business is written over a stated horizon: `Data` refuses a `duration_mth`
+below `-future_horizon_mth`, a Reference of 120 months on Term. So no frame runs longer than
+cover from issue plus the horizon, and Phase 2's `t` caches have a contractual size (F4). A
+negative horizon is itself refused (precised at M1).
+
 *Fallback:* if future new business proves disproportionate for a product (§8, risk K4),
 that product's `Data` rejects `duration_mth < 0` with a clear error and its `model-sec.md`
-says so. The rest of the design is unaffected.
+says so. The rest of the design is unaffected. The horizon set to 0 is that fallback, with
+a message of its own (precised at M1).
 
 ### D5 — Counts: BasicTerm_SE's entry, uslib's row weight
 
@@ -248,7 +255,11 @@ says so. The rest of the design is unaffected.
 - `pols_if_init()` is `policy_count` if the point is in force at `t = 0`, else 0;
   `pols_new_biz(t)` is `policy_count` in the issue month; both as in BasicTerm_SE.
 - `pols_if_at(t, "BEF_NB")` is the count carried in from `t - 1` (`pols_if_init()` at
-  `t = 0`), and `pols_if_at(t, "BEF_DECR")` adds new business.
+  `t_entry()`, D4), and `pols_if_at(t, "BEF_DECR")` adds new business. `BEF_NB` forms
+  month `t - 1`'s `BEF_DECR` count itself, as its own value at `t - 1` plus that month's
+  new business, rather than calling for it. That is the same sum in the same order, so the
+  results are identical, and the chain of calls back to `t_entry()` is one cell a month, no
+  deeper than S's (F7; precised at M1).
 - **`pols_if(t)` is `pols_if_at(t, "BEF_DECR")`**, not BasicTerm_SE's `BEF_MAT`. The
   library settled `pols_if(t)` as the count that weights row `t`, and this is the definition
   under which it equals the S model's `pols_if` on every new-business point.
@@ -280,7 +291,12 @@ and the splice identity of §5.2 tests it.
   reason BasicTerm_SE reads its premium from a table.
 - `Data` validates the in-force columns on read, vectorized, and raises naming the
   offending `point_id`: no negative balances, flags consistent with balances, a phase
-  consistent with the account value.
+  consistent with the account value. A rule of the product rather than of the table,
+  such as whether a point is still in cover, needs a `Projection` Reference, so it is
+  checked where the frame is defined, in `proj_len()`, which raises naming the point.
+  Such a row reads, and a loop over the block meets it only when it reaches it, so
+  `run_sec.py --block` asks every point for its frame before it projects any (precised
+  at M1).
 - The S tables' mixed spellings — `_init`, `_initial`, `_inforce`, `duration_inforce`
   (years), `duration_mth_init`, `entry_year` — become this one vocabulary in the SEC tables.
   Each `model-sec.md` records the mapping.
@@ -411,7 +427,10 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   in `Data` — as DIA's month-0 pricing must, since it reads survival out to the payout
   date.
 - **R3** Phase 1 adds no new Python-object machinery: no new string-valued cells, no new
-  Series or tuple returns, no new pandas lookups in `Projection`.
+  Series or tuple returns, no new per-`t` pandas lookup in `Projection`. A model-point
+  accessor cell, one `int(...)` or `float(...)` of one `model_point()` subscript, is S's
+  own pattern and is allowed for each new in-force column; R11 rewrites it in Phase 2 with
+  the rest (precised at M1).
 - **R4** `Projection` is parameterized by `idx`, and `point_id()` returns the label for
   reporting.
 - **R5** `Data` keeps the S CSV readers unchanged (read once, `object`-typed) and adds one
@@ -621,6 +640,9 @@ new skips are the eight SEC conventions, each skipped for want of a model.
    case-insensitively for every publisher and product the product's `sources.md` cites, as
    `CLAUDE.md` requires. T6 keeps the files in step with S, but it does not look for names.
 
+M1 settled how each step is written, and the later products copy it: §7.1's *Record* lists
+the template item by item.
+
 ### 5.2 Tests
 
 Each product gets `tests/test_<product>_us_sec.py`; T1 is generic and lives in the
@@ -633,13 +655,23 @@ conventions suite.
   goldens on intermediate cells (MYGA's surrender traces, WholeLife's dividend steps) that a
   `result_cf()` comparison would miss. In Phase 2 the comparison maps string arguments to
   the int References of the same name (R9).
+
+  Two precisions (M1). The comparison covers every cell of the S model, and an S cell the
+  SEC model lacks fails unless its spec exempts it with a reason, so a renamed cell cannot
+  take its goldens out unseen. And it covers S's own frame only. A formula that reads ahead
+  of its frame, as Term's `jump_ratio()` does when cover ends with the level period, gets
+  an answer from S's tables as though cover went on, where an SEC model answers that the
+  month is outside cover (R1). The two frames' ends are held together by
+  `frame_mismatches`.
 - **T2 — Splice identity.** The test that says the opening state is complete. For S
   new-business points, at months `d` chosen to straddle each product's events (§7), an SEC
   point opened with the S state at `d` reproduces S from `d` on, for every result column
   and every state cell, to 1e-9. Valuation-clock inputs are shifted by `d` in the temporary
   input directory, and `inflation_rate` is set to 0 in both models (D7), as is mortality
   improvement where it runs from the projection start. A missing state variable fails here
-  and nowhere else.
+  and nowhere else. Every assumption that ships at zero is switched on, in both models
+  alike, so the splice can see it. Where the shipped points leave a branch unreached, a
+  variant S point is spliced too, added to a temporary copy of S's table (precised at M1).
 
   **S's own in-force rows are splice cases too.** On the policy-clock models their frames
   align at offset `d`: WholeLife at 108, FIA at 84. On the projection-clock models they
@@ -651,6 +683,8 @@ conventions suite.
 - **T4 — Count algebra.** `BEF_DECR = BEF_NB + pols_new_biz`; the roll-forward closes;
   doubling `policy_count` doubles every cash flow and leaves every per-policy value alone.
 - **T5 — Validation.** Each malformed in-force row raises in `Data`, naming its point.
+  A row malformed only against a rule of the product, such as a point past its cover,
+  raises in `proj_len()`, naming it too (D6).
 - **T6 — Regeneration.** The committed SEC table and its generated companions, every row
   and column, equal what `gen_sec_points.py` produces from the S model and its inputs as
   committed. So an edit to an S row that an SEC file copies or derives from — a reworded
@@ -785,6 +819,194 @@ no formula.
 - Decoded: `plan` to `policy_term`; `premium_mode` to `prem_cycle` and `modal_factor`; the
   M(1) override to a value plus a flag; `phase` to a code.
 - Never reached: `pols_lapse`, `pols_maturity`, `phase`.
+
+#### Record — M1, done 2026-11-01
+
+Built in two commits, as D1 requires: `Term_US_S` copied with only `_name` changed, then
+the enhancement. A design was prototyped and critiqued before the build. The tests were
+written against the build and checked by injecting faults. The whole was then reviewed
+under three lenses: the numbers, the plan's rules, and the tests with the docs. The review
+found 21 defects, 4 of them major, and a re-review of the fixes found 2 more. All 23 are
+fixed in `Term_US_SEC`. The one that `Term_US_S` shares is carried below.
+
+**What exists now.**
+- `Term_US_SEC` at stage `E`. `Projection` keeps all 52 of `Term_US_S`'s cells: 24
+  unchanged, 8 with a new docstring only, and 20 rewritten. It adds 10: `policy_count`,
+  `duration_mth_init`, `t_entry`, `is_active`, `expiry_mth`, `pols_if_at`, `pols_new_biz`,
+  `premium_pp_ann_py`, `conv_elig_py` and `result_pols`. `Data` reads its own model point
+  table and `Term_US_S`'s four assumption tables in place, and checks the table as it reads
+  it.
+- `model_point_table_sec.csv`, six rows generated from Term's `SecSpec`. They are S's two
+  points as twins, S point 2 at month 12, S point 1 at months 126 and 719, and S point 1
+  issued 3 months after the valuation date. A case-insensitive search for every publisher,
+  product and form number `term_life/sources.md` cites finds none of them in it.
+- `tests/test_term_life_us_sec.py`, 59 tests: T2 on 23 splices, T3 on 7 future points, T4,
+  T5 on 12 malformed tables and its edges, T6, a test of how the model computes (R1, R2 and
+  D3), and the product's own facts. The SEC conventions, T1 among them, now run on a model:
+  32 pass, and `test_net_cf_is_income_positive` is skipped, as it is for `Term_US_S`.
+- `run_sec.py`, for one point or `--block`; `model-sec.md`; the registry entry with its
+  `INPUT_FILES`; and five generated pages. doccheck reports 477 pages and 0 warnings.
+- Of §4's items carried into Phase 1, three are discharged: the pages were regenerated once
+  `model-sec.md` existed, `gen_input_files.py --write` rewrapped the ULSG and WholeLife
+  entries and changed no value, and T6 takes the module's swept S model through `s_model=`.
+
+**Departures and precisions.**
+- *The cover check* is in `proj_len()`, not `Data`, because the end of cover needs
+  `expiry_age`, a `Projection` Reference. A point past its cover reads, and `proj_len()`
+  refuses it, naming the point. `run_sec.py --block` asks every point for its frame before
+  it projects any. D6 and T5 are precised in place.
+- *The future horizon* was settled here rather than at M14:
+  `Data.future_horizon_mth = 120` (D4, precised in place).
+- *R3* is precised in place: a model-point accessor cell is allowed, a per-`t` lookup is
+  not.
+- *One more R1a site.* Beyond the list above, `conv_rate` found the final eligible year by
+  asking `conv_elig(t + 12)`, twelve months ahead of its own (R2). It now asks
+  `conv_elig_py(policy_year(t) + 1)`. The expiry tests in `pols_maturity` and `phase` were
+  still correct on the valuation clock. They moved to the policy clock anyway, so that
+  cover has one definition, and `phase` gains `PRE_ISSUE`.
+- *Guards outside cover* (R1). `prem_due`, `premium_pp_ann`, `mort_rate_base`, `conv_elig`,
+  `comm_rate` and every count return zero or `False` outside cover, before any table or
+  rate is read. The review found `comm_rate`: before issue `duration(t)` is negative, and
+  the commission scale read it as a year of the level period.
+- *Acquisition* is `expense_acq * pols_new_biz(t)`, per policy issued and not inflated, as
+  in BasicTerm_SE. On a point issued at `t = 0` it is the one designed difference from S,
+  which charges $300 once per model point, whatever the count. So T1 holds on Term only
+  while each S point counts one policy. Every point of all twelve S tables does, and the
+  Term module asserts it of Term's.
+- *The count chain* is one cell a month (D5, precised in place).
+- *`result_cf_annual`* leaves out the months before issue. An in-force point's first row
+  holds the rest of its current policy year.
+- *The Phase 0 harness changed* (§5.2, precised in place). `twin_mismatches` compares S's
+  own frame only, and reports an S cell the SEC model lacks. Before the change, a point
+  whose cover ends with the level period failed T2 falsely, and a renamed cell passed T1.
+  `test_sec_support.py` has 37 tests.
+- *T2 switches conversion on* in both models, at the notes' standardized 1% a year and 2%
+  in the final eligible year: at the shipped zeros the conversion window is invisible to
+  any comparison. It also splices three variants of S's points, added to a temporary copy
+  of S's table, for branches the shipped points never reach:
+  - issue age 65 paying quarterly, for the window's age limit and a three-month cycle;
+  - T20 at 45 paying semi-annually, for a level period of another length, with its premium
+    scale added to the copies only;
+  - age 85 paying monthly, for cover that ends with the level period.
+- *How the model computes is tested.* On the splice grid no cell is called at a negative
+  month and none reads beyond `t + 1`. On the committed points `duration_mth` is a closed
+  form, and the reports run under a recursion limit of 40. No number shows any of these,
+  and Phase 2 needs each.
+
+**Measured for K6 and F7.**
+- *Time.* The module runs its 59 tests in 32 to 37 s over two runs. In the slower run, T2's
+  23 splices take 9.1 s, plus 1.8 s for their fixture. The rules test takes 6.9 s, T3 3.4 s,
+  and the three tests that start an interpreter 8.4 s together. The uslib suite went from
+  1,061 passed and 19 skipped in 4 min 53 s (M0) to 1,154 passed and 12 skipped in
+  5 min 54 s. The new passes are the
+  module's 59, the SEC conventions' 32 and the harness's 2. The eight skips for an empty SEC
+  section became one. The splice stays in the default run; WholeLife, whose sweep is about
+  ten times Term's (§4, *Record*), is the next measurement.
+- *Depth.* A cold `net_cf` of the last month runs 727 cells deep on a 720-month frame,
+  against 726 in `Term_US_S`. On the longest frame the contract allows, issue age 18 and
+  issued 120 months on, it runs 931 deep. An ascending sweep stays at 10. In the modelx
+  export the cold call needs a recursion limit of 1,469 (S: 1,465), or 1,877 on the longest
+  frame, and the ascending sweep 51. With the two-cell count chain, the 720-month figures
+  were 1,445 cells and a limit of 2,905.
+
+**Faults.** 63 faults were run against the module, the conventions and the harness suite,
+each injected alone into its own copy of the library. 62 fail at least one test. The 63rd
+is a control, the two-cell count chain, which changes no value. After the re-review, a
+recursion backward over the frame through `t + 1`, which also gives the same numbers,
+fails the rules test too.
+
+**Carried into M2 and after: the template.**
+1. *Derivation.* Commit 1 is the S folder copied, with `_name` edited and nothing else.
+2. *The policy clock.* `duration_mth_init()` is an `int` accessor of `duration_mth`.
+   `duration_mth(t) = duration_mth_init() + t`, never a recursion.
+   `t_entry() = max(0, -duration_mth_init())`. `is_active(t)` is
+   `0 <= duration_mth(t) < <end>`, where `<end>` is S's frame from issue as a policy-clock
+   cell named for the event that ends cover: `expiry_mth()` here, `maturity_mth()` where the
+   contract matures.
+3. *The frame.* `proj_len() = <end> - duration_mth_init()`, raising `ValueError` naming
+   the point when that is not positive.
+4. *Counts.* `policy_count()` is a `float` accessor. `pols_if_init()`, `pols_new_biz(t)`
+   and the two timings are as D5 has them, the chain one cell a month. S's later timings
+   and maturity rule are kept, and every count is a `float` in every branch.
+5. *Outside cover.* Every count returns 0.0 before it evaluates a rate. Every read at a
+   policy year, a PLT duration or an attained age is guarded by `is_active(t)`, and so is a
+   contractual scale such as a commission rate. A contractual boolean is `False` there.
+6. *S's tests of the frame index.*
+   - Each test of `t` against a contractual event becomes a test of `duration_mth(t)` or
+     `policy_year(t)`, even where the old test stays correct.
+   - Each read of a schedule at a policy month passed as `t` becomes a policy-year cell,
+     `<cell>_py(y)`.
+   - A question about the next policy year, asked twelve months ahead, becomes
+     `<cell>_py(policy_year(t) + 1)`.
+7. *Expenses.* Acquisition is charged per policy issued, uninflated. Expense inflation
+   keeps S's formula, on `t`. Where SEC charges per policy what S charges per model point,
+   T1 holds only while the S points count one policy: the spec's comment says so, and the
+   module asserts it.
+8. *Reporting.* `result_cf()` keeps S's columns. `result_pols()` is `pols_if`,
+   `pols_new_biz`, the decrements in S's processing order, then the maturities, indexed
+   `t`. A report keyed on the policy clock keeps S's key and drops the months before issue,
+   and a phase cell gains `PRE_ISSUE`.
+9. *Data.* `model_point_file = "model_point_table_sec.csv"`, with S's readers unchanged.
+   The table is checked as it is read, vectorized, and the first check that fails raises,
+   naming the column or every point at fault. The checks, in order: the in-force columns
+   are present, `point_id` is unique, `policy_count` is a number zero or more,
+   `duration_mth` is whole and within the horizon, then the product's own state columns
+   (D6). A rule of the product is checked in `proj_len()`.
+10. *The table.* The committed rows are the twins, a few derived rows for distinct cases
+    (an anniversary, mid-year after the product's main event, the last covered month) and
+    one future row. The full splice grid is built in the tests from the same spec.
+11. *The test module.*
+    - Fixtures `sec_model`, `s_model` (swept, and handed to T6 as `s_model=`) and
+      `spliced`. Each model is read under a name of its own, nothing is written inside the
+      library tree, and a row is found by its kind, S point and month.
+    - T2 runs over `SPLICES + IN_FORCE_TWINS`. Term has no in-force twin. WholeLife's is
+      `("twin", 1, 108)`, and §5.2 lists the rest.
+    - Variants cover every branch the shipped points hide: another level period, every
+      premium mode, cover that ends with a contractual period.
+    - Every assumption that ships at zero is switched on in both models. Valuation-clock
+      inputs are neutralized by Reference, or by `shift_months` where they are tables, and
+      a separate test asserts the valuation clock on the shipped inputs.
+    - Each product keeps its own lists: the S cells its sweep never reaches (`_sweep_s`),
+      and `OUTSIDE_COVER` and `IN_COVER_ONLY` for the guard test.
+    - The rules test makes its negative-argument and look-ahead checks on the splice grid,
+      after the reports. It checks the closed-form clock and the lowered recursion limit on
+      a fresh read of the committed points. Each product sets the limit from its measured
+      depth: Term's reports reach 10 cells on the committed points and 13 on the grid,
+      under a limit of 40.
+12. *The runner.* `run_sec.py [point_id | --block]`, point 1 by default. `--block` asks
+    every point for its frame first, sums the frames with
+    `pd.concat(frames).groupby(level="t").sum()`, and releases each ItemSpace once read.
+    Output is ASCII, and the generator's columns are optional. A test runs it and checks
+    its numbers.
+13. *The notes.* `model-sec.md` has the H1 *In-Force Implementation Notes* and Term's
+    sections: running it, the two clocks, the in-force interface, the model points, counts
+    and timings, the departures, the tests.
+14. *Registry.* The SEC entry goes directly after its twin, with `INPUT_FILES` written by
+    `tools/gen_input_files.py --write`.
+
+**Carried into Phase 2.**
+- Term's `spec_sec.py` sizes its caches from the contract:
+  - `premium_pp_ann_py` and `conv_elig_py` by policy years 1 to 77 (issue age 18);
+  - `plt_mort_factor` by PLT durations 1 to 67;
+  - `t` from 0 to 1,044: the longest frame's 1,044 months (12 × 77 + 120), and the month
+    after, which the roll-forward check reads.
+- `proj_len()` names `point_id` when it refuses a point. At stage EC it names `point_id()`,
+  and a test checks that the compiled cell still raises.
+- The recursion limits above size `sample_sec.py`, `run_sec.py --cython` and the Windows
+  job's stack.
+- No test checks that `run_sec.py --block` releases each ItemSpace, since that changes no
+  number. Phase 2's memory test (F5, K2) should.
+
+**Carried, outside the SEC models.**
+- `tools/fix_doc_roles.py` takes the first model folder in each product directory, in
+  directory order, so in `term_life` it would fix one of the two models. No test or step
+  runs it, but it must take every model folder before its next use.
+- Two S-side items for §8.2 item 4:
+  - `test_term_life_us.py`'s `test_an_input_can_be_swapped_without_touching_formulas`
+    writes `mort_table_doubled.csv` beside the models while it runs, where a concurrent
+    `test_every_csv_beside_the_model_is_actually_read` would see it.
+  - `Term_US_S`'s Projection docstring, under *Premium mode*, reads "six two semi-annual
+    instalments". The slip is fixed in `Term_US_SEC` only.
 
 ### 7.2 Whole life — `WholeLife_US_SEC` (E: L, C: M)
 
@@ -1277,6 +1499,9 @@ valuation clock these part.
     an opt-in marker before the timeout is raised.
   - *Phase 0:* T1 about doubles the sweep of the points it pairs; Term pays under a second
     (§4, *Record*). T2 is measured on Term at M1.
+  - *M1:* T2 takes about 11 s on Term's 23 splices, fixture included, and Term's whole
+    module 32 to 37 s; the uslib suite grew by about a minute (§7.1, *Record*). WholeLife's
+    sweep is about ten times Term's, so M2 is the next measurement.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares numbers only.
@@ -1314,7 +1539,7 @@ is needed only before Phase 1 reaches RILA.
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product, in §5.3's order | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero |
+| M1–M12 | Phase 1, one PR per product, in §5.3's order; M1, Term, **done**, 2026-11-01 (§7.1) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero |
 | M13 | Phase 1 freeze | Fingerprints for every SEC point; `index.md`'s SEC conventions | the whole matrix green under its timeout |
 | M14–M25 | Phase 2, one PR per product, same order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |

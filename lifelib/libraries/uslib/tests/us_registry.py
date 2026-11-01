@@ -81,11 +81,13 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 #                     {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
 #
 # with "param": "idx" added at stage "EC", and "closing_pols_if": True on SPIA_US_SEC alone.
-# None is registered yet: Phase 1 adds them, one product at a time, each with its
-# INPUT_FILES set below.
+# Phase 1 adds them one product at a time, each directly after its twin and with its
+# INPUT_FILES set below; Term_US_SEC, the first, is entered exactly so.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
+    "Term_US_SEC": ("products/term_life/Term_US_SEC",
+                    {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
     "WholeLife_US_S": ("products/whole_life/WholeLife_US_S", MONTHLY),
     "UL_US_S": ("products/universal_life/UL_US_S", MONTHLY),
     "IUL_US_S": ("products/indexed_ul/IUL_US_S", MONTHLY),
@@ -144,10 +146,13 @@ INPUT_FILES = {
     "Term_US_S": {
         "class_factor_table.csv", "model_point_table.csv", "mort_table.csv",
         "premium_rates.csv", "shock_lapse_table.csv"},
+    "Term_US_SEC": {
+        "class_factor_table.csv", "model_point_table_sec.csv", "mort_table.csv",
+        "premium_rates.csv", "shock_lapse_table.csv"},
     "ULSG_US_S": {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
-        "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
-        "rop_table.csv", "surr_charge_table.csv"},
+        "lapse_table.csv", "model_point_table.csv", "mort_table.csv", "rop_table.csv",
+        "surr_charge_table.csv"},
     "UL_US_S": {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
@@ -161,8 +166,8 @@ INPUT_FILES = {
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "scenario_table.csv", "subaccount_table.csv", "surr_charge_table.csv"},
     "WholeLife_US_S": {
-        "cv_table.csv", "model_point_table.csv", "mort_table.csv",
-        "np_guar_table.csv", "nsp_table.csv", "premium_rates.csv"},
+        "cv_table.csv", "model_point_table.csv", "mort_table.csv", "np_guar_table.csv",
+        "nsp_table.csv", "premium_rates.csv"},
 }
 
 

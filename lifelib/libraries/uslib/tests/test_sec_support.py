@@ -11,9 +11,9 @@ What each test pins, against the plan (its §4 item 3 and §5.2):
 
 * T1's comparison, :func:`twin_mismatches`: silent on a true twin, but only after it has
   compared every value the S sweep cached, a tuple argument included; loud, and specific,
-  on a changed one; bounded by ``limit``; an SEC error or an uncomparable value reported
-  rather than raised or passed; and an offset, or an argument map, turning S's call into
-  SEC's.
+  on a changed one; bounded by ``limit``; an SEC error, an uncomparable value or an S cell
+  the SEC model lacks reported rather than raised or passed; S's reads past its own frame
+  left out; and an offset, or an argument map, turning S's call into SEC's.
 * T2 and T3's harness: :func:`temp_inputs` copies a product so an added point projects
   exactly as its source, and writes floats the models' reader reads back exactly;
   :func:`shift_months` re-bases a table under both readings; :func:`frame_mismatches`
@@ -209,6 +209,67 @@ def test_values_compare_by_kind():
         "opaque(): uncomparable: S object, SEC object",
         "grid(): [1] [1] S 1.0, SEC 2.0, diff +1",
     ])
+
+
+def test_an_s_cell_the_sec_model_lacks_is_reported_unless_exempt():
+    """A cells renamed or dropped is a line of its own, not a comparison left out.
+
+    The SEC Space here has S's ``rate`` under another name, so every golden on ``rate``
+    would go unchecked without a word.  Exempting it, as a product does for a cell it drops
+    by design, with its reason, takes the line out.
+    """
+    s, sec = mx.new_model(_name("lack_s")), mx.new_model(_name("lack_sec"))
+    try:
+        s_space = _space(s, {"rate": "lambda t: 0.01 * t",
+                             "net": "lambda t: 2.0 * rate(t)"})
+        sec_space = _space(sec, {"mort_rate": "lambda t: 0.01 * t",
+                                 "net": "lambda t: 2.0 * mort_rate(t)"})
+        s_space.net(3)
+        lines = twin_mismatches(s_space, sec_space, exempt=frozenset())
+        exempted = twin_mismatches(s_space, sec_space, exempt=frozenset({"rate"}))
+    finally:
+        s.close()
+        sec.close()
+    assert lines == ["rate: a cell of S that SEC lacks; a cell SEC drops by design is "
+                     "named in the spec's exempt, with its reason"]
+    assert exempted == []
+
+
+# A frame of months 0 to 4, whose ratio reads month 5, past it, as Term_US_S's jump_ratio()
+# reads premium_pp_ann(12n) on a point whose cover ends with the level period.  The SEC
+# side answers 0.0 there, outside cover; ``lift`` moves its premium inside the frame.
+def _frame_pair(tag, lift=0.0, frame=True):
+    s, sec = mx.new_model(_name(f"{tag}_s")), mx.new_model(_name(f"{tag}_sec"))
+    s_formulas = {"prem": "lambda t: 100.0 + t", "ratio": "lambda: prem(5) / prem(4)"}
+    sec_formulas = {"prem": f"lambda t: 100.0 + {lift} + t if t < 5 else 0.0",
+                    "ratio": "lambda: 105.0 / prem(4)"}
+    if frame:
+        s_formulas["proj_len"] = sec_formulas["proj_len"] = "lambda: 5"
+    return s, sec, _space(s, s_formulas), _space(sec, sec_formulas)
+
+
+def test_only_the_s_frame_is_compared():
+    """A month S reads ahead of its frame, at or past its ``proj_len()``, is not compared.
+
+    S answers such a read from its tables as though cover went on, where SEC answers that
+    the month is outside cover (:func:`_frame_pair`).  Inside the frame a difference is
+    still found, and a Space with no ``proj_len`` is compared at every month it cached.
+    """
+    found = {}
+    for tag, lift, frame in (("same", 0.0, True), ("lifted", 1.0, True),
+                             ("frameless", 0.0, False)):
+        s, sec, s_space, sec_space = _frame_pair(tag, lift, frame)
+        try:
+            s_space.ratio()
+            assert sorted(s_space.cells["prem"].keys()) == [4, 5]
+            found[tag] = twin_mismatches(s_space, sec_space)
+        finally:
+            s.close()
+            sec.close()
+    assert found["same"] == []
+    assert found["lifted"] == ["prem(4): S 104.0, SEC 105.0, diff +1",
+                               "ratio(): S 1.0096153846153846, SEC 1.0, diff -0.00962"]
+    assert found["frameless"] == ["prem(5): S 105.0, SEC 0.0, diff -105"]
 
 
 def test_a_cells_cached_at_a_tuple_argument_is_compared():

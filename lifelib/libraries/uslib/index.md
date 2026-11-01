@@ -61,6 +61,15 @@ the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are
 ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
 the vectorized `_M` models — and that is true of all twelve here.
 
+A product may also carry a second model, `<product>_US_SEC`, derived from its `_S` model.
+`E` is for running **in force**: `t` counts months from a valuation date shared by every
+model point, and a model point may be a policy issued at that date, one already in force at
+it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
+`basiclife/BasicTerm_SC` does, a step still to come. On the `_S` model's new-business
+points, issued at the valuation date, an `_SEC` model reproduces its `_S` model's worked
+example cell by cell, and its `model-sec.md` says what running in force changes.
+`Term_US_SEC` is the first.
+
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
 
@@ -74,13 +83,14 @@ contractual event — mortality and lapse in the month they happen, interest and
 nonforfeiture floors accruing month by month so a mid-year exit is valued on the balance it
 actually has, and expenses falling where they are incurred. The two grids agree exactly on
 the in-force at every anniversary, and on every anniversary-dated contractual quantity;
-they differ on cash flow timing, which is what the monthly grid is for.
+they differ on cash flow timing, which is what the monthly grid is for. An `_SEC` model
+derives the policy year from its policy clock (`duration(t) = duration_mth(t) // 12`).
 
 **Life**
 
 | Product | Model | Grid | Representative design |
 |---|---|---|---|
-| [Level premium term](products/term_life/index.md) | `Term_US_S` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
+| [Level premium term](products/term_life/index.md) | `Term_US_S`, `Term_US_SEC` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
 | [Whole life](products/whole_life/index.md) | `WholeLife_US_S` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
 | [Universal life](products/universal_life/index.md) | `UL_US_S` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
 | [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
@@ -201,11 +211,16 @@ issue and the elapsed periods for an in-force point (`WholeLife_US_S`'s `proj_st
 This is lifelib's own convention (`basiclife/BasicTerm_S`, `savings/CashValue_SE`:
 `for t in range(proj_len())`). A contractual policy year is the 1-based label
 `duration(t) + 1` and is derived, never indexed by. The same rule holds in all twelve
-models, and `tests/test_model_conventions.py` asserts it for every model point.
+models, and `tests/test_model_conventions.py` asserts it for every model point. An `_SEC`
+model counts `t` from its valuation date instead, the same month for every model point,
+and its `model-sec.md` sets out the two clocks.
 
 Where a model publishes `result_cf_annual()` — `Term_US_S` and `WholeLife_US_S`, the two
 products whose contractual quantities are annual — it is the same frame summed into policy
-years, with `pols_if` the count entering each year.
+years, with `pols_if` the count entering each year. `Term_US_SEC` publishes it too: for a
+point already in force at the valuation date, the first row holds the rest of the policy
+year the point is in, with `pols_if` the count at the valuation date, and for a point
+issued later, the months before issue are left out.
 
 The tests ship inside the library and run against *your* copy:
 
@@ -222,25 +237,27 @@ python -m pytest tests -q
 * - File or folder
   - Description
 * - `products/<product>/`
-  - One directory per product, holding its documents *and* its model together. Twelve of them.
+  - One directory per product, holding its documents *and* its models together. Twelve of them.
 * - `products/<product>/product-spec.md`
   - The representative product specification: mechanics, parameters, variation across insurers.
 * - `products/<product>/technical-notes.md`
   - The liability cash flow model on paper: state variables, recursions, processing order, worked example.
 * - `products/<product>/model.md`
   - How the model implements those notes — what was standardized, what diverges, what the tests cover.
+* - `products/<product>/model-sec.md`
+  - Where the product has an `_SEC` model: how it extends the `_S` one — the in-force interface, the two clocks, the departures.
 * - `products/<product>/sources.md`
   - Every source the product's documents cite, with URLs, access dates and retrieval status.
 * - `products/<product>/<Model>/`
   - The modelx model itself. Formulas only — no embedded data.
 * - `products/<product>/*.csv`
-  - The model's inputs, external to the model folder so they can be edited or swapped in place.
+  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, generated from the `_S` model and its table and checked against them by the tests.
 * - `products/<product>/run.py`
-  - Reads the model and prints its cash flow statement.
+  - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block.
 * - `references/`
   - The cross-product regulatory and actuarial bibliography, cited as `[REG-R#]`.
 * - `tests/`
-  - One module per model for its worked example and invariants, plus `test_model_conventions.py` for the house style, and `us_registry.py` carrying the model registry.
+  - One module per model for its worked example and invariants, plus `test_model_conventions.py` for the house style, `us_registry.py` carrying the model registry, and `sec_support.py`, the comparisons and the generator the `_SEC` tests share.
 * - `_research/`
   - The raw research notes every citation traces back to. Provenance, not documentation — kept in the source repository, neither rendered nor packaged with lifelib.
 ```

@@ -11,8 +11,9 @@ What is here, by the plan's tests (its §5.2):
 T1, the twin identity
     :func:`sweep` evaluates on an S model point what the conventions suite's sweep
     evaluates and every other ``result_*`` report, and :func:`twin_mismatches` then
-    compares every cell the two models share, at every argument tuple the S cell cached,
-    less :data:`TWIN_EXEMPT_DEFAULT`.
+    compares every cell of the S model, at every argument tuple the S cell cached inside
+    its frame, less :data:`TWIN_EXEMPT_DEFAULT`; an S cell the SEC model lacks is a
+    mismatch.
 T2 and T3, the splice and the future new business
     :func:`temp_inputs` writes a temporary input directory -- the model, its CSVs, extra
     model points and edited tables; :func:`shift_months` re-bases a month-keyed table for
@@ -127,7 +128,8 @@ TWIN_EXEMPT_DEFAULT = frozenset({"model_point", "pols_if_init", "input_dir"})
 
 A product adds its own exemptions in its :class:`SecSpec`'s ``exempt``, and T1 skips the
 union.  Every name added there is a cell T1 no longer checks, so each needs a reason as
-specific as these three.
+specific as these three.  That includes an S cell the SEC model drops or renames, which
+:func:`twin_mismatches` otherwise reports as missing.
 """
 
 
@@ -141,10 +143,10 @@ def sweep(proj):
     every other ``result_*`` report, such as ``result_cf_annual()``.
 
     It exists for T1.  :func:`twin_mismatches` enumerates the argument tuples each S cell
-    has cached, so what the S sweep evaluates *is* what T1 covers.  A cell the sweep never
-    reaches, such as ``Term_US_S.pols_lapse``, which no result column reads, holds no keys
-    and is compared nowhere.  A test that wants more calls the extra cells on the S side
-    before it compares.
+    has cached, so what the S sweep evaluates inside its frame is what T1 covers.  A cell
+    the sweep never reaches, such as ``Term_US_S.pols_lapse``, which no result column
+    reads, holds no keys and is compared nowhere.  A test that wants more calls the extra
+    cells on the S side before it compares.
 
     Returns ``{name: value}`` in evaluation order, so a caller can assert on the checks
     without calling them a second time.
@@ -420,18 +422,43 @@ def _known(x):
     return x is None or _is_bool(x) or _is_number(x) or isinstance(x, _KNOWN_KINDS)
 
 
+def _frame_end(space):
+    """S's ``proj_len()``, the exclusive end of its frame, or ``None`` if it has none.
+
+    Every model's ``Projection`` has the cell, and a ``Data`` Space or a synthetic one need
+    not.  It is read, never compared here: a comparison may exempt it, as the splice does.
+    """
+    cells = space.cells
+    if "proj_len" not in cells or cells["proj_len"].parameters:
+        return None
+    return cells["proj_len"]()
+
+
+def _is_month(x):
+    return isinstance(x, numbers.Integral) and not _is_bool(x)
+
+
 def _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol):
     """Every mismatch line, lazily, so :func:`twin_mismatches` can stop at its limit."""
     sec_cells = sec_proj.cells
+    end = _frame_end(s_proj)
     for name in list(s_proj.cells):
-        if name in exempt or name not in sec_cells:
+        if name in exempt:
+            continue
+        if name not in sec_cells:
+            yield (f"{name}: a cell of S that SEC lacks; a cell SEC drops by design is "
+                   f"named in the spec's exempt, with its reason")
             continue
         s_cells, cells = s_proj.cells[name], sec_cells[name]
         n_params = len(s_cells.parameters)
+        s_t_pos = s_cells.parameters.index("t") if "t" in s_cells.parameters else None
         params = cells.parameters
         t_pos = params.index("t") if "t" in params else None
         for key in list(s_cells.keys()):
             args = _args(key, n_params)
+            if (end is not None and s_t_pos is not None and s_t_pos < len(args)
+                    and _is_month(args[s_t_pos]) and args[s_t_pos] >= end):
+                continue                        # read ahead of S's frame: not compared
             expected = s_cells(*args)           # a cached key: the cache, not a new value
             sec_args = args if arg_map is None else arg_map(name, args)
             if sec_args is None:
@@ -439,7 +466,7 @@ def _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol):
             sec_args = tuple(sec_args)
             if t_pos is not None and t_pos < len(sec_args):
                 t = sec_args[t_pos]
-                if isinstance(t, numbers.Integral) and not _is_bool(t):
+                if _is_month(t):
                     t = int(t) - t_offset
                     if t < 0:
                         continue
@@ -460,13 +487,26 @@ def twin_mismatches(s_proj, sec_proj, *, exempt=TWIN_EXEMPT_DEFAULT, arg_map=Non
                     t_offset=0, rtol=1e-9, atol=1e-9, limit=50):
     """Where the SEC model differs from its S twin, cell by cell: T1 (§5.2).
 
-    For every cells name in both Spaces and not in ``exempt``, and for every argument tuple
-    the S cells has cached, the SEC cells is evaluated at the same arguments and its value
-    compared with the value S cached.  So the S Space must be swept first (:func:`sweep`),
-    and what the sweep reached is exactly what is compared.  The S cache is read, never
-    re-evaluated.  Through this, the S goldens are asserted on the SEC model too, with no
-    number restated, wherever they sit on a cells the sweep reaches: ``result_cf()``, and
-    intermediate cells such as MYGA's surrender trace.
+    For every cells name of the S Space not in ``exempt``, and for every argument tuple the
+    S cells has cached inside S's frame, the SEC cells is evaluated at the same arguments
+    and its value compared with the value S cached.  So the S Space must be swept first
+    (:func:`sweep`), and what the sweep reached inside the frame is what is compared.  The
+    S cache is read, never re-evaluated.  Through this, the S goldens are asserted on the
+    SEC model too, with no number restated, wherever they sit on a cells the sweep
+    reaches: ``result_cf()``, and intermediate cells such as MYGA's surrender trace.  An S
+    cells the SEC Space lacks is reported, one line for the cells, rather than left out of
+    the comparison: a cells renamed or dropped would otherwise take its goldens with it
+    without a word.  One the SEC model drops by design is named in ``exempt``, with its
+    reason, as any other exemption is.
+
+    Only S's own frame is compared.  Where S has a ``proj_len()`` cell, as every model's
+    ``Projection`` does, a key whose S ``t`` is at or past it is skipped.  S evaluates such
+    a month only when a formula reads ahead of its frame, as ``Term_US_S.jump_ratio()``
+    reads ``premium_pp_ann(12n)`` on a point whose cover ends with the level period, or
+    ``conv_rate`` reads ``conv_elig(t + 12)`` near expiry, and it answers from its tables
+    as though cover went on, where an SEC model answers that the month is outside cover
+    (R1).  S's frame ends where cover ends, on either clock, and :func:`frame_mismatches`
+    holds the two frames' ends together.
 
     ``s_proj`` and ``sec_proj`` are usually ItemSpaces, ``Projection[1]`` of each model, but
     any two Spaces work, ``Data`` against ``Data`` included.
@@ -886,7 +926,8 @@ class SecSpec:
         their twin, which is right only for a quantity fixed at issue (a locked rate, a
         solved premium: D6); anything that moves after issue needs a ``state`` entry.
     ``exempt``
-        extra cells T1 skips, beyond :data:`TWIN_EXEMPT_DEFAULT`, each for a stated reason.
+        extra cells T1 skips, beyond :data:`TWIN_EXEMPT_DEFAULT`, each for a stated reason,
+        an S cell the SEC model drops or renames among them.
     ``companions``
         companion filename to ``callable(s_model, table)``, which builds that file from the
         S model and the finished SEC table (a copy, free to modify): DIA's premium schedule,
@@ -935,11 +976,28 @@ class SecSpec:
         object.__setattr__(self, "exempt", frozenset(self.exempt))
 
 
-# SEC model name -> its SecSpec.  Empty until Phase 1, which registers each product's spec
-# here as its SEC model lands, Term first (§5.3).  The conventions suite reads ``exempt``
-# from it for T1, the product module's T6 calls :func:`check_generated` with the name, and
+# SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
+# model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
+# the product module's T6 calls :func:`check_generated` with the name, and
 # ``tools/gen_sec_points.py`` writes the files from it.
-SEC_SPECS: dict[str, SecSpec] = {}
+SEC_SPECS: dict[str, SecSpec] = {
+    # Term's only state is the count, which the default extractor reads (s_proj.pols_if(d)),
+    # so the spec names rows and nothing else.  The derived rows are an anniversary in the
+    # level period, the middle of the first ART year and the last covered month; the
+    # future row is issued off a valuation anniversary.  T2's splice grid is built from
+    # this spec in a temporary table, not committed.  T1, and T3 on the future rows, hold
+    # on Term only while each S point counts one policy, as both do: SEC charges
+    # acquisition per policy issued, S once per model point (§7.1), so on a row issued at
+    # or after the valuation date from a point of any other count, expenses and net_cf
+    # differ in the issue month by design, and no exemption can take that out without
+    # taking those cells.
+    "Term_US_SEC": SecSpec(
+        twin="Term_US_S",
+        column_map={"duration_inforce": None},
+        derived=((2, 12), (1, 126), (1, 719)),
+        future=((1, 3),),
+    ),
+}
 
 
 def _derived_policy_id(policy_id, d):
