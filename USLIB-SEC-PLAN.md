@@ -1,8 +1,13 @@
 # Plan — `*_US_SEC`: uslib models that run in force, then compile
 
-**Status:** Draft plan, 2026-10-31. Nothing in it is implemented yet. Every number in it
-was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and modelx-cython
-0.1.0 as installed for the purpose, and each is quoted with the experiment that produced it.
+**Status:** Accepted, 2026-11-01; drafted 2026-10-31. Its open decisions (§8.2) are settled
+but one, and implementation has begun with Phase 0. Like USLIB-MERGE-PLAN.md, this document
+is both the specification and the record: each phase records what it actually did,
+including where the implementation departed from the plan.
+
+Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
+modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
+that produced it.
 
 **Goal.** For each of the twelve uslib products, add a model `<Name>_US_SEC`, derived from
 its `<Name>_US_S`, with two enhancements done **in sequence**:
@@ -171,11 +176,46 @@ for a final state of 24; the stage key carries the same information.
 
 ### D3 — Time axis: the valuation clock
 
-`t = 0` is the valuation date for every point and `t` counts projection months. The policy
-clock is `duration_mth(t) = duration_mth_init() + t` — the closed form the UL family and VA
-already use, not BasicTerm_SE's recursion, which would be one more recursion chain in the
-compiled model. `duration(t)`, `policy_year(t)` and `age(t)` keep their S definitions on top
-of it, and `result_cf()` always covers `t = 0 .. proj_len() - 1`.
+The SEC models run on two clocks:
+
+- **`t`, the projection clock.** It counts months from the valuation date. `t = 0` is the
+  valuation date for every model point, however old the policy is.
+- **`duration_mth(t)`, the policy clock.** It counts how many months the policy has been in
+  force at time `t`. Everything contractual reads it: premium schedules, surrender charges,
+  anniversaries.
+
+The policy clock is plain addition, `duration_mth(t) = duration_mth_init() + t`.
+`duration_mth_init()` is read from the model point: the policy's age in months at the
+valuation date. It is 26 for a policy issued 26 months before the valuation date, 0 for one
+issued at it, and −15 for one to be issued 15 months later (D4). Ten months after the
+valuation date, the first of these is 36 months old.
+
+BasicTerm_SE reaches the same numbers by recursion instead. Month 0 comes from the model
+point and every later month is "last month plus one", so asking for month 500 first asks for
+month 499, then 498, back to 0. The SEC models use the addition, as UL_US_S and VA_US_S
+already do: the numbers are identical, without a 500-deep chain of calls. That matters once
+the model is compiled. Every such chain runs on the C stack, which is 1 MB on Windows' main
+thread (F7), and the models already carry the chains they cannot avoid, such as the
+in-force count.
+
+The cells built on the policy clock keep their S formulas unchanged:
+- `duration(t) = duration_mth(t) // 12`, the completed policy years;
+- `policy_year(t) = duration(t) + 1`;
+- `age(t) = age_at_entry() + duration(t)`.
+
+For the 26-month-old policy, issued at age 60, `t = 10` gives 36 months, 3 completed years,
+policy year 4 and age 63. Only the base changed, so nothing built on it needs rewriting to
+handle a policy already in force.
+
+`result_cf()` has one row per month, from `t = 0`, the valuation month, to `proj_len() - 1`.
+`proj_len()` counts the months from the valuation date to the end of cover. A policy with 720
+months of cover from issue and 26 months behind it has 694 left, so its frame runs from row
+0 to row 693.
+
+Row 0 always means the valuation month, so every point's frame lines up with every other's,
+and they sum row by row into a block. This is the change from WholeLife_US_S and FIA_US_S,
+whose in-force frames start at row 108 or 84 because their `t` is the policy's own age. A
+point not yet issued has zero rows until its issue month.
 
 On a new-business point issued at `t = 0` the two clocks coincide. That is what turns every
 S worked example into an SEC test case without restating it.
@@ -271,7 +311,7 @@ Beside the S files: `<Name>_US_SEC/` (formulas only, `Data` and `Projection`),
 `model_point_table_sec.csv`, `run_sec.py` and `model-sec.md`; at Phase 2, `sample_sec.py`
 and `spec_sec.py`, mx2cy's two inputs. The SEC table holds:
 
-1. **every S row**, with the same `policy_id` — the twins of §5.2. An S row that is in force
+1. **every S row**, with the same `policy_id` and `point_id` — the twins of §5.2. An S row that is in force
    on the policy clock (WholeLife's `duration_inforce = 9`, FIA's `entry_year = 7`) becomes
    an in-force SEC row at `duration_mth = 108` / `84`;
 2. **derived in-force rows**: S new-business points restated at chosen months `d`, with
@@ -293,7 +333,9 @@ against the shared roll-up table, and no projected number would ever reveal the 
 
 Some SEC rows need inputs S never had:
 - a scenario re-based to the row's valuation date (VA, FIA);
-- an in-force ladder (IUL).
+- an in-force ladder (IUL);
+- premium schedule rows (DIA), whose shared `premium_schedule.csv` is keyed by `point_id` and
+  knows no derived or future point (§7.12).
 
 These go in SEC-only companion files (`*_sec.csv`), never into the shared S inputs. Where
 they derive from S data they are generated the same way, under the same test.
@@ -311,7 +353,9 @@ representation, how to compile, and measured speed. `gen_scaffolding.py` learns 
 several models per product. The product landing page lists both, and the autodoc pages move
 under per-model folders (`products/<slug>/<Model>/{<Model>,Data,Projection}.rst`) for S and
 SEC alike. This is a one-time URL change, taken now, before the lifelib merge, while it
-costs nothing. `index.md` gains the SEC family in its models table and its convention table.
+costs nothing. The layout belongs to the tool, which writes all six libraries' page trees, so
+every library's model pages move with uslib's. Nothing links to them by path; `conf.py`,
+`MERGE.md` and the tool's own docstring describe the layout, and change with it. `index.md` gains the SEC family in its models table and its convention table.
 
 ### D10 — Registry and conventions
 
@@ -1068,6 +1112,15 @@ valuation clock these part.
   continuation explicitly.
 - Option months stay on the policy clock, compared with `duration_mth(t)`. Converted to `t`
   they would collide with the `-1` "never" sentinel.
+- **Premium schedule.** S reads a point's premiums from the shared `premium_schedule.csv`,
+  matching rows by `point_id`, and a point with no rows projects **silently**, with no
+  premium and no income. A copy of point 1 under a new id, verified, totals −1,985 in
+  `net_cf`, which is its expenses, against point 1's −277,364.
+  - The SEC model therefore reads its own `premium_schedule_sec.csv`, generated from S's
+    schedule: copied for a twin; for a derived row, the source policy's premiums still due
+    after `d`, because those paid earlier are already in the opening state as CP and B; and
+    the whole schedule for a future row.
+  - Premium months stay policy months.
 - Splice months: 59, 60 and 61 around point 14's second slice; `T - 1`, `T`, `T + 1`; the
   option months of points 13–15.
 
@@ -1130,23 +1183,24 @@ valuation clock these part.
   only Phase 1 change that restructures a model rather than extending it. It goes last, on
   the most mature harness.
 
-### 8.2 To confirm
+### 8.2 Decisions
 
-Each of these is decided above with a recommendation. A different answer changes the
-plan's shape, so it should be confirmed before Phase 0.
+Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended. Item 4 is still open; it
+is needed only before Phase 1 reaches RILA.
 
-1. **Future new business (D4).** Support it, as BasicTerm_SE does? *Recommended: yes, with
-   D4's per-product fallback.*
+1. **Future new business (D4).** Supported, as BasicTerm_SE does, with D4's per-product
+   fallback. *Confirmed.*
 2. **Economic inputs on the valuation clock (D7).** Expense inflation and mortality
    improvement run from the valuation date, so unit costs are in valuation-date dollars.
-   *Recommended: yes; it is BasicTerm_SE's choice, and changes nothing on new business.*
+   New business is unaffected; S's existing in-force rows differ by design. *Confirmed.*
 3. **Doc layout (D9).** Per-model autodoc folders for S and SEC alike, a one-time URL change
-   for the S pages before the merge. *Recommended: yes.*
+   before the merge. *Confirmed.*
 4. **Small S fixes found on the way** — RILA's invalid escape, the `pols_if_at` stubs in UL
    and VUL that return `pols_if` for every timing. Separate PRs on the S models, ahead of
    Phase 1? *Recommended: the escape, yes; the stubs are superseded in SEC and can stay.*
-5. **The `cython` CI job on Windows from the start (D13)?** *Recommended: yes. MSVC and the
-   1 MB main-thread stack are where a compiled model differs most.*
+   *Open.*
+5. **The `cython` CI job on Windows from the start (D13).** MSVC and the 1 MB main-thread
+   stack are where a compiled model differs most. *Confirmed.*
 
 ---
 
