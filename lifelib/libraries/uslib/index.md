@@ -65,12 +65,13 @@ A product may also carry a second model, `<product>_US_SEC`, derived from its `_
 `E` is for running **in force**: `t` counts months from a valuation date shared by every
 model point, and a model point may be a policy issued at that date, one already in force at
 it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
-`basiclife/BasicTerm_SC` does, a step still to come. On the `_S` model's new-business
-points, issued at the valuation date, an `_SEC` model reproduces its `_S` model cell by
-cell. Where the worked example's point is already in force, as whole life's is, the
-`_SEC` twin of that point continues the `_S` projection from the month it is valued at,
-its expenses apart, which inflate from the valuation date. Each `model-sec.md` says what
-running in force changes. `Term_US_SEC` and `WholeLife_US_SEC` are the first two.
+`basiclife/BasicTerm_SC` does; `Term_US_SEC` is the first to compile, and its
+`model-sec.md` says how. On the `_S` model's new-business points, issued at the
+valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where the worked
+example's point is already in force, as whole life's is, the `_SEC` twin of that point
+continues the `_S` projection from the month it is valued at, its expenses apart, which
+inflate from the valuation date. Each `model-sec.md` says what running in force changes.
+`Term_US_SEC` and `WholeLife_US_SEC` are the first two.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -115,7 +116,8 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 ### One shape, enforced
 
 Every model has the same two Spaces — `Data` reads the input CSVs once per model, and
-`Projection` is parameterized by `point_id` — with inputs as **external** CSVs beside
+`Projection` is parameterized by `point_id`, or by its position, `idx`, in an `_SEC` model
+that compiles — with inputs as **external** CSVs beside
 `run.py`, so the model folder holds formulas and nothing else. `Projection`'s docstring
 carries the mapping from the technical notes' actuarial symbols to the cells names.
 
@@ -255,7 +257,9 @@ python -m pytest tests -q
 * - `products/<product>/*.csv`
   - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, generated from the `_S` model and its table and checked against them by the tests.
 * - `products/<product>/run.py`
-  - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block.
+  - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block, and `--cython` runs the compiled model.
+* - `products/<product>/sample_sec.py`, `spec_sec.py`
+  - mx2cy's two inputs for compiling an `_SEC` model: the sample run that types each cell, and the size of each cell's cache.
 * - `references/`
   - The cross-product regulatory and actuarial bibliography, cited as `[REG-R#]`.
 * - `tests/`

@@ -42,6 +42,7 @@ lifelib/libraries/                   the path lifelib keeps its libraries on, an
         sources.md                   numbered source list for this product's documents
         run.py  *.csv  <Model>/      the modelx model and its inputs
         model-sec.md  run_sec.py     uslib: an _SEC model's notes and runner, beside it
+        sample_sec.py  spec_sec.py   uslib: an _SEC model's compile inputs, at stage EC
     references/
       regulatory-and-actuarial-references.md
                                      curated cross-product bibliography

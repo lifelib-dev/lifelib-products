@@ -131,7 +131,9 @@ jobs:
 
     - name: Run the compile tests with pytest
       # Only uslib has compile tests, so only its suite is collected, and `-m cython`
-      # selects them. Until Phase 2 that is test_cython_toolchain.py, which compiles
-      # Term_US_S. A run that selects nothing exits 5 and fails, which is wanted for the
-      # same reason a skip is.
+      # selects them: test_cython_toolchain.py, which compiles Term_US_S, and from its
+      # Phase 2 on each SEC model's own, Term_US_SEC's first (M14), with the stage-EC
+      # conventions of test_compiled_conventions.py, which compile the model once a
+      # session and hold the compiled model to modelx. A run that selects nothing exits 5
+      # and fails, which is wanted for the same reason a skip is.
       run: pytest -q -m cython --durations=10 lifelib/libraries/uslib/tests

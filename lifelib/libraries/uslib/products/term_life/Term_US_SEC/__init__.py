@@ -21,12 +21,15 @@ explains what running in force changes.
 :mod:`~.Term_US_SEC.Data`
     Reads the four assumption CSVs it shares with :mod:`~.Term_US_S` and its own model
     point table, and holds their filename References. It takes no parameters, so each
-    file is read **once per model**.
+    file is read **once per model**. It hands the projection what the files hold as
+    numpy vectors and arrays of numbers, one element per model point or per key.
 
 :mod:`~.Term_US_SEC.Projection`
-    The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.Term_US_SEC.Data` Space.
+    The by-policy projection, parameterized by ``idx``, the position of a model point in
+    the ``Data`` vectors, as ``basiclife.BasicTerm_SC`` is: ``Projection[0]`` is an
+    ItemSpace projecting the table's first row, model point 1, and its ``point_id()`` is
+    that label. It reaches the inputs through its ``data`` Reference, which resolves to
+    the single :mod:`~.Term_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -36,6 +39,18 @@ once, however many policies are projected.
 Input data is **external**: CSVs in the model folder's parent directory, read at run
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
+
+**Compiled.** The model compiles under modelx-cython into C-typed code, as
+``basiclife/BasicTerm_SC`` does, from the two inputs beside it: ``sample_sec.py``, the run
+that types each cell, and ``spec_sec.py``, the length of each cell's cache.
+``Projection``'s cells read every model point attribute a projection cell uses as a C
+number from a ``Data`` vector at ``idx``, and every table as an array indexed by integers;
+a timing or a phase is an int code; and every cell but the reports, ``model_point`` and
+four label accessors returns a C ``bint``, ``long long`` or ``double``, cached as a single
+value or in a C array sized from the contract. modelx reads and runs the same formulas,
+and computes the same numbers. ``products/term_life/model-sec.md`` says how to compile and
+run it, and what the compiled model does not do as modelx does: it clears no cache when a
+Reference is set, so every Reference is set on a model just imported.
 
 **Projection basis.** Monthly steps on two clocks. ``t`` counts months from the
 valuation date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the
@@ -54,7 +69,10 @@ as in ``basiclife/BasicTerm_SE``. On a point issued at ``t = 0`` the two clocks
 coincide, and the model computes what :mod:`~.Term_US_S` computes, except that
 acquisition is charged per policy issued rather than once per model point, and that
 ``pols_if_init()`` is the count already in force at the valuation date, 0 for such a
-point, whose policies enter as new business at ``t = 0``.
+point, whose policies enter as new business at ``t = 0``. Where :mod:`~.Term_US_S`'s
+annual mortality passes 1 its monthly rate is complex, and this model caps the annual
+rate at 1, which changes no value :mod:`~.Term_US_S` computes as a real number but that
+rate itself.
 
 Decrements follow suit in two speeds. ``mort_rate(t)`` and ``lapse_rate(t)`` are the
 **annual** rates of the policy year containing month ``t`` — the vectors the technical
@@ -100,18 +118,19 @@ class or band requires ``premium_rates.csv`` to be extended first.
 holds here too, with no number restated. ``tests/test_term_life_us_sec.py`` splices: an
 S point restated in force at month ``d`` continues the S projection from ``d`` on, cell
 by cell, at months around the shock, the first ART premium and the last month of
-cover. It splices S's two points, and three variants of them in a copy of S's table,
-never committed, that reach what S's own points cannot: a conversion window closed by
-attained age 70, the other three premium modes, a 20-year level period, and cover that
-ends with the level period. And a point issued ``k`` months late is the S projection
-``k`` months on.
+cover. It splices S's two points, and variants of them in a copy of S's table and its
+premium schedule, never committed, that reach what S's own points cannot: a conversion
+window closed by attained age 70, the other three premium modes, a 20-year level period,
+cover that ends with the level period, the other sex, every underwriting class and each
+side of every face-amount boundary. And a point issued ``k`` months late is the S
+projection ``k`` months on.
 
 Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/term_life/Term_US_SEC")
-    >>> model.Projection[4].result_cf()
-    >>> model.Projection[4].result_pols()
+    >>> model.Projection[3].result_cf()      # the fourth row: model point 4
+    >>> model.Projection[3].result_pols()
 """
 
 from modelx.serialize.jsonvalues import *

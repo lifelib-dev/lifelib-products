@@ -8,6 +8,8 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
@@ -53,6 +55,8 @@ Cells Descriptions
 .. autofunction:: prem_due
 
 .. autofunction:: premium_pp_ann
+
+.. autofunction:: premium_schedule
 
 .. autofunction:: premium_pp_ann_py
 

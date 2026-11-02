@@ -220,15 +220,18 @@ def test_model_folder_holds_formulas_only(name):
 
 # What an SEC model needs beside it on top of what its twin does: its own runner, notes and
 # model point table (USLIB-SEC-PLAN.md D8, D9). They share the S model's directory, under
-# names that cannot collide with the S files.
+# names that cannot collide with the S files. At stage "EC" it needs mx2cy's two inputs
+# too, the sample run that types its cells and the spec that sizes their caches (§6.1).
 SEC_COMPANION_FILES = ("run_sec.py", "model-sec.md", "model_point_table_sec.csv")
+EC_COMPANION_FILES = ("sample_sec.py", "spec_sec.py")
 
 
 def test_the_model_ships_with_its_inputs_and_a_runner(name):
     """Every model directory carries its CSVs, a run.py and a model.md beside the model.
 
     An SEC model lives in its twin's directory, so it has those already, and needs
-    :data:`SEC_COMPANION_FILES` beside them as well.
+    :data:`SEC_COMPANION_FILES` beside them as well, and :data:`EC_COMPANION_FILES` from
+    stage ``"EC"`` on.
     """
     parent = model_path(name).parent
     csvs = {p.name for p in parent.iterdir() if p.suffix == ".csv"}
@@ -236,7 +239,9 @@ def test_the_model_ships_with_its_inputs_and_a_runner(name):
     assert (parent / "run.py").is_file()
     assert (parent / "model.md").is_file()
     if is_sec(name):
-        missing = [f for f in SEC_COMPANION_FILES if not (parent / f).is_file()]
+        needed = SEC_COMPANION_FILES + (
+            EC_COMPANION_FILES if meta(name).get("stage") == "EC" else ())
+        missing = [f for f in needed if not (parent / f).is_file()]
         assert not missing, f"{name}: no {', '.join(missing)} beside the model"
 
 
@@ -760,8 +765,11 @@ def test_round_trip_is_stable(name, model, tmp_path):
 # model beyond the base sweep; T1 takes those reads back out of the log (see there).
 #
 # Phase 1 registers the SEC models one product at a time, Term_US_SEC first, and each meets
-# this section from the commit that registers it. The conventions of stage "EC" — the
-# typing guard, no pandas in Projection — are Phase 2's and are not here.
+# this section from the commit that registers it. The conventions of stage "EC" alone —
+# the typing guard, no pandas in Projection, the compiled model against modelx — are
+# Phase 2's and are not here: most need a compiled build, and they are
+# test_compiled_conventions.py's, which shares the session's build through
+# conftest.sec_build.
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
 
@@ -801,8 +809,9 @@ def _timing(model, label):
     """The argument that selects timing ``label``: at stage ``"E"``, the string itself.
 
     Phase 2 turns the timing strings into int References of the same names (R9:
-    ``pols_if_at(t, BEF_DECR)`` with ``BEF_DECR = 2``), and this passes whichever the model
-    defines, so the conventions below read the same at both stages.
+    ``pols_if_at(t, BEF_DECR)``, with ``BEF_NB = 0`` and ``BEF_DECR = 1`` in every SEC
+    model), and this passes whichever the model defines, so the conventions below read the
+    same at both stages.
     """
     value = model.Projection.refs.get(label)
     return value if isinstance(value, int) else label
@@ -978,7 +987,11 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
     exempt: ``sec_support.TWIN_EXEMPT_DEFAULT``, and the product's own in
     ``sec_support.SEC_SPECS``, where a cell SEC drops is named too. Through this, every S
     worked example, its intermediate cells included, becomes an SEC assertion with no golden
-    restated.
+    restated. At stage ``"EC"`` the SEC model spells S's timings and phases as int
+    References named as S's strings (R9, R10), and ``sec_support.codes`` maps the one onto
+    the other, in S's arguments and in S's values; an argument SEC takes otherwise, a
+    total's code for S's ``None`` or a slot for S's month, goes through the spec's
+    ``twin_arg_map`` first (R12, R15).
 
     The identity presumes what every S table in the library holds: each S point counts one
     policy. An SEC model charges per policy issued what its S model may charge once per
@@ -1007,11 +1020,12 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
     comparison read back out of the log, and the read-once test sees the same reads in
     either order.
     """
-    from sec_support import SEC_SPECS, TWIN_EXEMPT_DEFAULT, sweep, twin_mismatches
+    from sec_support import SEC_SPECS, TWIN_EXEMPT_DEFAULT, codes, sweep, twin_mismatches
 
     twin = meta(name)["twin"]
     spec = SEC_SPECS.get(name)
     exempt = TWIN_EXEMPT_DEFAULT | (spec.exempt if spec is not None else frozenset())
+    arg_map = spec.twin_arg_map if spec is not None else None
     _base_sweep(model)
     mark = len(read_log)
     try:
@@ -1030,7 +1044,9 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
         for point_id, s_key, sec_key in pairs:
             s_proj = projection(twin_model, s_key)
             sweep(s_proj)
-            found = twin_mismatches(s_proj, projection(model, sec_key), exempt=exempt)
+            sec_proj = projection(model, sec_key)
+            found = twin_mismatches(s_proj, sec_proj, exempt=exempt, arg_map=arg_map,
+                                    codes=codes(sec_proj))
             mismatches += [f"point {point_id}: {m}" for m in found]
     finally:
         del read_log[mark:]

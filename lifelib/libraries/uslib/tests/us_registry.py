@@ -17,17 +17,20 @@ That last entry is a property of the library, not an omission: every ``technical
 specifies *gross liability cash flows* and leaves discounting and reserves to a separate
 layer that consumes them.
 
-**The SEC keys.**  USLIB-SEC-PLAN.md puts a ``_SEC`` model beside each ``_S`` one, and four
-metadata keys describe it: three from the plan's D10 and the last from its D5.  ``"twin"``
-names the S model an SEC model is derived from; its presence is what makes an entry SEC
-(:func:`is_sec`).  ``"stage"`` is ``"E"`` while an SEC model runs in force at ``t = 0`` but
-does not yet compile, and ``"EC"`` once it does; the name does not change with it.
-``"param"`` names the ``Projection`` parameter: ``"point_id"``, the default, or ``"idx"``,
-the position of a model point in the ``Data`` vectors, which a compiled model takes as
-``basiclife/BasicTerm_SC`` does.  And ``"closing_pols_if"`` marks ``SPIA_US_SEC`` alone,
-whose ``pols_if`` is a closing count, not the count that weights row ``t``.  Read them
-through :func:`meta`, which hands out a copy: ``MONTHLY`` is one dict, shared by every entry
-that registers it.
+**The SEC keys.**  USLIB-SEC-PLAN.md puts a ``_SEC`` model beside each ``_S`` one, and five
+metadata keys describe it: three from the plan's D10, one from its D5 and one from its
+R17.  ``"twin"`` names the S model an SEC model is derived from; its presence is what makes
+an entry SEC (:func:`is_sec`).  ``"stage"`` is ``"E"`` while an SEC model runs in force at
+``t = 0`` but does not yet compile, and ``"EC"`` once it does; the name does not change
+with it.  ``"param"`` names the ``Projection`` parameter: ``"point_id"``, the default, or
+``"idx"``, the position of a model point in the ``Data`` vectors, which a compiled model
+takes as ``basiclife/BasicTerm_SC`` does.  ``"closing_pols_if"`` marks ``SPIA_US_SEC``
+alone, whose ``pols_if`` is a closing count, not the count that weights row ``t``.  And
+``"reporting"``, at stage ``"EC"``, names the model's label accessors: the S cells that
+return a model point's text, kept for a reader and for the twin identity, which no other
+cell calls and which stay Python when the model compiles, beside ``model_point``, the
+``result_*`` reports and the ``check_*`` cells.  Read them through :func:`meta`, which
+hands out a copy: ``MONTHLY`` is one dict, shared by every entry that registers it.
 
 **Why :func:`point_keys` exists.**  An ``idx``-parameterized ``Projection`` is indexed by
 position, not by table label.  The tables number their points from 1, so a test that
@@ -80,14 +83,16 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 #     "Term_US_SEC": ("products/term_life/Term_US_SEC",
 #                     {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
 #
-# with "param": "idx" added at stage "EC", and "closing_pols_if": True on SPIA_US_SEC alone.
-# Phase 1 adds them one product at a time, each directly after its twin and with its
-# INPUT_FILES set below; Term_US_SEC, the first, is entered exactly so.
+# with "param": "idx" and the "reporting" label accessors added at stage "EC", and
+# "closing_pols_if": True on SPIA_US_SEC alone.  Phase 1 adds them one product at a time,
+# each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
+# to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC".
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
     "Term_US_SEC": ("products/term_life/Term_US_SEC",
-                    {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
+                    {**MONTHLY, "twin": "Term_US_S", "stage": "EC", "param": "idx",
+                     "reporting": ("plan", "premium_mode", "rate_class", "sex")}),
     "WholeLife_US_S": ("products/whole_life/WholeLife_US_S", MONTHLY),
     "WholeLife_US_SEC": ("products/whole_life/WholeLife_US_SEC",
                          {**MONTHLY, "twin": "WholeLife_US_S", "stage": "E"}),

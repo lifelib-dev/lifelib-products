@@ -13,7 +13,8 @@ What each test pins, against the plan (its §4 item 3 and §5.2):
   compared every value the S sweep cached, a tuple argument included; loud, and specific,
   on a changed one; bounded by ``limit``; an SEC error, an uncomparable value or an S cell
   the SEC model lacks reported rather than raised or passed; S's reads past its own frame
-  left out; and an offset, or an argument map, turning S's call into SEC's.
+  left out; an offset, or an argument map, turning S's call into SEC's; and, at stage
+  ``"EC"``, :func:`codes` turning S's timing and phase strings into SEC's int References.
 * T2 and T3's harness: :func:`temp_inputs` copies a product so an added point projects
   exactly as its source, and writes floats the models' reader reads back exactly;
   :func:`shift_months` re-bases a table under both readings; :func:`frame_mismatches`
@@ -28,6 +29,14 @@ What each test pins, against the plan (its §4 item 3 and §5.2):
   months; :func:`fingerprint_text` writes a literal that reads back as the freeze exactly,
   within 92 columns; and :func:`fingerprint_mismatches` reports every kind of departure,
   a spike in a month the freeze does not name and a zero column that moves included.
+* Compiling: :func:`cython_missing` names what a machine lacks, and :func:`require_cython`
+  skips, or fails under ``USLIB_REQUIRE_CYTHON=1``; :class:`SecBuilds` builds a model
+  once and keeps a failed build's error for every asker; C3's readers find every kind of
+  fault in written declarations, a written spec and written C; C5's static check finds
+  every construct it forbids in a synthetic model and passes the ones it allows; C4's
+  comparison keeps a value's kind and floors its tolerance at the magnitude, or at a
+  tolerance of 0 tells one ulp apart; and :func:`full_sweep` reaches every cell at every
+  month and keeps each raise.  None of these compiles anything.
 
 modelx keeps every model in one registry, and ``conftest.term_life`` already holds the
 default name, so every model here is read under a name of its own and closed.
@@ -44,7 +53,8 @@ import pandas as pd
 import pytest
 
 from sec_support import (
-    SEC_SPECS, TWIN_EXEMPT_DEFAULT, SecSpec, build_sec_table, check_generated, fingerprint,
+    SEC_SPECS, TWIN_EXEMPT_DEFAULT, SecSpec, build_sec_table, check_generated, codes,
+    fingerprint,
     fingerprint_mismatches, fingerprint_months, fingerprint_text, frame_mismatches,
     shift_months, sweep, temp_inputs, twin_mismatches, write_generated)
 from us_registry import model_path
@@ -366,6 +376,88 @@ def test_arg_map_turns_s_arguments_into_sec_ones():
     finally:
         s.close()
         sec.close()
+
+
+# S spells a timing and a phase as text, and SEC, at stage "EC", as int References named as
+# the text (R9, R10).  Both keep a label accessor's text.  SEC also holds References that
+# are not codes: a bool, a lower-case int and an all-capital float.
+S_TEXT = {
+    "pols_if_at": "lambda t, timing: 10.0 * t + (1.0 if timing == 'BEF_DECR' else 0.0)",
+    "phase": "lambda t: 'LEVEL' if t < 2 else 'PLT'",
+    "sex": "lambda: 'M'",
+}
+SEC_CODES = {
+    "pols_if_at": "lambda t, timing: 10.0 * t + (1.0 if timing == BEF_DECR else 0.0)",
+    "phase": "lambda t: LEVEL if t < lift else PLT",
+    "sex": "lambda: 'M'",
+}
+
+
+def test_codes_turn_s_strings_into_sec_ints():
+    """``codes`` maps S's timing arguments and phase values onto SEC's int References.
+
+    With them the two Spaces agree: ``pols_if_at(1, "BEF_DECR")`` is called as
+    ``pols_if_at(1, 1)``, S's ``"LEVEL"`` is compared with SEC's ``LEVEL``, and the label
+    accessor's ``"M"`` stays a string on both sides.  Without them SEC is called with S's
+    strings and compared with S's labels, and a phase coded wrongly is reported as such.
+    """
+    s, sec = mx.new_model(_name("codes_s")), mx.new_model(_name("codes_sec"))
+    try:
+        s_space, sec_space = _space(s, S_TEXT), _space(sec, SEC_CODES)
+        for name, value in {"BEF_NB": 0, "BEF_DECR": 1, "LEVEL": 1, "PLT": 2, "FLAG": True,
+                            "lift": 2, "RATE": 0.5}.items():
+            setattr(sec_space, name, value)
+        for timing in ("BEF_NB", "BEF_DECR"):
+            s_space.pols_if_at(1, timing)
+        s_space.phase(0), s_space.phase(3), s_space.sex()
+        found = {"codes": codes(sec_space)}
+        found["with"] = twin_mismatches(s_space, sec_space, exempt=frozenset(),
+                                        codes=found["codes"])
+        found["without"] = twin_mismatches(s_space, sec_space, exempt=frozenset())
+        sec_space.lift = 0                  # month 0 now coded PLT, which S calls LEVEL
+        found["wrong"] = twin_mismatches(s_space, sec_space, exempt=frozenset(),
+                                         codes=found["codes"])
+    finally:
+        s.close()
+        sec.close()
+    assert found["codes"] == {"BEF_NB": 0, "BEF_DECR": 1, "LEVEL": 1, "PLT": 2}
+    assert found["with"] == []
+    assert found["without"] == [
+        "pols_if_at(1, 'BEF_DECR'): S 11.0, SEC 10.0, diff -1",
+        "phase(0): S 'LEVEL' (str), SEC 1 (int)", "phase(3): S 'PLT' (str), SEC 2 (int)"]
+    assert found["wrong"] == ["phase(0): S 'LEVEL' is code 1; S 1, SEC 2, diff +1"]
+
+
+def test_a_spec_maps_s_none_total_onto_the_code_sec_takes():
+    """A spec's ``twin_arg_map`` turns S's ``None`` for a total into SEC's code (R12).
+
+    S's ``claims(t, kind=None)`` caches its total under ``(t, None)``, and at stage
+    ``"EC"`` an SEC model takes the total as a code, ``claims(t, ALL)``.  :func:`codes`
+    maps S's strings alone, so the spec's map names the code by its string, and ``codes``
+    then turns that into SEC's int, as T1 passes both.  Without the map, SEC is called with
+    S's ``None``.
+    """
+    spec = SecSpec(twin=TERM, twin_arg_map=lambda name, args: (
+        (args[0], "ALL") if name == "claims" and args[1] is None else args))
+    s, sec = mx.new_model(_name("total_s")), mx.new_model(_name("total_sec"))
+    try:
+        s_space = _space(s, {"claims": (
+            "lambda t, kind=None: 3.0 * t if kind is None else 1.0 * t")})
+        sec_space = _space(sec, {"claims": (
+            "lambda t, kind: 3.0 * t if kind == ALL else 1.0 * t")})
+        sec_space.ALL, sec_space.DEATH = 0, 1
+        s_space.claims(2), s_space.claims(2, "DEATH")
+        found = {"with": twin_mismatches(s_space, sec_space, exempt=frozenset(),
+                                         arg_map=spec.twin_arg_map,
+                                         codes=codes(sec_space)),
+                 "without": twin_mismatches(s_space, sec_space, exempt=frozenset(),
+                                            codes=codes(sec_space))}
+    finally:
+        s.close()
+        sec.close()
+    assert found["with"] == []
+    assert found["without"] == ["claims(2, None): S 6.0, SEC 2.0, diff -4"]
+    assert SecSpec(twin=TERM).twin_arg_map is None
 
 
 def test_frame_mismatches_will_not_pass_a_comparison_of_nothing():
@@ -917,3 +1009,419 @@ def test_every_departure_from_a_fingerprint_is_reported():
     assert found["columns"] == ["point 1: result_pols columns ['pols_death'], frozen "
                                 "['pols_lapse']"]
     assert found["points"] == ["points: frozen [1], now [1, 2]"]
+
+
+# ---------------------------------------------------------------------------
+# Compiling: require_cython, SecBuilds, and the checks of C3, C4 and C5
+
+
+def test_cython_missing_names_what_this_machine_lacks(monkeypatch):
+    """The tool, modelx-cython and, on POSIX, the C compiler, each named when missing."""
+    import importlib.util
+    import os
+    import pathlib
+
+    import sec_support
+    present = pathlib.Path(__file__)
+    found = {}
+    monkeypatch.setattr(sec_support, "_tool", lambda: present.with_name("no_such_tool.py"))
+    found["tool"] = sec_support.cython_missing()
+    monkeypatch.setattr(sec_support, "_tool", lambda: present)
+    real = importlib.util.find_spec
+    with monkeypatch.context() as patch:
+        patch.setattr(importlib.util, "find_spec",
+                      lambda name, *args: None if name == "modelx_cython"
+                      else real(name, *args))
+        found["modelx_cython"] = sec_support.cython_missing()
+    if importlib.util.find_spec("modelx_cython") is not None and os.name == "posix":
+        monkeypatch.setenv("CC", "no-such-compiler-cc")
+        found["compiler"] = sec_support.cython_missing()
+    assert "tools/build_sec_cy.py is absent" in found["tool"]
+    assert "modelx-cython is not installed" in found["modelx_cython"]
+    assert found.get("compiler", "'no-such-compiler-cc'").endswith(
+        "'no-such-compiler-cc', which is not on PATH")
+
+
+def test_require_cython_skips_and_the_cython_job_fails_instead(monkeypatch):
+    """Without the toolchain a compile test skips, and under ``USLIB_REQUIRE_CYTHON=1``
+    fails, saying what is missing; with it, the build tool comes back as a module."""
+    import sec_support
+    monkeypatch.setattr(sec_support, "cython_missing", lambda: "no compiler here")
+    monkeypatch.delenv("USLIB_REQUIRE_CYTHON", raising=False)
+    with pytest.raises(pytest.skip.Exception, match="no compiler here"):
+        sec_support.require_cython()
+    monkeypatch.setenv("USLIB_REQUIRE_CYTHON", "0")
+    with pytest.raises(pytest.skip.Exception, match="no compiler here"):
+        sec_support.require_cython()
+    monkeypatch.setenv("USLIB_REQUIRE_CYTHON", "1")
+    with pytest.raises(pytest.fail.Exception,
+                       match="USLIB_REQUIRE_CYTHON=1 forbids a skip, and no compiler here"):
+        sec_support.require_cython()
+    tool = sec_support._tool()
+    if tool is not None and tool.is_file():
+        monkeypatch.setattr(sec_support, "cython_missing", lambda: None)
+        module = sec_support.require_cython()
+        assert callable(module.build) and module.DIRECTIVE.startswith("# cython:")
+
+
+def test_sec_builds_compiles_each_model_once_and_keeps_a_failure(monkeypatch,
+                                                                 tmp_path_factory):
+    """A model is built once a session, and a failed build fails every asker unbuilt."""
+    import types
+
+    import sec_support
+    calls = []
+
+    def build(product_dir, model, out):
+        calls.append(model)
+        if model == "Term_US_S":
+            raise RuntimeError("the compiler failed")
+        package = out / f"{model}_nomx_cy"
+        package.mkdir()
+        (package / "_mx_classes.pxd").write_text("cdef class _c_Projection(x):\n",
+                                                 encoding="utf-8")
+        return package
+
+    monkeypatch.setattr(sec_support, "require_cython",
+                        lambda: types.SimpleNamespace(build=build))
+    builds = sec_support.SecBuilds(tmp_path_factory)
+    first, again = builds("Term_US_SEC"), builds("Term_US_SEC")
+    assert first is again and calls == ["Term_US_SEC"]
+    assert first.package == first.out / "Term_US_SEC_nomx_cy"
+    assert first.pxd.startswith("cdef class _c_Projection")
+    errors = []
+    for _ in range(2):
+        with pytest.raises(RuntimeError, match="the compiler failed") as excinfo:
+            builds("Term_US_S")
+        errors.append(excinfo.value)
+    assert errors[0] is errors[1] and calls == ["Term_US_SEC", "Term_US_S"]
+
+
+# A compiled model's declarations, as mx2cy writes them: Data, then Projection.  Of the
+# Projection cells, a and e are C; b returns an object and caches in a dict, as an
+# untraced cell does; c takes its timing as text; f takes a policy year the spec does not
+# size; d is missing, a Python method; g takes and returns objects and has no cache, as an
+# uncached cell does, since mx2cy traces no uncached formula; result_cf is a report.
+# Data.y is an object, and so is Data.table, a reader of an input file, which may stay one.
+PXD = """\
+cdef class _c_Data(_mx_sys.BaseSpace):
+
+    cdef const double[:] _v_x
+    cdef object _v_y
+    cdef object _v_table
+
+    cpdef const double[:] x(_c_Data self)
+    cpdef object y(_c_Data self)
+    cpdef object table(_c_Data self)
+
+cdef class _c_Projection(_mx_sys.BaseSpace):
+
+    cdef double[100] _v_a
+    cdef dict _v_b
+    cdef dict _v_c
+    cdef double[100][2] _v_e
+    cdef bint[7] _v_f
+    cdef object _v_result_cf
+
+    cpdef _mx_copy_refs(_c_Projection self, object base, object base_root)
+    cpdef double a(_c_Projection self, long long t)
+    cpdef object b(_c_Projection self, long long t)
+    cpdef double c(_c_Projection self, long long t, str timing)
+    cpdef double e(_c_Projection self, long long t, long long timing)
+    cpdef bint f(_c_Projection self, long long y)
+    cpdef object g(_c_Projection self, object t)
+    cpdef object result_cf(_c_Projection self)
+"""
+
+
+def _declared_model(tag):
+    """A modelx model with the cells :data:`PXD` declares, d among them.  ``Data.table``
+    reads ``table_file``, and ``Data.y`` names it only in a refusal, which a reader's
+    formula does not."""
+    model = mx.new_model(_name(tag))
+    data = model.new_space("Data")
+    data.table_file = "table.csv"
+    data.new_cells("x", formula="lambda: 0.0")
+    data.new_cells("y", formula=(
+        "def y():\n    if False:\n        raise ValueError(f'{table_file} is bad')\n"
+        "    return 0.0\n"))
+    data.new_cells("table", formula="lambda: table_file")
+    proj = model.new_space("Projection")
+    for name in ("a", "b", "c", "d", "e", "f", "g"):
+        proj.new_cells(name, formula="lambda t: 0.0")
+    proj.cells["g"].is_cached = False
+    proj.new_cells("result_cf", formula="lambda: 0.0")
+    return model
+
+
+def test_the_typing_guard_reads_every_kind_of_fault_from_the_declarations(tmp_path):
+    """C3 on a written ``.pxd``: an object, a text parameter, a dict cache, a cell not
+    compiled, an uncached cell, which mx2cy leaves untyped, an object ``Data`` vector but a
+    reader's; and the spec: a size off, a size missing, a misspelt key."""
+    from sec_support import Build, data_readers, spec_faults, typing_faults
+    build = Build("Synthetic", tmp_path, tmp_path / "pkg", PXD)
+    model = _declared_model("pxd")
+    try:
+        readers = data_readers(model)
+        found = typing_faults(build, model, reporting={"result_cf"},
+                              new_data={"x", "y", "table"})
+    finally:
+        model.close()
+    assert readers == {"table"}
+    assert [line.split(":")[0].split(",")[0] for line in found] == [
+        "Projection.b returns object", "Projection.b caches its values in a Python dict",
+        "Projection.c takes timing as str",
+        "Projection.c caches its values in a Python dict",
+        "Projection.d did not compile", "Projection.g returns object",
+        "Projection.g takes t as object", "Data.y returns object"]
+    assert "an uncached one" in found[5] and "has no trace of" in found[6], found[5:7]
+    spec = tmp_path / "spec_sec.py"
+    spec.write_text('# sizes\n{"spaces": {"Projection": {"cells_param_size": {\n'
+                    '    "t": 100, ("t", "timing"): (100, 3), "tt": 5}}}}\n',
+                    encoding="utf-8")
+    assert spec_faults(build, spec) == [
+        "Projection.e: a cache of (100, 2), where spec_sec.py gives (100, 3)",
+        "Projection.f: spec_sec.py gives no size for ('y',), so the sample sized its "
+        "cache, (7,)",
+        "spec_sec.py sizes ('tt',), which no compiled cell takes: mx2cy ignores the size, "
+        "as it ignores a misspelt name"]
+
+
+# The C Cython writes for six formulas, its names shortened: a keeps C locals alone, and
+# raises a ValueError, a builtin an exception; e a Python object, as an integer local does
+# under Cython's default inference; g calls the builtin round; h builds a list for sum; k
+# builds a dict; and the report result_cf keeps a Python object too, as it may.
+_C_SOURCE = """\
+static double __pyx_f_1S_13_c_Projection__f_a(void *__pyx_v_self, PY_LONG_LONG __pyx_v_t) {
+  PY_LONG_LONG __pyx_v_n;
+  double __pyx_r;
+  __pyx_t_1 = __Pyx_PyObject_FastCall(__pyx_builtin_ValueError, __pyx_callargs, 2);
+  return __pyx_r;
+}
+
+static double __pyx_f_1S_13_c_Projection__f_g(void *__pyx_v_self, PY_LONG_LONG __pyx_v_t) {
+  __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_builtin_round, __pyx_callargs, 3);
+  return 0.0;
+}
+
+static double __pyx_f_1S_13_c_Projection__f_h(void *__pyx_v_self, PY_LONG_LONG __pyx_v_t) {
+  __pyx_t_1 = PyList_New(2);
+  __pyx_t_2 = __Pyx_PyObject_FastCall(__pyx_builtin_sum, __pyx_callargs, 2);
+  return 0.0;
+}
+
+static double __pyx_f_1S_13_c_Projection__f_k(void *__pyx_v_self, PY_LONG_LONG __pyx_v_t) {
+  __pyx_t_1 = __Pyx_PyDict_NewPresized(2);
+  return 0.0;
+}
+
+static double __pyx_f_1S_13_c_Projection__f_e(void *__pyx_v_self, PY_LONG_LONG __pyx_v_t) {
+  PyObject *__pyx_v_n = NULL;
+  PyObject *__pyx_v_rate = NULL;
+  return 0.0;
+}
+
+static PyObject *__pyx_f_1S_13_c_Projection__f_result_cf(void *__pyx_v_self) {
+  PyObject *__pyx_v_ts = NULL;
+  return __pyx_r;
+}
+"""
+
+
+def test_the_generated_c_is_read_for_python_work_and_the_directives(tmp_path):
+    """C3 on written C: a projection formula's Python-object locals, its builtins but an
+    exception and the containers it builds are faults, a report's are not, and a
+    translated module must open with both of the tool's directives, in any order."""
+    from sec_support import Build, c_faults
+    package = tmp_path / "pkg"
+    package.mkdir()
+    (package / "_mx_classes.c").write_text(_C_SOURCE, encoding="utf-8")
+    module = package / "_mx_classes.py"
+    module.write_text("# cython: cpow=True, infer_types=True\nimport x\n",
+                      encoding="utf-8")
+    build = Build("Synthetic", tmp_path, package, "")
+    found = c_faults(build, reporting={"result_cf"})
+    assert found == [
+        "Projection.g calls the Python builtin round (R12, R16)",
+        "Projection.h calls the Python builtin sum (R12, R16)",
+        "Projection.h builds a Python list, dict or set (PyList_New) (R10, R12)",
+        "Projection.k builds a Python list, dict or set (__Pyx_PyDict_NewPresized) "
+        "(R10, R12)",
+        "Projection.e keeps Python objects in its C locals: n, rate"]
+    for first, missing in (("# cython: infer_types=True", "cpow=True"),
+                           ("# cython: infer_types=True, cpow=False", "cpow=True"),
+                           ("import x", "infer_types=True, cpow=True")):
+        module.write_text(f"{first}\nimport x\n", encoding="utf-8")
+        assert c_faults(build, reporting={"result_cf", "e", "g", "h", "k"}) == [
+            f"_mx_classes.py begins {first!r}, without {missing}: tools/build_sec_cy.py "
+            f"puts them on its first line"]
+    (package / "_mx_classes.c").write_text("int main(void) { return 0; }\n",
+                                           encoding="utf-8")
+    assert c_faults(build, reporting=set())[-1] == (
+        "no Projection formula in _mx_classes.c: its layout has changed under this check")
+
+
+# A model holding one of each construct C5 forbids, and the right way beside it.  ``label``
+# is a reporting cell, and so may hold text; ``kw_target`` is called with a keyword.
+STATIC_DATA = {
+    "vec": "lambda: np.array([1.0, 2.0, 3.0])",
+    "grid": "lambda: np.ones((2, 3))",
+    "flags": "lambda: np.array([True, False])",
+    "table": "lambda: pd.DataFrame({'x': [1.0]})",
+    "count": "lambda: 3",
+    "doubled": "lambda: vec() * 2",
+    "picked": "lambda: np.array([vec()[0], grid()[1, 2]])",
+}
+STATIC_PROJECTION = {
+    "fine": 'def fine(t):\n    """A docstring is text."""\n'
+            '    if t < 0:\n        raise ValueError(f"no month {t}")\n'
+            '    return float(data.vec()[t]) + data.grid()[0, t] + data.count()\n',
+    "kw_target": "lambda t: 0.0",
+    "uses_pd": "lambda t: pd.isna(t)",
+    "uses_loc": "lambda t: data.table().loc[t, 'x']",
+    "returns_text": "lambda t: 'LEVEL'",
+    "generator": "lambda t: sum(x for x in range(t))",
+    "keyword": "lambda t: kw_target(t=t)",
+    "measures": "lambda t: len(data.vec())",
+    "reads_label": "lambda t: label() == 'M'",
+    "label": "lambda: 'M'",
+    "flag": "lambda t: data.flags()[t]",
+    "text_ref": "lambda t: 1.0 if mode == 0 else 0.0",
+    "sliced": "lambda t: data.vec()[1:]",
+    "half": "lambda t: data.grid()[t]",
+    "nested": "def nested(t):\n    def inner():\n        return t\n    return inner()\n",
+    "rounds": "lambda t: round(1.5 * t, 2)",
+    "listed": "lambda t: [1.0, 2.0][t]",
+    "keyed": "lambda t: {12: 1.0, 6: 0.5}[t]",
+    "paired": "lambda t: (1.0, 2.0)[t] + abs(min(t, 1)) + max(float(t), 0.0)",
+    "method": "lambda t: (1.5 * t).is_integer()",
+    "uncached": "lambda t: 2.0 * t",
+}
+
+# The cells of STATIC_PROJECTION made uncached, as R14 once had float engine cells made.
+STATIC_UNCACHED = ("uncached",)
+
+
+def test_the_static_check_finds_what_a_compiled_cell_cannot_run():
+    """C5 on a synthetic model: every forbidden construct a line, the allowed ones none."""
+    from sec_support import static_faults
+    model = mx.new_model(_name("static"))
+    try:
+        data = model.new_space("Data")
+        data.np, data.pd = np, pd
+        for name, formula in STATIC_DATA.items():
+            data.new_cells(name, formula=formula)
+        proj = model.new_space("Projection")
+        proj.data, proj.pd, proj.mode = data, pd, "A"
+        for name, formula in STATIC_PROJECTION.items():
+            proj.new_cells(name, formula=formula)
+        for name in STATIC_UNCACHED:
+            proj.cells[name].is_cached = False
+        found = static_faults(model, reporting={"label", "missing"})
+    finally:
+        model.close()
+    expected = [
+        "the registry's reporting names missing, which is not a Projection cell",
+        "Projection.kw_target shares its name with what a call with keywords calls, at "
+        "Projection.keyword, line 1",
+        "Projection.uses_pd, line 1: refers to the module pd",
+        "Projection.uses_loc, line 1: reads .loc",
+        "Projection.uses_loc, line 1: holds the text 'x'",
+        "Projection.uses_loc, line 1: reads data.table(), a pandas DataFrame",
+        "Projection.returns_text, line 1: holds the text 'LEVEL'",
+        "Projection.generator, line 1: holds a GeneratorExp",
+        "Projection.generator, line 1: calls sum(), a call into Python",
+        "Projection.measures, line 1: calls len()",
+        "Projection.measures, line 1: uses data.vec() other than by one element",
+        "Projection.reads_label, line 1: refers to the reporting cell label",
+        "Projection.reads_label, line 1: holds the text 'M'",
+        "Projection.flag, line 1: reads data.flags(), an array of bool",
+        "Projection.text_ref, line 1: reads mode, a Reference holding text",
+        "Projection.sliced, line 1: uses data.vec() other than by one element",
+        "Projection.half, line 1: uses data.grid() other than by one element",
+        "Projection.nested, line 2: holds a FunctionDef",
+        "Projection.nested, line 4: calls inner(), a call into Python",
+        "Projection.rounds, line 1: calls round(), a call into Python",
+        "Projection.listed, line 1: builds a list, a Python object",
+        "Projection.keyed, line 1: builds a dict, a Python object",
+        "Projection.paired, line 1: builds a tuple, a Python object",
+        "Projection.method, line 1: calls the method .is_integer(), a call into Python",
+        "Projection.uncached is uncached: modelx-cython 0.1.0 traces only a cached cell's",
+        "Data.doubled, line 1: uses vec() other than by one element",
+    ]
+    for line in expected:
+        assert any(f.startswith(line) for f in found), (line, found)
+    assert len(found) == len(expected), found
+    assert not [f for f in found if f.startswith(("Projection.fine", "Projection.label",
+                                                  "Data.picked"))]
+
+
+def test_the_compiled_comparison_keeps_kinds_and_floors_at_the_magnitude():
+    """C4's comparison: a bool, an int and a real keep their kind, a real compares to
+    1e-12 floored at the cell's magnitude, frames and Series by column and value, arrays
+    exactly, and a raise only with the same raise."""
+    from sec_support import _outcome_text, _value_text
+    frame = pd.DataFrame({"pols_if": [1.0, 0.5], "net_cf": [-300.0, 12.5]},
+                         index=pd.Index([0, 1], name="t"))
+    row = pd.Series({"plan": "T10", "sum_assured": 250000.0, "override": float("nan")})
+    agree = [(True, True), (np.bool_(False), False), (3, 3), (1.0, 1.0 + 5e-13),
+             (0.0, 1e-13, 1.0), (float("nan"), float("nan")), ("M", "M"),
+             (frame, frame.copy()), (row, row.copy()),
+             (np.arange(3), np.arange(3)), (np.array([np.nan]), np.array([np.nan]))]
+    for case in agree:
+        scale = case[2] if len(case) > 2 else 0.0
+        assert _value_text(case[0], case[1], scale) is None, case
+    off = frame.copy()
+    off.loc[1, "net_cf"] = 12.5 * (1 + 1e-9)
+    differ = [(True, 1), (1, True), (3, 3.0), (3, 4), (1.0, 1.0 + 5e-12),
+              (0.0, 1e-13, 0.0), (float("nan"), 0.0), ("M", "F"), (frame, off),
+              (frame, frame.rename(columns={"net_cf": "net"})),
+              (row, row.replace("T10", "T20")),
+              (np.arange(3), np.arange(3.0)), (np.arange(3), np.arange(1, 4))]
+    for case in differ:
+        scale = case[2] if len(case) > 2 else 0.0
+        assert _value_text(case[0], case[1], scale), case
+    assert "column 'net_cf': 1 of 2 differ, first at 1" in _value_text(frame, off, 0.0)
+    raised = ("raised", "ValueError: point_id 2: no rate at attained age 30")
+    assert _outcome_text(raised, raised, 0.0) is None
+    assert _outcome_text(raised, ("raised", "IndexError: Out of bounds"), 0.0) == (
+        "modelx raised ValueError: point_id 2: no rate at attained age 30, compiled "
+        "raised IndexError: Out of bounds")
+    assert _outcome_text(("ok", 1.5), raised, 0.0) == (
+        "modelx returned 1.5 (float), compiled raised ValueError: point_id 2: no rate at "
+        "attained age 30")
+    assert _outcome_text(("ok", frame), None, 0.0) == (
+        "the compiled run returned nothing for it")
+    nudged = frame.copy()
+    nudged.loc[1, "net_cf"] = np.nextafter(12.5, 13.0)
+    for want, have in ((1.0, 1.0 + 5e-13), (0.046900001716041806, 0.046900001716041792),
+                       (frame, nudged)):
+        assert _value_text(want, have, 0.0) is None
+        assert _value_text(want, have, 0.0, rtol=0.0), (want, have)
+    for same in ((1.0, 1.0), (float("nan"), float("nan")), (-0.0, 0.0), (frame, frame)):
+        assert _value_text(*same, 0.0, rtol=0.0) is None
+
+
+def test_the_full_sweep_reaches_every_cell_and_every_month_and_keeps_the_raises():
+    """``full_sweep`` evaluates every cell without parameters and every monthly cell at
+    ``t = 0 .. proj_len()``, what they reach with them, and records each raise."""
+    from sec_support import _cached_values, full_sweep
+    model = mx.new_model(_name("sweep"))
+    try:
+        proj = model.new_space("Projection")
+        proj.new_cells("proj_len", formula="lambda: 3")
+        proj.new_cells("rate", formula="lambda t: 0.01 * t")
+        proj.new_cells("count_at", formula="lambda t, timing: rate(t) + timing")
+        proj.new_cells("count", formula="lambda t: count_at(t, 1)")
+        proj.new_cells("strict", formula=(
+            "def strict(t):\n    if t == 2:\n        raise ValueError('no month 2')\n"
+            "    return 1.0\n"))
+        raised = full_sweep(proj)
+        cached = _cached_values(proj)
+    finally:
+        model.close()
+    assert raised == {("strict", (2,)): "ValueError: no month 2"}
+    assert sorted(args for name, args in cached if name == "count_at") == [
+        (t, 1) for t in range(4)]
+    assert sorted(args for name, args in cached if name == "strict") == [(0,), (1,), (3,)]
+    assert cached[("rate", (3,))] == 0.03 and cached[("proj_len", ())] == 3

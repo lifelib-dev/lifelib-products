@@ -50,3 +50,38 @@ def term_life():
 def anchor(term_life):
     """Model point 1 — the worked-example anchor cell."""
     return term_life.Projection[1]
+
+
+@pytest.fixture(scope="session")
+def sec_build(tmp_path_factory):
+    """The SEC models compiled in this session: ``sec_build(name)`` is ``name``'s build.
+
+    Each model is compiled once per session, into a temporary directory, never into the
+    tree (USLIB-SEC-PLAN.md D12), and only when a compile test asks for it, so a session
+    that selects none compiles nothing.  Without modelx-cython or a compiler the asking
+    test skips, or fails under ``USLIB_REQUIRE_CYTHON=1`` (``sec_support.require_cython``).
+    """
+    from sec_support import SecBuilds
+    return SecBuilds(tmp_path_factory)
+
+
+@pytest.hookimpl(wrapper=True)
+def pytest_runtest_makereport(item, call):
+    """Under ``USLIB_REQUIRE_CYTHON=1``, report a ``cython`` test that skips as failed.
+
+    ``sec_support.require_cython`` fails a compile test that finds the toolchain missing,
+    but a test can skip before its body runs: one parametrized over the SEC models at
+    stage ``"EC"`` skips, "got empty parameter set", when the registry holds none.  In the
+    ``cython`` CI job any such skip is a green run that compiled nothing (D13), so it is
+    turned into a failure here, whatever skipped it.
+    """
+    import os
+    report = yield
+    if (report.skipped and not hasattr(report, "wasxfail")
+            and item.get_closest_marker("cython") is not None
+            and os.environ.get("USLIB_REQUIRE_CYTHON") == "1"):
+        given = report.longrepr
+        reason = given[-1] if isinstance(given, tuple) else given
+        report.outcome = "failed"
+        report.longrepr = f"USLIB_REQUIRE_CYTHON=1 forbids a skip, and it skipped: {reason}"
+    return report

@@ -13,7 +13,8 @@ T1, the twin identity
     evaluates and every other ``result_*`` report, and :func:`twin_mismatches` then
     compares every cell of the S model, at every argument tuple the S cell cached inside
     its frame, less :data:`TWIN_EXEMPT_DEFAULT`; an S cell the SEC model lacks is a
-    mismatch.
+    mismatch.  At stage ``"EC"`` :func:`codes` turns S's timing and phase strings into
+    the SEC model's int References for the comparison.
 T2 and T3, the splice and the future new business
     :func:`temp_inputs` writes a temporary input directory -- the model, its CSVs, extra
     model points and edited tables; :func:`shift_months` re-bases a month-keyed table for
@@ -28,6 +29,22 @@ C2, the Phase 1 fingerprint
     :func:`fingerprint` takes, in brief, what an SEC model computes on every point,
     :func:`fingerprint_text` writes it out as the literal a product module freezes, and
     :func:`fingerprint_mismatches` holds a later version of the model to it (§5.4).
+Compiling, for Phase 2's compile tests
+    :func:`require_cython` skips a compile test, or fails it in the ``cython`` job, where
+    :func:`cython_missing` finds the toolchain missing; :class:`SecBuilds` compiles each
+    SEC model once a session, into a temporary directory; :func:`compiled_case` puts a
+    build beside a copy of its inputs; and :func:`run_compiled` runs calls on it in a
+    child process, on a stack of a given size.
+C3, C4 and C5, and the release
+    :func:`reporting_cells` is R17's allowlist, the cells that may stay Python, and
+    :func:`data_readers` the ``Data`` cells that read a file, which stay Python too.
+    :func:`typing_faults`, :func:`spec_faults` and :func:`c_faults` read a build's
+    declarations, its caches against the spec, and its generated C (C3);
+    :func:`compiled_mismatches` holds the compiled model to modelx, cell by cell, after a
+    :func:`full_sweep` of every point, bit for bit where :func:`exact_here` (C4);
+    :func:`static_faults` reads the formulas, and needs no compiler (C5); and
+    :func:`release_faults` runs a product's ``run_sec.py --block`` on a compiled block and
+    counts the ItemSpaces it keeps (F5).
 
 **Why the generator lives in the tests.**  ``tools/gen_sec_points.py`` is only a command
 line over :func:`write_generated` and :func:`check_generated`.  The logic is here because
@@ -135,6 +152,24 @@ union.  Every name added there is a cell T1 no longer checks, so each needs a re
 specific as these three.  That includes an S cell the SEC model drops or renames, which
 :func:`twin_mismatches` otherwise reports as missing.
 """
+
+
+def codes(proj):
+    """The codes an SEC ``Projection`` names, ``{name: int}``: timings, kinds and phases.
+
+    At stage ``"EC"`` an SEC model spells what its S twin spells as text as an int
+    Reference named as the text it replaces (USLIB-SEC-PLAN.md R9, R10): a timing,
+    ``pols_if_at(t, BEF_DECR)``, and a phase, ``LEVEL``.  Those are its References whose
+    names are all capitals and whose values are ints, bools excepted, and they are what
+    this returns.  Passed to :func:`twin_mismatches` as ``codes``, they turn S's strings
+    into SEC's ints, in the arguments S cached and in the values S returned.  At stage
+    ``"E"``, and in every S model, there are none, and it returns ``{}``.
+
+    So every other Reference an SEC model holds is named in lower case, however constant:
+    an all-capital int Reference is read as a code.
+    """
+    return {name: value for name, value in proj.refs.items()
+            if name.isupper() and isinstance(value, int) and not isinstance(value, bool)}
 
 
 def sweep(proj):
@@ -442,7 +477,7 @@ def _is_month(x):
     return isinstance(x, numbers.Integral) and not _is_bool(x)
 
 
-def _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol):
+def _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol, codes=None):
     """Every mismatch line, lazily, so :func:`twin_mismatches` can stop at its limit."""
     sec_cells = sec_proj.cells
     end = _frame_end(s_proj)
@@ -467,7 +502,8 @@ def _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol):
             sec_args = args if arg_map is None else arg_map(name, args)
             if sec_args is None:
                 continue
-            sec_args = tuple(sec_args)
+            sec_args = tuple(codes.get(a, a) if codes and isinstance(a, str) else a
+                             for a in sec_args)
             if t_pos is not None and t_pos < len(sec_args):
                 t = sec_args[t_pos]
                 if _is_month(t):
@@ -483,12 +519,18 @@ def _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol):
             except Exception as err:            # reported, so the sweep goes on
                 yield f"{label}: SEC raised {_error_text(err)}"
                 continue
+            if (codes and isinstance(expected, str) and expected in codes
+                    and _is_month(actual)):
+                code = codes[expected]          # S's label against SEC's code (R10)
+                for line in _value_diffs(code, actual, rtol, atol, t_offset):
+                    yield f"{label}: S {expected!r} is code {code}; {line}"
+                continue
             for line in _value_diffs(expected, actual, rtol, atol, t_offset):
                 yield f"{label}: {line}"
 
 
 def twin_mismatches(s_proj, sec_proj, *, exempt=TWIN_EXEMPT_DEFAULT, arg_map=None,
-                    t_offset=0, rtol=1e-9, atol=1e-9, limit=50):
+                    t_offset=0, rtol=1e-9, atol=1e-9, limit=50, codes=None):
     """Where the SEC model differs from its S twin, cell by cell: T1 (§5.2).
 
     For every cells name of the S Space not in ``exempt``, and for every argument tuple the
@@ -516,12 +558,17 @@ def twin_mismatches(s_proj, sec_proj, *, exempt=TWIN_EXEMPT_DEFAULT, arg_map=Non
     any two Spaces work, ``Data`` against ``Data`` included.
 
     The arguments are mapped before the SEC call.  ``arg_map(name, args)`` returns SEC's
-    arguments for S's (the default is the identity, and Phase 2 maps timing strings to the
-    int References of the same name, R9); returning ``None`` skips that key.  Then the
-    argument named ``t``, if the SEC cells has one, moves to SEC's clock: SEC month ``t`` is
-    S month ``t + t_offset``, as in :func:`frame_mismatches`, so the SEC cells is called at
-    S's ``t - t_offset``, and a row passes its ``source_mth`` (``d`` for a row derived from
-    S month ``d``; see the module docstring).  A key whose SEC ``t`` falls below 0 is
+    arguments for S's (the default is the identity); returning ``None`` skips that key.
+    Then, with ``codes``, :func:`codes` of the SEC Space, each string argument that names
+    a code is passed as that code: S's ``pols_if_at(t, "BEF_DECR")`` is SEC's
+    ``pols_if_at(t, BEF_DECR)`` (R9).  And a string S returned that names a code is
+    compared with SEC's value as that code, where SEC returned an int: S's ``"LEVEL"``
+    against SEC's ``LEVEL`` (R10).  A string SEC still returns, such as a label accessor's
+    ``"M"``, is compared as a string.  Then the argument named ``t``, if the SEC cells has
+    one, moves to SEC's clock: SEC month ``t`` is S month ``t + t_offset``, as in
+    :func:`frame_mismatches`, so the SEC cells is called at S's ``t - t_offset``, and a
+    row passes its ``source_mth`` (``d`` for a row derived from S month ``d``; see the
+    module docstring).  A key whose SEC ``t`` falls below 0 is
     skipped: no month precedes the valuation date, and R1 forbids evaluating one.  Under an
     offset a ``t``-indexed Series or DataFrame, such as ``result_cf()``, is relabelled the
     same way before it is compared.  Only the
@@ -543,7 +590,8 @@ def twin_mismatches(s_proj, sec_proj, *, exempt=TWIN_EXEMPT_DEFAULT, arg_map=Non
     if limit < 1:
         raise ValueError(f"limit must be at least 1, not {limit}")
     found = []
-    for line in _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol):
+    for line in _twin_lines(s_proj, sec_proj, exempt, arg_map, t_offset, rtol, atol,
+                            codes):
         found.append(line)
         if len(found) > limit:
             break
@@ -932,6 +980,14 @@ class SecSpec:
     ``exempt``
         extra cells T1 skips, beyond :data:`TWIN_EXEMPT_DEFAULT`, each for a stated reason,
         an S cell the SEC model drops or renames among them.
+    ``twin_arg_map``
+        ``callable(name, args)``, or ``None``: the ``arg_map`` T1 passes to
+        :func:`twin_mismatches`, for an SEC cell that takes S's arguments otherwise than
+        by :func:`codes`, which maps S's strings alone.  At stage ``"EC"``: S's ``None``
+        for a total, where SEC's cell takes a code for it, ``claims(t, None)`` as
+        ``claims(t, "ALL")``, which ``codes`` then maps (R12); or S's ``(t, m)`` keys
+        re-keyed by slot, ``(t, t - m)`` (R15).  ``None``, the default, leaves S's
+        arguments as they are.
     ``companions``
         companion filename to ``callable(s_model, table)``, which builds that file from the
         S model and the finished SEC table (a copy, free to modify): DIA's premium schedule,
@@ -955,6 +1011,7 @@ class SecSpec:
     exempt: frozenset[str] = frozenset()
     companions: Mapping[str, Callable] = dataclasses.field(default_factory=dict)
     model_point_file: str = "model_point_table_sec.csv"
+    twin_arg_map: Callable | None = None
 
     def __post_init__(self):
         for filename in (self.model_point_file, *self.companions):
@@ -1623,4 +1680,1141 @@ def fingerprint_mismatches(frozen, model):
                 for t, want, have in zip(entry["months"], values, n_values):
                     if not _fp_close(want, have, scale):
                         lines.append(f"{where} at t={t} is {have!r}, frozen {want!r}")
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# Compiling an SEC model, for the compile tests (Phase 2, D12, D13)
+#
+# A compile test builds the model with tools/build_sec_cy.py into a temporary directory,
+# never into the tree (D12), and runs the compiled package in a child process only: a
+# compiled model that overflows the C stack takes down the child and not the session, and
+# on Windows a .pyd that a process holds open cannot be deleted.
+
+
+def _tool():
+    """``tools/build_sec_cy.py`` of the repository holding this library, or ``None``.
+
+    A ``lifelib.create()`` copy of the library has no repository above it, and no tool.
+    """
+    lib = pathlib.Path(__file__).resolve().parents[1]
+    if lib.parent.name != "libraries":
+        return None
+    return lib.parents[2] / "tools" / "build_sec_cy.py"
+
+
+def cython_missing():
+    """What this machine lacks to compile a model, or ``None`` when it lacks nothing.
+
+    The tool, which a ``lifelib.create()`` copy lacks; modelx-cython, which
+    ``requirements.txt`` leaves out because it needs a C compiler; and, on POSIX, the C
+    compiler setuptools would run, ``CC`` or the one the interpreter was built with, on
+    ``PATH``.  On Windows setuptools finds MSVC through vswhere at build time, and
+    ``cl.exe`` is on no ``PATH`` outside a developer prompt, so no probe is made there: a
+    missing MSVC fails the build instead, and the error quotes setuptools saying so.
+    """
+    import importlib.util
+    import os
+    import shlex
+    import shutil as _shutil
+    import sysconfig
+    tool = _tool()
+    if tool is None or not tool.is_file():
+        return "tools/build_sec_cy.py is absent, as it is from a lifelib.create() copy"
+    if importlib.util.find_spec("modelx_cython") is None:
+        return "modelx-cython is not installed: pip install -r requirements-cython.txt"
+    if os.name == "posix":
+        command = os.environ.get("CC") or sysconfig.get_config_var("CC") or "cc"
+        compiler = (shlex.split(command) or ["cc"])[0]
+        if _shutil.which(compiler) is None:
+            return f"no C compiler: setuptools would run {compiler!r}, which is not on PATH"
+    return None
+
+
+def require_cython():
+    """``tools/build_sec_cy.py`` as a module, or a skip, which ``USLIB_REQUIRE_CYTHON=1``
+    turns into a failure.
+
+    The compile tests skip where :func:`cython_missing` finds something missing, so the
+    ``test`` CI job and lifelib's own bare ``pytest`` stay green without modelx-cython or a
+    compiler (D13).  The ``cython`` job installs both and sets ``USLIB_REQUIRE_CYTHON=1``,
+    and there a skip would be a green run that compiled nothing, so it fails instead.
+    ``pytest`` is imported here, not at the top, because ``tools/gen_sec_points.py``
+    imports this module without it.
+    """
+    import importlib.util
+    import os
+    import pytest
+    missing = cython_missing()
+    if missing is not None:
+        if os.environ.get("USLIB_REQUIRE_CYTHON") == "1":
+            pytest.fail(f"USLIB_REQUIRE_CYTHON=1 forbids a skip, and {missing}")
+        pytest.skip(missing)
+    spec = importlib.util.spec_from_file_location("build_sec_cy", _tool())
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@dataclasses.dataclass(frozen=True)
+class Build:
+    """One compiled SEC model: its name, the directory it was built in, its compiled
+    package, ``<name>_nomx_cy``, and the text of that package's ``_mx_classes.pxd``, the
+    declarations a typing guard reads."""
+    name: str
+    out: pathlib.Path
+    package: pathlib.Path
+    pxd: str
+
+
+class SecBuilds:
+    """The SEC models compiled in this test session, each once: ``builds(name)``.
+
+    Each is built by ``tools/build_sec_cy.py`` into a directory of the session's own
+    (``tmp_path_factory.mktemp``), from the committed model, sample and spec, and kept as
+    a :class:`Build` for the rest of the session.  A build that fails is kept too, and its
+    error raised again to every test that asks for it, so a broken build reports itself
+    in each test that needs it without being compiled again.  Without the toolchain,
+    :func:`require_cython` skips, or fails in the ``cython`` job.  ``conftest.sec_build``
+    is the session's one instance.
+    """
+
+    def __init__(self, tmp_path_factory):
+        self._factory = tmp_path_factory
+        self._done = {}
+
+    def __call__(self, name):
+        if name not in self._done:
+            tool = require_cython()
+            try:
+                out = self._factory.mktemp(name)
+                package = tool.build(model_path(name).parent, model=name, out=out)
+                pxd = (package / "_mx_classes.pxd").read_text(encoding="utf-8")
+                self._done[name] = Build(name, out, package, pxd)
+            except Exception as err:            # kept, and raised to every asker
+                self._done[name] = err
+        built = self._done[name]
+        if isinstance(built, Exception):
+            raise built
+        return built
+
+
+def compiled_case(build, dest, *, model_points=None, model_point_file=None, edits=None):
+    """A directory where modelx and the compiled model read the same inputs; its model.
+
+    :func:`temp_inputs` copies the model and its CSVs into ``dest``, with
+    ``model_points`` and ``edits`` as it takes them, and the compiled package of ``build``
+    is copied beside them.  The package reads the CSVs of the directory that holds it
+    (USLIB-SEC-PLAN.md F6), so it reads the copies, as the model folder returned does.
+    ``model_point_file`` defaults to the SEC table's name in the model's spec.
+    """
+    if model_point_file is None:
+        spec = SEC_SPECS.get(build.name)
+        model_point_file = (spec.model_point_file if spec is not None
+                            else "model_point_table_sec.csv")
+    folder = temp_inputs(dest, model_path(build.name), model_points=model_points,
+                         model_point_file=model_point_file, edits=edits)
+    shutil.copytree(build.package, pathlib.Path(dest) / build.package.name,
+                    ignore=shutil.ignore_patterns("__pycache__", "*.c", "*.html"))
+    return folder
+
+
+COMPILED_RUNNER = '''\
+"""Run calls on a compiled SEC package in a child process, and pickle what they returned.
+
+    python runner.py <case dir> <package> <job> <result> <stack KiB> <thread | main>
+"""
+import ctypes
+import importlib
+import importlib.machinery
+import os
+import pickle
+import sys
+import threading
+
+import numpy as np
+
+case, package, job_path, result_path, kib, where = sys.argv[1:7]
+sys.path.insert(0, case)
+with open(job_path, "rb") as f:
+    job = pickle.load(f)
+model = importlib.import_module(package).mx_model
+for ref, value in job["refs"].items():
+    setattr(model.Projection, ref, value)
+
+# Whether each space's class came from an extension module: a package whose build lost one
+# still imports, from the translated .py beside it, and computes the same numbers.
+suffixes = tuple(importlib.machinery.EXTENSION_SUFFIXES)
+compiled = {type(space).__name__: sys.modules[type(space).__module__].__file__.endswith(
+    suffixes) for space in (model.Data, model.Projection)}
+values, stack = {}, {}
+
+
+def reservation():
+    """The calling thread's stack in bytes, as reserved: from Windows, or from glibc's
+    pthread_getattr_np; None elsewhere, as on macOS."""
+    if os.name == "nt":
+        low, high = ctypes.c_size_t(), ctypes.c_size_t()
+        ctypes.windll.kernel32.GetCurrentThreadStackLimits(ctypes.byref(low),
+                                                            ctypes.byref(high))
+        return high.value - low.value
+    try:
+        libc = ctypes.CDLL(None)
+        libc.pthread_self.restype = ctypes.c_ulong
+        attr, size = ctypes.create_string_buffer(256), ctypes.c_size_t()
+        if libc.pthread_getattr_np(ctypes.c_ulong(libc.pthread_self()), attr):
+            return None
+        libc.pthread_attr_getstacksize(attr, ctypes.byref(size))
+        libc.pthread_attr_destroy(attr)
+        return size.value
+    except (AttributeError, OSError):       # no glibc
+        return None
+
+
+def called(call):
+    """``("ok", value)`` or ``("raised", "Type: message")``, a memoryview as an array."""
+    try:
+        value = call()
+    except Exception as err:
+        return ("raised", f"{type(err).__name__}: {err}")
+    if type(value).__name__ == "_memoryviewslice":
+        value = np.asarray(value)
+    return ("ok", value)
+
+
+def run():
+    stack["reserved"] = reservation()
+    for idx, calls in job["calls"].items():
+        proj = model.Projection[idx]
+        values[idx] = [called(lambda: getattr(proj, name)(*args)) for name, args in calls]
+        del proj
+        del model.Projection[idx]
+    for name in job.get("data", ()):
+        data[name] = called(getattr(model.Data, name))
+
+
+def on_stack(kib):
+    """Run :func:`run` in a thread whose stack is ``kib`` KiB, reserved.
+
+    The reservation is what bounds a recursion.  On Windows ``threading.stack_size`` sets
+    the stack a thread commits, and the thread reserves the executable's own, 2,000,000
+    bytes for python.exe, so the thread is made by CreateThread with
+    STACK_SIZE_PARAM_IS_A_RESERVATION instead.
+    """
+    if os.name != "nt":
+        threading.stack_size(kib * 1024)
+        thread = threading.Thread(target=run)
+        thread.start()
+        thread.join()
+        return
+    from ctypes import wintypes
+    kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+    start = ctypes.WINFUNCTYPE(wintypes.DWORD, wintypes.LPVOID)
+    kernel32.CreateThread.argtypes = (wintypes.LPVOID, ctypes.c_size_t, start,
+                                      wintypes.LPVOID, wintypes.DWORD, wintypes.LPDWORD)
+    kernel32.CreateThread.restype = wintypes.HANDLE
+    kernel32.WaitForSingleObject.argtypes = (wintypes.HANDLE, wintypes.DWORD)
+    kernel32.CloseHandle.argtypes = (wintypes.HANDLE,)
+    failed = []
+
+    def body(_):
+        try:
+            run()
+        except BaseException as err:
+            failed.append(err)
+        return 0
+
+    entry = start(body)
+    handle = kernel32.CreateThread(None, kib * 1024, entry, None, 0x00010000, None)
+    if not handle:
+        raise ctypes.WinError(ctypes.get_last_error())
+    kernel32.WaitForSingleObject(handle, 0xFFFFFFFF)
+    kernel32.CloseHandle(handle)
+    if failed:
+        raise failed[0]
+
+
+data = {}
+if where == "main":
+    run()
+else:
+    on_stack(int(kib))
+with open(result_path, "wb") as f:
+    pickle.dump({"compiled": compiled, "values": values, "data": data, "stack": stack}, f)
+'''
+"""The child that :func:`run_compiled` starts: it imports the compiled package, sets the
+References, and makes the calls, in a thread of the stack asked for or on its main
+thread."""
+
+
+def run_compiled(case_dir, package, job, *, stack_kib=1024, main_thread=False,
+                 timeout=600):
+    """Run ``job`` on the compiled ``package`` in ``case_dir``, in a child; what it found.
+
+    ``job`` is ``{"refs": {name: value}, "calls": {idx: [(cell, args), ...]}}``, and may
+    name ``"data"``, a list of ``Data`` cells to read once the calls are made.  The child
+    sets each Reference on the base ``Projection`` before any ItemSpace is made, then makes
+    each point's calls in order, on ``Projection[idx]``, in a thread whose stack is
+    ``stack_kib`` KiB or, with ``main_thread``, on its main thread, which is what
+    ``run_sec.py --cython`` runs on.  A compiled chain of cells runs on the C stack, which
+    the interpreter's recursion limit does not count (F7).  The thread's stack is
+    reserved at that size on every platform: ``threading.stack_size`` sets it on POSIX,
+    and on Windows, where that sets only the stack a thread commits, the child makes the
+    thread itself (``COMPILED_RUNNER``).
+
+    Returns ``{"exit": code, "stderr": its last lines}``, and when the child exited 0:
+    ``"compiled"``, whether each space's class came from an extension module; ``"values"``,
+    ``{idx: [("ok", value) or ("raised", "Type: message"), ...]}`` in the calls' order,
+    an array returned as a numpy array; ``"data"``, ``{cell: ("ok", value) or ("raised",
+    ...)}`` for the ``Data`` cells named; and ``"stack"``, ``{"reserved": bytes}``, the
+    stack the thread that made the calls has, read back from Windows or glibc, ``None``
+    where neither tells.  A child that dies on its stack has a nonzero exit and no values.
+    """
+    import os
+    import pickle
+    import subprocess
+    import sys
+    import tempfile
+    case_dir = pathlib.Path(case_dir)
+    work = pathlib.Path(tempfile.mkdtemp(prefix="run_", dir=case_dir.parent))
+    runner, job_path, result = work / "runner.py", work / "job.pickle", work / "got.pickle"
+    runner.write_text(COMPILED_RUNNER, encoding="utf-8")
+    job_path.write_bytes(pickle.dumps(job))
+    done = subprocess.run(
+        [sys.executable, "-P", str(runner), str(case_dir), package, str(job_path),
+         str(result), str(stack_kib), "main" if main_thread else "thread"],
+        capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"}, timeout=timeout)
+    found = {"exit": done.returncode, "stderr": done.stderr[-4000:]}
+    if done.returncode == 0:
+        found.update(pickle.loads(result.read_bytes()))
+    return found
+
+
+# ---------------------------------------------------------------------------
+# What may stay Python (R17)
+
+
+def reporting_cells(name, space):
+    """The cells of SEC model ``name``'s ``Projection`` that may stay Python (R17).
+
+    ``model_point``, every ``result_*`` report, every ``check_*`` check but the per-``t``
+    ``*_resid`` cells a check reads, and the label accessors the registry entry names
+    under ``"reporting"`` (:mod:`us_registry`): cells that hand a reader a table row, text,
+    a DataFrame or a verdict.  They are the typing guard's allowlist
+    (:func:`typing_faults`), and no other cell may call one (:func:`static_faults`), so
+    every cell a projection runs compiles to C.  ``space`` is the model's ``Projection``.
+    """
+    from us_registry import meta
+    declared = set(meta(name).get("reporting", ()))
+    return frozenset(
+        cell for cell in space.cells
+        if cell == "model_point" or cell.startswith("result_") or cell in declared
+        or (cell.startswith("check_") and not cell.endswith("_resid")))
+
+
+# ---------------------------------------------------------------------------
+# C3 -- the typing guard, read from what the compiler generated
+
+
+C_SCALARS = frozenset({"bint", "long long", "double"})
+"""The C types a compiled cell returns and takes: a flag, an integer, a real (F3)."""
+
+_MEMORYVIEW = re.compile(r"const (?:double|long long)\[:(?:, :)*\]")
+_PXD_CLASS = re.compile(r"^cdef class _c_(\w+)\(", re.M)
+_PXD_CPDEF = re.compile(r"\s+cpdef (.+?) (\w+)\(_c_\w+ self((?:, [^)]*)?)\)\s*")
+_PXD_CACHE = re.compile(r"\s+cdef (.+?)((?:\[\d+\])*) _v_(\w+)\s*")
+
+
+def pxd_declarations(pxd, space):
+    """What a generated ``_mx_classes.pxd`` declares for the cells of one space.
+
+    Returns ``(cells, caches)``: ``{cell: (return type, ((type, parameter), ...))}`` for
+    each cell compiled to a ``cpdef`` method, and ``{cell: (type, sizes)}`` for each cell's
+    cache, ``sizes`` being the dimensions of its C array, ``()`` for a single value.  A
+    cell missing from ``cells`` stayed a Python method.  ``space`` is the space's name,
+    ``"Projection"``; a space the file does not declare has neither.
+    """
+    blocks = _PXD_CLASS.split(pxd)
+    body = dict(zip(blocks[1::2], blocks[2::2])).get(space, "")
+    cells, caches = {}, {}
+    for line in body.splitlines():
+        found = _PXD_CPDEF.fullmatch(line)
+        if found and not found.group(2).startswith("_mx"):
+            params = tuple(tuple(part.strip().rsplit(" ", 1))
+                           for part in found.group(3).split(",") if part.strip())
+            cells[found.group(2)] = (found.group(1), params)
+            continue
+        found = _PXD_CACHE.fullmatch(line)
+        if found:
+            sizes = tuple(int(n) for n in re.findall(r"\[(\d+)\]", found.group(2)))
+            caches[found.group(3)] = (found.group(1), sizes)
+    return cells, caches
+
+
+def data_readers(model):
+    """The ``Data`` cells of ``model`` that read an input file: its readers (R5).
+
+    A reader is a cell whose formula names a ``Data`` Reference ending ``_file`` outside
+    its ``raise`` statements, as ``model_point_table()`` names ``model_point_file``.  R5
+    keeps the S model's readers as they are, Python objects returning DataFrames, and a
+    reader of an SEC-only companion file is one too (D8): IUL's in-force ladder, DIA's
+    premium schedule.  A cell that only quotes a file's name in a refusal is not one.
+    """
+    import ast
+    files = {ref for ref in model.Data.refs if ref.endswith("_file")}
+    found = set()
+    for name, cells in model.Data.cells.items():
+        tree, _, _, exempt = _syntax(cells)
+        if any(isinstance(node, ast.Name) and node.id in files and node not in exempt
+               for node in ast.walk(tree)):
+            found.add(name)
+    return frozenset(found)
+
+
+def typing_faults(build, model, *, reporting, new_data):
+    """C3: what the compiled model holds as Python objects, from its declarations.
+
+    Every ``Projection`` cell of ``model`` outside ``reporting`` (:func:`reporting_cells`)
+    must compile to a method returning one of :data:`C_SCALARS` and taking only them, and
+    none of their caches may be a Python dict.  Every ``Data`` cell of ``new_data``, the
+    ones the S twin lacks, must return a typed memoryview of int64 or float64, or a C
+    scalar (R5), but for the readers among them (:func:`data_readers`), which stay
+    Python, as the S model's own do.  ``model`` is the modelx model ``build`` was
+    compiled from.  Returns a line per fault, empty when the declarations are all C.
+    """
+    lines = []
+    cells, caches = pxd_declarations(build.pxd, "Projection")
+    for name in sorted(set(model.Projection.cells) - set(reporting)):
+        if name not in cells:
+            lines.append(f"Projection.{name} did not compile: it stays a Python method, as "
+                         f"one does whose name a call with keywords uses, and an uncached "
+                         f"one whose formula holds a generator, a lambda or a nested def "
+                         f"(F3)")
+            continue
+        returns, params = cells[name]
+        if returns not in C_SCALARS:
+            lines.append(f"Projection.{name} returns {returns}, not a C scalar: a cell "
+                         f"mx2cy has no trace of, one the sample never calls or an "
+                         f"uncached one, whose formula modelx-cython 0.1.0 never traces "
+                         f"(R14), or one returning what mx2cy cannot type, a numpy bool, "
+                         f"text, a tuple or a DataFrame (F3)")
+        for kind, param in params:
+            if kind not in C_SCALARS:
+                lines.append(f"Projection.{name} takes {param} as {kind}: a timing or a "
+                             f"kind passed as text, not as an int code (R9), or a cell "
+                             f"mx2cy has no trace of, as above")
+        if caches.get(name, ("",))[0] == "dict":
+            lines.append(f"Projection.{name} caches its values in a Python dict")
+    data_cells, _ = pxd_declarations(build.pxd, "Data")
+    for name in sorted(set(new_data) - data_readers(model)):
+        if name not in data_cells:
+            lines.append(f"Data.{name} did not compile: it stays a Python method")
+            continue
+        returns = data_cells[name][0]
+        if returns not in C_SCALARS and not _MEMORYVIEW.fullmatch(returns):
+            lines.append(f"Data.{name} returns {returns}, not a typed memoryview or a C "
+                         f"scalar: an array of bools, objects or text, or one a cell uses "
+                         f"whole (R5, R13)")
+    return lines
+
+
+def spec_faults(build, spec_path):
+    """C3's check of the spec: each C-array cache is the size ``spec_path`` gives (F4).
+
+    mx2cy sizes the cache of every cell with integer parameters from the spec's
+    ``cells_param_size``, keyed by the parameters' names, and it ignores without a word a
+    key that no cell takes, a misspelt one, sizing those caches from the sample's largest
+    argument instead, which the committed points fit.  So the spec is read here as mx2cy
+    reads it, with ``ast.literal_eval``, and every compiled ``Projection`` cell taking
+    only C integers must have a size for its parameters and a cache of exactly that size,
+    and every size must be taken by some cell.  A sample argument beyond the size, which
+    enlarges the cache, is reported too.  Returns a line per fault.
+    """
+    import ast
+    spec = ast.literal_eval(pathlib.Path(spec_path).read_text(encoding="utf-8"))
+    given = spec.get("spaces", {}).get("Projection", {}).get("cells_param_size", {})
+    sizes = {(key if isinstance(key, tuple) else (key,)):
+             (tuple(size) if isinstance(size, (tuple, list)) else (size,))
+             for key, size in given.items()}
+    cells, caches = pxd_declarations(build.pxd, "Projection")
+    lines, taken, spec_name = [], set(), pathlib.Path(spec_path).name
+    for name, (_, params) in sorted(cells.items()):
+        if not params or any(kind != "long long" for kind, _ in params):
+            continue
+        key = tuple(param for _, param in params)
+        kind, cache = caches.get(name, ("", ()))
+        if key in sizes:
+            taken.add(key)
+        if kind == "dict":
+            continue                        # typing_faults reports a dict cache
+        if key not in sizes:
+            lines.append(f"Projection.{name}: {spec_name} gives no size for {key}, so the "
+                         f"sample sized its cache, {cache}")
+        elif cache != sizes[key]:
+            lines.append(f"Projection.{name}: a cache of {cache}, where {spec_name} gives "
+                         f"{sizes[key]}")
+    for key in sorted(set(sizes) - taken):
+        lines.append(f"{spec_name} sizes {key}, which no compiled cell takes: mx2cy "
+                     f"ignores the size, as it ignores a misspelt name")
+    return lines
+
+
+# The C function Cython writes for one Projection formula, and its body: the definition at
+# the start of a line, up to the closing brace that ends its own line.
+_C_FORMULA = re.compile(
+    r"^static [^\n;{]*?__pyx_f_\w+?_c_Projection__f_(\w+)\([^)]*\) \{\n(.*?)\n\}\n",
+    re.S | re.M)
+
+REQUIRED_DIRECTIVES = {"infer_types": "True", "cpow": "True"}
+"""The directives ``tools/build_sec_cy.py`` puts at the top of each translated space module,
+which C3 requires: without ``infer_types`` an integer local stays a Python object, and
+without ``cpow`` a power is complex, and drifts from modelx in its last bits (M14)."""
+
+# What a formula's C does that is Python's work: a builtin it looks up and calls, other
+# than an exception a refusal raises, and a list, dict or set it builds.
+_C_BUILTIN = re.compile(r"__pyx_builtin_(\w+)")
+_C_CONTAINER = re.compile(r"\b(PyList_New|PyDict_New|__Pyx_PyDict_NewPresized|PySet_New)\b")
+
+
+def _directives(line):
+    """The directives of a ``# cython: a=b, c=d`` line, ``{name: value}``, or ``None``."""
+    head, _, body = line.partition(":")
+    if head.replace(" ", "") != "#cython":
+        return None
+    pairs = [part.split("=", 1) for part in body.split(",") if part.strip()]
+    return {k.strip(): v.strip() for k, v in (p for p in pairs if len(p) == 2)}
+
+
+def c_faults(build, *, reporting):
+    """C3 on the generated C: the Python a compiled formula still runs.
+
+    A cell typed ``double`` can compute in Python all the same, and its declaration does
+    not show it.  So the C of every ``Projection`` formula outside ``reporting`` must
+    declare no ``PyObject`` local, which turns every operation on it into a call into the
+    interpreter; call no Python builtin, such as ``round`` or ``sum``, but the exceptions a
+    refusal raises; and build no list, dict or set.  Under Cython's default inference an
+    integer local used in arithmetic, and any loop counter, is a Python object, and a
+    power of two doubles is complex, so every translated space module must begin with the
+    directives of :data:`REQUIRED_DIRECTIVES`, which ``tools/build_sec_cy.py`` writes.
+    An uncached cell has no ``_f_`` formula, its public method being its formula, so its
+    body is not read here; mx2cy types no such cell, and :func:`typing_faults` and
+    :func:`static_faults` refuse it.  Returns a line per fault.
+    """
+    lines = []
+    for module in sorted(build.package.rglob("_mx_classes.py")):
+        first = module.read_text(encoding="utf-8").split("\n", 1)[0]
+        given = _directives(first) or {}
+        missing = [f"{k}={v}" for k, v in REQUIRED_DIRECTIVES.items() if given.get(k) != v]
+        if missing:
+            lines.append(f"{module.name} begins {first!r}, without {', '.join(missing)}: "
+                         f"tools/build_sec_cy.py puts them on its first line")
+    source = build.package / "_mx_classes.c"
+    if not source.is_file():
+        return lines + [f"no generated C at {source}"]
+    found = 0
+    for match in _C_FORMULA.finditer(source.read_text(encoding="utf-8", errors="replace")):
+        found += 1
+        name, body = match.group(1), match.group(2)
+        if name in reporting:
+            continue
+        objects = sorted(set(re.findall(r"PyObject \*__pyx_v_(\w+)", body)))
+        if objects:
+            lines.append(f"Projection.{name} keeps Python objects in its C locals: "
+                         f"{', '.join(objects)}")
+        builtins = sorted({b for b in _C_BUILTIN.findall(body)
+                           if not b.endswith(("Error", "Exception", "Warning"))})
+        if builtins:
+            lines.append(f"Projection.{name} calls the Python builtin "
+                         f"{', '.join(builtins)} (R12, R16)")
+        built = sorted({kind for kind in _C_CONTAINER.findall(body)})
+        if built:
+            lines.append(f"Projection.{name} builds a Python list, dict or set "
+                         f"({', '.join(built)}) (R10, R12)")
+    if not found:
+        lines.append(f"no Projection formula in {source.name}: its layout has changed "
+                     f"under this check")
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# C4 -- the compiled model against modelx, cell by cell
+
+
+COMPILED_RTOL = 1e-12
+"""C4's tolerance where it is not exact: relative, floored at the same fraction of the
+cell's magnitude (:func:`exact_here`)."""
+
+
+def exact_here():
+    """Whether C4 holds the compiled model to modelx bit for bit on this machine.
+
+    On x86-64 it does.  ``tools/build_sec_cy.py`` compiles with ``-ffp-contract=off``
+    there, after any ``-march`` the interpreter's flags or ``CFLAGS`` give, so that gcc and
+    clang fuse no multiply and add into one rounding, which they do by default wherever
+    the target has fused multiply-add; MSVC, on Windows, emits none for x64 without
+    ``/arch:AVX2``, which setuptools does not pass.  And with ``cpow=True`` the compiled
+    power is the C ``pow`` that Python's float power calls.  So a compiled cell does
+    modelx's arithmetic in modelx's order, and every value Term's tables reach is
+    identical (M14).  Elsewhere, on arm64 among others, no run has shown it yet, and C4
+    compares to :data:`COMPILED_RTOL` instead.
+    """
+    import platform
+    return platform.machine().lower() in ("x86_64", "amd64")
+
+_c4_names = itertools.count(1)
+
+
+def full_sweep(proj):
+    """Evaluate on one point every value C4 compares, and return what raised.
+
+    Every cell without parameters, the reports among them, and then, for ``t = 0 ..
+    proj_len()`` in ascending order, every cell whose one parameter is ``t``: the frame,
+    and the month after it, which the count's roll-forward reads.  What those reach is
+    evaluated with them: a cell keyed by a timing, a policy year or a duration, at every
+    argument the frame asks of it.  A call that raises is recorded, ``{(cell, args):
+    "Type: message"}``, and the sweep goes on, unless it is ``proj_len()`` itself.
+    """
+    raised = {}
+
+    def call(name, args):
+        try:
+            proj.cells[name](*args)
+        except Exception as err:            # recorded, for a raise to meet a raise
+            raised[(name, args)] = _error_text(err)
+
+    for name, cells in proj.cells.items():
+        if not cells.parameters:
+            call(name, ())
+    if "proj_len" not in proj.cells or ("proj_len", ()) in raised:
+        return raised
+    monthly = [name for name, cells in proj.cells.items()
+               if tuple(cells.parameters) == ("t",)]
+    for t in range(proj.proj_len() + 1):
+        for name in monthly:
+            call(name, (t,))
+    return raised
+
+
+def _cached_values(proj):
+    """``{(cell, args): value}`` for every value ``proj`` has cached, in cache order."""
+    found = {}
+    for name, cells in proj.cells.items():
+        n_params = len(cells.parameters)
+        for key in list(cells.keys()):
+            args = _args(key, n_params)
+            found[(name, args)] = cells(*args)
+    return found
+
+
+# The kinds of value most cells return, which C4 compares at once when they are identical.
+_PLAIN = (float, int, bool, str)
+
+
+def _kind(x):
+    """C4's kind of a value: a bool, an int and a real stay apart, numpy's or Python's."""
+    kind = type(x)
+    if kind is float:
+        return "float"
+    if kind is bool or isinstance(x, np.bool_):
+        return "bool"
+    if isinstance(x, numbers.Integral):
+        return "int"
+    if isinstance(x, numbers.Real):
+        return "float"
+    return kind.__name__
+
+
+def _scaled_close(a, b, scale, rtol=COMPILED_RTOL):
+    """Within ``rtol`` of the larger of the two, or of ``scale``; at 0, identical."""
+    if a == b or (a != a and b != b):
+        return True
+    if not (math.isfinite(a) and math.isfinite(b)):
+        return False
+    return abs(a - b) <= rtol * max(abs(a), abs(b), scale)
+
+
+def _magnitude(values):
+    """The largest finite absolute value among the numbers of ``values``; 0.0 if none."""
+    found = [abs(float(v)) for v in values if _kind(v) in ("int", "float")]
+    return max((v for v in found if math.isfinite(v)), default=0.0)
+
+
+def _series_text(want, have, rtol=COMPILED_RTOL):
+    """How two Series on the same labels differ, value by value, or ``None``."""
+    a, b = want.tolist(), have.tolist()
+    scale = _magnitude(a)
+    bad = [i for i, (x, y) in enumerate(zip(a, b)) if _value_text(x, y, scale, rtol)]
+    if not bad:
+        return None
+    first = bad[0]
+    return (f"{len(bad)} of {len(a)} differ, first at {_py(want.index[first])!r}: "
+            f"{_value_text(a[first], b[first], scale, rtol)}")
+
+
+def _value_text(want, have, scale, rtol=COMPILED_RTOL):
+    """Why ``have``, a compiled value, is not ``want``, modelx's; ``None`` when it is.
+
+    A bool, an int and a real must stay what they are, and ints compare exactly; reals
+    compare within ``rtol``, floored at ``scale``, the cell's magnitude, and at ``rtol``
+    0 must be identical, NaN meeting NaN.  A DataFrame compares column by column on the
+    same labels, a Series value by value, each against its own magnitude, an array
+    exactly, and anything else by equality.
+    """
+    kind = _kind(want)
+    if kind != _kind(have):
+        return f"modelx {_typed(want)}, compiled {_typed(have)}"
+    if kind in ("bool", "int", "float"):
+        same = (_scaled_close(float(want), float(have), scale, rtol) if kind == "float"
+                else want == have)
+        return None if same else f"modelx {_py(want)!r}, compiled {_py(have)!r}"
+    if isinstance(want, pd.DataFrame):
+        if list(want.columns) != list(have.columns) or not want.index.equals(have.index):
+            return (f"modelx's frame has columns {list(want.columns)} and {len(want)} "
+                    f"rows, the compiled one {list(have.columns)} and {len(have)}")
+        parts = [f"column {column!r}: {text}" for column in want.columns
+                 if (text := _series_text(want[column], have[column], rtol))]
+        return "; ".join(parts) or None
+    if isinstance(want, pd.Series):
+        if not want.index.equals(have.index):
+            return "the two Series have different labels"
+        return _series_text(want, have, rtol)
+    if isinstance(want, np.ndarray):
+        same = (want.shape == have.shape and want.dtype == have.dtype
+                and np.array_equal(want, have, equal_nan=want.dtype.kind == "f"))
+        return None if same else f"modelx {want!r}, compiled {have!r}"
+    return None if want == have else f"modelx {want!r}, compiled {have!r}"
+
+
+def _outcome_text(want, have, scale, rtol=COMPILED_RTOL):
+    """Why the compiled outcome is not modelx's, each ``("ok", value)`` or ``("raised",
+    "Type: message")``; ``None`` when they agree.  A raise must meet the same raise."""
+    if have is None:
+        return "the compiled run returned nothing for it"
+    if want[0] == have[0] == "ok":
+        return _value_text(want[1], have[1], scale, rtol)
+    if want[0] == have[0] == "raised" and want[1] == have[1]:
+        return None
+    show = {"ok": lambda v: f"returned {_typed(v)}" if _kind(v) in ("bool", "int", "float")
+            else f"returned a {type(v).__name__}", "raised": lambda v: f"raised {v}"}
+    return f"modelx {show[want[0]](want[1])}, compiled {show[have[0]](have[1])}"
+
+
+def compiled_mismatches(build, folder, *, refs=None, stack_kib=65536, limit=50,
+                        exact=None):
+    """C4: where the compiled model departs from modelx on the model in ``folder``, cell
+    by cell.
+
+    ``folder`` is the model folder of a case :func:`compiled_case` made, so modelx and the
+    compiled package beside it read the same CSVs.  The model is read from it afresh,
+    under a name of its own, ``refs`` are set on its ``Projection``, and every point is
+    swept (:func:`full_sweep`): every value modelx then holds in a cache, at every
+    argument, is the expectation, and so is every raise.  A fresh read, because the sweep
+    evaluates what no projection asks for, a rate before issue among them, which a test
+    of the same model's instance may forbid.  The compiled package then makes the same
+    calls on the same points with the same ``refs``, in a child (:func:`run_compiled`), on
+    a thread of ``stack_kib`` KiB, and reads every ``Data`` cell whose modelx value is an
+    array or a number.
+
+    They must agree: a number identical where ``exact`` holds, by default where
+    :func:`exact_here` does, and elsewhere within :data:`COMPILED_RTOL` relative, floored
+    at the cell's largest magnitude on the point; a bool and an int keeping their kind, a
+    frame column by column, text exactly, a raise with the same type and message, and
+    every ``Data`` array exactly, in dtype and shape too.  Both spaces must come from
+    extension modules.  Returns readable lines, ``"point 4: premiums(6): modelx 89.6,
+    compiled 89.7"``, empty when the compiled model computes what modelx computes; at
+    most ``limit``, the last saying when more were found.
+    """
+    from us_registry import point_keys, projection
+    folder, refs = pathlib.Path(folder), dict(refs or {})
+    rtol = 0.0 if (exact_here() if exact is None else exact) else COMPILED_RTOL
+    model = mx.read_model(folder, name=f"{build.name}_c4_{next(_c4_names)}")
+    try:
+        for ref, value in refs.items():
+            setattr(model.Projection, ref, value)
+        labels = list(model.Data.model_point_table().index)
+        keys, expected = point_keys(model), {}
+        for key in keys:
+            proj = projection(model, key)
+            raised = full_sweep(proj)
+            found = {call: ("ok", value) for call, value in _cached_values(proj).items()}
+            found.update((call, ("raised", text)) for call, text in raised.items())
+            expected[key] = found
+        data = {}
+        for name, cells in model.Data.cells.items():
+            try:
+                value = cells()
+            except Exception as err:            # a raise must meet the same raise
+                data[name] = ("raised", _error_text(err))
+                continue
+            if isinstance(value, np.ndarray) or _kind(value) in ("int", "float"):
+                data[name] = ("ok", value)
+    finally:
+        model.close()
+    job = {"refs": refs, "calls": {key: list(found) for key, found in expected.items()},
+           "data": list(data)}
+    got = run_compiled(folder.parent, build.package.name, job, stack_kib=stack_kib)
+    if got["exit"]:
+        return [f"the compiled run failed with exit code {got['exit']}:\n{got['stderr']}"]
+    lines = [f"{space} was not loaded from an extension module"
+             for space, compiled in got["compiled"].items() if not compiled]
+    compared = 0
+    for key, label in zip(keys, labels):
+        found, scales = expected[key], {}
+        for (name, _), (status, value) in found.items():
+            if status == "ok" and _kind(value) == "float":
+                scales[name] = max(scales.get(name, 0.0), _magnitude([value]))
+        for ((name, args), want), have in zip(found.items(), got["values"][key]):
+            compared += 1
+            if (have is not None and want[0] == have[0] == "ok"
+                    and type(want[1]) is type(have[1]) and type(want[1]) in _PLAIN
+                    and want[1] == have[1]):
+                continue                        # identical, the usual case
+            text = _outcome_text(want, have, scales.get(name, 0.0), rtol)
+            if text:
+                lines.append(f"point {label}: {_call(name, args)}: {text}")
+    for name, want in data.items():
+        compared += 1
+        text = _outcome_text(want, got["data"].get(name), 0.0)
+        if text:
+            lines.append(f"Data.{name}(): {text}")
+    if not compared:
+        lines.append(f"nothing was compared: {folder} holds no model point")
+    if len(lines) > limit:
+        lines = lines[:limit - 1] + [f"(and {len(lines) - limit + 1} more)"]
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# C5 -- what a compiled Projection formula may not hold
+
+
+PANDAS_ATTRIBUTES = frozenset({
+    "loc", "iloc", "at", "iat", "iterrows", "itertuples", "apply", "values", "to_numpy"})
+"""The pandas reads C5 looks for in a ``Projection`` formula, beside the modules."""
+
+C_CALLS = frozenset({"int", "float", "bool", "abs", "min", "max", "range"})
+"""The builtins a compiled formula may call, beside cells and ``Data`` vectors: Cython
+turns each into C on C numbers, where any other builtin, ``round`` and ``sum`` among them,
+is a call into the interpreter, which no declaration shows (R12, R16)."""
+
+
+def _spaces(model):
+    """``(name, space)`` for every space of ``model``, the spaces within them included."""
+    pending = list(model.spaces.items())
+    while pending:
+        name, space = pending.pop(0)
+        yield name, space
+        pending += [(f"{name}.{child}", sub) for child, sub in space.spaces.items()]
+
+
+def _syntax(cells):
+    """A cell's formula parsed: ``(tree, top, parents, exempt)``.
+
+    ``top`` is the formula's own ``def`` or ``lambda``; ``parents`` maps every node to the
+    node holding it; ``exempt`` holds the nodes that may hold text, the docstring and
+    whatever a ``raise`` holds, its message.
+    """
+    import ast
+    import textwrap
+    tree = ast.parse(textwrap.dedent(cells.formula.source))
+    first = tree.body[0] if tree.body else None
+    top = first.value if isinstance(first, ast.Expr) else first
+    parents = {child: node for node in ast.walk(tree)
+               for child in ast.iter_child_nodes(node)}
+    exempt = set()
+    if isinstance(top, ast.FunctionDef) and top.body:
+        head = top.body[0]
+        if (isinstance(head, ast.Expr) and isinstance(head.value, ast.Constant)
+                and isinstance(head.value.value, str)):
+            exempt.add(head.value)
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Raise):
+            exempt.update(ast.walk(node))
+    return tree, top, parents, exempt
+
+
+def _element_read(call, parents, ndim):
+    """Whether ``call``'s array is read as one element: subscripted at once, by ``ndim``
+    indices in all, none a slice, and not written to (mx2cy's usage analysis, F3)."""
+    import ast
+    remaining, node = ndim, call
+    while remaining > 0:
+        up = parents.get(node)
+        if not (isinstance(up, ast.Subscript) and up.value is node):
+            return False
+        index = up.slice
+        items = index.elts if isinstance(index, ast.Tuple) else [index]
+        if len(items) > remaining or any(isinstance(i, (ast.Slice, ast.Starred))
+                                         for i in items):
+            return False
+        remaining -= len(items)
+        node = up
+    return not isinstance(getattr(node, "ctx", None), (ast.Store, ast.Del))
+
+
+def _vector_text(value):
+    """What is wrong with a ``Data`` value a compiled cell reads, or ``None``: it must be
+    an int64 or float64 array, a memoryview compiled, or a Python int or float (R5)."""
+    if isinstance(value, np.ndarray):
+        if value.dtype in (np.dtype("int64"), np.dtype("float64")):
+            return None
+        return f"an array of {value.dtype}"
+    if _kind(value) in ("int", "float") and not isinstance(value, np.generic):
+        return None
+    return f"a {type(value).__module__.split('.')[0]} {type(value).__name__}"
+
+
+def static_faults(model, *, reporting):
+    """C5: what a formula of ``model`` holds that a compiled cell cannot run in C.
+
+    Read from the formulas, so it needs no compiler and runs in the default suite.  Every
+    ``Projection`` formula outside ``reporting`` (:func:`reporting_cells`) may refer to no
+    module, ``pd`` and ``np`` among them, read no pandas attribute
+    (:data:`PANDAS_ATTRIBUTES`), refer to no reporting cell, ``model_point`` among them,
+    hold no text outside its docstring and its ``raise`` messages, read no Reference that
+    holds text, call ``len()`` nowhere, and hold no generator, comprehension, ``lambda`` or
+    nested ``def`` (R10-R13).  Outside its ``raise`` statements it calls no function but
+    a cell, a ``Data`` vector and the builtins of :data:`C_CALLS`, and no method, and it
+    builds no list, dict, set or tuple, but the index of a table read, ``[s, y]``: each is
+    a call into Python inside a cell its declaration types as C (R10, R12).  Every
+    ``Data`` cell it calls must return an int64 or float64 array or a Python int or float,
+    found by evaluating it, and an array must be read at once by element (R5, R13); so
+    must every ``Data`` array another ``Data`` cell calls.  No ``Projection`` cell outside
+    the allowlist may be uncached, ``is_cached`` False: mx2cy traces a cell's ``_f_``
+    formula, which an uncached cell has none of, so it compiles untyped (R14).  And no
+    cell outside the allowlist, in any space, may share its name with a function or a
+    method that a call with keywords calls anywhere in the model, the reporting cells
+    included, because mx2cy keeps every cell of such a name a Python method (R12).  The
+    registry's ``reporting`` must name ``Projection`` cells.  Returns a line per fault,
+    ``"Projection.mort_rate_base, line 9: reads .loc"``, the line counted in the formula.
+    """
+    import ast
+    import types
+    proj, data = model.Projection, model.Data
+    lines = [f"the registry's reporting names {name}, which is not a Projection cell"
+             for name in sorted(set(reporting) - set(proj.cells))]
+    values = {}
+    for name, cells in data.cells.items():
+        try:
+            values[name] = cells()
+        except Exception as err:            # reported, and the formulas still read
+            lines.append(f"Data.{name} raised {_error_text(err)}")
+    arrays = {name: value.ndim for name, value in values.items()
+              if isinstance(value, np.ndarray)}
+    trees = {(space_name, name): _syntax(cells) for space_name, space in _spaces(model)
+             for name, cells in space.cells.items()}
+    keyworded = {}
+    for (space_name, name), (tree, _, _, _) in trees.items():
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call) and node.keywords:
+                func = node.func
+                callee = (func.id if isinstance(func, ast.Name)
+                          else getattr(func, "attr", ""))
+                keyworded.setdefault(callee, f"{space_name}.{name}, line {node.lineno}")
+    for space_name, name in trees:
+        if name in keyworded and not (space_name == "Projection" and name in reporting):
+            lines.append(f"{space_name}.{name} shares its name with what a call with "
+                         f"keywords calls, at {keyworded[name]}: mx2cy keeps every cell "
+                         f"of that name a Python method (R12)")
+    refs = {ref: value for ref, value in proj.refs.items() if not ref.startswith("__")}
+    modules = {ref for ref, value in refs.items() if isinstance(value, types.ModuleType)}
+    modules |= {"pd", "np"}
+    texts = {ref for ref, value in refs.items() if isinstance(value, str)}
+    interfaces = {ref for ref, value in refs.items() if value is data} or {"data"}
+    banned = (ast.GeneratorExp, ast.ListComp, ast.SetComp, ast.DictComp, ast.Yield,
+              ast.YieldFrom, ast.Lambda, ast.FunctionDef)
+    displays = {ast.List: "list", ast.Dict: "dict", ast.Set: "set", ast.Tuple: "tuple"}
+    for name in proj.cells:
+        if name in reporting:
+            continue
+        if not proj.cells[name].is_cached:
+            lines.append(f"Projection.{name} is uncached: modelx-cython 0.1.0 traces only "
+                         f"a cached cell's formula, so an uncached one compiles taking and "
+                         f"returning Python objects (R14)")
+        tree, top, parents, exempt = trees[("Projection", name)]
+        for node in ast.walk(tree):
+            where = f"Projection.{name}, line {getattr(node, 'lineno', '?')}"
+            kind = displays.get(type(node))
+            if kind and node not in exempt and not (
+                    isinstance(parents.get(node), ast.Subscript)
+                    and parents[node].slice is node):
+                lines.append(f"{where}: builds a {kind}, a Python object")
+            if isinstance(node, ast.Name):
+                if node.id in modules:
+                    lines.append(f"{where}: refers to the module {node.id}")
+                elif node.id in reporting:
+                    lines.append(f"{where}: refers to the reporting cell {node.id}")
+                elif node.id in texts:
+                    lines.append(f"{where}: reads {node.id}, a Reference holding text")
+            elif isinstance(node, ast.Attribute) and node.attr in PANDAS_ATTRIBUTES:
+                lines.append(f"{where}: reads .{node.attr}")
+            elif (isinstance(node, ast.Constant) and isinstance(node.value, str)
+                  and node not in exempt):
+                lines.append(f"{where}: holds the text {node.value!r}")
+            elif isinstance(node, banned) and node is not top:
+                lines.append(f"{where}: holds a {type(node).__name__}")
+            elif isinstance(node, ast.Call) and node not in exempt:
+                func = node.func
+                if isinstance(func, ast.Name) and func.id == "len":
+                    lines.append(f"{where}: calls len()")
+                elif isinstance(func, ast.Name):
+                    if func.id not in proj.cells and func.id not in C_CALLS:
+                        lines.append(f"{where}: calls {func.id}(), a call into Python: a "
+                                     f"compiled formula calls cells, Data vectors and "
+                                     f"{', '.join(sorted(C_CALLS))} alone")
+                elif not (isinstance(func, ast.Attribute)
+                          and isinstance(func.value, ast.Name)
+                          and func.value.id in interfaces | modules):
+                    lines.append(f"{where}: calls the method "
+                                 f".{getattr(func, 'attr', '?')}(), a call into Python")
+                elif (isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name)
+                      and func.value.id in interfaces and func.attr in values):
+                    text = _vector_text(values[func.attr])
+                    if text:
+                        lines.append(f"{where}: reads data.{func.attr}(), {text}, where a "
+                                     f"Data vector is an int64 or float64 array or an int")
+                    elif (func.attr in arrays
+                          and not _element_read(node, parents, arrays[func.attr])):
+                        lines.append(f"{where}: uses data.{func.attr}() other than by one "
+                                     f"element")
+    for name in data.cells:
+        tree, _, parents, _ = trees[("Data", name)]
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id in arrays
+                    and not _element_read(node, parents, arrays[node.func.id])):
+                lines.append(f"Data.{name}, line {node.lineno}: uses {node.func.id}() "
+                             f"other than by one element, which compiles it as a Python "
+                             f"object (R13)")
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# A compiled block run, and what it keeps (F5, K2)
+
+
+RELEASE_RUNNER = '''\
+"""Run an SEC model's run_sec.py over a block, compiled, counting its ItemSpaces.
+
+    python probe.py <run_sec.py> <case dir> <package> <result>
+
+After each collection the runner makes once it has frozen what was alive, the Projection
+ItemSpaces still alive are counted.  When the runner is done, what it froze is unfrozen
+and they are counted again, so that one kept since before the freeze is seen too.  Then,
+if none is, a control: an ItemSpace made and deleted, counted before a collection and
+after it.
+"""
+import contextlib
+import gc
+import io
+import pickle
+import runpy
+import sys
+
+runner, case, package, result_path = sys.argv[1:5]
+collect, after = gc.collect, []
+
+
+def alive():
+    """The ItemSpaces of the base Projection's class alive and not frozen, less the base."""
+    module = sys.modules.get(package)
+    if module is None:
+        return 0
+    base = module.mx_model.Projection
+    return sum(1 for o in gc.get_objects() if type(o) is type(base) and o is not base)
+
+
+def counted(*args, **kwargs):
+    found = collect(*args, **kwargs)
+    if gc.get_freeze_count():
+        after.append(alive())
+    return found
+
+
+gc.collect = counted
+sys.argv = [runner, "--block", "--build", case]
+printed, stopped = io.StringIO(), None
+try:
+    with contextlib.redirect_stdout(printed):
+        runpy.run_path(runner, run_name="__main__")
+except SystemExit as stop:
+    stopped = stop.code
+gc.collect = collect
+gc.unfreeze()
+kept = alive()
+held = freed = None
+if stopped in (None, 0) and not kept:
+    gc.disable()
+    model = sys.modules[package].mx_model
+    proj = model.Projection[0]
+    proj.proj_len()
+    del proj
+    del model.Projection[0]
+    held = alive()
+    collect()
+    freed = alive()
+    gc.enable()
+with open(result_path, "wb") as f:
+    pickle.dump({"stopped": stopped, "printed": printed.getvalue(), "after": after,
+                 "kept": kept, "held": held, "freed": freed}, f)
+'''
+"""The child that :func:`release_faults` starts around the product's own runner."""
+
+
+def release_faults(case_dir, package, runner, *, points, timeout=600):
+    """Where a compiled block run keeps what it has released (F5, K2), a line each.
+
+    ``runner`` is a product's ``run_sec.py``, run with ``--block --build case_dir`` on
+    the compiled ``package`` there, in a child, as a user runs it, ``points`` the number
+    of points in the case's table.  A compiled ItemSpace holds every cell's cache in its
+    C struct, about 430 KB for Term, and a deleted one is not freed: it refers to
+    itself, as its own ``_space`` and in its own ``_mx_roots``, cycles only the cyclic
+    collector frees.  So the runner releases each point once read, deleting it and
+    collecting, in its frame pass and in its projections, after freezing what was alive
+    before the block.  So, counting the ``Projection`` ItemSpaces alive besides the
+    base: none may be alive after any collection the runner makes once frozen, and there
+    must be at least one such collection for every point; none may be alive when the
+    block ends, frozen or not; and then the control must still find the cycle, a deleted
+    ItemSpace alive until a collection frees it.  If the control fails, modelx-cython
+    frees an ItemSpace on its own, and the collection can go.
+    """
+    import os
+    import pickle
+    import subprocess
+    import sys
+    import tempfile
+    case_dir = pathlib.Path(case_dir)
+    work = pathlib.Path(tempfile.mkdtemp(prefix="release_", dir=case_dir.parent))
+    probe, result = work / "probe.py", work / "found.pickle"
+    probe.write_text(RELEASE_RUNNER, encoding="utf-8")
+    done = subprocess.run(
+        [sys.executable, "-P", str(probe), str(runner), str(case_dir), package,
+         str(result)], capture_output=True, text=True, encoding="utf-8", errors="replace",
+        env={**os.environ, "PYTHONIOENCODING": "utf-8"}, timeout=timeout)
+    if done.returncode:
+        return [f"the block run failed with exit code {done.returncode}:\n"
+                f"{done.stderr[-4000:]}"]
+    found = pickle.loads(result.read_bytes())
+    if found["stopped"] not in (None, 0):
+        return [f"run_sec.py --block stopped: {found['stopped']}"]
+    lines, after = [], found["after"]
+    if len(after) < points:
+        lines.append(f"the runner collected {len(after)} times once frozen, over "
+                     f"{points} points: it does not collect after each release")
+    worst = max(after, default=0)
+    if worst:
+        first = next(i for i, n in enumerate(after) if n) + 1
+        lines.append(f"up to {worst} ItemSpaces were alive after a release and its "
+                     f"collection, the first time at collection {first}: the runner keeps "
+                     f"a point it has read")
+    if found["kept"]:
+        lines.append(f"{found['kept']} ItemSpaces were still alive when the block ended")
+    if found["held"] not in (None, 1):
+        lines.append(f"the control: a deleted ItemSpace left {found['held']} alive before "
+                     f"a collection, not 1; if modelx-cython no longer holds it in a "
+                     f"cycle, the runner's collection can go")
+    if found["freed"]:
+        lines.append(f"the control: a collection left {found['freed']} deleted ItemSpaces "
+                     f"alive")
     return lines

@@ -1,21 +1,21 @@
 """The compile toolchain end to end: export, trace, translate, compile, run, compare.
 
 USLIB-SEC-PLAN.md compiles each SEC model in its Phase 2 and runs the compile tests in a
-``cython`` CI job of their own, on Linux and Windows (D13).  This module is what that job
-runs in the meantime, so that it proves something real before any model is written for the
-compiler: that ``tools/build_sec_cy.py``, modelx-cython and the platform's C compiler
+``cython`` CI job of their own, on Linux and Windows (D13).  This module gave that job a
+test before any model was written for the compiler, so that it proved something real from
+the start: that ``tools/build_sec_cy.py``, modelx-cython and the platform's C compiler
 together turn a uslib model into a compiled package, and that the package computes what
-modelx computes.  A job with nothing to run would stay green on a Windows runner where no
-MSVC build had ever succeeded, and Phase 2 would find that out on its first model.
+modelx computes.  Each SEC model's own compile tests now stand beside it, from
+``Term_US_SEC``'s at M14, and this one stays until every model has them (M26).
 
-**What it compiles.**  ``Term_US_S``.  No SEC model is written for the compiler before
-Phase 2 (``Term_US_SEC`` is at stage ``"E"``), and mx2cy compiles any export, an S
-model's included (F2); typing a model well is Phase 2's representation work, while
-compiling one at all is what is proved here.  mx2cy's two inputs are written by the
-test rather than added to the product directory.  The sample runs ``result_cf()`` on every
-point of the shipped table, both of them.  The spec sizes the ``t`` caches for the longest
-frame any issue age can have, because a compiled cache raises ``IndexError`` past its end
-(F4), and the test reads the generated declarations to see that it did.  The numbers
+**What it compiles.**  ``Term_US_S``, an S model, which mx2cy compiles as it compiles any
+export (F2): one whose cells still read pandas, the shape mx2cy handles least well, where
+the SEC models' compile tests compile the shape Phase 2 writes for it.  mx2cy's two inputs
+are written by the test rather than added to the product directory.  The sample runs
+``result_cf()`` on every point of the shipped table, both of them.  The spec sizes the
+``t`` caches for the longest frame any issue age can have, because a compiled cache raises
+``IndexError`` past its end (F4), and the test reads the generated declarations to see
+that it did.  The numbers
 cannot show it: mx2cy ignores a spec key or space name it does not know and sizes each
 cache from the sample instead, and the sample's own points then fit.  With the key
 misspelled, every ``t`` cache came out ``[720]``, and the compiled model still matched
@@ -23,8 +23,10 @@ modelx exactly.  The build goes into ``tmp_path``, and the compiled package runs
 child process, which raises the recursion limit, as modelx does and the export does not
 (F7); a compiled model that overflows the C stack then takes down the child, not the test
 session.  Its ``result_cf()`` must equal modelx's on both points to 1e-12 relative, the
-tolerance of Phase 2's C4.  With gcc on Linux it is exact; the tolerance is for a compiler
-that fuses a multiply and an add into a single rounding.
+tolerance of Phase 2's C4 where it is not exact.  With gcc on Linux it is exact.  The tool
+tells gcc and clang to fuse no multiply and add into a single rounding, whatever ``-march``
+the interpreter's flags give, and the test reads the compiler's command lines in the
+build's log for it.
 
 **When it skips.**  Without modelx-cython, which ``requirements.txt`` leaves out because it
 needs a C compiler; without a C compiler, on a POSIX system; and without
@@ -39,32 +41,26 @@ setuptools saying so.
 
 **In the cython job a skip is a failure.**  A skip there would be a green job that compiled
 nothing, so the job sets ``USLIB_REQUIRE_CYTHON=1``, and each condition above then fails
-the test instead of skipping it.
+the test instead of skipping it.  The conditions and the choice between skipping and
+failing are ``sec_support.cython_missing`` and ``sec_support.require_cython``, which every
+compile test shares.
 """
-import importlib.util
 import os
 import pickle
 import re
-import shlex
-import shutil
 import subprocess
 import sys
-import sysconfig
 
 import modelx as mx
 import numpy as np
 import pytest
 
-from us_registry import LIB, model_path, point_keys, projection
+from sec_support import require_cython
+from us_registry import model_path, point_keys, projection
 
 pytestmark = pytest.mark.cython
 
 MODEL = "Term_US_S"
-
-# The repository root holds tools/.  A lifelib.create() copy of the library has no such
-# root above it, and so no tool.
-REPO = LIB.parents[2] if LIB.parent.name == "libraries" else None
-TOOL = REPO / "tools" / "build_sec_cy.py" if REPO is not None else None
 
 # The youngest issue age product-spec.md admits on any Term plan.  With expiry at attained
 # age 95 it makes the longest frame, which the spec sizes the caches for.
@@ -129,32 +125,10 @@ with open(dest, "wb") as f:
 '''
 
 
-def _missing():
-    """What this machine lacks to compile a model, or ``None`` when it lacks nothing."""
-    if TOOL is None or not TOOL.is_file():
-        return "tools/build_sec_cy.py is absent, as it is from a lifelib.create() copy"
-    if importlib.util.find_spec("modelx_cython") is None:
-        return "modelx-cython is not installed: pip install -r requirements-cython.txt"
-    if os.name == "posix":
-        command = os.environ.get("CC") or sysconfig.get_config_var("CC") or "cc"
-        compiler = (shlex.split(command) or ["cc"])[0]
-        if shutil.which(compiler) is None:
-            return f"no C compiler: setuptools would run {compiler!r}, which is not on PATH"
-    return None
-
-
 @pytest.fixture(scope="module")
 def build_sec_cy():
     """``tools/build_sec_cy.py`` as a module, or a skip, which the cython job fails."""
-    missing = _missing()
-    if missing is not None:
-        if os.environ.get("USLIB_REQUIRE_CYTHON") == "1":
-            pytest.fail(f"USLIB_REQUIRE_CYTHON=1 forbids a skip, and {missing}")
-        pytest.skip(missing)
-    spec = importlib.util.spec_from_file_location("build_sec_cy", TOOL)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
+    return require_cython()
 
 
 def test_compiled_term_reproduces_modelx(build_sec_cy, tmp_path):
@@ -191,6 +165,17 @@ def test_compiled_term_reproduces_modelx(build_sec_cy, tmp_path):
     compiled = build_sec_cy.build(
         model_path(MODEL).parent, model=MODEL, out=out, sample=sample, spec=spec)
     assert compiled == (out / f"{MODEL}_nomx_cy").resolve()
+
+    # Off Windows every command that compiles a C file ends its flags with the tool's
+    # NO_CONTRACT, so that no -march before it makes gcc or clang fuse a multiply and an
+    # add, and the compiled model rounds where modelx rounds.  MSVC reads no CFLAGS.
+    if os.name != "nt":
+        log = out / "build" / build_sec_cy.LOG
+        lines = log.read_text(encoding="utf-8", errors="replace").splitlines()
+        compiles = [line for line in lines if re.search(r" -c \S+\.c\b", line)]
+        assert compiles, f"no command compiling a C file in {log}"
+        for line in compiles:
+            assert re.findall(r"-ffp-contract=(\w+)", line)[-1:] == ["off"], line
 
     # The spec reached the C: each Projection cell compiled with a C integer t keeps its
     # values in a C array of the spec's size.  The sample alone would have sized them to
