@@ -1079,6 +1079,34 @@ _WL_STATE = {
 }
 
 
+def _spia_lives(life):
+    """``SPIA_US_S``'s survival of ``life`` to time ``d``, the start of month ``d``."""
+    return lambda s, d: s.lives_if(d, life)
+
+
+def _spia_cmt10_change(s, d):
+    """The 10-year CMT's change ``SPIA_US_S`` has applied by month ``d``, since the annuity
+    date: its ``cmt10_shift``, which it applies from month 0 on, and 0 at ``d = 0``, the
+    annuity date itself, where a twin stands."""
+    return float(s.cmt10_shift) if d > 0 else 0.0
+
+
+# SPIA_US_SEC's opening state (D6): what SPIA_US_S carries into month d, each read as S's
+# own formulas read it: each life's survival to time d, before month d's deaths; the
+# commutation fraction applying in month d, before its withdrawal; and the 10-year CMT's
+# change since the annuity date, which S applies whole from month 0, so that a row restated
+# at d has seen all of it and sees none after (D7's last paragraph).  The count is S's
+# pols_if_init, the contracts the point stands for, and not S's pols_if, which is a
+# closing measure (D5): mortality decrements each life, never the count.
+_SPIA_STATE = {
+    "policy_count": lambda s, d: s.pols_if_init(),
+    "lives_if_init_1": _spia_lives(1),
+    "lives_if_init_2": _spia_lives(2),
+    "commute_frac_cum_init": lambda s, d: s.commute_frac_cum(d),
+    "cmt10_shift_init": _spia_cmt10_change,
+}
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -1139,6 +1167,68 @@ SEC_SPECS: dict[str, SecSpec] = {
                     if c not in ("pua_face_init", "loan_bal_init")},
         exempt=frozenset({"puaf_inforce", "loan_inforce", "proj_start",
                           "duration_inforce", "result_pols"}),
+    ),
+    # SPIA's state is each life's survival, the commutation fraction and the CMT's change
+    # since the annuity date (_SPIA_STATE).  S has no in-force point, so every twin is new
+    # business, and the four columns take S's own values at the annuity date: each covered
+    # life alive, life 2 at 0 on a single-life contract, no commutation, no change in the
+    # CMT.  A derived row's CMT change is S's cmt10_shift, all of it seen by month d.  SEC's
+    # cmt10_shift is a change made at the valuation date, on the one path every point
+    # shares, which a row in payment sees on top of its column and a future row, bought
+    # after it, never sees: so the splice reads its table once, with SEC's cmt10_shift at 0,
+    # and compares each future row with S read with its cmt10_shift at 0, the same contract
+    # on that path.  The payments to date need no column: they are deterministic, and the
+    # model sums them on the policy clock from the annuity date.  The derived rows are the
+    # worked example's anchor the month after the joint annuitant's death; the cash refund
+    # in its death month, which pays the refund at t = 0; the certain period ending at the
+    # valuation date; both lives dead inside the certain period; the commuting point on its
+    # second anniversary, with two fractional lives; and the anchor on the table basis in
+    # its last month, a one-row frame.  The future row commences 13 months on: more than a
+    # year out, so that a read before the annuity date lands at policy year -1, and off
+    # every payment step (1, 3, 6 and 12 months), so that its payment months fall apart on
+    # the two clocks.  T2's splice grid is built from this spec in a temporary table, not
+    # committed.
+    #
+    # T1 holds on SPIA at any count: neither model charges acquisition, and every flow is
+    # the count times a per-contract amount.  It skips one S cell besides the default
+    # three:
+    #   result_pols: SEC's gains pols_new_biz and puts pols_if first, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_immediate_annuity_us_sec.py compares
+    #     the report itself with S's, column by column.
+    # S caches claims(t, kind=None) under (t, None); at stage EC, where that default
+    # becomes a named total (R12), T1 needs an arg_map for those keys.  S's label
+    # accessors stay S's, called by reporting and T1 alone.  R17 and C5 admit one that
+    # takes no argument and returns its point's column of its own name: form(),
+    # reduction_trigger() and mort_basis() do, but payment_timing() returns "timing" and
+    # sex(life) takes a life and returns "primary_sex" or "joint_sex", so SPIA's C step
+    # extends R17 and C5 for those two, or leaves them out of "reporting".
+    #
+    # Phase 2 sizes its caches from the contract, each from these inputs:
+    #   t 0..1,344: the youngest lifetime issue age, 18 (product-spec), the limiting age
+    #     omega_age, 120, and future_horizon_mth, 120: the longest frame is
+    #     12 * (120 - 18) + 120 months, and lives_if reads the closing time point
+    #     t = proj_len().  The longest certain period, 360 months, lengthens a frame only
+    #     at issue ages above 90, and an installment refund's period stops at the age stop;
+    #   k 0..1,224, the policy months and time points: the youngest issue age and
+    #     omega_age, or the longest certain period if it were longer;
+    #   y 1..102, the policy years: k's bound, (stop_mth() - 1) // 12 + 1;
+    #   x 18..119, the attained ages, per life: the youngest issue age and omega_age - 1.
+    # Three inputs those sizes rest on are bounded by the product and by no cell, and
+    # proj_len() refuses none of them at stage E, as S projects each: the issue age of a
+    # lifetime form, 18 or more (S projects a younger one on the scenario basis, which
+    # reads no table); the issue age of the certain_only form, which product-spec bounds
+    # only above, to attained age 100, and whose frame also runs to the age stop on its
+    # youngest life; and certain_months, 0 or 60 to 360 by product-spec, where a value
+    # past 1,224 would lengthen both the k and the t frames.  Phase 2 refuses each in
+    # proj_len() beside the cover check, or sizes from the product's limits.
+    "SPIA_US_SEC": SecSpec(
+        twin="SPIA_US_S",
+        derived=((1, 14), (6, 13), (5, 120), (13, 30), (9, 24), (8, 695)),
+        future=((8, 13),),
+        state=_SPIA_STATE,
+        twin_state={c: f for c, f in _SPIA_STATE.items() if c != "policy_count"},
+        exempt=frozenset({"result_pols"}),
     ),
 }
 

@@ -554,6 +554,7 @@ EXTRA_POINT_ASSERTIONS = {
     "DIA_US_S": _dia_pays_an_income,
     "FIA_US_S": _fia_phase_is_one_of_four,
     "SPIA_US_S": _spia_liability_is_outgo,
+    "SPIA_US_SEC": _spia_liability_is_outgo,
     "VA_US_S": _va_residuals,
 }
 

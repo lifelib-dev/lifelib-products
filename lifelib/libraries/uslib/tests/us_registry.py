@@ -108,6 +108,9 @@ MODELS = {
         "products/registered_index_linked_annuity/RILA_US_S", MONTHLY),
     # Annuity — payout
     "SPIA_US_S": ("products/immediate_annuity/SPIA_US_S", MONTHLY),
+    "SPIA_US_SEC": ("products/immediate_annuity/SPIA_US_SEC",
+                    {**MONTHLY, "twin": "SPIA_US_S", "stage": "E",
+                     "closing_pols_if": True}),
     "DIA_US_S": ("products/deferred_income_annuity/DIA_US_S", MONTHLY),
 }
 
@@ -149,6 +152,9 @@ INPUT_FILES = {
         "withdrawal_table.csv"},
     "SPIA_US_S": {
         "improvement_scale.csv", "model_point_table.csv", "mort_table.csv",
+        "surr_charge_table.csv"},
+    "SPIA_US_SEC": {
+        "improvement_scale.csv", "model_point_table_sec.csv", "mort_table.csv",
         "surr_charge_table.csv"},
     "Term_US_S": {
         "class_factor_table.csv", "model_point_table.csv", "mort_table.csv",

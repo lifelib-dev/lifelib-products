@@ -71,7 +71,7 @@ valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where th
 example's point is already in force, as whole life's is, the `_SEC` twin of that point
 continues the `_S` projection from the month it is valued at, its expenses apart, which
 inflate from the valuation date. Each `model-sec.md` says what running in force changes.
-`Term_US_SEC` and `WholeLife_US_SEC` are the first two.
+`Term_US_SEC`, `WholeLife_US_SEC` and `SPIA_US_SEC` are the first three.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -108,7 +108,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 | [Fixed indexed (FIA)](products/fixed_indexed_annuity/index.md) | `FIA_US_S` | monthly | Index-linked credits at a 0% floor, premium bonus with vesting, and a guaranteed lifetime withdrawal benefit that continues after the account value is exhausted |
 | [Variable annuity](products/variable_annuity/index.md) | `VA_US_S` | monthly | Separate-account deferred annuity: subaccount units net of M&E, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base |
 | [Registered index-linked (RILA)](products/registered_index_linked_annuity/index.md) | `RILA_US_S` | monthly | SEC-registered buffered annuity: point-to-point terms with a downside buffer and upside cap, and an AG 54 interim value |
-| [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
+| [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S`, `SPIA_US_SEC` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
 | [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
 
 (uslib-one-shape)=
