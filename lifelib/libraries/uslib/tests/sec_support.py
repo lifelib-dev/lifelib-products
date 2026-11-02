@@ -1107,6 +1107,41 @@ _SPIA_STATE = {
 }
 
 
+def _myga_entering(name):
+    """What ``MYGA_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``, or 0.0 at ``d = 0``: a contract issued at the valuation
+    date opens with no state and takes its issue values in its issue month.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > 0 else 0.0
+    return extract
+
+
+# MYGA_US_SEC's opening state (D6): what MYGA_US_S carries into month d, each read as S's
+# own formulas read it.  The account value, the Model #805 floor and P_accum@GMIR entering
+# the month; the interest credited to date, and to the anniversary that opened the contract
+# year of d, S's close of month 12 duration(d) - 1, which next year's interest-only
+# allowance reads; that year's free-withdrawal allowance, S's free_wd_allow at the year of
+# d, and the part of it unused, S's free_wd_remain(d - 1); the IRC 72 basis; and the
+# declared rate and i0 S credits and holds in month d - 1, the rate and the lock in force
+# entering d.
+_MYGA_STATE = {
+    "av_pp_init": _myga_entering("av_pp"),
+    "mgsv_pp_init": _myga_entering("mgsv_pp"),
+    "prem_accum_gmir_pp_init": _myga_entering("prem_accum_gmir_pp"),
+    "interest_credited_pp_init": _myga_entering("interest_credited_pp"),
+    "interest_credited_pp_prev_anniv_init": lambda s, d: (
+        s.interest_credited_pp(12 * s.duration(d) - 1) if d >= 12 else 0.0),
+    "free_wd_allow_init": lambda s, d: (
+        s.free_wd_allow(s.policy_year(d)) if d > 0 else 0.0),
+    "free_wd_remain_init": _myga_entering("free_wd_remain"),
+    "tax_basis_pp_init": lambda s, d: s.tax_basis_pp(d - 1),
+    "credit_rate_init": _myga_entering("credit_rate"),
+    "mva_ref_yield_locked_init": _myga_entering("mva_ref_yield_locked"),
+}
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -1229,6 +1264,91 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_SPIA_STATE,
         twin_state={c: f for c, f in _SPIA_STATE.items() if c != "policy_count"},
         exempt=frozenset({"result_pols"}),
+    ),
+    # MYGA's state is ten columns (_MYGA_STATE above), each read off S as S's own formulas
+    # read it.  S's one column of the kind, tax_basis_initial, is renamed in place to
+    # tax_basis_pp_init, the name of the S cell that reads it; on new business it keeps its
+    # S meaning, the basis at issue.  On the twins the other nine take what S itself
+    # assumes, 0 entering month 0, where SEC credits the issue values in the issue month, so
+    # each twin reproduces S.  The derived rows are the anchor on its first anniversary,
+    # whose $4,000 is free under the year's allowance; the interest-only, net-of-charges
+    # point the month after its excess withdrawal, carrying both interest columns, the
+    # floor net of charges, the basis and a used-up allowance; Camp B inside its initial
+    # term, carrying the P_accum its GMIR-floored cap reads; the registered-contract point
+    # in its window, where the rate is redeclared and i0 re-locked from the scenario at
+    # t = 0; the stress trace in the second month of its first renewal period, the month
+    # after its window, whose rate and i0 come from the opening state; and Camp B in its
+    # last covered month, its annual rate declared before the valuation date.  The future
+    # row is issued more than a year on, so a missing guard reads contract year -1 before
+    # issue.  T2's splice grid is built from this spec in a temporary table, not
+    # committed.
+    #
+    # T1 holds on MYGA at any count: S already charges acquisition and commission on the
+    # count issued, as SEC does.  It skips three S cells besides the default three:
+    #   av_pp_init, mgsv_pp_init: SEC's are the account value and the Model #805 floor in
+    #     force entering month 0 (D6), 0 on a contract issued at the valuation date, where
+    #     S's compute the issue values.  SEC credits those by S's rules in the issue month
+    #     (prem_to_av_pp, prem_to_mgsv_pp), and every cell they fed, av_pp_at, av_pp,
+    #     mgsv_pp and prem_to_av_pp among them, is compared.
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_fixed_deferred_annuity_us_sec.py
+    #     compares the report itself with S's, on every column both hold.
+    # At stage EC, T1 also needs a mapping for S's claims(t, None) and
+    # claims_over_av(t, None) keys, the kind=None totals that R9 and R12 replace.
+    #
+    # No projection cell calls a label accessor or compares a model point column's text:
+    # the five categorical columns S branches on are decoded once a point into bools, the
+    # is_* cells (renewal_architecture into is_rollover and is_annual_redeclare,
+    # free_wd_rule, mva_family, mva_cap_rule and mgsv_wd_convention likewise, one bool for
+    # each value S tests), each read where S asks its question, so a value S does not know
+    # is answered as S answers it.  R6 moves the decodes into Data.  The text a projection
+    # cell still compares in a branch is S's own: the timing and kind strings, which Phase
+    # 1 keeps and R9 numbers, and surr_charge_rate's test of the schedule surr_charge_id(t)
+    # names for "none", part of the surrender-charge join R7 re-keys.  Four joins on text
+    # keys are S's and wait for R7, each through the one cell that reads its table:
+    # mort_rate on the model point's sex, scenario_rate on its scenario_id,
+    # wd_scheduled_pp on its wd_schedule_id, and surr_charge_rate on the schedule
+    # surr_charge_id(t) names, a string-valued cell of S's.  The age cap and the duration
+    # factors are read through cells keyed by the age and the whole year
+    # (surr_charge_age_cap_at, mva_factor_at).  Every table is read through Data's checked
+    # copy of it, its keys read by value (mort_rates, surr_charge_scales,
+    # surr_charge_age_caps, rate_scenario_steps, wd_schedules, mva_factors), the extents
+    # through Data's int cells.  And Data checks each join's key before a projection joins
+    # on it: model_point_table refuses a point whose scenario the table lacks or which sets
+    # no level by the point's first month on the books, whose withdrawal programme the
+    # table lacks, or whose sex and attained age in that month the mortality table gives
+    # no rate at; surr_charge_scales refuses a table without the initial and the renewal
+    # schedules.  Left open, as in S: an attained age past the mortality table's last
+    # before maturity raises mort_rate's KeyError, since maturity_age is a Projection
+    # Reference that Data cannot read (the shipped table runs to 120).  R7's pre-joined
+    # arrays must refuse such a point rather than pad, and keep the scenario's months
+    # before its first level unreadable.
+    #
+    # For Phase 2's caches, each size with every input it depends on.  The contract issues
+    # at ages 0 to 85 (product-spec) and matures at maturity_age 100; nothing refuses an
+    # issue age outside that range, as S does not.
+    #   t: 0 .. 1,320, the 1,200 months of cover at the youngest issue age, 0, plus
+    #     future_horizon_mth, 120, and the month after for the t + 1 reads;
+    #   y (free_wd_base, free_wd_allow): contract years 1 .. 100, from the youngest issue
+    #     age and maturity_age;
+    #   a (surr_charge_age_cap_at): attained ages 0 .. 99, the same two;
+    #   k (mva_factor_at): whole years remaining 0 .. mva_factor_last_year, 10 as shipped,
+    #     by column 0 or 1, whatever the guarantee period: mva_duration_factor reads no
+    #     year past the table's last;
+    #   the guarantee period n sizes no cache: gp_index and the window are arithmetic.
+    # The float-parameter cells are S's, unchanged, for Phase 2 to inline or re-key:
+    # mva_pp_on(t, base), called by mva_pp and wd_mva_pp; mva_factor_geometric, called by
+    # mva_rate; and mgsv_rate_statutory, mgsv_rate_is_compliant and mva_ref_term_years,
+    # which no projection cell calls.  SEC adds none.
+    "MYGA_US_SEC": SecSpec(
+        twin="MYGA_US_S",
+        column_map={"tax_basis_initial": "tax_basis_pp_init"},
+        derived=((1, 12), (5, 30), (3, 30), (4, 60), (2, 61), (3, 479)),
+        future=((1, 15),),
+        state=_MYGA_STATE,
+        twin_state={c: f for c, f in _MYGA_STATE.items() if c != "tax_basis_pp_init"},
+        exempt=frozenset({"av_pp_init", "mgsv_pp_init", "result_pols"}),
     ),
 }
 

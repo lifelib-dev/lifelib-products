@@ -102,6 +102,8 @@ MODELS = {
     "ULSG_US_S": ("products/guaranteed_ul/ULSG_US_S", MONTHLY),
     # Annuity — deferred
     "MYGA_US_S": ("products/fixed_deferred_annuity/MYGA_US_S", MONTHLY),
+    "MYGA_US_SEC": ("products/fixed_deferred_annuity/MYGA_US_SEC",
+                    {**MONTHLY, "twin": "MYGA_US_S", "stage": "E"}),
     "FIA_US_S": ("products/fixed_indexed_annuity/FIA_US_S", MONTHLY),
     "VA_US_S": ("products/variable_annuity/VA_US_S", MONTHLY),
     "RILA_US_S": (
@@ -144,6 +146,10 @@ INPUT_FILES = {
         "surr_charge_table.csv"},
     "MYGA_US_S": {
         "model_point_table.csv", "mort_table.csv", "mva_factor_table.csv",
+        "rate_scenario.csv", "surr_charge_age_cap.csv", "surr_charge_table.csv",
+        "withdrawal_table.csv"},
+    "MYGA_US_SEC": {
+        "model_point_table_sec.csv", "mort_table.csv", "mva_factor_table.csv",
         "rate_scenario.csv", "surr_charge_age_cap.csv", "surr_charge_table.csv",
         "withdrawal_table.csv"},
     "RILA_US_S": {

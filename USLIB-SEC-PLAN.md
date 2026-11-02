@@ -3,7 +3,8 @@
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
 and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
 and §7.2). The other ten run in three streams (§5.3), of which SPIA, the first of the
-Payout stream, is done (M11, the *Record* of §7.9). Term's compile step, M14, brought
+Payout stream, is done (M11, the *Record* of §7.9), and so is MYGA, the first of the
+Deferred annuity stream (M7, the *Record* of §7.10). Term's compile step, M14, brought
 forward to run beside the streams (D2), is done on Linux, 2026-11-02; its Windows gate
 awaits the `cython` job's first run (§7.1, *Record — M14*). The open decisions of §8.2 are
 settled but one, which is needed only before Phase 1 reaches RILA.
@@ -383,6 +384,19 @@ and the splice identity of §5.2 tests it.
 - A quantity fixed at issue and not re-derivable from static data (a payout amount, a
   locked rate, a solved premium, an index level at term start) is a column too, for the
   reason BasicTerm_SE reads its premium from a table.
+- A rate fixed at a past date that is not issue, such as a declared rate or a yield locked
+  at the start of the period under way, is a column too, `<cell>_init`, the value in force
+  entering month 0. It is read only where the fixing month precedes `t_entry()`; a fixing
+  at month 0 itself reads the scenario at the valuation date (precised at M7).
+- Where S computes an issue value by rule rather than reading it, as MYGA's `av_pp_init()`
+  and `mgsv_pp_init()` do, the rule moves into the issue month's credit and the cell
+  becomes the in-force accessor, 0 on new business; T1 exempts the cell with that reason.
+  An S column that is a value at issue, as MYGA's `tax_basis_initial` is, takes the D6
+  name and keeps its issue meaning on new business, so `Data`'s check that a point not yet
+  in force has no opening state exempts it (precised at M7).
+- The remainder of an annual allowance, which each anniversary resets, is not an
+  accumulator and takes no `_ytd`, as MYGA's `free_wd_remain_init` does not; an
+  accumulator of use does, as VA's do (precised at M7).
 - `Data` validates the in-force columns on read, vectorized, and raises naming the
   offending `point_id`: no negative balances, flags consistent with balances, a phase
   consistent with the account value. A rule of the product rather than of the table,
@@ -391,6 +405,21 @@ and the splice identity of §5.2 tests it.
   Such a row reads, and a loop over the block meets it only when it reaches it, so
   `run_sec.py --block` asks every point for its frame before it projects any (precised
   at M1).
+- A `Data` rule that ties one amount of money to another, as an allowance to the base it
+  is a share of, compares to a cent, so that an extract may carry each amount to the cent:
+  each amount so carried is within half a cent of its exact value, so the rule can miss by
+  half a cent from each, the base's scaled by the rate, and at half a cent ties fall to
+  floating point. Two columns that hold one amount at instants that coincide may still be
+  compared exactly, as WholeLife's are on an anniversary. `Data` holds a carried allowance
+  to what makes it, as MYGA's does: the issue allowance in the first contract year; on an
+  anniversary under `pct_av`, the rate times the account value; and under `interest_only`,
+  at most the interest to the anniversary that opened the year, exactly that in the second
+  year. A balance S lets fall below 0, as MYGA's floor and `P_accum`, is checked only as a
+  finite number (precised at M7).
+- A contract in force whose benefits all rest on its account value has an account value
+  above 0, and `Data` refuses 0, naming the point, as MYGA's does (precised at M7). A
+  product whose rider pays on after the account value is exhausted, as FIA's and VA's
+  lifetime withdrawals do, accepts 0 and guards its ratios instead.
 - The S tables' mixed spellings — `_init`, `_initial`, `_inforce`, `duration_inforce`
   (years), `duration_mth_init`, `entry_year` — become this one vocabulary in the SEC tables.
   Each `model-sec.md` records the mapping.
@@ -595,7 +624,17 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   where S raised or returned NaN only when a projection reached it, and one `Data` cell
   holds each table's check, from which its array and its extents are sized, so that a
   projection, which reads an extent first, meets the same refusal (Term's
-  `premium_schedules`; precised at M14).
+  `premium_schedules`; precised at M14). Each array, and each point's index into it, is
+  built from keys `Data` has checked, and a point whose key its table lacks is refused, by
+  point, rather than read as padding (precised at M7). MYGA's mortality, padded from age
+  0, holds padding below the table's first age, where `Data` refuses a point's attained
+  age in its first month on the books, and ends at the table's last age, 120 as shipped,
+  which a point can pass before maturity on a shorter table: the maturity age is a
+  `Projection` Reference that `Data` cannot read, so Phase 2 checks that bound in
+  `proj_len()` against an int `Data` cell of the table's last age by sex (§7.10,
+  *Record — M7*), where Phase 1 leaves S's `KeyError`. A scenario step-filled into
+  `[scenario, month]` keeps the months before its first level unreadable: T3's re-based
+  scenarios have none before issue, and a read there must fail.
 - **R8** A blank override becomes a value array plus a 0/1 flag array; no `pd.isna` or NaN
   test runs in `Projection`.
 - **R9** String parameters become named int References: `pols_if_at(t, BEF_DECR)` with
@@ -911,6 +950,18 @@ conventions suite.
   at the valuation date and one issued later, at two values of the SEC Reference (precised
   at M11).
 
+  Where spliced rows at different months share one S scenario, each row reads its own
+  copy, re-based to its month as a step function under an id of its own, so the comparison
+  exempts `scenario_id`. A future row's copy holds no level before issue, so a read there
+  raises, and Phase 2's full sweep starts each scenario reader at `t_entry()` on such
+  rows. Where S keys a state cell by contract year, the comparison skips, through
+  `twin_mismatches`'s `arg_map`, each year that closed before the restated month, and each
+  value of the year under way that the opening state stands in for, as MYGA's base of a
+  year opened before that month, whose allowance is a column; the rules test asserts that
+  the model asks about no year closed before the valuation date. And the rules test judges
+  each read through a cell keyed by no month, a contract year, an age or nothing, against
+  the month that asked (precised at M7).
+
   **S's own in-force rows are splice cases too.** On the policy-clock models their frames
   align at offset `d`: WholeLife at 108, FIA at 84. On the projection-clock models they
   align at offset 0: UL at 120, ULSG at 300, VUL at 24 and 120, VA at 26. Any input S read
@@ -980,7 +1031,12 @@ says when it measured under load, and K6 is measured again on the merged branch 
 
 ### 5.4 Exit criteria
 
-- All twelve pass T1–T6 and the generalized conventions.
+- All twelve pass T1–T6, as §5.2 now states them, and the generalized conventions. M11's
+  precisions of T2, T3 and T4, no absolute floor where a compared value falls far below 1
+  and a count factor that is not whole with every zero-shipped assumption switched on, are
+  taken at M13 into the four products built before them, Term, WholeLife, MYGA and UL,
+  before the last three's fingerprints are frozen; a fix they force that moves a number of
+  Term's regenerates Term's M14 fingerprint, committed alone (decided at M7's landing).
 - `python tools/doccheck.py` reports zero.
 - The existing CI matrix is green inside its 90-minute timeout. The SEC suites roughly
   double the projected volume, so §8's K6 measures that before the timeout is touched.
@@ -2782,46 +2838,548 @@ maturity on `t == proj_len() - 1`. Timings: `BEF_DECR`, `BEF_MORT` (after annuit
 `BEF_LAPSE`, `AFT_DECR`.
 
 *E:*
-- Opening state:
-  - `av_init`; `mgsv_init` (S starts it at 0.875 P); `prem_accum_gmir_init`;
-  - `tax_basis_init` — the one input S already takes, as `tax_basis_initial`;
-  - interest credited, both cumulative and as at the last anniversary: the interest-only
-    free withdrawal is last year's interest, while the minimum-interest surrender cap uses
-    the cumulative;
-  - this year's free-withdrawal allowance, or the anniversary AV it is based on, and the
-    unused remainder;
-  - the declared rate in force and the MVA reference yield `i0` in force, when the
-    redeclaration or the period start precedes `t = 0`.
-- The guarantee-period position, surrender-charge clock, window, base lapse and age derive
-  from `duration_mth`, on the assumption, which holds for the product, that every renewal
-  period is `n` years.
-- R1a, four violations:
+- The opening state is ten columns, each read off S as S's own formulas read it. Entering
+  month 0: `av_pp_init`, above 0 on a contract in force; `mgsv_pp_init` and
+  `prem_accum_gmir_pp_init`, the Model #805 floor and `P_accum@GMIR`, either of which may
+  be negative, since S floors neither; `interest_credited_pp_init`, which the
+  minimum-interest cap and the interest-only allowance read; and `free_wd_remain_init`,
+  the allowance unused, which the projection reads off an anniversary.
+- At the anniversary on or before the valuation date (D6):
+  `interest_credited_pp_prev_anniv_init`, which next year's interest-only allowance reads,
+  and `free_wd_allow_init`, the allowance of the contract year under way: under `pct_av`
+  `free_wd_rate` times that anniversary's account value, under `interest_only` the
+  interest of the year before, which no anniversary value gives. The projection reads the
+  allowance only on a valuation on an anniversary; off one, only `Data`'s remainder check
+  reads it.
+- `tax_basis_pp_init` is S's `tax_basis_initial` renamed: the basis entering month 0, or
+  at issue on new business, where it keeps S's meaning. `credit_rate_init` and
+  `mva_ref_yield_locked_init` are the declared rate and `i0` in force entering month 0,
+  read where the redeclaration or the period start precedes `t_entry()`; one at month 0
+  reads the scenario (D6, precised at M7).
+- S's `av_pp_init()` and `mgsv_pp_init()` compute `P (1 - load_prem_rate)` and `0.875 P`.
+  In SEC they read the columns, and the two rules credit the issue month, through
+  `prem_to_av_pp` and the new `prem_to_mgsv_pp` (D6, precised at M7). `Data` compares
+  amounts of money to a cent, so that an extract may carry each to the cent, and the
+  projection starts from the amounts as carried.
+- The guarantee-period position, the surrender-charge clock, the window, the base lapse
+  and the age derive from `duration_mth`, every renewal period being `n` years.
+- R1a, four violations in the model and one in S's runner, whose `lapse_rate(12 n)` takes
+  a policy month as `t`:
   - `free_wd_base` reads `av_pp_at(12(y-1))`;
   - `free_wd_allow` reads `interest_credited_pp(12(y-1) - 1)`;
   - `credit_rate` reads `market_rate(redeclare_month)`;
   - `mva_ref_yield_locked` reads `mva_ref_yield(gp_start_month)`.
-- Clocks: the rate scenario moves to `t`. All three shipped scenarios are one flat row, so
-  no shipped number moves. Withdrawals stay on the policy clock.
-- Splice months: 12; 30, after point 5's excess withdrawal; 60, the window; 61 and 89, a
-  renewal period with `i0` re-locked (point 3 redeclares every anniversary).
+  `redeclare_month` and `gp_start_month` keep returning policy months, and the two cells
+  that read them turn each into a valuation month once. Every other test of `t` against a
+  contractual event, every recursion's base and the guards outside cover follow template
+  items 3 to 6, D4 and D7, and `model-sec.md`'s *Departures* lists each cell.
+- Counts: `BEF_NB` is the one timing added. S's `BEF_MORT` means "before mortality", so no
+  S timing clashes with BasicTerm_SE's.
+- Clocks: the rate scenario moves to `t`, and each of its three shipped scenarios is one
+  flat row, so the move changes no shipped number. Expense inflation moves to `t` too,
+  `(1 + i)^(t // 12)`, so a point in force carries its expenses in valuation-date dollars
+  (D7). Withdrawals stay on the policy clock.
+- Chains: every chain is one cell a month. A cold `net_cf` of the last month runs one cell
+  a month back to `t_entry()` and at most 16 more: 494 to 496 cells on a 480-month frame,
+  against 1,437 in S, and 1,214 at issue age 0.
+- Text: the five categorical columns S branches on, `renewal_architecture`,
+  `free_wd_rule`, `mva_family`, `mva_cap_rule` and `mgsv_wd_convention`, are decoded once
+  a point into fourteen bools, the `is_*` cells, each read where S asks its question, so
+  that a value S does not know is answered as S answers it; R6 moves the decodes into
+  `Data`. No other projection cell compares a model point column's text, and none calls a
+  label accessor, which are left to reporting. The text a projection cell still compares
+  in a branch is S's own: the timing and kind strings, which Phase 1 keeps and R9 numbers,
+  and `surr_charge_rate`'s test for `"none"` on the schedule `surr_charge_id(t)` names,
+  part of the surrender-charge join that R7 re-keys. The four joins on text keys stay S's
+  for R7, each in the one cell that reads its table: mortality on the point's `sex`, the
+  scenario on its `scenario_id`, the withdrawals on its `wd_schedule_id`, and the
+  surrender charge on that schedule. `Data` checks each key before a projection joins on
+  it (*Record — M7*, *Data's checks*).
+- Tables: S's six readers keep their code. Beside each, a `Data` cell reads the table's
+  keys by value, once, checks them and the values, and returns the table indexed by the
+  checked keys, and the projection reads the table there alone: `mort_rates`,
+  `surr_charge_scales`, `surr_charge_age_caps`, `rate_scenario_steps`, `wd_schedules` and
+  `mva_factors`. A key that is not a whole number, text and a blank among them, a blank
+  text key, a value out of its range, a repeated key, and a gap where the projection reads
+  every year or age between a table's first and last are refused, naming the file, the
+  column and the lines, and so is a surrender charge table without the `initial` and
+  `renewal` schedules. The age cap's extents and the duration factors' last year are int
+  cells from the same keys, and those two tables are read through cells keyed by the age
+  and the whole year, `surr_charge_age_cap_at(a)` and `mva_factor_at(k, column)`. No
+  mortality cap: no factor multiplies the table rate, and `Data` refuses a rate outside 0
+  to 1.
+- Splice months: 11 and 12, either side of the first anniversary; 30, after point 5's
+  excess withdrawal; 59 and 60, the initial term's last month and its window, where the
+  rate is redeclared and `i0` re-locked at `t = 1` and at `t = 0`; 61 and 89, a renewal
+  period whose rate and `i0` were fixed before the valuation date (point 3, which
+  redeclares at each anniversary, last at 60 and at 84); and 479, the last covered month.
+  Four variants, in the splice's copy of S's table only, carry the categories S's points
+  do not: point 1 female at a GMIR of 2%, with the floor's $50 charge and 2% premium tax,
+  at 12, 30 and 61; point 3 at a GMIR of 3% as an IRA with no basis, at 61, 72 and 89;
+  point 5 with a seven-year guarantee period, at 30, 83 to 85 and 100; and point 4 issued
+  at 85, under the attained-age cap, at 59 to 61, 125 and 179. Future rows are issued 1
+  and 15 months on, the variants 1 month on. The full grid is 72 T2 and 18 T3 cases, and a
+  core of 17 and 7 runs by default (*Record — M7*). Two core rows are each the only one to
+  show a fault: point 5 at 11, interest-only in a contract year's last month, which
+  measures the allowance of the year after next from the interest at frame month 0, and
+  point 4 at 89, a renewal period under way, whose `i0` stands apart from the yield at the
+  valuation date.
 
 *C:*
-- 23 attribute cells. `free_wd_mva_exempt` becomes an int, not a numpy bool.
-- To arrays: scenario rates (`.loc`, a list comprehension and `max` per call) step-filled
-  into `[scenario, month]`; withdrawals into `[schedule, month]`; surrender charges into
-  `[schedule, year]`; the age cap into `[age]`; the MVA duration factor into a 2-D array;
-  mortality into `[age, sex]`.
-- Eleven string cells, including `surr_charge_id(t)`. Timing and kind parameters, and
-  `scenario_rate(t, name)`.
+- 33 attribute cells, ten more than S's 23: `policy_count` in place of `pols_if_init`,
+  `duration_mth_init` and nine opening-state accessors. `free_wd_mva_exempt` becomes an
+  int, not a numpy bool.
+- To arrays, each from the checked table `Data` already returns, its keys read by value
+  and refused by name: scenario rates step-filled into `[scenario, month]`; withdrawals
+  into `[schedule, month]`; surrender charges into `[schedule, year]`; the age cap into
+  `[age]`, its extents already int cells; the MVA duration factor into `[year, column]`,
+  read through `mva_factor_at`; mortality into `[age, sex]`.
+- The fourteen `is_*` decodes move into `Data` (R6). `surr_charge_id(t)`, a string cell,
+  becomes an int code, and the four joins on text keys are re-keyed (R7). Timing, kind and
+  `scenario_rate`'s column name become codes (R9), and its list comprehension and `max`,
+  kept from S, a loop (R12).
 - `claims(t)` called from `net_cf` with `kind=None` becomes an explicit `ALL` kind.
 - R14: `mva_pp_on` and `mva_factor_geometric`, each inlined into the cached cell that
   calls it, or keyed by an int code. `mgsv_rate_statutory`, `mva_ref_term_years` and
   `mgsv_rate_is_compliant` are never reached (below). S's tests call those three and
   `mva_factor_geometric` directly, so S's cells stay for them, admitted by name, or go
   with a T1 exemption (R14). `math.floor` and `math.ceil` become integer arithmetic (C5).
-- Never reached: `tax_basis_pp`, `taxable_wd_pp`, `claims_over_av`, `gp_end`,
-  `duration_mth`, `mgsv_rate_statutory`, `mva_ref_term_years`, `mgsv_rate_is_compliant`,
-  `policy_id`, `tax_status`.
+- Never reached in S: `tax_basis_pp`, `taxable_wd_pp`, `tax_basis_pp_init`,
+  `claims_over_av`, `gp_end`, `duration_mth`, `mgsv_rate_statutory`,
+  `mgsv_rate_is_compliant`, `mva_ref_term_years`, `policy_id` and `tax_status`;
+  `tax_basis_pp_init`, the cell that reads S's `tax_basis_initial`, was found at M7. In
+  SEC `duration_mth` is the clock, which every contractual cell reads. The other ten stay
+  unreached on the committed rows, and so do eight of S's label accessors that no
+  projection cell calls any more, `sex`, `renewal_architecture`, `free_wd_rule`,
+  `mva_family`, `mva_cap_rule`, `mgsv_wd_convention`, `scenario_id` and `wd_schedule_id`:
+  `sample_sec.py` must call each, or the registry's `"reporting"` name it (R17).
+
+#### Record — M7, done 2026-11-02
+
+Built in two commits, as D1 requires: `MYGA_US_S` copied with only `_name` changed, then
+the enhancement, by M1's process: a design prototyped and critiqued before the build,
+tests written against the build and checked by injected faults, then a review under the
+three lenses. The review made 30 findings, one a blocker and 11 major, some of them one
+defect seen under two or three lenses. The blocker was that a key written as text in an
+assumption table silently zeroed every surrender charge or every withdrawal, or removed
+the age cap, and the fix has `Data` check every table's keys. The first fix took 29 of the
+findings. For the 30th, that no test tells the block's `groupby` sum from a plain running
+sum, it took the finding's own alternative and recorded the rule as review-only, since the
+runner prints to the cent, where a running sum's last-bit differences cannot show. A
+re-review of the fixes made five findings, one of them major: the half-cent tolerance the
+first fix gave `Data`'s money rules equalled the largest error that carrying one amount to
+the cent makes, so ties fell to floating point, and 5.1% to 5.3% of correctly rounded
+anniversary allowances, in a sample of 200,000, were refused. The second fix compares
+those rules to a cent, prints "1 month" where a point is a month from the valuation date,
+tests the second-year interest-only rule at both ends of its window, says which text a
+branch still compares, and has `Data` check each point's join keys. It rejected one
+instruction as given, that a scenario must set a level by `t = 0`: T3's scenarios,
+re-based to their issue months, set none before issue, and under that rule all seven core
+T3 cases failed. The check is made per point instead, against the point's first month on
+the books. Eleven defects found in `MYGA_US_S` are carried below: eight are fixed in
+`MYGA_US_SEC` only, and three in neither model. M7 was built on M2's tip and rebased onto
+M11's at landing (*Landing*, below).
+
+**What exists now.**
+- `MYGA_US_SEC` at stage `E`. Of `MYGA_US_S`'s 127 `Projection` cells, 53 are unchanged,
+  13 have a new docstring only and 61 are rewritten; none is removed or renamed. It adds
+  30 cells, 157 in all: `policy_count`, `duration_mth_init`, `maturity_mth`, `t_entry`,
+  `is_active` and `pols_new_biz`; seven opening-state accessors; `prem_to_mgsv_pp`, which
+  credits the floor's issue value; a reader keyed by age and one keyed by whole year,
+  `surr_charge_age_cap_at(a)` and `mva_factor_at(k, column)`; and fourteen decodes. `Data`
+  keeps S's eight cells, rewrites the table reader, which now checks the table as it reads
+  it, and gives four readers new docstrings. It adds nine cells, the six checked tables
+  and three int extents, and the Reference `future_horizon_mth = 120`.
+- `model_point_table_sec.csv` holds 14 rows generated from MYGA's `SecSpec`. Seven are S's
+  points as twins, issued at the valuation date. Six are derived: the anchor (S point 1)
+  on its first anniversary, month 12, with year 2's allowance; the interest-only point (5)
+  at 30, the month after its excess withdrawal; Camp B (3) at 30, inside its initial term;
+  the registered-contract point (4) at 60, in its window; the stress trace (2) at 61, the
+  month after its window; and Camp B at 479, its last covered month. The last row is S
+  point 1 issued 15 months on. A case-insensitive search for the publishers, products,
+  form numbers, hosts and towns that `fixed_deferred_annuity/sources.md` cites finds none
+  of them in the table.
+- `tests/test_fixed_deferred_annuity_us_sec.py` has 34 tests and 223 cases: T2 on 72
+  splices; T3 on 18 future points; T5 on 84 malformed rows and 18 malformed assumption
+  tables; the rules test, core and full; and 29 tests of one case each, T4, T6, the depth
+  test, the clocks, the opening state, the runner and the product's own facts among them.
+  By default a core of 17 splices and 7 future points runs, 156 cases in all. A test
+  asserts that the core reaches each category of the five text columns, each kind of
+  valuation month, each opening-state column and each branch it names in the frame; one
+  branch, the dynamic lapse switched off by a surrender haircut of 20% or more, is reached
+  by no grid. The other 67 cases carry `sec_full` (K6). S has no in-force point, so
+  `IN_FORCE_TWINS` is empty. The SEC conventions, 33 cases, pass but for
+  `test_net_cf_is_income_positive`, which skips, as it does for `MYGA_US_S`, since neither
+  has a `liability_cf`.
+- `run_sec.py`; `model-sec.md`, with *The opening state*; the registry entry with its
+  `INPUT_FILES`; and four generated pages, with the product page's toctree. doccheck
+  reports 489 pages and 0 warnings as landed, 485 on M2's tip.
+- Shared files, added to in place: MYGA's spec and its state extractors in
+  `sec_support.py`; the entry in `us_registry.py`; and MYGA's row of the models table in
+  uslib's `index.md`, with the sentence that lists the SEC models at landing.
+
+**Departures and precisions from `MYGA_US_S`.**
+- *The clock and the frame* (D3). `duration_mth(t) = duration_mth_init() + t`, a closed
+  form, and `proj_len() = maturity_mth() - duration_mth_init()`, which refuses by name a
+  point at or past maturity. `maturity_mth()` is new and keeps S's frame from issue,
+  `12 (100 - age_at_entry)`. Every contractual test moves to the policy clock, §7.10's
+  four R1a sites among them.
+- *Counts* on BasicTerm_SE's pattern (D5). `pols_if_at` gains `BEF_NB` beside S's four
+  timings, `pols_new_biz` is new, and `result_pols` puts it second. The count's chain is
+  one cell a month, where S's ran two.
+- *The opening state* is ten columns (§7.10, *E*). The issue rules of S's `av_pp_init()`
+  and `mgsv_pp_init()` credit the issue month, and the two cells read the columns, 0 on
+  new business; T1 exempts both. `tax_basis_initial` is renamed `tax_basis_pp_init`
+  through the spec's `column_map`, and `Data`'s no-state check exempts it (D6, precised).
+- *The allowance of the year under way* is carried, with the interest at its anniversary,
+  rather than the anniversary's account value, because the interest-only allowance is the
+  interest of the year before, which no anniversary value gives.
+- *One cell a month.* S's account value ran three cells a month and its free-withdrawal
+  carry two; each now runs one. On the twins every account value, floor, `P_accum`,
+  interest, basis, allowance, count and `net_cf` is S's bit for bit at every month.
+- *Contract-year state* keeps S's keys, `free_wd_base(y)` and `free_wd_allow(y)`, so T1
+  compares S's goldens on them. T2 skips each contract year that closed before a restated
+  row's month, and the base of one under way that opened before it, whose allowance the
+  row carries, and the rules test asserts that no year closed before the valuation date is
+  asked for (§5.2, precised).
+- *Inputs on their clocks* (D7). The rate scenario is read on `t` and the withdrawals on
+  `duration_mth(t)`. Expense inflation is `(1 + i)^(t // 12)` from the valuation date, so
+  point 8's maintenance expense is S's divided by 1.025. Acquisition is charged per
+  contract issued, in the issue month, uninflated.
+- *Guards outside cover.* Fifteen cells that S leaves unguarded, the decrements, the
+  withdrawals, the table and lapse readers and the floor's charge among them, return zero
+  or `False` outside cover before any table or rate is read.
+- *Text and tables* (§7.10, *E*). Fourteen bool decodes; every table read through `Data`'s
+  checked copy; the age cap and the duration factors read through cells keyed by the age
+  and the whole year.
+- *The checks* scale their tolerances by `max(policy_count, 1)`, since a residual is
+  rounding on that many contracts, and their verdicts are loops.
+- *No mortality cap* (§5.1, step 6). No factor multiplies MYGA's table rate, which is
+  0.263 at most in cover, and `Data` refuses a rate outside 0 to 1.
+
+**Departures and precisions from the template** (§7.1 and §7.2, *Records*).
+- *No `LOOK_AHEAD`*: no read goes beyond `t + 1`.
+- *The future row* is issued 15 months on, so that a missing guard reads contract year -1
+  before issue. T3 issues every S point 1 and 15 months on.
+- *Signed and issue-dated state.* The floor and `P_accum` may be negative, and
+  `tax_basis_pp_init` is not 0 on new business.
+- *The splice* switches on `free_wd_util` 0.5, `renewal_spread` 0.75%, `expense_acq` 150
+  and `load_prem_rate` 1% in both models and sets inflation to 0. Its copies step the
+  scenarios, raise the renewal surrender charges by 0.5% and cut the duration factors to
+  years 0 to 3, and each spliced row reads its own re-based copy of its scenario, so T2
+  and T3 exempt `scenario_id` (§5.2, precised). `_sweep_s` evaluates the cells S's sweep
+  never reaches.
+- *T5* reads each case with a model of its own, and each refusal again through a
+  projection.
+- *T2 and T3* compare to 1e-9 relative over the harness's absolute floor of 1e-9. M7 was
+  built before §5.2 dropped that floor wherever a compared value can fall below about 1e-7
+  (precised at M11). On the committed points, 12,927 of the 596,161 numbers cached outside
+  the reports and the checks are nonzero and below 1e-7 in magnitude, every one a count or
+  an expense.
+- *T4* doubles the count at the shipped assumptions, as M2's does, and asserts both
+  reports doubled and every uncounted cell unchanged. Acquisition per contract issued is
+  asserted on its own, at 2.5 contracts with `expense_acq` 150, and both roll-forward
+  checks at a million contracts. §5.2's T4, a factor that is not whole with every
+  assumption that ships at zero switched on, was precised at M11, after M7 was built.
+- *M14's and M11's carried items not yet taken.* Built on M2's tip, MYGA took `codes=` at
+  landing, but its runner does not yet carry Term's `--cython`, `--build` and `_tool()`,
+  nor its module the `create()`-copy test. `proj_len()` checks no contract bound.
+  Mortality, the scenario, the withdrawals and the surrender charge are read in S's
+  per-`t` cells, joined on text keys, not each through one age- or year-keyed cell (R7).
+  The module freezes no swept model out of the collector. It records each splice row for
+  the rules test after comparing it, in `_settle`, where M11's item records it before, so
+  the rules test judges what the comparison evaluated too. Its core was chosen by branch
+  and fault reach rather than by line coverage. Its malformed cases are each built so that
+  the check it names fails first, not so that it alone refuses them, and no run dropped
+  each rule in turn: with its own check dropped, a blank or a text `duration_mth` is still
+  refused, by the scenario check, and the text `age_at_entry` added at landing by the
+  mortality check. MYGA's C step takes up the runner's options, the copy test, the bounds,
+  the keyed readers, the freeze and the malformed cases' single rule. T2's and T3's floor
+  and T4, above, are §5.2's Phase 1 rules, and MYGA takes them before Phase 1 closes
+  (§5.4).
+- *The rules test* judges what a call reads through a cell keyed by no month against the
+  month that asked (§5.2, precised).
+- *The depth test* makes six cold calls on the committed model, each on an ItemSpace of
+  its own: `net_cf` on twins 1, 3 and 5 and on the point issued 15 months on, and the
+  floor's chain and the basis's alone. It repeats the anchor at issue age 0, on a copy
+  whose mortality is extended below 40, at the valuation date and 120 months on. Each
+  asserts one cell a month back to `t_entry()` and at most `CHAIN_OVERHEAD`, 16, more.
+
+**Data's checks.** `model_point_table()` runs these in turn and refuses on the first that
+fails, naming the missing column or every point that fails it:
+- a missing in-force column;
+- a repeated `point_id`;
+- a `policy_count` that is not a number, zero or more;
+- a `duration_mth` that is not a whole number, 12.0 read as 12;
+- an `age_at_entry` or a `guar_period` that is not a whole number of years: S reads both
+  by `int()`, which truncates a fraction without a word, and the initial-term check reads
+  `guar_period` as written;
+- a `guar_period` below 1 year: at 0 the guarantee-period index divides by zero, naming no
+  point, and below it the projection runs a period no contract has;
+- a contract issued more than `future_horizon_mth` months on: at 0, any future business,
+  and the message says so; a negative horizon is itself refused;
+- an account value, interest, allowance, remainder or basis that is not a finite number,
+  zero or more;
+- a floor, `P_accum`, declared rate or `i0` that is not a finite number;
+- any opening state but the basis on a point not yet in force;
+- an account value not above 0 on a point in force;
+- in the first contract year, interest at the anniversary, or an allowance other than the
+  issue allowance;
+- on an anniversary, the two interest columns apart;
+- interest at the anniversary above the interest to date;
+- under `interest_only` from year 2, an allowance above the interest at its anniversary,
+  and in year 2 one apart from it;
+- off an anniversary, a remainder above the allowance;
+- in the initial term, the first renewal month included, a rate or `i0` other than the
+  issue ones;
+- after it, a rate below the GMIR;
+- on an anniversary under `pct_av`, an allowance other than `free_wd_rate` times
+  `av_pp_init`;
+- last, a `scenario_id` that is not a scenario of `rate_scenario.csv` setting its levels
+  by the point's first month on the books, `t = 0` or its issue month if later; a
+  `wd_schedule_id` the withdrawal table lacks; and a sex and attained age in that first
+  month that `mort_table.csv` does not rate.
+
+Every rule between two amounts of money holds to a cent (D6, precised): carried to the
+cent, each amount is within half a cent of its exact value, and an allowance can miss its
+base's share by half a cent plus `free_wd_rate` times half a cent, 0.0055 at the product's
+10%. The six assumption tables are checked in their own cells (§7.10, *E*). Accepted,
+because a contract can be in each state: a negative floor or `P_accum`; any basis at
+issue, zero or more, on a point not yet in force; on an anniversary, a remainder above the
+allowance, last year's; and a `duration_mth`, an `age_at_entry` or a `guar_period` written
+as a float. Left to the projection, as in S: an attained age past the mortality table's
+last before maturity, which raises a `KeyError`, since the maturity age is a `Projection`
+Reference that `Data` cannot read, and the shipped table runs to 120, past every cover.
+
+**Measured for K6 and F7.** Every time below was taken with other workflows sharing the
+machine.
+- *Time.* After the second fix, the module ran 150 passed and 67 skipped in 4 min 31 s by
+  default, at a peak of 2.33 GB in one process, and 217 passed in 7 min 17 s over its full
+  grid, at 2.52 GB. Before it, it ran 140 passed and 67 skipped in 3 min 58 s and
+  4 min 41 s, at 2.38 GB, and 207 passed in 7 min 14 s and 6 min 55 s over the full grid,
+  at 2.35 GB. Most of the default run is fixed: the extract (26 s), the committed sweep's
+  fixture (25 s), the count doubling (25 s), `run_sec.py`'s subprocesses (20 s), the S
+  fixture's sweep (17 s), the splice's fixture (15 s), the edges (15 s) and the depth test
+  (12 s), about 156 s together. A T2 or T3 case takes up to 5 s, and the 24 core cases
+  took 55 s of one suite run. In that run the module took 3 min 54 s of test time, where
+  WholeLife's took 2 min 40 s, and the SEC conventions, 32 passed and 1 skipped, 37 s. On
+  M2's tip with MYGA added, the uslib suite ran 1,480 passed and 177 skipped in
+  14 min 50 s after the second fix, and 1,470 passed and 177 skipped in 14 min 44 s and
+  16 min 29 s before it, each at a peak of 2.69 GB. As landed, on M11's tip, it ran 1,722
+  passed and 231 skipped in 21 min 45 s (*Verified at landing*, below).
+- *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()`,
+  plus an overhead of 14: 494 cells deep on the 480-month frames of twins 1, 3 and 5, 482
+  on the anchor's 468 months at its first anniversary, and 494 on the point issued 15
+  months on, against 1,437 in `MYGA_US_S`. On a model just read, twin 3's runs 496: its
+  deepest frames are `Data`'s first read of the age-cap table, which takes its overhead to
+  16, `CHAIN_OVERHEAD` itself. The floor's chain alone runs 483 and the basis's 485. At
+  the longest cover, issue age 0 and 1,200 months, on a copy whose mortality is extended
+  below 40, it runs 1,214, both at the valuation date and issued 120 months on, in a frame
+  of 1,320. An ascending sweep of the committed points runs 17 deep, on the anchor's twin
+  as it first reads the age-cap table, so under a recursion limit of 16; `CALL_DEPTH` is
+  40. In the modelx export, with the limit set after the package is imported, as M1
+  measured, the cold call needs a recursion limit of 1,003 on the anchor's twin, 1,012 on
+  twin 3 and 2,443 at the longest cover, and the ascending sweep 54. Set before the
+  import, as §7.2's and §7.9's records set it for their sweeps, the sweep's limit is the
+  import's own, 128.
+
+**Faults.** Each fault went alone into its own copy of the library, and the tests aimed at
+it ran through the gate.
+- *Tests stage:* 49 faults, all caught; each of the module's 29 tests of the time failed
+  under at least one.
+- *Review (tests lens):* 26 faults, 7 of which survived the default grid: acquisition
+  charged once per model point, `free_wd_allow_init` exempted from the no-state check, the
+  interest-only look-back off by one, the roll-forward tolerance unscaled, an infinite
+  balance accepted, the look-back based at 0, and a plain running sum in `--block`.
+- *Fix stage:* the seven again and nine of its own. All fail but the running sum, which
+  survives by construction: the rule is review-only, and MYGA's C step copies Term's
+  compensated `add()`.
+- *Re-review:* four faults, of which two survived: the second-year interest-only rule
+  narrowed to the anniversary, and widened to month 24.
+- *Second fix:* 14 faults, each failing a test. The two survivors fail at months 23 and
+  24. Every money rule at half a cent, the anniversary `pct_av` rule alone and the
+  first-year rule alone each fail the edges test. Each join-key check dropped or misplaced
+  fails, among them a scenario required by `t = 0` for every point, which fails all seven
+  core T3 cases. The runner's plural restored fails the one-month runner test.
+
+**Carried into FIA (M8), VA (M9) and RILA (M10): the deferred chassis.** Each item goes to
+the products in progress from this landing (§5.3), and each record says what it took.
+- *Chains.* Write every chain one cell a month, its opening inline, the account value and
+  each in-year carry alike: `MYGA_US_S`'s account value ran three cells a month and its
+  free-withdrawal carry two, and a cold last-month `net_cf` fell from 1,437 cells to 494
+  with every value S's. FIA's account value, VA's per-fund values and RILA's accounts
+  follow (D5, F7).
+- *Issue values and past fixings* (D6, precised). An issue value S computes by rule stays
+  a rule, credited in the issue month, and its cell becomes the in-force accessor, T1
+  exempting it. A rate fixed at a past date is a `<cell>_init` column, read only where its
+  fixing month precedes `t_entry()`, as RILA's `cap_init` and term-start market state are,
+  with a core row inside each fixed period, as MYGA's at 61 and 89 are. Keep S's
+  month-valued cells, as MYGA keeps `redeclare_month` and `gp_start_month`, and convert
+  once in each reader.
+- *Year-opening state.* Keep S's contract-year keys, with T2's `_on_the_books` and the
+  rules test's year check, and carry each product's own state: FIA's year-open account
+  value and F, VA's withdrawals used this year, RILA's `av_prev_anniv_init` and
+  `fw_remain_init`. MYGA's allowance column fits only where the allowance is read at the
+  anniversary alone. For each year-keyed state read from the frame, put a row valued in a
+  year's last month, `d % 12 == 11`, in the core, with an `AT_VALUATION` entry: MYGA's
+  interest-only look-back one month off passed the core until point 5 at 11 joined it.
+- *Data's checks.* Compare to a cent each rule that ties one amount of money to another
+  (D6, precised). Hold each carried value to what makes it where its rule fixes it: FIA's
+  F and year-open account value to the anniversary rules, and RILA's `av_prev_anniv_init`
+  likewise. VA's withdrawals used this year are checked as zero or more and no further: VA
+  recomputes its allowance every month from the earnings and the remaining premium, so the
+  amount used can exceed the allowance at the valuation date. Test a rule on a window of
+  contract months at both ends, refused just inside and accepted just outside: MYGA's
+  second-year rule passed every test while it was tested at month 12 alone. Run each new
+  check's removal as a fault.
+- *Join keys.* Check each point's text keys against the tables they key, by point, last in
+  `model_point_table`. A scenario must set its levels by the point's first month on the
+  books, `t = 0` or its issue month if later, never by `t = 0` for every point, since T3's
+  re-based scenarios start at the issue month. A programme, fund, strategy or scenario id
+  must be in its table, mortality must rate the point's sex and its attained age in that
+  first month, and a schedule name the projection hard-codes must be in its table. Say
+  what `Data` cannot check, a bound that needs a `Projection` Reference such as the
+  maturity age.
+- *A zero account value.* MYGA refuses it in force. FIA's and VA's lifetime withdrawals go
+  on after the account value is exhausted, so both accept 0 with a live rider, keep a
+  guard on every ratio over the account value, as their S moneyness factors already have,
+  and test a row in force at 0 that projects its whole frame (D6, precised). RILA, with no
+  such rider, can follow MYGA.
+- *Tables and text.* Read every assumption table through a checked `Data` cell beside S's
+  unchanged reader (§7.10, *E*), with its extents as int `Data` cells, a `TABLE_FAULTS`
+  case per table with a key written as text, each refused through a projection too, and a
+  test of keys written as floats. Give each table an age- or year-keyed reader. Decode
+  each categorical column S branches on, once a point, into bools, one per value S tests,
+  read where S asks, and read each join key from `model_point()` in the one cell that
+  reads its table: RILA's buffer and cap types and FIA's crediting strategies are the
+  obvious cases. Where a model says it compares no text, name what it still compares: S's
+  timing and kind strings, and any string-valued join key S branches on, as MYGA's
+  `surr_charge_id` is.
+- *Tests.* Copy `_month_reads` into the rules test, admitting FIA's `lapse_rate`
+  look-ahead by reader, cell and month (R2). Test acquisition per contract at a count
+  other than 1, and the scaled roll-forward tolerance at a million contracts. Re-base each
+  spliced row's scenario copy, stepped at levels of its own. Evaluate S's unreached cells
+  in `_sweep_s`. Guard every per-month charge, ratio and clamp, and probe the future rows
+  of every point and variant. Measure the depth at the longest cover, the youngest issue
+  age the product allows, on mortality extended below the table, and assert it as a bound.
+  Check for a factor before capping mortality: `FIA_US_S` caps already, and VA and RILA
+  check (§5.1, step 6). Build each T5 case so that only the check it names fails, since a
+  move to an anniversary brings every anniversary check into play. Route every count of
+  months the runner prints through `months()`, on both sides of the valuation date.
+
+**Carried into Phase 2.**
+- *Caches and bounds:* `t` from 0 to 1,320, and the month after for the `t + 1` reads:
+  1,200 months of cover at the youngest issue age, 0, and the 120-month horizon. Contract
+  years 1 to 100 for `free_wd_base` and `free_wd_allow`, attained ages 0 to 99 for
+  `surr_charge_age_cap_at`, and whole years remaining 0 to `mva_factor_last_year`, 10 as
+  shipped, by column, for `mva_factor_at`. The figures above size `sample_sec.py`,
+  `run_sec.py --cython` and the Windows job's stack: 1,214 levels at gcc's 255 bytes a
+  level is about 300 KiB, and MSVC's cost waits for the first Windows run. No `Projection`
+  Reference bounds the issue age to the product's 0 to 85, and `proj_len()` checks no such
+  bound, as in S; of the inputs those sizes rest on, `Data` refuses only a contract issued
+  past the horizon, an issue age that is not a whole number of years and an attained age
+  the mortality table does not rate, below 40 as shipped. Phase 2 makes each bound a
+  Reference that `proj_len()` checks, as M14's item asks.
+- *The mortality table's last age* before maturity needs `maturity_age`, so Phase 2 checks
+  it in `proj_len()` against an int `Data` cell of the table's last age by sex, as Term's
+  `issue_age_min` is checked, with a table-driven refusal.
+- *Decodes and joins:* the fourteen decodes move to `Data` vectors (R6).
+  `surr_charge_rate`'s test for `"none"` goes with its join into R7's array, and
+  `surr_charge_id`, which returns text (R10), leaves with them. `model_point_table` reads
+  the scenario, withdrawal and mortality tables, so the model point table is refused with
+  an unreadable one of those, compiled or not.
+- *Engine functions:* S's float-parameter cells, `mva_pp_on` and `mva_factor_geometric`,
+  and `mgsv_rate_statutory`, `mgsv_rate_is_compliant` and `mva_ref_term_years`, which no
+  report or check reaches, are inlined or re-keyed (R14). SEC adds none, and no uncached
+  cell.
+- *T1 and codes:* `_mismatches`, the module's one call of `twin_mismatches`, passes
+  `codes=codes(sec_proj)` from the landing on, and S's `claims(t, None)` and
+  `claims_over_av(t, None)` keys need a T1 mapping at stage `EC` (R9, R12).
+- *The runner:* MYGA's C step copies Term's, with its compensated `add()`; until then the
+  rule against summing the block by a plain running sum is checked by review only.
+- *`IN_COVER_ONLY`*, 16 cells, has no guard of its own. The guard test holds that no
+  formula reaches these cells outside cover, and that the three scenario readers raise
+  before issue on T3's re-based copies.
+
+**Carried, outside the SEC models.** Eleven S-side items for §8.2 item 4, found in
+`MYGA_US_S`; the first three are fixed in neither model, the rest in `MYGA_US_SEC` only:
+- Under `gmir_floor`, `mva_pp_on` returns `max(raw, P_accum - AV)` whatever its base, so
+  once a premium load is set a withdrawal of 0 pays: at `load_prem_rate` 1%, point 3 pays
+  660.97 at month 0 and 320.63 at month 1. The splice's load shows it, alike in both
+  models.
+- `wd_pp` takes any scheduled amount, one above the opening account value too: the
+  anchor's $4,000 raised to $200,000 leaves an account value of -95,897.30, and a
+  withdrawal of exactly the account value makes `lapse_dyn_rate` divide by zero.
+- Point 5's `provenance` and two `rate_scenario.csv` `provenance` cells give 1-based
+  months, the month-30 surrender and month 6, for events the model has at `t = 29` and
+  `t = 5`, and `MYGA_US_SEC`'s twin of point 5 copies the first.
+- `age_at_entry` and `guar_period` are read by `int()`, so a fraction truncates silently:
+  `guar_period` 5.5 projects as 5. `MYGA_US_SEC`'s `Data` refuses a fraction in either by
+  name, since its initial-term check reads `guar_period` as written: 5.5 there counts 66
+  months of initial term where the projection counts 60.
+- A `guar_period` of 0 or below is accepted: at 0 the guarantee-period index divides by
+  zero, a `ZeroDivisionError` that names no point, and below it the projection runs a
+  period no contract has. `MYGA_US_SEC`'s `Data` refuses one below 1 year by name.
+- Each reader takes its table's keys as pandas reads them. One key written as text
+  silently zeroes every surrender charge or every withdrawal, removes the attained-age
+  cap, or raises a `KeyError` or `TypeError` that names no file; a blank or fractional key
+  drops its row silently, and a blank scenario month is a level that never holds.
+- A key its tables lack is met only as S projects, and names no file: a `scenario_id`, a
+  sex or an attained age the tables lack raises a `KeyError`, a scenario whose first row
+  comes after a point's first month raises `max()`'s `ValueError`, and a `wd_schedule_id`
+  the withdrawal table lacks, or a renewal schedule spelt `Renewal`, gives no withdrawal
+  or no renewal charge, without a word. `MYGA_US_SEC`'s `Data` refuses each by name,
+  except an attained age past the mortality table's last before maturity.
+- A mortality or surrender-charge rate outside 0 to 1 is accepted from its table.
+- 98 docstring lines exceed 92 characters, 96 in `Projection`, 84 of them in its module
+  docstring, and two in `Data`; one line of `expenses`' code does too.
+- The symbol map's three rows with a blank first column render as continuation lines, and
+  under *pols_maturity and the projection horizon* the roll-forward identity, after a "so
+  that" with no `::`, renders as a definition list that loses its `+`.
+- `annuitization_pp` says "This cells", and `Data` says "then clear the cache". `Data`'s
+  "Three of these carry a compound key" leaves out the mortality table. `wd_pp` says the
+  account value runs unbroken on every point but the anchor, though point 5 takes $20,000
+  at policy month 29. The within-month order leaves out the annuitization elections, and
+  `result_av`'s `free_wd_avail` column holds `free_wd_remain(t)`, which its docstring does
+  not say.
+
+**Landing.** Rebased from bbb99a9 (M2) onto 244360e (M11). `sec_support.py` took the two
+conflicts, where MYGA's state extractors and its spec sit beside SPIA's, keeping both, and
+uslib's `index.md` took MYGA in the sentence that lists the SEC models. `_mismatches` took
+`codes=codes(sec_proj)` (*Carried into Phase 2*), and twelve comments and docstrings in
+the test module that cited a working note no reader can open now say what they meant
+without it. `Data` took the refusal of an `age_at_entry` or a `guar_period` that is not a
+whole number of years, and of a `guar_period` below 1 year, with six malformed cases, and
+the edges test reads both written as floats (*Data's checks*). Six texts in the tree now
+give what this record measures: the sweep's recursion limit, 16, in the `CALL_DEPTH`
+comment and in `model-sec.md`; the cold call's depth on a model just read, 496, and its
+recursion limit, 495, in `model-sec.md`; the cold chains' overheads in the
+`CHAIN_OVERHEAD` comment; and the cent in `model-sec.md` and in `free_wd_allow_init`'s
+docstring. `_sweep_s`'s docstring no longer says that §7.10's list of the cells S never
+reaches lacks two of them.
+
+**Verified at landing**, on the tree as committed, with three other workflows sharing the
+machine. The uslib suite, with modelx-cython installed and so the compile tests included,
+gave 1,722 passed and 231 skipped in 1,305.54 s (21 min 45 s), 187 passes and 68 skips
+more than M11 landed with: MYGA's module, 154 and 67; its SEC conventions, 32 and 1; and
+the one compiled convention that reads every SEC model. Over its full grid, MYGA's module
+gave 221 passed in 445.53 s, and the `cython` selection 11 passed and none skipped under
+`USLIB_REQUIRE_CYTHON=1`, in 171.87 s. doccheck built 489 pages with 0 warnings.
+`gen_sec_points.py --check` found the files of `Term_US_SEC`, `WholeLife_US_SEC`,
+`SPIA_US_SEC` and `MYGA_US_SEC` current, and `gen_sec_fingerprint.py Term_US_SEC --check`
+reproduced the fingerprint. md_lint reported 0, `gen_scaffolding.py --dry-run` 0 files in
+each of the six libraries, and `gen_citation_links.py --dry-run` nothing on its 297 source
+tags. A case-insensitive search of `model_point_table_sec.csv` for the 115 names, forms
+and hosts that `fixed_deferred_annuity/sources.md` cites found only the design label Camp
+B and the product type MYGA, neither a company nor a product. After the text corrections,
+MYGA's module and the conventions of `MYGA_US_S` and `MYGA_US_SEC`, the compiled one among
+them, gave 211 passed and 69 skipped in 298.22 s, doccheck 489 pages with 0 warnings, and
+md_lint 0. The suite and the generator checks ran before the last edit, the guarantee
+period's floor and its two malformed cases, which a review of this landing asked for;
+after it, the same selection gave 213 passed and 69 skipped in 364.54 s, and the full grid
+223 passed in 469.79 s; doccheck again built 489 pages with 0 warnings, md_lint reported
+0, `MYGA_US_SEC`'s generated files were current, and `gen_scaffolding.py --dry-run` wrote
+0 files.
 
 ### 7.11 FIA — `FIA_US_SEC` (E: M, C: L)
 
@@ -3020,6 +3578,23 @@ valuation clock these part.
     53 s, of which SPIA's share is about 4 minutes, and as landed, on M14's tip, 1,535
     passed and 163 skipped in 16 min 36 s. All times were taken with other workflows
     sharing the machine.
+  - *M7:* MYGA's module holds 34 tests and 223 cases, six of them added at landing. Over
+    its full grid, 72 T2 and 18 T3 cases, it ran 217 passed in 7 min 17 s at a peak of
+    2.52 GB, and 207 passed in 7 min 14 s and 6 min 55 s before the second fix, so by
+    default it runs a core of 17 and 7, which a test asserts reaches each category, kind
+    of valuation month, opening-state column and named branch of the full grid. The other
+    55 and 11, and the rules test's scan of their rows, carry `sec_full`. By default it
+    ran 150 passed and 67 skipped in 4 min 31 s, at a peak of 2.33 GB in one process, and
+    140 passed and 67 skipped in 3 min 58 s and 4 min 41 s before the second fix. Most of
+    that is fixed: eight tests and fixtures take about 156 s together, and the 24 core
+    cases took 55 s of one suite run, in which MYGA's module took 3 min 54 s of test time,
+    WholeLife's 2 min 40 s, and MYGA's SEC conventions 37 s. By default it costs about 1
+    to 2 minutes more than WholeLife's module, and over the full grid about 2 minutes
+    more. The uslib suite on M2's tip with MYGA added ran 1,480 passed and 177 skipped in
+    14 min 50 s, at a peak of 2.69 GB, and as landed, on M11's tip, 1,722 passed and 231
+    skipped in 21 min 45 s. For C4, the full grid's 90 rows held 3,976,300 cached values
+    over 34,718 months at the tests stage, against 1,067,350 on Term's 55 points. All
+    times were taken with other workflows sharing the machine.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares what the cells return and raise.
@@ -3072,8 +3647,8 @@ only its escape is needed before Phase 1 reaches RILA, since SEC caps whatever S
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M11, SPIA, is **done**, 2026-11-02 (§7.9) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
-| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions | the whole matrix green under its timeout |
+| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M11, SPIA, is **done**, 2026-11-02 (§7.9), and M7, MYGA, is **done**, 2026-11-02 (§7.10) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
+| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL before the fingerprints are frozen (§5.4) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
