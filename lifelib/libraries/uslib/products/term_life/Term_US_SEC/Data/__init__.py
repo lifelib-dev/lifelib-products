@@ -122,18 +122,34 @@ another cell's array.
 **What cannot be decoded is refused** when the array is first read, naming every point
 at fault: a ``point_id`` that is not a whole number, a plan whose number of years ``int``
 cannot read, a premium mode other than A, SA, Q or M, a class *class_factor_table.csv*
-lacks, an M(1) override that is neither a number nor blank. So is a table the arrays
-cannot hold: a premium schedule whose policy years are not whole, leave a gap, repeat or
-start below 1, or a blank premium; a mortality table with an age that is not whole, a
-gap, a repeated or negative age, or a blank rate; a shock-lapse table with no bucket.
-``Term_US_S`` met each of these only when a projection reached it, or, for a blank
-premium, projected NaN from it. A key written as a float, a policy year ``1.0`` or an age
-``35.0``, is read by its value, as ``Term_US_S``'s lookups match it, and so is every key
-an extent is taken from: a key written as text is not whole, and the table's extents
-refuse it as its array does. A read beyond a table's extent is refused where
-``Term_US_S``'s lookup raised ``KeyError``, by the one :mod:`~.Term_US_SEC.Projection`
-cell that reads the table, naming the point: ``premium_pp_ann_py`` and
-``mort_rate_base``.
+lacks. So is a table the arrays cannot hold: a premium schedule whose policy years are
+not whole, leave a gap, repeat or start below 1; a mortality table with an age that is
+not whole, a gap, a repeated or negative age; a shock-lapse table with no bucket.
+``Term_US_S`` met each of these only when a projection reached it. A key written as a
+float, a policy year ``1.0`` or an age ``35.0``, is read by its value, as ``Term_US_S``'s
+lookups match it, and so is every key an extent is taken from: a key written as text is
+not whole, and the table's extents refuse it as its array does. A read beyond a table's
+extent is refused where ``Term_US_S``'s lookup raised ``KeyError``, by the one
+:mod:`~.Term_US_SEC.Projection` cell that reads the table, naming the point:
+``premium_pp_ann_py`` and ``mort_rate_base``.
+
+**A value a capped rate, a min or a max reads is a finite number,** or it is refused
+when its array is first read, naming the file, the column and every line or point at
+fault. ``Projection.mort_rate`` caps the annual rate with ``min``, and the notes' M(1)
+rule and the post-level-term grading bound theirs with ``min`` and ``max``. Each keeps
+its first argument unless a later one compares smaller, or larger, and no comparison
+with NaN holds, so each is written with the value first and the bound second, and a NaN
+would stay NaN; but an infinity is a number, which the cap reads as 1, certain death. So
+every value they read is checked, over its whole column, and a blank, text or infinite
+one is refused: a factor of *class_factor_table.csv*, by ``rate_class``, whether or not
+a point carries the class; a rate of *mort_table.csv*, by age; a premium of
+*premium_rates.csv*, by schedule and policy year, whether or not a point carries the
+schedule; an ``age_at_entry`` and a ``plt_mort_factor_override``, by ``point_id``. A blank override is the notes' rule, and
+is left so, and so is the padding, which no formula reads. ``Term_US_S``, which does not
+cap, met each only when a projection reached it: it raised on text and on a blank or
+infinite age, read a negative infinite override as its grading's floor, 2.0, and
+projected NaN or an infinity from any other such value, where a capped rate can project
+finite numbers from it, and wrong ones.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -259,8 +275,21 @@ def point_id():
 
 
 def age_at_entry():
-    """The issue age (ANB) of every model point: int64 [point]."""
-    return model_point_table()["age_at_entry"].to_numpy(dtype="int64")
+    """The issue age (ANB) of every model point: int64 [point].
+
+    Read as ``Term_US_S`` reads it, ``int`` of the number. The attained age it opens
+    indexes *mort_table.csv*, whose rate ``Projection.mort_rate`` caps, so an age that is
+    not a finite number, blank, text or infinite, is refused, naming every point that
+    carries one: numpy would read a blank or infinite age as the least int64, without a
+    word.
+    """
+    table = model_point_table()
+    ages = pd.to_numeric(table["age_at_entry"], errors="coerce")     # noqa: F821
+    bad = table.index[~((ages > -float("inf")) & (ages < float("inf")))].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: age_at_entry must be a finite number; it "
+                         f"is not at point_id {bad}")
+    return ages.to_numpy(dtype="int64")
 
 
 def sum_assured():
@@ -343,11 +372,17 @@ def class_factor():
     """The underwriting-class factor of every model point **[std]**: float64 [point].
 
     Each point's ``rate_class`` joined to *class_factor_table.csv*, the factor
-    ``Term_US_S`` looks up. A class the table lacks is refused, naming every point that
-    carries it.
+    ``Term_US_S`` looks up. ``Projection.mort_rate`` caps the rate the factor scales, so
+    every factor in the table must be a finite number: a blank, text or infinite one is
+    refused, naming every class that carries one, whether or not a point carries it. A
+    class the table lacks is refused too, naming every point that carries it.
     """
     table = model_point_table()
-    factors = class_factor_table()["factor"]
+    factors = pd.to_numeric(class_factor_table()["factor"], errors="coerce")  # noqa: F821
+    bad = factors.index[~((factors > -float("inf")) & (factors < float("inf")))].tolist()
+    if bad:
+        raise ValueError(f"{class_factor_file}: factor must be a finite number; it is not "
+                         f"at rate_class {bad}")
     bad = table.index[~table["rate_class"].isin(factors.index)].tolist()
     if bad:
         raise ValueError(f"{class_factor_file} has no factor for the rate_class of "
@@ -359,17 +394,20 @@ def plt_mort_factor_override():
     """M(1) where a model point overrides it, 0.0 where it leaves it blank: float64 [point].
 
     A blank is :func:`has_plt_mort_factor_override`'s 0, and ``Projection`` asks the flag,
-    never the value, whether a point overrides M(1), so no NaN reaches a formula. An
-    override that is neither a number nor blank is refused, naming every point that
-    carries one.
+    never the value, whether a point overrides M(1), so no NaN reaches a formula. A blank
+    is the column's own meaning, the notes' rule, and is left so. An override is read by
+    the ``max`` of ``Projection.plt_mort_factor`` and the cap of ``Projection.mort_rate``,
+    so one that is neither a finite number nor blank, text or infinite, is refused, naming
+    every point that carries one.
     """
     table = model_point_table()
     column = table["plt_mort_factor_override"]
     values = pd.to_numeric(column, errors="coerce")                  # noqa: F821
-    bad = table.index[column.notna() & values.isna()].tolist()
+    bad = table.index[column.notna()
+                      & ~((values > -float("inf")) & (values < float("inf")))].tolist()
     if bad:
-        raise ValueError(f"{model_point_file}: plt_mort_factor_override must be a number "
-                         f"or blank; it is not at point_id {bad}")
+        raise ValueError(f"{model_point_file}: plt_mort_factor_override must be a finite "
+                         f"number or blank; it is not at point_id {bad}")
     return values.fillna(0.0).to_numpy(dtype="float64")
 
 
@@ -413,24 +451,39 @@ def premium_schedules():
     the order of those keys, as :func:`premium_schedule` numbers them. Its policy years are
     read by their value, as ``Term_US_S``'s lookup matches them, so a year written ``1.0``
     is year 1. A schedule whose policy years are not whole numbers, text among them, leave
-    a gap, repeat or start below 1, or that has a blank premium, is refused, naming it.
-    :func:`premium_rates_array` and both of its extents, :func:`premium_first_year` and
-    :func:`premium_last_year`, are sized by this count, so each meets the refusal first,
-    whichever of them a projection reads first.
+    a gap, repeat or start below 1 is refused, naming it. Once every schedule's years are
+    checked, a premium that is not a finite number, blank, text or infinite, is refused,
+    naming every schedule that holds one, whether or not a point carries it, and every
+    such policy year in it: ``Projection.jump_ratio`` reads two premiums of a schedule,
+    and the ``min`` of the notes' M(1) rule reads their ratio. :func:`premium_rates_array`
+    and both of its extents, :func:`premium_first_year` and :func:`premium_last_year`, are
+    sized by this count, so each meets the refusal first, whichever of them a projection
+    reads first.
     """
     rates = premium_rates().reset_index()
     years = pd.to_numeric(rates["policy_year"], errors="coerce")     # noqa: F821
-    groups = rates.assign(policy_year=years).groupby(["plan", "sex", "rate_class", "band"])
+    premiums = pd.to_numeric(rates["premium_pp"], errors="coerce")   # noqa: F821
+    groups = rates.assign(policy_year=years, premium_pp=premiums).groupby(
+        ["plan", "sex", "rate_class", "band"])
+    found = []
     for key, rows in groups:
         y = rows["policy_year"]
         whole = bool((y % 1 == 0).all())
         if (not whole or y.min() < 1
-                or sorted(y.tolist()) != list(range(int(y.min()), int(y.max()) + 1))
-                or rows["premium_pp"].isna().any()):
+                or sorted(y.tolist()) != list(range(int(y.min()), int(y.max()) + 1))):
             raise ValueError(
                 f"{premium_rates_file}: the schedule of plan {key[0]}, sex {key[1]}, class "
                 f"{key[2]}, band {key[3]} must run in whole policy years from 1 or more, "
-                f"without a gap or a repeat, each year with a premium")
+                f"without a gap or a repeat")
+        p = rows["premium_pp"]
+        bad = y[~((p > -float("inf")) & (p < float("inf")))].tolist()
+        if bad:
+            found.append(f"the schedule of plan {key[0]}, sex {key[1]}, class {key[2]}, "
+                         f"band {key[3]}, at policy year {bad}")
+    if found:
+        where = ", nor in ".join(found)
+        raise ValueError(f"{premium_rates_file}: premium_pp must be a finite number; it is "
+                         f"not in {where}")
     return groups.ngroups
 
 
@@ -525,15 +578,21 @@ def mort_table_array():
     ``basiclife.BasicTerm_SC.Data.mort_table_array`` pads its table; the ages below the
     table's first, 0 to 34 as shipped, hold NaN, which no formula reads. The ages must run
     from :func:`mort_age_first` to :func:`mort_age_last` without a gap or a repeat, none
-    negative, each with its rate, or the table is refused. ``Projection.mort_rate_base``
-    refuses an age outside them, naming the point.
+    negative, or the table is refused. ``Projection.mort_rate`` caps the rate, so each
+    must be a finite number: a blank, text or infinite one is refused, naming every age
+    that carries one. ``Projection.mort_rate_base`` refuses an age outside the table,
+    naming the point.
     """
-    rates = mort_table()["mort_rate"]
+    rates = pd.to_numeric(mort_table()["mort_rate"], errors="coerce")  # noqa: F821
     ages = rates.index.tolist()
     first, last = mort_age_first(), mort_age_last()
-    if first < 0 or sorted(ages) != list(range(first, last + 1)) or rates.isna().any():
+    if first < 0 or sorted(ages) != list(range(first, last + 1)):
         raise ValueError(f"{mort_table_file}: the ages must run from {first} to {last} "
-                         f"without a gap or a repeat, none negative, each with a rate")
+                         f"without a gap or a repeat, none negative")
+    bad = rates.index[~((rates > -float("inf")) & (rates < float("inf")))].tolist()
+    if bad:
+        raise ValueError(f"{mort_table_file}: mort_rate must be a finite number; it is not "
+                         f"at age {bad}")
     out = np.full(last + 1, np.nan)                                  # noqa: F821
     out[rates.index.to_numpy(dtype="int64")] = rates.to_numpy(dtype="float64")
     return out

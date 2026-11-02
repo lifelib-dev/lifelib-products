@@ -259,7 +259,9 @@ that cover has one definition. Ten cells are new for running in force, and two m
 compiling, `point_id` and `premium_schedule` (*The compiled model*, below). None of
 `Term_US_S`'s 52 is removed, which the twin identity asserts: a cell of `Term_US_S`'s that
 this model lacked would fail it. One departure comes from neither the clock nor running in
-force: `mort_rate` caps the annual rate at 1, where `Term_US_S`'s passes it (below).
+force: `mort_rate` caps the annual rate at 1, where `Term_US_S`'s passes it, and it, the
+notes' M(1) rule and the post-level-term grading write their bounds second, so that a NaN
+stays NaN (below).
 
 | Cells | `Term_US_S` | `Term_US_SEC` | Why |
 |---|---|---|---|
@@ -273,7 +275,8 @@ force: `mort_rate` caps the annual rate at 1, where `Term_US_S`'s passes it (bel
 | `inflation_factor` | `1.02^(t/12)`, `t` the policy month | the same formula, `t` the valuation month | Unit costs in valuation-date dollars |
 | `pols_maturity`, `phase` | expiry at `t = proj_len() − 1`, and `t ≥ proj_len()` | at `duration_mth(t) = expiry_mth() − 1`, and `≥ expiry_mth()` | One definition of cover, on the policy clock; `phase` gains `PRE_ISSUE` |
 | `prem_due`, `premium_pp_ann`, `mort_rate_base`, `conv_elig`, `comm_rate` and the decrement counts | unguarded: no `Term_US_S` frame has a month outside cover | zero or false outside cover, before any table or rate is read | A policy year or an attained age the policy does not have is never looked up, and no scale reads a month before issue as a policy year |
-| `mort_rate` | uncapped | `min(1.0, …)` | Past 1, the monthly rate is complex (below) |
+| `mort_rate` | uncapped | `min(…, 1.0)`, the bound second | Past 1, the monthly rate is complex; a NaN stays NaN (below) |
+| `plt_mort_factor_init_formula`, `plt_mort_factor` | `min(8.0, …)`, `max(2.0, …)` | `min(…, 8.0)`, `max(…, 2.0)` | A NaN stays NaN, as at the cap; the same float wherever the argument is a number (below) |
 | `result_cf_annual` | whole policy years | the policy years in the frame, the months before issue left out | An in-force point's first row holds the rest of its current policy year, and its `pols_if` is the count at the valuation date |
 | `result_pols` | — | new | The counts behind `result_cf()`, after `basiclife/BasicTerm_SE`'s `result_pols()` |
 
@@ -285,9 +288,10 @@ Its `pols_if`, `premiums`, `claims`, `commissions`, `premium_taxes` and `conv_cr
 six columns too; its maintenance expense is `1.02^(3/12)` above S's, and its acquisition is
 $300 exactly.
 
-`mort_rate` caps the annual rate at 1, `min(1.0, q)`, as `SPIA_US_S` caps its `q_be` and
-`q_rated`, and `DIA_US_S`, `FIA_US_S` and `ULSG_US_S` cap their mortality. `Term_US_S`
-does not, and past 1 its monthly rate, `1 − (1 − q)^(1/12)`, is complex, so the cap
+`mort_rate` caps the annual rate at 1, as `SPIA_US_S` caps its `q_be` and `q_rated`, and
+`DIA_US_S`, `FIA_US_S` and `ULSG_US_S` cap their mortality, but writes the cap
+`min(q, 1.0)`, the product first and the bound second (below). `Term_US_S` does not cap,
+and past 1 its monthly rate, `1 − (1 − q)^(1/12)`, is complex, so the cap
 changes no value `Term_US_S` computes as a real number but the annual rate itself, which
 `Term_US_S` leaves above 1. At 1 the monthly rate is 1, so every policy in force at the
 start of the first month the cap binds dies in that month, and none is in force after
@@ -303,6 +307,19 @@ and 7.9891 in the standard non-tobacco class, the least M(1) that does so on any
 model projects. At M(1) = 8 the anchor cell issued at 70 in the tobacco class passes 1 at
 attained age 90, in policy year 21, as a test shows (*Tests*, below). No committed point
 comes near it, nor any point of the splice grid.
+
+The order of the cap's arguments matters. Python's `min` and the compiled cell alike keep
+the first argument unless a later one compares smaller, and no comparison with NaN holds,
+so `min(1.0, q)` is 1.0 where `q` is NaN: a blank class factor would read as certain death
+in the first month, every count and cash flow finite, where `Term_US_S`, uncapped,
+projects NaN. `min(q, 1.0)` is NaN there, in both engines, and wherever `q` is a number it
+is the float `min(1.0, q)` is, 1.0 included, so the order changes no number the model
+computes. The notes' M(1) rule, `min(8.0, 1 + 0.55 × (J − 1))`, and the floor of the
+post-level-term grading, `max(2.0, …)`, are written with their bounds second for the same
+reason, and are the same floats wherever their arguments are numbers. An infinity is a
+number, though, and the cap reads an infinite class factor as certain death in either
+order, so `Data` also refuses, by name, every value a cap, a `min` or a `max` reads that is
+blank, text or infinite (*What it refuses*, below): no NaN, and no infinity, reaches one.
 
 ## The compiled model
 
@@ -523,15 +540,25 @@ The compiled model refuses what modelx refuses, with the same message. modelx ra
 - What `Data` cannot decode or hold, when the vector is first read, naming every point at
   fault, or the schedule or the table: a `point_id` that is not a whole number, a plan
   whose years `int` cannot read, a premium mode other than `A`, `SA`, `Q` or `M`, a class
-  `class_factor_table.csv` lacks, an M(1) override that is neither a number nor blank; a
-  premium schedule whose policy years are not whole, leave a gap, repeat or start below
-  1, or a blank premium; a mortality table with an age that is not whole, a gap, a
-  repeated or negative age or a blank rate; a shock-lapse table with no bucket.
-  `Term_US_S` met each only when a projection reached it, or, for a blank premium,
-  projected NaN from it. A key written as a float, a policy year `1.0`, is read by its
-  value, as `Term_US_S`'s `.loc` matches it, and so are the keys each table's extents are
-  taken from: a key written as text is refused by the extents as by the array, so a
-  projection, which reads an extent first, meets the table's own refusal.
+  `class_factor_table.csv` lacks; a premium schedule whose policy years are not whole,
+  leave a gap, repeat or start below 1; a mortality table with an age that is not whole, a
+  gap, a repeated or negative age; a shock-lapse table with no bucket. `Term_US_S` met
+  each only when a projection reached it. A key written as a float, a policy year `1.0`,
+  is read by its value, as `Term_US_S`'s `.loc` matches it, and so are the keys each
+  table's extents are taken from: a key written as text is refused by the extents as by
+  the array, so a projection, which reads an extent first, meets the table's own refusal.
+- A value a cap, a `min` or a `max` reads that is not a finite number, blank, text or
+  infinite, when its array is first read, naming the file, the column and every line or
+  point at fault, over the whole table, so that a value no point reads is refused as one
+  that it reads is: a factor of `class_factor_table.csv`, by class,
+  `class_factor_table.csv: factor must be a finite number; it is not at rate_class
+  ['PNT']`; a rate of `mort_table.csv`, by age; a premium of `premium_rates.csv`, which
+  the jump ratio and so the M(1) rule read, by every schedule at fault and every policy
+  year in it; an `age_at_entry`, whose attained age indexes the mortality table, and a
+  `plt_mort_factor_override`, by `point_id`. A blank override is the notes' rule, and is
+  read so. `Term_US_S`, uncapped, met each only when a projection reached it: it raised on
+  text and on a blank or infinite age, read a negative infinite M(1) override as its
+  grading's floor, 2.0, without a word, and projected NaN or an infinity from the rest.
 - A key beyond a table, by the one cell that reads it, where `Term_US_S`'s `.loc` raised
   `KeyError`: `point_id 2: mort_table.csv has no rate at attained age 30`, from
   `mort_rate_base`, and `point_id 2: premium_rates.csv has no premium for policy year 61`,
@@ -551,7 +578,11 @@ An annual mortality above 1 is not refused but capped, in both: `mort_rate` caps
 product of the base rate, the class factor and M(d) at 1 (*Departures from Term_US_S*,
 above). Uncapped, as in `Term_US_S`, the monthly rate, `1 − (1 − q)^(1/12)`, would be
 complex in modelx and NaN compiled, silently. Capped, both compute 1, and a compile test
-holds the two equal on points where the cap binds, new business and in force.
+holds the two equal on points where the cap binds, new business and in force. A NaN
+product would stay NaN through the cap, in both, as it would through the M(1) rule's
+`min` and the grading's `max`, each of which the compiled model computes as a comparison
+that keeps the value unless the bound is smaller, or larger; `Data`'s refusals of a value
+that is not a finite number keep any NaN from reaching them.
 
 ### Speed
 
@@ -671,7 +702,13 @@ one to compare.
   number, the annual rate excepted. So does the point restated in force the month before
   the cap, opened with `Term_US_S`'s count and compared cell by cell as a splice row is.
   It loses every policy in the capped month, and the point in force five months into that
-  year loses every policy in the first month it projects.
+  year loses every policy in the first month it projects. And a NaN sent to the cap, to
+  the M(1) rule's `min` or to the grading's `max`, through the formula of the cell that
+  feeds it replaced by one returning NaN in a model read for the test, stays NaN at the
+  bound and at each call after it that the test lists, the mortality and a count among
+  them: `mort_rate` is NaN, not 1.0, where the class factor is NaN. (`shock_lapse_rate`
+  reads the jump ratio through a comparison, which takes the last bucket for a NaN;
+  `Data`'s refusals keep a NaN from it.)
 - **The fingerprint** (C2): before the compile step changed anything, what the model
   computed on each committed point was frozen in the module, each column of `result_cf()`
   and `result_pols()`, its sum, its largest value and its values at five months, and the
@@ -683,9 +720,18 @@ one to compare.
   each side of every face boundary, decodes as `Term_US_S`'s own cells read it; a table
   whose keys are written as floats, policy years `1.0` and ages `35.0`, projects exactly
   the committed numbers, as it does in `Term_US_S`; what cannot be decoded, a table with a
-  gap, a blank, a policy year or an age that is not whole, or a key written as text, and
-  a key beyond a table, are each refused naming the point, the schedule or the table, a
-  projection meeting the same refusal; and the padding beyond each table's extent is NaN.
+  gap, a blank policy year, a policy year or an age that is not whole, or a key written as
+  text, and a key beyond a table, are each refused naming the point, the schedule or the
+  table, a projection meeting the same refusal; and the padding beyond each table's
+  extent is NaN.
+- **Values a bound reads**: a class factor, a base rate, a premium and an issue age
+  written blank, as text or as an infinity, and an M(1) override written as text or as
+  either infinity, are each refused naming the file, the column and every line or point
+  at fault, by the `Data` cell that first reads them and by a projection: one at a time,
+  a factor of a class and a premium of a schedule no point carries among them, and two in
+  one column, at two classes, two ages, two policy years, two schedules or two points; no
+  other rule refuses the copy, every other `Data` cell reading or meeting the same
+  refusal.
 - **No pandas in `Projection`** (C5), in `tests/test_compiled_conventions.py`, which holds
   what every `_SEC` model meets once it compiles. Read from the formulas, with no compiler:
   no cell but the reporting ones refers to pandas, numpy or another module, reads a table
@@ -710,12 +756,13 @@ one to compare.
   `tests/test_term_life_us_sec.py`: the same comparison on the splice grid, variants
   included, on the contract's two longest frames and on the points where the cap binds;
   the compiled model refuses what modelx refuses, with modelx's message, on the extract
-  labelled otherwise than by position too; the deepest call the contract allows runs cold
-  on a 1 MiB stack and on the main thread; a Reference set after the model has computed
-  changes no value it has cached; and `run_sec.py --cython` prints what `run_sec.py`
-  prints, and refuses a directory that holds no build. They are marked `cython`, and they
-  skip without the toolchain, but in the `cython` CI job, which installs it on Linux and
-  on Windows, a skip fails, whatever made it.
+  labelled otherwise than by position too, and every value a bound reads that is not a
+  finite number; the deepest call the contract allows runs cold on a 1 MiB stack and on
+  the main thread; a Reference set after the model has computed changes no value it has
+  cached; and `run_sec.py --cython` prints what `run_sec.py` prints, and refuses a
+  directory that holds no build. They are marked `cython`, and they skip without the
+  toolchain, but in the `cython` CI job, which installs it on Linux and on Windows, a skip
+  fails, whatever made it.
 
 ```bash
 python -m pytest tests/test_term_life_us_sec.py -q

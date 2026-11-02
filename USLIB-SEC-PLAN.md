@@ -868,23 +868,54 @@ new skips are the eight SEC conventions, each skipped for want of a model.
 5. Anniversary and term logic that looked back across `t = 0` takes opening-state columns
    instead (R1).
 6. Rates: an annual decrement rate `q` built as a product of factors (base × class ×
-   improvement or PLT factor) is capped at 1, `min(1.0, q)`, the convention `SPIA_US_S`,
-   `DIA_US_S`, `FIA_US_S` and `ULSG_US_S` already follow. The cap is on the annual rate,
+   improvement or PLT factor) is capped at 1, as `SPIA_US_S`, `DIA_US_S`, `FIA_US_S` and
+   `ULSG_US_S` cap theirs, but written `min(q, 1.0)`: the product first, the float bound
+   second. Python's `min` and the compiled cell alike keep their first argument unless a
+   later one compares smaller, and no comparison with NaN holds, so `min(1.0, q)` is 1.0
+   where `q` is NaN, in both engines: a blank input read as certain death, every flow
+   finite. `min(q, 1.0)` is NaN there, and wherever `q` is any other float it is the float
+   `min(1.0, q)` is, 1.0 included, so the order changes no number. A `min` or a `max` that
+   bounds a value that is always a float may be written the same way, the value first, as
+   Term's M(1) rule and PLT floor are. Where the value can be an int equal to the bound,
+   or −0.0 against a bound of 0.0, the value-first form returns the value, of another kind
+   or sign than the bound, so there the order stays as S has it, and `Data`'s refusals,
+   below, keep a NaN from it (precised at Term's cap fix). The cap is on the annual rate,
    and it is the float `1.0`. A cap on the monthly rate's result instead would compile to
-   1.0 where modelx raises, since compiled `min(1.0, NaN)` is 1.0. Where the S model does
-   not cap, SEC caps as a recorded departure from S. That changes no value S computes as
-   a real number but the annual rate itself: past 1, S's monthly rate
+   NaN, or with its bound first to 1.0, where modelx raises on the complex rate. Where the
+   S model does not cap, SEC caps as a recorded departure from S. That changes no value S
+   computes as a real number but the annual rate itself: past 1, S's monthly rate
    `1 - (1 - q)^(1/12)` is complex in modelx, and so is every count and cash flow that
    reads it, while an SEC model's uncapped monthly rate is NaN compiled, silently. At 1
    the monthly rate is exactly 1.0 in both engines, so every policy in force at the start
-   of the month dies in it, and the count is 0.0 from the next. A point where the cap
-   binds is compared with S wherever S's value is real, the capped rate excepted, as new
-   business and restated in force the month before the cap, in the splice grid or in a
-   case of its own, as Term's is. Its test asserts the capped rate's type as well as its
-   value, since `1 == 1.0`, and asserts the capped rate on the rows in force too: a cap
-   applied to new business only passes both comparisons, which leave out that rate and
-   S's complex values. The S model goes on §8.2 item 4's list of S-side fixes
-   (decided at M14's landing; Term capped then, and WholeLife caps in its C step, M15).
+   of the month dies in it, and the count is 0.0 from the next.
+
+   So that no blank is lost in a `min` or a `max`, and no infinity is read by a cap as 1,
+   which it is in either order, `Data` refuses, by name, a blank, text or infinite value,
+   not only a key, wherever a capped rate, or a `min` or a `max` in a projection cell,
+   reads it as a number, through a product or a ratio included. A column such a cell
+   reads only as a key is decoded as S decodes it: Term bands a blank face as S does, and
+   refuses by name a blank, text or infinite issue age, from which the mortality table is
+   read, where S's `int` raises. `Data` refuses a value when its array is first read, over
+   the whole column, a value no point reads included, naming the file, the column and
+   every line or point at fault, in the style of its other refusals: Term's
+   `mort_table.csv: mort_rate must be a finite number; it is not at age [50]`. A value
+   legitimately absent is said so and left: padding, which no formula reads, and an
+   optional column whose blank has a meaning, as a blank M(1) override is the notes' rule
+   (R8). Each refusal is a table-driven case on its own inputs, a blank, a text and an
+   infinite value among them, a value no point reads and two lines at fault in one column
+   too, refused by that rule alone and through a projection, and the same cases run
+   compiled in the refusal test (§6.2).
+
+   A point where the cap binds is compared with S wherever S's value is real, the capped
+   rate excepted, as new business and restated in force the month before the cap, in the
+   splice grid or in a case of its own, as Term's is. Its test asserts the capped rate's
+   type as well as its value, since `1 == 1.0`, and asserts the capped rate on the rows in
+   force too: a cap applied to new business only passes both comparisons, which leave out
+   that rate and S's complex values. A modelx test sends each bound a NaN, by replacing in
+   a model read for the test the formula of the cell that feeds it (K7), and asserts the
+   float NaN, not the bound. The S model goes on §8.2 item 4's list of S-side fixes
+   (decided at M14's landing; Term capped then, and WholeLife caps in its C step, M15; the
+   cap's order and the `Data` rule decided at Term's cap fix, §7.1).
 7. Inputs: assign each input to its clock (D7).
 8. Reporting: `result_cf()` with the S columns; `result_pols()`.
 9. Docstrings: rewrite the time-axis prose — every "t = 0 is the issue month" — add the
@@ -1709,12 +1740,17 @@ follows.
 - Every contract bound a cache size depends on is a lower-case `Projection` Reference that
   `proj_len()` checks, naming the point, with its `NOT_ISSUED` cases (F4; §6.1, step 6).
 - An annual decrement rate built as a product of factors is capped with the float 1.0,
-  `min(1.0, q)`, never on the monthly rate's result. A point where the cap binds is
+  `min(q, 1.0)`, the bound second, never on the monthly rate's result; a `min` or a `max`
+  that bounds a value that is always a float may put its bound second too, as Term's
+  M(1) rule and PLT floor do. `Data` refuses, by name, a blank, text or
+  infinite value wherever a cap, a `min` or a `max` reads it as a number, and decodes a
+  column such a cell reads only as a key as S decodes it. A point where the cap binds is
   compared with S wherever S's value is real, the capped rate excepted, as new business
   and restated in force the month before the cap, in the splice grid or in a case of its
   own, as Term's is. Its test asserts the capped rate's type as well as its value, and
   asserts the capped rate on the rows in force too, since a cap applied to new business
-  only passes both comparisons (§5.1, step 6; §8.2, item 4).
+  only passes both comparisons; a modelx test sends each bound a NaN (§5.1, step 6; §8.2,
+  item 4; changed at Term's cap fix).
 - `check_*` cells stay Python, each a `bool` over `*_resid` cells that compile; a label
   accessor stays S's, and no projection cell calls it (R17).
 - WholeLife's Phase 1 patterns compile without restructuring: at the review 92 of its 106
@@ -1791,9 +1827,10 @@ item:
   landing: D2 stays as landed, so their Phase 2 starts after M13, and the build stage's
   proposal to start each product's Phase 2 once its own Phase 1 has landed stays
   withdrawn.
-- *The q > 1 domain*, left open too, was settled at landing: capped, `min(1.0, q)` (§5.1,
-  step 6), Term's at landing (above), WholeLife's in its C step (M15), and the products
-  still in Phase 1 in Phase 1; each S model without the cap is on §8.2 item 4's list.
+- *The q > 1 domain*, left open too, was settled at landing: capped, `min(1.0, q)` then,
+  `min(q, 1.0)` since Term's cap fix (§5.1, step 6), Term's at landing (above),
+  WholeLife's in its C step (M15), and the products still in Phase 1 in Phase 1; each S
+  model without the cap is on §8.2 item 4's list.
 - R16's `round` for a projected amount, WholeLife's dividend, is flagged by C3 and C5
   today. WholeLife's Phase 2 (M15) adds an admission by cell, such as a registry key
   naming the cells, with a test.
@@ -1882,6 +1919,64 @@ reproduced the fingerprint. md_lint reported 0, and `gen_scaffolding.py --dry-ru
 files in each of the six libraries. Before the cap, the rebased tree gave 1,362 passed
 and 109 skipped in 907.73 s, and the selection 10 passed in 245.86 s.
 
+**The cap's fix, after landing.** The cap as landed, `min(1.0, q)`, lost a NaN: Python's
+`min` and the compiled cell keep their first argument unless a later one compares
+smaller, so `min(1.0, nan)` is 1.0. With StdNT's factor blanked in a copy of
+`class_factor_table.csv`, `class_factor()` was NaN, `mort_rate(0)` 1.0 and `pols_if(1)`
+0.0, every flow finite, where `Term_US_S` projects NaN. The fix follows §5.1, step 6, as
+revised, and changes no number: the fingerprint reproduces, the committed table is
+current, and C4 is exact on the grid, at the extremes and where the cap binds.
+- *The order.* `mort_rate` returns `min(q, 1.0)`, the product computed first, as before.
+  The notes' M(1) rule and the PLT grading put their bounds second too, `min(…, 8.0)` and
+  `max(…, 2.0)`, where a NaN jump ratio and a NaN M(1) had given 8.0 and 2.0;
+  `t_entry()`'s `max(0, …)` takes ints alone and stays. The generated C tests
+  `bound < value`, or `>`, and keeps the value otherwise, so a NaN stays NaN compiled.
+- *The refusals*, when the array is first read, over the whole column, naming the file,
+  the column and every line or point at fault, a premium by every schedule at fault and
+  every policy year in it: a class factor, a base rate, a premium, an `age_at_entry` and
+  an M(1) override that is blank, text or infinite, a blank override excepted, the
+  notes' rule. Before, a blank rate or premium was refused by its table's message,
+  naming neither column nor age or year; a text factor, rate or premium raised numpy's
+  error and a text age `int`'s, naming nothing, a text override being refused by name
+  already; a blank factor, and a +∞ factor, rate or override, passed, the cap reading
+  each as certain death, and a −∞ override passed, the grading's `max` reading it as
+  2.0; an infinite premium passed, and an infinite jump ratio was read by the M(1) rule
+  as 8; a blank or infinite age became the least int64, which modelx's `proj_len()`
+  refused as an issue age below 18. The schedule's and the mortality table's messages
+  drop their value clauses.
+- *Left, with reasons:* the shock-lapse table, which no cap, `min` or `max` reads, where
+  a blank bound skips its bucket in `shock_lapse_rate`'s comparison and an infinite
+  bound is a legitimate open bucket; `sum_assured`, which reaches the cap only as a band,
+  a blank face in band 4 as in `Term_US_S` (`DECODED`), its number read by `claims`
+  alone; the padding and a blank override, legitimately absent.
+- *Tests:* `NOT_FINITE`, 22 cases beside `UNDECODABLE`, 3 of them moved from it, each on
+  its own inputs, refused by its rule alone, by a projection and compiled: each column
+  blank, as text and infinite, the override's −∞ too and its blank excepted; a factor
+  and a premium no point reads; and two lines at fault in each column, and two
+  schedules. `test_a_nan_that_reaches_a_bound_stays_nan`, 3 cases, sends each bound a
+  NaN through a replaced formula (K7). The module has 128 tests, 121 modelx and 7
+  compile. 24 faults, each alone in a copy, each failed some test: the three bounds put
+  first again; each refusal dropped; each refusal accepting an infinity, the override's
+  −∞ too; the override refusing a blank, the rate check reading the padding, the factor
+  check refusing a factor above 1; the factor and the premium checks reading only what
+  points carry; the factor, rate, premium and age refusals each naming its first line
+  alone, and the premium refusal its first schedule alone; and a guard turning the M(1)
+  rule's NaN into 8. Five of them, the premium check reading only the schedules points
+  carry and the four naming the first line alone, passed every test until the fix's
+  review asked for the cases of a premium no point reads and of two lines in each
+  column, and the premium refusal, which then named the first schedule at fault alone,
+  came to name every one.
+- *Verified* under load. At the fix's last stage, on M11's tip: the module, 128 passed in
+  223 s; the conventions on `Term_US_SEC`, 37 passed and 1 skipped; the uslib suite,
+  1,557 passed and 163 skipped in 1,044 s (17 min 24 s). At landing, rebased onto M7's
+  tip without a conflict, under `USLIB_REQUIRE_CYTHON=1`: the uslib suite, 1,746 passed
+  and 231 skipped in 1,297.94 s (21 min 38 s); the `cython` selection, 11 passed and none
+  skipped, in 182.06 s; doccheck 489 pages and 0 warnings; md_lint 0; the generated files
+  of the four SEC models current; Term's fingerprint reproduced; and
+  `gen_scaffolding.py --dry-run` 0 files in each of the six libraries.
+- *Carried:* `SPIA_US_SEC`, landed before the fix, caps `q_be` and `q_rated` with the
+  bound first, as `SPIA_US_S`, `DIA_US_S`, `FIA_US_S` and `ULSG_US_S` do (§8.2, item 4).
+
 ### 7.2 Whole life — `WholeLife_US_SEC` (E: L, C: M)
 
 *Today:* policy clock, with in-force support in whole years only. `proj_start()` is
@@ -1932,8 +2027,10 @@ Splice months: 12, 108, 120, 600, and one mid-year month.
 - `div_round_digits = None` becomes an int sentinel.
 - `cv_pp_anniv` (y 0..55) and `nsp` (y 45..100) share the `('y',)` cache, so one size
   covers both. A test calls `cv_pp_anniv(-1)`.
-- Mortality capped at 1, `min(1.0, q)`, a recorded departure from `WholeLife_US_S`
-  (§5.1, step 6; decided at M14's landing).
+- Mortality capped at 1, `min(q, 1.0)`, the bound second, a recorded departure from
+  `WholeLife_US_S`, and `Data` refusing, by name, a blank, text or infinite value wherever
+  the capped rate reads it as a number (§5.1, step 6; decided at M14's landing, the order
+  and the refusals at Term's cap fix).
 
 #### Record — M2, done 2026-11-01
 
@@ -3631,12 +3728,14 @@ only its escape is needed before Phase 1 reaches RILA, since SEC caps whatever S
    before the merge. *Confirmed.*
 4. **Small S fixes found on the way** — RILA's invalid escape, the `pols_if_at` stubs in UL
    and VUL that return `pols_if` for every timing, and the cap on an annual decrement rate
-   built as a product of factors, `min(1.0, q)` (§5.1, step 6), which `Term_US_S`,
+   built as a product of factors, `min(q, 1.0)` (§5.1, step 6), which `Term_US_S`,
    `UL_US_S`, `VUL_US_S`, `IUL_US_S` and `WholeLife_US_S` lack, as does any of `MYGA_US_S`,
-   `VA_US_S` and `RILA_US_S` whose factors can take a rate past 1. Separate PRs on the S
-   models? *Recommended: the escape, yes; the stubs are superseded in SEC and can stay; the
-   cap, in each S model where it changes no shipped number, as on Term's points, while SEC
-   caps whatever S does.* *Open.*
+   `VA_US_S` and `RILA_US_S` whose factors can take a rate past 1. `SPIA_US_S`, `DIA_US_S`,
+   `FIA_US_S` and `ULSG_US_S` cap with the bound first, `min(1.0, q)`, which reads a NaN
+   as 1. Separate PRs on the S models? *Recommended: the escape, yes; the stubs are
+   superseded in SEC and can stay; the cap, in each S model where it changes no shipped
+   number, as on Term's points, with its bound second, while SEC caps whatever S does.*
+   *Open.*
 5. **The `cython` CI job on Windows from the start (D13).** MSVC and the 1 MB main-thread
    stack are where a compiled model differs most. *Confirmed.*
 

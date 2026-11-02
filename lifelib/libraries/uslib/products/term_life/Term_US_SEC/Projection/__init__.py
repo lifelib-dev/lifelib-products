@@ -32,12 +32,16 @@ This is :mod:`~.Term_US_S` taught to run in force at a valuation date, as lifeli
 ``basiclife.BasicTerm_SC`` is made from ``basiclife.BasicTerm_S``. A formula of
 :mod:`~.Term_US_S` is rewritten where it depends on where the projection starts, where it
 must answer for a month outside cover, or where it read a month far ahead of its own, and
-:func:`mort_rate` caps the annual rate at 1, where :mod:`~.Term_US_S`'s passes it; every
-other is :mod:`~.Term_US_S`'s own. ``products/term_life/model-sec.md`` lists the
-rewritten cells with the reason for each. Making it compile changed how each cell reads
-its inputs and spells its codes, and no number: every model point attribute a projection
-cell uses is read as a number from a ``Data`` vector, every table as an array indexed by
-integers, and every timing and phase is an int code (*Codes*, below).
+:func:`mort_rate` caps the annual rate at 1, where :mod:`~.Term_US_S`'s passes it. The cap
+puts its bound second, ``min(q, 1.0)``, and so do the ``min`` of the notes' M(1) rule and
+the ``max`` of the PLT grading, :func:`plt_mort_factor_init_formula` and
+:func:`plt_mort_factor`, so that a NaN stays NaN; wherever its argument is a number, each
+is the float it would be with its bound first. Every other formula is
+:mod:`~.Term_US_S`'s own. ``products/term_life/model-sec.md`` lists the rewritten cells
+with the reason for each. Making it compile changed how each cell reads its inputs and
+spells its codes, and no number: every model point attribute a projection cell uses is
+read as a number from a ``Data`` vector, every table as an array indexed by integers, and
+every timing and phase is an int code (*Codes*, below).
 
 .. rubric:: Input data
 
@@ -685,9 +689,12 @@ def plt_mort_factor_init_formula():
     """The notes' rule for M(1): min(8.0, 1 + 0.55*(J-1)) **[std]**.
 
     Returns 3.4514 for the anchor cell, where the worked example uses 3.50. Not used
-    unless the model point leaves plt_mort_factor_override blank.
+    unless the model point leaves plt_mort_factor_override blank. Written with the bound
+    second, ``min(1.0 + 0.55 * (J - 1.0), 8.0)``, as :func:`mort_rate` writes its cap, so
+    that a NaN jump ratio gives NaN rather than 8.0; wherever ``J`` is a number it is the
+    notes' value.
     """
-    return min(8.0, 1.0 + 0.55 * (jump_ratio() - 1.0))
+    return min(1.0 + 0.55 * (jump_ratio() - 1.0), 8.0)
 
 
 def plt_mort_factor_init():
@@ -708,8 +715,12 @@ def plt_mort_factor(d):
     ``d`` is the notes' PLT duration in **years**, ``d = policy_year(t) - n``: ``d = 1``
     in the first post-level-term policy year (``duration_mth(t) = 12n .. 12n + 11``). It
     is neither the frame index ``t`` nor a policy month.
+
+    The floor is written second, ``max(M(1) - 0.15 * (d - 1), 2.0)``, as
+    :func:`mort_rate` writes its cap, so that a NaN M(1) gives NaN rather than 2.0;
+    wherever M(1) is a number it is the notes' value.
     """
-    return max(2.0, plt_mort_factor_init() - 0.15 * (d - 1)) if d >= 1 else 1.0
+    return max(plt_mort_factor_init() - 0.15 * (d - 1), 2.0) if d >= 1 else 1.0
 
 
 def class_factor():
@@ -742,8 +753,14 @@ def mort_rate_base(t):
 def mort_rate(t):
     """The **annual** mortality rate of the policy year containing month t, at most 1.
 
-    Base x class factor x PLT deterioration, capped at 1: ``min(1.0, ...)``, as
-    ``SPIA_US_S``, ``DIA_US_S``, ``FIA_US_S`` and ``ULSG_US_S`` cap theirs. The PLT
+    Base x class factor x PLT deterioration, capped at 1, as ``SPIA_US_S``, ``DIA_US_S``,
+    ``FIA_US_S`` and ``ULSG_US_S`` cap theirs, but written ``min(q, 1.0)``: the product
+    first, the float bound second. ``min`` keeps its first argument unless a later one
+    compares smaller, in Python and in the compiled cell alike, and no comparison with NaN
+    holds, so ``min(1.0, q)`` would be 1.0 where ``q`` is NaN, a blank input read as
+    certain death, silently. ``min(q, 1.0)`` is NaN there, and wherever ``q`` is a number
+    it is the float ``min(1.0, q)`` is, 1.0 included. ``Data`` refuses a blank, text or
+    infinite value wherever the product reads one, so that none reaches it. The PLT
     duration is ``d = policy_year(t) - n``, so the multiplier applies from
     ``duration_mth(t) = 12n`` (``d = 1``) on. :func:`mort_rate_mth` is the rate actually
     applied in the month.
@@ -763,8 +780,8 @@ def mort_rate(t):
     class, the least M(1) that does so on any point the model projects.
     """
     d = policy_year(t) - policy_term()
-    return min(1.0, mort_rate_base(t) * class_factor()
-               * (plt_mort_factor(d) if d >= 1 else 1.0))
+    return min(mort_rate_base(t) * class_factor()
+               * (plt_mort_factor(d) if d >= 1 else 1.0), 1.0)
 
 
 def mort_rate_mth(t):

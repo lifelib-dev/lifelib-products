@@ -35,6 +35,12 @@ tests (its §5.2) and the product's own facts:
   point; the future horizon is a Reference that bounds future business, and at 0 refuses
   it; a point past its cover, or one the contract does not issue, is refused by the
   frame; and the edges of the interface are accepted.
+* Phase 2's decoding: every value a column can hold decodes as ``Term_US_S`` reads it,
+  what cannot be decoded is refused by name, and so is a read beyond a table; and a value
+  a cap, a ``min`` or a ``max`` reads, a class factor, a base rate, a premium, an issue
+  age or an M(1) override, is a finite number, or ``Data`` refuses it, blank, text or
+  infinite, a blank M(1) override excepted, the notes' rule, naming the file, the column
+  and every line or point at fault, when its array is first read.
 * T6, regeneration: the committed ``model_point_table_sec.csv`` is what the generator makes
   of ``Term_US_S`` and its table as they stand.
 * Then the two clocks on the shipped points, the policy in force mid-ART, expense inflation
@@ -44,7 +50,9 @@ tests (its §5.2) and the product's own facts:
 * The cap: where ``Term_US_S``'s annual mortality passes 1 and its monthly rate turns
   complex, this model's is 1, every policy then in force dies that month, on new
   business and in force, and the two models agree wherever ``Term_US_S`` computes a real
-  number, the annual rate excepted.
+  number, the annual rate excepted.  A NaN that reaches the cap, or the ``min`` of the
+  M(1) rule or the ``max`` of the PLT grading, stays NaN, and is not turned into the
+  bound.
 * C2, the fingerprint: every committed point computes what the model computed when Phase 1
   ended, frozen at the end of this module before Phase 2 changed anything (§5.4).
 * Compiled (marked ``cython``): C4 on the splice grid, at the contract's extremes and where
@@ -74,6 +82,7 @@ changed the call syntax only (C1).
 import dataclasses
 import itertools
 import json
+import math
 import re
 import shutil
 import subprocess
@@ -1046,10 +1055,9 @@ def _age_written(age, value):
 
 
 SCHEDULE = ("premium_rates.csv: the schedule of plan T10, sex M, class StdNT, band 1 must "
-            "run in whole policy years from 1 or more, without a gap or a repeat, each "
-            "year with a premium")
+            "run in whole policy years from 1 or more, without a gap or a repeat")
 MORTALITY = ("mort_table.csv: the ages must run from 35 to 94 without a gap or a repeat, "
-             "none negative, each with a rate")
+             "none negative")
 
 # What Data cannot decode, or cannot turn into an array, as (case, the table's edit, the
 # other inputs' edits, the Data cell that refuses it, its message, and whether a projection
@@ -1067,10 +1075,6 @@ UNDECODABLE = [
     ("a plan int cannot read", _set("plan", [3, 5], "T10.0"), None, "policy_term",
      f"{TABLE}: plan must be a letter and a whole number of years, as T10; it is not at "
      f"point_id [3, 5]", True),
-    ("a text M(1) override", _set("plt_mort_factor_override", [1], "high"), None,
-     "plt_mort_factor_override",
-     f"{TABLE}: plt_mort_factor_override must be a number or blank; it is not at "
-     f"point_id [1]", True),
     ("a label that is not whole", lambda t: t.rename(index={3: 3.5}), None, "point_id",
      f"{TABLE}: point_id must be a whole number; [3.5] is not", False),
     ("a gap in a premium schedule", None,
@@ -1079,10 +1083,6 @@ UNDECODABLE = [
     ("a repeated policy year", None,
      {"premium_rates.csv": lambda r: pd.concat(
          [r, r[_anchor_rows(r) & (r["policy_year"] == 30)]])},
-     "premium_rates_array", SCHEDULE, True),
-    ("a blank premium", None,
-     {"premium_rates.csv": lambda r: r.assign(premium_pp=r["premium_pp"].where(
-         r["policy_year"] != 30))},
      "premium_rates_array", SCHEDULE, True),
     ("a policy year that is not whole", None,
      {"premium_rates.csv": lambda r: r.assign(policy_year=r["policy_year"].where(
@@ -1101,9 +1101,6 @@ UNDECODABLE = [
      {"premium_rates.csv": _year_written(60, "x")}, "premium_last_year", SCHEDULE, True),
     ("a gap in the mortality table", None,
      {"mort_table.csv": lambda m: m[m["age"] != 50]}, "mort_table_array", MORTALITY, True),
-    ("a blank mortality rate", None,
-     {"mort_table.csv": lambda m: m.assign(mort_rate=m["mort_rate"].where(m["age"] != 50))},
-     "mort_table_array", MORTALITY, True),
     ("an age written as text", None, {"mort_table.csv": _age_written(50, "x")},
      "mort_table_array", "mort_table.csv: an age must be a whole number; ['x'] is not",
      True),
@@ -1126,17 +1123,170 @@ def test_what_data_cannot_decode_is_refused_naming_it(tmp_path, case, table_edit
     schedule at fault, the first time it is read; and the first point's projection, which
     reads the cell, meets the same refusal.  ``Term_US_S`` met each of these only when a
     projection reached the point or the year: an unknown mode in ``modal_factor``, an
-    unknown class or a gap at ``.loc``, a bad plan at ``int``, and a blank premium not at
-    all, which it projected as NaN.  A key written as text makes pandas read its column as
-    text, where ``Term_US_S``'s ``.loc`` matches no number; here each extent of the table
-    reads its keys by value, as its array does, so a projection, which reads an extent
-    first, meets the table's own refusal, and not ``int``'s, nor an extent cut short.
+    unknown class or a gap at ``.loc`` and a bad plan at ``int``.  A key written as text
+    makes pandas read its column as text, where ``Term_US_S``'s ``.loc`` matches no
+    number; here each extent of the table reads its keys by value, as its array does, so a
+    projection, which reads an extent first, meets the table's own refusal, and not
+    ``int``'s, nor an extent cut short.  A value that is not a finite number, a blank
+    premium or rate among them, is :data:`NOT_FINITE`'s.
     """
     model = _faulty(tmp_path, table_edit, edits)
     try:
         _refused(model.Data.cells[cell], message)
         if reached:
             _refused(projection(model, point_keys(model)[0]).result_cf, message)
+    finally:
+        model.close()
+
+
+# What a cap, a min or a max reads.  mort_rate caps the annual rate with min, and the notes'
+# M(1) rule and the PLT grading bound theirs with min and max.  Each keeps its first
+# argument unless a later one compares smaller, or larger, and no comparison with NaN
+# holds, so each is written with its bound second, and a NaN stays NaN (the cap's tests,
+# below).  And Data refuses, naming the file, the column and every line or point at fault,
+# a blank, text or infinite value wherever one of them reads it: a class factor, a base
+# mortality rate, a premium, two of which make the jump ratio, an issue age, whose attained
+# age indexes the mortality table, and an M(1) override, which may be blank.
+
+
+def _value_written(column, rows, value):
+    """An edit of an input table that writes ``value``, text or a number, into ``column``
+    on the rows ``rows(table)`` selects; pandas then reads a column holding text as text."""
+    def edit(table):
+        cells = table[column].astype(object)
+        return table.assign(**{column: cells.where(~rows(table), value)})
+    return edit
+
+
+def _factor(classes, value):
+    """The edit of *class_factor_table.csv* that writes ``value`` as the factor of each
+    class of ``classes``."""
+    return {"class_factor_table.csv": _value_written(
+        "factor", lambda f: f["rate_class"].isin(classes), value)}
+
+
+def _rate(ages, value):
+    """The edit of *mort_table.csv* that writes ``value`` as the rate at each age of
+    ``ages``."""
+    return {"mort_table.csv": _value_written(
+        "mort_rate", lambda m: m["age"].isin(ages), value)}
+
+
+def _premium(years, value, sexes=("M",)):
+    """The edit of *premium_rates.csv* that writes ``value`` as the premium of each policy
+    year of ``years`` in the anchor cell's schedule, T10/M/StdNT/1, of each sex of
+    ``sexes``.  For F the edit first adds a copy of the anchor cell's schedule for sex F,
+    which no committed point carries, every one being of sex M."""
+    def edit(rates):
+        if "F" in sexes:
+            rates = pd.concat([rates, rates[_anchor_rows(rates)].assign(sex="F")],
+                              ignore_index=True)
+        at = ((rates["plan"] == "T10") & rates["sex"].isin(sexes)
+              & (rates["rate_class"] == "StdNT") & (rates["band"] == 1)
+              & rates["policy_year"].isin(years))
+        return _value_written("premium_pp", lambda r: at, value)(rates)
+    return {"premium_rates.csv": edit}
+
+
+NAN, INF = float("nan"), float("inf")
+FACTOR = ("class_factor_table.csv: factor must be a finite number; it is not at "
+          "rate_class ")
+RATE = "mort_table.csv: mort_rate must be a finite number; it is not at age "
+PREMIUM = "premium_rates.csv: premium_pp must be a finite number; it is not in "
+IN_SCHEDULE = "the schedule of plan T10, sex {}, class StdNT, band 1, at policy year {}"
+OVERRIDE = (f"{TABLE}: plt_mort_factor_override must be a finite number or blank; it is "
+            f"not at point_id ")
+AGE = f"{TABLE}: age_at_entry must be a finite number; it is not at point_id "
+
+# A value a cap, a min or a max reads that is not a finite number, as (case, the table's
+# edit, the other inputs' edits, the Data cell that refuses it, its message).  Each column
+# is checked whole when its array is first read, so a value no point reads, such as the
+# factor of a class or the premium of a schedule no point carries, or the rate at an age
+# the first point reaches only at the end of cover, is refused at the first point's first
+# read of the table; and an override is refused for every point that carries one, the
+# first point's projection meeting the refusal through the array it reads.  Each refusal
+# names every line or point at fault, and every schedule, so each column has a case that
+# faults two lines of it, and the premiums one that faults two schedules: a refusal that
+# named the first alone, or checked only what a point reads, would fail one.
+NOT_FINITE = [
+    ("a blank class factor", None, _factor(["StdNT"], NAN), "class_factor",
+     FACTOR + "['StdNT']"),
+    ("a class factor written as text", None, _factor(["StdNT"], "x"), "class_factor",
+     FACTOR + "['StdNT']"),
+    ("an infinite class factor", None, _factor(["StdNT"], INF), "class_factor",
+     FACTOR + "['StdNT']"),
+    ("a blank factor of a class no point carries", None, _factor(["PNT"], NAN),
+     "class_factor", FACTOR + "['PNT']"),
+    ("blank factors of two classes", None, _factor(["PNT", "StdNT"], NAN), "class_factor",
+     FACTOR + "['PNT', 'StdNT']"),
+    ("a blank mortality rate", None, _rate([50], NAN), "mort_table_array", RATE + "[50]"),
+    ("a mortality rate written as text", None, _rate([50], "x"), "mort_table_array",
+     RATE + "[50]"),
+    ("an infinite mortality rate", None, _rate([94], INF), "mort_table_array",
+     RATE + "[94]"),
+    ("blank mortality rates at two ages", None, _rate([50, 60], NAN), "mort_table_array",
+     RATE + "[50, 60]"),
+    ("a blank premium", None, _premium([30], NAN), "premium_rates_array",
+     PREMIUM + IN_SCHEDULE.format("M", [30])),
+    ("a premium written as text", None, _premium([11], "x"), "premium_first_year",
+     PREMIUM + IN_SCHEDULE.format("M", [11])),
+    ("an infinite premium", None, _premium([11], INF), "premium_last_year",
+     PREMIUM + IN_SCHEDULE.format("M", [11])),
+    ("blank premiums in two policy years", None, _premium([30, 40], NAN),
+     "premium_rates_array", PREMIUM + IN_SCHEDULE.format("M", [30, 40])),
+    ("a blank premium of a schedule no point carries", None, _premium([30], NAN, ("F",)),
+     "premium_rates_array", PREMIUM + IN_SCHEDULE.format("F", [30])),
+    ("blank premiums in two schedules", None, _premium([30], NAN, ("F", "M")),
+     "premium_schedules", PREMIUM + IN_SCHEDULE.format("F", [30]) + ", nor in "
+     + IN_SCHEDULE.format("M", [30])),
+    ("a text M(1) override", _set("plt_mort_factor_override", [1], "high"), None,
+     "plt_mort_factor_override", OVERRIDE + "[1]"),
+    ("an infinite M(1) override", _set("plt_mort_factor_override", [4, 6], INF), None,
+     "plt_mort_factor_override", OVERRIDE + "[4, 6]"),
+    ("a negative infinite M(1) override", _set("plt_mort_factor_override", [1], -INF),
+     None, "plt_mort_factor_override", OVERRIDE + "[1]"),
+    ("a blank issue age", _set("age_at_entry", [3], NAN), None, "age_at_entry",
+     AGE + "[3]"),
+    ("an issue age written as text", _set("age_at_entry", [1], "x"), None, "age_at_entry",
+     AGE + "[1]"),
+    ("an infinite issue age", _set("age_at_entry", [1], INF), None, "age_at_entry",
+     AGE + "[1]"),
+    ("blank issue ages at two points", _set("age_at_entry", [1, 3], NAN), None,
+     "age_at_entry", AGE + "[1, 3]"),
+]
+
+
+@pytest.mark.parametrize("case, table_edit, edits, cell, message", NOT_FINITE,
+                         ids=[c[0] for c in NOT_FINITE])
+def test_a_value_a_bound_reads_is_refused_unless_it_is_a_finite_number(tmp_path, case,
+                                                                       table_edit, edits,
+                                                                       cell, message):
+    """``Data`` refuses a blank, text or infinite value a cap, a ``min`` or a ``max`` reads.
+
+    Each case of :data:`NOT_FINITE` is the committed inputs with one such value, or two in
+    one column, read from a copy.  The ``Data`` cell refuses it with ``ValueError`` the
+    first time it is read, naming the file, the column and every line or point at fault,
+    and the first point's projection, which reads the cell, meets the same refusal.  No
+    other rule refuses the copy: every other ``Data`` cell reads, or meets this refusal
+    through the cell it reads.
+
+    Without these refusals, the cap reads an infinite factor, base rate or M(1) override
+    as certain death, and the ``max`` of the PLT grading a negative infinite M(1) as 2.0,
+    without a word; a blank or infinite issue age reads as the least int64, and a text
+    value raises numpy's error, or ``int``'s, naming nothing.  ``Term_US_S``, uncapped, met
+    each only when a projection reached it: it raised on text and on a blank or infinite
+    age, read a negative infinite M(1) override as its grading's floor, 2.0, without a
+    word, and projected NaN or an infinity from the rest.
+    """
+    model = _faulty(tmp_path, table_edit, edits)
+    try:
+        _refused(model.Data.cells[cell], message)
+        for name, cells in model.Data.cells.items():
+            try:
+                cells()
+            except Exception as err:            # this case's refusal alone may be met
+                assert message in str(err), f"Data.{name}: {_raised(err)}"
+        _refused(projection(model, point_keys(model)[0]).result_cf, message)
     finally:
         model.close()
 
@@ -1779,6 +1929,61 @@ def test_an_annual_mortality_past_1_is_capped_where_term_us_s_turns_complex(tmp_
         s.close()
 
 
+def _not_a_number():
+    """NaN, what a blank input carries: a formula a test puts in place of a cell's."""
+    return float("nan")
+
+
+# Each bound a NaN must pass through, as (the bound, the cell whose formula _not_a_number
+# replaces, the row it is read on, the calls that must then be NaN).  Bound first, each call
+# would be the bound or follow from it: mort_rate 1.0 in every month, every policy dead in
+# month 0 and the count 0.0 after it; M(1) 8.0; every PLT factor 2.0.  Point 2 takes M(1)
+# from the notes' rule, point 1 from its override.
+NAN_BOUNDS = [
+    ("the cap on mortality", "class_factor", ("twin", 1, 0),
+     [("mort_rate", (0,)), ("mort_rate", (120,)), ("mort_rate", (719,)),
+      ("mort_rate_mth", (0,)), ("pols_if", (1,))]),
+    ("the min of the M(1) rule", "jump_ratio", ("twin", 2, 0),
+     [("plt_mort_factor_init_formula", ()), ("plt_mort_factor_init", ()),
+      ("plt_mort_factor", (1,)), ("mort_rate", (120,))]),
+    ("the max of the PLT grading", "plt_mort_factor_init", ("twin", 1, 0),
+     [("plt_mort_factor", (1,)), ("plt_mort_factor", (50,)), ("mort_rate", (120,)),
+      ("mort_rate", (719,))]),
+]
+
+
+@pytest.mark.parametrize("bound, cell, row, calls", NAN_BOUNDS,
+                         ids=[c[0] for c in NAN_BOUNDS])
+def test_a_nan_that_reaches_a_bound_stays_nan(bound, cell, row, calls):
+    """A NaN that reaches the cap, or the M(1) rule's or the PLT grading's bound, stays NaN.
+
+    The bounds are the M(1) rule's ``min`` and the PLT grading's ``max``.  A ``min`` or a
+    ``max`` keeps its first argument unless a later one compares smaller, or larger, in
+    modelx and compiled alike, and no comparison with NaN holds.  So with its bound first
+    each would turn a NaN into the bound, and ``mort_rate`` would read a blank class
+    factor as certain death, every flow finite.  Each is written with its bound second
+    (``mort_rate``'s docstring).  ``Data`` refuses every blank input that could carry a
+    NaN to one (:data:`NOT_FINITE`), so to send one a NaN, the formula of the cell that
+    feeds it is replaced by one returning NaN, in a model read for the test, which modelx
+    allows and a compiled model does not (USLIB-SEC-PLAN.md K7).  Each of ``calls`` must
+    then be the float NaN, and not the bound: ``mort_rate`` NaN, not 1.0, where the class
+    factor is NaN.  Where the product passes 1, the cap's tests above hold the other side,
+    the float 1.0.
+    """
+    model = mx.read_model(model_path(SEC), name=_name("nan"))
+    try:
+        model.Projection.cells[cell].formula = _not_a_number
+        p = _row(model, *row)
+        lost = []
+        for name, args in calls:
+            value = p.cells[name](*args)
+            if not (type(value) is float and math.isnan(value)):
+                lost.append(f"{name}{args} = {value!r}")
+        assert not lost, f"{bound} loses a NaN {cell}(): {lost}"
+    finally:
+        model.close()
+
+
 # ---------------------------------------------------------------------------
 # C2 -- the Phase 1 fingerprint
 
@@ -2180,7 +2385,7 @@ def test_the_compiled_model_computes_what_modelx_computes_where_the_cap_binds(se
     table.  modelx sweeps them fully, and the compiled model must agree at every argument
     modelx caches, identically on x86-64 and to 1e-12 relative elsewhere
     (``sec_support.compiled_mismatches``, which reads ``exact_here()``).  No other
-    compiled test reaches the side of ``min(1.0, ...)`` that returns 1.  Uncapped, the
+    compiled test reaches the side of ``min(..., 1.0)`` that returns 1.  Uncapped, the
     compiled monthly rate there is NaN, silently, where modelx's is complex.
     """
     build = sec_build(SEC)
@@ -2206,7 +2411,10 @@ def test_the_compiled_model_refuses_what_modelx_refuses(sec_build, tmp_path):
     refuses an age below the mortality table and a policy year outside the schedule, at
     either end; a mode ``Data`` cannot decode is refused when another point first reads its
     premium; and a schedule whose policy year is text is refused by the schedule's message,
-    which the extent read before the array gives too.
+    which the extent read before the array gives too.  Every case of :data:`NOT_FINITE`, a
+    value a cap, a ``min`` or a ``max`` reads that is blank, text or infinite, is refused
+    by the first point's ``result_cf()``, on its own inputs, compiled as in modelx, so a
+    compiled ``Data`` cell refuses each value its modelx cell refuses.
 
     And one refusal is the compiled model's alone: a call past the caches ``spec_sec.py``
     sizes, ``net_cf(1046)``, which modelx answers with a zero, the month being outside
@@ -2232,6 +2440,8 @@ def test_the_compiled_model_refuses_what_modelx_refuses(sec_build, tmp_path):
          "premiums", (0,), False),
         ("a policy year written as text", _committed(), text_year, 1, "premium_pp_ann_py",
          (11,), False),
+        *((case, _committed() if edit is None else edit(_committed()), edits, 1,
+           "result_cf", (), False) for case, edit, edits, _, _ in NOT_FINITE),
         ("a month past the caches", _committed(), None, 1, "net_cf", (1046,), True),
     ]
     found = []
