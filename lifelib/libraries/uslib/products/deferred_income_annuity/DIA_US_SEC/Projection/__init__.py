@@ -3,39 +3,26 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of the :mod:`~.DIA_US_S` model.
+"""The by-contract projection of the :mod:`~.DIA_US_SEC` model.
 
-The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
-projecting model point 1::
+The Space is parameterized by ``point_id``, so ``Projection[19]`` is an ItemSpace
+projecting model point 19, the worked-example anchor cell in force 241 months at the
+valuation date, one month into its income phase::
 
-    >>> Projection[1].result_annual()      # the worked-example anchor cell
+    >>> Projection[19].result_cf()         # one row per month from the valuation date
+    >>> Projection[19].result_pols()       # the counts and survival behind it
+    >>> Projection[1].result_annual()      # the worked example, issued at t = 0
     >>> Projection.point_id = 8            # or switch the default
 
-.. rubric:: t counts months from issue, and it is 0-based
+Switch the default, or set any Reference, before the model computes anything.
 
-``t = 0, 1, 2, …, proj_len() - 1`` are **policy months from issue**, the library-wide
-0-based convention of lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
-and exactly how the technical notes index them. Month ``t`` runs from elapsed time ``t``
-to ``t + 1``. ``t = 0`` is the issue month and a real projected month, not a recursion
-base case: the first premium is received at its start, deaths occur during it, and the
-maintenance expense accrues in it. ``proj_len()`` is the **number** of projected months
-- the exclusive end of the frame, ``range(proj_len())`` - so the last row is
-``t = proj_len() - 1``: 720 months, ``t = 0 .. 719``, on the anchor cell. The notes'
-``T`` is a month index on this grid — the anchor cell's income start month is
-``T = 240``, the start of month 240 and exactly twenty years from issue, and its
-premiums fall at months 0 and 60 — as are the option months named on the model point.
-The policy year is a derived, 1-based contractual label, ``policy_year(t) = t // 12 + 1``,
-used only where the notes speak in policy years (the expense escalation and the annual
-display grid).
-
-Two consequences to hold on to:
-
-- ``lives_if(t, life)`` is the probability of being alive at the **start** of month
-  ``t`` — equivalently, of having survived ``t`` elapsed months, ``lives_if(0) = 1``.
-  It is the same function of elapsed time under the chassis name ``lives_if`` in
-  :mod:`.SPIA_US_S`.
-- ``lives_death(t, life) = lives_if(t) - lives_if(t + 1)`` — deaths **during** month
-  ``t``, a forward difference, because month ``t`` spans elapsed ``[t, t+1)``.
+This is :mod:`~.DIA_US_S` taught to run in force at a valuation date, as lifelib's
+``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``. A formula of
+:mod:`~.DIA_US_S` is rewritten where it depends on where the projection starts, where it
+must answer for a month outside the frame, where it passed a policy month as ``t``, where
+it priced a premium off the projection's survival, or where it branched on text; every
+other is :mod:`~.DIA_US_S`'s own. ``products/deferred_income_annuity/model-sec.md`` lists
+the rewritten cells with the reason for each.
 
 .. rubric:: Input data
 
@@ -48,156 +35,428 @@ contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model th
 modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``DIA_US_S`` folder without its parent's CSVs produces a model that reads
-and then fails on first evaluation.
+``DIA_US_SEC`` folder without its parent's CSVs produces a model that reads and then
+fails on first evaluation.
 
 Each table has a filename Reference and a reader Cells, both on
-:mod:`~.DIA_US_S.Data`:
+:mod:`~.DIA_US_SEC.Data`. The four assumption tables are the files :mod:`~.DIA_US_S`
+reads, read in place; the model point table and the premium schedule are this model's
+own:
 
-========================  ==================================  ======================
+========================  ==================================  =========================
 Reference                 Cells                               File
-========================  ==================================  ======================
-model_point_file          data.model_point_table()            model_point_table.csv
-premium_schedule_file     data.premium_schedule_table()       premium_schedule.csv
+========================  ==================================  =========================
+model_point_file          data.model_point_table()            model_point_table_sec.csv
+premium_schedule_file     data.premium_schedule_table()       premium_schedule_sec.csv
 mort_table_file           data.mort_table()                   mort_table.csv
 improvement_scale_file    data.improvement_scale()            improvement_scale.csv
 payout_factor_file        data.payout_factor_table()          payout_factor_table.csv
 rop_factor_file           data.rop_factor_table()             rop_factor_table.csv
-========================  ==================================  ======================
+========================  ==================================  =========================
+
+.. rubric:: Two clocks
+
+``t`` counts months from the **valuation date**, 0-based, the clock
+``basiclife.BasicTerm_SE`` runs on: ``t = 0`` is the valuation month for every model
+point, however long the contract has been in force, month ``t`` runs from time ``t`` to
+time ``t + 1``, and the frame is ``t = 0 .. proj_len() - 1``, where :func:`proj_len`
+counts the months from the valuation date to the stop rule. Row ``t`` is the same month
+for every point, so the frames of a block line up and sum row by row. Survival is indexed
+by a **time point** on this clock rather than by a month: ``lives_if(t, life)`` and
+``lives_if_last(t)`` are survival *at* time ``t``, the start of month ``t``, so month
+``t`` opens at time ``t`` and closes at time ``t + 1``, the deaths of month ``t`` are
+``l(t) - l(t + 1)``, and the arrears survival point is ``t + 1``, as in
+:mod:`~.DIA_US_S`.
+
+``duration_mth(t)`` counts **policy months**, the months elapsed from issue at the start
+of month ``t``: ``duration_mth(t) = duration_mth_init() + t``, where
+:func:`duration_mth_init` is read from the model point — positive for a contract already
+in force at the valuation date, 0 for one issued at it, ``-k`` for one to be issued ``k``
+months later, at most ten years later. It is the technical notes' month index, and
+everything contractual reads it: the completed policy years
+``duration(t) = duration_mth(t) // 12``, the contractual 1-based label
+``policy_year(t) = duration(t) + 1``, the attained ages ``age(t, life)``, the premium
+months, the income start month ``T``, the three option months, the payment months, the
+COLA anniversaries and the certain period. ``T``, the premium months and the option months
+stay policy months and are compared with ``duration_mth(t)``: converted to ``t`` they
+would collide with the ``-1`` that the option accessors return for "never", and turn
+negative on a contract past them. A cell keyed directly by this clock takes ``k``, a
+policy month or the time point that opens it, or ``y``, a policy year, never ``t``: the
+pricing cells and the payout schedule are keyed by ``k``, and the annual mortality rate by
+``y``. The months from the income start month, the payout phase's own count, are this
+clock less ``T``. No cell is keyed by them: :func:`is_payment_pm`, :func:`cola_factor_pm`,
+:func:`certain_floor_pm` and :func:`annuity_pp_sched_pm` take a policy month ``k`` and
+form ``k - T`` inside, so that the contract's schedules, its premiums and its options share
+one key. The anchor cell in force 241 months, point 19, is in policy year 21 at ``t = 0``,
+a month after its income start month ``T = 240``, and point 18, the payment-acceleration
+contract in force 59 months, pays its second premium at policy month 60, ``t = 1``.
+
+The **stop rule** ends every frame where it ends :mod:`~.DIA_US_S`'s: :func:`stop_mth` is
+:mod:`~.DIA_US_S`'s frame length from issue, the month the youngest covered life attains
+the limiting age or the end of the guarantee period if that is later, and :func:`is_active`
+is ``0 <= duration_mth(t) < stop_mth()``. A contract's own end inside the frame, its last
+death or the end of its guarantee, is a probability or a floor reaching zero, and the
+frame runs on with zeros, as :mod:`~.DIA_US_S`'s does.
+
+Three inputs, and their clocks. Expense inflation reads the **valuation** clock,
+``inflation_factor(t) = (1 + inflation_rate) ** (t // 12)``, :mod:`~.DIA_US_S`'s annual
+steps moved onto ``t``, so that the maintenance charge is in valuation-date dollars for
+every point alike. Mortality improvement stays on the **policy** clock, because it is
+already calendar-dated: its exponent is the calendar year less ``mort_table_year``, and the
+calendar year ``issue_year() + duration(t)`` is the one the contract reaches whatever the
+valuation date, so a contract in force reads the improvement of its own calendar years and
+nothing is re-based. The commutation discount rate moves with the reference rate's change
+since issue, on one path every point shares: for a contract on the books at the valuation
+date, the change to that date, which a contract in force carries in its opening state,
+plus ``ref_rate_shift``, a change made at the valuation date; for a contract issued later,
+after that change, none.
+
+On a point issued at the valuation date the two clocks coincide and this model computes
+what :mod:`~.DIA_US_S` computes: every cell the two share agrees at every argument
+:mod:`~.DIA_US_S` evaluates in its sweep, but for three whose meaning changed,
+``pols_if_init``, now the count already in force at the valuation date, ``model_point``, a
+row of another table, and ``result_pols``, which gains the month's new business. That is
+how the worked example carries over, and ``tests/test_model_conventions.py`` asserts it
+cell by cell.
+
+.. rubric:: Counts
+
+The count on the books is the number of contracts the point stands for,
+:func:`policy_count`, from issue to the stop rule. Mortality decrements each life's
+survival, :func:`lives_if`, never the count: the two lives are independent, so their two
+probabilities are the whole survival state, and every cash flow is the count times a
+per-contract amount weighted by survival, as :mod:`~.DIA_US_S` weights every flow by its
+constant ``pols_if_init``. So ``pols_if_at(t, "BEF_NB")`` is :func:`pols_if_init`, the
+count already in force, at :func:`t_entry`, the first month on the books, the whole count
+after it, and 0 outside the frame; and ``pols_if_at(t, "BEF_DECR")`` adds
+:func:`pols_new_biz`, the contracts issued in month ``t``. The ``"BEF_DECR"`` count weights
+every cash flow of row ``t``. A contract in force at the valuation date opens with its
+``policy_count``; one issued at or after it opens with none, and takes its
+``policy_count`` as new business in its issue month, ``duration_mth(t) = 0``. New business
+brings its premium schedule and no acquisition cost, as in :mod:`~.DIA_US_S`, which has
+none.
+
+:func:`pols_if` keeps :mod:`~.DIA_US_S`'s definition on that count: the contracts on the
+books weighted by the probability that a covered life is alive at the start of month
+``t``, ``pols_if_at(t, "BEF_DECR") * lives_if_last(t)``, which carries the maintenance
+expense. It is not the count before decrements, which mortality never moves: on point 20,
+the period-certain point in force 300 months, ``pols_if(0)`` is 0.5577 against a count of
+1.0, as ``DIA_US_S``'s ``pols_if(300)`` is, and the registry marks the model
+``survival_pols_if`` for that reason. There is no lapse decrement, and no ``pols_lapse``.
+
+.. rubric:: The opening state
+
+A contract in force at the valuation date carries eight things its count and its policy
+clock do not say. Each is read from its model point as it stands at the start of month
+0, before any month-0 event:
+
+``lives_if_init_1``, ``lives_if_init_2``
+    each covered life's probability of being alive at the valuation date,
+    :func:`lives_if_init`. On a real record it is 1 or 0, and a joint contract may carry
+    one life already dead; on a point restated from :mod:`~.DIA_US_S` at its month ``d``
+    it is :mod:`~.DIA_US_S`'s ``lives_if(d, life)``, a probability. The lives are
+    independent, as in :mod:`~.DIA_US_S`, so the two per-life probabilities are the whole
+    survival state. Life 2 is 0 on a single-life contract.
+``cum_premium_pp_init``, ``annual_income_init``
+    ``CP`` and ``B`` entering month 0: the premiums paid before the valuation date and the
+    guaranteed annual income their slices bought, a start-date adjustment already
+    exercised included, :func:`cum_premium_pp_init` and :func:`annual_income_init`.
+    ``CP`` is the base of the death benefit and of the refund, and ``B`` of the income;
+    the premiums still due are in the premium schedule, so the two columns and the
+    schedule hold all of the premium history the projection reads.
+``guarantee_mths_pricing_init``
+    on a cash or installment refund in force, ``n_g`` as the pricing kernel takes it,
+    :func:`guarantee_mths_pricing_init`: a fixed point over the **whole** premium schedule,
+    the slices bought included, which prices every slice still to be bought and a
+    start-date adjustment still to come. The schedule holds only the premiums still due,
+    and the iteration depends on the path, so neither the schedule nor ``CP`` and ``B``
+    can recover it.
+``surv_to_payout_init``
+    on a contract past its income start month, the cohort that reached the income phase,
+    ``l_last(T)``, :func:`surv_to_payout_init`, which weights every guaranteed
+    instalment. It is **not** the probability that a life is alive: in a certain period
+    the contract stays open after the last death, its guarantee running on to a
+    beneficiary, so on point 20, in force 300 months, it is 0.715 while
+    ``lives_if_last(0)`` is 0.5577. On a real record in payout it is 1.
+``commute_weight_init``
+    on a contract that commuted before the valuation month, the cohort that commuted,
+    ``l_last(t_c)``, :func:`commute_weight_init`, whose guaranteed instalments the
+    commutation extinguished; the rest of the cohort that reached the income phase keeps
+    its guarantee. On a real record of a commuted contract it is 1.
+``ref_rate_shift_init``
+    the reference rate at the valuation date less the reference rate at issue,
+    :func:`ref_rate_shift_init`: the part of the change since issue, which moves the
+    commutation discount rate, that the contract has already seen. A fact of the market,
+    the same for two contracts issued together.
+
+At issue each covered life is 1, the premiums paid, the income bought and the change 0,
+and the three other columns blank, so a point issued at or after the valuation date
+carries those values. Each of the two frozen weights is blank where its instant, the income
+start month or the commutation month, is at or after the valuation month: the projection
+derives it there from the lives, :mod:`~.DIA_US_S`'s own ``l_last`` at that month.
+Nothing else carries a path. The acceleration factor is read only in the exercise month,
+and a contract valued after its exercise paid the lump sum before the valuation date,
+its blackout months paying nothing. The commuted fraction follows from the policy clock:
+the commutation is one exercise named on the model point, and there is no withdrawal. The
+certain months left follow from ``duration_mth``. And the instalments scheduled to date,
+``G``, are a deterministic schedule fixed by the income at the income start month
+(below).
+
+.. rubric:: Pricing on the policy clock
+
+:mod:`~.DIA_US_S` uses one survival curve for two jobs: **pricing** each premium's paid-up
+slice at its own date, and **projecting**. On the valuation clock they part. The
+projection's survival, :func:`lives_if`, opens at the valuation date from the opening
+state. Pricing stays anchored at issue and at the premium dates, deterministic from the
+contract's terms: :func:`lives_if_pm`, survival from issue to a policy time point ``k``,
+is one explicit loop from issue over the monthly rates, :mod:`~.DIA_US_S`'s recursion
+unrolled, the same products in the same order, so every purchase rate, every pricing
+factor and every guarantee period is :mod:`~.DIA_US_S`'s to the last bit. The monthly rate
+comes from one place, :func:`mort_rate_py`, the annual rate of a policy year, which the
+projection's :func:`mort_rate` reads at the policy year of month ``t``, so the two curves
+use one rate, as :mod:`~.DIA_US_S`'s one curve did. So pricing shares the valuation's
+mortality basis, its A/E and its improvement, as :mod:`~.DIA_US_S`'s does: a mortality
+sensitivity moves the purchase rate of every premium still due, and every twin's and
+future row's guarantee period and income, while a contract in force keeps the guarantee
+period it was priced with, ``guarantee_mths_pricing_init``. Every pricing cell is keyed
+by the premium's or the exercise's policy month ``k``, :mod:`~.DIA_US_S`'s ``t`` renamed:
+:func:`income_start_mth_at`, :func:`deferral_yrs`, :func:`surv_to_income_start`,
+:func:`rop_factor_calc`, :func:`rop_factor`, :func:`annuity_factor_def` and
+:func:`purchase_rate`. Pricing never reads the projection, so a cold ``net_cf(0)`` runs a
+handful of cells deep where :mod:`~.DIA_US_S`'s recurses through survival to the payout
+date.
+
+The payout phase reads the income ahead of ``t``: the installment refund's search for its
+certain period, the refund balance, the commuted value and the accelerated instalments.
+On the valuation clock the income ``B`` and the cumulative premium ``CP`` are recursions,
+and reading them far ahead would open a chain as long as the deferral. So the payout
+schedule is fixed at the income start month, from :func:`annual_income_payout`,
+``B(T)``, and :func:`cum_premium_payout`, ``CP(T)``, each one loop over the policy months
+from the valuation date's to ``T``, in :mod:`~.DIA_US_S`'s order. The schedule rests on
+``B`` being level from ``T`` on, which the product guarantees and ``Data`` checks: no
+premium falls at or after ``T``, and a start-date adjustment is exercised before its new
+start month. :func:`annuity_pp_sched_pm` is the instalment of policy month ``k`` on that
+schedule, and :func:`cum_annuity_pp` sums it, ``G``, keyed by policy month and based at
+the valuation date's, so that the refund of a cash refund long in payout reads ``G`` from
+there forward, recursing back to that key and no further.
 
 .. rubric:: Naming
 
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue, and — for everything in the income phase — they
-follow :mod:`.SPIA_US_S` **exactly**, because the payout phase of a DIA *is* a
-single premium immediate annuity. The technical notes use compact actuarial symbols
-instead. The mapping is:
+follow :mod:`.SPIA_US_S` **exactly**, because the payout phase of a DIA *is* a single
+premium immediate annuity. What running in force adds is named as
+``basiclife.BasicTerm_SE`` names it: ``duration_mth`` read from the model point,
+``policy_count``, ``pols_new_biz``, ``pols_if_at`` with its ``"BEF_NB"`` and
+``"BEF_DECR"`` timings, ``is_active`` and ``result_pols``. ``duration_mth_init``, the
+policy months completed at the valuation date, takes ``UL_US_S``'s name, and each
+opening-state column is ``<cell>_init``, the cell it opens with ``_init`` added, read per
+life by ``lives_if_init(life)``. ``t_entry`` and ``stop_mth`` are the SEC family's own. A
+cell keyed by policy month carries ``_pm``, as in ``SPIA_US_SEC``, beside the ``_py`` that
+``Term_US_SEC`` gives a policy-year key, a table reader keyed by attained age carries
+``_at``, and a quantity fixed at the income start month carries ``_payout``. The ``is_*``
+decodes turn the model point's text columns into the flags the projection branches on,
+each reading and validating its column as :mod:`~.DIA_US_S`'s label accessor does, so that
+no other projection cell compares text and none calls a label accessor (``sex``,
+``income_form``, ...), which is left to reporting. The technical notes use compact
+actuarial symbols instead. The mapping is:
 
-=========================  ==============================  =========================
-Notes symbol               Cells                           Meaning
-=========================  ==============================  =========================
-t                          (the cells argument)            Policy month from issue
-y = floor(t/12) + 1        policy_year(t)                  Policy year containing t
-(none)                     duration(t)                     Completed policy years
-(none)                     duration_mth(t)                 Months elapsed at start of t
-x, x_2                     age_at_entry(life)              Issue ages (ANB), life 1 or 2
-x(t)                       age(t, life)                    Attained age (ANB)
-(none)                     sex(life)                       Sex of each covered life
-(none)                     is_joint()                      Two covered lives
-market_type                market_type()                   NQ / TradIRA / RothIRA / QLAC
-f                          income_form()                   LO / LO_ROP / CR / IR / PC
-(f, payout part)           payout_form()                   The payout stream f implies
-db_form                    db_form()                       ROP or NONE in deferral
-n                          certain_period()                Elected certain period, years
-T                          income_start_mth()              Income start month in force
-(T at issue)               income_start_mth_init()         Income start month at issue
-(T for a premium at t)     income_start_mth_at(t)          Start month a premium is priced to
-m                          payment_freq()                  Payments per year
-pay_timing                 payment_timing()                arrears / advance
-c                          cola_rate()                     Fixed compound COLA rate
-(1+c)^floor((t-T)/12)      cola_factor(t)                  COLA escalation factor
-delta / survivor_pct       survivor_pct()                  Survivor percentage
-reduction_trigger          reduction_trigger()             either / primary
-P_k                        premium_pp(t)                   Premium paid in month t
-(the schedule)             premium_by_mth()                {month: premium} mapping
-CP(t)                      cum_premium_pp(t)               Cumulative premiums at the start of t, eq (7)
-B(t)                       annual_income(t)                Guaranteed annual income during t, eq (8)
-l(t)                       lives_if(t, life)               Survival to the start of month t
-q(t)                       mort_rate_mth(t, life)          Monthly death probability
-(annual q)                 mort_rate(t, life)              Annual rate after improvement
-q_x (table)                mort_rate_base(t, life)         Base-table annual rate
-2012 (in q_x^(2012+n))     mort_table_year                 Base year of the shipped table
-G2_x                       improvement_rate(t, life)       Generational improvement rate
-(A/E)                      mort_ae_factor                  A/E factor, 1.00 **[std]**
-omega                      omega_age                       Limiting age, 120
-(d_i)                      lives_death(t, life)            Deaths during month t
-l_last(t)                  lives_if_last(t)                At least one life alive
-d_last(t)                  lives_death_last(t)             Last-death density
-(in force)                 pols_if(t)                      Contracts in force
-i_p, v                     pricing_rate                    Pricing interest rate, 4.75%
-v^d                        pricing_disc_factor(yrs)        Pricing discount factor
-L                          expense_load                    Expense and profit load, 6.0%
-d_k = (T - t_k)/12         deferral_yrs(t)                 Deferral of a premium at t
-_d p_x                     surv_to_income_start(t)         Survival over the deferral
-a^(m)_y(f; i)              annuity_factor(...)             Payout APV, eq (2) generalized
-(same, at T)               payout_factor()                 Payout factor in force
-(same, computed)           payout_factor_calc()            Payout factor by eq (2)
-A_rop(x, d; i)             rop_factor(t)                   ROP factor in force, eq (3)
-(same, computed)           rop_factor_calc(t)              ROP factor by the mid-band rule
-a_def(x, d, f; i)          annuity_factor_def(t)           Deferred APV, eq (1)
-pr(x, d, f)                purchase_rate(t)                Purchase rate, eq (4)
-n_g (pricing)              guarantee_mths_pricing()        n_g in the kernel, eq (5)
-("three iterations")       pricing_iters                   Fixed points taken on eq (5)
-n_g (realized)             guarantee_yrs()                 CP(T)/B(T), eq (5)
-n_R                        certain_mths_refund()           Derived refund period, months
-n_eff                      certain_mths_eff()              Effective certain months
-C(t)                       certain_floor(t)                Certain-floor indicator
-L(t), L_pay(t)             payment_factor_life(t)          Life-contingent payment factor
-Phi(t)                     payment_factor(t)               max(C(t), L(t))
-inst(t)                    annuity_pp_sched(t)             Scheduled instalment
-(inst as payable)          annuity_pp(t)                   Instalment after a blackout
-(inst after commutation)   annuity_pp_paid(t)              inst * (1 - theta_cum * C)
-G(t)                       cum_annuity_pp(t)               Cumulative instalments to the end of t
-RG(t)                      refund_balance(t)               Refund balance at the start of t
-phase(t)                   phase(t)                        DEFERRAL / PAYOUT / TERMINATED
-(t >= T)                   is_payout(t)                    In the income phase
-T (payment dates)          is_payment_mth(t)               Month t is a payment date
-(payment point)            payment_surv_mth(t)             Elapsed month survival is at
-Baa(t_e)                   baa_yield                       Moody's Baa yield at t_e
-s_adj                      adjust_spread                   Repricing spread, 100 bp
-i_e                        repricing_rate()                Start-date repricing rate, eq (10)
-B'/B                       adjust_income_factor()          Repricing factor, eq (11)
-t_e                        adjust_mth()                    Start-date exercise month
-T'                         adjust_start_mth()              New income start month
-t_a                        accel_mth()                     Acceleration exercise month
-n_a                        accel_months                    Payments accelerated, 6
-Cost(t_a)                  accel_cost()                    Acceleration cost, eq (12)
-accel_blackout(t)          accel_blackout(t)               Payments suspended
-(Phi, frozen at t_a)       accel_payment_factor(t)         Weight on an accelerated payment
-t_c                        commute_mth()                   Commutation exercise month
-r_ref(t) - r_ref(0)        ref_rate_shift                  Reference-rate rise since issue
-i_c(t)                     commute_disc_rate(t)            Commutation rate, eq (13)
-m_c                        commute_margin                  Commutation margin, 50 bp
-CV(t)                      commuted_value(t)               Commuted value, eq (14)
-theta_cum(t)               commute_frac_cum(t)             Cumulative commuted fraction
-(l_last(t_c))              commute_weight(t)               Cohort a commutation extinguishes
-E[COMM(t)]                 commutations(t)                 Commutation paid to the owner
-Limit(year)                qlac_premium_limit              QLAC premium limit, $210,000
-qlac_room(t)               qlac_room(t)                    Remaining QLAC premium room
-(age 85 outside date)      qlac_max_start_age              Latest QLAC income start age
-(QLAC conditions)          qlac_flags()                    QLAC compliance failures
-(premium income)           premiums(t)                     l(t) * premium paid at t
-(deferral DB)              claims(t, "DEATH")              Return of CP(t) on death
-(refund benefit)           claims(t, "REFUND")             Cash-refund lump sum
-(per contract)             claim_pp(t, kind)               Claim amount per contract
-E[income]                  annuity_payments(t)             Expected income outgo
-e, g                       expense_maint, inflation_rate   Maintenance expense and escalation
-E[EXP(t)]                  expenses(t)                     Maintenance expense
-(total outgo)              liability_outgo(t)              Gross liability outgo
-(none)                     liability_cf(t)                 Net stream, outgo positive
-(none)                     net_cf(t)                       Premiums less outgo
-=========================  ==============================  =========================
+========================  ==================================  ==============================
+Notes symbol              Cells                               Meaning
+========================  ==================================  ==============================
+t                         (the cells argument)                Month from the valuation date,
+                                                              0-based; time t opens month t
+k                         (the cells argument)                Policy month, or the time
+                                                              point opening it, from issue
+y                         (the cells argument)                Policy year, 1-based
+(month index)             duration_mth(t)                     Months from issue at the start
+                                                              of month t
+(none)                    duration_mth_init()                 Months in force at the
+                                                              valuation date; -k if issued k
+                                                              months on
+y = duration + 1          policy_year(t)                      Policy year containing t
+(none)                    duration(t)                         Completed policy years
+(issue year)              issue_year()                        Calendar year of issue
+(calendar year)           calendar_year(t)                    Calendar year of the policy
+                                                              year containing t
+(none)                    t_entry()                           First month on the books
+(stopping rule)           stop_mth()                          Policy month the frame stops
+(none)                    is_active(t)                        Whether month t is in frame
+x, x_2                    age_at_entry(life)                  Issue ages (ANB), life 1 or 2
+x(t)                      age(t, life)                        Attained age (ANB)
+(none)                    sex(life)                           Sex of each covered life
+(none)                    is_joint()                          Two covered lives
+market_type               market_type()                       NQ / TradIRA / RothIRA / QLAC
+(none)                    is_qlac()                           market_type decoded: QLAC
+f                         income_form()                       LO / LO_ROP / CR / IR / PC
+(f, payout part)          payout_form()                       The payout stream f implies
+(none)                    is_life_only()                      f decoded: LO or LO_ROP
+(none)                    is_cash_refund()                    f decoded: CR
+(none)                    is_installment_refund()             f decoded: IR
+(none)                    is_period_certain()                 f decoded: PC
+db_form                   db_form()                           ROP or NONE in deferral
+(none)                    is_rop()                            db_form decoded: ROP
+n                         certain_period()                    Elected certain period, years
+T                         income_start_mth()                  Income start month in force
+(T at issue)              income_start_mth_init()             Income start month at issue
+(T for a premium at k)    income_start_mth_at(k)              Start month a premium at k is
+                                                              priced to
+m                         payment_freq()                      Payments per year
+pay_timing                payment_timing()                    arrears / advance
+(none)                    is_arrears()                        timing decoded: arrears
+c                         cola_rate()                         Fixed compound COLA rate
+(1+c)^floor((t-T)/12)     cola_factor(t)                      COLA escalation factor
+(the same, at k)          cola_factor_pm(k)                   The same, in policy month k
+delta / survivor_pct      survivor_pct()                      Survivor percentage
+reduction_trigger         reduction_trigger()                 either / primary
+(none)                    is_trigger_either()                 trigger decoded: either
+P_k                       premium_pp(t)                       Premium paid in month t
+(P_k by policy month)     premium_pm(k)                       Premium paid in policy month k
+(the schedule)            premium_by_mth()                    {month: premium} still due
+CP(t)                     cum_premium_pp(t)                   Cumulative premiums during t,
+                                                              eq (7)
+CP(t_entry)               cum_premium_pp_init()               Premiums paid before the
+                                                              valuation date
+CP(T)                     cum_premium_payout()                Cumulative premiums at the
+                                                              income start, the refund base
+B(t)                      annual_income(t)                    Guaranteed annual income
+                                                              during t, eq (8)
+B(t_entry)                annual_income_init()                Income bought before the
+                                                              valuation date
+B(T)                      annual_income_payout()              Income at the income start
+l(t)                      lives_if(t, life)                   Survival to time t, projected
+l(t_entry)                lives_if_init(life)                 Survival at the valuation
+                                                              date, or at issue if later
+l(k) (pricing)            lives_if_pm(k, life)                Survival from issue to policy
+                                                              time point k
+l_last(k) (pricing)       lives_if_last_pm(k)                 At least one life alive, from
+                                                              issue to k
+q(t)                      mort_rate_mth(t, life)              Monthly death probability
+(q by policy year)        mort_rate_mth_py(y, life)           The same, in policy year y
+(annual q)                mort_rate(t, life)                  Annual rate after improvement
+(annual q by year)        mort_rate_py(y, life)               The same, in policy year y
+q_x (table)               mort_rate_base(t, life)             Base-table annual rate
+(q_x by age)              mort_rate_base_at(x, life)          The same, at attained age x
+2012 (in q_x^(2012+n))    mort_table_year                     Base year of the shipped table
+G2_x                      improvement_rate(t, life)           Generational improvement rate
+(G2_x by age)             improvement_rate_at(x, life)        The same, at attained age x
+(none)                    mort_basis()                        anchor / generational
+(none)                    is_generational()                   mort_basis decoded
+(A/E)                     mort_ae_factor                      A/E factor, 1.00 **[std]**
+omega                     omega_age                           Limiting age, 120
+(stopping rule)           horizon_mths()                      Months from issue to the age
+                                                              stop rule
+(none)                    proj_len()                          Months from the valuation date
+                                                              to the stop rule
+(d_i)                     lives_death(t, life)                Deaths during month t
+l_last(t)                 lives_if_last(t)                    At least one life alive
+d_last(t)                 lives_death_last(t)                 Last-death density
+(none)                    policy_count()                      Contracts the point stands for
+(none)                    pols_if_init()                      Contracts in force at the
+                                                              valuation date
+(none)                    pols_if_at(t, timing)               Contracts on the books at time
+                                                              t, BEF_NB or BEF_DECR
+(none)                    pols_new_biz(t)                     Contracts issued in month t
+(in force)                pols_if(t)                          Contracts on the books times
+                                                              l_last(t)
+i_p, v                    pricing_rate                        Pricing interest rate, 4.75%
+v^d                       pricing_disc_factor(yrs)            Pricing discount factor
+L                         expense_load                        Expense and profit load, 6.0%
+d_k = (T - t_k)/12        deferral_yrs(k)                     Deferral of a premium at k
+_d p_x                    surv_to_income_start(k)             Survival over the deferral
+a^(m)_y(f; i)             annuity_factor(...)                 Payout APV, eq (2) generalized
+(same, at T)              payout_factor()                     Payout factor in force
+(same, computed)          payout_factor_calc()                Payout factor by eq (2)
+(none)                    factor_basis()                      table / formula
+(none)                    is_formula_basis()                  factor_basis decoded
+A_rop(x, d; i)            rop_factor(k)                       ROP factor in force, eq (3)
+(same, computed)          rop_factor_calc(k)                  ROP factor, mid-band rule
+a_def(x, d, f; i)         annuity_factor_def(k)               Deferred APV, eq (1)
+pr(x, d, f)               purchase_rate(k)                    Purchase rate, eq (4)
+(none)                    purchase_rate_dp()                  Its decimal places, -1 for all
+n_g (pricing)             guarantee_mths_pricing()            n_g in the kernel, eq (5)
+(n_g as priced)           guarantee_mths_pricing_init()       The same, carried in force
+("three iterations")      pricing_iters                       Fixed points taken on eq (5)
+n_g (realized)            guarantee_yrs()                     CP(T)/B(T), eq (5)
+n_R                       certain_mths_refund()               Derived refund period, months
+n_eff                     certain_mths_eff()                  Effective certain months
+C(t)                      certain_floor(t)                    Certain-floor indicator
+(C by policy month)       certain_floor_pm(k)                 The same, in policy month k
+L(t), L_pay(t)            payment_factor_life(t)              Life-contingent payment factor
+l_last(T)                 surv_to_payout()                    Cohort reaching the income
+                                                              phase
+(l_last(T) in force)      surv_to_payout_init()               The same, carried in force
+Phi(t)                    payment_factor(t)                   max(C(t) * l_last(T), L(t))
+inst(t)                   annuity_pp_sched(t)                 Scheduled instalment
+(inst by policy month)    annuity_pp_sched_pm(k)              The same, in policy month k
+(inst as payable)         annuity_pp(t)                       Instalment after a blackout
+(inst after commutation)  annuity_pp_paid(t)                  inst * (1 - theta_cum * C)
+G(k)                      cum_annuity_pp(k)                   Cumulative instalments through
+                                                              policy month k
+RG(t)                     refund_balance(t)                   Refund balance at the start of
+                                                              t
+phase(t)                  phase(t)                            PRE_ISSUE / DEFERRAL /
+                                                              PAYOUT / TERMINATED
+(t >= T)                  is_payout(t)                        In the income phase
+T (payment dates)         is_payment_mth(t)                   Month t is a payment date
+(by policy month)         is_payment_pm(k)                    Policy month k is a payment
+                                                              date
+(payment point)           payment_surv_mth(t)                 Time survival is measured at
+Baa(t_e)                  baa_yield                           Moody's Baa yield at t_e
+s_adj                     adjust_spread                       Repricing spread, 100 bp
+i_e                       repricing_rate()                    Start-date repricing rate,
+                                                              eq (10)
+B'/B                      adjust_income_factor()              Repricing factor, eq (11)
+t_e                       adjust_mth()                        Start-date exercise month
+T'                        adjust_start_mth()                  New income start month
+t_a                       accel_mth()                         Acceleration exercise month
+n_a                       accel_months                        Payments accelerated, 6
+Cost(t_a)                 accel_cost()                        Acceleration cost, eq (12)
+accel_blackout(t)         accel_blackout(t)                   Payments suspended
+(Phi, frozen at t_a)      accel_payment_factor(t)             Weight on an accelerated
+                                                              payment
+t_c                       commute_mth()                       Commutation exercise month
+(commuted share)          commute_frac()                      Fraction commuted at t_c
+r_ref(t) - r_ref(0)       ref_rate_shift_init()               Reference-rate change from
+                                                              issue to the valuation date
+(the change at t = 0)     ref_rate_shift                      Reference-rate change made at
+                                                              the valuation date; none for a
+                                                              policy issued later
+i_c(t)                    commute_disc_rate(t)                Commutation rate, eq (13)
+m_c                       commute_margin                      Commutation margin, 50 bp
+CV(t)                     commuted_value(t)                   Commuted value, eq (14)
+theta_cum(t)              commute_frac_cum(t)                 Cumulative commuted fraction
+(l_last(t_c))             commute_weight(t)                   Cohort a commutation
+                                                              extinguishes
+(l_last(t_c) in force)    commute_weight_init()               The same, carried in force
+E[COMM(t)]                commutations(t)                     Commutation paid to the owner
+Limit(year)               qlac_premium_limit                  QLAC premium limit, $210,000
+qlac_room(t)              qlac_room(t)                        Remaining QLAC premium room
+(none)                    other_qlac_premium()                Premiums to any other QLAC
+(age 85 outside date)     qlac_max_start_age                  Latest QLAC income start age
+(QLAC conditions)         qlac_flags()                        QLAC compliance failures
+(premium income)          premiums(t)                         l(t) * premium paid at t
+(deferral DB)             claims(t, "DEATH")                  Return of CP(t) on death
+(refund benefit)          claims(t, "REFUND")                 Cash-refund lump sum
+(per contract)            claim_pp(t, kind)                   Claim amount per contract
+E[income]                 annuity_payments(t)                 Expected income outgo
+e, g                      expense_maint, inflation_rate       Maintenance expense and
+                                                              escalation
+(1+g)^(t//12)             inflation_factor(t)                 Expense inflation factor, on
+                                                              the valuation clock
+E[EXP(t)]                 expenses(t)                         Maintenance expense
+(total outgo)             liability_outgo(t)                  Gross liability outgo
+(none)                    liability_cf(t)                     Net stream, outgo positive
+(none)                    net_cf(t)                           Premiums less outgo
+========================  ==================================  ==============================
 
-.. rubric:: The five state variables do not share one timing
-
-Read the timing column of the map: month ``t`` spans elapsed ``[t, t+1)``, and the five
-``t``-indexed state cells sit at three different instants inside it.
-
-- ``l(t)`` and ``RG(t)`` are **start-of-month** values. ``lives_if(t, life)`` is survival
-  to the start of month ``t``; :func:`refund_balance` is measured before the arrears
-  instalment due at the end of the month, ``CP(T) - G(t-1)``, which is why a death in
-  month ``T`` refunds the full ``CP(T)``. (On *advance* timing the instalment paid at
-  the start of the month has been paid, so that one is netted: ``CP(T) - G(t)``.)
-- ``CP(t)`` and ``B(t)`` are the values **during** month ``t`` — after the premium
-  received at its start, which is exactly what makes the deferral death benefit
-  ``CP(t) * l(t) * q(t)`` right and what lets a slice bought at the start of ``t`` be
-  guaranteed from that moment.
-- ``G(t)`` is a **closing** balance: cumulative scheduled instalments through the *end*
-  of month ``t``. ``G`` and ``RG`` are therefore exactly one month apart by
-  construction, not by accident.
-
-None of the five is a recursion seed living before the frame: each opens at ``t = 0``
-and nothing in this model is indexed at ``t = -1``.
+Every input of the notes has a row above, and so do the model's own additions, which the
+notes give no symbol but which drive the in-force projection: the counts, the clocks, the
+opening state and the decodes. Only the outputs and diagnostics are left out —
+:func:`model_point`, :func:`premium_schedule`, the annual display cells
+:func:`lives_if_ann`, :func:`claims_ann` and :func:`annuity_payments_ann`, the reports
+:func:`result_cf`, :func:`result_pols` and :func:`result_annual`, and the ``check_*``
+cells — because they are not quantities the notes define.
 
 Seven names in that table needed care.
 
@@ -206,13 +465,18 @@ life-contingent payment factor — so they become ``lives_if`` and
 ``payment_factor_life``, exactly as in :mod:`.SPIA_US_S`. ``L`` is *also* the
 expense and profit load in equation (4); that one is the Reference ``expense_load``.
 
+``l`` is also two curves here, where the notes have one: the projection's
+:func:`lives_if`, on the valuation clock from the opening state, and the pricing kernel's
+:func:`lives_if_pm`, on the policy clock from issue. On a point issued at the valuation
+date they are the same numbers at every time point.
+
 ``B`` is the guaranteed **annual** income and ``B(t)/m`` is one instalment; the notes
 never name the instalment, so it takes the chassis name ``annuity_pp_sched``. Note that
 ``annual_income(t)`` is indexed by **month**, not by policy year as in
 :mod:`.SPIA_US_S`, because a DIA's income level changes when a *premium* is paid
 and premiums fall on months.
 
-``n_g`` is two different quantities in the notes and they must not be conflated.
+``n_g`` is three different quantities in the notes and they must not be conflated.
 :func:`guarantee_mths_pricing` is the guarantee period fed into the pricing kernel by
 equation (5) — a fixed point, since ``n_g = CP(T)/B`` and ``B`` depends on ``n_g``.
 :func:`guarantee_yrs` is the realized value once ``B`` is known, the 3.3891 years the
@@ -234,12 +498,12 @@ and therefore the only cohort a guarantee period can pay; :func:`commute_weight`
 ``l_last(t_c)``, the sub-cohort still alive to exercise a commutation and therefore the
 only cohort whose guarantee a commutation can extinguish.  They are the same idea
 applied at two dates, and getting either of them wrong moves the guaranteed leg without
-moving anything else.
+moving anything else. A contract valued after either date carries it in its opening
+state, because the lives at the valuation date can no longer say it.
 
 ``CP(T)`` is the DIA-specific change to the payout chassis and the notes' own listed
 pitfall: **the refund base is cumulative premiums, not the initial premium.** Where
-``SPIA_US_S`` writes ``premium_pp()``, this model writes
-``cum_premium_pp(income_start_mth())``.
+``SPIA_US_S`` writes ``premium_pp()``, this model writes :func:`cum_premium_payout`.
 
 The self-checks follow the library-wide ``check_*`` convention, which is
 ``CashValue_SE.check_av_roll_fwd()``'s: each check takes **no argument and returns a
@@ -250,6 +514,30 @@ The bool is defined in terms of the residual, never the other way round.
 :func:`check_lives_roll_fwd`, :func:`check_income_roll_fwd`,
 :func:`check_payment_factor` and :func:`check_commutation_value` are the four here; there
 is no ``check_av_roll_fwd``, because there is no account value to roll forward.
+
+.. rubric:: The state variables do not share one timing
+
+Month ``t`` spans time ``t`` to time ``t + 1``, and the state cells sit at three different
+instants inside it.
+
+- ``l(t)`` and ``RG(t)`` are **start-of-month** values. ``lives_if(t, life)`` is survival
+  to the start of month ``t``; :func:`refund_balance` is measured before the arrears
+  instalment due at the end of the month, ``CP(T) - G(m - 1)`` at policy month ``m``,
+  which is why a death in month ``T`` refunds the full ``CP(T)``. (On *advance* timing the
+  instalment paid at the start of the month has been paid, so that one is netted:
+  ``CP(T) - G(m)``.)
+- ``CP(t)`` and ``B(t)`` are the values **during** month ``t`` — after the premium
+  received at its start, which is exactly what makes the deferral death benefit
+  ``CP(t) * l(t) * q(t)`` right and what lets a slice bought at the start of ``t`` be
+  guaranteed from that moment. Entering month 0 they are the opening state, the values
+  :mod:`~.DIA_US_S` holds during the month before the valuation month.
+- ``G(k)`` is a **closing** balance: cumulative scheduled instalments through the *end*
+  of policy month ``k``. ``G`` and ``RG`` are therefore exactly one month apart by
+  construction, not by accident.
+
+None of them is a recursion seed living before the frame: each opens at :func:`t_entry`,
+from the opening state in force and from its value at issue otherwise, and nothing in this
+model is indexed at a time point before it on the valuation clock.
 
 .. rubric:: Two pricing bases: tabulated and computed
 
@@ -262,15 +550,16 @@ column:
 ``factor_basis = "table"``
     :func:`payout_factor` and :func:`rop_factor` read the shipped factor tables, and
     :func:`annuity_factor_def` is the notes' equation (1) literally,
-    ``v^d * _d p_x * a^(m)``. Model points 1, 2 and 4. This is the basis that
-    reproduces the worked example. It is single-life only: equation (1) factorizes the
-    deferral survival out of the payout APV, which a joint status does not permit.
+    ``v^d * _d p_x * a^(m)``. Model points 1, 2 and 4, and the points restated from point
+    1, 19 and 25. This is the basis that reproduces the worked example. It is single-life
+    only: equation (1) factorizes the deferral survival out of the payout APV, which a
+    joint status does not permit, and ``Data`` refuses a joint contract on it.
 
 ``factor_basis = "formula"``
     :func:`payout_factor_calc` computes equation (2) and :func:`rop_factor_calc` the
     notes' mid-band approximation of equation (3), both off the shipped mortality table,
     and :func:`annuity_factor_def` values the whole deferred stream in one pass so joint
-    forms work. Model points 3 and 5 onwards.
+    forms work. Model points 3, 5 to 18, 20 to 24 and 26.
 
 The shipped mortality table is **[std]**, built so that the two bases agree where the
 notes say they should: its rates over ages 60-84 are band-constant values reproducing
@@ -288,7 +577,8 @@ out at **0.180241** against a printed **0.180200** — agreement to four decimal
 One of the two is arithmetically consistent with the stated recipe and the other is not.
 Rather than choose, the model ships both: model point 1 takes the printed factors from
 ``rop_factor_table.csv`` and reproduces the worked example, model point 3 is otherwise
-identical and computes them. A test pins the gap open.
+identical and computes them. A test of :mod:`~.DIA_US_S`'s pins the gap open, and the twin
+identity carries it here.
 
 .. rubric:: The purchase-rate rounding is a [std] convention, and it is worth 3.6 cents
 
@@ -301,11 +591,11 @@ reproduces to the cent without the rounding being hidden.
 
 .. rubric:: The certain period is a floor, not a second stream
 
-``payment_factor(t) = max(certain_floor(t), payment_factor_life(t))`` is inherited from
-the payout chassis and is the notes' first-listed payout pitfall. During the certain
-period the full, *unreduced* instalment is payable regardless of survival; an additive
-construction would pay ``1 + L`` and silently double the guarantee. The ``max`` also
-reproduces, with no extra logic, the rule that a survivor reduction falling inside a
+``payment_factor(t) = max(certain_floor(t) * l_last(T), payment_factor_life(t))`` is
+inherited from the payout chassis and is the notes' first-listed payout pitfall. During
+the certain period the full, *unreduced* instalment is payable regardless of survival; an
+additive construction would pay ``1 + L`` and silently double the guarantee. The ``max``
+also reproduces, with no extra logic, the rule that a survivor reduction falling inside a
 guarantee period is deferred to the end of that period.
 
 .. rubric:: There is no lapse decrement, and adding one is a defect
@@ -332,7 +622,7 @@ _spaces = []
 # Cells
 
 def model_point():
-    """The selected model point as a Series."""
+    """The selected model point, its row of ``model_point_table_sec.csv``, as a Series."""
     return data.model_point_table().loc[point_id]                    # noqa: F821
 
 
@@ -341,7 +631,8 @@ def age_at_entry(life):
 
     Age nearest birthday **[std]**: the archetype guide states contract issue age on an
     ANB basis [S2], prescribed VM-22 payout mortality is ANB [R9], and the 2012 IAM
-    Basic and Period tables were developed ANB [R15][REG-R59].
+    Basic and Period tables were developed ANB [R15][REG-R59].  The age at issue, not at
+    the valuation date: ``age(0, life)`` is the attained age then.
     """
     if life == 1:
         return int(model_point()["issue_age"])
@@ -360,7 +651,11 @@ def sex(life):
 
 
 def is_joint():
-    """True when the contract covers two annuitants [S2][S4]."""
+    """True when the contract covers two annuitants [S2][S4].
+
+    The ``joint`` column as ``Data`` checked it, a flag: ``DIA_US_S``'s ``bool()`` of the
+    raw value reads any text, ``"no"`` and a blank among them, as ``True``.
+    """
     return bool(model_point()["joint"])
 
 
@@ -381,6 +676,22 @@ def reduction_trigger():
     return v
 
 
+def is_trigger_either():
+    """Whether either death triggers the survivor reduction, not the primary's alone.
+
+    A decode of the model point's ``reduction_trigger`` column, read and validated as
+    :func:`reduction_trigger` reads and validates it, so that :func:`payment_factor_life`
+    and :func:`annuity_factor` branch on a flag and no projection cell calls the label
+    accessor, which is left to reporting.
+    """
+    v = model_point()["reduction_trigger"]
+    if v == "either":
+        return True
+    if v == "primary":
+        return False
+    raise ValueError("invalid reduction_trigger")
+
+
 def market_type():
     """The tax wrapper: NQ, TradIRA, RothIRA or QLAC [S2][S4]."""
     v = model_point()["market_type"]
@@ -390,8 +701,16 @@ def market_type():
 
 
 def is_qlac():
-    """True when the contract is intended to be a QLAC [R1 (q)(1)(vi)]."""
-    return market_type() == "QLAC"
+    """True when the contract is intended to be a QLAC [R1 (q)(1)(vi)].
+
+    A decode of the model point's ``market_type`` column, read and validated as
+    :func:`market_type` reads and validates it, so that :func:`qlac_flags` branches on a
+    flag and calls no label accessor.
+    """
+    v = model_point()["market_type"]
+    if v not in ("NQ", "TradIRA", "RothIRA", "QLAC"):
+        raise ValueError("invalid market_type")
+    return bool(v == "QLAC")
 
 
 def income_form():
@@ -420,6 +739,55 @@ def payout_form():
     return "LO" if f in ("LO", "LO_ROP") else f
 
 
+def is_life_only():
+    """Whether the payout stream is life only: ``income_form`` LO or LO_ROP.
+
+    One of four decodes of the model point's ``income_form`` column, as are the three below
+    it, so that no projection cell compares text or calls :func:`income_form` or
+    :func:`payout_form`, the label accessors, which are left to reporting.  Each reads the
+    column as :func:`income_form` does and validates it as :func:`income_form` does, so an
+    invalid form raises ``ValueError("invalid income_form")`` wherever the projection first
+    meets it.  ``LO_ROP`` is life only in payout, as :func:`payout_form` collapses it.
+    """
+    f = model_point()["income_form"]
+    if f not in ("LO", "LO_ROP", "CR", "IR", "PC"):
+        raise ValueError("invalid income_form")
+    return bool(f == "LO" or f == "LO_ROP")
+
+
+def is_cash_refund():
+    """Whether the form is cash refund, CR: a lump sum of ``CP(T) - G`` on the last death.
+
+    A decode of the ``income_form`` column, validated as :func:`income_form` validates it.
+    """
+    f = model_point()["income_form"]
+    if f not in ("LO", "LO_ROP", "CR", "IR", "PC"):
+        raise ValueError("invalid income_form")
+    return bool(f == "CR")
+
+
+def is_installment_refund():
+    """Whether the form is installment refund, IR: a certain period derived from ``CP(T)``.
+
+    A decode of the ``income_form`` column, validated as :func:`income_form` validates it.
+    """
+    f = model_point()["income_form"]
+    if f not in ("LO", "LO_ROP", "CR", "IR", "PC"):
+        raise ValueError("invalid income_form")
+    return bool(f == "IR")
+
+
+def is_period_certain():
+    """Whether the form is life with period certain, PC: an elected certain period.
+
+    A decode of the ``income_form`` column, validated as :func:`income_form` validates it.
+    """
+    f = model_point()["income_form"]
+    if f not in ("LO", "LO_ROP", "CR", "IR", "PC"):
+        raise ValueError("invalid income_form")
+    return bool(f == "PC")
+
+
 def db_form():
     """The deferral-phase death benefit: ``ROP`` or ``NONE``.
 
@@ -432,6 +800,21 @@ def db_form():
     if v not in ("ROP", "NONE"):
         raise ValueError("invalid db_form")
     return v
+
+
+def is_rop():
+    """Whether the contract carries the return-of-premium death benefit in deferral.
+
+    A decode of the model point's ``db_form`` column, read and validated as
+    :func:`db_form` reads and validates it, so that the ROP factor and the death claim
+    branch on a flag and no projection cell calls the label accessor.
+    """
+    v = model_point()["db_form"]
+    if v == "ROP":
+        return True
+    if v == "NONE":
+        return False
+    raise ValueError("invalid db_form")
 
 
 def certain_period():
@@ -460,6 +843,22 @@ def payment_timing():
     return v
 
 
+def is_arrears():
+    """Whether instalments fall in arrears, at the end of the month, rather than in advance.
+
+    A decode of the model point's ``timing`` column, read and validated as
+    :func:`payment_timing` reads and validates it, so that the payment months, the
+    survival point, the refund balance, the refund-period search and the pricing kernel
+    branch on a flag and no projection cell calls the label accessor.
+    """
+    v = model_point()["timing"]
+    if v == "arrears":
+        return True
+    if v == "advance":
+        return False
+    raise ValueError("invalid timing")
+
+
 def cola_rate():
     """c: the fixed compound annual increase, 0 or 1%-4%, elected at issue [S2][S3][S4].
 
@@ -481,9 +880,30 @@ def issue_year():
     return int(model_point()["issue_year"])
 
 
+def policy_count():
+    """The number of contracts the model point stands for, its ``policy_count`` column.
+
+    A point in force at the valuation date counts the contracts in force then, before any
+    month-0 event; any other point counts the contracts it issues.  Either way the count
+    enters the projection once: as :func:`pols_if_init` for the first, as
+    :func:`pols_new_biz` in the issue month for the second.  It is ``DIA_US_S``'s
+    ``pols_if_init`` column, renamed, and like it a constant on the books: mortality
+    decrements each life's survival, :func:`lives_if`, never the count.
+    """
+    return float(model_point()["policy_count"])
+
+
 def pols_if_init():
-    """Initial number of contracts in force; 1.0 on a single-contract model point."""
-    return float(model_point()["pols_if_init"])
+    """Contracts in force at the valuation date, before any month-0 event.
+
+    ``policy_count()`` for a point already in force at ``t = 0`` (``duration_mth_init() >
+    0``), and 0 for one issued at or after it, whose contracts enter through
+    :func:`pols_new_biz` in the issue month instead, as in ``basiclife.BasicTerm_SE``.  So
+    on a point issued at ``t = 0`` this is 0, where ``DIA_US_S``'s is the count itself; on
+    either model the count that weights row 0 is the same, here
+    ``pols_if_at(0, "BEF_DECR")``.
+    """
+    return policy_count() if duration_mth_init() > 0 else 0.0
 
 
 def mort_basis():
@@ -502,6 +922,21 @@ def mort_basis():
     return v
 
 
+def is_generational():
+    """Whether mortality is the generational projection rather than the anchor curve.
+
+    A decode of the model point's ``mort_basis`` column, read and validated as
+    :func:`mort_basis` reads and validates it, so that :func:`mort_rate_py` branches on a
+    flag and no projection cell calls the label accessor.
+    """
+    v = model_point()["mort_basis"]
+    if v == "generational":
+        return True
+    if v == "anchor":
+        return False
+    raise ValueError("invalid mort_basis")
+
+
 def factor_basis():
     """Whether the pricing factors are *table* lookups or *formula* computations.
 
@@ -516,8 +951,24 @@ def factor_basis():
     return v
 
 
+def is_formula_basis():
+    """Whether the pricing factors are formula computations rather than table lookups.
+
+    A decode of the model point's ``factor_basis`` column, read and validated as
+    :func:`factor_basis` reads and validates it, so that :func:`payout_factor`,
+    :func:`rop_factor` and :func:`annuity_factor_def` branch on a flag and no projection
+    cell calls the label accessor.
+    """
+    v = model_point()["factor_basis"]
+    if v == "formula":
+        return True
+    if v == "table":
+        return False
+    raise ValueError("invalid factor_basis")
+
+
 def purchase_rate_dp():
-    """Decimal places the purchase rate is rounded to, or None for full precision.
+    """Decimal places the purchase rate is rounded to, or -1 for full precision.
 
     **[std]**.  The worked example computes ``B`` from a six-decimal purchase rate;
     carrying full precision instead moves the anchor cell's annual income by 3.6 cents.
@@ -539,21 +990,26 @@ def other_qlac_premium():
 
 
 def premium_schedule():
-    """The selected contract's premium slices, ordered by payment month.
+    """The selected contract's premium slices still due, ordered by payment month.
 
     A DIA is a flexible-premium contract - "any number of premiums during the deferral
     period" [S2][S3][S4][R13] - so the schedule is a separate long table rather than a
-    fixed set of model point columns.
+    fixed set of model point columns.  Its rows of ``premium_schedule_sec.csv``, which holds
+    the premiums due at or after the valuation date: on a point issued at or after it the
+    whole schedule, and on a point in force the premiums of policy months ``duration_mth``
+    and later, those paid before being in the opening state.
     """
     tbl = data.premium_schedule_table()                              # noqa: F821
     return tbl[tbl["point_id"] == point_id].sort_values("premium_mth")  # noqa: F821
 
 
 def premium_by_mth():
-    """The premium schedule collapsed to a ``{month: amount}`` mapping.
+    """The premium schedule still due collapsed to a ``{month: amount}`` mapping.
 
-    Built once per contract so that :func:`premium_pp` is a dictionary lookup rather
-    than a DataFrame filter in every one of the projected months.
+    Keyed by policy month.  Built once per contract so that :func:`premium_pm`, its reader
+    in the projection, is a dictionary lookup rather than a DataFrame filter in every one
+    of the projected months; :func:`guarantee_mths_pricing` sums and iterates it too, on a
+    point issued at or after the valuation date.
     """
     out = {}
     for _, r in premium_schedule().iterrows():
@@ -562,52 +1018,185 @@ def premium_by_mth():
     return out
 
 
+def premium_pm(k):
+    """P_k: the premium per contract paid at the **start** of policy month k; 0 if none.
+
+    Keyed by policy month, on the policy clock, and the one cell that reads the premium
+    schedule, so that :func:`premium_pp` reads a premium at the policy month of month t,
+    and :func:`annual_income_payout` and :func:`cum_premium_payout` at every policy month
+    from the valuation date's to the income start month, without passing a policy month as
+    ``t``.  0 before the valuation date on a point in force, whose premiums paid are in its
+    opening state.
+    """
+    return premium_by_mth().get(k, 0.0)
+
+
 def premium_pp(t):
-    """P_k: the premium per contract paid at the **start** of month t; 0 if none falls."""
-    return premium_by_mth().get(t, 0.0)
+    """P_k: the premium per contract paid at the **start** of month t; 0 if none falls.
+
+    ``premium_pm(duration_mth(t))``, the premium of the policy month that month ``t`` falls
+    in, inside the frame, and 0 outside it.
+    """
+    if not is_active(t):
+        return 0.0
+    return premium_pm(duration_mth(t))
+
+
+def cum_premium_pp_init():
+    """CP at the valuation date: the premiums per contract paid before it.
+
+    The ``cum_premium_pp_init`` column, the cumulative premium entering month 0, before
+    the premium, if any, received at its start: ``DIA_US_S``'s ``cum_premium_pp(d - 1)``
+    on a point restated at its month ``d``.  The opening value of :func:`cum_premium_pp` at
+    :func:`t_entry`, and the deferral death benefit's and the refund's base before the
+    premiums still due are added.  0 at issue, and so on every point not yet in force, as
+    ``Data`` checks.
+    """
+    return float(model_point()["cum_premium_pp_init"])
 
 
 def cum_premium_pp(t):
     """CP(t): cumulative premiums paid per contract, equation (7).
 
-    ``CP(0) = P_0`` and ``CP(t) = CP(t-1) + sum of P_k at t`` thereafter: the recursion
-    opens **on the first row of the frame**, not on a seed at ``t = -1``.  The value is
-    the one in force *during* month ``t`` - it already includes the premium received at
-    the start of that month, which is what makes the deferral death benefit
-    ``CP(t) * l(t) * q(t)`` right.  This is both the deferral death benefit base and -
-    at ``t = T`` - the refund base.  **For a flexible-premium DIA the refund base is
-    CP(T), not the initial premium**, which is one of the notes' listed pitfalls
-    [S2][S4].
+    ``CP(t) = CP(t-1) + P_k`` at the premiums of month ``t``.  The recursion opens at
+    :func:`t_entry`, the first month on the books, on the opening state,
+    :func:`cum_premium_pp_init`, the premiums paid before the valuation date, which is 0
+    on a point issued at or after it, so that ``CP(t_entry)`` is that plus the premium,
+    if any, received at the start of the month.  The value is the one in force *during*
+    month ``t`` - it already includes the premium received at the start of that month,
+    which is what makes the deferral death benefit ``CP(t) * l(t) * q(t)`` right.  This is
+    the deferral death benefit base; the refund base is ``CP(T)``,
+    :func:`cum_premium_payout`, read from the income start month on.  **For a
+    flexible-premium DIA the refund base is CP(T), not the initial premium**, which is one
+    of the notes' listed pitfalls [S2][S4].  Zero outside the frame.
     """
-    return (cum_premium_pp(t - 1) if t > 0 else 0.0) + premium_pp(t)
+    if not is_active(t):
+        return 0.0
+    prev = cum_premium_pp(t - 1) if t > t_entry() else cum_premium_pp_init()
+    return prev + premium_pp(t)
+
+
+def cum_premium_payout():
+    """CP(T): cumulative premiums per contract at the income start month, the refund base.
+
+    ``cum_premium_pp_init()`` plus every premium still due, from the valuation date's
+    policy month to the income start month ``T``, in one loop over the policy months, the
+    same additions in the same order as the recursion :func:`cum_premium_pp`, so ``CP(T)``
+    is ``DIA_US_S``'s ``cum_premium_pp(T)`` to the last bit.  On a contract past its
+    income start month the loop is empty and ``CP(T)`` is the opening state: no premium
+    falls at or after ``T``, as ``Data`` checks, so ``CP`` is level in payout.  A static
+    quantity, so that the refund balance, the installment refund's search and
+    :func:`guarantee_yrs` read the refund base without reading :func:`cum_premium_pp` far
+    ahead of their month.
+    """
+    total = cum_premium_pp_init()
+    for k in range(max(duration_mth_init(), 0), income_start_mth() + 1):
+        total = total + premium_pm(k)
+    return total
+
+
+def duration_mth_init():
+    """Months from issue to the valuation date, the ``duration_mth`` column.
+
+    The policy's age in months at ``t = 0``: 241 for a contract issued 241 months before the
+    valuation date, 0 for one issued at it, and -13 for one to be issued 13 months after
+    it, which ``Data`` admits up to ``future_horizon_mth`` months ahead.  It is read as
+    ``basiclife.BasicTerm_SE`` reads it, by value, and is the one fact the policy clock
+    takes from the model point.
+    """
+    return int(model_point()["duration_mth"])
 
 
 def duration_mth(t):
-    """Months elapsed from issue at the start of month t; equal to t.
+    """Months elapsed from issue at the start of month t, the **policy** clock.
 
-    ``t`` is 0-based here, so the identity is trivial - the cells exists so that the
-    monthly models share one vocabulary.
+    ``duration_mth_init() + t``: ``t`` counts months from the valuation date and
+    ``duration_mth(t)`` months from issue, and the two move together.  A closed form, where
+    ``basiclife.BasicTerm_SE`` adds one a month by recursion: the same numbers, without a
+    call chain as long as the frame.  Negative before issue.  Everything contractual reads
+    this clock: the policy year, the attained ages, the premium months, the income start
+    month, the option months, the payment months, the COLA anniversaries and the certain
+    period.
     """
-    return t
+    return duration_mth_init() + t
+
+
+def t_entry():
+    """The first month the contract is on the books: ``max(0, -duration_mth_init())``.
+
+    0 for a contract in force at the valuation date or issued at it, ``k`` for one issued
+    ``k`` months later.  It is the base of every recursion on the valuation clock:
+    :func:`lives_if`, :func:`cum_premium_pp` and :func:`annual_income` open there, from the
+    opening state, and read no month before it, and :func:`pols_if_at` counts the contracts
+    from there.
+    """
+    return max(0, -duration_mth_init())
+
+
+def stop_mth():
+    """The policy month at which the projection stops: the stop rule, on the policy clock.
+
+    ``max(horizon_mths(), income_start_mth() + certain_mths_eff())``, ``DIA_US_S``'s frame
+    length counted from issue: the month the youngest covered life attains the limiting
+    age, or the end of the guarantee period if that is later.  The last projected month is
+    policy month ``stop_mth() - 1``; :func:`proj_len` counts the months to the stop from
+    the valuation date instead.  720 on the anchor cell, ages 60 to 119.
+    """
+    return max(horizon_mths(), income_start_mth() + certain_mths_eff())
+
+
+def is_active(t):
+    """Whether month t is inside the frame: issued, and not yet at the stop rule.
+
+    ``0 <= duration_mth(t) < stop_mth()``.  False before issue and from the stop rule on.
+    Outside it every count is zero, and so every cash flow; no cell reads a rate, a policy
+    year or an attained age there that the contract does not have.  A contract's own end
+    inside the frame - its last death, or the end of its guarantee - is a probability or a
+    floor reaching zero, not the end of the frame, which runs on with zeros as
+    ``DIA_US_S``'s does.
+    """
+    return 0 <= duration_mth(t) < stop_mth()
 
 
 def duration(t):
-    """Completed policy years at the start of month t: ``t // 12``."""
-    return t // 12
+    """Completed policy years at the start of month t: ``duration_mth(t) // 12``.
+
+    0 throughout the first policy year from issue, and negative before issue.
+    """
+    return duration_mth(t) // 12
 
 
 def policy_year(t):
-    """y = floor(t/12) + 1: the policy year containing month t; 1 for t = 0..11."""
+    """y = duration(t) + 1: the policy year containing month t, on the policy clock.
+
+    The policy year is the contract's own 1-based label, ``duration_mth(t) // 12 + 1``, and
+    is *derived* from the policy clock, never used to index the frame: 1 for policy months
+    0..11, whatever ``t`` they fall at.  It is 0 or less before issue, where no cell reads
+    a rate by it.  Used where the notes speak in policy years: the mortality rate, and the
+    annual display grid.
+    """
     return duration(t) + 1
 
 
 def calendar_year(t):
-    """The calendar year of the policy year containing month t."""
+    """The calendar year of the policy year containing month t, on the policy clock.
+
+    ``issue_year() + duration(t)``: calendar-dated from the issue year, so a contract in
+    force at the valuation date reads its own calendar years whatever that date, and
+    nothing in the improvement it dates is re-based onto the valuation clock.  On a point
+    restated from ``DIA_US_S`` at its month ``d``, month ``t`` here is ``DIA_US_S``'s month
+    ``d + t``, and so the same calendar year.  :func:`mort_rate_py` computes the same year
+    for a policy year.
+    """
     return issue_year() + duration(t)
 
 
 def age(t, life):
-    """x(t) = x + floor(t/12): the attained age (ANB) of ``life`` in month t."""
+    """x(t) = x + duration(t): the attained age (ANB) of ``life`` in month t.
+
+    On the policy clock: the age changes on each anniversary of issue, whatever the
+    valuation date.
+    """
     return age_at_entry(life) + duration(t)
 
 
@@ -616,6 +1205,7 @@ def horizon_mths():
 
     ``t/12 + x_i > omega_age`` for every covered life is the payout chassis' stop rule;
     stopping on the primary's age alone would truncate a younger joint annuitant's tail.
+    Counted from issue, on the policy clock; :func:`stop_mth` and :func:`proj_len` take it.
     """
     ages = [age_at_entry(1)]
     if is_joint():
@@ -624,48 +1214,113 @@ def horizon_mths():
 
 
 def proj_len():
-    """The number of projected months: ``t`` runs ``0, 1, ..., proj_len() - 1``.
+    """The number of months from the valuation date to the stop rule.
 
-    The exclusive end of the frame, lifelib's ``range(proj_len())``: the frame has
-    ``proj_len()`` rows, the last month index is ``proj_len() - 1`` and the projection
-    stops when it reaches the mortality horizon - the month the youngest covered life
-    attains the limiting age, ``horizon_mths()`` - or the end of the guarantee period
-    if that is later.  Both are age- or contract-driven rather than derived from the
-    projection they bound, so ``proj_len()`` never depends on the survival path.
-    720 on the anchor cell: months ``0 .. 719``, ages 60 to 119.
+    ``stop_mth() - duration_mth_init()``: 720 for the anchor cell issued at ``t = 0``, 479
+    for it in force 241 months (point 19), 1 in its last month (point 25), and 733 for the
+    joint point issued 13 months after the valuation date (point 26).  The exclusive end of
+    the frame: :func:`result_cf` runs over ``range(proj_len())``, so the last projected
+    month is ``proj_len() - 1``, which is policy month ``stop_mth() - 1`` on every point.
+
+    The projection stops when it reaches the mortality horizon - the month the youngest
+    covered life attains the limiting age, ``horizon_mths()`` - or the end of the
+    guarantee period if that is later.  Both are age- or contract-driven rather than
+    derived from the projection they bound, so the frame never depends on the survival
+    path.
+
+    Two kinds of point have no frame, and raise here, naming the point, rather than
+    projecting nothing: an in-force extract should not carry either.  A point at or past
+    the stop rule.  And a contract that owes nothing after the valuation date: in force,
+    with every covered life dead at the valuation date, valued at or before its income
+    start month, whose every death fell in the deferral and whose death benefit, if any,
+    was paid before the valuation date; or valued after it, with its certain period over
+    or no certain period at all, the refund, if any, having been paid at the last death.
+    This is ``Term_US_SEC``'s point past its cover, for a product whose cover can end with
+    a death.  The rule needs the certain period, which an installment refund derives from
+    the payout schedule, so it is checked here rather than in ``Data``, and each message
+    says why nothing is owed.  A contract in its certain period with every life dead pays
+    the beneficiary, and projects.
+
+    And one combination of the two payout options raises here, naming the point, because
+    neither model prices it: an acceleration on the books, at or after the valuation date,
+    whose lump sum pulls forward instalments of a guarantee that a commutation before it
+    has reduced.  The lump sum pays each instalment it pulls forward at the payment
+    factor, unreduced, as ``DIA_US_S``'s does, so the cohort that commuted would be paid
+    those instalments again.  The guarantee's end needs the certain period, so this too is
+    checked here.  ``Data`` refuses the two options within six months of each other, the
+    product's interlock; an acceleration that pulls forward only the life-contingent
+    instalments after the guarantee projects, and so does one paid before the valuation
+    date, whose blackout months pay nothing.
     """
-    return max(horizon_mths(),
-               income_start_mth() + certain_mths_eff())
+    p = point_id                                                     # noqa: F821
+    d = duration_mth_init()
+    n = stop_mth() - d
+    if n <= 0:
+        raise ValueError(f"point_id {p}: duration_mth {d} is at or past the end of the "
+                         f"projection, policy month {stop_mth()}")
+    if d > 0:
+        dead = not (lives_if_init(1) > 0.0 or (is_joint() and lives_if_init(2) > 0.0))
+        start = income_start_mth()
+        end = start + certain_mths_eff()
+        if dead and d <= start:
+            raise ValueError(f"point_id {p}: duration_mth {d}: no payment is owed after "
+                             f"the valuation date: every covered life has died before the "
+                             f"income start month, {start}")
+        if dead and d >= end and end > start:
+            raise ValueError(f"point_id {p}: duration_mth {d}: no payment is owed after "
+                             f"the valuation date: every covered life has died, and the "
+                             f"certain period ended at policy month {end}")
+        if dead and d >= end:
+            raise ValueError(f"point_id {p}: duration_mth {d}: no payment is owed after "
+                             f"the valuation date: every covered life has died, and the "
+                             f"form has no certain period")
+    a, c = accel_mth(), commute_mth()
+    if 0 <= c <= a and d <= a and commute_frac() > 0.0:
+        end = income_start_mth() + certain_mths_eff()
+        if a + 1 < end:
+            raise ValueError(f"point_id {p}: accel_mth {a} pulls forward guaranteed "
+                             f"instalments that the commutation at policy month {c} "
+                             f"reduced, the guarantee running to policy month {end - 1}: "
+                             f"the lump sum would pay the cohort that commuted its "
+                             f"instalments again")
+    return n
 
 
 def income_start_mth_init():
     """T at issue: the income start month elected at issue, ``13 <= T <= 360`` [S2][S4].
 
-    ``T`` is a month index, so the income start date is the **start** of month ``T``,
-    exactly ``T/12`` years after issue.  Under arrears the first instalment falls one
-    payment period later - at ``m = 12``, at the end of month ``T``.
+    ``T`` is a **policy month**, so the income start date is the **start** of policy month
+    ``T``, exactly ``T/12`` years after issue, whatever the valuation date.  Under arrears
+    the first instalment falls one payment period later - at ``m = 12``, at the end of
+    policy month ``T``.  Read as ``Data`` checked it, a whole number of months, and compared
+    with ``duration_mth(t)``, never with ``t``.
     """
     return int(model_point()["income_start_mth"])
 
 
 def adjust_mth():
-    """t_e: the month a start-date adjustment is exercised; -1 if it never is.
+    """t_e: the policy month a start-date adjustment is exercised; -1 if it never is.
 
     One-time, deferral only, excluded on Life Only and Joint Life Only [S1][S3][S4].
     The **incidence** of the exercise - the notes' 1.5% p.a. take-up with its 60/40
     direction split, rate multipliers and health-selection overlay - is a cohort-
     splitting behavioural construction and is **not implemented**; the exercise is
-    named deterministically on the model point instead, and is off by default.
+    named deterministically on the model point instead, and is off by default.  Read as
+    ``Data`` checked it, blank or a whole number of months, and compared with
+    ``duration_mth(t)``; a contract valued after it carries its repricing in
+    ``annual_income_init``.
     """
     v = model_point()["adjust_mth"]
     return -1 if pd.isna(v) else int(v)                              # noqa: F821
 
 
 def adjust_start_mth():
-    """T': the new income start month after an adjustment; -1 if there is none.
+    """T': the new income start month after an adjustment, a policy month; -1 if none.
 
     ``|T' - T| <= 60`` months, ``T'`` at least 13 months after the last premium, and
     inside the maximum deferral and the maximum income start age [S1][S2][S3][S4].
+    ``Data`` checks that it is given exactly where :func:`adjust_mth` is, and that it
+    follows the exercise.
     """
     v = model_point()["adjust_start_mth"]
     return -1 if pd.isna(v) else int(v)                              # noqa: F821
@@ -676,14 +1331,15 @@ def income_start_mth():
     return income_start_mth_init() if adjust_mth() < 0 else adjust_start_mth()
 
 
-def income_start_mth_at(t):
-    """The income start month a premium paid in month t is priced to.
+def income_start_mth_at(k):
+    """The income start month a premium paid in policy month k is priced to.
 
     A premium bought before the adjustment was priced to the original date; one bought
-    after it is priced to the new date [R13 SS3.B(1)(b)].
+    after it is priced to the new date [R13 SS3.B(1)(b)].  Keyed by the premium's policy
+    month, ``DIA_US_S``'s ``t`` renamed: pricing stays on the policy clock.
     """
     a = adjust_mth()
-    if a < 0 or t < a:
+    if a < 0 or k < a:
         return income_start_mth_init()
     return adjust_start_mth()
 
@@ -695,29 +1351,34 @@ def repricing_rate():
     request date less a contractual interest-rate-change adjustment [S1][S2]; the
     adjustment is named but never quantified in any retrieved source, so the 100 bp
     spread is **[std]**.  The base run sets ``baa_yield`` so that ``i_e = i_p`` - no rate
-    movement since issue - because the notes supply no Baa value **[std]**.
+    movement since issue - because the notes supply no Baa value **[std]**.  A flat level,
+    so it reads the same on either clock.
     """
     return baa_yield - adjust_spread                                 # noqa: F821
 
 
 def accel_mth():
-    """t_a: the month payment acceleration is exercised; -1 if it never is.
+    """t_a: the policy month payment acceleration is exercised; -1 if it never is.
 
     Payout phase, attained age 59 1/2 or over, nonqualified, monthly frequency
     [S1][S2][S3][S4].  The notes' 2% p.a. take-up among eligible contracts is a
     cohort-splitting construction and is **not implemented**; the exercise is named
-    deterministically on the model point and is off by default.
+    deterministically on the model point and is off by default.  Read as ``Data``
+    checked it, blank or a whole number of months at or after the income start month, and
+    compared with ``duration_mth(t)``.
     """
     v = model_point()["accel_mth"]
     return -1 if pd.isna(v) else int(v)                              # noqa: F821
 
 
 def commute_mth():
-    """t_c: the month a commutation is exercised; -1 if never (extended case only).
+    """t_c: the policy month a commutation is exercised; -1 if never (extended case only).
 
     Offered by one of the four composite sources [S4][S5] and prohibited on a QLAC after
     the required beginning date [R1 (q)(1)(iv)].  The notes' 1.5% p.a. take-up is not
-    implemented, for the same reason as the other two options.
+    implemented, for the same reason as the other two options.  Read as ``Data`` checked
+    it, blank or a whole number of months at or after the income start month, and compared
+    with ``duration_mth(t)``.
     """
     v = model_point()["commute_mth"]
     return -1 if pd.isna(v) else int(v)                              # noqa: F821
@@ -729,6 +1390,47 @@ def commute_frac():
     return 0.0 if pd.isna(v) else float(v)                           # noqa: F821
 
 
+def mort_rate_base_at(x, life):
+    """The base-table annual mortality rate at attained age ``x``, for ``life``'s sex.
+
+    The one cell that reads ``mort_table.csv``, keyed by age and life, so that the rate
+    cells call it rather than join the table themselves.  The sex is the join key, read
+    from the model point's ``sex`` or ``joint_sex`` column as :func:`sex` reads it, and the
+    label accessor itself is left to reporting.  Called only at ages the table holds, below
+    the limiting age: :func:`mort_rate_py` and :func:`mort_rate_base` return 1 at and above
+    it without calling here.  It asks ``data.mort_table_count()`` first, which checks the
+    table's keys and rates, so that a projection meets the checks before it reads a rate:
+    a blank rate would otherwise reach the cap on mortality as a missing value.
+    """
+    if life == 1:
+        key = model_point()["sex"]
+    elif life == 2:
+        key = model_point()["joint_sex"]
+    else:
+        raise ValueError("invalid life")
+    data.mort_table_count()                                          # noqa: F821
+    return float(data.mort_table().loc[(x, key), "mort_rate"])      # noqa: F821
+
+
+def improvement_rate_at(x, life):
+    """The generational improvement rate at attained age ``x``, for ``life``'s sex.
+
+    The one cell that reads ``improvement_scale.csv``, keyed by age and life and joined on
+    the sex as :func:`mort_rate_base_at` joins the mortality table, and called only below
+    the limiting age.  It asks ``data.improvement_scale_count()`` first, which checks the
+    scale's keys and rates, so that a projection meets the checks before it reads a rate.
+    """
+    if life == 1:
+        key = model_point()["sex"]
+    elif life == 2:
+        key = model_point()["joint_sex"]
+    else:
+        raise ValueError("invalid life")
+    data.improvement_scale_count()                                   # noqa: F821
+    return float(                                                    # noqa: F821
+        data.improvement_scale().loc[(x, key), "improvement_rate"])
+
+
 def mort_rate_base(t, life):
     """The base-table annual mortality rate for ``life`` in the year containing month t.
 
@@ -737,93 +1439,204 @@ def mort_rate_base(t, life):
     table is in any case printed in no source this library holds - A-821 prints the
     loaded Period Table only [REG-R153].  Its rates over ages 60-84 are band-constant
     values that reproduce the notes' five-year survival anchors exactly.  Rates at and
-    above the limiting age are 1.
+    above the limiting age are 1, and the table is read below it, at the attained age
+    :func:`age` gives, through :func:`mort_rate_base_at`.  Zero outside the frame, where
+    the contract has no attained age to look up.  The rate the projection applies is built
+    by :func:`mort_rate_py`, which reads the same table at the same age.
     """
+    if not is_active(t):
+        return 0.0
     x = age(t, life)
     if x >= omega_age:                                               # noqa: F821
         return 1.0
-    return float(data.mort_table().loc[(x, sex(life)), "mort_rate"])  # noqa: F821
+    return mort_rate_base_at(x, life)
 
 
 def improvement_rate(t, life):
     """G2_x: the generational improvement rate for ``life`` in the year containing t.
 
     The shipped scale is an illustrative **[std]** stand-in for Projection Scale G2 and
-    is read only when ``mort_basis() == "generational"``.  Scaling it is the notes' first
-    listed sensitivity: Scale G2 is fixed and dated, and the 2020-2024 payout experience
-    study says it has over-projected improvement [R15][REG-R61].
+    is read only on the generational basis.  Scaling it is the notes' first listed
+    sensitivity: Scale G2 is fixed and dated, and the 2020-2024 payout experience study
+    says it has over-projected improvement [R15][REG-R61].  Zero at and above the limiting
+    age, and outside the frame; read below it through :func:`improvement_rate_at`.
     """
+    if not is_active(t):
+        return 0.0
     x = age(t, life)
     if x >= omega_age:                                               # noqa: F821
         return 0.0
-    return float(                                                    # noqa: F821
-        data.improvement_scale().loc[(x, sex(life)), "improvement_rate"])
+    return improvement_rate_at(x, life)
+
+
+def mort_rate_py(y, life):
+    """The annual mortality rate of ``life`` in policy year y: the one place it is built.
+
+    On the *generational* basis the notes' construction
+    ``q_x^(2012+k) = q_x^(2012) * (1 - G2_x)^k`` [R9][REG-R59], with ``k`` the calendar year
+    of policy year ``y``, ``issue_year() + y - 1``, less ``mort_table_year``, so each
+    attained age in each future calendar year uses its own improved rate.  On the *anchor*
+    basis the table is used unprojected, which is what the worked example's survival curve
+    is.  The attained age is ``age_at_entry(life) + y - 1``, the rate 1 and the
+    improvement 0 at and above the limiting age, and the tables are read below it through
+    :func:`mort_rate_base_at` and :func:`improvement_rate_at`.  ``mort_ae_factor`` is the
+    experience A/E overlay, **[std]** at 1.00 - the notes set the deferral-phase A/E at
+    1.00 and give no number for the payout phase, the 2020-2024 study being cited without a
+    factor [R15][REG-R61].
+
+    Keyed by policy year, so that the projection's :func:`mort_rate`, at the policy year of
+    month t, and the pricing kernel's :func:`mort_rate_mth_py`, at any policy year from
+    issue, read one rate.  The rate is capped at 1 as ``DIA_US_S`` caps it, the bound
+    second, ``min(mort_ae_factor * q, 1.0)``, so that a missing input, a NaN, stays NaN,
+    where ``min(1.0, q)`` would read it as 1, certain death with every flow finite.
+    """
+    x = age_at_entry(life) + y - 1
+    q = 1.0 if x >= omega_age else mort_rate_base_at(x, life)        # noqa: F821
+    if is_generational():
+        k = issue_year() + y - 1 - mort_table_year                   # noqa: F821
+        imp = 0.0 if x >= omega_age else improvement_rate_at(x, life)  # noqa: F821
+        q = q * (1.0 - imp) ** k
+    return min(mort_ae_factor * q, 1.0)                              # noqa: F821
+
+
+def mort_rate_mth_py(y, life):
+    """The monthly death probability in policy year y: ``1 - (1 - q_annual)^(1/12)``.
+
+    :func:`mort_rate_py` turned monthly, as :func:`mort_rate_mth` turns :func:`mort_rate`,
+    so the two give one float in the same policy year.  The pricing kernel's rate, keyed
+    by policy year, which :func:`lives_if_pm` and :func:`annuity_factor` read at the
+    policy year of each month from issue.
+    """
+    return 1.0 - (1.0 - mort_rate_py(y, life)) ** (1.0 / 12.0)
 
 
 def mort_rate(t, life):
     """The annual mortality rate applied to ``life`` in the year containing month t.
 
-    On the *generational* basis the notes' construction
-    ``q_x^(2012+k) = q_x^(2012) * (1 - G2_x)^k`` [R9][REG-R59], with
-    ``k = calendar_year(t) - mort_table_year``, so each attained age in each future
-    calendar year uses its own improved rate.  On the *anchor* basis the table is used
-    unprojected, which is what the worked example's survival curve is.
-    ``mort_ae_factor`` is the experience A/E overlay, **[std]** at 1.00 - the notes set
-    the deferral-phase A/E at 1.00 and give no number for the payout phase, the 2020-2024
-    study being cited without a factor [R15][REG-R61].  The rate is capped at 1, the bound
-    second, so that a missing input, a NaN, stays NaN, where ``min(1.0, q)`` would read it
-    as 1.
+    :func:`mort_rate_py` at the policy year of month ``t``, on the policy clock, so the
+    projection's survival and the pricing kernel's read one rate: on the generational
+    basis, improved to the calendar year the contract reaches, and capped at 1.  Zero
+    outside the frame, before any rate is read.
     """
-    q = mort_rate_base(t, life)
-    if mort_basis() == "generational":
-        k = calendar_year(t) - mort_table_year                       # noqa: F821
-        q = q * (1.0 - improvement_rate(t, life)) ** k
-    return min(mort_ae_factor * q, 1.0)                              # noqa: F821
+    if not is_active(t):
+        return 0.0
+    return mort_rate_py(policy_year(t), life)
 
 
 def mort_rate_mth(t, life):
-    """q(t) = 1 - (1 - q_annual)^(1/12): the probability of death during month t **[std]**."""
+    """q(t) = 1 - (1 - q_annual)^(1/12): the probability of death during month t **[std]**.
+
+    Month ``t`` on the valuation clock, the projection's rate; 0 outside the frame.
+    """
     return 1.0 - (1.0 - mort_rate(t, life)) ** (1.0 / 12.0)
 
 
+def lives_if_init(life):
+    """l_i at the valuation date: the probability that ``life`` is alive then.
+
+    The ``lives_if_init_1`` (primary, life = 1) or ``lives_if_init_2`` (joint annuitant,
+    life = 2) column, as the contract stands at the start of month 0, before any month-0
+    death: the opening value of :func:`lives_if` at :func:`t_entry`.  On a real record it
+    is 1 or 0, so a joint contract may carry one life already dead; on a point restated
+    from ``DIA_US_S`` at its month ``d`` it is ``DIA_US_S``'s ``lives_if(d, life)``, a
+    probability.  The lives are independent, as in ``DIA_US_S``, so the two per-life
+    probabilities are the whole survival state.  A contract not yet in force carries its
+    values at issue, 1 for each covered life, and ``lives_if_init_2`` is 0 on a
+    single-life contract; ``Data`` checks both.
+    """
+    if life == 1:
+        return float(model_point()["lives_if_init_1"])
+    if life == 2:
+        return float(model_point()["lives_if_init_2"])
+    raise ValueError("invalid life")
+
+
 def lives_if(t, life):
-    """l(t): the probability that ``life`` is alive at the **start** of month t.
+    """l(t): the probability that ``life`` is alive **at time t**, as projected.
 
-    Indexed by a **time point**, not by a period: ``t`` here is the instant elapsed
-    ``t`` months from issue, so month ``t`` *opens* at ``lives_if(t)`` and *closes* at
-    ``lives_if(t + 1)``.  :mod:`.SPIA_US_S` writes the same cells with the argument
-    named ``k`` to make that reading unmissable; it is the same function of elapsed
-    time, and every call site here passes positionally.
+    Indexed by a **time point** on the valuation clock, not by a period: time ``t`` is the
+    start of month ``t``, so month t opens at time ``t`` and closes at time ``t + 1``, and
+    time 0 is the valuation date.  :mod:`.SPIA_US_S` writes the same cells with the
+    argument named ``k``; here it is the valuation clock's ``t``.
 
-    ``l(0) = 1`` and ``l(t+1) = l(t) * (1 - q(t))``, equation (9) - the only decrement
-    in the product.  There is no lapse and no annuitization decrement: VM-22's
+    At :func:`t_entry`, the first time point on the books, it is the opening state,
+    :func:`lives_if_init`: the life's status at the valuation date for a contract in force,
+    and 1, its value at issue, for one issued at or after it.  Before that it is 0: the
+    contract is not yet on the books.  After it ``l(t) = l(t-1) * (1 - q(t-1))``, equation
+    (9) - the only decrement in the product, at the rate of month ``t - 1``, the month that
+    has just closed.  There is no lapse and no annuitization decrement: VM-22's
     standard-projection lapse section is "not applicable" to contracts with no account
     value or surrender benefit, and annuitization is prescribed at 0% [R9].
-    Returns 0 for ``life = 2`` on a single-life contract.
+
+    The projection's survival only: the pricing kernel prices each premium on its own
+    survival curve from issue, :func:`lives_if_pm`.  Returns 0 for ``life = 2`` on a
+    single-life contract.
     """
     if life == 2 and not is_joint():
         return 0.0
-    if t <= 0:
-        return 1.0
+    if t < t_entry():
+        return 0.0
+    if t == t_entry():
+        return lives_if_init(life)
     return lives_if(t - 1, life) * (1.0 - mort_rate_mth(t - 1, life))
+
+
+def lives_if_pm(k, life):
+    """The pricing survival: the probability that ``life`` survives from issue to time k.
+
+    Indexed by a **time point** on the policy clock, ``k`` months after issue, ``l(0) =
+    1``.  One explicit loop from issue over the monthly rates of each policy year,
+    :func:`mort_rate_mth_py`: ``DIA_US_S``'s ``lives_if`` recursion unrolled, the same
+    products in the same order, so it is ``DIA_US_S``'s ``lives_if(k, life)`` to the last
+    bit.  The pricing kernel reads it at the premium months, the income start months, the
+    five-year bands of the ROP factor and the exercise months, and :func:`annuity_factor`
+    carries the product on from there to the horizon, so pricing is anchored at issue and
+    at the premium dates, deterministic from the contract's terms and the mortality basis
+    the model is read with, whatever the valuation date, and never reads the projection or
+    its opening state.  Returns 0 for ``life = 2`` on a single-life contract.
+    """
+    if life == 2 and not is_joint():
+        return 0.0
+    surv = 1.0
+    for j in range(k):
+        surv = surv * (1.0 - mort_rate_mth_py(j // 12 + 1, life))
+    return surv
+
+
+def lives_if_last_pm(k):
+    """l_last on the pricing curve: the probability that a covered life survives to time k.
+
+    ``l_1 + l_2 - l_1*l_2`` on :func:`lives_if_pm`, under joint-life independence, and
+    ``l_1`` on a single-life contract: ``DIA_US_S``'s ``lives_if_last(k)`` from issue,
+    which the ROP factor's exposure reads.
+    """
+    l1 = lives_if_pm(k, 1)
+    if not is_joint():
+        return l1
+    l2 = lives_if_pm(k, 2)
+    return l1 + l2 - l1 * l2
 
 
 def lives_death(t, life):
     """d(t) = l(t) - l(t+1): the deaths of ``life`` **during** month t.
 
-    Note the index.  Month ``t`` spans elapsed months ``[t, t+1)`` on the 0-based grid,
-    so the density is a forward difference: the deaths of month ``t`` are taken at its
-    end, between the survival at its start and the survival at the start of ``t + 1``.
+    Note the index.  Month ``t`` spans time ``t`` to time ``t + 1``, so the density is a
+    forward difference: the deaths of month ``t`` are taken at its end, between the
+    survival at its start and the survival at the start of ``t + 1``.  Zero outside the
+    frame.
     """
+    if not is_active(t):
+        return 0.0
     return lives_if(t, life) - lives_if(t + 1, life)
 
 
 def lives_if_last(t):
-    """l_last(t): the probability at least one covered life is alive at the start of t.
+    """l_last(t): the probability at least one covered life is alive at time t.
 
     ``l_1 + l_2 - l_1*l_2`` on a joint contract, under **joint-life independence
     [std]**; ``l_1`` on a single-life contract, which is why no separate ``l_alive``
-    cells is needed.
+    cells is needed.  Indexed by a time point on the valuation clock, like
+    :func:`lives_if`, and 0 before the contract is on the books.
     """
     l1 = lives_if(t, 1)
     if not is_joint():
@@ -837,21 +1650,79 @@ def lives_death_last(t):
 
     Also the death that terminates the income stream and triggers the refund, and - on
     a joint contract, where the first death leaves the contract running on the option
-    chosen at issue [S2] - the death that triggers the deferral death benefit.
+    chosen at issue [S2] - the death that triggers the deferral death benefit.  Zero
+    outside the frame.
     """
+    if not is_active(t):
+        return 0.0
     return lives_if_last(t) - lives_if_last(t + 1)
 
 
 def pols_if(t):
-    """Contracts in force at the start of month t: ``pols_if_init * l_last(t)``.
+    """Contracts in force at the start of month t: the count on the books times l_last(t).
 
-    The notes weight the maintenance expense by ``l(t)`` alone.  The payout chassis
-    instead uses ``max(C(t), l_alive(t))``, so that a certain-period obligation running
-    on after the last death still carries expense; the two notes files differ here and
-    this model follows its own.  They coincide on every form without a certain floor,
+    The contracts on the books weighted by the probability that a covered life is alive
+    at the start of month ``t``, ``DIA_US_S``'s ``pols_if_init * l_last(t)`` on the count
+    on the books.  The notes weight the maintenance expense by ``l(t)`` alone.  The payout
+    chassis instead uses ``max(C(t), l_alive(t))``, so that a certain-period obligation
+    running on after the last death still carries expense; the two notes files differ here
+    and this model follows its own.  They coincide on every form without a certain floor,
     the anchor cell included.
+
+    It is not the count that weights row ``t``, ``pols_if_at(t, "BEF_DECR")``, which
+    mortality never moves: on point 20, the period-certain point in force 300 months,
+    ``pols_if(0)`` is 0.5577 against a count of 1.0.  The registry marks the model
+    ``survival_pols_if`` for that reason.  Zero outside the frame.
     """
-    return pols_if_init() * lives_if_last(t)
+    if not is_active(t):
+        return 0.0
+    return pols_if_at(t, "BEF_DECR") * lives_if_last(t)
+
+
+def pols_if_at(t, timing):
+    """Contracts on the books at time t, at the instant ``timing`` names.
+
+    ``"BEF_NB"``
+        The contracts carried in from month t - 1, before month t's new business: at
+        :func:`t_entry`, the first month on the books, :func:`pols_if_init`, the count in
+        force at the valuation date (0 for a point issued at or after it), and the whole
+        ``policy_count()`` after it.  Zero outside the frame, so the contracts leave the
+        books at the stop rule, at the end of the last projected month.
+    ``"BEF_DECR"``
+        ``"BEF_NB"`` plus :func:`pols_new_biz`: the count that weights every cash flow
+        of month t.
+
+    These are ``basiclife.BasicTerm_SE``'s names, and any other timing raises.  The count
+    is not decremented: mortality decrements each life's survival, :func:`lives_if`, and
+    every cash flow is this count times a per-contract amount weighted by survival, as
+    ``DIA_US_S`` weights its flows by the constant ``pols_if_init``.  A count weighted by
+    survival could not carry the two lives' independent probabilities.  So ``"BEF_NB"`` is
+    a closed form, the same float that the recursion ``BEF_NB(t-1) + pols_new_biz(t-1)``
+    gives, with no chain of calls back to :func:`t_entry`.  :func:`pols_if` is not
+    ``"BEF_DECR"``: it is this count weighted by survival.
+    """
+    if timing == "BEF_NB":
+        if not is_active(t):
+            return 0.0
+        if t == t_entry():
+            return pols_if_init()
+        return policy_count()
+    elif timing == "BEF_DECR":
+        return pols_if_at(t, "BEF_NB") + pols_new_biz(t)
+    else:
+        raise ValueError("invalid timing")
+
+
+def pols_new_biz(t):
+    """Contracts issued in month t: ``policy_count()`` in the issue month.
+
+    The month with ``duration_mth(t) == 0``: ``t = 0`` for a point issued at the valuation
+    date, ``t = k`` for one issued ``k`` months later.  A contract already in force at the
+    valuation date has none.  New business in ``basiclife.BasicTerm_SE``'s sense, a
+    contract entering the books, which brings its premium schedule and no acquisition
+    cost: ``DIA_US_S`` carries none.
+    """
+    return policy_count() if duration_mth(t) == 0 else 0.0
 
 
 def pricing_disc_factor(yrs):
@@ -866,25 +1737,29 @@ def pricing_disc_factor(yrs):
     return (1.0 + pricing_rate) ** (-yrs)                            # noqa: F821
 
 
-def deferral_yrs(t):
-    """d_k = (T - t)/12: the remaining deferral in years of a premium paid in month t."""
-    return (income_start_mth_at(t) - t) / 12.0
+def deferral_yrs(k):
+    """d_k = (T - k)/12: the remaining deferral in years of a premium in policy month k.
 
-
-def surv_to_income_start(t):
-    """_d p_x(t): survival of the primary life from month t to the income start month.
-
-    A ratio on the single survival curve anchored at issue, which is how the notes
-    derive ``_15p_65 = _20p_60 / _5p_60 = 0.715000/0.975000 = 0.733333``.
+    Keyed by the premium's policy month, ``DIA_US_S``'s ``t`` renamed.
     """
-    base = lives_if(t, 1)
+    return (income_start_mth_at(k) - k) / 12.0
+
+
+def surv_to_income_start(k):
+    """_d p_x(k): the primary life's survival from policy month k to the income start month.
+
+    A ratio on the pricing survival curve anchored at issue, :func:`lives_if_pm`, which is
+    how the notes derive ``_15p_65 = _20p_60 / _5p_60 = 0.715000/0.975000 = 0.733333``.
+    Keyed by the premium's policy month, ``DIA_US_S``'s ``t`` renamed.
+    """
+    base = lives_if_pm(k, 1)
     if base <= 0.0:
         return 0.0
-    return lives_if(income_start_mth_at(t), 1) / base
+    return lives_if_pm(income_start_mth_at(k), 1) / base
 
 
 def annuity_factor(start_mth, guar_mths, int_rate, from_mth):
-    """The APV at month ``from_mth`` of $1 per annum of income beginning at ``start_mth``.
+    """The APV at policy month ``from_mth`` of $1 per annum of income from ``start_mth``.
 
     Equation (2) generalized.  The k-th instalment is certain while ``k * 12/m`` does not
     exceed ``guar_mths`` and life-contingent after that, the payment factor being the
@@ -894,43 +1769,55 @@ def annuity_factor(start_mth, guar_mths, int_rate, from_mth):
         a = sum over k of (1/m) * v^((s_k - from_mth)/12) * max(C_k, L_k)
 
     Called with ``from_mth = start_mth`` it is ``a^(m)_y(f; i)``, the payout factor at
-    the income start age; called with ``from_mth = t`` it is ``a_def(x(t), d, f; i)``
-    directly, which is what makes the joint forms work.  Equation (15)'s expansion
-    ``a_def^(both) + s * sum_i a_def^(only i)`` is algebraically this sum with the
-    *either* trigger, so no separate joint kernel is needed.  The convertible variant,
-    equation (16), is **not implemented**; the base is non-convertible **[std]**.
+    the income start age; called with ``from_mth = k``, a premium's month, it is
+    ``a_def(x(k), d, f; i)`` directly, which is what makes the joint forms work.  Equation
+    (15)'s expansion ``a_def^(both) + s * sum_i a_def^(only i)`` is algebraically this sum
+    with the *either* trigger, so no separate joint kernel is needed.  The convertible
+    variant, equation (16), is **not implemented**; the base is non-convertible **[std]**.
 
     The certain instalments are weighted by the probability that the income phase is
     reached at all - see :func:`surv_to_payout`.  Without that weight the deferred
     factor would treat a guarantee period as payable to an annuitant who died in the
     deferral, and equation (1)'s ``v^d * _d p_x * a^(m)`` would not be recovered.
 
-    **The sum is bounded by ``horizon_mths()``, not by the frame.**  ``horizon_mths()``
-    is the month the youngest covered life attains ``omega_age``, which is **one past**
-    the last projected month ``proj_len() - 1`` - on the anchor cell the frame ends at
-    ``t = 719`` and the last instalment admitted here falls at month 720.  That is
-    deliberate: this is a pricing kernel and must be bounded by the mortality horizon,
-    which is age-driven, rather than by ``proj_len()``, which the pricing feeds.  Do not
-    "tidy" ``last`` to ``proj_len() - 1``; it would move golden values.
+    Every month is a **policy month**, and every survival probability is the pricing
+    curve's, :func:`lives_if_pm`, from issue: ``DIA_US_S``'s own sum, read at the same
+    months.  The survival at each payment point is carried forward month by month from
+    ``lives_if_pm(start_mth)``, in one pass, at the rates of :func:`mort_rate_mth_py`,
+    the same products in the same order as ``DIA_US_S``'s recursion, so the factor is
+    ``DIA_US_S``'s to the last bit, with no recursion through the projection.
+
+    **The sum is bounded by** ``horizon_mths()``, **not by the frame.**  ``horizon_mths()``
+    is the policy month the youngest covered life attains ``omega_age``, which is **one
+    past** the last projected month on a contract issued at the valuation date - on the
+    anchor cell the frame ends at policy month 719 and the last instalment admitted here
+    falls at month 720.  That is deliberate: this is a pricing kernel and must be bounded
+    by the mortality horizon, which is age-driven, rather than by ``proj_len()``, which the
+    pricing feeds.  Do not "tidy" ``last`` to the frame's end; it would move golden
+    values.  A pricing engine with a float rate and guarantee, kept as ``DIA_US_S``'s cell
+    for its tests and the twin identity.
     """
     v = 1.0 / (1.0 + int_rate)
     m = payment_freq()
     step = 12 // m
-    adv = payment_timing() == "advance"
-    l1f = lives_if(from_mth, 1)
+    adv = not is_arrears()
+    l1f = lives_if_pm(from_mth, 1)
     if l1f <= 0.0:
         return 0.0
     jt = is_joint()
-    l2f = lives_if(from_mth, 2) if jt else 1.0
+    l2f = lives_if_pm(from_mth, 2) if jt else 1.0
     dlt = survivor_pct()
-    trig = reduction_trigger()
-    q1 = lives_if(start_mth, 1) / l1f
+    either = is_trigger_either()
+    q1 = lives_if_pm(start_mth, 1) / l1f
     if jt and l2f > 0.0:
-        q2 = lives_if(start_mth, 2) / l2f
+        q2 = lives_if_pm(start_mth, 2) / l2f
         p_start = q1 + q2 - q1 * q2
     else:
         p_start = q1
     last = horizon_mths()
+    l1 = lives_if_pm(start_mth, 1)
+    l2 = lives_if_pm(start_mth, 2) if jt else 0.0
+    j = start_mth
     total = 0.0
     k = 1
     while True:
@@ -938,11 +1825,17 @@ def annuity_factor(start_mth, guar_mths, int_rate, from_mth):
         s = start_mth + off
         if s > last:
             break
+        while j < s:
+            y = j // 12 + 1
+            l1 = l1 * (1.0 - mort_rate_mth_py(y, 1))
+            if jt:
+                l2 = l2 * (1.0 - mort_rate_mth_py(y, 2))
+            j += 1
         cert = p_start if k * step <= guar_mths else 0.0
-        p1 = lives_if(s, 1) / l1f
+        p1 = l1 / l1f
         if jt and l2f > 0.0:
-            p2 = lives_if(s, 2) / l2f
-            if trig == "either":
+            p2 = l2 / l2f
+            if either:
                 lf = p1 * p2 + dlt * (p1 + p2 - 2.0 * p1 * p2)
             else:
                 lf = p1 + dlt * (1.0 - p1) * p2
@@ -951,6 +1844,24 @@ def annuity_factor(start_mth, guar_mths, int_rate, from_mth):
         total += (1.0 / m) * v ** ((s - from_mth) / 12.0) * max(cert, lf)
         k += 1
     return total
+
+
+def guarantee_mths_pricing_init():
+    """n_g as the kernel prices with it, carried in force: the column of that name.
+
+    On a cash or installment refund in force at the valuation date, ``DIA_US_S``'s
+    ``guarantee_mths_pricing()``, the guarantee period in months with which every slice of
+    the contract is priced: a fixed point over the **whole** premium schedule, the slices
+    already bought included.  The premium schedule holds only the premiums still due, and
+    the fixed point depends on the path of its iterations, so neither the schedule nor the
+    premiums paid and the income bought can recover it: it is opening state, a quantity
+    fixed at issue and not re-derivable from static data.  It prices a premium still due
+    and a start-date adjustment still to come, and :func:`payout_factor_calc` reports it.
+    ``Data`` requires it on every refund form in force, a rule a contract record meets
+    without the schedule, though on one with nothing left to price, in payout say, only
+    :func:`payout_factor_calc` reads it; it is blank, and unread, on every other point.
+    """
+    return float(model_point()["guarantee_mths_pricing_init"])
 
 
 def guarantee_mths_pricing():
@@ -963,12 +1874,20 @@ def guarantee_mths_pricing():
     ample") - ``pricing_iters`` carries the count.  The equation (5) approximation is
     used for **both** refund forms **[std]**; the exact cash-refund factor of equation
     (6) is not implemented.
+
+    The elected period on a period-certain form and 0 on a life-only form, as in
+    ``DIA_US_S``.  On a refund form the fixed point runs over the premium schedule, which
+    on a point issued at or after the valuation date is the whole schedule, so it is
+    ``DIA_US_S``'s to the last bit; on a contract in force the schedule holds only the
+    premiums still due, and the value is the opening state,
+    :func:`guarantee_mths_pricing_init`.
     """
-    f = payout_form()
-    if f == "PC":
+    if is_period_certain():
         return float(12 * certain_period())
-    if f == "LO":
+    if is_life_only():
         return 0.0
+    if duration_mth_init() > 0:
+        return guarantee_mths_pricing_init()
     cp = sum(premium_by_mth().values())
     n = 0.0
     for _ in range(pricing_iters):                                   # noqa: F821
@@ -996,16 +1915,30 @@ def payout_factor():
     ``a^(12)_80(cash refund, female; 4.75%)`` - read from *payout_factor_table.csv*
     **[std]**; on the *formula* basis :func:`payout_factor_calc`.  No insurer publishes
     payout factors for this product and the Compact does not require the basis to be
-    disclosed at all [R13 SS1.B(1)(a)].
+    disclosed at all [R13 SS1.B(1)(a)].  The table's key is the primary life's age at the
+    income start month, ``age_at_entry(1) + T // 12`` on the policy clock, its sex, read
+    from the model point's ``sex`` column as the join key, and the payout stream, from the
+    form decodes, as :func:`payout_form` names it.  The join asks
+    ``data.payout_factor_count()`` first, which checks the table's keys and factors, so that
+    a projection meets the checks before it reads a factor.
     """
-    if factor_basis() == "formula":
+    if is_formula_basis():
         return payout_factor_calc()
-    key = (age(income_start_mth(), 1), sex(1), payout_form())
+    if is_life_only():
+        form = "LO"
+    elif is_cash_refund():
+        form = "CR"
+    elif is_installment_refund():
+        form = "IR"
+    else:
+        form = "PC"
+    key = (age_at_entry(1) + income_start_mth() // 12, model_point()["sex"], form)
+    data.payout_factor_count()                                       # noqa: F821
     return float(data.payout_factor_table().loc[key, "payout_factor"])  # noqa: F821
 
 
-def rop_factor_calc(t):
-    """A_rop for a premium paid in month t, by the notes' mid-band approximation.
+def rop_factor_calc(k):
+    """A_rop for a premium paid in policy month k, by the notes' mid-band approximation.
 
     Equation (3) is a monthly sum; the notes state their illustrative factors were
     "computed from the same survival anchors with a mid-band death-timing
@@ -1025,62 +1958,70 @@ def rop_factor_calc(t):
     pitfall that the deferral death benefit's cost "belongs in the purchase rate (4)
     *and* in the projected cash flows", read as requiring the *same* benefit in both.
     On a single-life contract ``l_last`` **is** the primary curve, so this changes
-    nothing on the worked example.
+    nothing on the worked example.  On the pricing curve, :func:`lives_if_last_pm`, from
+    issue; keyed by the premium's policy month, ``DIA_US_S``'s ``t`` renamed.
     """
-    if db_form() != "ROP":
+    if not is_rop():
         return 0.0
-    end = income_start_mth_at(t)
-    base = lives_if_last(t)
+    end = income_start_mth_at(k)
+    base = lives_if_last_pm(k)
     if base <= 0.0:
         return 0.0
     total = 0.0
-    lo = t
+    lo = k
     while lo < end:
         hi = min(lo + 60, end)
-        s0 = lives_if_last(lo) / base
-        s1 = lives_if_last(hi) / base
-        mid = ((lo - t) + (hi - t)) / 24.0
+        s0 = lives_if_last_pm(lo) / base
+        s1 = lives_if_last_pm(hi) / base
+        mid = ((lo - k) + (hi - k)) / 24.0
         total += (s0 - s1) * pricing_disc_factor(mid)
         lo = hi
     return total
 
 
-def rop_factor(t):
-    """A_rop(x(t), d; i_p): the return-of-premium factor for a premium paid in month t.
+def rop_factor(k):
+    """A_rop(x(k), d; i_p): the return-of-premium factor of a premium in policy month k.
 
     On the *table* basis the notes' illustrative values from *rop_factor_table.csv*
     **[std]**; on the *formula* basis :func:`rop_factor_calc`.  The two disagree on the
     twenty-year slice - 0.157900 printed against 0.161605 computed - while agreeing to
     four decimals on the fifteen-year slice; both readings are shipped and a test pins
-    the gap open.  See the Space docstring.
+    the gap open.  See the Space docstring.  The table's key is the primary life's age
+    at the premium, ``age_at_entry(1) + k // 12`` on the policy clock, its sex, read from
+    the model point's ``sex`` column as the join key, and the deferral in whole years.  The
+    join asks ``data.rop_factor_count()`` first, which checks the table's keys and factors,
+    so that a projection meets the checks before it reads a factor.
     """
-    if db_form() != "ROP":
+    if not is_rop():
         return 0.0
-    if factor_basis() == "formula":
-        return rop_factor_calc(t)
-    key = (age(t, 1), sex(1), int(round(deferral_yrs(t))))
+    if is_formula_basis():
+        return rop_factor_calc(k)
+    key = (age_at_entry(1) + k // 12, model_point()["sex"], int(round(deferral_yrs(k))))
+    data.rop_factor_count()                                          # noqa: F821
     return float(data.rop_factor_table().loc[key, "rop_factor"])     # noqa: F821
 
 
-def annuity_factor_def(t):
-    """a_def(x(t), d, f; i_p): the APV at month t of $1 p.a. of income from T, eq (1).
+def annuity_factor_def(k):
+    """a_def(x(k), d, f; i_p): the APV at policy month k of $1 p.a. from T, equation (1).
 
     On the *table* basis, equation (1) literally, ``v^d * _d p_x * a^(m)``.  That
     factorization is single-life only - a joint status does not separate into a deferral
     survival times a payout APV - so a joint model point must use the *formula* basis,
-    where the whole deferred stream is valued in one pass by :func:`annuity_factor`.
+    where the whole deferred stream is valued in one pass by :func:`annuity_factor`, and
+    ``Data`` refuses a joint point on the table basis, naming it.  Keyed by the premium's
+    policy month, ``DIA_US_S``'s ``t`` renamed.
     """
-    if factor_basis() == "table":
+    if not is_formula_basis():
         if is_joint():
             raise ValueError("factor_basis 'table' is single-life only")
-        return (pricing_disc_factor(deferral_yrs(t))
-                * surv_to_income_start(t) * payout_factor())
-    return annuity_factor(income_start_mth_at(t), guarantee_mths_pricing(),
-                          pricing_rate, t)                           # noqa: F821
+        return (pricing_disc_factor(deferral_yrs(k))
+                * surv_to_income_start(k) * payout_factor())
+    return annuity_factor(income_start_mth_at(k), guarantee_mths_pricing(),
+                          pricing_rate, k)                           # noqa: F821
 
 
-def purchase_rate(t):
-    """pr(x(t), d, f): annual income bought per $1 of premium paid in month t, eq (4).
+def purchase_rate(k):
+    """pr(x(k), d, f): annual income bought per $1 of premium in policy month k, eq (4).
 
     ``pr = [ (1 - L) - 1{ROP} * A_rop ] / a_def`` - the equivalence principle applied
     **per premium**, which is the core of the product: income is additive across slices,
@@ -1088,12 +2029,14 @@ def purchase_rate(t):
     payment date** [R13 SS3.B(1)(b)][S3].  Nothing accumulates and there is no balance to
     roll forward.  The whole kernel is **[std]**: no purchase-rate table was obtained
     and none is published.  ``purchase_rate_dp`` rounds the result, 6 on the worked
-    example's model point; see the Space docstring.
+    example's model point; see the Space docstring.  Keyed by the premium's policy month,
+    ``DIA_US_S``'s ``t`` renamed, so a premium still due at the valuation date is priced
+    as ``DIA_US_S`` prices it.
     """
-    a = annuity_factor_def(t)
+    a = annuity_factor_def(k)
     if a <= 0.0:
         return 0.0
-    pr = ((1.0 - expense_load) - rop_factor(t)) / a                  # noqa: F821
+    pr = ((1.0 - expense_load) - rop_factor(k)) / a                  # noqa: F821
     dp = purchase_rate_dp()
     return pr if dp < 0 else round(pr, dp)
 
@@ -1111,6 +2054,9 @@ def adjust_income_factor():
     refinements the disclosed recipe does not mention are **flagged rather than
     modeled**, as the notes require: the return-of-premium exposure changes with the
     deferral length, and ``CP`` is unchanged so the derived guarantee period shifts.
+    Priced at the exercise's policy month on the pricing curve, so it is ``DIA_US_S``'s
+    factor; a contract valued after the exercise carries the repriced income in
+    ``annual_income_init``, and nothing reads the factor there.
     """
     a = adjust_mth()
     if a < 0:
@@ -1124,22 +2070,66 @@ def adjust_income_factor():
     return old / new
 
 
+def annual_income_init():
+    """B at the valuation date: the guaranteed annual income per contract bought before it.
+
+    The ``annual_income_init`` column, the income entering month 0, before COLA and before
+    the slice, if any, bought at its start: ``DIA_US_S``'s ``annual_income(d - 1)`` on a
+    point restated at its month ``d``, a start-date adjustment exercised before ``d``
+    included.  The opening value of :func:`annual_income` at :func:`t_entry`; on a
+    contract past its income start month it is the income ``B(T)``, level in payout.  0 at
+    issue, and so on every point not yet in force, as ``Data`` checks.
+    """
+    return float(model_point()["annual_income_init"])
+
+
 def annual_income(t):
     """B(t): the guaranteed annual income purchased to date, before COLA, equation (8).
 
-    ``B(0) = P_0 * pr(...)`` and ``B(t) = B(t-1) + sum of P_k * pr(x(t_k), (T - t_k)/12,
-    f)`` thereafter, plus the repricing factor of equation (11) in the month a start-date
-    adjustment is exercised.  The recursion opens **on the first row of the frame**, not
-    on a seed at ``t = -1``, and ``B(t)`` is the income in force *during* month ``t``,
+    ``B(t) = B(t-1) + sum of P_k * pr(x(t_k), (T - t_k)/12, f)`` at the premiums of month
+    ``t``, plus the repricing factor of equation (11) in the month a start-date adjustment
+    is exercised.  The recursion opens at :func:`t_entry`, on the opening state,
+    :func:`annual_income_init`, the income bought before the valuation date, which is 0 on
+    a point issued at or after it.  ``B(t)`` is the income in force *during* month ``t``,
     including a slice bought at its start.  Income is **additive across slices** and each
-    slice is fully guaranteed from the moment its premium is paid [R13 SS3.H(1)].
+    slice is fully guaranteed from the moment its premium is paid [R13 SS3.H(1)].  The
+    exercise month and the purchase rate are read at the policy month of month ``t``.  Zero
+    outside the frame.
     """
-    b = annual_income(t - 1) if t > 0 else 0.0
-    if t == adjust_mth():
+    if not is_active(t):
+        return 0.0
+    b = annual_income(t - 1) if t > t_entry() else annual_income_init()
+    if duration_mth(t) == adjust_mth():
         b = b * adjust_income_factor()
     p = premium_pp(t)
     if p:
-        b = b + p * purchase_rate(t)
+        b = b + p * purchase_rate(duration_mth(t))
+    return b
+
+
+def annual_income_payout():
+    """B(T): the guaranteed annual income per contract at the income start month.
+
+    ``annual_income_init()``, then one loop over the policy months from the valuation
+    date's to the income start month ``T``, applying the repricing factor at the exercise
+    month and adding each premium's slice at its purchase rate, the same operations in the
+    same order as the recursion :func:`annual_income`, so ``B(T)`` is ``DIA_US_S``'s
+    ``annual_income(T)`` to the last bit.  On a contract past its income start month the
+    loop is empty and ``B(T)`` is the opening state.  The income is level from ``T`` on: no
+    premium falls at or after it and a start-date adjustment precedes its new start month,
+    as ``Data`` checks.  So this is the income of every instalment of the payout schedule,
+    :func:`annuity_pp_sched_pm`, which the refund, the commuted value and the accelerated
+    payments read at policy months ahead of ``t`` without reading :func:`annual_income`
+    there.
+    """
+    b = annual_income_init()
+    a = adjust_mth()
+    for k in range(max(duration_mth_init(), 0), income_start_mth() + 1):
+        if k == a:
+            b = b * adjust_income_factor()
+        p = premium_pm(k)
+        if p:
+            b = b + p * purchase_rate(k)
     return b
 
 
@@ -1150,100 +2140,168 @@ def guarantee_yrs():
     anchor cell, so its cash-refund guarantee is exhausted during the fourth payment
     year, at attained age about 83.4.  The elected period on a PC form, zero on a life
     only form.  Distinct from :func:`guarantee_mths_pricing`, which is the fixed point
-    the *kernel* uses before ``B`` is known.
+    the *kernel* uses before ``B`` is known.  Read from the payout schedule's two static
+    quantities, :func:`cum_premium_payout` and :func:`annual_income_payout`.
     """
-    f = payout_form()
-    if f == "PC":
+    if is_period_certain():
         return float(certain_period())
-    if f == "LO":
+    if is_life_only():
         return 0.0
-    t = income_start_mth()
-    b = annual_income(t)
-    return 0.0 if b <= 0.0 else cum_premium_pp(t) / b
+    b = annual_income_payout()
+    return 0.0 if b <= 0.0 else cum_premium_payout() / b
 
 
 def is_payout(t):
-    """Whether month t is in the income phase, ``t >= T``.
+    """Whether month t is in the income phase, ``duration_mth(t) >= T``, inside the frame.
 
-    Deaths in months ``t < T`` are deferral-phase deaths attracting the return of
-    premium; deaths in months ``t >= T`` are payout-phase deaths attracting the form's
-    refund benefit.
+    Deaths in months before ``T`` are deferral-phase deaths attracting the return of
+    premium; deaths from ``T`` on are payout-phase deaths attracting the form's refund
+    benefit.  ``T`` is a policy month, compared with the policy clock.  False outside the
+    frame.
     """
-    return t >= income_start_mth()
+    return is_active(t) and duration_mth(t) >= income_start_mth()
 
 
 def phase(t):
-    """DEFERRAL, PAYOUT or TERMINATED in month t.
+    """PRE_ISSUE, DEFERRAL, PAYOUT or TERMINATED in month t.
 
-    TERMINATED from ``t = proj_len()``, the first month past the frame.
+    PRE_ISSUE before a point issued after the valuation date is issued; TERMINATED from the
+    stop rule on, ``t = proj_len()``, the first month past the frame.
     """
-    if t >= proj_len():
+    if duration_mth(t) < 0:
+        return "PRE_ISSUE"
+    if not is_active(t):
         return "TERMINATED"
     return "PAYOUT" if is_payout(t) else "DEFERRAL"
 
 
-def is_payment_mth(t):
-    """Whether an instalment falls in month t.
+def is_payment_pm(k):
+    """Whether an instalment falls in policy month k: the payment schedule, by policy month.
 
-    Arrears: the k-th instalment falls at the **end** of month ``T + k*(12/m) - 1``, so
-    the first lands at the end of month ``T`` when ``m = 12`` - one payment period after
+    Arrears: the n-th instalment falls at the **end** of policy month ``T + n*(12/m) - 1``,
+    so the first lands at the end of month ``T`` when ``m = 12`` - one payment period after
     the income start date, which is why policy year 21 of the anchor cell carries the
-    first twelve payments.  Advance: the k-th falls at the **start** of month
-    ``T + (k-1)*(12/m)``, one full payment period earlier.
+    first twelve payments.  Advance: the n-th falls at the **start** of policy month
+    ``T + (n-1)*(12/m)``, one full payment period earlier.  False before ``T``.  Keyed by
+    policy month and counted from ``T`` inside, so that :func:`is_payment_mth` asks it at
+    the policy month of month t and :func:`annuity_pp_sched_pm` at any policy month.
     """
-    if not is_payout(t):
+    off = k - income_start_mth()
+    if off < 0:
         return False
     step = 12 // payment_freq()
-    off = t - income_start_mth()
-    if payment_timing() == "arrears":
+    if is_arrears():
         return (off + 1) % step == 0
     return off % step == 0
 
 
-def payment_surv_mth(t):
-    """The elapsed month at which survival is measured for the instalment falling in t.
+def is_payment_mth(t):
+    """Whether an instalment falls in month t: ``is_payment_pm(duration_mth(t))``.
 
-    Arrears: the end of month t, which on the 0-based grid is elapsed month ``t + 1``.
-    Advance: the start of month t, elapsed month ``t``.  Using end-of-period survival
-    for advance payments understates the liability by about one period's mortality per
-    payment.
+    The schedule is the contract's, on the policy clock (:func:`is_payment_pm`).  False
+    outside the frame.
     """
-    return t + 1 if payment_timing() == "arrears" else t
+    return is_active(t) and is_payment_pm(duration_mth(t))
 
 
-def cola_factor(t):
-    """(1+c)^floor((t-T)/12): the COLA escalation applying in month t.
+def payment_surv_mth(t):
+    """The **time point** at which survival is measured for the instalment falling in t.
+
+    Arrears: the end of month t, time ``t + 1``.  Advance: the start of month t, time
+    ``t``.  A time point on the valuation clock, where :func:`lives_if` is indexed.  Using
+    end-of-period survival for advance payments understates the liability by about one
+    period's mortality per payment.
+    """
+    return t + 1 if is_arrears() else t
+
+
+def cola_factor_pm(k):
+    """(1+c)^floor((k-T)/12): the COLA escalation applying in policy month k.
 
     Fixed compound, on each anniversary of the income start date, elected at issue and
-    irrevocable [S2][S3][S4].  One in the deferral and in the first payout year.
+    irrevocable [S2][S3][S4].  One in the deferral and in the first payout year.  Keyed by
+    policy month and counted from ``T`` inside, the one COLA formula, which
+    :func:`annuity_pp_sched_pm`, :func:`accel_cost` and :func:`annuity_payments_ann` read
+    at policy months, and :func:`cola_factor` at the policy month of month t.
     """
-    d = t - income_start_mth()
+    d = k - income_start_mth()
     if d < 0:
         return 1.0
     return (1.0 + cola_rate()) ** (d // 12)
 
 
-def annuity_pp_sched(t):
-    """inst(t) = B(t)/m * (1+c)^floor((t-T)/12): the scheduled instalment per contract.
+def cola_factor(t):
+    """(1+c)^floor((t-T)/12): the COLA escalation applying in month t.
+
+    ``cola_factor_pm(duration_mth(t))``, on the policy clock: one in the deferral and in
+    the first payout year, whatever the valuation date.  One outside the frame, a factor
+    that moves nothing.
+    """
+    if not is_active(t):
+        return 1.0
+    return cola_factor_pm(duration_mth(t))
+
+
+def annuity_pp_sched_pm(k):
+    """inst(k) = B(T)/m * (1+c)^floor((k-T)/12): the scheduled instalment in policy month k.
 
     Zero outside payment months.  Scheduled, not paid: an acceleration blackout or a
+    commutation may suppress it.  The payout schedule, fixed at the income start month
+    by :func:`annual_income_payout`, on which ``B`` is level, so it is ``DIA_US_S``'s
+    ``annual_income(k) / m * cola_factor(k)`` at every payment month.  Keyed by policy
+    month, on the policy clock, so that :func:`cum_annuity_pp`, :func:`commuted_value` and
+    the acceleration's lump sum read the schedule at policy months after month t without
+    passing a policy month as ``t``; :func:`annuity_pp_sched` is this at the policy month
+    of month t.
+    """
+    if not is_payment_pm(k):
+        return 0.0
+    return annual_income_payout() / payment_freq() * cola_factor_pm(k)
+
+
+def annuity_pp_sched(t):
+    """inst(t) = B/m * (1+c)^floor((t-T)/12): the scheduled instalment per contract.
+
+    ``annuity_pp_sched_pm(duration_mth(t))`` inside the frame, and 0 outside it.  Zero
+    outside payment months.  Scheduled, not paid: an acceleration blackout or a
     commutation may suppress it.
     """
-    if not is_payment_mth(t):
+    if not is_active(t):
         return 0.0
-    return annual_income(t) / payment_freq() * cola_factor(t)
+    return annuity_pp_sched_pm(duration_mth(t))
 
 
-def cum_annuity_pp(t):
-    """G(t): cumulative scheduled instalments per contract through the end of month t.
+def cum_annuity_pp(k):
+    """G(k): cumulative scheduled instalments per contract to the end of policy month k.
 
     A **deterministic** as-if-alive schedule - instalments payable while any covered
     life is alive follow the deterministic escalation path - so the refund balance needs
-    no path simulation.  A **closing** balance, one month ahead of the start-of-month
-    :func:`refund_balance` that consumes it; the recursion opens on the first row of the
-    frame, not on a seed at ``t = -1``.
+    no path simulation, and no opening state.  A **closing** balance, one month ahead of
+    the start-of-month :func:`refund_balance` that consumes it.  Keyed by policy month,
+    ``DIA_US_S``'s ``t`` renamed, so ``G(k)`` reads as the notes write it on a contract in
+    force as on new business; 0 before the income start month.
+
+    The recursion ``G(k) = G(k-1) + inst(k)`` is ``DIA_US_S``'s, but it is based where the
+    valuation date falls: at the policy month before the valuation month, or before issue
+    on a contract issued later, ``max(duration_mth_init(), 0) - 1``, a key fixed by the
+    model point that reads no clock, one loop sums the instalments from the income start
+    month to it, the same additions in the same order as the recursion, so ``G`` is
+    ``DIA_US_S``'s to the last bit.  The refund reads ``G`` from there on and recurses back
+    to it, and the installment refund's search reads it upward from the first payment
+    point, recursing back no further than the key it read before.  Recursing from the
+    income start month instead, the first refund of a cash refund long in payout would
+    recurse as deep as it has been paying.
     """
-    return (cum_annuity_pp(t - 1) if t > 0 else 0.0) + annuity_pp_sched(t)
+    start = income_start_mth()
+    if k < start:
+        return 0.0
+    if k == max(duration_mth_init(), 0) - 1:
+        total = 0.0
+        for j in range(start, k + 1):
+            total += annuity_pp_sched_pm(j)
+        return total
+    prev = cum_annuity_pp(k - 1) if k > start else 0.0
+    return prev + annuity_pp_sched_pm(k)
 
 
 def certain_mths_refund():
@@ -1254,21 +2312,24 @@ def certain_mths_refund():
     cumulative instalments reach ``CP(T)``.  Searched rather than closed so that a COLA
     path still resolves, and bounded by the mortality horizon so that it never depends
     on :func:`proj_len`, which depends on it - and that bound is ``horizon_mths()``,
-    **one month past the frame's last index** ``proj_len() - 1``, for the same reason
-    as in :func:`annuity_factor`.  **[std]**: the month grid rounds the
-    guarantee **up** to a whole instalment rather than trimming the last one, which is
-    what the notes' "exactly a certain-and-life annuity with n_g = CP(T)/B" framing
-    implies; the payout chassis trims instead.
+    **one month past the last projected month of a contract issued at the valuation
+    date**, for the same reason as in :func:`annuity_factor`.  **[std]**: the month grid
+    rounds the guarantee **up** to a whole instalment rather than trimming the last one,
+    which is what the notes' "exactly a certain-and-life annuity with n_g = CP(T)/B"
+    framing implies; the payout chassis trims instead.  A count of months from ``T``; the
+    search runs over policy months on the payout schedule, :func:`cum_annuity_pp`, against
+    the refund base :func:`cum_premium_payout`, so its result does not depend on the
+    valuation date.
     """
     t0 = income_start_mth()
-    cp = cum_premium_pp(t0)
+    cp = cum_premium_payout()
     step = 12 // payment_freq()
-    t = t0 if payment_timing() == "advance" else t0 + step - 1
+    k = t0 + step - 1 if is_arrears() else t0
     last = horizon_mths()
-    while t <= last:
-        if cum_annuity_pp(t) >= cp:
-            return t - t0 + 1
-        t += step
+    while k <= last:
+        if cum_annuity_pp(k) >= cp:
+            return k - t0 + 1
+        k += step
     return max(0, last - t0)
 
 
@@ -1279,20 +2340,38 @@ def certain_mths_eff():
     refund and life only**.  A cash refund is a lump-sum shortfall paid at death, not a
     stream of guaranteed payments - equation (5) treats it as certain-and-life for
     *pricing* only, and carrying that into the projection would pay the guarantee twice.
+    A count of months from ``T``: the guarantee covers policy months ``T ... T + n_eff -
+    1``, so a contract in force ``d`` months has the months to ``T + n_eff`` left, and none
+    once ``d >= T + n_eff``.
     """
-    f = payout_form()
-    if f == "PC":
+    if is_period_certain():
         return 12 * certain_period()
-    if f == "IR":
+    if is_installment_refund():
         return certain_mths_refund()
     return 0
 
 
+def certain_floor_pm(k):
+    """C(k) = 1{the instalment in policy month k falls inside the guarantee period}.
+
+    ``0 <= k - T < n_eff``: keyed by policy month and counted from ``T`` inside, so that
+    :func:`certain_floor` asks it at the policy month of month t and the acceleration's
+    lump sum at the policy months of the instalments it pulls forward.
+    """
+    d = k - income_start_mth()
+    return 1.0 if 0 <= d < certain_mths_eff() else 0.0
+
+
 def certain_floor(t):
-    """C(t) = 1{the instalment in month t falls inside the guarantee period}."""
-    if not is_payout(t):
+    """C(t) = 1{the instalment in month t falls inside the guarantee period}.
+
+    ``certain_floor_pm(duration_mth(t))`` inside the frame, and 0 outside it.  The certain
+    months left at the valuation date are therefore no opening state: they follow from
+    ``duration_mth``.
+    """
+    if not is_active(t):
         return 0.0
-    return 1.0 if (t - income_start_mth()) < certain_mths_eff() else 0.0
+    return certain_floor_pm(duration_mth(t))
 
 
 def payment_factor_life(t):
@@ -1308,7 +2387,9 @@ def payment_factor_life(t):
     **exactly one** is; the *primary* form pays in full while the primary lives whatever
     the joint annuitant's status.  The two coincide on the primary's death and differ
     only on the secondary's, which is why the trigger is a switch and not a footnote.
-    Zero before the income start date.
+    On a joint contract in force with one life already dead, as point 23 is, the factor is
+    delta times the survivor's survival from ``t = 0``.  Zero before the income start date,
+    and outside the frame.
     """
     if not is_payout(t):
         return 0.0
@@ -1318,9 +2399,26 @@ def payment_factor_life(t):
         return l1
     l2 = lives_if(s, 2)
     d = survivor_pct()
-    if reduction_trigger() == "either":
+    if is_trigger_either():
         return l1 * l2 + d * (l1 + l2 - 2.0 * l1 * l2)
     return l1 + d * (1.0 - l1) * l2
+
+
+def surv_to_payout_init():
+    """l_last(T) carried in force: the cohort that reached the income phase.
+
+    The ``surv_to_payout_init`` column, on a contract whose income start month precedes
+    the valuation month: ``DIA_US_S``'s ``surv_to_payout()``, the probability, from issue,
+    that a covered life was alive at the income start month.  The lives at the valuation
+    date cannot say it: in a certain period the contract stays open after the last death,
+    its guarantee running on to a beneficiary, so the cohort the guarantee pays exceeds the
+    survivors, 0.715 against 0.5577 on point 20, in force 300 months.  On a real record in
+    payout it is 1.  Read only where the certain floor is positive, so on a period certain
+    or an installment refund; ``Data`` requires it on every contract past its income start
+    month, a rule a contract record meets without the certain period, though on a cash
+    refund or a life-only form nothing reads it.  Blank elsewhere.
+    """
+    return float(model_point()["surv_to_payout_init"])
 
 
 def surv_to_payout():
@@ -1337,8 +2435,16 @@ def surv_to_payout():
     inherit ``L_pay`` and its "certain inside a guarantee period" wording from the
     immediate-annuity notes without adjusting for the deferral; this is that
     adjustment, and it is the same weight equation (1) applies through ``_d p_x``.
+
+    A frozen weight: on a contract valued after its income start month, the opening state,
+    :func:`surv_to_payout_init`; otherwise ``lives_if_last`` at the income start month on
+    the valuation clock, ``T - duration_mth_init()``, which on a contract valued at its
+    income start month is time 0.  Read only where the certain floor is positive, from the
+    income start month on, so never ahead of the month that reads it.
     """
-    return lives_if_last(income_start_mth())
+    if duration_mth_init() > income_start_mth():
+        return surv_to_payout_init()
+    return lives_if_last(income_start_mth() - duration_mth_init())
 
 
 def payment_factor(t):
@@ -1351,25 +2457,31 @@ def payment_factor(t):
     payout chassis' first-listed pitfall - and, because the floor pays the *unreduced*
     instalment, it also reproduces with no extra flag the rule that a survivor reduction
     inside a guarantee period is deferred to the end of that period [S1][S3].  The
-    ``l_last(T)`` weight on the floor is the DIA's own; see :func:`surv_to_payout`.
+    ``l_last(T)`` weight on the floor is the DIA's own; see :func:`surv_to_payout`, which
+    is read only where the floor is positive: elsewhere the floor is 0, as
+    ``DIA_US_S``'s ``0 * l_last(T)`` is.
     """
-    return max(certain_floor(t) * surv_to_payout(), payment_factor_life(t))
+    c = certain_floor(t)
+    floor = c * surv_to_payout() if c > 0.0 else 0.0
+    return max(floor, payment_factor_life(t))
 
 
 def refund_balance(t):
-    """RG(t) = max(0, CP(T) - income scheduled through the end of month t-1).
+    """RG(t) = max(0, CP(T) - income scheduled through the end of policy month m-1).
 
-    The ``t-1`` is the arrears convention: an instalment due at the end of the death
-    month has not been paid, so a death between ``T`` and ``T + 1/m`` yields a cash
-    refund of the **full** ``CP(T)``.  On advance timing an instalment paid at the
-    *start* of the death month **has** been paid, so the balance is measured at ``t``
-    there or the lump sum is overstated by one instalment.
+    ``m = duration_mth(t)``.  The ``m - 1`` is the arrears convention: an instalment due at
+    the end of the death month has not been paid, so a death between ``T`` and ``T + 1/m``
+    yields a cash refund of the **full** ``CP(T)``.  On advance timing an instalment paid
+    at the *start* of the death month **has** been paid, so the balance is measured at
+    ``m`` there or the lump sum is overstated by one instalment.  ``CP(T)`` is
+    :func:`cum_premium_payout` and ``G`` the payout schedule's :func:`cum_annuity_pp`, by
+    policy month.  Zero before the income start month and outside the frame.
     """
-    t0 = income_start_mth()
-    if t < t0:
+    m = duration_mth(t)
+    if not is_active(t) or m < income_start_mth():
         return 0.0
-    adv = payment_timing() == "advance" and is_payment_mth(t)
-    return max(0.0, cum_premium_pp(t0) - cum_annuity_pp(t if adv else t - 1))
+    adv = not is_arrears() and is_payment_mth(t)
+    return max(0.0, cum_premium_payout() - cum_annuity_pp(m if adv else m - 1))
 
 
 def accel_blackout(t):
@@ -1378,12 +2490,13 @@ def accel_blackout(t):
     Six monthly payments are made in one sum at ``t_a`` and no payment is made for the
     following five months [S1][S4].  The feature is expressly "not a liquidity feature"
     [S2] - a timing shift, not a withdrawal - and modelling it as a withdrawal is one of
-    the notes' listed pitfalls.
+    the notes' listed pitfalls.  ``t_a < duration_mth(t) <= t_a + 5``, on the policy
+    clock; False outside the frame.
     """
     a = accel_mth()
-    if a < 0:
+    if a < 0 or not is_active(t):
         return False
-    return a < t <= a + accel_months - 1                             # noqa: F821
+    return a < duration_mth(t) <= a + accel_months - 1               # noqa: F821
 
 
 def accel_cost():
@@ -1394,23 +2507,24 @@ def accel_cost():
     interest discount on payments 2 through ``n_a``.  Small but real, and the reason the
     feature is capped in uses and gated at age 59 1/2 - the gate itself being driven by
     the IRC SS72(q) 10% additional tax [R8][REG-R55].  Reported, not added to the cash
-    flows: the cost is already implicit in paying them early through
-    :func:`accel_payment_factor`.  Only the **mortality** element of it surfaces in the
-    projected cash flows, because they are undiscounted - on the anchor configuration
-    435.11 per exercising contract here against 153.52 of extra lifetime income outgo,
-    the difference being the interest term ``v^(j/m)`` that an undiscounted projection
-    has nowhere to put.
+    flows: the cost is already implicit in paying them early.  Only the **mortality**
+    element of it surfaces in the projected cash flows, because they are undiscounted -
+    on the anchor configuration 435.11 per exercising contract here against 153.52 of
+    extra lifetime income outgo, the difference being the interest term ``v^(j/m)`` that
+    an undiscounted projection has nowhere to put.  Priced at the exercise's policy month
+    on the pricing curve, :func:`lives_if_pm`, with the instalment of the payout schedule,
+    so it is ``DIA_US_S``'s cost whatever the valuation date.
     """
     a = accel_mth()
     if a < 0:
         return 0.0
-    base = lives_if(a, 1)
+    base = lives_if_pm(a, 1)
     if base <= 0.0:
         return 0.0
-    inst = annual_income(a) / payment_freq() * cola_factor(a)
+    inst = annual_income_payout() / payment_freq() * cola_factor_pm(a)
     total = 0.0
     for j in range(1, accel_months):                                 # noqa: F821
-        sp = lives_if(a + j, 1) / base
+        sp = lives_if_pm(a + j, 1) / base
         total += 1.0 - pricing_disc_factor(j / 12.0) * sp
     return inst * total
 
@@ -1420,22 +2534,31 @@ def accel_payment_factor(t):
 
     The six instalments are paid **in one sum** at ``t_a`` [S1][S4], so the five that are
     pulled forward are paid **unconditionally**: their survivorship is frozen at the date
-    the lump sum falls - ``payment_factor_life(t_a)``, the same weight the first
-    instalment of the block carries - instead of being measured at their own scheduled
-    dates.  That frozen weight *is* the mortality element equation (12) prices; the
-    interest element of (12) does not appear in an undiscounted projection.
+    the lump sum falls - ``payment_factor_life`` in the exercise month, the same weight the
+    first instalment of the block carries - instead of being measured at their own
+    scheduled dates.  That frozen weight *is* the mortality element equation (12)
+    prices; the interest element of (12) does not appear in an undiscounted projection.
 
     A **guaranteed** instalment is untouched.  Its weight is already
     ``C(t) * l_last(T)``, independent of survival after the income start date, so
     accelerating it forgoes no survivorship - which is why the ``max`` is taken against
     the certain floor exactly as :func:`payment_factor` does, and why equation (12)'s
-    cost is zero inside a guarantee period and strictly positive outside it.  Zero when
-    no acceleration is exercised.
+    cost is zero inside a guarantee period and strictly positive outside it.
+
+    ``DIA_US_S``'s weight in a blackout month whose exercise is on the books, the
+    exercise month at or after the valuation date, and 0 in every other month: with no
+    acceleration, outside the blackout, and where the lump sum was paid before the
+    valuation date, from which on nothing reads the factor.  :func:`annuity_payments`
+    computes the same weight in the exercise month itself, reading the payout schedule by
+    policy month, so this cell is ``DIA_US_S``'s, for its readers and for the twin
+    identity, and no projection cell calls it.
     """
     a = accel_mth()
-    if a < 0:
+    if not accel_blackout(t) or a < duration_mth_init():
         return 0.0
-    return max(certain_floor(t) * surv_to_payout(), payment_factor_life(a))
+    c = certain_floor(t)
+    floor = c * surv_to_payout() if c > 0.0 else 0.0
+    return max(floor, payment_factor_life(a - duration_mth_init()))
 
 
 def commute_frac_cum(t):
@@ -1447,12 +2570,30 @@ def commute_frac_cum(t):
     ``C(t)`` in :func:`annuity_pp_paid`, so it reaches guaranteed instalments only: if
     the annuitant is alive when the would-be guarantee period ends, income **resumes
     until death**, the life-contingent tail not being commuted [S4].  Applying it to
-    that tail contradicts every retrieved contract.
+    that tail contradicts every retrieved contract.  The commutation is one exercise
+    named on the model point, so the fraction follows from the policy clock,
+    ``duration_mth(t) >= t_c``, and needs no opening state.  Zero outside the frame.
     """
     c = commute_mth()
-    if c < 0 or t < c:
+    if c < 0 or not is_active(t) or duration_mth(t) < c:
         return 0.0
     return commute_frac()
+
+
+def commute_weight_init():
+    """l_last(t_c) carried in force: the cohort that commuted.
+
+    The ``commute_weight_init`` column, on a contract whose commutation month precedes the
+    valuation month: ``DIA_US_S``'s ``lives_if_last(t_c)``, the probability, from issue,
+    that a covered life was alive to exercise the commutation, and so the cohort whose
+    guaranteed instalments it extinguished.  The lives at the valuation date cannot say
+    it: the contracts whose annuitant died between ``T`` and ``t_c`` keep their guarantee,
+    running to the beneficiary, so the residual guaranteed stream is
+    ``l_last(T) - l_last(t_c)``.  On a real record of a commuted contract it is 1.  Given
+    exactly where the commutation precedes the valuation month, as ``Data`` requires, and
+    blank elsewhere.
+    """
+    return float(model_point()["commute_weight_init"])
 
 
 def commute_weight(t):
@@ -1470,13 +2611,35 @@ def commute_weight(t):
     the commuted value pays for.
 
     Zero outside a guarantee period, before the exercise month, and on a contract that
-    never commutes.  Bounded above by :func:`payment_factor` because ``t_c >= T``, so
-    the surviving expected instalment is never negative.
+    never commutes.  Bounded above by :func:`payment_factor` because ``t_c >= T``, which
+    ``Data`` checks, so the surviving expected instalment is never negative.  A frozen
+    weight: on a contract that commuted before the valuation month, the opening state,
+    :func:`commute_weight_init`; otherwise ``lives_if_last`` at the commutation month on
+    the valuation clock, ``t_c - duration_mth_init()``, read from that month on.
     """
     c = commute_mth()
-    if c < 0 or t < c or certain_floor(t) == 0.0:
+    if c < 0 or duration_mth(t) < c or certain_floor(t) == 0.0:
         return 0.0
-    return lives_if_last(c)
+    if c < duration_mth_init():
+        return commute_weight_init()
+    return lives_if_last(c - duration_mth_init())
+
+
+def ref_rate_shift_init():
+    """The reference rate's change from issue to the valuation date.
+
+    The ``ref_rate_shift_init`` column, a decimal, 0.005 for a rise of 50 basis points, of
+    either sign: the reference rate at the valuation date less the reference rate at the
+    contract's issue, the part of the change since issue that a contract in force has
+    already seen.  The commutation discount rate moves with the change since issue, floored
+    at 0 (:func:`commute_disc_rate`), and that change began before ``t = 0``, so its value
+    there is opening state, as a rate's value at the start of a term would be on a market
+    path.  A fact of the market, not of the contract's own history: two contracts issued
+    together carry one value.  0 at issue, and so on every point not yet in force, as
+    ``Data`` checks.  The change made at the valuation date is ``ref_rate_shift``, which a
+    contract issued later has not seen (:func:`commute_disc_rate`).
+    """
+    return float(model_point()["ref_rate_shift_init"])
 
 
 def commute_disc_rate(t):
@@ -1487,33 +2650,55 @@ def commute_disc_rate(t):
     rising interest rate after issue" and its required disclosure that "the higher the
     interest rate the lower the commuted value" [R13 SS3.F(7)].  **The actual contractual
     formula is not published anywhere** [S4][S5], so this is **[std]** and
-    **[unverified]**; ``ref_rate_shift`` is a flat scalar because a reference-rate path
-    would be another input table.
+    **[unverified]**.
+
+    Every contract of a block reads the change since its own issue on one path of the
+    reference rate, which every point shares, as it shares every economic input.  A
+    contract on the books at the valuation date, in force or issued then,
+    ``t_entry() == 0``, has seen :func:`ref_rate_shift_init` by that date, from its model
+    point, and sees ``ref_rate_shift``, the change made at the valuation date, from month
+    0 on, as ``DIA_US_S``'s contract sees its ``ref_rate_shift`` from issue; a contract
+    issued ``t_entry()`` months later is bought after that change and has seen none of
+    it, its column being 0.  The floor applies to the whole change since issue, the two
+    parts added first, ``i_p + max(0, ref_rate_shift_init() + shift) + m_c`` in that
+    order, so a fall before the valuation date offsets a rise at it, and on a point issued
+    at the valuation date the rate is ``DIA_US_S``'s ``i_p + max(0, ref_rate_shift) + m_c``
+    to the last bit.  One Reference could not hold the change since each contract's own
+    issue: contracts issued at different dates have seen different changes.
+    ``ref_rate_shift`` is a flat scalar, a path that steps once, at the valuation date, so
+    the rate is level and reads neither clock; a reference-rate path would be another input
+    table, read on the valuation clock.
     """
-    return pricing_rate + max(0.0, ref_rate_shift) + commute_margin  # noqa: F821
+    shift = ref_rate_shift if t_entry() == 0 else 0.0                # noqa: F821
+    return (pricing_rate + max(0.0, ref_rate_shift_init() + shift)   # noqa: F821
+            + commute_margin)                                        # noqa: F821
 
 
 def commuted_value(t):
     """CV(t): the commuted value of the remaining guaranteed payments, equation (14).
 
-    ``sum over j in J_g(t) of (B/m) * (1 + i_c(t))^(-(j - t)/12)``, where ``J_g`` is the
-    set of remaining **guaranteed** payment months.  Zero on a form with no guaranteed
-    stream: a cash refund is a lump sum at death, not a schedule of payments, so there
-    is nothing to commute.  Non-zero only in the exercise month.
+    ``sum over j in J_g(t) of (B/m) * (1 + i_c(t))^(-(j - m)/12)``, where ``J_g`` is the
+    set of remaining **guaranteed** payment months and ``m = duration_mth(t)``.  Zero on a
+    form with no guaranteed stream: a cash refund is a lump sum at death, not a schedule
+    of payments, so there is nothing to commute.  Non-zero only in the exercise month.
+    The guaranteed instalments are read from the payout schedule by policy month,
+    :func:`annuity_pp_sched_pm`, in one loop, so that no month of the frame ahead of t is
+    read.  Zero outside the frame.
     """
     c = commute_mth()
-    if c < 0 or t != c:
+    if c < 0 or not is_active(t) or duration_mth(t) != c:
         return 0.0
     n_eff = certain_mths_eff()
     if n_eff <= 0:
         return 0.0
-    end = income_start_mth() + n_eff
+    m = duration_mth(t)
+    start = income_start_mth()
     i = commute_disc_rate(t)
     total = 0.0
-    for s in range(max(t, income_start_mth()), end):
-        inst = annuity_pp_sched(s)
+    for k in range(max(m, start), start + n_eff):
+        inst = annuity_pp_sched_pm(k)
         if inst:
-            total += inst * (1.0 + i) ** (-(s - t) / 12.0)
+            total += inst * (1.0 + i) ** (-(k - m) / 12.0)
     return total * commute_frac()
 
 
@@ -1522,13 +2707,16 @@ def commutations(t):
 
     ``CV(t) * l_last(t)``: the commuted value is paid to the cohort alive to exercise,
     which is the **same** ``l_last(t_c)`` weight :func:`commute_weight` removes from the
-    guaranteed instalments.  The two must agree, and :func:`check_commutation_value`
-    asserts that they do - discounted at ``i_c``, the value paid out equals the value
-    suppressed.  Zero in the base run - commutation exists only in the extended case
-    [S4][S5] - and prohibited on a QLAC after the required beginning date other than a
-    rescission period not exceeding 90 days [R1 (q)(1)(iv)][R2 SS202(a)(4)].
+    guaranteed instalments, on the contracts on the books.  The two must agree, and
+    :func:`check_commutation_value` asserts that they do - discounted at ``i_c``, the
+    value paid out equals the value suppressed.  Zero in the base run - commutation exists
+    only in the extended case [S4][S5] - and prohibited on a QLAC after the required
+    beginning date other than a rescission period not exceeding 90 days
+    [R1 (q)(1)(iv)][R2 SS202(a)(4)].  Zero outside the frame.
     """
-    return pols_if_init() * lives_if_last(t) * commuted_value(t)
+    if not is_active(t):
+        return 0.0
+    return pols_if_at(t, "BEF_DECR") * lives_if_last(t) * commuted_value(t)
 
 
 def annuity_pp(t):
@@ -1563,26 +2751,36 @@ def annuity_payments(t):
         E[income](t) = pols * [ inst(t) * (Phi(t) - w_c(t))          not commuted
                               + inst_paid(t) * w_c(t) ]              commuted
 
-    ``w_c(t)`` is :func:`commute_weight`, the ``l_last(t_c)`` sub-cohort that was alive
-    to exercise the commutation; ``inst_paid`` is that sub-cohort's reduced instalment.
-    Multiplying ``inst_paid`` by the whole of ``Phi`` instead - the obvious reading of
-    the chassis formula - would cancel the guarantee of contracts whose annuitant died
-    between ``T`` and ``t_c`` and could not have commuted.
+    ``pols`` is the count on the books, ``pols_if_at(t, "BEF_DECR")``.  ``w_c(t)`` is
+    :func:`commute_weight`, the ``l_last(t_c)`` sub-cohort that was alive to exercise the
+    commutation; ``inst_paid`` is that sub-cohort's reduced instalment.  Multiplying
+    ``inst_paid`` by the whole of ``Phi`` instead - the obvious reading of the chassis
+    formula - would cancel the guarantee of contracts whose annuitant died between ``T``
+    and ``t_c`` and could not have commuted.
 
     In the exercise month of a payment acceleration the following ``n_a - 1``
-    instalments are added at :func:`accel_payment_factor`, the survivorship frozen at
-    the lump sum's own date - they are paid whether or not the annuitant survives to
-    their scheduled dates, which is precisely the mortality element equation (12)
-    measures - and the months they would have fallen in pay nothing.
+    instalments are added at the survivorship frozen at the lump sum's own date, the
+    exercise month's ``payment_factor_life``, floored by the certain floor of each
+    instalment's own month as :func:`accel_payment_factor` floors it - they are paid
+    whether or not the annuitant survives to their scheduled dates, which is precisely the
+    mortality element equation (12) measures - and the months they would have fallen in
+    pay nothing.  The instalments and their floors are read from the payout schedule by
+    policy month, so the lump sum reads no month of the frame ahead of the exercise.  The
+    lump sum weighs no commutation: after one, it would pay the cohort that commuted its
+    pulled-forward guaranteed instalments unreduced, as ``DIA_US_S``'s does, so
+    :func:`proj_len` refuses an acceleration whose lump sum pulls forward instalments of a
+    commuted guarantee.
     """
     w = commute_weight(t)
-    total = pols_if_init() * (annuity_pp(t) * (payment_factor(t) - w)
-                              + annuity_pp_paid(t) * w)
+    pols = pols_if_at(t, "BEF_DECR")
+    total = pols * (annuity_pp(t) * (payment_factor(t) - w) + annuity_pp_paid(t) * w)
     a = accel_mth()
-    if a >= 0 and t == a:
+    if a >= 0 and is_active(t) and duration_mth(t) == a:
+        life = payment_factor_life(t)
         for j in range(1, accel_months):                             # noqa: F821
-            total += (pols_if_init() * annuity_pp_sched(a + j)
-                      * accel_payment_factor(a + j))
+            c = certain_floor_pm(a + j)
+            floor = c * surv_to_payout() if c > 0.0 else 0.0
+            total += pols * annuity_pp_sched_pm(a + j) * max(floor, life)
     return total
 
 
@@ -1595,14 +2793,15 @@ def claim_pp(t, kind):
     no-death-benefit form.  ``"REFUND"`` - the cash-refund shortfall
     :func:`refund_balance`, zero on any form other than cash refund, because installment
     refund and period certain deliver their guarantee as continued payments through the
-    certain floor rather than as a lump sum.
+    certain floor rather than as a lump sum.  Zero outside the frame; any other kind
+    raises.
     """
     if kind == "DEATH":
-        if is_payout(t) or db_form() != "ROP":
+        if not is_active(t) or is_payout(t) or not is_rop():
             return 0.0
         return cum_premium_pp(t)
     if kind == "REFUND":
-        if not is_payout(t) or payout_form() != "CR":
+        if not is_payout(t) or not is_cash_refund():
             return 0.0
         return refund_balance(t)
     raise ValueError("invalid kind")
@@ -1613,13 +2812,14 @@ def claims(t, kind=None):
 
     Weighted by :func:`lives_death_last`, the death that ends the contract: on a joint
     contract the first death leaves the contract running on the option chosen at issue
-    [S2], so both the deferral death benefit and the refund attach to the last death.
-    The two kinds are mutually exclusive by construction - ``"DEATH"`` is zero from the
-    income start month and ``"REFUND"`` is zero before it.
+    [S2], so both the deferral death benefit and the refund attach to the last death, on
+    the contracts on the books, ``pols_if_at(t, "BEF_DECR")``.  The two kinds are mutually
+    exclusive by construction - ``"DEATH"`` is zero from the income start month and
+    ``"REFUND"`` is zero before it.
     """
     if kind is None:
         return claims(t, "DEATH") + claims(t, "REFUND")
-    return pols_if_init() * lives_death_last(t) * claim_pp(t, kind)
+    return pols_if_at(t, "BEF_DECR") * lives_death_last(t) * claim_pp(t, kind)
 
 
 def premiums(t):
@@ -1630,24 +2830,34 @@ def premiums(t):
     differs structurally from a fixed deferred annuity's - each premium is priced at
     *then-current* rates, so there is no rate guarantee to select against unless the
     contract guarantees paid-up rates for future premiums [R13 SS1.B(1)(h)], which is off
-    in the base **[std]**.
+    in the base **[std]**.  On the contracts on the books, ``pols_if_at(t, "BEF_DECR")``,
+    so a point issued after the valuation date brings its premiums as new business.
     """
-    return pols_if_init() * premium_pp(t) * lives_if_last(t)
+    return pols_if_at(t, "BEF_DECR") * premium_pp(t) * lives_if_last(t)
 
 
 def inflation_factor(t):
-    """The expense escalation factor in month t: ``(1 + g)^(y(t) - 1)``."""
-    return (1.0 + inflation_rate) ** (policy_year(t) - 1)            # noqa: F821
+    """The expense escalation factor in month t: ``(1 + g)^(t // 12)`` **[std]**.
+
+    On the **valuation** clock: ``DIA_US_S``'s annual steps, ``(1 + g)^(y(t) - 1)``, moved
+    onto ``t``, so that the maintenance charge it inflates is in valuation-date dollars,
+    whatever the contract's age, and every point of a block inflates alike, stepping on
+    each anniversary of the valuation date.  On a point issued at ``t = 0`` the two are the
+    same.
+    """
+    return (1.0 + inflation_rate) ** (t // 12)                       # noqa: F821
 
 
 def expenses(t):
-    """E[EXP(t)] = (e/12) * (1+g)^(y-1) * l(t): maintenance expense in month t.
+    """E[EXP(t)] = (e/12) * (1+g)^(t//12) * pols_if(t): maintenance expense in month t.
 
     $50 per contract per year escalated at 2.5%: VM-22 prescribes exactly that for
     individual Payout Annuity Reserving Category contracts, plus 7 basis points on a
     present-value base for contracts without an account value [R9]; adopting the
     prescribed figure as the best estimate is **[std]**, and the 7 bp element is not
-    implemented because this model computes no present-value base.
+    implemented because this model computes no present-value base.  The inflation runs on
+    the valuation clock (:func:`inflation_factor`), and the count is the contracts on the
+    books weighted by survival, :func:`pols_if`.
     """
     return expense_maint / 12.0 * inflation_factor(t) * pols_if(t)   # noqa: F821
 
@@ -1672,7 +2882,7 @@ def liability_cf(t):
     and a conventions test asserts it.
 
     The distinction that matters here: the notes' purpose statement projects "premiums in;
-    deferral death benefits, income..." , so premium income belongs in the net stream.
+    deferral death benefits, income...", so premium income belongs in the net stream.
     That makes this product differ from the :mod:`~.SPIA_US_S` payout chassis it
     otherwise follows, where the single premium is a pricing input and never a projected
     cash flow, so there gross outgo and the net stream coincide.  The gross outgo alone is
@@ -1715,13 +2925,16 @@ def qlac_flags():
     flows.  An excess premium ends QLAC status on the date paid unless returned by the
     end of the following calendar year; any other failure voids status retroactively to
     purchase [R1 (q)(4)(i)(B), (q)(4)(iii)(A)].  Empty on a contract that is not a QLAC.
+    The premium limit is tested on the premiums paid by the last projected month, and the
+    income start age on the policy clock, ``age_at_entry(1) + T // 12``; the market type
+    and the form are read through the decodes.
     """
     if not is_qlac():
         return []
     out = []
     if qlac_room(proj_len() - 1) < 0.0:
         out.append("premium limit exceeded")
-    if age(income_start_mth(), 1) > qlac_max_start_age:              # noqa: F821
+    if age_at_entry(1) + income_start_mth() // 12 > qlac_max_start_age:  # noqa: F821
         out.append("income start after the age limit")
     if cola_rate() > 0.0:
         out.append("cost-of-living adjustment on a QLAC")
@@ -1729,25 +2942,49 @@ def qlac_flags():
         out.append("commutation on a QLAC")
     if accel_mth() >= 0:
         out.append("payment acceleration on a QLAC")
-    if payout_form() not in ("LO", "CR"):
+    if not (is_life_only() or is_cash_refund()):
         out.append("income form not permitted on a QLAC")
     return out
 
 
 def check_lives_roll_fwd_resid(t):
-    """Roll-forward residual in month t, over both lives, plus the last-survivor identity.
+    """Residual between :func:`lives_if` and its recursion restated, over both lives.
 
-    ``sum_i [ l_i(t) - d_i(t) - l_i(t+1) ]`` and, on a joint contract,
-    ``l_last(t) - [l_1 + l_2 - l_1*l_2]``.  Zero to floating point; non-zero if the
-    independence construction and the per-life recursion ever disagree.  The signed float
-    at a single ``t``, for the debugging session that follows a
-    :func:`check_lives_roll_fwd` failure.
+    Indexed by a **time point** on the valuation clock, like :func:`lives_if` itself.  For
+    each covered life the survival is restated month by month from the opening state:
+    0 before :func:`t_entry`, :func:`lives_if_init` at it, and ``l(t-1) * (1 - q(t-1))``
+    after it; the residual is the sum of the per-life differences from :func:`lives_if`,
+    plus, on a joint contract, the last-survivor identity
+    ``l_last(t) - [l_1 + l_2 - l_1*l_2]``.  Zero to floating point.
+
+    Deliberately **not** ``DIA_US_S``'s telescoping identity ``l_i(t) - d_i(t) -
+    l_i(t+1)``: :func:`lives_death` is *defined* as that difference, so the identity is
+    identically zero whatever :func:`lives_if` returns and constrains nothing.  Restating
+    the recursion from the opening state, a misindexed or mis-based recursion fails it; it
+    shares the monthly rate with :func:`lives_if`, which the twin and splice identities
+    check against ``DIA_US_S``.  It reads one month back, so it costs a cell a month,
+    where a running product rebuilt at every time point would hold a dependency graph
+    quadratic in the frame.  The last-survivor term *is* zero by construction, like
+    :func:`check_payment_factor_resid`, and exists to catch a redefinition of
+    :func:`lives_if_last` that broke the independence construction.  The signed float at a
+    single ``t``, for the debugging session that follows a :func:`check_lives_roll_fwd`
+    failure.
     """
     res = 0.0
-    for i in (1, 2):
-        res += lives_if(t, i) - lives_death(t, i) - lives_if(t + 1, i)
+    entry = t_entry()
+    for i in range(1, 3):
+        if i == 2 and not is_joint():
+            continue
+        if t < entry:
+            built = 0.0
+        elif t == entry:
+            built = lives_if_init(i)
+        else:
+            built = lives_if(t - 1, i) * (1.0 - mort_rate_mth(t - 1, i))
+        res += built - lives_if(t, i)
     if is_joint():
-        l1, l2 = lives_if(t, 1), lives_if(t, 2)
+        l1 = lives_if(t, 1)
+        l2 = lives_if(t, 2)
         res += lives_if_last(t) - (l1 + l2 - l1 * l2)
     return res
 
@@ -1758,9 +2995,10 @@ def check_lives_roll_fwd():
     No argument and a bool, the library-wide ``check_*`` shape taken from
     ``CashValue_SE.check_av_roll_fwd()``: one call covers ``t = 0 .. proj_len() - 1``, so
     the same name can be asserted across every model in the library.
-    :func:`check_lives_roll_fwd_resid` carries the signed residual at a single ``t``.
-    Mortality is the only decrement here, so a failure means the last-survivor
-    construction and the per-life recursion have come apart.
+    :func:`check_lives_roll_fwd_resid` carries the signed residual at a single ``t``, the
+    survival recursion restated from the opening state.  Mortality is the only decrement
+    here, so a failure means the projection's survival and its recursion, or the
+    last-survivor construction and the per-life survival, have come apart.
     """
     return all(abs(check_lives_roll_fwd_resid(t)) < 1e-12
                for t in range(proj_len()))
@@ -1773,13 +3011,17 @@ def check_income_roll_fwd_resid(t):
     than a premium slice or the one permitted repricing - and **nothing else can move
     it**: there is no credited rate, no index, no charge and no balance in this product.
     The signed float at a single ``t``; :func:`check_income_roll_fwd` is the bool.
-    On the first row the prior income is taken as zero rather than read at ``t = -1``,
-    which is off the frame.
+    At :func:`t_entry` the prior income is the opening state,
+    :func:`annual_income_init`, rather than a month before the books.  The exercise month
+    and the purchase rate are read at the policy month of month ``t``.  Zero outside the
+    frame.
     """
-    prev = annual_income(t - 1) if t > 0 else 0.0
-    if t == adjust_mth():
+    if not is_active(t):
+        return 0.0
+    prev = annual_income(t - 1) if t > t_entry() else annual_income_init()
+    if duration_mth(t) == adjust_mth():
         prev = prev * adjust_income_factor()
-    bought = premium_pp(t) * purchase_rate(t) if premium_pp(t) else 0.0
+    bought = premium_pp(t) * purchase_rate(duration_mth(t)) if premium_pp(t) else 0.0
     return annual_income(t) - prev - bought
 
 
@@ -1801,9 +3043,12 @@ def check_payment_factor_resid(t):
     Zero by construction.  Computed anyway because an additive floor - ``C + L`` instead
     of ``max(C, L)`` - is the payout chassis' first-listed pitfall and would show up
     here as ``min(C, L)``.  :func:`check_payment_factor` is the bool over every ``t``.
+    ``l_last(T)`` is read only where the certain floor is positive, as
+    :func:`payment_factor` reads it.
     """
-    return payment_factor(t) - max(certain_floor(t) * surv_to_payout(),
-                                   payment_factor_life(t))
+    c = certain_floor(t)
+    floor = c * surv_to_payout() if c > 0.0 else 0.0
+    return payment_factor(t) - max(floor, payment_factor_life(t))
 
 
 def check_payment_factor():
@@ -1818,7 +3063,7 @@ def check_payment_factor():
 
 
 def check_commutation_value_resid(t):
-    """``PV_ic(instalments suppressed) - commutations(t)`` in month t: the exchange residual.
+    """``PV_ic(instalments suppressed) - commutations(t_c)``: the exchange residual.
 
     A commutation is an exchange, not a benefit: the owner gives up guaranteed
     instalments and receives their present value at ``i_c``.  On an expected basis the
@@ -1830,26 +3075,48 @@ def check_commutation_value_resid(t):
     does pay - so weighting the suppression by ``l_last(T)`` while paying the commuted
     value to ``l_last(t_c)`` shows up here as a leak equal to the difference: 6,898.37 on
     the shipped commutation model point.  The acceleration block is added back before the
-    comparison so that the two options do not contaminate each other, though the
-    contract's own six-month interlocks make that combination unreachable [S4].  Zero to
-    floating point at the exercise month, and zero everywhere else because both legs are.
-    :func:`check_commutation_value` is the bool over every ``t``.
+    comparison so that the two options do not contaminate each other.  It is reached where
+    an acceleration falls in a commuted guarantee's last month, its lump sum pulling
+    forward life-contingent instalments alone: ``Data`` refuses an acceleration within six
+    months of the commutation, the product's interlock [S4], and :func:`proj_len` one whose
+    lump sum would pull forward instalments of the guarantee the commutation reduced, which
+    :func:`annuity_payments` would pay unreduced, as ``DIA_US_S``'s does.
+
+    **Measured at the guarantee's last month**, policy month ``T + n_eff - 1``, reading
+    back to the commutation month ``t_c``: ``DIA_US_S`` takes the same sum at the exercise
+    month, reading every guaranteed month still to come, which on the valuation clock is a
+    read far ahead of the month that makes it.  Here every month read is at or before the
+    month the residual is measured in, and the sum is the same, month by month and
+    discounted at ``i_c(t_c)`` from the exercise month, so the residual equals
+    ``DIA_US_S``'s at the exercise month.  Zero to floating point there, and zero in every
+    other month; zero too where the commutation precedes the valuation month, the exchange
+    having closed before it, and where it falls after the guarantee, with nothing to
+    commute.  :func:`check_commutation_value` is the bool over every ``t``.
     """
     c = commute_mth()
-    if c < 0 or t != c:
+    start = income_start_mth()
+    end = start + certain_mths_eff()
+    d = duration_mth_init()
+    if (c < 0 or c < max(d, 0) or c >= end or not is_active(t)
+            or duration_mth(t) != end - 1):
         return 0.0
+    t_c = c - d
     a = accel_mth()
-    i = commute_disc_rate(t)
+    i = commute_disc_rate(t_c)
     total = 0.0
-    for s in range(t, income_start_mth() + certain_mths_eff()):
+    for s in range(t_c, t + 1):
+        k = duration_mth(s)
         paid = annuity_payments(s)
-        if s == a:
-            for j in range(1, accel_months):                          # noqa: F821
-                paid -= (pols_if_init() * annuity_pp_sched(s + j)
-                         * accel_payment_factor(s + j))
-        supp = pols_if_init() * annuity_pp(s) * payment_factor(s) - paid
-        total += supp * (1.0 + i) ** (-(s - t) / 12.0)
-    return total - commutations(t)
+        if k == a:
+            life = payment_factor_life(s)
+            for j in range(1, accel_months):                         # noqa: F821
+                cf = certain_floor_pm(a + j)
+                floor = cf * surv_to_payout() if cf > 0.0 else 0.0
+                paid -= (pols_if_at(s, "BEF_DECR") * annuity_pp_sched_pm(a + j)
+                         * max(floor, life))
+        supp = pols_if_at(s, "BEF_DECR") * annuity_pp(s) * payment_factor(s) - paid
+        total += supp * (1.0 + i) ** (-(k - c) / 12.0)
+    return total - commutations(t_c)
 
 
 def check_commutation_value():
@@ -1858,31 +3125,39 @@ def check_commutation_value():
     No argument and a bool, the library-wide ``check_*`` shape;
     :func:`check_commutation_value_resid` returns the signed leak at one ``t``.
     Trivially ``True`` on a contract that never commutes, which is the base run - the
-    residual is identically zero away from the exercise month.
+    residual is identically zero away from the month it is measured in.
     """
     return all(abs(check_commutation_value_resid(t)) < 1e-6
                for t in range(proj_len()))
 
 
 def lives_if_ann(y):
-    """l at the **end** of policy year y: ``lives_if_last(12*y)``.
+    """l at the **end** of policy year y: the survival at the start of policy month 12y.
 
-    The annual display's survival column.  Policy year ``y`` spans months
-    ``12(y-1) .. 12y-1``, so surviving it means being alive at the start of month
-    ``12y``.
+    The annual display's survival column.  Policy year ``y`` spans policy months
+    ``12(y-1) .. 12y-1``, so surviving it means being alive at the start of policy month
+    ``12y``, which is time ``12y - duration_mth_init()`` on the valuation clock; 0 for a
+    year that ended before the contract was on the books.
     """
-    return lives_if_last(12 * y)
+    t = 12 * y - duration_mth_init()
+    return lives_if_last(t) if t >= t_entry() else 0.0
 
 
 def claims_ann(y, kind=None):
     """Expected claim outgo over policy year y; the notes' ``E[DB]`` when kind="DEATH".
 
-    The monthly cash flows summed over the twelve months of the year.  Because ``CP`` is
-    constant through a year whose premium falls at its start, this collapses to
-    ``(l(y-1) - l(y)) * CP(y)`` on the annual grid - which is exactly how the worked
-    example computes it.
+    The monthly cash flows summed over the twelve months of the year, those on the books:
+    on a contract in force the months of its valuation year from the valuation date on.
+    Because ``CP`` is constant through a year whose premium falls at its start, this
+    collapses to ``(l(y-1) - l(y)) * CP(y)`` on the annual grid - which is exactly how the
+    worked example computes it.
     """
-    return sum(claims(t, kind) for t in range(12 * (y - 1), 12 * y))
+    d = duration_mth_init()
+    entry = t_entry()
+    total = 0.0
+    for t in range(max(12 * (y - 1) - d, entry), max(12 * y - d, entry)):
+        total += claims(t, kind)
+    return total
 
 
 def annuity_payments_ann(y):
@@ -1890,19 +3165,26 @@ def annuity_payments_ann(y):
 
     An **annual-payment display approximation**, not the sum of the year's monthly
     instalments: one year's income ``B`` escalated for COLA and weighted by survival to
-    the end of the year.  The model runs monthly; this cells exists so that the notes'
-    annual display table can be reproduced and asserted directly.  Zero in a policy year
-    that ends before the income start month.
+    the end of the year, on the count the point stands for.  The model runs monthly; this
+    cells exists so that the notes' annual display table can be reproduced and asserted
+    directly.  Zero in a policy year that ends before the income start month.  The income
+    is the payout schedule's, ``B(T)``, level from the income start month on, and the COLA
+    is read at the year's last policy month.
     """
     last = 12 * y - 1
     if last < income_start_mth():
         return 0.0
-    return (pols_if_init() * annual_income(last) * cola_factor(last)
+    return (policy_count() * annual_income_payout() * cola_factor_pm(last)
             * lives_if_ann(y))
 
 
 def result_cf():
-    """Result table of monthly cashflows, indexed by policy month ``t = 0 .. proj_len() - 1``."""
+    """Result table of monthly cashflows, one row per month ``t = 0 ... proj_len() - 1``.
+
+    Row 0 is the valuation month for every model point, so the frames of a block line up
+    and sum row by row; a point issued after the valuation date has zeros until its issue
+    month.  The columns are ``DIA_US_S``'s.
+    """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
@@ -1920,13 +3202,22 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of survival probabilities and payment factors, indexed by month t.
+    """Result table of the counts, survival probabilities and payment factors, by month t.
 
-    The same frame as :func:`result_cf`: ``t = 0 .. proj_len() - 1``.
+    One row per projected month, ``t = 0 ... proj_len() - 1``, the frame of
+    :func:`result_cf`: ``pols_if``, the count on the books weighted by survival, and
+    ``pols_new_biz``, the contracts issued in the month, as ``basiclife.BasicTerm_SE``'s
+    ``result_pols`` sets its counts out first; then ``DIA_US_S``'s other columns in
+    ``DIA_US_S``'s order, the survival read at the start of each month, as in
+    ``DIA_US_S``, and every column 0 in the months before a point is issued.  The count on
+    the books that weights the cash flows is not a column: it is the table's
+    ``policy_count``, from issue to the stop rule.
     """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
+            "pols_if": [pols_if(t) for t in ts],
+            "pols_new_biz": [pols_new_biz(t) for t in ts],
             "lives_if_1": [lives_if(t, 1) for t in ts],
             "lives_if_2": [lives_if(t, 2) for t in ts],
             "lives_if_last": [lives_if_last(t) for t in ts],
@@ -1934,7 +3225,6 @@ def result_pols():
             "certain_floor": [certain_floor(t) for t in ts],
             "payment_factor_life": [payment_factor_life(t) for t in ts],
             "payment_factor": [payment_factor(t) for t in ts],
-            "pols_if": [pols_if(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
@@ -1946,19 +3236,28 @@ def result_annual():
     One row per policy year with the columns the worked example prints: the attained age
     at the start of the year, the premium received at its start, ``CP``, ``B``, the
     survival probability at the end of the year, the expected deferral death benefit
-    paid during it, and the expected income at its end on the annual-payment display
-    approximation.  The projection itself is monthly; this is the display grid, and
-    ``policy_year = t // 12 + 1`` maps the monthly frame onto it - one row per complete
-    policy year inside the ``proj_len()`` projected months, 60 on the anchor cell.
+    paid during it, the expected refund, and the expected income at its end on the
+    annual-payment display approximation.  The projection itself is monthly; this is the
+    display grid, keyed by the policy year, ``DIA_US_S``'s key, one row per complete
+    policy year to the stop rule, 60 on the anchor cell.
+
+    A point in force at the valuation date shows the policy years from the one the
+    valuation date falls in, whose row holds the months of that year from the valuation
+    date on: its premium and claims are the year's on the books, and ``CP``, ``B`` and the
+    survival are the year's closing values, which a year begun before the valuation date
+    reaches as ``DIA_US_S`` does.  The years before it are left out, as ``Term_US_SEC``'s
+    annual report leaves them out.  A point issued later starts at policy year 1.
     """
-    ys = list(range(1, proj_len() // 12 + 1))
+    d = duration_mth_init()
+    entry = t_entry()
+    ys = list(range(duration_mth(entry) // 12 + 1, stop_mth() // 12 + 1))
     return pd.DataFrame(                                             # noqa: F821
         {
-            "age": [age(12 * (y - 1), 1) for y in ys],
-            "premium_pp": [sum(premium_pp(t) for t in range(12 * (y - 1), 12 * y))
-                           for y in ys],
-            "cum_premium_pp": [cum_premium_pp(12 * y - 1) for y in ys],
-            "annual_income": [annual_income(12 * y - 1) for y in ys],
+            "age": [age_at_entry(1) + y - 1 for y in ys],
+            "premium_pp": [sum(premium_pp(t) for t in range(
+                max(12 * (y - 1) - d, entry), 12 * y - d)) for y in ys],
+            "cum_premium_pp": [cum_premium_pp(12 * y - 1 - d) for y in ys],
+            "annual_income": [annual_income(12 * y - 1 - d) for y in ys],
             "lives_if": [lives_if_ann(y) for y in ys],
             "claims_death": [claims_ann(y, "DEATH") for y in ys],
             "claims_refund": [claims_ann(y, "REFUND") for y in ys],

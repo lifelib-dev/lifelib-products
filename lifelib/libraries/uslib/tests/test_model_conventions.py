@@ -521,6 +521,20 @@ def _dia_pays_an_income(proj, df):
     assert proj.annual_income(proj.income_start_mth()) > 0.0
 
 
+def _dia_sec_pays_an_income(proj, df):
+    """DIA_US_SEC: the income actually starts, read on the valuation clock.
+
+    ``DIA_US_S``'s fact, with the income start month kept a policy month (R1a): the income
+    in force at ``T`` is read at ``T - duration_mth_init()`` on the valuation clock, or at
+    the first month on the books on a contract already past ``T``, whose income is its
+    opening state, and it is positive.  It is the payout schedule's income too,
+    ``annual_income_payout()``, which the refund and the commuted value read.
+    """
+    t = max(proj.income_start_mth() - proj.duration_mth_init(), proj.t_entry())
+    assert proj.annual_income(t) > 0.0
+    assert proj.annual_income(t) == proj.annual_income_payout()
+
+
 def _fia_phase_is_one_of_four(proj, df):
     """FIA_US_S: every projected month sits in one of the four GLWB phases."""
     assert proj.result_glwb()["phase"].isin(
@@ -552,6 +566,7 @@ def _va_residuals(proj, df):
 
 EXTRA_POINT_ASSERTIONS = {
     "DIA_US_S": _dia_pays_an_income,
+    "DIA_US_SEC": _dia_sec_pays_an_income,
     "FIA_US_S": _fia_phase_is_one_of_four,
     "SPIA_US_S": _spia_liability_is_outgo,
     "SPIA_US_SEC": _spia_liability_is_outgo,
@@ -789,6 +804,12 @@ ROW_KINDS = {"twin", "derived", "future"}
 # switch that convention off without a word.
 CLOSING_POLS_IF = frozenset({"SPIA_US_SEC"})
 
+# The one SEC model whose ``pols_if`` is the count on the books weighted by survival (D5),
+# ``pols_if_at(t, "BEF_DECR") * lives_if_last(t)``. Its registry flag, ``survival_pols_if``,
+# makes test_pols_if_is_the_count_before_decrements skip it as ``closing_pols_if`` skips
+# SPIA, and the registry test at the end confines this flag to it in the same way.
+SURVIVAL_POLS_IF = frozenset({"DIA_US_SEC"})
+
 
 def _base_sweep(model):
     """``result_cf()`` and every ``check_*`` on every point: what INPUT_FILES records.
@@ -850,9 +871,18 @@ def test_pols_if_is_the_count_before_decrements(name, model):
     the opening count even in S. The flag would skip this test on any model it was set on,
     so ``test_the_sec_entry_agrees_with_its_twin_and_its_stage`` fails any other model that
     carries it (:data:`CLOSING_POLS_IF`).
+
+    ``DIA_US_SEC`` is registered ``survival_pols_if`` and is skipped too. Its ``pols_if`` is
+    the count on the books weighted by the probability that a covered life is alive at the
+    start of the month, as ``DIA_US_S`` weights its constant count, and its own module
+    asserts that definition; the registry test confines the flag to it in the same way
+    (:data:`SURVIVAL_POLS_IF`).
     """
     if meta(name).get("closing_pols_if"):
         pytest.skip(f"{name}: pols_if is a closing count (USLIB-SEC-PLAN.md D5)")
+    if meta(name).get("survival_pols_if"):
+        pytest.skip(f"{name}: pols_if is the count on the books weighted by survival, "
+                    f"pols_if_at(t, BEF_DECR) * lives_if_last(t) (USLIB-SEC-PLAN.md D5)")
     bef_decr = _timing(model, "BEF_DECR")
     bad = []
     for key, point_id in _points(model):
@@ -1066,7 +1096,8 @@ def test_the_sec_entry_agrees_with_its_twin_and_its_stage(name):
     :data:`SEC_LETTERS` after the grid letter. The stage is ``"E"`` or ``"EC"``, and the
     parameter follows it: ``point_id`` through Phase 1, and ``idx`` once Phase 2 has made
     the model compilable (R4). And ``closing_pols_if``, which switches the ``pols_if``
-    convention off, is SPIA's alone (D5, :data:`CLOSING_POLS_IF`).
+    convention off, is SPIA's alone (D5, :data:`CLOSING_POLS_IF`), as ``survival_pols_if``,
+    which switches it off too, is DIA's (:data:`SURVIVAL_POLS_IF`).
     """
     entry = meta(name)
     if entry.get("closing_pols_if"):
@@ -1074,6 +1105,11 @@ def test_the_sec_entry_agrees_with_its_twin_and_its_stage(name):
             f"{name} is registered closing_pols_if, which skips "
             f"test_pols_if_is_the_count_before_decrements; D5 grants that to "
             f"{', '.join(sorted(CLOSING_POLS_IF))} alone")
+    if entry.get("survival_pols_if"):
+        assert name in SURVIVAL_POLS_IF, (
+            f"{name} is registered survival_pols_if, which skips "
+            f"test_pols_if_is_the_count_before_decrements; D5 grants that to "
+            f"{', '.join(sorted(SURVIVAL_POLS_IF))} alone")
     twin = entry["twin"]
     assert twin in MODELS and not is_sec(twin), (
         f"{name}: its twin {twin!r} is not a registered S model")

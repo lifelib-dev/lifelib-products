@@ -17,15 +17,19 @@ That last entry is a property of the library, not an omission: every ``technical
 specifies *gross liability cash flows* and leaves discounting and reserves to a separate
 layer that consumes them.
 
-**The SEC keys.**  USLIB-SEC-PLAN.md puts a ``_SEC`` model beside each ``_S`` one, and five
-metadata keys describe it: three from the plan's D10, one from its D5 and one from its
+**The SEC keys.**  USLIB-SEC-PLAN.md puts a ``_SEC`` model beside each ``_S`` one, and six
+metadata keys describe it: three from the plan's D10, two from its D5 and one from its
 R17.  ``"twin"`` names the S model an SEC model is derived from; its presence is what makes
 an entry SEC (:func:`is_sec`).  ``"stage"`` is ``"E"`` while an SEC model runs in force at
 ``t = 0`` but does not yet compile, and ``"EC"`` once it does; the name does not change
 with it.  ``"param"`` names the ``Projection`` parameter: ``"point_id"``, the default, or
 ``"idx"``, the position of a model point in the ``Data`` vectors, which a compiled model
 takes as ``basiclife/BasicTerm_SC`` does.  ``"closing_pols_if"`` marks ``SPIA_US_SEC``
-alone, whose ``pols_if`` is a closing count, not the count that weights row ``t``.  And
+alone, whose ``pols_if`` is a closing count, not the count that weights row ``t``.
+``"survival_pols_if"`` marks ``DIA_US_SEC`` alone, whose ``pols_if`` is the count on the
+books weighted by ``lives_if_last(t)``, the probability that a covered life is alive at
+the start of month ``t``, as ``DIA_US_S`` weights its constant count: neither the count
+that weights row ``t`` nor a closing count.  And
 ``"reporting"``, at stage ``"EC"``, names the model's label accessors: the S cells that
 return a model point's text, kept for a reader and for the twin identity, which no other
 cell calls and which stay Python when the model compiles, beside ``model_point``, the
@@ -83,8 +87,9 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 #     "Term_US_SEC": ("products/term_life/Term_US_SEC",
 #                     {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
 #
-# with "param": "idx" and the "reporting" label accessors added at stage "EC", and
-# "closing_pols_if": True on SPIA_US_SEC alone.  Phase 1 adds them one product at a time,
+# with "param": "idx" and the "reporting" label accessors added at stage "EC",
+# "closing_pols_if": True on SPIA_US_SEC alone, and "survival_pols_if": True on DIA_US_SEC
+# alone.  Phase 1 adds them one product at a time,
 # each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC".
 MODELS = {
@@ -116,6 +121,9 @@ MODELS = {
                     {**MONTHLY, "twin": "SPIA_US_S", "stage": "E",
                      "closing_pols_if": True}),
     "DIA_US_S": ("products/deferred_income_annuity/DIA_US_S", MONTHLY),
+    "DIA_US_SEC": ("products/deferred_income_annuity/DIA_US_SEC",
+                   {**MONTHLY, "twin": "DIA_US_S", "stage": "E",
+                    "survival_pols_if": True}),
 }
 
 
@@ -138,6 +146,9 @@ INPUT_FILES = {
     "DIA_US_S": {
         "improvement_scale.csv", "model_point_table.csv", "mort_table.csv",
         "payout_factor_table.csv", "premium_schedule.csv", "rop_factor_table.csv"},
+    "DIA_US_SEC": {
+        "improvement_scale.csv", "model_point_table_sec.csv", "mort_table.csv",
+        "payout_factor_table.csv", "premium_schedule_sec.csv", "rop_factor_table.csv"},
     "FIA_US_S": {
         "model_point_table.csv", "mort_table.csv", "payout_rate_table.csv",
         "rate_scenario.csv", "rollup_table.csv", "surr_charge_table.csv",

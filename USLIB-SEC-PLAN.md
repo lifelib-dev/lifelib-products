@@ -4,10 +4,11 @@
 and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
 and §7.2). The other ten run in three streams (§5.3), and the first product of each is
 done: UL in the Life stream, MYGA in the Deferred annuity stream and SPIA in the Payout
-stream (M3, M7 and M11, the *Records* of §7.3, §7.10 and §7.9). Term's compile step, M14,
-brought forward to run beside the streams (D2), is done on Linux, 2026-11-02; its Windows
-gate awaits the `cython` job's first run (§7.1, *Record — M14*). The open decisions of
-§8.2 are settled, the last of them, item 4, on 2026-11-03.
+stream (M3, M7 and M11, the *Records* of §7.3, §7.10 and §7.9). So is DIA, the Payout
+stream's second (M12, the *Record* of §7.12). Term's compile step, M14, brought forward to
+run beside the streams (D2), is done on Linux, 2026-11-02; its Windows gate awaits the
+`cython` job's first run (§7.1, *Record — M14*). The open decisions of §8.2 are settled,
+the last of them, item 4, on 2026-11-03.
 Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
 phase records what it actually did, including where the implementation departed from the
 plan.
@@ -181,6 +182,22 @@ its export `net_cf(0)` alone needs a call depth of 517, and point 5 raises `Recu
 at the default limit even when swept in ascending order (verified). Runners and samples must
 set `sys.setrecursionlimit`, and far-ahead reads need a non-recursive form (R2).
 
+*M12:* `DIA_US_SEC` prices on a survival curve of its own, one explicit loop from issue
+(`lives_if_pm`); its payout schedule is keyed by policy month, and no pricing cell reads
+the projection. Its cold `net_cf(0)` runs 12 or 13 cells deep on the committed points, 21
+on the installment refund's twin, and 8 on the point issued later once `Data`'s table is
+read (10 before). `DIA_US_S`'s runs 251 on point 1 and 311 on point 13. Its cold
+`net_cf(proj_len() - 1)` runs one cell a month back to `t_entry()` plus 7 to 9 (12 in all
+on a one-row frame): 726 to 728 on the 720-month twins, and at the longest cover (1,176
+months from issue age 22) 1,182 on an installment refund and 1,184 on a cash refund. An
+ascending sweep runs at most 16 deep. Each figure counts the count cell a table's join
+asks first. In `model.export()`, the cold last month needs a Python recursion limit of
+1,482 on the anchor twin, 1,454 on the installment refund's twin, 1,000 on the cash refund
+in force 241 months and 2,366 at the longest cover; the ascending sweep needs 52 on the
+committed points and 62 on the longest-cover rows (measured at M12's fix, under load). The
+module asserts a cold `net_cf(0)` within 32 cells and a cold last month within 16 of its
+chain.
+
 A compiled chain runs on the C stack, which the interpreter's recursion limit does not
 count. Term's cold call at its contractual maximum, 932 cells deep in modelx on a model just
 read, one a month back to `t_entry()` and 9 more, needs 232 to 236 KiB with gcc, about 255
@@ -351,7 +368,7 @@ a message of its own (precised at M1).
   stub at every other key, through an `arg_map`, rather than exempting it. Each S model's
   `"BEF_MAT"` thus keeps its own meaning: the end of the month in WholeLife, the count
   that weights the month in the UL family (precised at M3).
-- SPIA is the one exception to the row-weight rule. Its count on the books,
+- SPIA and DIA are the two exceptions to the row-weight rule. SPIA's count on the books,
   `pols_if_at(t, "BEF_DECR")`, is `policy_count` from the annuity date to the stop rule:
   mortality decrements each life's `lives_if`, never the count, and every flow is that
   count times a per-contract amount weighted by survival, as S weights every flow by its
@@ -361,9 +378,14 @@ a message of its own (precised at M1).
   of the month), so `pols_if(0) != pols_if_init()` even in S (0.99999986 on point 8), and
   the registry marks it `closing_pols_if` so the `pols_if == BEF_DECR` convention skips it
   (precised at M11). `DIA_US_S` weights its flows by a constant `pols_if_init` the same
-  way. Its `pols_if`, `pols_if_init * l_last`, is weighted by survival, so on a count that
-  mortality does not decrement it is not `BEF_DECR` either, and M12 settles which rule it
-  follows.
+  way, and `DIA_US_SEC` copies SPIA's count chassis. Its `pols_if` keeps S's definition on
+  the count on the books, `pols_if_at(t, "BEF_DECR") * lives_if_last(t)`: the count
+  weighted by the probability that a covered life is alive at the start of month `t`, S's
+  `pols_if_init * l_last` bit for bit on every twin. That is neither `BEF_DECR` nor SPIA's
+  closing measure, so the registry marks it with a key of its own, `survival_pols_if`,
+  confined to `DIA_US_SEC` by the registry test (`SURVIVAL_POLS_IF`); the
+  `pols_if == BEF_DECR` convention skips it and the module asserts the definition (settled
+  at M12).
 - `result_cf()` keeps the S columns exactly; the SEC-only quantities go in a new
   `result_pols()`, as BasicTerm_SE does it.
 
@@ -538,7 +560,8 @@ every library's model pages move with uslib's. Nothing links to them by path; `c
 
 `us_registry.MODELS` gains twelve SEC entries whose metadata adds `"twin"` (the S name),
 `"param"` (`"point_id"`, then `"idx"`) and `"stage"` (`"E"`, then `"EC"`), and
-`INPUT_FILES` gains their file sets. SPIA's entry also carries D5's `"closing_pols_if"`.
+`INPUT_FILES` gains their file sets. SPIA's entry also carries D5's `"closing_pols_if"`,
+and DIA's its `"survival_pols_if"`, each confined to its one model by the registry test.
 `test_model_conventions.py` is generalized rather than forked:
 
 - the suffix is `_S`, or `_SEC` for a model registered with a `"twin"`, at either stage:
@@ -553,7 +576,7 @@ every library's model pages move with uslib's. Nothing links to them by path; `c
 
 New conventions for the SEC family:
 - the frame starts at `t = 0`;
-- `pols_if(t)` equals `pols_if_at(t, "BEF_DECR")`, except on SPIA (D5);
+- `pols_if(t)` equals `pols_if_at(t, "BEF_DECR")`, except on SPIA and DIA (D5);
 - the `pols_new_biz` column sums to the new-business `policy_count`;
 - nothing is active before issue, and the pre-issue rows are zeros, not NaN;
 - the in-force columns are present;
@@ -578,10 +601,11 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   opening state. The twin identity cannot catch a violation, because on new business the
   two clocks coincide; the splice identity of §5.2 is the test that does.
 - **R2** Recursions run forward: bases at `t_entry()`, look-ahead at most `t + 1`, and no
-  backward recursion over the frame (F7). A formula that needs a value far ahead of its own
-  `t` takes it from a non-recursive form — an explicit loop in one cell, or a vector built
-  in `Data` — as DIA's month-0 pricing must, since it reads survival out to the payout
-  date.
+  backward recursion over the frame (F7). A formula that needs a value far ahead of its
+  own `t` takes it from a non-recursive form — an explicit loop in one cell, or a vector
+  built in `Data` — as DIA's month-0 pricing does, since it reads survival out to the
+  payout date: `DIA_US_SEC`'s survival from issue is one loop in `lives_if_pm(k, life)`
+  (M12).
 
   A recursion over a deterministic schedule on the policy clock may keep its key and be
   based at the valuation date's key instead of at issue, one loop there summing what
@@ -590,6 +614,19 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   equal S's at every key, bit for bit, and a contract valued late in its term recurses
   forward from the valuation date only: a cash refund in payment 600 months computes its
   whole `result_cf()` 9 cells deep, where S's cold `G(600)` runs 606 (precised at M11).
+
+  A check whose S form sums a period's flows ahead of its own month is measured at the
+  month the period ends, reading back. `DIA_US_SEC`'s commutation residual equals S's at
+  the exercise, bit for bit, on every row valued at or before the exercise, and is 0.0 in
+  every month on a row valued later, the exchange having closed before `t_entry()`, where
+  look-back stops (R1); its module asserts both. A schedule recursion's base key reads no
+  clock: `DIA_US_SEC`'s `G`, a closing balance, is based at
+  `max(duration_mth_init(), 0) - 1`, not `duration_mth(t_entry()) - 1`. SPIA's two cells
+  above, built before this, still base on clock reads at `t_entry()`, which no month-keyed
+  cell reaches before `t_entry()`: each that reaches them is `is_active(t)`, which reads
+  `stop_mth()` only from `t_entry()` on, or a cell it guards. SPIA's C step moves them
+  onto static keys (§7.9, *Record — M11*). The rules test follows precedents keyed by no
+  month to the month-keyed calls they read (precised at M12).
 
   One read further ahead is allowed (precised at M2): a cell may read a per-policy
   quantity at `anniv_mth(t)`, the anniversary that closes the policy year of `t`, so at
@@ -841,8 +878,11 @@ new skips are the eight SEC conventions, each skipped for want of a model.
   inherits neither of them:
   - IUL_US_SEC's twin of point 5 needs its own `check_margin` exemption.
   - The DIA, FIA, SPIA and VA product facts need SEC entries. SPIA's has one,
-    `EXTRA_POINT_ASSERTIONS["SPIA_US_SEC"]` (M11).
+    `EXTRA_POINT_ASSERTIONS["SPIA_US_SEC"]` (M11), and DIA's one,
+    `EXTRA_POINT_ASSERTIONS["DIA_US_SEC"]` (M12).
   - DIA's check reads `income_start_mth()`, a policy month (R1a), so it needs an SEC form.
+    `DIA_US_SEC`'s reads the income at `max(T - duration_mth_init(), t_entry())` on the
+    valuation clock, positive and the payout schedule's (M12).
 - `gen_scaffolding.py` refuses a library in which an SEC folder lacks a `model-sec.md`, so
   regenerate the pages once that file exists. Its H1 becomes the landing page's link text.
 - The first `gen_input_files.py --write` rewraps the ULSG and WholeLife entries, a cosmetic
@@ -932,13 +972,21 @@ new skips are the eight SEC conventions, each skipped for want of a model.
    is real, the capped rate excepted. Its test asserts the capped rate's type as well as
    its value, since `1 == 1.0`, in each model that caps, and asserts the capped rate on
    the rows in force too: where S does not cap, a cap applied to new business only passes
-   both comparisons, which leave out that rate and S's complex values. A modelx test sends
-   the cap, and each `min` or `max` written with its bound second, a NaN, by replacing in a
-   model read for the test the formula of the cell that feeds it (K7), and asserts the
-   float NaN, not the bound. Decided at M14's landing, when Term's SEC model capped; the
-   cap's order and the `Data` rule decided at Term's cap fix (§7.1); and the cap made in
-   the S models at §8.2 item 4's fix, 2026-11-03, when `WholeLife_US_SEC` took
-   `WholeLife_US_S`'s and `SPIA_US_SEC` reordered its two caps with `SPIA_US_S`'s.
+   both comparisons, which leave out that rate and S's complex values. A test sends the
+   cap, and each `min` or `max` written with its bound second, a NaN, and asserts the
+   float NaN, not the bound. It sends it either by setting a Reference that feeds the cap,
+   on a model read for the test, before the model computes anything, as `DIA_US_SEC`'s cap
+   and residual tests set `mort_ae_factor`, or by replacing in such a model the formula of
+   the cell that feeds it. The first is the form that runs compiled unchanged, since a
+   compiled ItemSpace takes the References when it is made; the second needs modelx (K7;
+   precised at M12). Decided at M14's landing, when Term's SEC model capped; the cap's
+   order and the `Data` rule decided at Term's cap fix (§7.1); and the cap made in the S
+   models at §8.2 item 4's fix, 2026-11-03, when `WholeLife_US_SEC` took
+   `WholeLife_US_S`'s and `SPIA_US_SEC` reordered its two caps with `SPIA_US_S`'s. At M12,
+   `DIA_US_SEC` caps as `DIA_US_S` does since that fix, the bound second, and checks its
+   four assumption tables in count cells beside S's unchanged readers (§7.1, *Precised at
+   M3*, item 9), and its `survivor_pct`, `cola_rate`, `commute_frac` and
+   `other_qlac_premium` in `Data`.
 7. Inputs: assign each input to its clock (D7).
 8. Reporting: `result_cf()` with the S columns; `result_pols()`.
 9. Docstrings: rewrite the time-axis prose — every "t = 0 is the issue month" — add the
@@ -1812,9 +1860,11 @@ follows.
   mortality is such a product does since §8.2 item 4's fix, and otherwise wherever S's
   value is real, the capped rate excepted. Its test asserts the capped rate's type as
   well as its value, and asserts the capped rate on the rows in force too, since where S
-  does not cap a cap applied to new business only passes both comparisons; a modelx test
-  sends the cap, and each bound put second, a NaN (§5.1, step 6; §8.2, item 4; changed at
-  Term's cap fix and at §8.2 item 4's fix).
+  does not cap a cap applied to new business only passes both comparisons; a test sends
+  the cap, and each bound put second, a NaN: through a Reference set before the model
+  computes anything, which runs compiled, or a replaced formula, which needs modelx (§5.1,
+  step 6, precised at M12; §8.2, item 4; changed at Term's cap fix and at §8.2 item 4's
+  fix).
 - `check_*` cells stay Python, each a `bool` over `*_resid` cells that compile; a label
   accessor stays S's, and no projection cell calls it (R17).
 - WholeLife's Phase 1 patterns compile without restructuring: at the review 92 of its 106
@@ -3354,7 +3404,11 @@ stream from this landing, and DIA's record says what it took.
   issue; life 2 is 0 on a single-life contract), `lives_if` on the valuation clock based
   at `t_entry()` and 0.0 before it, `Data`'s probability, single-life and at-issue checks
   (DIA has no scenario basis), and the roll-forward check rebuilt from the opening state.
-  This is §7.12's projection survival; DIA's pricing survival stays at issue.
+  (Precised at M12: `DIA_US_SEC` restates the recursion month by month from the opening
+  state instead, so a misindexed or mis-based recursion fails it at a cell a month; it
+  shares the monthly rate with `lives_if`, which T1 and T2 check. SPIA's running product
+  would hold 70 to 116 MB on each of DIA's 720-month points.) This is §7.12's projection
+  survival; DIA's pricing survival stays at issue.
 - *Certain periods.* Copy `certain_floor` on the payout clock (below), the certain months
   left read from it, `stop_mth()`, and `proj_len()`'s refusal of a contract owing nothing,
   worded by form and adapted to deferral.
@@ -3362,19 +3416,28 @@ stream from this landing, and DIA's record says what it took.
   key, one loop there and nowhere else (R2, precised): at every key before it the search
   is quadratic. §7.12 carries DIA's CP, B and G as opening state, so the pattern serves
   only a schedule DIA does not carry as a column. Clamp at 0 any read at the previous
-  payment point.
+  payment point. (Precised at M12: §7.12 now carries CP and B alone, and G is such a
+  schedule, which needs no column. An installment refund's derived period `n_R` is a fixed
+  point of the whole payout schedule, found by `certain_mths_refund()`'s ascending search
+  from the income start month, so a contract long in payout reads G at every key from `T`
+  up, a cell deep each. The valuation-date base serves the refund balance, the one other
+  reader of G, and a cash refund asks for no key before the valuation date's.)
 - *The payout clock.* SPIA's `_pm(k)` cells count months from the annuity date, which is
   DIA's payout clock: key DIA's payment months, COLA and certain floor on
   `duration_mth(t) - income_start_mth()`, keep the policy clock from issue for premiums
-  and deferral events, and name each cell's clock. `T` and the option months stay policy
-  months, compared with `duration_mth(t)`.
+  and deferral events, and name each cell's clock. (Precised at M12: `DIA_US_SEC` keys
+  them by policy month from issue and forms `k - T` inside, so that S's
+  `cum_annuity_pp(t)`, the premium months and the option months compare at S's keys
+  unshifted with no `twin_arg_map`; a payout-clock key would be negative in deferral.) `T`
+  and the option months stay policy months, compared with `duration_mth(t)`.
 - *Commutation.* DIA's is not SPIA's. It is one exercise named on the model point,
   `commute_frac` from `commute_mth` on, so `commute_frac_cum` follows from the policy
   clock, `duration_mth(t) >= commute_mth()`, and takes no column, and there is no
   withdrawal. What an exercise before the valuation date leaves is the frozen weight
   `commute_weight`, `l_last(t_c)`, an opening-state column (§7.12). Key the commuted
   value's loop over the remaining guaranteed payments on the payout clock, as SPIA's
-  `annuity_pp_sched_pm(k)` is keyed (R1a).
+  `annuity_pp_sched_pm(k)` is keyed (R1a). (Precised at M12: `DIA_US_SEC` keys it by
+  policy month from issue, as *The payout clock*, above, has it.)
 - *The reference rate.* Read `ref_rate_shift` as SPIA's CMT on one path (D7, precised).
   `ref_rate_shift_init` is the change in the reference rate from issue to the valuation
   date, of either sign, and 0 on a contract issued at or after it. The Reference is the
@@ -3402,6 +3465,7 @@ stream from this landing, and DIA's record says what it took.
   read of a contract in payment reading it from the valuation date's key only. Also the
   depth test with a refund in payment beside the longest cover, futures 13 months on in
   the guard test, and `check_lives_roll_fwd` left out of the swept splice copies.
+  (Precised at M12: `DIA_US_SEC`'s check, restated a cell a month, stays in them.)
 - *RILA (M10).* `RILA_US_S` projects no payout: its forced annuitization is
   `pols_maturity`, a lump sum at the account value, which it leaves to the
   immediate-annuity chassis. Copy SPIA's patterns, the decodes, the age-keyed readers,
@@ -3464,6 +3528,11 @@ while building:
   which Phase 2 removes. `commute_disc_rate` reads `t_entry()`, an int comparison.
 - *T5 at stage `EC`:* `MALFORMED` reads each refusal through `model.Projection.result_cf`,
   the base Space's default point, which must still read `Data`'s table first.
+- *Static bases:* `cum_annuity_pp(k)` is based at `duration_mth(t_entry())` and
+  `annual_income(y)` at `policy_year(t_entry())`, clock reads that no month-keyed cell
+  reaches before `t_entry()`. The C step bases them at `max(duration_mth_init(), 0)` and
+  `max(duration_mth_init(), 0) // 12 + 1`, the same values, so no number moves (R2,
+  precised at M12).
 
 **Carried, outside the SEC models.** Seven S-side items for §8.2 item 4, found in
 `SPIA_US_S`; the first two are fixed in neither model, the rest in `SPIA_US_SEC` only:
@@ -4127,16 +4196,40 @@ weighted by survival, on a constant `pols_if_init` (D5, precised at M11).
 *E — the one structural change in Phase 1.* S uses one survival curve, `lives_if`, for two
 jobs: **pricing** each premium's paid-up slice at its own date, and **projecting**. On the
 valuation clock these part.
-- Pricing stays anchored at issue and premium dates. It is deterministic from static data
-  and becomes a non-recursive vector (R2), which also removes the 517-deep recursion of
-  F7.
+- Pricing stays anchored at issue and premium dates. It is deterministic from the
+  contract's terms and the model's mortality basis, and takes a non-recursive form (R2):
+  survival from issue by one explicit loop, `lives_if_pm(k, life)`, which is S's recursion
+  bit for bit; the annual rate in one policy-year cell, `mort_rate_py(y, life)`, which the
+  projection's `mort_rate` reads too; and the pricing cells keyed by policy month `k`.
+  That removes F7's 517-deep recursion. Pricing shares the valuation's mortality basis,
+  its A/E and its improvement, as S's one curve does. A mortality sensitivity therefore
+  moves the purchase rate of every premium still due and every twin's and future row's
+  `n_g` and income, while a contract in force keeps the `n_g` it was priced with (precised
+  at M12).
 - Projection opens at valuation from per-life probabilities.
-- So the opening state is:
-  - per-life survival probabilities;
-  - cumulative premium CP (the ROP base, the refund base and QLAC room), the purchased
-    income B, and the payments-as-if-alive G;
-  - the frozen weights `surv_to_payout = l_last(T)`, `commute_weight` and the acceleration
-    factor, wherever their dates precede `t = 0`.
+- So the opening state is eight columns (precised at M12):
+  - per-life survival probabilities, `lives_if_init_1` and `lives_if_init_2` (0 on a
+    single life);
+  - the cumulative premium CP (the ROP base, the refund base and QLAC room) and the
+    purchased income B entering month 0, `cum_premium_pp_init` and `annual_income_init`,
+    S's values of month `d - 1`;
+  - `guarantee_mths_pricing_init`, the `n_g` with which S prices every slice of a cash or
+    installment refund. It is a fixed point over the whole schedule, which the premiums
+    still due cannot recover; required on every refund form in force and blank otherwise;
+  - the frozen weights `surv_to_payout_init` (`l_last(T)`) and `commute_weight_init`
+    (`l_last(t_c)`), each given exactly where its month precedes the valuation month and
+    derived bit for bit otherwise. `Data` checks presence both ways, the second at most
+    the first, each at least the probability that a covered life is alive, and each above
+    0: a contract past `T` reached it and a commutation needs an owner alive to exercise
+    it, and at 0 a contract whose lives have all died would owe its guarantee and pay
+    nothing;
+  - `ref_rate_shift_init` (§7.9, *Record — M11*).
+- The payments-as-if-alive G need no column. B is level from `T`, because `Data` refuses a
+  premium at or after `T`, an adjustment not followed by its new start month, and an
+  adjustment at or after `T`. G is therefore a static schedule, summed by policy month and
+  based at `max(duration_mth_init(), 0) - 1`, a key the model point fixes and no clock
+  read gives (R2). Nor does the acceleration factor need one: S reads it only in the
+  exercise month.
 - **"Contract open" is not "life alive"** in a certain period. S's certain-floor weight
   `l_last(T)` (0.715 on point 7 at `t = 300`) exceeds survivors (0.5577), because the open
   cohort includes beneficiary continuations. The in-force interface carries the
@@ -4148,12 +4241,35 @@ valuation clock these part.
   premium and no income. A copy of point 1 under a new id, verified, totals −1,985 in
   `net_cf`, which is its expenses, against point 1's −277,364.
   - The SEC model therefore reads its own `premium_schedule_sec.csv`, generated from S's
-    schedule: copied for a twin; for a derived row, the source policy's premiums still due
-    after `d`, because those paid earlier are already in the opening state as CP and B; and
-    the whole schedule for a future row.
+    schedule and read through S's `premium_schedule_file` Reference. It opens with S's
+    file as it stands, in its order, so each twin keeps S's rows and row labels and T1
+    compares the reader's frame exactly; then, in the table's order, a derived row's
+    source premiums due at or after `d`, because those paid earlier are already in the
+    opening state as CP and B, and a future row's whole schedule. Its reader checks it
+    against the checked table, naming the point: each `point_id` whole and in the table,
+    each month whole and not negative, each amount a finite number not negative, no
+    premium before `duration_mth` on a point in force or at or after the income start
+    month in force, and no point with neither a positive premium due nor income bought,
+    S's silent case (precised at M12).
   - Premium months stay policy months.
-- Splice months: 59, 60 and 61 around point 14's second slice; `T - 1`, `T`, `T + 1`; the
-  option months of points 13–15.
+- Splice months are chosen on the splice's edited inputs:
+  - 59, 60 and 61 around point 14's second slice;
+  - `T - 1`, `T` and `T + 1`;
+  - each option month of points 13 to 15, and either side;
+  - an acceleration inside a guarantee, valued at its income start month and issued 13
+    months on, where `l_last(T)` is derived rather than read;
+  - a half commutation with an acceleration in its guarantee's last month, valued at the
+    commutation;
+  - the last month of each refund period, derived period and guarantee, and the first
+    after;
+  - the month before mortality's cap binds, and the month after a life dies with
+    certainty;
+  - the frame's last month.
+
+  Eighteen variants of S's points reach every category of every text column S branches or
+  joins on. `SPLICE_MTHS` records 112 cases with a core of 36, and `FUTURES` 21 rows with
+  a core of 8. At M12's fix, line coverage showed the core executing 660 of the 660
+  `Projection` lines the full grid executes (precised at M12).
 
 *C:*
 - To arrays: the premium schedule — filtered and sorted per call, then an `iterrows`-built
@@ -4166,8 +4282,523 @@ valuation clock these part.
   that it is int-keyed.
 - S's tests assert the dict and DataFrame returns of `premium_by_mth()` and
   `premium_schedule()`, so those readers stay in `Data` beside the arrays.
-- Never reached: `guarantee_yrs`, `qlac_room`, `qlac_flags`, `accel_cost`,
-  `payout_factor_calc`, `phase`, `market_type`, `is_qlac`, `other_qlac_premium`.
+- Never reached by any report or check: `guarantee_yrs`, `qlac_room`, `qlac_flags`,
+  `accel_cost`, `payout_factor_calc`, `phase`, `market_type`, `is_qlac`,
+  `other_qlac_premium`; in `DIA_US_SEC` also `accel_payment_factor`, whose exercise-month
+  block reads the schedule by policy month, each life's `lives_death`, `cola_factor`, now
+  read through `cola_factor_pm(k)`, `calendar_year` and `age`, the per-`t`
+  `mort_rate_base` and `improvement_rate`, now that the rate is built once per policy year
+  (`mort_rate_py`), and the label accessors (`sex`, `reduction_trigger`, `market_type`,
+  `income_form`, `payout_form`, `db_form`, `payment_timing`, `mort_basis`,
+  `factor_basis`). The module's sweep calls each (precised at M12).
+
+#### Record — M12, done 2026-11-03
+
+Built in two commits, as D1 requires: `DIA_US_S` copied with only `_name` changed, then
+the enhancement, by M1's process: a design prototyped and critiqued before the build,
+tests written against the build and checked by injected faults, then a review under the
+three lenses. The design departed from §7.12's *E* where reading `DIA_US_S` cell by cell
+showed it short: the opening state is eight columns, one of them
+`guarantee_mths_pricing_init`, which §7.12 lacked, and G and the acceleration factor need
+none, so §7.12's *E* and *C* are rewritten to match. The review made 24 findings, 5 of
+them major, one defect seen under two lenses among them. An acceleration inside a commuted
+guarantee paid the commuted cohort its pulled-forward instalments again; a frozen weight
+of 0 let a contract whose lives had all died inside its guarantee pay nothing; the four
+assumption tables' keys were never checked, so a key written as text ended in a bare
+`KeyError` that named no file; and no row reached an acceleration on guaranteed
+instalments where `l_last(T)` is derived, so a fault that turned it NaN passed every test.
+A re-review of the fixes made three more, all minor: §7.1's *Precised at M3*, item 11, was
+half met, three lines of `model-sec.md` ran past 92 characters, and the proposed K6 text
+misstated the default run's cost and where the uslib suite's peak memory is reached. All
+are fixed, in `DIA_US_SEC`, its tests and its notes, or recorded here where they asked for
+a record, and neither fix stage rejected a finding. Fifteen defects found in `DIA_US_S`
+are carried below: fourteen are fixed in `DIA_US_SEC` only, and one in neither model. M12
+was built on M11's tip and rebased at landing onto §8.2 item 4's fix, after M3 (*Landing*,
+below).
+
+**What exists now.**
+- `DIA_US_SEC` at stage `E`. Of `DIA_US_S`'s 113 `Projection` cells, 26 are unchanged, 24
+  have a new docstring only and 63 are rewritten; none is removed or renamed. It adds 36
+  cells, 149 in all: `policy_count`, `duration_mth_init`, `t_entry`, `stop_mth`,
+  `is_active`, `pols_if_at` and `pols_new_biz`; seven opening-state accessors,
+  `lives_if_init(life)`, `cum_premium_pp_init`, `annual_income_init`,
+  `guarantee_mths_pricing_init`, `surv_to_payout_init`, `commute_weight_init` and
+  `ref_rate_shift_init`; the pricing curve, `lives_if_pm(k, life)` and
+  `lives_if_last_pm(k)`, and the one rate cell, `mort_rate_py(y, life)`, with its monthly
+  rate `mort_rate_mth_py(y, life)`; one reader per table keyed by attained age,
+  `mort_rate_base_at(x, life)` and `improvement_rate_at(x, life)`; the premium of a policy
+  month, `premium_pm(k)`; the payout schedule fixed at the income start month,
+  `annual_income_payout` and `cum_premium_payout`, with `is_payment_pm(k)`,
+  `cola_factor_pm(k)`, `annuity_pp_sched_pm(k)` and `certain_floor_pm(k)`; and nine
+  decodes. `Data` keeps five of S's seven cells, `input_dir` and the four assumption
+  readers, rewrites the readers of this model's two files, `model_point_table` and
+  `premium_schedule_table`, which now check them as they read them, and adds four count
+  cells, `mort_table_count`, `improvement_scale_count`, `payout_factor_count` and
+  `rop_factor_count`, and the Reference `future_horizon_mth = 120`.
+- `model_point_table_sec.csv` holds 26 rows generated from DIA's `SecSpec`. Seventeen are
+  S's points as twins, issued at the valuation date. Eight are derived: the
+  payment-acceleration point (S point 14) at month 59, in its deferral the month before
+  its second premium; the anchor (1) at 241, a month into its income phase, its cash
+  refund running; the 10-year period certain (7) at 300, inside its guarantee, where the
+  contract open exceeds the life alive; the commuting point (15) at 253, the month after
+  its full commutation; the start-date adjustment (13) at 121, the month after it; the
+  joint point (8) at 672, its joint annuitant dead with certainty; the installment refund
+  (5) at 270, inside its derived period; and the anchor at 719, its last month, a one-row
+  frame. The last row is S point 8 issued 13 months on. `premium_schedule_sec.csv` holds
+  34 rows: S's 31 as they stand, then the premium the payment-acceleration row still owes
+  and the future row's two. A case-insensitive search for the publishers, products, form
+  numbers and hosts that `deferred_income_annuity/sources.md` cites finds none of them in
+  either file.
+- `tests/test_deferred_income_annuity_us_sec.py` has 46 tests and 341 cases: T2 on 112
+  splices; T3 on 21 future rows; T4; T5 on 96 malformed rows, 17 malformed premium
+  schedules, 38 malformed assumption tables, 9 points `proj_len()` refuses and 8
+  undecodable values; T6, and the committed rows against S; the rules test, core and full,
+  and the clock, depth and guard tests; and the product's own facts. By default a core of
+  36 splices and 8 future rows runs, 251 cases in all. A test asserts that the core
+  reaches each listed branch, and line coverage at the fix stage showed it executing all
+  660 `Projection` lines the full grid executes. The other 90 cases carry `sec_full` (K6).
+  S has no in-force point, so `IN_FORCE_TWINS` is empty. The SEC conventions, 33 cases,
+  pass but for two skipped by design: the lapse-rate convention, since DIA has no lapse,
+  and `pols_if == BEF_DECR`, which `survival_pols_if` skips.
+- `run_sec.py`; `model-sec.md`, with *The opening state*, *The premium schedule* and
+  *Pricing on the policy clock*; the registry entry, with `survival_pols_if` among its
+  flags, and its `INPUT_FILES`, which name `premium_schedule_sec.csv`; and four generated
+  pages. doccheck reported 489 pages and 0 warnings on M11's tip with DIA added.
+- Shared files, added to in place: DIA's spec, its state extractors and its companion's
+  builder, `_dia_premium_schedule`, in `sec_support.py`; the entry in `us_registry.py`,
+  with a sentence on `survival_pols_if` in its docstring; in `test_model_conventions.py`,
+  `EXTRA_POINT_ASSERTIONS["DIA_US_SEC"]`, S's product fact that the income starts, read on
+  the valuation clock, and `SURVIVAL_POLS_IF`, the skip the flag keys and the confinement
+  of the flag to `DIA_US_SEC`; and the models table, the SEC sentence and the file table's
+  row on the `*_sec.csv` companions in uslib's `index.md`.
+
+**Departures and precisions.**
+- *The count is not decremented* (D5, settled at M12). `DIA_US_SEC` copies SPIA's count
+  chassis: `policy_count` on the books from issue to the stop rule, never decremented,
+  with `BEF_NB` a closed form and mortality per life in `lives_if`. `pols_if` keeps S's
+  definition on that count, `pols_if_at(t, "BEF_DECR") * lives_if_last(t)`, S's
+  `pols_if_init * l_last` bit for bit on every twin, which is neither `BEF_DECR` nor
+  SPIA's closing measure. The registry marks it `survival_pols_if`, a key the registry
+  test confines to `DIA_US_SEC` (`SURVIVAL_POLS_IF`), the `pols_if == BEF_DECR` convention
+  skips it, and the module asserts the definition; `closing_pols_if` is not widened.
+- *The opening state* (§7.12, *E*, precised) is eight columns: each life's survival,
+  `lives_if_init_1` and `_2`; CP and B entering month 0, `cum_premium_pp_init` and
+  `annual_income_init`, S's values of month `d - 1`; `guarantee_mths_pricing_init`, the
+  `n_g` with which S prices each slice of a refund form, a fixed point over the whole
+  premium schedule that the premiums still due cannot recover; the frozen weights
+  `surv_to_payout_init` and `commute_weight_init`, each given exactly where its month
+  precedes the valuation month and derived bit for bit otherwise; and
+  `ref_rate_shift_init`. `Data` holds the weights to presence both ways, the second at
+  most the first, each at least the survivors and each above 0. G and the acceleration
+  factor take no column.
+- *Pricing on a curve of its own* (§7.12, *E*; R2; F7). `lives_if_pm(k, life)` is one
+  explicit loop from issue, S's recursion bit for bit at every key of all seventeen twins;
+  `mort_rate_py(y, life)` is the one place the annual rate is built, which the
+  projection's `mort_rate` reads too; and the pricing cells, `income_start_mth_at`,
+  `deferral_yrs`, `surv_to_income_start`, `rop_factor_calc`, `rop_factor`,
+  `annuity_factor_def` and `purchase_rate`, are keyed by policy month `k`, S's `t`
+  renamed, so T1 and the splice compare them unshifted. Pricing shares the valuation's
+  mortality basis, its A/E and its improvement, as S's one curve does: at an A/E of 0.9
+  the slice point 18 still owes buys 0.229129 a year per dollar rather than 0.241650,
+  while its column keeps the 40.810288 months priced at the shipped 1.0.
+- *The payout schedule is fixed at the income start month* (R2, precised).
+  `annual_income_payout()`, `B(T)`, and `cum_premium_payout()`, `CP(T)`, are one loop each
+  from the valuation date's policy month, bit for bit S's. `is_payment_pm(k)`,
+  `cola_factor_pm(k)`, the one COLA formula, `annuity_pp_sched_pm(k)` and
+  `certain_floor_pm(k)` take a policy month and form `k - T` inside, so S's keys compare
+  unshifted, and `cum_annuity_pp(k)`, S's `G`, is based at
+  `max(duration_mth_init(), 0) - 1`, a key the model point fixes and no clock read gives.
+  The schedule rests on `B` level from `T`, which `Data` enforces (below). An installment
+  refund's derived period `n_R` is a fixed point of the whole payout schedule, so
+  `certain_mths_refund()` searches `G` upward from `T`, a cell deep each: point 24 reads
+  `G` at keys 240 to 280 and no other, which the test asserts. A cash refund asks for no
+  key before the valuation date's: point 19 reads `G` at 240 to 718 alone.
+- *Two residuals restated.* `check_lives_roll_fwd_resid` restates the recursion month by
+  month from the opening state, so that a misindexed or mis-based recursion fails it,
+  where S's is the telescoping identity, zero whatever `lives_if` returns, and SPIA's
+  rebuild as a running product would hold 70 to 116 MB on each of DIA's 720-month points
+  (§7.9, precised). `check_commutation_value_resid` is measured at the guarantee's last
+  month, reading back to the exercise, where S's reads the guaranteed months ahead of it:
+  on every row valued at or before the exercise it is S's residual at the exercise, bit
+  for bit, which the module asserts, since a residual moved to the wrong month is 0 there
+  and passes every comparison at the floor (R2, precised).
+- *§7.9's carried items* (*Record — M11*) are taken, with the precisions recorded there:
+  the payout schedule's cells and the commuted value's loop keyed by policy month from
+  issue; the survival check restated rather than rebuilt, which at a cell a month stays in
+  the swept splice copies; and an installment refund's search reading `G` from `T`.
+- *Guards* (R1). Outside cover every count and flow is zero, as is every rate read at a
+  policy year or an age, every flag is false, and no cell reads a rate, a policy year or
+  an age the contract does not have. `cola_factor`, a factor, is 1.0 there, its neutral
+  value and S's before `T`, and `commute_disc_rate`, which reads neither clock, keeps its
+  value. The guard does not leave the tables unread: on an installment refund
+  `is_active(t)` reads `stop_mth()`, whose search for `n_R` reads the payout schedule and
+  so prices the premiums, so the age readers and `mort_rate_py` are read in cover or not,
+  at keys the guard test bounds to the contract, and `IN_COVER_ONLY` holds `age` and
+  `calendar_year` alone.
+- *The acceleration.* `accel_payment_factor(t)` is 0.0 outside its blackout and where the
+  lump sum was paid before the valuation date. The exercise month's lump sum reads the
+  schedule and the certain floor by policy month inline, so no projection cell calls the
+  factor, and T2 exempts it on a row valued after the exercise, where nothing reads it.
+- *The reference rate on one path* (D7, as §7.9 carried it). A contract on the books at
+  the valuation date discounts a commutation at
+  `i_p + max(0, ref_rate_shift_init() + ref_rate_shift) + m_c`, the floor on the whole
+  change since issue, and one issued later at `i_p + m_c`. A test reads one table holding
+  point 15 in force at 240, its twin and the point issued 13 months on, at the Reference 0
+  and 0.005, and with the column and the Reference of opposite signs: a column of -0.01 at
+  0.005 discounts at 5.25%, and one of 0.01 at -0.005 at 5.75%, where a floor on each part
+  would give 5.75% and 6.25%.
+- *`Data` refuses, naming the point,* what S projects inconsistently or silently, each a
+  recorded departure: a premium at or after the income start month in force; a broken
+  adjustment pair, a new start month not after the exercise, or an exercise at or after
+  `income_start_mth`; an acceleration or a commutation before `T`, or the two less than
+  six months apart, the product's interlock [S4]; a point with no income bought and no
+  positive premium due; a joint contract on the table basis; a `joint` flag other than
+  True or False, or 1 or 0; a sex, or on a joint contract a `joint_sex`, other than M or
+  F; a `survivor_pct`, `cola_rate`, `commute_frac` or `other_qlac_premium` that is not a
+  number or is out of range; an `issue_age`, `joint_age`, `certain_period`, `frequency`,
+  `issue_year` or `purchase_rate_dp` that is not whole or is below its least sensible
+  value, each read by value; and in the companion, a premium before the valuation date and
+  a row naming no point. The income start month and the option months are checked before
+  every rule that reads them, and the checked columns are returned as the numbers checked.
+- *`proj_len()` refuses* a point at or past the stop rule; a contract in force owing
+  nothing, with one message for each of its three ways; and an acceleration on the books
+  whose lump sum pulls forward instalments of a guarantee that a commutation before it
+  reduced, which both models would pay unreduced. An acceleration that pulls forward only
+  the life tail after the guarantee projects, and so does one paid before the valuation
+  date.
+- *The tables* (R5; §7.1, *Precised at M3*, item 9). DIA followed UL's form for its four
+  tables: S's readers unchanged, an int count cell beside each, which each join asks
+  first. Each count cell reads its table's keys by value and refuses, naming the file, the
+  column and the lines, a key blank, text or not whole, a sex or payout form no join
+  reads, a key on two rows and a gap in a sex's ages, then a value blank, text, infinite
+  or outside its table's range. A negative improvement rate, a deterioration, projects as
+  S projects it. The build had checked the values in place in S's readers; the fix stage
+  moved the checks out, so that none of the four readers is rewritten, as R5 has it.
+- *Text.* Ten bool decodes, the nine new cells and S's `is_qlac` rewritten as one, and the
+  `joint` flag as `Data` checked it, carry every branch, so no projection cell compares
+  the model point's text or calls a label accessor. The pricing and QLAC cells that passed
+  policy months as `t` read the age at `T` as `age_at_entry(1) + T // 12`, and at `k` as
+  `age_at_entry(1) + k // 12`, their sex from the model point's column and their form from
+  the decodes (R1a).
+- *The cap on mortality* (§5.1, step 6). `mort_rate_py` caps the annual rate as `DIA_US_S`
+  does since §8.2 item 4's fix, `min(mort_ae_factor * q, 1.0)`, so the cap is no
+  departure, and the build's "cap written rate first" is withdrawn. A test finds S's own
+  product past 1 on S point 8 and variants 18 and 30 on the splice's inputs, asserts both
+  models' annual and monthly rates `(float, 1.0)` there and the life's survival 0.0 after,
+  compares every cell with S on the twin and on the row in force the month before, the
+  capped months included, and reads a model with `mort_ae_factor` NaN, set before it
+  computes anything, whose `mort_rate(0, 1)` is NaN.
+- *Inputs on their clocks.* Expense inflation keeps S's annual steps, on `t`,
+  `(1 + g)^(t // 12)`. Improvement is dated by the calendar on the policy clock (D7), so
+  the splice does not neutralize it: point 16 restated at 240 reads S's
+  `mort_rate(240 + t, life)` exactly.
+- *The frame's end* (§7.1, *Precised at M3*, item 5). DIA's frame ends at the age horizon,
+  or at the guarantee's end where it is later, with survivors left: the anchor's life in
+  its last month is 6.13e-08. Survival, the one quantity its roll-forwards read at
+  `t + 1`, is carried into `t = proj_len()`, and every other count, balance and flow is
+  zero there, as is every rate read at a policy year or an age, and every flag is false,
+  as the guard test asserts; the clocks and the valuation-clock inputs keep their values,
+  and so does `commute_disc_rate`, which reads neither clock. The count, SPIA's chassis,
+  is read at `t + 1` by no roll-forward and leaves the books at the stop rule (D5).
+- *`result_pols` and `result_annual`.* `result_pols` puts `pols_if` and `pols_new_biz`
+  first, then S's seven survival and payment-factor columns; T1 exempts it, and the module
+  compares it with S's column by column. `result_annual` keeps S's policy-year key and
+  drops the years before the valuation date's, as `Term_US_SEC`'s annual report does, its
+  first row holding the rest of that policy year.
+- *The product's fact* (§4, *Carried into Phase 1*).
+  `EXTRA_POINT_ASSERTIONS["DIA_US_SEC"]` reads S's fact, that the income starts, on the
+  valuation clock, `T` kept a policy month (R1a): the income at
+  `max(T - duration_mth_init(), t_entry())` is positive and is the payout schedule's,
+  `annual_income_payout()`.
+- *No S cell is removed or renamed.* S's four docstring slips are corrected and its nine
+  lines over 92 characters wrapped, in SEC only (*Carried, outside the SEC models*).
+- *The splice.* Inflation is set to 0 in both models, the Baa yield to 6.25% and the A/E
+  to 1.05 in both, and `ref_rate_shift` to 0.005 in S, where SEC's is 0, the change being
+  in the restated rows' column, and future rows are compared with S read at 0. The
+  mortality table and the improvement scale are set apart by age and sex in both copies,
+  kept small so that no later row owes nothing, and the months are chosen on those edited
+  inputs. Eighteen variants of S's points, each with its premium rows, are added to the
+  copies of S's table and schedule. T2 and T3 compare to 1e-9 relative with no absolute
+  floor, the four roll-forward residuals at the 1e-9 floor (§5.2, precised at M11). T2
+  exempts `proj_len`, `payment_surv_mth`, the premium schedule's two readers,
+  `result_annual` and, on a row valued after its acceleration, `accel_payment_factor`; T3
+  compares a future row's premiums by month and its annual display too. Each S point is
+  released after the last T2 case that compares a row of it, and the collector is frozen
+  again after the last, which took the module's peak from 4.47 GB to 2.61 GB at the tests
+  stage.
+- *The committed rows and a residual that is not a number* (§7.1, *Precised at M3*,
+  item 11). `test_every_committed_row_continues_its_s_point` compares each derived and
+  future row of the committed table with its S point, frame by frame and cell by cell. The
+  future row is compared with T3's exemptions, so its premiums by month and its annual
+  display are compared too; `result_annual`'s `claims_death` differs from S's by at most
+  3.7e-16 relative, from summation order.
+  `test_a_residual_that_is_not_a_number_fails_its_check` reads the model with
+  `mort_ae_factor`, a Reference, at NaN. It asserts that the survival check fails on every
+  twin, and all four checks on the commuting point's twin, each on a residual NaN in some
+  month and 0.0 in every other. `DIA_US_S`'s own `max(0.0, ...)` and `a > 0.0` lose the
+  NaN in the payment factor, the annuity factor and the guarantee search, so the other
+  three checks pass on most twins: the income check fails on twins 1, 2, 4, 7 and 15, the
+  payment factor's on 5, 7 and 15 and the commutation's on 15 alone. Unlike UL's, DIA's
+  flows are NaN too, `net_cf` on every row, so the checks are a second line. No formula is
+  replaced, so the test runs compiled (§5.1, step 6, precised).
+- *The rules test* has no `LOOK_AHEAD`: DIA admits no read beyond `t + 1`, the commutation
+  residual reading back. It follows each precedent keyed by no month through its own
+  precedents to the month-keyed calls it reads (`_months_read`), which found `G`'s base
+  key reading the clock, at `duration_mth(t_entry())`, from a row issued 13 months on; it
+  is now the static key, and no number changed (R2, precised).
+- *T4* multiplies the count by 2.5 with `ref_rate_shift` switched on, on the four twins
+  that carry every counted flow and on the derived and future rows, and asserts every
+  counted cell (§5.2, precised at M11).
+- *T5* reads each case with a model of its own, refused by the one rule under test and
+  again through a projection; a sweep that dropped each of the 68 rules in turn showed
+  each failing its own cases and no other (*Faults*, below).
+- *The runner* keys each point as M14's `run_sec.py` does, freezes the collector once the
+  table is read and again before the projections, releases and collects each point in both
+  passes, and in `--block` asks every point for its frame first.
+- *M14's carried items not yet taken.* Built on M11's tip, DIA's `_mismatches` passes
+  `codes=codes(sec_proj)` from the build on, but its runner does not yet carry Term's
+  `--cython`, `--build` and `_tool()`, nor its module the `create()`-copy test, and
+  `proj_len()` does not yet refuse the four bounds *Carried into Phase 2* names; DIA's C
+  step takes them up.
+
+**Measured for K6 and F7.** Every time below was taken with other workflows sharing the
+machine, the fix stages' and the re-review's at load averages of 2.8 to 3.9.
+- *Time.* By default the module ran 251 passed and 90 skipped in 193.99 s and 196.63 s in
+  its final state, peaking at 2.62 GB in one process; before the second fix's two tests it
+  ran 249 passed and 90 skipped in 191.1 s and 193.3 s, and 246 passed in 205.3 s before
+  the fix stage's last three cases. Over the full grid it ran 341 passed in 275.2 s at
+  2.33 GB, and 339 passed in 280.8 s and 282.0 s before. So the default run takes 191 to
+  205 s, about 10 to 40 s more than WholeLife's module, and the full grid about 15 to 25 s
+  less. Most of it is fixed: the splice's fixture (26.4 s), `sec_read` (16.4 s), `s_model`
+  (12.8 s), T4's scaling (12.8 s), the runner test (12.0 s) and the module's teardown
+  (6.6 s); the second fix's two tests take 1.2 s each, so a cut would come from the
+  fixtures. The SEC conventions, 31 passed and 2 skipped, took 29.2 s and 29.1 s at the
+  fix stage and the re-review, and 42.5 s and 38.4 s at the review. On M11's tip with DIA
+  added, the uslib suite ran 1,818 passed and 255 skipped in 15 min 50 s, peaking at
+  3.88 GB in one process, and 1,816 passed in 16 min 25 s and 16 min 22 s before the
+  second fix, at 3.88 GB and 3.84 GB. That peak is not DIA's: DIA's module alone peaks at
+  2.62 GB, `Term_US_SEC`'s alone at 3.52 GB on M11's tip, M14's compile step included, and
+  DIA's followed by Term's at the same 3.52 GB, so DIA adds nothing to it; a per-module
+  watch of one suite run put the high-water mark at 2.64 GB after DIA's module and at
+  3.61 GB in Term's. As landed, after M3 and §8.2 item 4's fix, the suite ran 2,258 passed
+  and 365 skipped in 23 min 22 s (*Verified at landing*, below).
+- *Depth.* A cold `net_cf(0)` runs 13 cells deep on the twins and on points 18 and 22, 12
+  on points 19 to 21 and 23 to 25, 21 on the installment refund's twin, point 5, through
+  its refund-period search, and on point 26, issued 13 months on, 10 fully cold and 8 once
+  `Data`'s table is read, where `DIA_US_S`'s runs 251 on points 1 and 5 and 311 on
+  point 13. A cold `net_cf` of the last month runs one cell a month back to `t_entry()`
+  plus 7 to 9, and 12 in all on point 25's one-row frame: 728 on the 720-month twins, 726
+  on point 5, 487 on point 19, 479 of them `cum_annuity_pp`, and 728 on point 26. At the
+  longest cover, issue age 22 with the income from policy month 360, 1,176 months, it runs
+  1,182 on an installment refund and 1,184 on a cash refund, both at the valuation date
+  and issued 120 months on. Each figure counts the count cell a table's join asks first.
+  An ascending sweep runs at most 16 deep, on point 5, a recursion limit of 15.
+  `CALL_DEPTH` is 40, `CHAIN_OVERHEAD` 16 and `FIRST_MONTH_DEPTH` 32. In the modelx
+  export, the cold call in the last month needs a recursion limit of 1,482 on the anchor's
+  twin, 1,454 on point 5's, 1,000 on point 19, 1,482 on point 26 and 2,366 at the longest
+  cover, and the ascending sweep 52 on the committed points and 62 on the longest cover's
+  two rows.
+
+**Faults.** Each fault went alone into its own copy of the library, and the tests aimed at
+it ran through the gate.
+- *Tests stage:* 94 faults and a control, at most two at a time: a fault in each of the
+  eight opening columns, at every R1a site of the design and on each named risk. Every
+  fault failed some test but F64, `Data` returning the raw columns, an equivalent mutant,
+  since pandas reads every accepted input as the numbers checked. F60, `G` summed in
+  reverse, passed the first sweep, and fails since a loop-order check on a COLA cash
+  refund restated at policy month 265 was added. A sweep that dropped each of the 48
+  refusals of the time showed each failing its own cases and no other, and each of the
+  module's 43 test functions of the time failed under some fault.
+- *Review (tests lens):* G07 and G08, the lump sum's floor and the acceleration factor's
+  read from `surv_to_payout_init()`, which turn the lump sum NaN where `l_last(T)` is
+  derived, passed the default module, the conventions and the full grid; so did G10,
+  `phase`'s `PRE_ISSUE` dropped, and G11, the commutation residual's acceleration add-back
+  with its sign flipped. G05, the payment factor reading `surv_to_payout()` in every
+  month, a 240-month look-ahead through a cell keyed by no month, failed the depth test
+  alone.
+- *Fix stage:* 13 faults, all failing: G05 the core rules test and the depth test; G07 and
+  G08 each T2 point25-d240 and T3 point25-k13; G10 the guard test; G11 T2 point35-d252 and
+  the residual test; G12, survival based at 0, T3 point1-k1, the core rules test and the
+  guard test; N01 and N02, a join that skips its count, 11 and 8 `TABLES` cases; N03, the
+  guarantee rule a month short, 2 `REFUSED` cases; N04, the rule skipping the valuation
+  month, 1; N05, the interlock at five months, 2 `MALFORMED` cases; N06, a weight of 0
+  admitted, 2; and N07, `G`'s base reading the clock, the core rules test. A sweep that
+  dropped each of the 68 rules, 37 in `model_point_table`, 8 in `premium_schedule_table`,
+  18 in the four count cells and 5 in `proj_len()`, showed each failing its own cases and
+  no case of another rule.
+- *Re-review:* re-ran G05, G07 and G11, all failing, and found §7.1's item 11 half met: no
+  committed future row was compared with S frame by frame, and no test showed a check
+  failing on a residual that is not a number.
+- *Second fix:* F01 to F04, each check rewritten as `not any(abs(r) > tol)`, which passes
+  a NaN, fail the NaN-residual test, F01 on twin 1 and the others on twin 15, and F01 and
+  F04, run against the whole default module, fail it alone, the other 250 tests passing:
+  before this stage no test saw a check that passes a NaN. F05, `t_entry()` a month early
+  on a contract issued later, fails the committed-rows test at row 26 alone.
+
+**Carried into RILA (M10).** What DIA adds to what §7.9's *Record — M11* carries into RILA
+with the payout chassis, and §7.10's *Record — M7* with the deferred one; RILA's record
+says what it took.
+- *Term-start inputs* take DIA's frozen-weight shape: a column only where the term began
+  before the valuation month, blank otherwise and derived bit for bit, `Data` checking its
+  presence both ways and its range, the term-start index level above 0, since `index_perf`
+  divides by it. §7.10's *Record — M7* gives `cap_init` and the term-start market state
+  D6's value entering month 0 instead, on every row, as MYGA's `credit_rate_init` holds
+  it: 0 on a point not yet in force, and on a row valued at a term start the expiring
+  term's, unread. Each form's `Data` refuses a twin written in the other, so RILA's record
+  says which it took. Term starts and ends, renewals and the maturity stay policy months,
+  compared with `duration_mth(t)`.
+- *Far-ahead pricing* goes in one explicit loop or a static cell keyed by policy month, as
+  `lives_if_pm` and the payout schedule are, never a recursion on the valuation clock, and
+  a schedule's recursion is based on a key the model point fixes, never a clock read (R2,
+  precised).
+- *A residual that sums ahead* is measured at its period's end, reading back, and asserted
+  equal to S's on every row valued at or before the period's start, since at the floor a
+  residual moved to the wrong month passes; on a row valued later, look-back stops at
+  `t_entry()` (R1), and DIA's residual is asserted 0.0 in every month (R2, precised).
+- *Tables and refusals.* S's readers stay unchanged, and each table a join reads gets an
+  int count cell beside it, which the join asks first, as DIA's and UL's do; §7.10's
+  *Record — M7* carries MYGA's checked copy instead, and §7.1's *Precised at M3*, item 9,
+  admits either, so RILA's record says which it took. Every flag column is validated by
+  value, True or False, or 1 or 0, and decoded from the checked value; and the option
+  combinations the product's interlocks forbid are refused by name.
+- *Tests.* Walk the rules test through each precedent keyed by no month to every
+  month-keyed call it reads, and test the cap over both models. Write §7.1's item 11's two
+  tests from the start: every committed derived and future row compared with its S point
+  frame by frame, the future rows with T3's exemptions; and a residual that is not a
+  number failing each check, sent through a Reference the residuals read, set before the
+  model computes anything, so that it runs compiled, each check asserted only where its
+  residual goes NaN, since S's own `max` and comparisons can lose one.
+- *The count.* RILA's is a decrement chain, so its `pols_if` is `BEF_DECR` and needs no
+  registry flag.
+
+**Carried into every product still to come.** The first two were found writing §7.1's
+item 11's tests at the second fix, the next two at the tests stage, and the last by the
+design:
+- The helper that compares a committed row with its S point takes the exemption set as a
+  parameter: a future row compares more than a restated one, its whole schedule and its
+  whole policy years.
+- A NaN-residual test asserts that the residual is NaN in some month and 0.0, or within
+  its tolerance, in every other, which shows the check failing on the NaN and not on a
+  finite residual; where a Reference feeds the residuals, it sends the NaN through it, set
+  before the model computes anything, so that the test runs compiled (§5.1, step 6,
+  precised).
+- The rows a module's product tests read are built in the splice's fixture while S is
+  swept, and read once; each spliced S point is released after the last T2 case that
+  compares a row of it, and the collector frozen again after the last, which took DIA's
+  peak from 4.47 GB to 2.61 GB.
+- A schedule summed by a loop has the loop's order asserted on a row whose instalments
+  step: on level instalments a reversed loop gives the same float, and F60, `G` summed in
+  reverse, passed every other test.
+- An aggregate over a whole schedule becomes an opening-state column wherever the
+  companion keeps only what is still due, as `guarantee_mths_pricing_init` carries `n_g`.
+
+**Carried into Phase 2.**
+- *Engine functions* (R14): S's float-parameter cells, `annuity_factor` and
+  `pricing_disc_factor`, kept for S's tests and T1, which call them; Phase 2 inlines them.
+- *Rounding* (R16): `purchase_rate`'s `round(pr, dp)` and `rop_factor`'s
+  `int(round(deferral_yrs(k)))`, which Phase 2 precomputes in `Data`.
+- *T1 and codes:* S's `claims(t, kind=None)` and `claims_ann(y, kind=None)` keys need a T1
+  `arg_map` at stage `EC` (R12). `_mismatches`, the module's one call of
+  `twin_mismatches`, passes `codes=codes(sec_proj)`, so the splice's comparisons take
+  Phase 2's codes when they come.
+- *Label accessors* that R17 and C5 do not admit as worded: `payout_form()`, derived from
+  `income_form`, `payment_timing()`, which returns `timing`, and `sex(life)`; DIA's C step
+  extends R17 and C5 for those three, or leaves them out of `"reporting"`.
+- *Containers to remove:* `premium_by_mth`'s dict and `premium_pm`'s lookup in it, which
+  become a dense `[idx, month]` array; `guarantee_mths_pricing`'s sum over the dict; the
+  lists of `horizon_mths` and `qlac_flags`; and `phase`'s strings (R10).
+- *`Data`:* the four count cells are R7's checking ints: Phase 2 sizes the ROP factor's
+  array and the per-point payout factor from them, and int sex and form codes replace the
+  string-keyed `.loc` joins.
+- *Caches and bounds:* `t` 0..1,296, `k` 0..1,180, `y` 1..99 and `x` 22..119, as the
+  spec's comment in `sec_support.py` derives them. Four inputs those sizes rest on are
+  bounded by the product and refused by no cell at stage `E`: the issue age, 22 or more,
+  the joint annuitant's age, the income start month, 13 to 360, and the certain period, 10
+  to 30 years on PC. Phase 2 refuses each in `proj_len()` beside the cover check, or sizes
+  the caches from the product's limits. The export's limits above size `sample_sec.py` and
+  `run_sec.py --cython`.
+- *Tests on the compiled model:* the NaN-residual test and the cap test's NaN case set a
+  Reference before the model computes anything, so they run compiled unchanged (K7).
+
+**Carried, outside the SEC models.**
+- Fifteen S-side items for §8.2 item 4, found in `DIA_US_S`; the first is fixed in neither
+  model, the rest in `DIA_US_SEC` only, refused there or corrected in its formulas or
+  docstrings:
+  - a joint cash refund below a 100% survivor percentage nets the unreduced schedule, so
+    the refund after the first death is understated: points 8 and 9 ship it at two thirds,
+    and §7.9's record carries the same item for `SPIA_US_S`;
+  - a premium at or after the income start raises the instalments but not the refund base,
+    `CP(T)`;
+  - `commute_weight` assumes the commutation is in payout: one taken before `T` weighs
+    `l_last(t_c)`, above the payment factor from `T` on in the guarantee, and the expected
+    instalment goes negative;
+  - an adjustment with one month blank, or a new start at or before the exercise, gives a
+    start of -1 or one before the exercise;
+  - an adjustment at or after the elected income start month pays nothing from that month
+    to the exercise;
+  - a point with no premium rows projects silently: point 1 copied under a new `point_id`
+    totals -1,985.46 in `net_cf`, its expenses, against point 1's -277,363.94;
+  - a joint point on the table basis is refused only when a premium is priced, naming no
+    point;
+  - the option and integer accessors take `int()` of the raw value, so 60.5 reads as 60
+    and text raises Python's own message;
+  - `bool()` of the `joint` column reads any text as True;
+  - a blank `survivor_pct` or `cola_rate` is lost through a `max`;
+  - an acceleration and a commutation inside each other's six months, which the product's
+    interlock forbids: in the blackout the commuted value counts instalments the lump sum
+    paid;
+  - an acceleration after a commutation, inside its guarantee, pays the commuted cohort
+    its pulled-forward instalments again (point 15 accelerating at 258: 7,805.70 of
+    8,282.92), its check fails, and `check_commutation_value_resid`'s docstring calls the
+    combination unreachable;
+  - `check_lives_roll_fwd_resid` is the telescoping identity;
+  - four docstring slips: `purchase_rate_dp` says None where it returns -1;
+    `annuity_factor` nests a literal in bold; `liability_cf` has a stray space; and "`n_g`
+    is two different quantities" goes on to describe three;
+  - nine lines of `Projection` exceed 92 characters.
+- *Tools*, for the next change to `tools/`:
+  - `tools/gen_scaffolding.py` ignores an option it does not know, `--help` among them,
+    and runs, writing the pages: at M12's fix stage `--help` rewrote uslib's doc tree,
+    every file as it was;
+  - doccheck's autodoc import writes `__pycache__` into the model folders of all six
+    libraries, 183 directories at M12's docs stage; git ignores them, and
+    `PYTHONDONTWRITEBYTECODE=1` in its Sphinx subprocess would stop it.
+
+**Landing.** Rebased from 244360e (M11) onto e3e026e, after M3 and §8.2 item 4's fix.
+`DIA_US_S` there caps its annual mortality with the bound second,
+`min(mort_ae_factor * q, 1.0)`, which `DIA_US_SEC`'s `mort_rate_py` already wrote, so that
+fix changed no formula of `DIA_US_SEC`. uslib's `index.md` took one conflict, the sentence
+that lists the SEC models, which now names all six; `sec_support.py` took two, where DIA's
+state extractors and spec follow MYGA's and UL's, all three kept; and `DIA_US_SEC`'s
+`Projection` one, `mort_rate`, where the enhancement's, which reads `mort_rate_py`,
+replaces the copy's. `INPUT_FILES`, regenerated with `gen_input_files.py --write`, came
+out unchanged. `model-sec.md` now says the valuation-date base of `G` serves the refund
+balance, its one other reader, where it named the commuted value too, which reads the
+schedule instead; and `tools/gen_sec_points.py`'s docstring cites §5.1's step 10 for
+`CLAUDE.md`'s name search, where it cited step 9, the number before the rates step was put
+in as step 6.
+
+**Verified at landing**, with two other workflows, FIA's and VUL's builds, sharing the
+machine. The uslib suite, with modelx-cython installed and so the compile tests included,
+gave 2,258 passed and 365 skipped in 1,402.73 s (23 min 22 s), its two warnings modelx's
+renames of `Term_US_S` and `VUL_US_S` in the round-trip tests. DIA brings 251 passes and
+90 skips in its module, 31 passes and 2 skips in its SEC conventions, and one pass in the
+compiled convention that reads every SEC model. Over its full grid, DIA's module gave 341
+passed in 272.44 s, and the `cython` selection 11 passed and none skipped under
+`USLIB_REQUIRE_CYTHON=1`, in 118.99 s. doccheck built 497 pages with 0 warnings.
+`gen_sec_points.py --check` found the files of the six SEC models current, and
+`gen_sec_fingerprint.py Term_US_SEC --check` reproduced the fingerprint. md_lint reported
+0, `gen_scaffolding.py --dry-run` 0 files in each of the six libraries, and
+`gen_citation_links.py --dry-run` nothing on its 301 source tags. A case-insensitive
+search of `model_point_table_sec.csv` and `premium_schedule_sec.csv` for every publisher,
+product, form number, document code and host that `deferred_income_annuity/sources.md`
+cites, each name's words matched also when joined by underscores, dots or hyphens or run
+together, found none. These runs came before the landing's last edits, to two lines of
+`model-sec.md` and to this plan, and before the rebase onto e3e026e, which changed two
+lines of §8.2 item 4; none of them changed code or a test. On the tree as committed,
+doccheck again built 497 pages with 0 warnings, md_lint reported 0 on uslib and on this
+plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
+`gen_scaffolding.py --dry-run` 0 files in each of the six libraries.
 
 ---
 
@@ -4292,6 +4923,20 @@ valuation clock these part.
     passed and 273 skipped in 17 min 55 s, with no other workflow sharing the machine. The
     other times were taken with other workflows sharing the machine, and the module's, its
     full grid's and the suite's on M2's tip at a load average of 1.5 to 2.8.
+  - *M12:* DIA's module runs by default a core of 36 T2 and 8 T3 cases, which a test
+    asserts reaches each listed branch and line coverage showed executing all 660
+    `Projection` lines the full grid executes, in 191 to 205 s (251 passed and 90 skipped
+    in its final state), at a peak of 2.62 GB in one process. Its full grid, 112 and 21
+    cases, runs in 272 to 282 s at 2.33 GB, and its SEC conventions take 29 to 43 s. Most
+    of its time is fixed, so a cut would come from its fixtures. By default it costs about
+    10 to 40 s more than WholeLife's module, and over the full grid about 15 to 25 s less.
+    The uslib suite on M11's tip with DIA added ran 1,816 to 1,818 passed and 255 skipped
+    in 15 min 50 s to 16 min 25 s, and as landed, after M3 and §8.2 item 4's fix, 2,258
+    passed and 365 skipped in 23 min 22 s. The suite's peak, 3.6 to 3.9 GB in one process,
+    is reached in `test_term_life_us_sec.py`, whose module peaks at 3.52 GB alone on M11's
+    tip, M14's compile step included; DIA's module followed by Term's peaks at the same
+    3.52 GB, so DIA adds nothing to it (measured at M12's re-review and again at its
+    second fix). All times were taken with other workflows sharing the machine.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares what the cells return and raise.
@@ -4311,6 +4956,11 @@ valuation clock these part.
 - **K9 — DIA's two survival curves.** Separating pricing from projection survival is the
   only Phase 1 change that restructures a model rather than extending it. It goes last, on
   the most mature harness.
+  - *M12:* the streams put DIA second in the Payout stream, after SPIA (§5.3), not last.
+    Its pricing reads a survival curve of its own, `lives_if_pm`, one loop from issue and
+    S's recursion bit for bit, beside the projection's, which opens from the per-life
+    columns; its cold `net_cf(0)` runs at most 21 cells deep on the committed points,
+    where `DIA_US_S`'s runs 251 to 311 (§7.12, *Record — M12*).
 
 ### 8.2 Decisions
 
@@ -4391,7 +5041,7 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
+| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, is **done**, 2026-11-03 (§7.12) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
 | M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL before the fingerprints are frozen (§5.4) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |

@@ -71,8 +71,8 @@ valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where th
 example's point is already in force, as whole life's is, the `_SEC` twin of that point
 continues the `_S` projection from the month it is valued at, its expenses apart, which
 inflate from the valuation date. Each `model-sec.md` says what running in force changes.
-`Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC` and `UL_US_SEC` are the
-first five.
+`Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC` and
+`DIA_US_SEC` are the first six.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -110,7 +110,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 | [Variable annuity](products/variable_annuity/index.md) | `VA_US_S` | monthly | Separate-account deferred annuity: subaccount units net of M&E, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base |
 | [Registered index-linked (RILA)](products/registered_index_linked_annuity/index.md) | `RILA_US_S` | monthly | SEC-registered buffered annuity: point-to-point terms with a downside buffer and upside cap, and an AG 54 interim value |
 | [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S`, `SPIA_US_SEC` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
-| [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
+| [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S`, `DIA_US_SEC` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
 
 (uslib-one-shape)=
 
@@ -256,7 +256,7 @@ python -m pytest tests -q
 * - `products/<product>/<Model>/`
   - The modelx model itself. Formulas only — no embedded data.
 * - `products/<product>/*.csv`
-  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, generated from the `_S` model and its table and checked against them by the tests.
+  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv` (and any `*_sec.csv` companion it needs, DIA's premium schedule), generated from the `_S` model and its table and checked against them by the tests.
 * - `products/<product>/run.py`
   - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block, and `--cython` runs the compiled model.
 * - `products/<product>/sample_sec.py`, `spec_sec.py`

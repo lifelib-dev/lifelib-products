@@ -26,7 +26,7 @@ from S or composes it from S's own keys and a month, and adds no name of its own
 vouch for S, though, and T6 keeps the files in step with S without looking for names.  So
 ``CLAUDE.md``'s rule applies to every file written here as to any other input file: before
 committing, search each one, case-insensitively, for every publisher and product the
-product's ``sources.md`` cites (USLIB-SEC-PLAN.md §5.1, step 9).  Case-insensitively,
+product's ``sources.md`` cites (USLIB-SEC-PLAN.md §5.1, step 10).  Case-insensitively,
 because a name lowercased into a lookup key slips past a case-sensitive search.  The tool
 prints the files it wrote and the ``sources.md`` to search them against.
 

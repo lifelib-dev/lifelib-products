@@ -1173,6 +1173,105 @@ _UL_STATE = {
 }
 
 
+def _dia_lives(life):
+    """``DIA_US_S``'s survival of ``life`` to time ``d``, the start of month ``d``."""
+    return lambda s, d: s.lives_if(d, life)
+
+
+def _dia_entering(name):
+    """What ``DIA_US_S`` carries into month ``d`` in cells ``name``, valued during a month.
+
+    ``cum_premium_pp`` and ``annual_income`` hold the month's value after the premium
+    received at its start, so what enters month ``d`` is S's value in month ``d - 1``, and 0
+    at issue.
+    """
+    return lambda s, d: getattr(s, name)(d - 1) if d > 0 else 0.0
+
+
+def _dia_pricing_guarantee(s, d):
+    """The guarantee period ``DIA_US_S``'s kernel prices every slice of a refund form with.
+
+    ``s.guarantee_mths_pricing()`` on a cash or installment refund in force at ``d``, and
+    blank otherwise: on new business ``DIA_US_SEC`` derives it from the whole schedule, and
+    the other forms fix it.
+    """
+    return (s.guarantee_mths_pricing() if d > 0 and s.payout_form() in ("CR", "IR")
+            else float("nan"))
+
+
+def _dia_surv_to_payout(s, d):
+    """``DIA_US_S``'s ``l_last(T)``, where the income start month precedes month ``d``.
+
+    Blank where it does not: there ``DIA_US_SEC`` derives the weight from the lives.
+    """
+    return s.surv_to_payout() if d > s.income_start_mth() else float("nan")
+
+
+def _dia_commute_weight(s, d):
+    """``DIA_US_S``'s ``l_last(t_c)``, where the commutation month precedes month ``d``.
+
+    Blank where it does not, or where the contract never commutes: there ``DIA_US_SEC``
+    derives the weight from the lives.
+    """
+    c = s.commute_mth()
+    return s.lives_if_last(c) if 0 <= c < d else float("nan")
+
+
+def _dia_ref_rate_change(s, d):
+    """The reference rate's change ``DIA_US_S`` has applied by month ``d``, since issue: its
+    ``ref_rate_shift``, which it applies from month 0 on, and 0 at ``d = 0``, issue itself,
+    where a twin stands."""
+    return float(s.ref_rate_shift) if d > 0 else 0.0
+
+
+# DIA_US_SEC's opening state (D6): what DIA_US_S carries into month d, each read as S's own
+# formulas read it: each life's survival to time d; the premiums paid and the income bought
+# entering month d, S's values in month d - 1, which hold the month's premium; on a refund
+# form in force, the guarantee period S's kernel prices every slice with, a fixed point over
+# the whole premium schedule, which the premiums still due cannot recover; the two frozen
+# cohort weights, l_last(T) and l_last(t_c), where their months precede d; and the reference
+# rate's change since issue, which S applies whole from month 0, so that a row restated at d
+# has seen all of it and sees none after (D7's last paragraph).  The count is S's
+# pols_if_init, the contracts the point stands for, and not S's pols_if, which is weighted
+# by survival (D5): mortality decrements each life, never the count.
+_DIA_STATE = {
+    "policy_count": lambda s, d: s.pols_if_init(),
+    "lives_if_init_1": _dia_lives(1),
+    "lives_if_init_2": _dia_lives(2),
+    "cum_premium_pp_init": _dia_entering("cum_premium_pp"),
+    "annual_income_init": _dia_entering("annual_income"),
+    "guarantee_mths_pricing_init": _dia_pricing_guarantee,
+    "surv_to_payout_init": _dia_surv_to_payout,
+    "commute_weight_init": _dia_commute_weight,
+    "ref_rate_shift_init": _dia_ref_rate_change,
+}
+
+
+def _dia_premium_schedule(s_model, table):
+    """``premium_schedule_sec.csv``: ``DIA_US_S``'s schedule, then the other rows' premiums.
+
+    The twins keep S's ``point_id`` s, so the file opens with S's ``premium_schedule.csv``
+    as it stands, in its order, and a twin's ``premium_schedule()`` is S's, row labels and
+    all (T1).  Then, in the table's order, a derived row's source premiums still due, those
+    of S months ``d`` and later, since those paid earlier are in its ``cum_premium_pp_init``
+    and ``annual_income_init``, and a future row's whole schedule, each under the row's
+    ``point_id``, every other cell copied from S.  The point key is the ``point_id``
+    column, and nothing else in the file names a point.
+    """
+    s_sched = s_model.Data.premium_schedule_table()
+    point_of = {pol: pid
+                for pid, pol in s_model.Data.model_point_table()["policy_id"].items()}
+    parts = [s_sched]
+    for row in table.to_dict("records"):
+        if row["row_kind"] == "twin":
+            continue
+        rows = s_sched[s_sched["point_id"] == point_of[row["source_policy_id"]]]
+        if row["row_kind"] == "derived":
+            rows = rows[rows["premium_mth"] >= row["source_mth"]]
+        parts.append(rows.assign(point_id=row["point_id"]))
+    return pd.concat(parts, ignore_index=True)[list(s_sched.columns)]
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -1430,6 +1529,91 @@ SEC_SPECS: dict[str, SecSpec] = {
         twin_state={c: f for c, f in _UL_STATE.items()
                     if c not in ("av_pp_init", "loan_bal_init")},
         exempt=frozenset({"result_pols"}),
+    ),
+    # DIA's state is eight columns (_DIA_STATE): each life's survival; the premiums paid and
+    # the income bought; on a refund form in force, the guarantee period the pricing kernel
+    # prices every slice with, a fixed point over the whole schedule, which the premiums
+    # still due cannot recover; the frozen cohort weights l_last(T) and l_last(t_c), each
+    # given only where its month precedes the valuation month, the projection deriving it
+    # from the lives at or after it; and the reference rate's change since issue.  S has no
+    # in-force point, so every twin is new business, and the columns take S's own values at
+    # issue: each covered life alive, life 2 at 0 on a single-life contract, nothing paid or
+    # bought, the three other columns blank, no change in the reference rate.  The
+    # instalments scheduled to date need no column: the income is level from the income
+    # start month, so they are a schedule the model sums by policy month.  Nor does the
+    # acceleration's weight, which S reads only in the exercise month: a row valued after it
+    # paid the lump sum before the valuation date.  SEC's ref_rate_shift is a change made at
+    # the valuation date, on the one path every point shares, which a row in force sees on
+    # top of its column and a future row, issued after it, never sees: so the splice reads
+    # its table once, with SEC's ref_rate_shift at 0, and compares each future row with S
+    # read with its ref_rate_shift at 0, the same contract on that path.
+    #
+    # DIA's premiums are a companion, premium_schedule_sec.csv (D8), keyed by point_id as
+    # S's premium_schedule.csv is: it opens with S's file as it stands, so each twin keeps
+    # S's rows and row labels, then holds each derived row's premiums still due and each
+    # future row's whole schedule.  Its reader checks it against the table.
+    #
+    # The derived rows are the payment-acceleration point in deferral the month before its
+    # second premium, which it prices with the guarantee-period column; the anchor a month
+    # into payout, its cash refund running; the 10-year period certain inside its guarantee,
+    # where the contract open exceeds the life alive; the commuting point a month after its
+    # commutation; the start-date adjustment a month after it; the joint point with its
+    # joint annuitant dead with certainty; the installment refund inside its derived period;
+    # and the anchor in its last month, a one-row frame.  The future row is the joint point
+    # issued 13 months on: more than a year out, so that a read before issue lands at policy
+    # year -1, and off every payment step.  T2's splice grid is built from this spec in a
+    # temporary table, not committed.
+    #
+    # T1 holds on DIA at any count: neither model charges acquisition, and every flow is the
+    # count times a per-contract amount.  It skips one S cell besides the default three:
+    #   result_pols: SEC's gains pols_new_biz and puts pols_if first, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and the product module compares the report
+    #     itself with S's, column by column.
+    # S caches claims(t, kind=None) and claims_ann(y, kind=None) under (t, None) and
+    # (y, None); at stage EC, where that default becomes a named total (R12), T1 needs an
+    # arg_map for those keys.  S's label accessors stay S's, called by reporting and T1
+    # alone.  R17 and C5 admit one that takes no argument and returns its point's column of
+    # its own name: market_type(), income_form(), db_form(), mort_basis(),
+    # factor_basis() and reduction_trigger() do, but payout_form() derives its value from
+    # income_form, payment_timing() returns "timing" and sex(life) takes a life and returns
+    # "sex" or "joint_sex", so DIA's C step extends R17 and C5 for those three, or leaves
+    # them out of "reporting".  S's float-parameter cells, annuity_factor and
+    # pricing_disc_factor, are R14 engine functions, kept for S's tests and T1, which call
+    # them; Phase 2 inlines them.  S rounds a computed rate in purchase_rate (round(pr, dp))
+    # and a deferral in rop_factor (int(round(deferral_yrs(k)))), which Phase 2 precomputes
+    # in Data (R16).  premium_by_mth's dict, premium_schedule's DataFrame, qlac_flags' list,
+    # horizon_mths' list and guarantee_mths_pricing's sum over the dict are Phase 2's to
+    # remove, and so is premium_pm's dict lookup, a method call in a per-month cell new in
+    # SEC, which becomes the dense [idx, month] read.
+    #
+    # Phase 2 sizes its caches from the contract, each from these inputs:
+    #   t 0..1,296: the youngest issue age, 22 (product-spec), the limiting age omega_age,
+    #     120, and future_horizon_mth, 120: the longest frame is 12 * (120 - 22) + 120
+    #     months, and lives_if reads the closing time point t = proj_len().  A guarantee
+    #     ends inside that frame at every issue age the product allows, the income starting
+    #     by attained age 85 and the certain period at most 30 years;
+    #   k 0..1,180, the policy months and time points: the youngest issue age and
+    #     omega_age, 1,176, plus the five instalments an acceleration in the last month
+    #     pulls forward, which annuity_pp_sched_pm, certain_floor_pm and lives_if_pm read;
+    #   y 1..99, the policy years of mort_rate_py and mort_rate_mth_py: k's bound,
+    #     1,180 // 12 + 1;
+    #   x 22..119, the attained ages, per life: the youngest issue age and omega_age - 1.
+    # Four inputs those sizes rest on are bounded by the product and refused by no cell at
+    # stage E, as S projects each: the issue age, 22 or more (the shipped tables start at
+    # 20, and S projects any age they hold); the joint annuitant's age, likewise; the
+    # income start month, 13 to 360 (S projects any month a premium precedes); and the
+    # certain period, 10 to 30 years on the PC form.  Phase 2 refuses each in proj_len()
+    # beside the cover check, or sizes from the product's limits.
+    "DIA_US_SEC": SecSpec(
+        twin="DIA_US_S",
+        derived=((14, 59), (1, 241), (7, 300), (15, 253), (13, 121), (8, 672), (5, 270),
+                 (1, 719)),
+        future=((8, 13),),
+        state=_DIA_STATE,
+        twin_state={c: f for c, f in _DIA_STATE.items() if c != "policy_count"},
+        exempt=frozenset({"result_pols"}),
+        companions={"premium_schedule_sec.csv": _dia_premium_schedule},
     ),
 }
 
