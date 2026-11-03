@@ -730,7 +730,7 @@ def qualified():
 def rating_factor():
     """theta: the substandard mortality multiplier **[std]**; 1.0 in the base run.
 
-    ``q_rated = min(theta * q_be, 1)``, the reference model's carrier for anti-selection
+    ``q_rated = min(1, theta * q_be)``, the reference model's carrier for anti-selection
     at outset and for rated ages [S8][R1][REG-R41].
     """
     return float(model_point()["rating_factor"])
@@ -1315,8 +1315,8 @@ def mort_rate(t, life):
     The notes' construction, in order::
 
         q_base(x, 2012+k) = q_x(table) * (1 - G2_x)^k
-        q_be              = min(AE * q_base, 1),      AE = 1.084 [std]
-        q_rated           = min(theta * q_be, 1),     theta = 1 in base
+        q_be              = min(1, AE * q_base),      AE = 1.084 [std]
+        q_rated           = min(1, theta * q_be),     theta = 1 in base
 
     ``k = calendar_year(t) - mort_table_year``, so the basis is **generational**: each
     attained age in each future calendar year uses its own improved rate.  The calendar
@@ -1326,9 +1326,10 @@ def mort_rate(t, life):
     belongs on the *projected* basis, matching the study's measurement convention - on
     the unprojected table the study's own answer is 99.6% [R9], and applying 1.084 there
     misstates the mortality level by about 8%.  The two caps keep ``q_rated`` at most 1,
-    so :func:`mort_rate_mth` stays real at any rating, and each puts its bound second, as
-    ``SPIA_US_S``'s do, so that a missing input, a NaN, stays NaN, where ``min(1.0, q)``
-    would read it as 1.  Zero outside the frame, before the calendar year is read.
+    so :func:`mort_rate_mth` stays real at any rating, and the code writes each with its
+    float bound second, ``min(q, 1.0)``, as ``SPIA_US_S`` does, so that a missing input,
+    a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.  Zero outside the frame,
+    before the calendar year is read.
     """
     if not is_active(t):
         return 0.0

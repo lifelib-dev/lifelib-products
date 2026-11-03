@@ -400,8 +400,8 @@ def mort_rate(t):
 
     Past 1 the monthly rate ``1 - (1 - q)^(1/12)`` has no real value, so the product is
     capped, written ``min(q, 1.0)``: the product first and the bound second, so that a
-    missing input, a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1, certain
-    death with every flow finite. No shipped point reaches the cap.
+    missing base rate or class factor, a NaN, stays NaN, where ``min(1.0, q)`` would read
+    it as 1, certain death with every flow finite. No shipped point reaches the cap.
     """
     d = policy_year(t) - policy_term()
     return min(mort_rate_base(t) * class_factor()

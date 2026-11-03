@@ -672,17 +672,18 @@ too, and its maintenance expense is `SPIA_US_S`'s times 1.025 or 1.025².
   calendar on the policy clock; where a cap on mortality binds, at the limiting age on the
   anchor's twin and on rows in payment, one of them rated past 1 at 117, the annual and
   monthly rates are the float 1.0, every life alive at the start of the month dies in it,
-  and every report is float64 and finite; expense inflation runs on the valuation clock at
-  the shipped 2.5%, which only this test sees, since the splice sets the rate to 0; an
-  annuity commencing later brings no premium and no acquisition cost; the model has
-  `pols_new_biz` and no lapse; the stop rule ends every frame; every guarded cell holds its
-  value outside the frame and reads no rate there; the points of a block sum row by row; an
-  extract without the generator's three columns, relabelled and reversed, projects the same
-  numbers; `run_sec.py` prints the model's numbers, for a point commencing at the valuation
-  date, one in payment, one in its last month, a one-row frame its headings call one row,
-  one commencing later and the block; the docstrings describe the valuation clock and map
-  every cell running in force adds; and the model reads `SPIA_US_S`'s assumption tables in
-  place.
+  and every report is float64 and finite; a NaN sent to either cap, through
+  `mort_rate_base`'s or `rating_factor`'s formula replaced, stays NaN; expense inflation
+  runs on the valuation clock at the shipped 2.5%, which only this test sees, since the
+  splice sets the rate to 0; an annuity commencing later brings no premium and no
+  acquisition cost; the model has `pols_new_biz` and no lapse; the stop rule ends every
+  frame; every guarded cell holds its value outside the frame and reads no rate there; the
+  points of a block sum row by row; an extract without the generator's three columns,
+  relabelled and reversed, projects the same numbers; `run_sec.py` prints the model's
+  numbers, for a point commencing at the valuation date, one in payment, one in its last
+  month, a one-row frame its headings call one row, one commencing later and the block; the
+  docstrings describe the valuation clock and map every cell running in force adds; and the
+  model reads `SPIA_US_S`'s assumption tables in place.
 
 ```bash
 python -m pytest tests/test_immediate_annuity_us_sec.py -q

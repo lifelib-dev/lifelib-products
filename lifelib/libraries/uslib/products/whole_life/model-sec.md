@@ -513,7 +513,11 @@ S's exactly.
   above, and with the first three zeroed they give the 1,800.00, the shortfall of 1,060.82
   and the 450.00 above; expense inflation runs on the valuation clock at the shipped 2%,
   which only this test sees, since the splice sets the rate to 0; acquisition falls on new
-  business alone; every guarded cell holds its value outside cover and reads no rate
+  business alone; on `WholeLife_US_S`'s point 2 at an A/E of 5.0, where the product
+  passes 1 at attained age 97, the rate is the float 1.0 in both models on four rows,
+  three of them `WholeLife_US_S`'s in every cell, the capped months included, every policy
+  in force dies in the first capped month and none is in force after it, and a NaN sent
+  to the cap stays NaN; every guarded cell holds its value outside cover and reads no rate
   there, on the committed points and on the splice's future rows, which carry the rider,
   the blend and each dividend option before issue; the points of a block sum row by row;
   an extract without the generator's three columns projects the same numbers; and

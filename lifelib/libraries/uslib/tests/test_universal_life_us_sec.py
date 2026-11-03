@@ -2760,13 +2760,15 @@ def test_an_annual_mortality_past_1_is_capped_in_both_models(tmp_path):
     the first capped month dies in it, and none is in force after it.  ``result_cf()``,
     ``result_pols()`` and ``result_av()`` hold finite floats alone, and both checks hold.
 
-    In every cell of S's this model agrees with S at every argument S cached
-    (``sec_support.twin_mismatches``), the capped months and the reports included, but, in
-    the issue month, the count before new business, which S counts as in force
-    (:func:`_issued_later`).  It holds them to 1e-9 relative with no absolute floor,
-    because the counts before the cap fall to 2.9e-13, where the default floor of 1e-9
-    would compare them against nothing.  S is swept as the splice sweeps it
-    (:func:`_sweep_s`), and every monthly cell in every month (:func:`_sweep_months`).
+    Each of the first three rows below agrees with S in every cell, as T1, T3 and the
+    splice compare them (:data:`FUTURE_EXEMPT`, :data:`SPLICE_EXEMPT`: ``result_pols`` by
+    its columns), at every argument S cached (``sec_support.twin_mismatches``), the capped
+    months, ``result_cf()`` and ``result_av()`` included, but, in the issue month, the
+    count before new business, which S counts as in force (:func:`_issued_later`).  It
+    holds them to 1e-9 relative with no absolute floor, because the count before the cap
+    falls to 2.1e-13, where the default floor of 1e-9 would compare it against nothing.
+    S is swept as the splice sweeps it (:func:`_sweep_s`), and every monthly cell in
+    every month (:func:`_sweep_months`).
 
     Four rows of the point, built from S by the generator under :data:`CAPPED_REFS`:
     issued at the valuation date and 25 months after it; restated in force in the month

@@ -7,7 +7,7 @@ done: UL in the Life stream, MYGA in the Deferred annuity stream and SPIA in the
 stream (M3, M7 and M11, the *Records* of §7.3, §7.10 and §7.9). Term's compile step, M14,
 brought forward to run beside the streams (D2), is done on Linux, 2026-11-02; its Windows
 gate awaits the `cython` job's first run (§7.1, *Record — M14*). The open decisions of
-§8.2 are settled but one, which is needed only before Phase 1 reaches RILA.
+§8.2 are settled, the last of them, item 4, on 2026-11-03.
 Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
 phase records what it actually did, including where the implementation departed from the
 plan.
@@ -882,7 +882,7 @@ new skips are the eight SEC conventions, each skipped for want of a model.
    and the issue value at `t_entry()` for new business. Everything is zero before issue.
 5. Anniversary and term logic that looked back across `t = 0` takes opening-state columns
    instead (R1).
-6. Rates: an annual decrement rate `q` built as a product of factors (base × class ×
+6. Rates: an annual mortality rate `q` built as a product of factors (base × class ×
    improvement or PLT factor) is capped at 1, written `min(q, 1.0)`: the product first,
    the float bound second, as each S model whose mortality is such a product writes it
    since §8.2 item 4's fix. Python's `min` and the compiled cell alike keep their first
@@ -894,7 +894,11 @@ new skips are the eight SEC conventions, each skipped for want of a model.
    way, the value first, as Term's M(1) rule and PLT floor are. Where the value can be an
    int equal to the bound, or −0.0 against a bound of 0.0, the value-first form returns
    the value, of another kind or sign than the bound, so there the order stays as S has
-   it, and `Data`'s refusals, below, keep a NaN from it (precised at Term's cap fix). The
+   it, and `Data`'s refusals, below, keep a NaN from it (precised at Term's cap fix). A
+   lapse rate's bound, at 1 or below it, is such a `min` or `max` and not the cap, which
+   is mortality's: §8.2 item 4's fix left the S models' lapse bounds in S's order,
+   `VA_US_S`'s `min(1.0, ...)` and `IUL_US_S`'s `min(lapse_rate_cap, rate)`, both at 1,
+   among them, and `UL_US_SEC` and `MYGA_US_SEC` keep S's (precised at that fix). The
    cap is on the annual rate, and it is the float `1.0`. A cap on the monthly rate's
    result instead would compile to NaN, or with its bound first to 1.0, where modelx
    raises on the complex rate. Where the S model does not cap, as `Term_US_S` and
@@ -926,15 +930,15 @@ new skips are the eight SEC conventions, each skipped for want of a model.
    the month before the cap, in the splice grid or in a case of its own, as Term's is: in
    every cell, the capped months included, where S caps, and otherwise wherever S's value
    is real, the capped rate excepted. Its test asserts the capped rate's type as well as
-   its value, since `1 == 1.0`, in both models, and asserts the capped rate on the rows in
-   force too: where S does not cap, a cap applied to new business only passes both
-   comparisons, which leave out that rate and S's complex values. A modelx test sends each
-   bound a NaN, by replacing in a model read for the test the formula of the cell that
-   feeds it (K7), and asserts the float NaN, not the bound. Decided at M14's landing, when
-   Term's SEC model capped; the cap's order and the `Data` rule decided at Term's cap fix
-   (§7.1); and the cap made in the S models at §8.2 item 4's fix, 2026-11-03, when
-   `WholeLife_US_SEC` took `WholeLife_US_S`'s and `SPIA_US_SEC` reordered its two caps
-   with `SPIA_US_S`'s.
+   its value, since `1 == 1.0`, in each model that caps, and asserts the capped rate on
+   the rows in force too: where S does not cap, a cap applied to new business only passes
+   both comparisons, which leave out that rate and S's complex values. A modelx test sends
+   the cap, and each `min` or `max` written with its bound second, a NaN, by replacing in a
+   model read for the test the formula of the cell that feeds it (K7), and asserts the
+   float NaN, not the bound. Decided at M14's landing, when Term's SEC model capped; the
+   cap's order and the `Data` rule decided at Term's cap fix (§7.1); and the cap made in
+   the S models at §8.2 item 4's fix, 2026-11-03, when `WholeLife_US_SEC` took
+   `WholeLife_US_S`'s and `SPIA_US_SEC` reordered its two caps with `SPIA_US_S`'s.
 7. Inputs: assign each input to its clock (D7).
 8. Reporting: `result_cf()` with the S columns; `result_pols()`.
 9. Docstrings: rewrite the time-axis prose — every "t = 0 is the issue month" — add the
@@ -1796,18 +1800,21 @@ follows.
   C4 is exact on x86-64 and a last-bit difference is a finding (C4, K3).
 - Every contract bound a cache size depends on is a lower-case `Projection` Reference that
   `proj_len()` checks, naming the point, with its `NOT_ISSUED` cases (F4; §6.1, step 6).
-- An annual decrement rate built as a product of factors is capped with the float 1.0,
+- An annual mortality rate built as a product of factors is capped with the float 1.0,
   `min(q, 1.0)`, the bound second, never on the monthly rate's result; a `min` or a `max`
   that bounds a value that is always a float may put its bound second too, as Term's
-  M(1) rule and PLT floor do. `Data` refuses, by name, a blank, text or
-  infinite value wherever a cap, a `min` or a `max` reads it as a number, and decodes a
-  column such a cell reads only as a key as S decodes it. A point where the cap binds is
-  compared with S wherever S's value is real, the capped rate excepted, as new business
-  and restated in force the month before the cap, in the splice grid or in a case of its
-  own, as Term's is. Its test asserts the capped rate's type as well as its value, and
-  asserts the capped rate on the rows in force too, since a cap applied to new business
-  only passes both comparisons; a modelx test sends each bound a NaN (§5.1, step 6; §8.2,
-  item 4; changed at Term's cap fix).
+  M(1) rule and PLT floor do, and a lapse rate's bound is such a `min` or `max`, not the
+  cap. `Data` refuses, by name, a blank, text or infinite value wherever a cap, a `min` or
+  a `max` reads it as a number, and decodes a column such a cell reads only as a key as S
+  decodes it. A point where the cap binds is compared with S as new business and restated
+  in force the month before the cap, in the splice grid or in a case of its own, as Term's
+  is: in every cell, the capped months included, where S caps, as every S model whose
+  mortality is such a product does since §8.2 item 4's fix, and otherwise wherever S's
+  value is real, the capped rate excepted. Its test asserts the capped rate's type as
+  well as its value, and asserts the capped rate on the rows in force too, since where S
+  does not cap a cap applied to new business only passes both comparisons; a modelx test
+  sends the cap, and each bound put second, a NaN (§5.1, step 6; §8.2, item 4; changed at
+  Term's cap fix and at §8.2 item 4's fix).
 - `check_*` cells stay Python, each a `bool` over `*_resid` cells that compile; a label
   accessor stays S's, and no projection cell calls it (R17).
 - WholeLife's Phase 1 patterns compile without restructuring: at the review 92 of its 106
@@ -1886,8 +1893,8 @@ item:
   withdrawn.
 - *The q > 1 domain*, left open too, was settled at landing: capped, `min(1.0, q)` then,
   `min(q, 1.0)` since Term's cap fix (§5.1, step 6), Term's at landing (above),
-  WholeLife's in its C step (M15), and the products still in Phase 1 in Phase 1; each S
-  model without the cap is on §8.2 item 4's list.
+  WholeLife's with `WholeLife_US_S`'s at §8.2 item 4's fix (§7.2, *C*), and the products
+  still in Phase 1 in Phase 1, where, since that fix, SEC caps as its S model does.
 - R16's `round` for a projected amount, WholeLife's dividend, is flagged by C3 and C5
   today. WholeLife's Phase 2 (M15) adds an admission by cell, such as a registry key
   naming the cells, with a test.
@@ -2033,6 +2040,7 @@ current, and C4 is exact on the grid, at the extremes and where the cap binds.
   `gen_scaffolding.py --dry-run` 0 files in each of the six libraries.
 - *Carried:* `SPIA_US_SEC`, landed before the fix, caps `q_be` and `q_rated` with the
   bound first, as `SPIA_US_S`, `DIA_US_S`, `FIA_US_S` and `ULSG_US_S` do (§8.2, item 4).
+  *Fixed on 2026-11-03 (§8.2, item 4): each of these caps now puts its bound second.*
 
 ### 7.2 Whole life — `WholeLife_US_SEC` (E: L, C: M)
 
@@ -2330,9 +2338,10 @@ and nothing calls it.
   them by formula override; on those paths the account value's close, both checks and the
   twins' match with S hold. Expense inflation keeps S's annual steps, on `t`,
   `(1 + i) ** (t // 12)`.
-- `mort_rate` is capped at 1.0, `min(q, 1.0)` (§5.1, step 6): at the shipped A/E, S's
-  tobacco classes pass 1 from attained age 113 (StdTob) and 114 (PTob), where `UL_US_S`
-  turns complex. The cap test follows Term's.
+- `mort_rate` is capped at 1.0, `min(q, 1.0)` (§5.1, step 6): at the shipped A/E, the
+  tobacco classes' product passes 1 from attained age 113 (StdTob) and 114 (PTob), where
+  `UL_US_S` turned complex before §8.2 item 4's fix and caps since. The cap test follows
+  Term's.
 - `pols_if_at`'s `"BEF_MAT"` keeps S's meaning, the `"BEF_DECR"` count, and T3 compares
   the cell with S's stub at every key but `"BEF_NB"` in the issue month (D5, precised at
   M3).
@@ -2656,10 +2665,12 @@ departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, no
   does. UL neither refuses a fractional run-off nor reads it one way: `lapse_shock_year`
   takes its `int()` and `surr_charge_rate` amortizes over the float, as `UL_US_S` does, so
   the chassis decides it once.
-- *Mortality.* Cap `mort_rate` at 1.0 with `min(q, 1.0)` (§5.1, step 6): in VUL and IUL,
-  whose S models do not cap, with the cap test on Term's form at the shipped A/E, and in
-  ULSG, whose S model caps by `min(1.0, ...)`, which reads a blank rate or class factor as
-  1.0.
+- *Mortality.* Cap `mort_rate` at 1.0 with `min(q, 1.0)` (§5.1, step 6), as `VUL_US_S`,
+  `IUL_US_S` and `ULSG_US_S` do since §8.2 item 4's fix, so the cap is no departure from
+  S; at this landing VUL's and IUL's S models did not cap, and ULSG's capped by
+  `min(1.0, ...)`, which reads a blank rate or class factor as 1.0. Test it as UL's cap
+  and NaN tests do: on a tobacco class at the shipped A/E, every cell compared with S, the
+  capped months included, and with a NaN sent to the cap, which stays NaN.
 - *Tables.* One keyed reader per policy-year or age table, `_py(y)` or `_at(a)`, each
   called only in cover, its extent from a `Data` cell that checks the table (§7.1,
   *Precised at M3*). VUL's subaccount table, read by a join, gets a count cell that the
@@ -3932,10 +3943,13 @@ the products in progress from this landing (§5.3), and each record says what it
   in `_sweep_s`. Guard every per-month charge, ratio and clamp, and probe the future rows
   of every point and variant. Measure the depth at the longest cover, the youngest issue
   age the product allows, on mortality extended below the table, and assert it as a bound.
-  Check for a factor before capping mortality: `FIA_US_S` caps already, and VA and RILA
-  check (§5.1, step 6). Build each T5 case so that only the check it names fails, since a
-  move to an anniversary brings every anniversary check into play. Route every count of
-  months the runner prints through `months()`, on both sides of the valuation date.
+  Cap `mort_rate` at 1.0 with `min(q, 1.0)` (§5.1, step 6) in FIA and RILA, as `FIA_US_S`
+  and `RILA_US_S` do since §8.2 item 4's fix, so the cap is no departure from S; `VA_US_S`,
+  like `MYGA_US_S`, reads the table's rate with no factor and needs no cap. At this landing
+  `FIA_US_S` capped by `min(1.0, ...)`, and VA and RILA were to check for a factor. Build
+  each T5 case so that only the check it names fails, since a move to an anniversary brings
+  every anniversary check into play. Route every count of months the runner prints through
+  `months()`, on both sides of the valuation date.
 
 **Carried into Phase 2.**
 - *Caches and bounds:* `t` from 0 to 1,320, and the month after for the `t + 1` reads:
@@ -4315,30 +4329,58 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 4. **Small S fixes found on the way** — RILA's invalid escape, the `pols_if_at` stubs in UL
    and VUL that return `pols_if` for every timing, and the cap on an annual decrement rate
    built as a product of factors, `min(q, 1.0)` (§5.1, step 6), which `Term_US_S`,
-   `UL_US_S`, `VUL_US_S`, `IUL_US_S` and `WholeLife_US_S` lack, as does any of `MYGA_US_S`,
-   `VA_US_S` and `RILA_US_S` whose factors can take a rate past 1. `SPIA_US_S`, `DIA_US_S`,
-   `FIA_US_S` and `ULSG_US_S` cap with the bound first, `min(1.0, q)`, which reads a NaN
-   as 1. Separate PRs on the S models? *Recommended: the escape, yes; the stubs are
-   superseded in SEC and can stay; the cap, in each S model where it changes no shipped
-   number, as on Term's points, with its bound second, while SEC caps whatever S does.*
-   *Confirmed*, and done on 2026-11-03 in two commits of their own, each one that can go
-   to `main` as a PR by itself. The first makes `RILA_US_S`'s Projection docstring a raw
-   string, the same text at run time. The second caps the annual mortality of the ten S
-   models whose rate is a product of factors, `min(q, 1.0)`: it adds the cap to
-   `Term_US_S`, `WholeLife_US_S`, `UL_US_S`, `VUL_US_S`, `IUL_US_S` and `RILA_US_S`, and
-   puts the bound second in `SPIA_US_S`'s two caps and in `DIA_US_S`'s, `FIA_US_S`'s and
-   `ULSG_US_S`'s. `MYGA_US_S` and `VA_US_S` read the table rate with no factor and need
-   none. On every shipped point of the ten, each value the model caches is the value it
-   cached before, of the same kind, bit for bit: 4.29 million values, no rate above 1 and
-   none NaN before. With it, `WholeLife_US_SEC` caps as `WholeLife_US_S` does, with a
-   cap test on Term's form, at an A/E of 5.0, where the product passes 1 at attained age
-   97, and a test that a NaN stays NaN through the cap; `SPIA_US_SEC` puts its bounds
-   second as `SPIA_US_S` does, with a NaN test of each cap; the cap tests of
-   `Term_US_SEC` and `UL_US_SEC` compare every cell, the capped months included, where S
-   turned complex before; and `UL_US_SEC` gains the NaN test Term's cap has. The stubs
-   stay, and so do the other S-side items the records list, each fixed in its SEC model
-   only. The records written before 2026-11-03 describe the S models as they were then,
-   `Term_US_S` and `UL_US_S` uncapped and the four caps bound first.
+   `UL_US_S`, `VUL_US_S`, `IUL_US_S` and `WholeLife_US_S` lacked, as did any of
+   `MYGA_US_S`, `VA_US_S` and `RILA_US_S` whose factors can take a rate past 1.
+   `SPIA_US_S`, `DIA_US_S`, `FIA_US_S` and `ULSG_US_S` capped with the bound first,
+   `min(1.0, q)`, which reads a NaN as 1. Separate PRs on the S models? *Recommended: the
+   escape, yes; the stubs are superseded in SEC and can stay; the cap, in each S model
+   where it changes no shipped number, as on Term's points, with its bound second, while
+   SEC caps whatever S does.*
+   *Confirmed*, and done on 2026-11-03 in commits of their own. The first, which can go to
+   `main` as a PR by itself, makes `RILA_US_S`'s Projection docstring a raw string, the
+   same text at run time. The second caps the annual mortality of the ten S models whose
+   rate is a product of factors, `min(q, 1.0)`: it adds the cap to `Term_US_S`,
+   `WholeLife_US_S`, `UL_US_S`, `VUL_US_S`, `IUL_US_S` and `RILA_US_S`, and puts the bound
+   second in `SPIA_US_S`'s two caps and in `DIA_US_S`'s, `FIA_US_S`'s and `ULSG_US_S`'s.
+   `MYGA_US_S` and `VA_US_S` read the table rate with no factor and need none. On every
+   shipped point of the ten, each value the model caches is the value it cached before, of
+   the same kind, bit for bit: 4.29 million values, no rate above 1 and none NaN before.
+   With it, `WholeLife_US_SEC` caps as `WholeLife_US_S` does, with a cap test on Term's
+   form, at an A/E of 5.0, where the product passes 1 at attained age 97, and a test that a
+   NaN stays NaN through the cap; `SPIA_US_SEC` puts its bounds second as `SPIA_US_S` does,
+   with a NaN test of each cap; the cap tests of `Term_US_SEC` and `UL_US_SEC` compare
+   every cell, the capped months included, where S turned complex before; and `UL_US_SEC`
+   gains the NaN test Term's cap has. A third, after a review of the second, corrects the
+   texts it left stale and holds the S models to it: `tests/test_mortality_caps.py` reads
+   each of the ten, feeds its product a NaN and then a factor that takes it past 1, through
+   its A/E factor, its class factor and its rating, each in turn where it has one, asserts
+   the float NaN and then the float 1.0, and holds `SPIA_US_S`'s first cap where its second
+   cannot bind. It reads each model where every factor of the product it does not feed
+   differs from 1, and on each branch of the product: `Term_US_S` at `t = 0`, in its level
+   term, and at `t = 120`, where M(1) is 3.5, `ULSG_US_S` at `t = 12`, where its improvement
+   factor is 0.99, and `DIA_US_S` on its first point and on its one point on the
+   generational basis. A review of it before it was pushed found that, reading each model
+   once, at `t = 0` of its first point with no class factor fed, it passed a cap that left
+   outside a factor that was 1, or not applied, where it read, the class factor, the PLT
+   factor or the improvement of `ULSG_US_S` or `DIA_US_S`, and a cap missing from a branch
+   it did not read, `Term_US_S`'s after its level term or `DIA_US_S`'s on the generational
+   basis. Of 60 faults injected one at a time, each of the eleven caps removed, written with
+   its bound first or bounded by the int 1, 23 caps each put on part of its product, a
+   factor left outside, and four caps each put on one branch of it, it fails 59, where
+   before that review it failed 50; the one it passes, `SPIA_US_S`'s first cap bounded by
+   the int 1, changes no value, since the rating's float multiplies it before any rate is
+   returned. Of the second and the third, only the S `Projection` modules can go to `main`
+   as a PR by themselves, cherry-picked onto a branch from `main` with the other files left
+   out: this plan, the SEC models and their tests and `model-sec.md` pages, and the new
+   test, which reads the registry's `is_sec`, `point_keys` and `projection`, none of which
+   `main` has. The fix is to mortality alone: the lapse rates' bounds keep S's order,
+   `VA_US_S`'s and `IUL_US_S`'s at 1 among them (§5.1, step 6). The stubs stay,
+   `ULSG_US_S`'s and `IUL_US_S`'s too (§7.3, *Record — M3*), and so do the other S-side
+   items the records list, each fixed in its SEC model only where its record says so, and
+   otherwise in neither, `test_term_life_us.py`'s race among them (§7.1, *Record — M1*). The
+   records written before these fixes describe the models as they were then: `Term_US_S`,
+   `UL_US_S`, `VUL_US_S` and `IUL_US_S` uncapped, and the caps of `SPIA_US_S`, `DIA_US_S`,
+   `FIA_US_S`, `ULSG_US_S` and `SPIA_US_SEC` bound first.
 5. **The `cython` CI job on Windows from the start (D13).** MSVC and the 1 MB main-thread
    stack are where a compiled model differs most. *Confirmed.*
 

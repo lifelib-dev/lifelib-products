@@ -470,7 +470,7 @@ step on its anniversaries. Its other cash flows, its counts and its account valu
 roll-forward are `UL_US_S`'s from month 0 on. Point 9 is `UL_US_S`'s point 1 twenty-five
 months on in those columns too. Its maintenance expense is `1.025^2` above `UL_US_S`'s,
 and `1.025^3` in the last month of each policy year, where the valuation year has stepped
-and the policy year has not. The mortality cap moves no number of any committed point.
+and the policy year has not.
 
 ## Tests
 
@@ -581,12 +581,13 @@ and the policy year has not. The mortality cap moves no number of any committed 
   1e-9 with no absolute floor, and on those rows and one restated inside the capped year,
   from `t = 936` at issue, attained age 113, where the cap first binds, its rate is the
   float 1.0 in both models, every life in force dies in that month, nothing is in force
-  after it, and its numbers are real and finite, with both checks closing; every monthly
-  cell holds its value outside cover
-  and reads no table there, before issue and at `proj_len()`; the points of a block sum row
-  by row; an extract without the generator's three columns, relabelled, projects the same
-  numbers; and `run_sec.py` prints the model's numbers, for a point issued at the valuation
-  date, a point restated, a point to be issued and the block.
+  after it, and its numbers are real and finite, with both checks closing; a NaN sent to
+  the cap, through `class_factor`'s formula replaced, stays NaN; every monthly cell holds
+  its value outside cover and reads no table there, before issue and at `proj_len()`; the
+  points of a block sum row by row; an extract without the generator's three columns,
+  relabelled, projects the same numbers; and `run_sec.py` prints the model's numbers, for
+  a point issued at the valuation date, a point restated, a point to be issued and the
+  block.
 
 ```bash
 python -m pytest tests/test_universal_life_us_sec.py -q

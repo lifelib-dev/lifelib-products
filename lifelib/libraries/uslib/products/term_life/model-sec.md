@@ -256,9 +256,9 @@ that cover has one definition. Ten cells are new for running in force, and two m
 compiling, `point_id` and `premium_schedule` (*The compiled model*, below). None of
 `Term_US_S`'s 52 is removed, which the twin identity asserts: a cell of `Term_US_S`'s that
 this model lacked would fail it. One departure comes from neither the clock nor running in
-force: `mort_rate` caps the annual rate at 1, where `Term_US_S`'s passes it, and it, the
-notes' M(1) rule and the post-level-term grading write their bounds second, so that a NaN
-stays NaN (below).
+force: the notes' M(1) rule and the post-level-term grading write their bounds second, as
+`mort_rate` writes its cap in both models, so that a NaN stays NaN; `Term_US_S` writes
+them first (below).
 
 | Cells | `Term_US_S` | `Term_US_SEC` | Why |
 |---|---|---|---|

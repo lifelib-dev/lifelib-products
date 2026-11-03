@@ -31,17 +31,17 @@ This is :mod:`~.Term_US_S` taught to run in force at a valuation date, as lifeli
 ``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``, and then made to compile, as
 ``basiclife.BasicTerm_SC`` is made from ``basiclife.BasicTerm_S``. A formula of
 :mod:`~.Term_US_S` is rewritten where it depends on where the projection starts, where it
-must answer for a month outside cover, or where it read a month far ahead of its own, and
-:func:`mort_rate` caps the annual rate at 1, where :mod:`~.Term_US_S`'s passes it. The cap
-puts its bound second, ``min(q, 1.0)``, and so do the ``min`` of the notes' M(1) rule and
-the ``max`` of the PLT grading, :func:`plt_mort_factor_init_formula` and
-:func:`plt_mort_factor`, so that a NaN stays NaN; wherever its argument is a number, each
-is the float it would be with its bound first. Every other formula is
-:mod:`~.Term_US_S`'s own. ``products/term_life/model-sec.md`` lists the rewritten cells
-with the reason for each. Making it compile changed how each cell reads its inputs and
-spells its codes, and no number: every model point attribute a projection cell uses is
-read as a number from a ``Data`` vector, every table as an array indexed by integers, and
-every timing and phase is an int code (*Codes*, below).
+must answer for a month outside cover, or where it read a month far ahead of its own. The
+``min`` of the notes' M(1) rule and the ``max`` of the PLT grading,
+:func:`plt_mort_factor_init_formula` and :func:`plt_mort_factor`, are rewritten with their
+bounds second, as :func:`mort_rate` writes its cap, ``min(q, 1.0)``, in both models, so
+that a NaN stays NaN; wherever its argument is a number, each is the float it would be
+with its bound first. Every other formula is :mod:`~.Term_US_S`'s own, :func:`mort_rate`
+among them. ``products/term_life/model-sec.md`` lists the rewritten cells with the reason
+for each. Making it compile changed how each cell reads its inputs and spells its codes, and
+no number: every model point attribute a projection cell uses is read as a number from a
+``Data`` vector, every table as an array indexed by integers, and every timing and phase is
+an int code (*Codes*, below).
 
 .. rubric:: Input data
 

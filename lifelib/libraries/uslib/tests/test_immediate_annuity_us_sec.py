@@ -2396,6 +2396,7 @@ def test_a_capped_annual_mortality_is_the_float_1_and_kills_every_life(sec_model
     assert _mismatches(_point(s_model, 8), _row(sec_model, "twin", 8, 0),
                        exempt=TWIN_EXEMPT_DEFAULT | SPEC.exempt, atol=0.0) == []
 
+
 def _nan_rate(t, life):
     """NaN, what a blank rate carries: the formula a test puts in place of a cell's.
 

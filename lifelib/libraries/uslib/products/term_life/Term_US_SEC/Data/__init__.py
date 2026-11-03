@@ -144,12 +144,12 @@ every value they read is checked, over its whole column, and a blank, text or in
 one is refused: a factor of *class_factor_table.csv*, by ``rate_class``, whether or not
 a point carries the class; a rate of *mort_table.csv*, by age; a premium of
 *premium_rates.csv*, by schedule and policy year, whether or not a point carries the
-schedule; an ``age_at_entry`` and a ``plt_mort_factor_override``, by ``point_id``. A blank override is the notes' rule, and
-is left so, and so is the padding, which no formula reads. ``Term_US_S``, which does not
-cap, met each only when a projection reached it: it raised on text and on a blank or
-infinite age, read a negative infinite override as its grading's floor, 2.0, and
-projected NaN or an infinity from any other such value, where a capped rate can project
-finite numbers from it, and wrong ones.
+schedule; an ``age_at_entry`` and a ``plt_mort_factor_override``, by ``point_id``. A blank
+override is the notes' rule, and is left so, and so is the padding, which no formula reads.
+``Term_US_S`` met each only when a projection reached it: it raised on text and on a blank
+or infinite age, read an infinite factor, base rate or M(1) override as certain death at its
+cap and a negative infinite override as its grading's floor, 2.0, without a word, and
+projected NaN or an infinity from any other such value.
 """
 
 from modelx.serialize.jsonvalues import *
