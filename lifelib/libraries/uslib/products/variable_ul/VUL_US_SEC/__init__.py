@@ -3,66 +3,51 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Reference liability cash flow model for U.S. variable universal life.
+"""In-force reference liability cash flow model for U.S. variable universal life.
 
-:mod:`~.VUL_US_S` is the executable counterpart of
-``products/variable_ul/technical-notes.md`` in the lifelib-products library. It
-projects gross liability cash flows for a single-life, flexible-premium variable
-universal life policy: account value allocated between two separate-account
-subaccounts and a general-account fixed option, a front-end premium load, a monthly
-deduction of cost-of-insurance, per-policy and per-$1,000 charges, an asset-based
-mortality-and-expense (M&E) risk charge collected inside the unit values, Guideline
-Premium Test death benefit options A and B, a fourteen-year surrender charge, spread
-policy loans through a general-account loan account, and no maturity date -- premiums
-and monthly deductions cease at attained age 121 while the asset charges continue.
+:mod:`~.VUL_US_SEC` projects the policy :mod:`~.VUL_US_S` projects -- a single-life,
+flexible-premium variable universal life policy: account value allocated between two
+separate-account subaccounts and a general-account fixed option, a front-end premium
+load, a monthly deduction of cost-of-insurance, per-policy and per-$1,000 charges, an
+asset-based mortality-and-expense (M&E) risk charge collected inside the unit values,
+Guideline Premium Test death benefit options A and B, a fourteen-year surrender charge,
+spread policy loans through a general-account loan account, and no maturity date,
+premiums and monthly deductions ceasing at attained age 121 while the asset charges
+continue -- from a **valuation date** rather than from the start of a projection of its
+own. A model point may be a policy already in force at that date, in any month of its
+policy year, one issued at it, or one to be issued in the ten years after it, as in
+lifelib's ``basiclife/BasicTerm_SE``, which extends ``basiclife/BasicTerm_S`` the same
+way. Its formulas are the executable counterpart of
+``products/variable_ul/technical-notes.md``, and ``products/variable_ul/model-sec.md``
+explains what running in force changes.
 
 The product is built on the universal-life chassis of
 ``products/universal_life/technical-notes.md``, and :mod:`~.VUL_US_S` follows
-:mod:`.UL_US_S` name for name wherever the two products share a concept. Where
-the two models differ, the difference is the variable-UL notes' own instruction rather
-than an implementation choice. Every one of those differences is listed below, and the
-model README tabulates the same set against the chassis:
-
-* **No one-month discount in the net amount at risk.** The VUL prospectuses define the
-  NAAR as death benefit less account value with no discount [S2], so
-  ``net_amt_at_risk(t) = max(0, db_pp(t) - av_pp_at(t, "BEF_FEE"))``. The fixed-UL
-  chassis divides the death benefit by ``1 + i_gm`` first; this model does not, and
-  carries no ``naar_factor``. For the same reason there is no ``wd_free_pp``: the
-  fixed-UL specimen carves out a free withdrawal amount and cuts the face by the
-  excess, where the variable-UL notes cut the face proportionately with no free amount.
-* **The investment return is a separate-account unit-value factor, not a declared
-  credited rate.** Each subaccount grows by ``(1 + r) (1 - e_i/12) (1 - m/12)`` on
-  exogenous gross returns ``r``; only the fixed option earns a declared rate.
-* **The account value is a vector.** Subaccounts, the fixed option and the loan
-  account are tracked separately because their growth rules differ, and the monthly
-  deduction is allocated across the *unloaned* accounts pro rata.
-* **Charges are quoted on the initial face amount.** The per-$1,000 monthly charge and
-  the surrender charge both scale with ``F_0``, so :func:`~.VUL_US_S.Projection.units`
-  takes no ``t``.
-* **The surrender charge steps by policy year, not by month.**
-  ``sc_init x (runoff + 1 - y) / runoff`` is level within a policy year, where the
-  chassis amortizes its charge every month; the worked example pins the step at
-  ``18.00 x 12/14`` through the whole of policy year 3.
-* **The maintenance expense does not inflate.** The variable-UL notes give a flat $75
-  per policy per year, so ``inflation_rate = 0.0`` where the chassis inflates at 2.5%.
-* **The surrender-charge lapse shock is a one-month spike, not a shock year**, its
-  magnitude an input (``lapse_shock_mult``, shipped at 1.0, off), and there is no 35%
-  cap on the total lapse rate -- the notes set none, and the dynamic multiplier is
-  already bounded at 2.0.
-* **Guideline premium and 7-pay/MEC compliance are not tracked.** The chassis carries
-  them as flags; the variable-UL notes state they are not enforced in the baseline and
-  that premiums are assumed within limits, so there is no ``gpt_ok`` or ``is_mec``.
+:mod:`.UL_US_S` name for name wherever the two products share a concept, as this model
+follows ``UL_US_SEC``, the chassis's in-force model, wherever running in force needs the
+same thing. Where the two products differ, the difference is the variable-UL notes' own
+instruction rather than an implementation choice, and :mod:`~.VUL_US_S`'s docstring lists
+every one of them: no one-month discount in the net amount at risk, a separate-account
+unit-value return rather than a declared credited rate, an account value that is a vector
+of subaccounts, a fixed option and a loan account, charges quoted on the initial face, a
+surrender charge that steps by policy year, a maintenance expense that does not inflate, a
+one-month lapse spike at the surrender charge's cliff, and no guideline premium or 7-pay
+tracking.
 
 **Spaces.** The model contains two:
 
-:mod:`~.VUL_US_S.Data`
-    Reads the ten input CSVs and holds their filename References. It takes no
-    parameters, so each file is read **once per model**.
+:mod:`~.VUL_US_SEC.Data`
+    Reads the nine assumption CSVs it shares with :mod:`~.VUL_US_S` and its own model
+    point table, and holds their filename References. It checks the model point table as
+    it reads it, the keys and the values of every table read at a policy year or an
+    attained age, the class factors, the surrender-charge schedules, the subaccount lineup
+    and the return scenario. It takes no parameters, so each file is read **once per
+    model**.
 
-:mod:`~.VUL_US_S.Projection`
+:mod:`~.VUL_US_SEC.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.VUL_US_S.Data` Space.
+    ``data`` Reference, which resolves to the single :mod:`~.VUL_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -73,24 +58,41 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps on policy monthiversaries. Projected month ``t``
-is **0-based** and runs ``0, 1, ..., proj_len() - 1`` -- ``for t in range(proj_len())``,
-as in lifelib's ``savings.CashValue_SE`` -- where ``t = 0`` is the **issue month** of a
-new-business model point and ``proj_len() = 12 * (omega_age - age_at_entry() + 1) -
-duration_mth_init()`` is the number of projected months, so the projection ends with
-the policy year in which the insured attains ``omega_age`` (121), the last age of the
-mortality table, where the annual rate is 1.0. For an in-force model point
-``duration_mth_init()`` is the number of completed policy months already elapsed at
-``t = 0``, so ``duration_mth(t) = duration_mth_init() + t`` is the policy month from
-issue and ``policy_year(t) = duration_mth(t) // 12 + 1`` the contractual, 1-based
-policy year. This is the same clock the technical notes use (``t = 0`` at issue or at
-the projection start). The contract has no maturity date [S1][S2][S4];
+**Projection basis.** Monthly steps on policy monthiversaries, on two clocks. ``t``
+counts months from the valuation date, 0-based, as ``basiclife/BasicTerm_SE`` counts
+them: ``t = 0`` is the valuation month for every model point, however old the policy, and
+the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len() = omega_mth() - duration_mth_init()`` counts the months from the valuation
+date to the end of the projection. That ends with the policy year in which the insured
+attains ``omega_age`` (121), the last age of the mortality table, where the annual rate is
+1.0: ``omega_mth()`` is the first policy month at attained age 122. ``duration_mth(t)``
+counts the months the policy has been in force, ``duration_mth_init() + t`` from the model
+point's ``duration_mth`` at ``t = 0``, and the contract runs on it:
+``policy_year(t) = duration(t) + 1`` is the 1-based contractual label,
+``duration(t) = duration_mth(t) // 12``, derived and never indexed by. The policy is on
+the books from :func:`~.VUL_US_SEC.Projection.t_entry`, the valuation month for a point
+in force or issued at it and the issue month for one issued later, and every recursion
+opens there. The contract has no maturity date [S1][S2][S4];
 ``pols_maturity(t)`` is therefore identically zero and the projection is truncated by
-mortality, not by the contract. The notes' state variables at ``t = 0`` -- ``SA_i(0)``,
-``FA(0)``, ``LA(0)``, ``D(0)``, ``F(0)``, ``l(0) = 1`` -- are the **opening** values of
-month 0: the ``"BEF_PREM"`` timing of ``sa_pp_at``, ``fa_pp_at``, ``la_pp_at``,
-``loan_bal_pp_at`` and ``av_pp_at`` at ``t = 0``, and ``pols_if(0)``; every ``*_pp(t)``
-state cells is the closing balance of month ``t``, the notes' ``X_{t+1}``.
+mortality, not by the contract, so where lives survive the last month the count and the
+account value they carry into ``t = proj_len()`` are kept, and the roll-forwards close on
+them. The separate-account return scenario, the declared fixed rate and expense
+inflation run on ``t``: the scenario is a path of the economy from the valuation date,
+and the rate and inflation are flat as shipped. Acquisition is charged per policy issued,
+in the issue month, and is not inflated, as in ``basiclife/BasicTerm_SE``. On a point
+issued at ``t = 0`` the two clocks coincide, and the model computes what :mod:`~.VUL_US_S`
+computes.
+
+A point in force opens with its state at the valuation date, per policy, as it stands at
+the start of month 0: each subaccount and the fixed option, ``sa_pp_init_<i>`` and
+``fa_pp_init``, ``VUL_US_S``'s own columns, read off the policy's own accounts and never
+the premium allocation times the account value; the loan account, ``la_pp_init``, which
+holds the loan's collateral and grows apart from the debt once interest accrues; the
+debt, ``loan_bal_init``, ``VUL_US_S``'s own; and the face in force, ``sum_assured_init``,
+after every Option A withdrawal cut to date, while the face at issue stays the base of the
+per-$1,000 charge and the surrender charge. ``VUL_US_S`` takes the loan account equal to
+the debt and the face at issue on its in-force points. The two first-month pins apply in
+the valuation month, ``t = 0``, the month the worked example describes.
 
 Within each month the notes' monthiversary order is followed exactly. At the beginning
 of the month (BOM): advance the policy year and its age-dependent parameters; premium
@@ -111,8 +113,8 @@ Cash flows are **undiscounted**: this library projects gross liability cash flow
 leaves reserving and discounting to a separate layer.
 
 A partial withdrawal is a payment on the owner's election, not a claim, so it is
-:func:`~.VUL_US_S.Projection.withdrawals` in its own ``withdrawals`` column of
-``result_cf()``; :func:`~.VUL_US_S.Projection.claims` covers deaths and surrenders
+:func:`~.VUL_US_SEC.Projection.withdrawals` in its own ``withdrawals`` column of
+``result_cf()``; :func:`~.VUL_US_SEC.Projection.claims` covers deaths and surrenders
 only, and its surrender column is ``claims_lapse``, named for the ``"LAPSE"`` kind that
 produces it.
 
@@ -120,9 +122,10 @@ The claim cash flow is the **full death benefit less policy debt**, not the net 
 at risk. The notes carry an explicit warning about this ("a common specification
 error"): projecting ``DB - AV`` as the claim understates gross benefit outgo, and
 projecting the full death benefit *and* separately expensing the net amount at risk
-double counts. The model projects the gross view in :func:`~.VUL_US_S.Projection.claims`
-and derives the general-account view arithmetically from the same run in
-:func:`~.VUL_US_S.Projection.result_net`; ``check_net_view()`` pins the two together.
+double counts. The model projects the gross view in
+:func:`~.VUL_US_SEC.Projection.claims` and derives the general-account view
+arithmetically from the same run in :func:`~.VUL_US_SEC.Projection.result_net`;
+``check_net_view()`` pins the two together.
 
 **What is sourced and what is not.** The contractual elements come from the four
 registered prospectuses behind the composite: the 6% guaranteed premium load ceiling
@@ -156,62 +159,85 @@ enough to project, all named here and in the README so their absence is not mist
 for an oversight:
 
 * The grace and default cascade. The trigger is a complete formula and is implemented
-  as :func:`~.VUL_US_S.Projection.is_default`, but the notes lapse the policy "at the
+  as :func:`~.VUL_US_SEC.Projection.is_default`, but the notes lapse the policy "at the
   next monthiversary **if not cured**" without defining the cure test, the in-grace
   deduction accrual or the death benefit during grace, so no policy is terminated for
   insufficiency and no in-grace state is carried. Read literally the notes' test fires
   from issue on any front-loaded design, because the scheduled surrender charge exceeds
-  a first premium; :func:`~.VUL_US_S.Projection.is_shortfall` and
-  :func:`~.VUL_US_S.Projection.first_shortfall_month` are the companion diagnostics
+  a first premium; :func:`~.VUL_US_SEC.Projection.is_shortfall` and
+  :func:`~.VUL_US_SEC.Projection.first_shortfall_month` are the companion diagnostics
   that mark where the account genuinely stops being able to carry the contract, and
-  months after that are arithmetic, not a description of a live contract.
+  months after that are arithmetic, not a description of a live contract. No policy in
+  force holds a negative subaccount, so the model point table refuses one, and a point in
+  permanent shortfall is restated no later than the last month its subaccounts are still
+  zero or more.
 * No-lapse guarantee and overloan protection riders -- documented variations, excluded
   from the baseline by the notes themselves.
 * New policy loans, repayments and the loan value limit. Loan *interest accrual* on an
   opening balance is implemented (the notes give the formula); no utilization pattern
-  is given, so :func:`~.VUL_US_S.Projection.loan_bal_pp` only rolls the model point's
-  opening debt forward and :func:`~.VUL_US_S.Projection.la_pp` only rolls its
+  is given, so :func:`~.VUL_US_SEC.Projection.loan_bal_pp` only rolls the model point's
+  opening debt forward and :func:`~.VUL_US_SEC.Projection.la_pp` only rolls its
   collateral forward.
 * Guideline premium and 7-pay/MEC testing. The notes state these are not enforced in
   the baseline and that premiums are assumed within limits.
 * Face increases and decreases, death benefit option changes and CVAT qualification.
-  Withdrawal-driven proportionate face reduction under Option A *is* implemented.
+  Withdrawal-driven proportionate face reduction under Option A *is* implemented, and a
+  point in force carries the face its withdrawals have left.
 * Stochastic return sets. The scenario interface is a table of monthly gross returns
   per subaccount, so a stochastic set is a data change, not a formula change; the
   shipped scenarios are deterministic.
-* Riders generally. :func:`~.VUL_US_S.Projection.rider_charge_pp` is the notes'
+* Riders generally. :func:`~.VUL_US_SEC.Projection.rider_charge_pp` is the notes'
   placeholder term, zero in the base model.
 
 The **dynamic behavior module** -- the funding ratio, dynamic lapse and premium
 persistency -- *is* implemented in full, including the notes' at-issue pricing path
 ``AV*``, but is switched **off** by the Reference ``dyn_behavior_on = False`` so that
 the base deterministic run pays the planned premium in full and reproduces the worked
-example, exactly as ``Term_US_S`` switches conversion off for the same reason.
+example, exactly as ``Term_US_S`` switches conversion off for the same reason. The
+pricing path is a projection made at issue, deterministic and keyed by the policy month
+from issue, so a point in force reads it from issue and needs no opening value for it.
 
-**Model points.** ``model_point_table.csv`` carries four points, all on the anchor
-configuration M45 / StdNT / $500,000, because the notes disclose a COI anchor for that
-cell alone. Point 1 is the technical notes' worked-example anchor: Option A, $6,000
-planned annual premium, twenty-four completed policy months, opening subaccount balances
-of $30,000 and $20,000 split 60/40, no fixed balance and no debt, on the worked
-example's own return scenario. Point 2 is identical except that it leaves the two
-override columns blank and so takes the formula path -- see **Verification**. Point 3 is
-new business under Option B, which makes the corridor and the constant net amount at
-risk live and exercises the surrender charge from policy year 1. Point 4 is an in-force
-cell at 120 completed policy months with a fixed-option balance and an $8,000 loan,
-which exercises the fixed option, the loan account, the debt accrual, the loan spread
-and the pro-rata deduction that excludes the loan account. A model point on any other
-issue age, sex or class requires ``coi_rates.csv`` to be extended first; a test asserts
-every model point in the table actually projects.
+**Model points.** ``model_point_table_sec.csv`` is generated from :mod:`~.VUL_US_S` and
+its model point table, and the tests regenerate it and compare, so no row is typed by
+hand. Every point is on the anchor configuration M45 / StdNT / $500,000, because the
+notes disclose a COI anchor for that cell alone. Points 1 to 4 are the twins of
+:mod:`~.VUL_US_S`'s four points: point 1, the technical notes' worked-example anchor,
+Option A, $6,000 planned annual premium, in force 24 months at the valuation date with
+subaccount balances of $30,000 and $20,000 split 60/40, no fixed balance and no debt, on
+the worked example's own return scenario, whose month 0 is the worked example's month;
+point 2, the same with the two pins blank, so that it takes the formula path; point 3,
+new business under Option B, issued at the valuation date, whose net amount at risk is the
+constant face, and which exercises the surrender charge from policy year 1; and point 4,
+in force 120 months with a fixed-option balance and an $8,000 loan. The corridor binds on
+the Option A points alone, late in their frames: on point 1 from ``t = 375``, at attained
+age 78, and on point 8 from ``t = 0``.
+Points 5 to 8 are S points restated in force at an S month, each opened with the state
+:mod:`~.VUL_US_S` carries into that month: point 3 on its first anniversary, inside the
+surrender-charge period; point 4 six months on, at policy month 126, mid-year, its
+collateral and its debt parted; point 3 at month 593, the month its shortfall begins;
+and point 4 at month 768, the first month at attained age 119, where the mortality rate
+reaches 1.0 and every survivor dies. Point 9 is point 3 to be issued 25 months after the
+valuation date. A model point on any other issue age, sex or class requires
+``coi_rates.csv`` to be extended first; a test asserts every model point in the table
+actually projects.
 
-**Verification.** Model point 1 is the anchor cell of the worked example in the
-technical notes, and ``tests/test_variable_ul_us.py`` asserts every row and column of
-it -- the opening balances, the premium and its load, the 60/40 net premium split, the
-death benefit and the corridor product that loses to it, the net amount at risk, the
-cost of insurance, the two fixed charges, the monthly deduction and its pro-rata split,
-both unit-value growth factors, both end-of-month subaccount balances, the M&E collected
-in each subaccount, the insurer margin for the month, the surrender charge, the cash
-surrender value and the end-of-month death benefit and net amount at risk -- to the cent
-and to the six displayed decimals of the growth factors.
+**Verification.** On point 3, the twin issued at the valuation date, every cell this
+model shares with :mod:`~.VUL_US_S` agrees with it at every argument the S model evaluates
+in its sweep, ``pols_if_init``, ``model_point`` and ``result_pols`` excepted; and on
+points 1, 2 and 4, :mod:`~.VUL_US_S`'s in-force points, which both models open at the
+valuation date, every cell agrees from ``t = 0`` on. So the goldens
+``tests/test_variable_ul_us.py`` asserts hold here too, with no number restated: every
+row and column of the worked example on point 1 -- the opening balances, the premium and
+its load, the 60/40 net premium split, the death benefit and the corridor product that
+loses to it, the net amount at risk, the cost of insurance, the two fixed charges, the
+monthly deduction and its pro-rata split, both unit-value growth factors, both
+end-of-month subaccount balances, the M&E collected in each subaccount, the insurer
+margin for the month, the surrender charge, the cash surrender value and the end-of-month
+death benefit and net amount at risk -- to the cent, at ``t = 0``, the valuation month.
+``tests/test_variable_ul_us_sec.py`` splices: an S point restated in force at month
+``d``, opened with S's own state there, continues the S projection from ``d`` on, cell by
+cell. A point issued ``k`` months late is the S projection ``k`` months on, and the
+committed table is what S generates.
 
 The worked example evaluates two age-dependent parameters at the **issue** age 45 while
 sitting in **policy year 3**, where the attained age is 47: it quotes the corridor factor
@@ -219,20 +245,20 @@ as ``kappa(45) = 215%`` and the current COI rate as the disclosed year-1 anchor 
 The model implements the rule -- both are attained-age lookups, per the notes' own state
 variable table -- and pins the worked example's two values on model point 1 through the
 ``corridor_override_m1`` and ``coi_rate_override_m1`` columns. Both pins are confined to
-``t == 0``, the first projected month and the single month the worked example
-describes (the ``_m1`` in the column names means "the first month"): they are lookups the notes
-performed at the wrong age, not contract parameters, and carrying an issue-age corridor
-factor or one disclosed COI rate across seventy-seven years would misstate every later
-month. Model point 2 is the same cell with both blank, so it takes the rule from the
-first month, and a test pins the gap open in both directions. This is the pattern
-``Term_US_S`` uses for its ``M(1)`` divergence; neither reading is "correct", and
-neither may be closed silently.
+``t = 0``, the valuation month and the single month the worked example describes: they
+are lookups the notes performed at the wrong age, not contract parameters, and carrying
+an issue-age corridor factor or one disclosed COI rate across seventy-seven years would
+misstate every later month. Model point 2 is the same cell with both blank, so it takes
+the rule from the first month, and a test pins the gap open in both directions. This is
+the pattern ``Term_US_S`` uses for its ``M(1)`` divergence; neither reading is "correct",
+and neither may be closed silently.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/variable_ul/VUL_US_S")
-    >>> model.Projection[1].result_av()
+    >>> model = mx.read_model("products/variable_ul/VUL_US_SEC")
+    >>> model.Projection[6].result_cf()
+    >>> model.Projection[6].result_av()
 """
 
 from modelx.serialize.jsonvalues import *

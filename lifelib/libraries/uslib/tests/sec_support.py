@@ -1395,6 +1395,51 @@ _FIA_STATE = {
 }
 
 
+def _vul_entering(name, opening):
+    """What ``VUL_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``, or, where month ``d`` opens S's frame, the opening value
+    S's own formulas read there.  ``VUL_US_S`` opens every point's frame at its own month 0,
+    in force or not, so that is ``d = 0``, the month a twin is read at.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > 0 else opening(s)
+    return extract
+
+
+def _vul_sa_entering(i):
+    """Subaccount ``i``'s value entering month ``d``: ``VUL_US_S``'s own opening timing."""
+    def extract(s, d):
+        return s.sa_pp_at(d, i, "BEF_PREM")
+    return extract
+
+
+def _vul_no_pin(s, d):
+    """A first-month pin, blank: ``VUL_US_S`` applies a pin at its own ``t = 0`` only."""
+    return float("nan")
+
+
+# VUL_US_SEC's opening state (D6): what VUL_US_S carries into month d, each read as S's own
+# formulas read it.  Each subaccount's value, the fixed option's, the loan collateral's and
+# the debt entering month d are S's own opening timings; the face in force is the close of
+# month d - 1, after its Option A cut, and where d opens S's frame it is S's face at issue
+# on an in-force point and 0 on new business, which has no opening state.  The two
+# first-month pins are blank on every row S restates in force at a later month: S applies a
+# pin at its own t = 0 only, which is before month d.  The subaccounts are the shipped
+# lineup's, 1 and 2, the ids subaccount_table.csv gives; a lineup with another id needs its
+# sa_pp_init_<i> entry here, and test_variable_ul_us_sec.py asserts that the two agree.
+_VUL_STATE = {
+    **{f"sa_pp_init_{i}": _vul_sa_entering(i) for i in (1, 2)},
+    "fa_pp_init": lambda s, d: s.fa_pp_at(d, "BEF_PREM"),
+    "la_pp_init": lambda s, d: s.la_pp_at(d, "BEF_PREM"),
+    "loan_bal_init": lambda s, d: s.loan_bal_pp_at(d, "BEF_PREM"),
+    "sum_assured_init": _vul_entering(
+        "sum_assured_at", lambda s: s.sum_assured() if s.duration_mth_init() > 0 else 0.0),
+    "corridor_override_m1": _vul_no_pin,
+    "coi_rate_override_m1": _vul_no_pin,
+}
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -1843,6 +1888,94 @@ SEC_SPECS: dict[str, SecSpec] = {
                           "payout_rate_init", "entry_year", "entry_mth", "result_pols"}),
         companions={"rate_scenario_sec.csv": _fia_rebased_scenarios},
         future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},
+    ),
+    # VUL's state is S's own columns under their own names, each subaccount, the fixed
+    # option and the debt, and two more, the loan collateral and the face in force
+    # (_VUL_STATE above).  pols_if_init becomes policy_count (the default), and
+    # duration_mth is S's own column: VUL_US_S runs on the projection clock already, and its
+    # points 1 and 2, in force 24 months, and 4, in force 120, open their frames at their
+    # own t = 0, so those twins' source_mth is 0 (§5.2).  On the twins the two new columns
+    # take what S itself assumes, so each twin reproduces S: the collateral equal to the
+    # debt [std], 8,000 on point 4 and 0 elsewhere, and the face at issue in force.  The
+    # pins stay as S's table has them, point 1's applying at t = 0, the valuation month.
+    # The derived rows are S point 3 on its first anniversary, inside the surrender-charge
+    # period, on Option B; S's in-force point 4 six months on, mid-year, its collateral and
+    # its debt parted; point 3 in the month its shortfall begins at the shipped
+    # assumptions, the last month it can be restated, since a subaccount opens negative in
+    # the month after; and point 4 in the first month at attained age 119, where the
+    # mortality table's rate reaches 1.0 and every survivor dies, in place of the last
+    # covered month, which at S's mortality no policy reaches, and the shortest frame, 36
+    # months.  The future row is point 3 issued 25 months after the valuation date, off its
+    # anniversaries and more than a year on, so that the months before issue read policy
+    # years -2 to 0, where a missing guard would show.  A future row copies its twin's
+    # columns, the pins among them, and the twin's are blank: S's one pinned point, 1, is
+    # in force, and Data refuses a pin on a point issued after the valuation date, which
+    # would never apply.  test_variable_ul_us_sec.py asserts that every S point named in
+    # future has both pins blank, so a pinned S new-business point fails there, by name,
+    # rather than in Data.  T2's splice grid is built from this spec in a temporary table,
+    # not committed.
+    #
+    # T1 holds on VUL at any count: S charges acquisition on the policies in force in the
+    # issue month, the policies issued, as SEC does.  It skips one S cell besides the
+    # default three:
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_variable_ul_us_sec.py compares the
+    #     report itself with S's, on every column both hold.
+    # S's net_cf calls claims(t) with its kind=None default and S's me_charge calls
+    # me_charge_pp(t) with its i=None, so S's sweep caches claims under (t, None) and
+    # me_charge_pp under (t, None).  Phase 2 replaces both defaults with total cells (R12),
+    # and its T1 then needs an arg_map from those keys to them.  The label accessors (sex,
+    # rate_class, db_option, qual_test, premium_type, surr_charge_id, scenario_id) are
+    # called by no projection cell, so Phase 2 declares them reporting; and the two
+    # first-month pins, read once a point as a value and a flag (corridor_override_m1,
+    # has_corridor_override_m1, coi_rate_override_m1, has_coi_rate_override_m1), become a
+    # value array and a 0/1 flag array (R8).  No cell takes a float parameter.
+    #
+    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 0
+    # to 85 (product-spec), and S projects any age its tables serve; at stage E Data
+    # refuses only an issue age below 0 or not whole, Phase 2 refuses one outside 0 to 85
+    # in proj_len(), and every size below rests on the youngest, 0.  Ages 0 to 17 sit
+    # below the mortality and corridor tables' first age, 18, and read those tables
+    # clamped there, as S does.
+    #   t: 0 to 1,584, the longest frame and the month after it, which the roll-forwards
+    #     read: 12 x (omega_age 121 - youngest issue age 0 + 1) = 1,464 months of cover,
+    #     plus future_horizon_mth 120.
+    #   the pricing month m (sa_pricing_pp_at, fa_pricing_pp_at and their kin): 0 to 1,463,
+    #     the last covered policy month at the youngest issue age.  The pricing path is
+    #     based at issue, one cell a month, so with dyn_behavior_on a cold call runs back
+    #     to issue: the depth Phase 2's stack is sized from is that path's, 1,463 cells and
+    #     a few more at issue age 0, wherever the valuation date falls.  And so does an
+    #     ascending sweep of a point in force at policy month d, whose first month reads the
+    #     path cold: about d + 15 cells deep, 39 on point 1, 135 on point 4 and 903 on point
+    #     8 under modelx, against 18 on every committed point with the module off, and
+    #     1,477 on a point in force in its last covered month at issue age 0.  A point
+    #     issued at or after the valuation date sweeps at about 22 cells deep.
+    #   policy years y (coi_rate_guar_at, coi_rate_at, lapse_rate_base_py,
+    #     prem_persistency_py): 1 to 122, the year of the last covered month at the
+    #     youngest issue age and omega_age 121.
+    #   attained ages a (corridor_factor_at, mort_rate_base_at): youngest issue age 0 to
+    #     omega_age 121; corridor_factor_at is read from the issue age on by the pricing
+    #     path.
+    #   subaccounts i: the lineup's size, 2 shipped; and each scenario path to its cell's
+    #     last month (scenario_last_mth), read at min(t, last).
+    # The lapse rate, base x the cliff's spike x the dynamic multiplier, has no cap in S or
+    # here, and Data holds each base rate to 0 to 1.  With lapse_shock_mult and
+    # lapse_dyn_cap at 0 or more, the annual lapse rate is at most max(1, lapse_shock_mult)
+    # x (lapse_dyn_cap with dyn_behavior_on, 1 without) x the largest base rate, and stays
+    # at most 1 while that product is at most 1: 0.06 as shipped, 0.12 with
+    # dyn_behavior_on, 0.36 on the splice.  Past 1 the monthly rate is complex in modelx,
+    # and its checks raise as S's do; compiled, the power is NaN and the checks fail
+    # instead.
+    "VUL_US_SEC": SecSpec(
+        twin="VUL_US_S",
+        duration_of=lambda row: int(row["duration_mth"]),
+        derived=((3, 12), (4, 6), (3, 593), (4, 768)),
+        future=((3, 25),),
+        state=_VUL_STATE,
+        twin_state={c: f for c, f in _VUL_STATE.items()
+                    if c in ("la_pp_init", "sum_assured_init")},
+        exempt=frozenset({"result_pols"}),
     ),
 }
 
