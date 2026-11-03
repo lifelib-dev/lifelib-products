@@ -4360,8 +4360,8 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
    term, and at `t = 120`, where M(1) is 3.5, `ULSG_US_S` at `t = 12`, where its improvement
    factor is 0.99, and `DIA_US_S` on its first point and on its one point on the
    generational basis. A review of it before it was pushed found that, reading each model
-   once, at `t = 0` of its first point with no class factor fed, it passed a cap that left
-   outside a factor that was 1, or not applied, where it read, the class factor, the PLT
+   once, at `t = 0` of its first point, it passed a cap that left outside a factor that it
+   did not feed and that was 1, or not applied, where it read, the class factor, the PLT
    factor or the improvement of `ULSG_US_S` or `DIA_US_S`, and a cap missing from a branch
    it did not read, `Term_US_S`'s after its level term or `DIA_US_S`'s on the generational
    basis. Of 60 faults injected one at a time, each of the eleven caps removed, written with
