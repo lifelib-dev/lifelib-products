@@ -71,7 +71,8 @@ valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where th
 example's point is already in force, as whole life's is, the `_SEC` twin of that point
 continues the `_S` projection from the month it is valued at, its expenses apart, which
 inflate from the valuation date. Each `model-sec.md` says what running in force changes.
-`Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC` and `MYGA_US_SEC` are the first four.
+`Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC` and `UL_US_SEC` are the
+first five.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -95,7 +96,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 |---|---|---|---|
 | [Level premium term](products/term_life/index.md) | `Term_US_S`, `Term_US_SEC` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
 | [Whole life](products/whole_life/index.md) | `WholeLife_US_S`, `WholeLife_US_SEC` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
-| [Universal life](products/universal_life/index.md) | `UL_US_S` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
+| [Universal life](products/universal_life/index.md) | `UL_US_S`, `UL_US_SEC` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
 | [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
 | [Variable UL](products/variable_ul/index.md) | `VUL_US_S` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
 | [Guaranteed UL](products/guaranteed_ul/index.md) | `ULSG_US_S` | monthly | UL chassis + shadow-account secondary guarantee (AG 38 §8E Design #1), funded by a solved level no-lapse premium; lapse-supported economics |

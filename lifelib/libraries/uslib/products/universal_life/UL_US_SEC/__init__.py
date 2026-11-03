@@ -3,27 +3,34 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Reference liability cash flow model for U.S. current-assumption universal life.
+"""In-force reference liability cash flow model for U.S. current-assumption universal life.
 
-:mod:`~.UL_US_S` is the executable counterpart of
-``products/universal_life/technical-notes.md`` in the lifelib-products library. It
-projects gross liability cash flows for a single-life, flexible-premium adjustable
-(universal) life policy on the current-assumption chassis: a declared credited rate
-above a contractual minimum, a monthly deduction of per-policy, per-unit and cost-of-
-insurance charges, Guideline Premium Test death benefit options A and B, a nine-year
-surrender charge run-off, and no maturity date -- charges and premiums cease at
-attained age 121 and coverage continues for life.
+:mod:`~.UL_US_SEC` projects the policy :mod:`~.UL_US_S` projects -- a single-life,
+flexible-premium adjustable (universal) life policy on the current-assumption chassis: a
+declared credited rate above a contractual minimum, a monthly deduction of per-policy,
+per-unit and cost-of-insurance charges, Guideline Premium Test death benefit options A
+and B, a nine-year surrender charge run-off, and no maturity date, charges and premiums
+ceasing at attained age 121 and coverage continuing for life -- from a **valuation
+date** rather than from the start of a projection of its own. A model point may be a
+policy already in force at that date, in any month of its policy year, one issued at it,
+or one to be issued in the ten years after it, as in lifelib's ``basiclife/BasicTerm_SE``,
+which extends ``basiclife/BasicTerm_S`` the same way. Its formulas are the executable
+counterpart of ``products/universal_life/technical-notes.md``, and
+``products/universal_life/model-sec.md`` explains what running in force changes.
 
 **Spaces.** The model contains two:
 
-:mod:`~.UL_US_S.Data`
-    Reads the eight input CSVs and holds their filename References. It takes no
+:mod:`~.UL_US_SEC.Data`
+    Reads the seven assumption CSVs it shares with :mod:`~.UL_US_S` and its own model
+    point table, and holds their filename References. It checks the model point table as
+    it reads it, the keys and the rates of every table read at a policy year or an
+    attained age, the class factors and the surrender-charge schedules. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.UL_US_S.Projection`
+:mod:`~.UL_US_SEC.Projection`
     The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.UL_US_S.Data`
+    ``data`` Reference, which resolves to the single :mod:`~.UL_US_SEC.Data`
     Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
@@ -35,23 +42,31 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
 
-**Projection basis.** Monthly steps. Policy month ``t`` is 0-based and runs
-``0, 1, ..., proj_len() - 1``, where ``t = 0`` is the **issue month** of a new-business
-model point and ``proj_len() = 12 * (omega_age - age_at_entry() + 1) - duration_mth_init()``
-is the number of months projected, so the projection ends with the policy year in which
-the insured attains ``omega_age`` (120), the last age of the mortality table, where the
-annual rate is 1.0. Policy month ``t`` runs from the monthiversary at time ``t`` to the
-next; ``policy_year(t) = duration(t) + 1`` is the 1-based contractual label, derived and
-never indexed by. For an in-force model point ``duration_mth_init()`` is the number of
-completed policy months already elapsed at ``t = 0``, so ``duration_mth(t) =
-duration_mth_init() + t``. The contract itself has no maturity date [S2][S3];
-``pols_maturity(t)`` is therefore identically zero and the projection is truncated by
-mortality, not by the contract.
+**Projection basis.** Monthly steps on two clocks. ``t`` counts months from the
+valuation date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the
+valuation month for every model point, however old the policy, and the frame runs
+``t = 0, 1, ..., proj_len() - 1``, where ``proj_len() = omega_mth() - duration_mth_init()``
+counts the months from the valuation date to the end of the projection. That ends with
+the policy year in which the insured attains ``omega_age`` (120), the last age of the
+mortality table, where the annual rate is 1.0: ``omega_mth()`` is the first policy month
+at attained age 121. ``duration_mth(t)`` counts the months the policy has been in force,
+``duration_mth_init() + t`` from the model point's ``duration_mth`` at ``t = 0``, and the
+contract runs on it: ``policy_year(t) = duration(t) + 1`` is the 1-based contractual
+label, ``duration(t) = duration_mth(t) // 12``, derived and never indexed by. The
+contract itself has no maturity date [S2][S3]; ``pols_maturity(t)`` is therefore
+identically zero and the projection is truncated by mortality, not by the contract, so
+where lives survive the last month the count and the account value they carry into
+``t = proj_len()`` are kept, and the roll-forwards close on them. Expense inflation and the
+two declared rates run on ``t``: the rates flat as shipped, and inflation stepping on the
+valuation anniversaries, so the maintenance expense is in valuation-date dollars;
+acquisition is charged per policy issued, in the issue month, and is not inflated, as in
+``basiclife/BasicTerm_SE``. On a point issued at ``t = 0`` the
+two clocks coincide, and the model computes what :mod:`~.UL_US_S` computes.
 
-Within each month the notes' monthiversary order is followed exactly. At the beginning
-of the month (BOM): surrender-charge amortization, gross premium and its load,
+Within each month the notes' monthiversary order is followed exactly: at the beginning
+of the month (BOM), surrender-charge amortization, gross premium and its load,
 withdrawal and withdrawal fee, death benefit and corridor test, net amount at risk,
-monthly deduction, shortfall test. At the end of the month (EOM): one month's interest
+monthly deduction, shortfall test; at the end of the month (EOM), one month's interest
 on the post-deduction balance, loan interest accrual, then the decrements -- death
 before lapse. Premiums, expenses and premium taxes therefore fall at BOM and are
 weighted by ``pols_if(t)``; death claims are weighted by
@@ -93,19 +108,21 @@ mistaken for an oversight:
 
 * The grace and lapse-for-insufficiency cascade. The trigger and the required cure
   payment are complete formulas and are implemented as the diagnostics
-  :func:`~.UL_US_S.Projection.is_shortfall` and
-  :func:`~.UL_US_S.Projection.cure_premium_pp`, but the notes leave the
+  :func:`~.UL_US_SEC.Projection.is_shortfall` and
+  :func:`~.UL_US_SEC.Projection.cure_premium_pp`, but the notes leave the
   in-grace account value treatment (deductions accrue "due and unpaid") and the cash
   flow of a cure payment undetermined, so no policy is terminated for insufficiency
   and no in-grace state is carried -- the notes' ``grace_flag(t)`` has no cells.
   **This absence bites on a shipped model point.** Point 2 enters shortfall in policy
-  year 57 and stays there for the last 356 of its 1,032 months: deductions keep being
-  taken from an account value that is already empty, which ends about $1.84m
+  year 57 and stays there for the last 356 of its 1,032 months, and point 7, the same
+  policy restated in force at that month, is in shortfall throughout: deductions keep
+  being taken from an account value that is already empty, which ends about $1.84m
   overdrawn. Cash flows past the trigger month of a model point in shortfall are not
   meaningful. What the model does *not* do is let that negative balance reach the
-  death benefit: :func:`~.UL_US_S.Projection.av_pp_db_basis` floors it at zero
+  death benefit: :func:`~.UL_US_SEC.Projection.av_pp_db_basis` floors it at zero
   **[std]**, so an Option B death benefit is never below the face amount and no death
-  claim is ever negative.
+  claim is ever negative. Nor does it take such a balance in as opening state: no
+  policy in force holds one, so the model point table refuses a negative account value.
 * Reinstatement -- a contractual provision only, out of scope in the notes.
 * NGE revision. The notes' rule ``i_cr(t) = max(i_guar, earned_rate(t) - spread)``
   needs an earned-rate input the notes do not supply; the base run holds the snapshot
@@ -115,42 +132,56 @@ mistaken for an oversight:
   so ``loan_bal_pp(t)`` only rolls forward the model point's opening balance.
 * Face increases and decreases, option changes, and the surrender-charge layering
   that goes with them. Withdrawal-driven face reduction under Option A *is*
-  implemented.
+  implemented, and a point in force carries the face its withdrawals have left.
 * Riders. ``rider_charge_pp(t)`` is the notes' placeholder term, zero in the base
   model.
 * MEC status has no cash flow consequence for the insurer, so
-  :func:`~.UL_US_S.Projection.is_mec` flags and does not project. The flag does
+  :func:`~.UL_US_SEC.Projection.is_mec` flags and does not project. The flag does
   **latch**, though: 7702A status is permanent once the 7-pay test fails, so once true
-  it stays true for the rest of the projection.
+  it stays true for the rest of the projection, and a point in force carries the latch
+  in from before the valuation date.
 * Withdrawal *utilization*. The mechanics are complete -- the fee, the notes' annual
   free-amount rule with its ``wd_used_year`` state, and the Option A face reduction --
   but the notes give no utilization pattern, so every shipped model point withdraws
   nothing.
 
-**Model points.** ``model_point_table.csv`` carries three points, all on the anchor
-configuration M35 / StdNT / $100,000, because the specimen gives a guaranteed COI
-scale for that cell alone. Point 1 is the technical notes' worked-example anchor:
-Option A, $1,800 planned annual premium, no opening account value and no loan. Point 2
-switches the death benefit to Option B, which makes the corridor and the increasing
-net amount at risk live -- and, from policy year 57, the shortfall trigger too, so it
-doubles as the model point that exhibits the missing grace cascade above. Point 3 is
-an in-force cell at 120 completed policy months
-with an opening account value of $15,000 and a $2,000 loan, which exercises the
-duration offset, the expired surrender charge and the loan roll-forward. A model point
+**Model points.** ``model_point_table_sec.csv`` is generated from :mod:`~.UL_US_S` and
+its model point table, and the tests regenerate it and compare, so no row is typed by
+hand. Every point is on the anchor configuration M35 / StdNT / $100,000, because the
+specimen gives a guaranteed COI scale for that cell alone. Points 1 to 3 are the twins of
+:mod:`~.UL_US_S`'s three points: point 1, the technical notes' worked-example anchor,
+Option A with a $1,800 planned annual premium, issued at the valuation date; point 2,
+the same on Option B, which makes the increasing net amount at risk live, and, from policy
+year 57, the shortfall trigger; and point 3, the in-force cell,
+120 completed policy months at the valuation date with an account value of $15,000 and
+a $2,000 loan. Points 4 to 8 are S points restated in force at an S month, each opened
+with the state :mod:`~.UL_US_S` carries into that month: point 1 on its first
+anniversary, inside the surrender-charge period; point 1 at month 113, in the middle of
+the lapse-shock year; point 3 six months on, at policy month 126, mid-year with its loan;
+point 2 at month 676, the month its shortfall begins; and point 1 at month 1,008, the
+first month at attained age 119, where the mortality rate reaches 1.0 and every survivor
+dies. Point 9 is point 1 to be issued 25 months after the valuation date. A model point
 on any other issue age, sex or class requires ``coi_rates.csv`` to be extended first; a
 test asserts every model point in the table actually projects.
 
-**Verification.** Model point 1 is the anchor cell of the worked example in the
-technical notes, and ``tests/test_universal_life_us.py`` asserts every cell of all
-three of its rows -- account value, net premium, death benefit, net amount at risk,
-cost of insurance, monthly deduction, post-deduction balance and credited interest --
-to the cent, together with the notes' issue-month (``t = 0``) trace at full precision.
+**Verification.** On the two twins issued at the valuation date every cell this model
+shares with :mod:`~.UL_US_S` agrees with it at every argument the S model evaluates in
+its sweep, ``pols_if_init``, ``model_point`` and ``result_pols`` excepted, so the goldens
+``tests/test_universal_life_us.py`` asserts on them hold here too, with no number
+restated: every cell of all three rows of the technical notes' worked example on point 1,
+to the cent, and the notes' issue-month trace at full precision.
+``tests/test_universal_life_us_sec.py`` splices: an S point restated in force at month
+``d``, opened with S's own state there, continues the S projection from ``d`` on, cell by
+cell, and so does the twin of S's in-force point 3 from S's own first month. A point
+issued ``k`` months late is the S projection ``k`` months on, and the committed table is
+what S generates.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/universal_life/UL_US_S")
-    >>> model.Projection[1].result_cf()
+    >>> model = mx.read_model("products/universal_life/UL_US_SEC")
+    >>> model.Projection[6].result_cf()
+    >>> model.Projection[6].result_av()
 """
 
 from modelx.serialize.jsonvalues import *

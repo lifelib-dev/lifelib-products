@@ -2,12 +2,12 @@
 
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
 and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
-and §7.2). The other ten run in three streams (§5.3), of which SPIA, the first of the
-Payout stream, is done (M11, the *Record* of §7.9), and so is MYGA, the first of the
-Deferred annuity stream (M7, the *Record* of §7.10). Term's compile step, M14, brought
-forward to run beside the streams (D2), is done on Linux, 2026-11-02; its Windows gate
-awaits the `cython` job's first run (§7.1, *Record — M14*). The open decisions of §8.2 are
-settled but one, which is needed only before Phase 1 reaches RILA.
+and §7.2). The other ten run in three streams (§5.3), and the first product of each is
+done: UL in the Life stream, MYGA in the Deferred annuity stream and SPIA in the Payout
+stream (M3, M7 and M11, the *Records* of §7.3, §7.10 and §7.9). Term's compile step, M14,
+brought forward to run beside the streams (D2), is done on Linux, 2026-11-02; its Windows
+gate awaits the `cython` job's first run (§7.1, *Record — M14*). The open decisions of
+§8.2 are settled but one, which is needed only before Phase 1 reaches RILA.
 Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
 phase records what it actually did, including where the implementation departed from the
 plan.
@@ -341,8 +341,16 @@ a message of its own (precised at M1).
   (survivors exit at the end of the last month) are kept. BasicTerm_SE's start-of-period
   `BEF_MAT` maturity is not adopted: the S goldens put expiry at the end of the final
   month. Nor is the **name**: WholeLife already has a `BEF_MAT` that means the end of the
-  month after surrenders, the opposite end of the month from BasicTerm_SE's. `BEF_NB` is the
-  only timing SEC introduces, plus `BEF_DECR` where an S model lacks it.
+  month after surrenders, the opposite end of the month from BasicTerm_SE's. `BEF_NB` is
+  the only timing SEC introduces, plus `BEF_DECR` where an S model lacks it. Where an S
+  model names CashValue_SE's three timings in a stub that returns `pols_if` for each, as
+  `UL_US_S`, `VUL_US_S`, `ULSG_US_S` and `IUL_US_S` do, SEC keeps the stub's meaning for
+  `"BEF_DECR"` and `"BEF_MAT"`, the count after the month's new business, since none of
+  the four matures a policy, and gives `"BEF_NB"` D5's meaning. The model then differs
+  from the stub in `"BEF_NB"` alone, in the issue month, and T3 compares the cell with the
+  stub at every other key, through an `arg_map`, rather than exempting it. Each S model's
+  `"BEF_MAT"` thus keeps its own meaning: the end of the month in WholeLife, the count
+  that weights the month in the UL family (precised at M3).
 - SPIA is the one exception to the row-weight rule. Its count on the books,
   `pols_if_at(t, "BEF_DECR")`, is `policy_count` from the annuity date to the stop rule:
   mortality decrements each life's `lives_if`, never the count, and every flow is that
@@ -405,6 +413,13 @@ and the splice identity of §5.2 tests it.
   Such a row reads, and a loop over the block meets it only when it reaches it, so
   `run_sec.py --block` asks every point for its frame before it projects any (precised
   at M1).
+- No balance a policy holds, such as an account value or a loan, is negative in force, so
+  a point the S model carries into a negative one, as `UL_US_S` carries its account value
+  in permanent shortfall, is restated no later than the last month it is still zero or
+  more. A measure that is not such a balance may take either sign: a tax measure such as
+  premiums less withdrawals, or the shadow account, which `ULSG_US_S` never floors (§7.5).
+  A quantity every policy in force holds, such as UL's face, is refused at zero (precised
+  at M3).
 - A `Data` rule that ties one amount of money to another, as an allowance to the base it
   is a share of, compares to a cent, so that an extract may carry each amount to the cent:
   each amount so carried is within half a cent of its exact value, so the rule can miss by
@@ -970,7 +985,10 @@ conventions suite.
   and nowhere else. Every assumption that ships at zero is switched on, in both models
   alike but for a market's change since a term's start (below), so the splice can see it.
   Where the shipped points leave a branch unreached, a variant S point is spliced too,
-  added to a temporary copy of S's table (precised at M1).
+  added to a temporary copy of S's table (precised at M1). A variant changes S's columns,
+  never a formula, wherever S has a column for the behaviour, as UL's withdrawals and
+  over-funding do, so that the splice runs unchanged once the model compiles (K7; precised
+  at M3).
 
   A market's change since a term's start that S carries as one Reference (D7) is switched
   on in S, where it is each point's change since its own start. The SEC table is read
@@ -1408,6 +1426,41 @@ fails the rules test too.
     and timings, the departures, the tests.
 14. *Registry.* The SEC entry goes directly after its twin, with `INPUT_FILES` written by
     `tools/gen_input_files.py --write`.
+
+*Precised at M3*, for every product that lands after it:
+- Item 5, *Outside cover*. Where a frame ends at a horizon rather than at an event that
+  ends cover, as in the UL family, whose four S models mature nothing, the count and the
+  balances the roll-forwards read at `t + 1` are carried into `t = proj_len()`, so that
+  those roll-forwards close with survivors left. Every other count, balance, flow and
+  charge is zero there, the cells that read `t + 1` included, as is every rate read at a
+  policy year or an age, and every flag is false; the clocks and the valuation-clock
+  inputs keep their values. Every per-policy flow and charge is guarded by `is_active(t)`,
+  never left to a contractual age to reach zero at the horizon.
+- Item 9, the assumption tables. `Data` checks each table a projection reads, its keys and
+  every value a reader reads, once and before any reader reads a value, at stage `E`,
+  which brings R7's refusal at the first read forward and extends it to values. It does so
+  either in the cell a keyed reader takes its extent from, which reads the key column by
+  value once, as in UL, or in a checked copy of the table that the projection reads alone,
+  as in MYGA (§7.10). In UL's form a table read by a per-point join gets a count cell that
+  the join asks first, as UL's `class_count()` and `surr_charge_count()` are. A key that
+  is blank, text or not whole is refused, naming the file, the column and its lines; keys
+  that repeat, or leave a gap where a reader reads every key between the first and the
+  last, naming each repeated key with its lines and each missing key or span; a text key
+  that is blank or repeated, naming its lines. A value that is blank, text or infinite is
+  refused, naming the column and its lines, in every column a reader reads, every table a
+  cap, a `min` or a `max` reads among them: an S model reads a blank as a missing value,
+  which its own `min` and `max` can lose without a word.
+- Item 11, the test module. Each such refusal is a case of a table-driven list, read
+  through a projection as well, its message matched whole, and the accepted edges write
+  every keyed table's keys as floats. An S text value no decode knows raises S's message,
+  in a table-driven `UNDECODABLE` list. Each committed derived and future row is compared
+  with its S point frame by frame, since T6 compares a float to 1e-12 and so pins UL's
+  smallest committed count, 1.8e-10, only to 0.57%. Where S's check is a `math.isclose`
+  loop with no residual cell, as in the UL family, its per-month residual becomes a
+  `*_resid(t)` cell relative to the larger side, floored at `abs_tol / rel_tol`, 1 in UL
+  and 10 in IUL, so that S's tolerances hold; where S has `*_resid` cells of its own, as
+  the annuities and WholeLife do, SEC keeps them and their tolerances, which T1 compares.
+  Either way the check fails a residual that is not a number, which a test shows.
 
 **Carried into Phase 2.**
 - Term's `spec_sec.py` sizes its caches from the contract:
@@ -2222,25 +2275,536 @@ changes:
 and nothing calls it.
 
 *E:*
-- New opening state:
-  - `sum_assured_init`, the current face; the original stays the surrender-charge base;
-  - `wd_used_year_init`, which S forces to 0 at `t = 0`;
-  - `cum_prem_init`, which restarts at 0 in force although the TARGET premium cap uses it;
-  - `is_mec_init`, because the latch's base is `t > 0`.
-- `crediting_rate_ann` and `comp_rate_ann` move to `t` (D7).
-- Splice months: 1, 11, 12, 13, 107–120 (the lapse-shock window), 125.
+- Opening state (D6): S's `av_pp_init` and `loan_bal_init`, unrenamed, and four new
+  columns:
+  - `sum_assured_init`, the face in force; the face at issue stays the surrender-charge
+    base, and `Data` refuses a face above it, or of 0 in force;
+  - `wd_used_year_init`, which S forces to 0 at `t = 0`, and which is 0 on an anniversary
+    valuation;
+  - `cum_prem_init`, which S restarts at 0 in force although the TARGET premium cap reads
+    it, of either sign;
+  - `is_mec_init`, an int code, because the latch's base is `t > 0`.
+
+  Reading every recursive cell found no other state. `Data` refuses a negative account
+  value, so a point in permanent shortfall is restated no later than the last month its
+  account value is still zero or more: without a loan, the month its shortfall begins (S
+  point 2 at 676).
+- Every chain is one cell a month (D5): `av_pp_at(t, "BEF_PREM")` and `loan_bal_pp_bom(t)`
+  form the previous month's close themselves, S's arithmetic in S's order, where S's
+  chains run through five cells a month and two. `is_mec` runs its in-year test before its
+  base, as S's does.
+- Rebase (R1a): eight bases move from `t == 0` to `t_entry()`, those of `av_pp_at`,
+  `loan_bal_pp_bom`, `sum_assured_at`, `wd_used_year`, `cum_prem_pp`, the TARGET cap in
+  `premium_pp`, `is_mec` and the count.
+- Guards (R1) cover every per-`t` cell that turns `t` into a policy year or an age, and
+  every per-policy flow and charge. `lapse_rate_sc_mult` is guarded because S's
+  no-schedule sentinel, shock year 0, is the policy year of the twelve months before
+  issue.
+- The frame ends at a horizon, `omega_mth()`, the first policy month at attained age 121,
+  not at an event: the count and the account value carried into `t = proj_len()` are kept,
+  and every other count, balance, flow and charge is zero there (§7.1, *Precised at M3*).
+- Tables: each policy-year or age table has one keyed reader, which takes its extent from
+  a `Data` cell that reads the key column by value once and checks the table before any
+  value is read; the COI scale's extent is per issue-age cell, read per point. A key that
+  is blank, text or not whole is refused, naming the file, the column and its lines. So
+  are keys that do not run one row a year or an age, without a gap or a repeat, policy
+  years from 1, naming each key that repeats, with its lines, and each missing key or
+  span; and a value that is blank, text or infinite, naming the column and its lines.
+  `class_count()` and `surr_charge_count()` check the two tables read by point, and
+  `class_factor()` and the schedule's two readers ask them first. `UL_US_S` reads a blank
+  as a missing value, which its own `min` and `max` lose without a word: a blank lapse
+  rate reads as the cap of 0.35, a blank corridor factor as no corridor, a blank surrender
+  charge as none.
+- Text: six bool decodes carry every branch on S's text columns, and a value none of them
+  knows raises S's message in the cell that branches, as in S. Only the decodes and five
+  per-point joins, `coi_rate_scale`, `coi_rate_last_year`, `class_factor`,
+  `surr_charge_rate_max` and `surr_charge_runoff_years`, call S's label accessors, a
+  departure from M14's carried rule (*Record — M3*); no monthly cell does.
+- `crediting_rate_ann` and `comp_rate_ann` are read on `t`, the valuation clock (D7), as
+  `UL_US_S` reads them on its projection clock. They are flat as shipped, so a test moves
+  them by formula override; on those paths the account value's close, both checks and the
+  twins' match with S hold. Expense inflation keeps S's annual steps, on `t`,
+  `(1 + i) ** (t // 12)`.
+- `mort_rate` is capped at 1.0, `min(q, 1.0)` (§5.1, step 6): at the shipped A/E, S's
+  tobacco classes pass 1 from attained age 113 (StdTob) and 114 (PTob), where `UL_US_S`
+  turns complex. The cap test follows Term's.
+- `pols_if_at`'s `"BEF_MAT"` keeps S's meaning, the `"BEF_DECR"` count, and T3 compares
+  the cell with S's stub at every key but `"BEF_NB"` in the issue month (D5, precised at
+  M3).
+- `check_margin`'s loan term is the loan a surrender recovers,
+  `min(loan_bal_pp(t), csv_pp(t)) * pols_lapse(t)`: with S's whole loan the check fails
+  once a loan exceeds the cash value.
+- `expenses` is S's formula in S's order, behind the guard.
+- Splice months, by event:
+  - on S points 1 and 2: 1, 11, 12 and 13; 107, the first month without a surrender
+    charge; the lapse shock's year at 108, 113 and 119, and 120, where it ends; and 125;
+  - point 1's last covered month, 1031, a one-row frame whose `t = 1` is the month carried
+    into, and 779 and 780, either side of the splice's charges ceasing at age 100; point
+    2's 676, where its shortfall begins;
+  - S point 3 at 1, 6 and 12 after its own month 120, and as its own twin at offset 0;
+  - seven variants, each with COI rows of its own: withdrawals on A (12, 13, 15, 23, 24);
+    withdrawals on B (13, 24); a single premium without a surrender charge (1, 12, 85);
+    TARGET on a second schedule, UL7 (70, 71, 72, 83, 84, 144); over-funded LEVEL (1, 3,
+    11, 84; at 3 the 7-pay test first fails in the valuation month); issue age 18 (12,
+    1235); and LEVEL at $24,000 a year on B, whose corridor binds (33, 34, 479, 480).
+
+  Future rows are issued 1 and 12 months on, and the variants 13 months on. The core is 20
+  splices and 5 future rows, the full grid 54, the in-force twin among them, and 11.
+- The splice's References, in both models: inflation 0, acquisition $250, A/E 0.56,
+  charges ceasing at attained age 100, and a lapse shock of 10 times, so that the shock
+  year's 0.04 meets the lapse rate's cap of 0.35.
 
 *C:*
-- `model_point()` sits behind about 20 attribute cells; six strings are decoded.
-- Per-`t` pandas in `prem_persistency`, `corridor_factor`, `class_factor`, `mort_rate`,
-  `lapse_rate_base` and `coi_rate_scale` (a Series) become age and policy-year arrays and a
-  `coi[schedule, y]` with a per-point schedule number (R7).
+- `model_point()` sits behind 23 accessor cells, each read once a point. Six of the
+  columns are text: three decoded into bools at stage `E`, and `sex`, `rate_class` and
+  `surr_charge_id`, the per-point joins' keys.
+- The keyed readers `prem_persistency_py`, `coi_rate_guar_py`, `lapse_rate_base_py`,
+  `corridor_factor_at` and `mort_rate_base_at` are the arrays' one reader each, and
+  already take their extents from `Data` cells that check each table's keys and values.
+  `coi_rate_scale`, `coi_rate_last_year`, `class_factor`, `surr_charge_rate_max` and
+  `surr_charge_runoff_years` are per-point joins keyed by text, and the six bool decodes
+  read text columns. `Data` decodes them all (R6, R7): the extents become int scalars or
+  vectors by point, `coi_rate_last_years`, a Series at stage `E`, among them; the COI
+  scale becomes `coi[schedule, y]` with a per-point schedule number; and `class_count`'s
+  and `surr_charge_count`'s checks move into the class factor's and the schedule's vectors
+  by point, which refuse a blank value as they do now.
 - Timing and kind cells: `av_pp_at`, `av_at` (+`EOM`), `pols_if_at`, `claim_pp`,
-  `claims_from_av`, and `claims(t, kind=None)`.
-- Never reached: `gsp`, `glp`, `seven_pay_prem`, `wd_used_year`, `wd_free_pp`,
-  `is_shortfall`, `cure_premium_pp`, `cum_prem_pp`, `gpt_limit`, `gpt_ok`,
-  `seven_pay_limit`, `is_mec`, `pols_if_at`.
-- `t` reaches 1,032. Two test fixtures override formulas, so they stay on modelx (C1).
+  `claims_from_av`, and `claims(t, kind=None)`, which S's `net_cf` caches under
+  `(t, None)`, so T1 needs an `arg_map` for it at stage `EC` (R12).
+- No report or check reaches, on the committed points, `gsp`, `glp`, `seven_pay_prem`,
+  `wd_used_year`, `wd_free_pp`, `is_shortfall`, `cure_premium_pp`, `cum_prem_pp`,
+  `gpt_limit`, `gpt_ok`, `seven_pay_limit` or `is_mec`, as in S, nor four new cells:
+  `is_target_premium`, which no committed point's premium asks, and the opening-state
+  accessors `wd_used_year_init`, `cum_prem_init` and `is_mec_init`; `sample_sec.py` must
+  call each. `pols_if_at`, which S never reached, now carries the count.
+- `t` runs from 0 to 1,356 at the contractual maximum, issue age 18 with 1,236 months of
+  cover, issued 120 months on, and the month after the frame, so `spec_sec.py` sizes `t`
+  at 1,358. Policy years run 1 to 103 and attained ages 18 to 120, each read only in
+  cover. Phase 2's `proj_len()` refuses an issue age below 18, the youngest
+  `product-spec.md` admits; at stage `E` UL's `SecSpec` comment in `sec_support.py` lists
+  the bound, and nothing refuses it.
+- Depth (F7): a cold `net_cf` runs one cell a month back to `t_entry()` and 16 more, 1,251
+  cells at the longest cover, and needs 2,529 Python frames in the modelx export. At gcc's
+  255 bytes a level, 1,251 levels are about 311 KiB.
+- Two product tests override formulas, the declared-rates test and the NaN-residual test,
+  so they stay on modelx (C1); the splice sets References only, and its variants are S's
+  columns.
+
+#### Record — M3, done 2026-11-02
+
+Built in two commits, as D1 requires: `UL_US_S` copied with only `_name` changed, then the
+enhancement, by M1's process: a design prototyped and critiqued before the build, tests
+written against the build and checked by injected faults, then a review under the three
+lenses. The review made 28 findings, 1 a blocker and 5 major, some of them one defect seen
+under two lenses. The blocker and one major were the cap test, which a cap on new business
+only and an int cap both passed. Two more were the assumption tables' extents, taken from
+the key column as pandas reads it, so that a blank last key cut a table short without a
+word. The other two were gaps in the tests: nothing pinned the month whose credited rate
+the account value's close reads, and nothing showed a residual that is not a number
+failing a check. A re-review of the fixes made 5 more, all minor, among them a blank rate
+that the cap read as 1.0. All are fixed in `UL_US_SEC` and its tests but one, which asked
+the plan to let the decodes and per-point joins call S's label accessors at stage `E`; the
+record states that as a departure from M14's carried rule instead (*Departures and
+precisions*, *Text*). The fixes rejected only what reached outside `UL_US_SEC`: the S
+halves of three findings, since `UL_US_S` is left untouched and its defects are carried
+below, and a relative float comparison in T6, which would change the shared harness for
+every product; the second fix rejected nothing. M3 was built on M2's tip and rebased at
+landing onto Term's cap fix, which followed M7 (*Landing*, below).
+
+**What exists now.**
+- `UL_US_SEC` at stage `E`. Of `UL_US_S`'s 107 `Projection` cells, 44 are unchanged, one
+  more has a line rewrapped, 26 have a new docstring only and 36 are rewritten; none is
+  removed or renamed. It adds 26 cells, 133 in all: `policy_count`, `omega_mth`,
+  `t_entry`, `is_active` and `pols_new_biz`; four opening-state accessors,
+  `sum_assured_init`, `wd_used_year_init`, `cum_prem_init` and `is_mec_init`, and
+  `wd_pp_mth`; six bool decodes; five keyed readers, `prem_persistency_py`,
+  `coi_rate_guar_py`, `lapse_rate_base_py`, `corridor_factor_at` and `mort_rate_base_at`,
+  and `coi_rate_last_year`, a point's COI extent; the schedule's two readers,
+  `surr_charge_rate_max` and `surr_charge_runoff_years`; and the residual cells
+  `check_av_roll_fwd_resid` and `check_margin_resid`. S's `math` Reference is dropped.
+  `Data` rewrites S's table reader, which now checks the table as it reads it, keeps S's
+  other eight cells, six of them rewrapped and two of those with a shortened docstring
+  line, and adds nine, 18 in all: seven that check a keyed table and give its extent, and
+  `class_count` and `surr_charge_count`, which check the two tables read by point. It adds
+  the Reference `future_horizon_mth = 120`.
+- `model_point_table_sec.csv` holds nine rows generated from UL's `SecSpec`. Three are S's
+  points as twins, point 3 in force at its own month 120, at offset 0. Five are derived: S
+  point 1 at months 12, 113 and 1008, S point 3 six months on, and S point 2 at 676, the
+  month its shortfall begins. The last is S point 1 issued 25 months on. The table has no
+  `provenance` column. A case-insensitive search for the publishers, products, form
+  numbers and hosts that `universal_life/sources.md` cites finds none of them in it.
+- `tests/test_universal_life_us_sec.py` has 34 tests and 200 cases: T2 on 54 splices, the
+  in-force twin among them; T3 on 11 future rows; T4; T5 on 50 malformed rows, 33
+  malformed keys, 15 values that are not numbers and 4 blank or repeated text keys, 3
+  values no decode knows, 2 points past cover, the horizon and the accepted edges; T6, and
+  the committed rows against S; the rules, depth and guard tests; and the product's own
+  facts. By default a core of 20 splices and 5 future rows runs, 159 cases in all, and a
+  test asserts that the core reaches every branch, opening-state column and kind of
+  valuation month the full grid reaches. The other 41 carry `sec_full` (K6). On M2's tip
+  the SEC conventions pass, 32 of them, and one is skipped, as it is for `UL_US_S`.
+- `run_sec.py`, which prints a point's account value roll-forward beside its cash flows;
+  `model-sec.md`, with *The opening state*, which shows each new column on a splice
+  variant beside the same row with the column as `UL_US_S` assumes it: 388.15 of TARGET
+  premium against 450.00, the MEC latch on against off, a free amount of 82.39 against
+  142.39, and a death benefit of 99,442.27 against 100,000.00; the registry entry with its
+  `INPUT_FILES`; and four generated pages. doccheck reported 485 pages and 0 warnings on
+  M2's tip with UL added.
+- Shared files, added to in place: UL's spec and its state extractors in `sec_support.py`;
+  the entry in `us_registry.py`; and the models table's Universal life row and the
+  sentence on the SEC models in uslib's `index.md`.
+
+**Departures and precisions.**
+- *The opening state* (D6, precised). S's `av_pp_init` and `loan_bal_init` keep their
+  names, since they already measure D6's instant, and four columns are new. `Data` refuses
+  a negative account value and a face of 0 in force, and accepts a negative
+  `cum_prem_init`, a tax measure rather than a balance. So a point in permanent shortfall
+  is restated no later than the last month its account value is still zero or more:
+  without a loan, the month its shortfall begins, as committed point 7 is.
+- *Chains of one cell a month* (D5). `av_pp_at(t, "BEF_PREM")` and `loan_bal_pp_bom(t)`
+  form the previous month's close themselves, S's arithmetic in S's order, where
+  `UL_US_S`'s chains run through five cells a month and two. `is_mec` runs its in-year
+  test before its base, as S's does, so a point that fails the 7-pay test at `t = 0` is a
+  MEC whatever `is_mec_init` says.
+- *Eight bases at `t_entry()`* (R1a): those of `av_pp_at`, `loan_bal_pp_bom`,
+  `sum_assured_at`, `wd_used_year`, `cum_prem_pp`, `premium_pp`'s TARGET cap, `is_mec` and
+  the count, which S bases at `t == 0`. No cell passes a policy month as `t`.
+- *Guards* (R1). Every per-`t` cell that turns `t` into a policy year or an age is guarded
+  by `is_active(t)`, and so is every per-policy flow and charge, `wd_pp` among them,
+  rather than left to a contractual age to reach zero. So is `lapse_rate_sc_mult`: without
+  a schedule S's `lapse_shock_year()` is 0, the policy year of the twelve months before
+  issue, where the multiplier was 2.0.
+- *The frame's end* (§7.1, item 5, precised). The frame ends at a horizon, `omega_mth()`,
+  the first policy month at attained age 121. The count and the account value are carried
+  into `t = proj_len()`, because S's roll-forwards read them there and survivors remain.
+  Every other count, balance, flow and charge is zero there, `av_change` and both residual
+  cells included, so no cell reads past `proj_len()`. At the splice's A/E of 0.56, 4.0e-6
+  of a policy survives to the end on points 1 and 2, and 9.3e-6 on point 3.
+- *The tables* (§7.1, item 9, precised). The five keyed readers take their extents from
+  seven `Data` cells, `prem_persistency_last_year`, `lapse_last_year`,
+  `corridor_age_first`, `corridor_age_last`, `mort_age_first`, `mort_age_last` and
+  `coi_rate_last_years`, which `coi_rate_last_year` reads per point; `class_count()` and
+  `surr_charge_count()` check the two tables read by point. Each reader asks its cell
+  before it reads a value, so a projection meets the checks first. A message names each
+  key that repeats, with its lines, and each missing key or span, so it stays short on
+  `mort_table.csv`'s 103 rows; in the COI scale each clause names its issue-age cell.
+- *Text.* Six bool decodes, `is_db_option_a`, `is_db_option_b`, `is_gpt`,
+  `is_level_premium`, `is_single_premium` and `is_target_premium`, carry every branch on
+  S's text columns, and a value none of them knows raises S's message in the cell that
+  branches, as in S. The six decodes and the five per-point joins keyed by text call S's
+  label accessors, where M14's carried rule has no projection cell call one. No monthly
+  cell calls one, and R6 and R7 move both onto `Data` in Phase 2. The products after UL
+  keep M14's rule, as SPIA and MYGA do (the life chassis, *Text*, below).
+- *The checks* run over relative `*_resid(t)` cells, which keep S's `isclose` tolerance.
+  Each check fails a residual that is not a number, as `math.isclose` does, and the `math`
+  Reference is dropped.
+- *The cap on mortality* (§5.1, step 6). `mort_rate` is `min(q, 1.0)`, which keeps a NaN
+  as NaN in both engines; the build wrote `min(1.0, q)`, and the landing changed it
+  (*Landing*). The cap changes S's annual rate where it passes 1, and no monthly rate,
+  count or flow that S computes as a real number. Its test, on Term's form, takes S's
+  anchor cell in StdTob at the shipped A/E, whose rate first passes 1 at `t = 936`,
+  attained age 113, at 1.095. It reads four rows: the twin, the point issued 25 months on,
+  and the point restated at 935 with S's count and at 941 with one policy. The first three
+  are compared with S wherever S's value is real, at 1e-9 relative with no absolute floor.
+  On all four the capped rate is `(float, 1.0)`, every policy in force there dies in that
+  month, the reports are finite float64 and both checks hold.
+- *`check_margin`*'s loan term is the loan a surrender recovers,
+  `min(loan_bal_pp(t), csv_pp(t)) * pols_lapse(t)`. With `UL_US_S`'s whole loan the check
+  fails once a loan exceeds the cash value, since the lapse claim is floored at 0. A test
+  restates S point 3 withdrawing on Option B the month before its loan passes its cash
+  value: its reports equal S's, S's check fails and this model's holds.
+- *`pols_if_at`* (D5, precised). `"BEF_MAT"` keeps S's meaning, the `"BEF_DECR"` count, as
+  WholeLife's keeps its S model's, and `"BEF_NB"` alone takes a new one. T3 compares the
+  cell through an `arg_map`, `_issued_later`, which leaves out S's
+  `pols_if_at(0, "BEF_NB")` alone.
+- *Expenses.* `expenses` is S's formula in S's order, behind the guard. S charges
+  acquisition on the count in force in the issue month, the policies issued, so T1 holds
+  at any count; a test checks it bit for bit against S at counts 3.7 times the table's.
+  Inflation keeps S's annual steps, on `t`. The declared rates are read on `t`, and a test
+  moves them by formula override.
+- *The committed table* has S point 1 at 1008, the first month at attained age 119, in
+  place of template item 10's last covered month, 1031: at the shipped A/E the table's
+  rate of 1.0 at 119 ends every policy in force, and no policy reaches 1031. The splice
+  restates 1031 at its A/E of 0.56.
+- *`result_pols`* gives `pols_if` and then `pols_new_biz`, then S's five columns, the
+  rates written 0 outside cover. T1 exempts it, and the module compares it with S's column
+  by column.
+- *The splice* switches on charges ceasing at attained age 100 and a lapse shock that
+  meets the lapse rate's cap, sets acquisition at $250 and A/E at 0.56, and sets inflation
+  to 0, in both models. Its variants change S's columns only, each with COI rows at a
+  scale of its own in the copies, and the copies add a second surrender-charge schedule.
+  The heap is frozen once S is swept, and each row is released once compared. T2 and T3
+  exempt `proj_len` and `duration_mth_init`, T2 also S's two opening columns.
+- *The rules test* has no `LOOK_AHEAD`: UL reads nothing beyond `t + 1`. Its scan counts
+  the precedent edges it reads, and fails a row that read none.
+- *No S cell is removed or renamed*, and S's lines over 92 characters are wrapped.
+- *The runner* takes `Projection`'s key from the model, freezes the collector once the
+  table is read and again before the projections, releases and collects each point in both
+  passes, and sums the block with M1's `groupby`. An unknown label exits naming the
+  table's labels.
+- *M14's carried items not yet taken.* Built on M2's tip, UL took `codes=` at landing, but
+  its runner does not yet carry Term's `--cython`, `--build` and `_tool()`, nor its module
+  the `create()`-copy test, and `proj_len()` does not yet refuse an issue age below 18,
+  the bound §7.3 *C* names; UL's C step takes them up.
+
+**Measured for K6 and F7.** Every time below but the landing's was taken with other
+workflows sharing the machine. The second fix's runs of the module, of its full grid and
+of the uslib suite were at a load average of 1.5 to 2.8; the SEC conventions' times are
+the build's, the docs stage's and the fix stage's.
+- *Time.* By default the module ran 159 passed and 41 skipped in 3 min 39 s and
+  3 min 50 s, and over the full grid 200 passed in 5 min 30 s, peaking at 2.45 GB and
+  2.52 GB in one process. A splice or future case took up to 4.5 s. The splice fixture
+  costs 20 s, and by default the count doubling, the runner's subprocesses, the extract,
+  the cap test, the declared-rates test, the cold-depth test and the clock test's fresh
+  read 10 to 16 s each. The 52 key and value refusals and the accepted-edges test ran in
+  21 s together, in the control run of the second fix's fault sweep. The SEC conventions,
+  32 passed and 1 skipped, took 17 to 19 s. By default the module costs about 40 s to
+  1 min more than WholeLife's, and over the full grid about 30 s more. On M2's tip with UL
+  added, the uslib suite ran 1,489 passed and 151 skipped in 13 min 54 s and 14 min 14 s,
+  peaking at 2.75 GB to 2.76 GB; UL's own share is about 4 minutes, from its module and
+  conventions measured alone. As landed, after M7 and Term's cap fix, it ran 1,938 passed
+  and 273 skipped in 17 min 55 s (*Verified at landing*, below).
+- *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()` and
+  16 more. On twin 1's 1,032-month frame it runs 1,047 cells deep, a recursion limit of
+  1,046, against 5,167 and 5,166 on `UL_US_S`'s point 1. It runs 927 on twin 3's 912
+  months, and 1,251 at the longest cover, issue age 18 and 1,236 months, both at the
+  valuation date and issued 120 months on. The 16 end in month 0's COI rate:
+  `coi_rate_guar_py`, `coi_rate_last_year`, `Data.coi_rate_last_years` and
+  `Data.coi_rates`. Each chain head called alone runs at most 8 above its chain: the
+  account value 8, the count 7, the premiums to date 6, the loan 4, the face 4 or 5 and
+  the latch 2. `CHAIN_OVERHEAD` is 20 and `CALL_DEPTH` 40, and an ascending sweep needs a
+  limit of 15, as `UL_US_S`'s does. In the modelx export the cold call needs a recursion
+  limit of 2,121 on twin 1, 1,881 on twin 3 and 2,529 at the longest cover; the sweep with
+  its checks needs 128, which the import itself needs, and the ascending sweep, with the
+  limit set after the import, 58.
+
+**Faults.** Each fault went alone into its own copy of the library, and the tests aimed at
+it ran through the gate.
+- *Tests stage:* 56 faults and a control: 30 runs of the whole default module, the control
+  among them, and 27 of the tests aimed at a fault. 55 faults failed some test, and each
+  of the module's 28 test functions of the time failed under at least one. The year's
+  usage based at `t == 0` rather than at `t_entry()` passed, an equivalent mutation:
+  `t_entry()` is 0 on a point in force, and on a point issued later the issue month is an
+  anniversary, where the usage restarts first. Chains of two or more cells a month, for
+  the loan, the account value and the count, each failed the cold-depth test, the only
+  test run on them, since no number shows a chain's length. The control passed.
+- *Review:* the tests lens ran 20 faults and a control, and 6 survived the default module:
+  a cap on new business only, the cap as the int 1, the account value's close crediting
+  the next month's rate, a residual that is not a number passing both checks, an infinite
+  `av_pp_init` accepted, and an unknown `db_option` projected as Option B. The numbers
+  lens's two cap faults passed too.
+- *Fix stage:* 18 faults and a control, the review's six survivors among them; all 18 fail
+  and the control passes. Among the rest: the extents taken from the raw key column, a
+  zero face accepted, the margin identity's whole loan, committed row 8's count 0.5% off,
+  which T6 passed and the committed-rows test fails, and three on the branches the new
+  splice rows reach: Option B without its corridor, no cap on the lapse rate, and a COI
+  charged after charges cease. Two faults of the tests stage and the review no longer
+  apply: the form of acquisition they edited is gone, and `BEF_MAT` returning the
+  `BEF_DECR` count is now the shipped behaviour; two of this stage's replace them.
+- *Re-review:* re-ran five of the review's survivors, all failing, and made one that
+  passed 25 key cases of 25: the COI scale's run check counting repeats alone, with the
+  policy-year tables run from their first key rather than from 1.
+- *Second fix:* 10 faults and a control; all 10 fail and the control passes. The
+  re-review's fault fails 6 cases. A repeat named by its later line alone fails 1, a gap
+  named one age off 2, mortality rates left unchecked 3, `class_factor` not asking
+  `class_count` 4, an infinite rate accepted 1, the schedule's readers not asking
+  `surr_charge_count` 4, and the schedule's values unchecked 2. Keys written as floats
+  refused fail the edges test, the only test run on that fault. `BEF_MAT` back to the
+  count before new business, which T3 passed while it exempted `pols_if_at`, now fails T3
+  on S point 1 issued a month on.
+
+**Carried into VUL (M4), ULSG (M5) and IUL (M6): the life chassis.** Each item goes to the
+Life stream from this landing, and each record says what it took. §7.1's *Precised at M3*
+and §7.9's *Carried into every product still to come* bind them too. Where UL's module
+departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, not UL.
+- *Chains.* Make every opening-timing and loan chain form the previous month's close
+  itself, in S's order, so that each is one cell a month: VUL's `sa_pp_at`, `fa_pp_at`,
+  `la_pp_at` and `loan_bal_pp_at`; ULSG's `av_pp_at`, `sg_pp_at`, `loan_bal_pp_at` and
+  `grace_mth`; IUL's `fa_pp_at`, `lca_pp_at` and `av_pp_at`, and the segment ladder. Probe
+  every chain head cold, on a read of its own, in an order that leaves each chain cold
+  until its head is called, since a cold `net_cf` sees only the chain it descends first.
+  At the build, with S's two-cell loan, a cold `loan_bal_pp` on twin 3 needed a recursion
+  limit of 1,825, where a cold `net_cf` needed 925.
+- *The frame's end.* None of the three S models matures a policy (`pols_maturity` is 0.0
+  in each), and each frame ends at a horizon: VUL's at attained age 122, `omega_age` 121
+  plus one, ULSG's at `charges_cease_age` 121 and IUL's at `maturity_age` 121. Copy UL's
+  carry into `t = proj_len()` and the guard test's `CARRIED` set, and set the splice's A/E
+  below 1, so that survivors reach the end.
+- *Guards.* Guard every comparison of `policy_year(t)` with a per-point sentinel.
+  `IUL_US_S`'s `lapse_rate_sc_mult` compares it with `lapse_shock_year()`, which is 0
+  without a schedule (§7.4); VUL's tests `has_surr_charge()` first and keys its shock on
+  `duration_mth(t)`.
+- *Opening state.* Keep S's own `*_init` columns, and name a new one `<cell>_init` on S's
+  stem, as `sum_assured_init` (VUL's too, §7.6), `cum_prem_init` and `is_mec_init` are;
+  give a latch or a category as an int code whose labels `model-sec.md` lists. Where the
+  product has them, copy UL's four bases at `t_entry()`, `cum_prem_pp`, the TARGET cap,
+  `is_mec` and `wd_used_year`, and `Data`'s checks: no usage on an anniversary, the latch
+  where the 7-pay test has failed, a face above 0 and at most the face at issue. IUL's S
+  cell `is_mec` does not latch; IUL adopts UL's latch (§7.4), with its in-year test run
+  before its base, and splices a month where that test fails at `t = 0`. Splice a face cut
+  at `t = 0`.
+- *Withdrawals and charges.* All three S models read `model_point()["wd_pp"]` in
+  `wd_pp(t)`; read it once a point, as UL's `wd_pp_mth()` does. All three surrender-charge
+  tables have UL's columns, `sc_per_1000_init` and `runoff_years`: copy
+  `surr_charge_rate_max()` and `surr_charge_runoff_years()`, the table's only readers,
+  each reading the schedule's key from `model_point()` (*Text*, below). `VUL_US_S` takes
+  `int()` of the run-off, so VUL takes `int()` of `surr_charge_runoff_years()` where S
+  does. UL neither refuses a fractional run-off nor reads it one way: `lapse_shock_year`
+  takes its `int()` and `surr_charge_rate` amortizes over the float, as `UL_US_S` does, so
+  the chassis decides it once.
+- *Mortality.* Cap `mort_rate` at 1.0 with `min(q, 1.0)` (§5.1, step 6): in VUL and IUL,
+  whose S models do not cap, with the cap test on Term's form at the shipped A/E, and in
+  ULSG, whose S model caps by `min(1.0, ...)`, which reads a blank rate or class factor as
+  1.0.
+- *Tables.* One keyed reader per policy-year or age table, `_py(y)` or `_at(a)`, each
+  called only in cover, its extent from a `Data` cell that checks the table (§7.1,
+  *Precised at M3*). VUL's subaccount table, read by a join, gets a count cell that the
+  join asks first, as UL's `class_count()` is. In a table keyed by text and a number, as
+  UL's COI scale, ULSG's COI rates by attained age and VUL's scenario table by scenario,
+  subaccount and month are, each clause of a refusal names the cell it is about. The
+  clauses are built inline with `for` loops, since a `Data` cell returns a C scalar at
+  stage `EC` and no helper cell builds a message. `VUL_US_S`'s `coi_rate_guar_at(y)` is a
+  policy-year reader, and VUL keeps S's name so that T1 compares it.
+- *Text.* A bool decode for each value of each text column a monthly cell branches on,
+  each reading its column from `model_point()`, as SPIA's and MYGA's decodes do, while the
+  cell that branches keeps S's raise, with a table-driven `UNDECODABLE` list: `db_option`,
+  `qual_test` and `premium_type` where the product has them, and IUL's `premium_mode`.
+  ULSG's `premium_freq` already decodes its `premium_mode` to a number. Read each join key
+  from `model_point()` in the one cell that reads its table. UL's decodes and joins call
+  S's label accessors instead, a departure from M14's carried rule (*Departures and
+  precisions*, *Text*) that the chassis does not copy.
+- *Checks.* Each S check becomes a `bool` over relative `*_resid(t)` cells that keep S's
+  own tolerances: IUL's `isclose(rel_tol=1e-9, abs_tol=1e-8)` is a residual floored at 10,
+  not 1, or T1 fails where S's check passes. IUL's `check_seg_ladder` tests three bounds
+  and a closure per maturing segment, and needs a residual cell for each part. VUL's,
+  ULSG's and IUL's margin identities add back the whole loan on a lapse,
+  `loan_bal_pp(t) * pols_lapse(t)`, as `UL_US_S`'s does, and VUL's `check_net_view` adds
+  it back on a lapse and on a death; check each lapse term against the loan a surrender
+  recovers, `min(loan_bal_pp(t), csv_pp(t))`.
+- *Timings.* `pols_if_at` keeps the stub's meaning for `"BEF_DECR"` and `"BEF_MAT"` and
+  gives `"BEF_NB"` D5's (D5, precised at M3). T3 compares it through an `arg_map` such as
+  `_issued_later`, and the count test holds `"BEF_MAT"` equal to `"BEF_DECR"`. VUL's test
+  module passes every timing and kind through `_code`, as UL's does; VUL's model keeps S's
+  strings at its 60 or so timing call sites until R9 (§7.6, *C*).
+- *The splice.* Variants from S's columns: withdrawals on each death benefit option, each
+  premium type and mode, an over-funded point and an Option B point funded past the face,
+  where the corridor binds; every class and sex with COI rows at a scale of its own, the
+  copied table sorted; a second surrender-charge schedule and a second issue age. Where
+  the product has them, switch on charges ceasing in cover and a lapse shock, by
+  References only and in both models, the shock meeting a lapse cap below 1, as UL's 0.35.
+  IUL's cap, 1.0, is inert, and a shock that met it would lapse every policy and leave no
+  survivor to reach the frame's end, so the splice lowers it first; VUL's lapse rate has
+  no cap. Freeze the heap once S is swept and release each row once compared; at teardown
+  close the models, then call `gc.unfreeze()` and `gc.collect()` (§7.9).
+- *Tests.* Copy UL's: `_settle`'s records, the rules test's taken before the comparison
+  (§7.9) and the row released after it; the guard test, whose disjoint sets cover every
+  cell whose first parameter is `t`; the cold-depth test, the deepest call on one read and
+  each chain head on a second; the rate-path test with its S comparison, through a copy of
+  `scenario_table.csv` for VUL's fund returns, which keeps it runnable compiled (K7), and
+  under an override of `index_level` for IUL's index path; the NaN-residual test; the
+  committed rows against S; the rules scan's edge count; the margin test with a loan above
+  its cash value; `MALFORMED_KEYS`, `MALFORMED_RATES` and `_refused_exactly`, each case
+  also read through `net_cf(0)` of a point that reads every table; keys written as floats
+  among the accepted edges; and acquisition checked bit for bit against S at counts and
+  inputs that are not round.
+- *Cost.* A UL splice or future case takes up to 4.5 s, and the module's default runs
+  about 40 s to 1 min longer than WholeLife's: plan the core and full split from the
+  start.
+
+**Carried into Phase 2.**
+- *Caches and bounds:* §7.3's *C*. The figures above size `sample_sec.py`,
+  `run_sec.py --cython` and the Windows job's stack. `CHAIN_OVERHEAD` 20 leaves 4 levels
+  for a `Data` vector read under a table's reader.
+- *`Data`:* the nine cells new at M3 become int scalars or vectors by point,
+  `coi_rate_last_years` among them, and `class_count`'s and `surr_charge_count`'s checks
+  move into the class factor's and the schedule's vectors; the refusal code stays on the
+  raise paths, which return nothing. The five per-point joins and the six decodes move
+  onto `Data` arrays (R6, R7).
+- *T1 and codes:* S's `claims(t, None)` keys need a T1 `arg_map` at stage `EC` (R12).
+  `_twin`, the module's one call of `twin_mismatches`, passes `codes=codes(sec_proj)` from
+  the landing on, so the splice's comparisons take Phase 2's codes when they come (§5.2,
+  T1).
+- *Tests on the compiled model:* `_refused` asserts that `ValueError` is in the error's
+  text, which a compiled model's bare `ValueError` does not hold; at stage `EC` it reads
+  `_raised(err)`, as `_refused_exactly` does. The declared-rates and NaN-residual tests
+  override formulas and stay on modelx (C1). C4's grid is the splice's: 54 splices and 11
+  future rows in full, 20 and 5 in the core.
+- *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, with the
+  `create()`-copy test and the compiled runner test's refusal leg; and `proj_len()`'s
+  refusal of an issue age below 18 (R4; §6.1, steps 6 and 7).
+- *M11's points, not retrofitted at stage `E`* (§7.9, *Carried into every product still to
+  come*). UL takes the first two at M13 with Term, WholeLife and MYGA (§5.4), and its C
+  step the rest:
+  - T4 doubles `policy_count`, a factor of 2, with the assumptions that ship at zero left
+    there; acquisition is tested apart, at counts 3.7 times the table's;
+  - T2 and T3 compare at `twin_mismatches`' default absolute floor of 1e-9, and the cap
+    test at none;
+  - each splice row is recorded for the rules test after it is compared with S, in the
+    case's `finally`; the rules test passes, so the comparison reached no negative key;
+  - the splice fixture calls `gc.unfreeze()` before it closes its models, and no
+    `gc.collect()` after;
+  - each malformed case carries one fault by design, but no run dropped each rule in turn
+    to check that one rule alone refuses it;
+  - the core is chosen by the list of branches, opening-state columns and kinds of
+    valuation month that a test asserts it reaches, not by line coverage. The same item's
+    set-apart edit does not arise: the splice's copies add rows for keys S's tables lack
+    and change none of S's.
+
+**Carried, outside the SEC models.**
+- *The harness.* T6 compares a float cell to 1e-12, relative and absolute, so it pins
+  committed row 8's count of 1.8e-10 only to 0.57%; UL's committed-rows test fails a 0.5%
+  change in it. A relative comparison in `sec_support._same_cell` would close the gap for
+  every product; it is a change to the shared harness, not made at M3.
+- Nine S-side items for §8.2 item 4. The first seven are `UL_US_S`'s, fixed in `UL_US_SEC`
+  only; the last two are in the chassis's other S models:
+  - `UL_US_S` does not cap `mort_rate` at 1: its StdTob class passes 1 from attained age
+    113 and PTob from 114, where its monthly rate is complex (§8.2 item 4 lists it, with
+    `VUL_US_S` and `IUL_US_S`);
+  - its readers take each table's extent from the key column as pandas reads it, so a
+    blank last key cuts the table short without a word: a blank policy year 16 in
+    `prem_persistency.csv` reads 0.72 for 0.70 from year 16 on;
+  - it reads a blank value as a missing one, which its own `min` and `max` lose without a
+    word: a blank lapse rate reads as the cap of 0.35 (`lapse_rate`), a blank corridor
+    factor as no corridor (`db_pp`), a blank surrender charge as none
+    (`surr_charge_rate`);
+  - `check_margin` adds back the whole loan on a lapse, `loan_bal_pp(t) * pols_lapse(t)`,
+    and fails once a loan exceeds the cash value, since the lapse claim is floored at 0;
+    the term is `min(loan_bal_pp(t), csv_pp(t)) * pols_lapse(t)`;
+  - the model docstring says that point 2's Option B makes the corridor live; the corridor
+    never binds there, its largest ratio to the death benefit 0.41;
+  - `premium_pp`'s docstring renders its three patterns as one paragraph, `wd_pp`'s says
+    "not after attained age 121" where the code stops from 121, and `lapse_rate_sc_mult`'s
+    says "Applied in `lapse_shock_year` only";
+  - seven lines exceed 92 characters: `Data` lines 103, 108, 112, 113 and 122, and
+    `Projection` lines 1162 and 1192;
+  - `ULSG_US_S` caps its mortality by `min(1.0, ...)`, which reads a blank rate or class
+    factor as 1.0;
+  - the `pols_if_at` stub that returns `pols_if` for every timing, which §8.2 item 4 lists
+    in UL and VUL, is in `ULSG_US_S` and `IUL_US_S` too.
+
+**Landing.** Rebased from bbb99a9 (M2) onto 05b56eb, Term's cap fix, after M7.
+`mort_rate`'s cap became `min(q, 1.0)`, where the build wrote `min(1.0, q)`, so that a NaN
+stays NaN in both engines (§5.1, step 6). `_twin` took `codes=codes(sec_proj)` (*Carried
+into Phase 2*). uslib's `index.md` took the one conflict, the sentence that lists the SEC
+models, merged as MYGA left it plus UL, and `sec_support.py` the two conflicts, where UL's
+state extractors and spec sit beside SPIA's and MYGA's, keeping all three. Nine texts that
+said the cap reads a blank base rate or class factor as 1.0, which `min(q, 1.0)` makes
+untrue, now say that it keeps one missing: the docstrings of `class_factor` and
+`mort_rate`, three in `Data`, two places in `model-sec.md` and two in the test module; and
+a test-module docstring that dated a measurement to the build's design now dates it to M3.
+
+**Verified at landing**, on the tree as committed, with no other workflow sharing the
+machine. The uslib suite, with modelx-cython installed and so the compile tests included,
+gave 1,938 passed and 273 skipped in 1,074.62 s (17 min 55 s), 192 passes and 42 skips
+more than Term's cap fix landed with: UL's module, 159 and 41; its SEC conventions, 32 and
+1; and the one compiled convention that reads every SEC model. Over its full grid, UL's
+module gave 200 passed in 224.69 s, and the `cython` selection 11 passed and none skipped
+under `USLIB_REQUIRE_CYTHON=1`, in 117.15 s. doccheck built 493 pages with 0 warnings.
+`gen_sec_points.py --check` found the files of the five SEC models current, and
+`gen_sec_fingerprint.py Term_US_SEC --check` reproduced the fingerprint. md_lint reported
+0, `gen_scaffolding.py --dry-run` 0 files in each of the six libraries, and
+`gen_citation_links.py --dry-run` nothing on its 298 source tags. A case-insensitive
+search of `model_point_table_sec.csv` for the names, forms and hosts that
+`universal_life/sources.md` cites found none.
 
 ### 7.4 Indexed UL — `IUL_US_SEC` (E: L, C: L)
 
@@ -2268,6 +2832,8 @@ a year (50,922 against 53,730) and flips `nlg_in_effect`.
   - `index_cap_at` and `fixed_rate_ann` also move to `t`;
   - `loan_credit_rate_ann` stays on the policy year;
   - `cred_rate_ann`'s `t < 12`, a projection-clock test, becomes a policy-clock one.
+- `lapse_rate_sc_mult` needs UL's guard: `IUL_US_S`'s `lapse_shock_year` returns 0 without
+  a schedule, which is the policy year of the twelve months before issue (M3).
 - Splice months: 1, 11, 12, 13, 60, 65, and point 4 (monthly premium, a full ladder).
 
 *C:*
@@ -2333,7 +2899,8 @@ already keyed on `duration_mth == 0`. Points 1–2 are in force at 24 months and
 *E:*
 - `la_init`: the loan collateral opens at `loan_bal_init` by a [std] assumption, and once
   interest accrues the two part (point 4: 0.015 a month in `net_cf`).
-- `face_init`, the current face; the initial face stays in `units()` and the charges.
+- `sum_assured_init`, the current face, D6's name for the opening of `VUL_US_S`'s
+  `sum_assured_at`, as at M3; the initial face stays in `units()` and the charges.
 - The pricing path (`sa_pricing_pp(m, i)` …) is recomputed from issue, which is
   deterministic and needs no state, but its `m = duration_mth(t)` goes negative for future
   new business (R1).
@@ -3692,6 +4259,19 @@ valuation clock these part.
     skipped in 21 min 45 s. For C4, the full grid's 90 rows held 3,976,300 cached values
     over 34,718 months at the tests stage, against 1,067,350 on Term's 55 points. All
     times were taken with other workflows sharing the machine.
+  - *M3:* UL's module runs by default a core of 20 T2 and 5 T3 cases, which a test asserts
+    reaches every branch, opening-state column and kind of valuation month the full grid
+    reaches, the corridor binding on either option, the lapse rate's cap and charges
+    ceasing in cover among them, in 3 min 39 s and 3 min 50 s (159 passed, 41 skipped), at
+    a peak of 2.45 GB in one process. Its full grid, 54 and 11 cases, runs in 5 min 30 s
+    (200 passed) at 2.52 GB, and its SEC conventions take 17 s to 19 s. A splice or future
+    case takes up to 4.5 s. By default the module costs about 40 s to 1 min more than
+    WholeLife's, and over the full grid about 30 s more. The uslib suite on M2's tip with
+    UL added ran 1,489 passed and 151 skipped in 13 min 54 s and 14 min 14 s, of which
+    UL's share is about 4 minutes, and as landed, after M7 and Term's cap fix, 1,938
+    passed and 273 skipped in 17 min 55 s, with no other workflow sharing the machine. The
+    other times were taken with other workflows sharing the machine, and the module's, its
+    full grid's and the suite's on M2's tip at a load average of 1.5 to 2.8.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares what the cells return and raise.
@@ -3746,7 +4326,7 @@ only its escape is needed before Phase 1 reaches RILA, since SEC caps whatever S
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M11, SPIA, is **done**, 2026-11-02 (§7.9), and M7, MYGA, is **done**, 2026-11-02 (§7.10) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
+| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
 | M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL before the fingerprints are frozen (§5.4) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |

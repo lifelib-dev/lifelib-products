@@ -97,6 +97,8 @@ MODELS = {
     "WholeLife_US_SEC": ("products/whole_life/WholeLife_US_SEC",
                          {**MONTHLY, "twin": "WholeLife_US_S", "stage": "E"}),
     "UL_US_S": ("products/universal_life/UL_US_S", MONTHLY),
+    "UL_US_SEC": ("products/universal_life/UL_US_SEC",
+                  {**MONTHLY, "twin": "UL_US_S", "stage": "E"}),
     "IUL_US_S": ("products/indexed_ul/IUL_US_S", MONTHLY),
     "VUL_US_S": ("products/variable_ul/VUL_US_S", MONTHLY),
     "ULSG_US_S": ("products/guaranteed_ul/ULSG_US_S", MONTHLY),
@@ -175,6 +177,10 @@ INPUT_FILES = {
     "UL_US_S": {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
+        "prem_persistency.csv", "surr_charge_table.csv"},
+    "UL_US_SEC": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "lapse_table.csv", "model_point_table_sec.csv", "mort_table.csv",
         "prem_persistency.csv", "surr_charge_table.csv"},
     "VA_US_S": {
         "cdsc_table.csv", "fund_table.csv", "gawa_pct_table.csv",

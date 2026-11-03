@@ -1142,6 +1142,37 @@ _MYGA_STATE = {
 }
 
 
+def _ul_entering(name, opening):
+    """What ``UL_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``, or, where month ``d`` opens S's frame, the opening value
+    S's own formulas read there.  ``UL_US_S`` opens every point's frame at its own month 0,
+    in force or not, so that is ``d = 0``, the month a twin is read at.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > 0 else opening(s)
+    return extract
+
+
+# UL_US_SEC's opening state (D6): what UL_US_S carries into month d, each read as S's own
+# formulas read it.  The account value and the loan entering month d are S's own opening
+# timings.  The face in force is the close of month d - 1, after its withdrawal cut, and
+# where d opens S's frame it is S's face at issue on S's in-force point and 0 on new
+# business, which has no opening state.  The free withdrawal used in the policy year is
+# S's wd_used_year(d), already a value entering the month.  The premiums less withdrawals
+# to date, S's cum_prem_pp(d - 1), and the MEC latch, S's is_mec(d - 1) as an int code,
+# restart at 0 where S's frame opens, as S assumes.
+_UL_STATE = {
+    "av_pp_init": lambda s, d: s.av_pp_at(d, "BEF_PREM"),
+    "loan_bal_init": lambda s, d: s.loan_bal_pp_bom(d),
+    "sum_assured_init": _ul_entering(
+        "sum_assured_at", lambda s: s.sum_assured() if s.duration_mth_init() > 0 else 0.0),
+    "wd_used_year_init": lambda s, d: s.wd_used_year(d),
+    "cum_prem_init": _ul_entering("cum_prem_pp", lambda s: 0.0),
+    "is_mec_init": lambda s, d: int(s.is_mec(d - 1)) if d > 0 else 0,
+}
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -1349,6 +1380,56 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_MYGA_STATE,
         twin_state={c: f for c, f in _MYGA_STATE.items() if c != "tax_basis_pp_init"},
         exempt=frozenset({"av_pp_init", "mgsv_pp_init", "result_pols"}),
+    ),
+    # UL's state is the account value and the loan, S's own columns under their own names,
+    # and four more (_UL_STATE above).  pols_if_init becomes policy_count (the default),
+    # and duration_mth is S's own column: UL_US_S runs on the projection clock already, and
+    # its point 3, in force 120 months, opens its frame at its own t = 0, so that twin's
+    # source_mth is 0 (§5.2).  On the twins the four new columns take what S itself
+    # assumes, so each twin reproduces S: on point 3 the face at issue, no withdrawal used,
+    # and the premiums paid and the MEC latch restarted at 0.  The derived rows are the
+    # first anniversary, inside the surrender-charge period; mid lapse-shock year; S's
+    # in-force point six months on, mid-year with its loan; Option B in the month its
+    # shortfall begins, the last month a point in permanent shortfall can be restated,
+    # since its account value is negative after it; and the first month at attained age
+    # 119, where the mortality table's rate reaches 1.0 and every survivor dies, in place of
+    # the last covered month, 1031, which at S's mortality no policy reaches.  The future
+    # row is issued 25 months after the valuation date, off its anniversaries and more
+    # than a year on, so that the months before issue read policy years -2 to 0, where a
+    # missing guard would show.  T2's splice grid is built from this spec in a temporary
+    # table, not committed.
+    #
+    # T1 holds on UL at any count: S charges acquisition on the policies in force in the
+    # issue month, the policies issued, as SEC does.  It skips one S cell besides the
+    # default three:
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_universal_life_us_sec.py compares the
+    #     report itself with S's, on every column both hold.
+    # S's net_cf calls claims(t) with its kind=None default, so S's sweep caches claims
+    # under (t, None).  Phase 2 replaces that default with a total cell (R12), and its T1
+    # then needs an arg_map from those keys to it.
+    #
+    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 18
+    # to 85 (product-spec), and S projects any age its tables serve, so Phase 2 refuses an
+    # issue age below 18 in proj_len():
+    #   t: 0 to 1,356, the longest frame and the month after it, which the roll-forwards
+    #     read: 12 x (omega_age 120 - youngest issue age 18 + 1) = 1,236 months of cover,
+    #     plus future_horizon_mth 120.
+    #   policy years y (prem_persistency_py, coi_rate_guar_py, lapse_rate_base_py): 1 to
+    #     103, the year of the last covered month at the youngest issue age 18 and
+    #     omega_age 120.
+    #   attained ages a (corridor_factor_at, mort_rate_base_at): youngest issue age 18 to
+    #     omega_age 120.
+    "UL_US_SEC": SecSpec(
+        twin="UL_US_S",
+        duration_of=lambda row: int(row["duration_mth"]),
+        derived=((1, 12), (1, 113), (3, 6), (2, 676), (1, 1008)),
+        future=((1, 25),),
+        state=_UL_STATE,
+        twin_state={c: f for c, f in _UL_STATE.items()
+                    if c not in ("av_pp_init", "loan_bal_init")},
+        exempt=frozenset({"result_pols"}),
     ),
 }
 
