@@ -13,8 +13,9 @@ T1, the twin identity
     evaluates and every other ``result_*`` report, and :func:`twin_mismatches` then
     compares every cell of the S model, at every argument tuple the S cell cached inside
     its frame, less :data:`TWIN_EXEMPT_DEFAULT`; an S cell the SEC model lacks is a
-    mismatch.  At stage ``"EC"`` :func:`codes` turns S's timing and phase strings into
-    the SEC model's int References for the comparison.
+    mismatch.  At stage ``"EC"``, and at stage ``"E"`` for a code a product brings
+    forward, as ``FIA_US_SEC`` does its phases, :func:`codes` turns S's timing and phase
+    strings into the SEC model's int References for the comparison.
 T2 and T3, the splice and the future new business
     :func:`temp_inputs` writes a temporary input directory -- the model, its CSVs, extra
     model points and edited tables; :func:`shift_months` re-bases a month-keyed table for
@@ -163,7 +164,9 @@ def codes(proj):
     names are all capitals and whose values are ints, bools excepted, and they are what
     this returns.  Passed to :func:`twin_mismatches` as ``codes``, they turn S's strings
     into SEC's ints, in the arguments S cached and in the values S returned.  At stage
-    ``"E"``, and in every S model, there are none, and it returns ``{}``.
+    ``"E"`` there are none unless a product brings a code forward, as ``FIA_US_SEC`` does
+    its phases (``PRE_ISSUE`` to ``MATURED``, M8); for an S model there are none, and it
+    returns ``{}``.
 
     So every other Reference an SEC model holds is named in lower case, however constant:
     an all-capital int Reference is read as a code.
@@ -973,7 +976,8 @@ class SecSpec:
         twin's ``source_mth``: the opening state S itself assumes, so the twin reproduces S.
         UL is the use: S restarts ``cum_prem`` at 0 on its in-force point 3, so that
         point's twin opens with ``cum_prem_init = 0``.  A future row copies its twin's
-        values.  A state column with no ``twin_state`` entry is blank on the twins.  And a
+        values, but for those ``future_state`` sets.  A state column with no
+        ``twin_state`` entry is blank on the twins.  And a
         ``twin_state`` column with no ``state`` entry is copied to the derived rows from
         their twin, which is right only for a quantity fixed at issue (a locked rate, a
         solved premium: D6); anything that moves after issue needs a ``state`` entry.
@@ -988,10 +992,18 @@ class SecSpec:
         ``claims(t, "ALL")``, which ``codes`` then maps (R12); or S's ``(t, m)`` keys
         re-keyed by slot, ``(t, t - m)`` (R15).  ``None``, the default, leaves S's
         arguments as they are.
+    ``future_state``
+        SEC column to ``callable(s_proj, k)`` for the future rows: S point ``p``'s
+        projection and the months ``k`` after the valuation date the row is issued.  A
+        future row copies its twin's values, but for these.  FIA is the use: a future
+        row's scenario is a copy of S's moved ``k`` months later, ``{id}-F{k}``, which its
+        twin's id cannot name.  A column S lacks, and neither ``state`` nor
+        ``twin_state`` sets, is blank on the twins and the derived rows.  It may not set
+        ``policy_count``, or any column the generator owns.
     ``companions``
         companion filename to ``callable(s_model, table)``, which builds that file from the
         S model and the finished SEC table (a copy, free to modify): DIA's premium schedule,
-        VA's re-based scenario (D8).
+        FIA's rate scenarios re-based to each row, and VA's re-based scenario (D8).
     ``model_point_file``
         the SEC table's own filename.
 
@@ -1012,6 +1024,7 @@ class SecSpec:
     companions: Mapping[str, Callable] = dataclasses.field(default_factory=dict)
     model_point_file: str = "model_point_table_sec.csv"
     twin_arg_map: Callable | None = None
+    future_state: Mapping[str, Callable] = dataclasses.field(default_factory=dict)
 
     def __post_init__(self):
         for filename in (self.model_point_file, *self.companions):
@@ -1025,7 +1038,8 @@ class SecSpec:
                 f"companion would replace the table")
         for field_name, extractors, reserved in (
                 ("state", self.state, _RESERVED),
-                ("twin_state", self.twin_state, _RESERVED | {"policy_count"})):
+                ("twin_state", self.twin_state, _RESERVED | {"policy_count"}),
+                ("future_state", self.future_state, _RESERVED | {"policy_count"})):
             clash = sorted(set(extractors) & reserved)
             if clash:
                 raise ValueError(
@@ -1270,6 +1284,115 @@ def _dia_premium_schedule(s_model, table):
             rows = rows[rows["premium_mth"] >= row["source_mth"]]
         parts.append(rows.assign(point_id=row["point_id"]))
     return pd.concat(parts, ignore_index=True)[list(s_sched.columns)]
+
+
+def _fia_entering(name, opening):
+    """What ``FIA_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``; where ``d`` opens S's frame, the value S's own formulas
+    open it on, ``opening(s)``, as S's in-force points 1, 3 and 7 open at 84; and 0.0 at
+    ``d = 0``: a contract issued at the valuation date opens with no state and takes its
+    issue values in its issue month.
+    """
+    def extract(s, d):
+        if d > s.entry_mth():
+            return getattr(s, name)(d - 1)
+        return opening(s) if d > 0 else 0.0
+    return extract
+
+
+# FIA_US_SEC's phase codes, as its References name them; PRE_ISSUE 0 and MATURED 5 never
+# open a row.  The product module asserts that these are the model's.
+_FIA_PHASE_CODES = {"ACCUM": 1, "INCOME": 2, "DEPLETED": 3, "TERMINATED": 4}
+
+
+def _fia_phase_prev_anniv(s, d):
+    """``FIA_US_S``'s phase at the anniversary on or before month ``d``, as its code.
+
+    S's phase closing month ``12 * (d // 12) - 1``, whose end opened the contract year of
+    ``d``, or S's ``phase_init()`` where that month precedes S's frame; 0 at ``d = 0``.
+    """
+    if d == 0:
+        return 0
+    prev = 12 * (d // 12) - 1
+    return _FIA_PHASE_CODES[s.phase(prev) if prev >= s.entry_mth() else s.phase_init()]
+
+
+def _fia_payout_prev_anniv(s, d):
+    """``FIA_US_S``'s locked payout rate at the anniversary on or before month ``d``.
+
+    Read as :func:`_fia_phase_prev_anniv` reads the phase; 0.0 at ``d = 0``.
+    """
+    if d == 0:
+        return 0.0
+    prev = 12 * (d // 12) - 1
+    return s.payout_rate_locked(prev) if prev >= s.entry_mth() else s.payout_rate_init()
+
+
+def _fia_scenario_id(s, d):
+    """The row's scenario: S's own at ``d = 0``, else S's re-based to month ``d`` (D8)."""
+    return s.scenario_id() if d == 0 else f"{s.scenario_id()}-M{d}"
+
+
+def _fia_rebased_scenarios(s_model, table):
+    """``rate_scenario_sec.csv``: S's scenarios on the valuation clock, each row's copy
+    re-based.
+
+    S keys a level by anniversary from issue; on the valuation clock anniversary ``y`` of a
+    contract issued at the valuation date is month ``12 y``.  S's own ids are kept at that
+    base, for the twins issued at the valuation date; each row whose ``scenario_id`` is
+    none of S's gets its source point's path re-based to its ``source_mth`` by
+    :func:`shift_months`: ``d`` for a row restated or in force at ``d``, ``-k`` for one
+    issued ``k`` months on.  S's scenarios are read through S's reader, so the companion
+    follows S's ``rate_scenario_file``, and each row keeps S's ``provenance``.
+    """
+    s_table = s_model.Data.model_point_table()
+    by_policy = dict(zip(s_table["policy_id"], s_table["scenario_id"]))
+    s_scen = s_model.Data.rate_scenario().reset_index()
+    monthly = s_scen.assign(t=12 * s_scen["t"])
+    out, made = [], set()
+    for sid in dict.fromkeys(s_scen["scenario_id"]):
+        out.append(monthly[monthly["scenario_id"] == sid])
+        made.add(sid)
+    for _, row in table.iterrows():
+        sid = row["scenario_id"]
+        if sid in made:
+            continue
+        path = monthly[monthly["scenario_id"] == by_policy[row["source_policy_id"]]]
+        out.append(shift_months(path, "t", int(row["source_mth"])).assign(scenario_id=sid))
+        made.add(sid)
+    return pd.concat(out, ignore_index=True)
+
+
+# FIA_US_SEC's opening state (D6): what FIA_US_S carries into month d, each read as S's own
+# formulas read it.  The account value, the fixed account, the Model #805 floor and the
+# withdrawals to date entering the month; the account value and the fixed account at the
+# anniversary that opened the contract year of d, S's av_pp_year_open(d) and
+# av_fixed_pp_year_open(d), which the year's index credit, fixed interest and free
+# withdrawal read; the benefit base, the rollup base and the lifetime withdrawal, each flat
+# between anniversaries, entering the month; the phase (as a code) and the payout rate at
+# that anniversary; the index level there, S's index_level(duration(d)), the year's credit
+# base; and the row's scenario, S's re-based to d.  S's own in-force points open on S's
+# columns, read by S's cells at their entry month.
+_FIA_STATE = {
+    "av_pp_init": _fia_entering("av_pp", lambda s: s.av_pp_init()),
+    "av_fixed_pp_init": _fia_entering("av_fixed_pp", lambda s: s.av_fixed_pp_init()),
+    "av_pp_prev_anniv_init": lambda s, d: s.av_pp_year_open(d) if d > 0 else 0.0,
+    "av_fixed_pp_prev_anniv_init": (
+        lambda s, d: s.av_fixed_pp_year_open(d) if d > 0 else 0.0),
+    "benefit_base_pp_init": _fia_entering("benefit_base_pp",
+                                          lambda s: s.benefit_base_pp_init()),
+    "rollup_base_pp_init": _fia_entering("rollup_base_pp",
+                                         lambda s: s.rollup_base_pp_init()),
+    "mgsv_pp_init": _fia_entering("mgsv_pp", lambda s: s.mgsv_pp_init()),
+    "lw_pp_init": _fia_entering("lw_pp", lambda s: s.lw_pp_init()),
+    "payout_rate_locked_prev_anniv_init": _fia_payout_prev_anniv,
+    "phase_prev_anniv_init": _fia_phase_prev_anniv,
+    "index_level_prev_anniv_init": (
+        lambda s, d: s.index_level(s.duration(d)) if d > 0 else 0.0),
+    "wd_cum_pp_init": _fia_entering("wd_cum_pp", lambda s: 0.0),
+    "scenario_id": _fia_scenario_id,
+}
 
 
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
@@ -1615,6 +1738,112 @@ SEC_SPECS: dict[str, SecSpec] = {
         exempt=frozenset({"result_pols"}),
         companions={"premium_schedule_sec.csv": _dia_premium_schedule},
     ),
+    # FIA's state is twelve columns and the row's scenario (_FIA_STATE above).  S's own
+    # columns are renamed in place under D6 -- av_initial, bb_initial, rb_initial,
+    # mgv_initial and lw_initial to their cells' _init, phase_initial (text) to
+    # phase_prev_anniv_init (an int code) and payout_rate_initial to
+    # payout_rate_locked_prev_anniv_init -- and entry_year, S's elapsed years at entry, is
+    # dropped for duration_mth, 84 on S's in-force points 1, 3 and 7.  On every twin each
+    # column S has none for takes what S itself assumes, so the twin reproduces S: on points
+    # 1, 3 and 7 at 84, S's columns, a fixed account of alloc_fixed x AV, the year-open
+    # values equal to the entering ones, withdrawals to date 0 and the index level of
+    # anniversary 7.  The derived rows are the fixed account on an anniversary (4 at 60),
+    # the anchor's exercise month read mid-year (1 at 95), joint income in force mid-year
+    # (5 at 150), the overdrawn anchor near exhaustion (7 at 216), a zero account value with
+    # the rider live (2 at 240), the first policy year (8 at 6), the last policy year,
+    # entered at 120 (6 at 696), and income in force mid-year with the fixed account
+    # accrued since its anniversary (4 at 100).  The last covered month is not among them:
+    # at the shipped mortality, 1.0 at age 120, S's count after month 696 is exactly 0, so
+    # a row at 707 would project zeros; the splice reaches it on mortality cut at 120.  The
+    # future row is issued 15 months on, more than a year, and future_state gives it its own
+    # re-based scenario.  T2's splice grid is built from this spec in a temporary table,
+    # not committed.
+    #
+    # The scenario is a companion, rate_scenario_sec.csv (D8): S keys its levels by
+    # anniversary from issue, so on the valuation clock each row needs its own copy
+    # re-based to its month, the in-force twins included.  It is read through S's reader,
+    # rate_scenario(), whose Data Reference rate_scenario_file names it.
+    #
+    # T1 holds on FIA at any count: S already weights its premium and acquisition by
+    # pols_if_init, the count issued.  S's phase strings map onto SEC's int codes through
+    # codes(), the phases being codes from stage E.  It skips ten S cells besides the
+    # default three:
+    #   av_pp_init, av_fixed_pp_init, benefit_base_pp_init, rollup_base_pp_init,
+    #     mgsv_pp_init: S computes each issue value by rule in these cells when its
+    #     column is blank; SEC's are the columns, 0 on new business, and the issue value
+    #     is credited by rule in the issue month (prem_to_av_pp, prem_to_mgsv_pp,
+    #     rollup_base_pp_year_open, benefit_base_pp_at), which T1 compares (D6, §7.10).
+    #   phase_init, payout_rate_init: dropped; the year-open phase and payout rate are
+    #     read through phase_year_open and payout_rate_locked from their _prev_anniv_init
+    #     columns.
+    #   entry_year, entry_mth: S's late frame on the policy clock.  Every SEC frame opens
+    #     at t = 0 (D3), which the conventions assert; duration_mth_init and t_entry
+    #     replace them.
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there.  Each column it
+    #     shares with S is a cell T1 compares, and the module compares the report itself.
+    # At stage EC, T1 also needs a mapping for S's claims(t, None) and
+    # claims_over_av(t, None) keys, the kind=None totals that R9 and R12 replace.
+    #
+    # No projection cell calls a label accessor or compares a model point column's text:
+    # glwb_basis and credit_method are decoded into the is_*_basis and is_credit_* bools,
+    # and the three string References, step_up_mode, rb_wd_convention and
+    # mva_collar_basis, into is_step_up_*, is_rb_* and is_collar_*, each read where S asks
+    # its question, so a value S does not know is answered as S answers it.  The text a
+    # projection cell still compares is S's timing and kind strings; four joins on text
+    # keys wait for R7, each in the one cell that reads its table (mort_rate_base_at on
+    # sex, rollup_rate_py on rollup_id, wd_scheduled_at on wd_schedule_id and
+    # scenario_value on scenario_id).
+    #
+    # For Phase 2's caches, each size with every input it depends on.  The contract issues
+    # at ages 40 to 80 (product-spec) and runs to the year entered at maturity_age, 120:
+    #   t: 0 .. 1,092, 1,093 values: 972 months of cover at the youngest issue age, 40
+    #     (the mortality table's first and product-spec's lowest), plus future_horizon_mth,
+    #     120, the frame's last month 1,091, and the month after, t = proj_len(), which
+    #     Phase 2's sweep calls: every cell that reads t + 1 is guarded there, the count's
+    #     roll-forward residual included, so nothing reads 1,093;
+    #   y (surr_charge_rate_py, vest_rate_py, rollup_rate_py): contract years 1 .. 81, from
+    #     the youngest issue age and maturity_age; the surrender table's last year, 11 as
+    #     shipped, caps the first two;
+    #   x (mort_rate_base_at): attained ages 40 .. 120, by sex; a (payout_rate_at): the
+    #     exercise ages, min_income_age, 50 as shipped, .. 121, the covered age 120 opening
+    #     the last contract year plus 1, read in the payout bands' first to last age, the
+    #     last band holding above it, so the cache runs to 121 though the table stops at
+    #     120;
+    #   k (wd_scheduled_at): contract-year counts 0 .. 80; y (index_level, mva_ref_yield,
+    #     scenario_value): anniversary numbers 0 .. 81, each read at its valuation month;
+    #     scenario_value(y, name) keeps S's text parameter name, "index_level" or
+    #     "mva_ref_yield", the column read, which R9 makes a code, as MYGA's scenario
+    #     column name is.
+    # No Projection Reference bounds the issue age to the product's 40 to 80: Data's
+    # mortality join refuses an age below the table's first, 40, an age above 80 projects,
+    # as in S, and proj_len() refuses one past maturity_age, whose cover is empty.  Phase 2
+    # makes each bound a Reference that proj_len() checks.  The join checks the attained
+    # age in the point's first month on the books only, so on a substituted mortality table
+    # that stops below maturity_age, an attained age past its last raises a bare KeyError
+    # from mort_rate_base_at, naming no file, as MYGA's join does.  The float-parameter
+    # cells are S's, for Phase 2 to inline: bonus_clawback_on, mva_pp_on and
+    # wd_reduction_rate_on, still called; credit_rate_on and payout_rate, kept for S's tests
+    # and called by no projection cell; and mgsv_rate_statutory and mgsv_rate_is_compliant,
+    # which nothing reaches.  SEC adds none, and no uncached cell.
+    "FIA_US_SEC": SecSpec(
+        twin="FIA_US_S",
+        column_map={"entry_year": None, "av_initial": "av_pp_init",
+                    "bb_initial": "benefit_base_pp_init",
+                    "rb_initial": "rollup_base_pp_init", "mgv_initial": "mgsv_pp_init",
+                    "lw_initial": "lw_pp_init", "phase_initial": "phase_prev_anniv_init",
+                    "payout_rate_initial": "payout_rate_locked_prev_anniv_init"},
+        duration_of=lambda row: 12 * int(row["entry_year"]),
+        derived=((4, 60), (1, 95), (5, 150), (7, 216), (2, 240), (8, 6), (6, 696),
+                 (4, 100)),
+        future=((2, 15),),
+        state=_FIA_STATE,
+        twin_state=_FIA_STATE,
+        exempt=frozenset({"av_pp_init", "av_fixed_pp_init", "benefit_base_pp_init",
+                          "rollup_base_pp_init", "mgsv_pp_init", "phase_init",
+                          "payout_rate_init", "entry_year", "entry_mth", "result_pols"}),
+        companions={"rate_scenario_sec.csv": _fia_rebased_scenarios},
+        future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},
+    ),
 }
 
 
@@ -1640,15 +1869,17 @@ def _sec_columns(spec, s_table, rename):
 
     S's columns in S's order, renamed or dropped by ``rename``; then ``policy_count`` and
     ``duration_mth``, each where S has no column of that name; then the state columns S
-    lacks, in the order the spec names them; then the generator's own columns; and
-    ``provenance`` last, where the S table has one, as every table in the library keeps it.
+    lacks, in the order the spec names them, ``twin_state``'s, ``state``'s and
+    ``future_state``'s; then the generator's own columns; and ``provenance`` last, where
+    the S table has one, as every table in the library keeps it.
     """
     columns = [rename.get(c, c) for c in ["point_id", *s_table.columns]]
     columns = [c for c in columns if c is not None]
     provenance = "provenance" in columns
     if provenance:
         columns.remove("provenance")
-    for c in ("policy_count", "duration_mth", *spec.twin_state, *spec.state):
+    for c in ("policy_count", "duration_mth", *spec.twin_state, *spec.state,
+              *spec.future_state):
         if c not in columns:
             columns.append(c)
     for c in GENERATED_COLUMNS:
@@ -1688,7 +1919,8 @@ def build_sec_table(spec, s_model):
         after the twin's own entry month.
     future rows, for each ``(p, k)``
         the twin of new-business point ``p``, issued ``k`` months after the valuation
-        date: ``duration_mth`` and ``source_mth`` are ``-k``, and the count is S's.
+        date: ``duration_mth`` and ``source_mth`` are ``-k``, and the count is S's; then
+        ``future_state`` sets the columns it names.
 
     Derived and future rows take fresh ``point_id`` s after the largest S one, in the
     spec's order, so the numbering is fixed by the spec, never by a dict or a filesystem.
@@ -1784,6 +2016,8 @@ def build_sec_table(spec, s_model):
                    policy_id=_future_policy_id(twin["policy_id"], k), duration_mth=-k)
         if provenance:
             row["provenance"] = _future_provenance(p, twin["policy_id"], k)
+        for column, extract in spec.future_state.items():
+            row[column] = extract(projs[p], k)
         row.update(row_kind="future", source_policy_id=twin["policy_id"], source_mth=-k)
         rows.append(row)
 

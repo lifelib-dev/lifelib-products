@@ -3,18 +3,22 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Reference liability cash flow model for U.S. fixed indexed annuities with a GLWB.
+"""In-force reference liability cash flow model for U.S. fixed indexed annuities (GLWB).
 
-:mod:`~.FIA_US_S` is the executable counterpart of
-``products/fixed_indexed_annuity/technical-notes.md`` in the lifelib-products
-library. It projects gross liability cash flows for a single-contract model point of a
-single-premium fixed indexed annuity carrying a guaranteed lifetime withdrawal benefit:
-a 7% premium bonus vesting over ten years, one annual point-to-point indexed account
-credited at ``max(0%, min(cap, index return))``, a notional benefit base growing by a
-guaranteed simple rollup **plus** 150% of realised dollar credits, a 0.95% rider charge
-on that base, a lifetime withdrawal locked at the attained age of first exercise, and —
-the economic centre of the product — a guaranteed income stream that survives
-account-value exhaustion and pays for life.
+:mod:`~.FIA_US_SEC` projects the contracts :mod:`~.FIA_US_S` projects from a **valuation
+date** rather than from issue. Each is a single-contract model point of a single-premium
+fixed indexed annuity carrying a guaranteed lifetime withdrawal benefit: a 7% premium
+bonus vesting over ten years, one annual point-to-point indexed account credited at
+``max(0%, min(cap, index return))``, a notional benefit base growing by a guaranteed
+simple rollup **plus** 150% of realised dollar credits, a 0.95% rider charge on that base,
+a lifetime withdrawal locked at the attained age of first exercise, and — the economic
+centre of the product — a guaranteed income stream that survives account-value exhaustion
+and pays for life. A model point may be a contract already in force at that date, in any
+month of its contract year and in any phase, one issued at it, or one to be issued in the
+ten years after it, as in lifelib's ``basiclife/BasicTerm_SE``, which extends
+``basiclife/BasicTerm_S`` the same way. Its formulas are the executable counterpart of
+``products/fixed_indexed_annuity/technical-notes.md``, and
+``products/fixed_indexed_annuity/model-sec.md`` explains what running in force changes.
 
 The base contract is the deferred annuity chassis of
 :mod:`.MYGA_US_S`: the surrender-benefit composition order and the NAIC
@@ -25,19 +29,20 @@ driven, the MVA is the ratio form ``[(1+i0)/(1+it)]^(n/12) - 1`` rather than the
 ``(i0 - it) x T``, the death benefit is ``max(AV, MGV)``, and the lapse architecture is
 rider-suppressed rather than a plain shock at surrender-charge expiry. The chassis's
 ``MGSV`` and these notes' ``MGV`` are **one quantity under two source labels**; this
-model uses the chassis name :func:`~.FIA_US_S.Projection.mgsv_pp`
+model uses the chassis name :func:`~.FIA_US_SEC.Projection.mgsv_pp`
 throughout.
 
 **Spaces.** The model contains two:
 
-:mod:`~.FIA_US_S.Data`
-    Reads the seven input CSVs and holds their filename References. It takes no
+:mod:`~.FIA_US_SEC.Data`
+    Reads the five assumption CSVs it shares with :mod:`~.FIA_US_S`, its own model point
+    table and its own rate scenarios, and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.FIA_US_S.Projection`
+:mod:`~.FIA_US_SEC.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.FIA_US_S.Data` Space.
+    Reference, which resolves to the single :mod:`~.FIA_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -48,10 +53,23 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
 
-**Projection basis.** Monthly steps, as the ``_S`` suffix and the product assignment table
-both say. ``t`` is the **0-based month index**: ``duration(t) = t // 12`` is the completed
-contract years, ``policy_year(t) = duration(t) + 1`` is the contractual label, and the
-frame is ``t = entry_mth() … proj_len() - 1`` with ``proj_len() = 12 * policy_term()``.
+**Projection basis.** Monthly steps on two clocks. ``t`` counts months from the valuation
+date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the valuation
+month for every model point, however old the contract, month ``t`` runs from time ``t``
+to time ``t + 1``, and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where
+``proj_len()`` counts the months from the valuation date to the end of cover.
+``duration_mth(t)`` counts the months the contract has been in force,
+``duration_mth_init() + t`` from the model point's ``duration_mth`` at ``t = 0``, and the
+contract runs on it: ``duration(t) = duration_mth(t) // 12`` is the completed contract
+years, ``policy_year(t) = duration(t) + 1`` the contractual label, and the anniversary
+month, where every contractual event lands, the one with ``duration_mth(t) % 12 == 11``.
+The surrender charge, the vesting, the rollup schedule, the growth window, the MVA term,
+the shock-lapse year, the withdrawal programme, the payout bands and the mortality read
+that clock. The rate scenario and expense inflation run on ``t`` instead, shared by every
+point of a block: the index level and the MVA reference yield are read at the valuation
+month each anniversary falls in, and maintenance expense is in valuation-date dollars. On
+a point issued at ``t = 0`` the two clocks coincide, and the model computes what
+:mod:`~.FIA_US_S` computes.
 
 **Every mechanic of the contract is still annual.** Annual point-to-point crediting
 [S2][S4][S10], the rider charge at the end of each contract year [S9], the benefit base
@@ -69,10 +87,10 @@ between anniversaries.
 Because the monthly decrement rates compound to the annual ones and every contractual step
 is unmoved, **every state value at an anniversary equals the annual-step model's**: account
 value, benefit base, rollup base, lifetime withdrawal, Model #805 floor, phase and
-``pols_if`` at ``t = 12k``. The cash differs, and that is the point — ``result_cf_annual()``
-sums the monthly frame into contract years and agrees exactly on ``pols_if``, ``premiums``,
-``commissions`` and ``premium_taxes``, but not on the withdrawals, the claims or the
-expenses.
+``pols_if`` in the month opening each contract year. The cash differs, and that is the
+point — ``result_cf_annual()`` sums the monthly frame into contract years and agrees
+exactly on ``pols_if``, ``premiums``, ``commissions`` and ``premium_taxes``, but not on the
+withdrawals, the claims or the expenses.
 
 ``age(t) = age_at_entry() + duration(t)`` is the attained age opening the contract year of
 month ``t``, so that year's mortality reads ``age(t)`` itself; ``mort_rate_mth(t)`` converts
@@ -93,21 +111,39 @@ inside it is exposed through a ``timing`` argument rather than being buried:
 7. phase transition including the depletion test --- ``phase(t)``
 8. decrements --- ``pols_if_at(t, "AFT_DECR")``
 
-``pols_if(t)`` is the in-force count at the **start** of month ``t``, the library-wide
-convention set by :mod:`.Term_US_S` and ``savings.CashValue_SE``, and it is the weight
-carried by every cash flow reported on the same row of ``result_cf()``. At ``t = 12k`` it
-is the technical notes' own ``l(k)``, the probability in force at the end of contract year
-``k``, and the equality is exact. At an anniversary month it is the count that **reaches**
-the anniversary, which is the weight that month's withdrawal and charges carry — where the
-annual grid could only weight them by the count that entered the year.
+``pols_if(t)`` is the in-force count at the **start** of month ``t``, after the month's
+new business — ``pols_if_at(t, "BEF_DECR")``, the library-wide convention set by
+:mod:`.Term_US_S` and ``savings.CashValue_SE`` — and it is the weight carried by every
+cash flow reported on the same row of ``result_cf()``. In the month opening contract year
+``k + 1`` it is the technical notes' own ``l(k)``, the probability in force at the end of
+contract year ``k``, and the equality is exact. At an anniversary month it is the count
+that **reaches** the anniversary, which is the weight that month's withdrawal and charges
+carry — where the annual grid could only weight them by the count that entered the year.
+A point in force at the valuation date opens with its ``policy_count``, and one issued at
+or after it takes its ``policy_count`` as ``pols_new_biz`` in its issue month;
+``result_pols()`` sets the counts out.
 
 Steps 1--3 are skipped in ``DEPLETED`` and steps 1--7 in ``TERMINATED``; step 8 is the one
-that runs every month. **There is no issue-instant row:** the premium, the premium bonus
-and the acquisition expense are beginning-of-month flows of month ``0`` on a new-issue
-model point, alongside that month's own activity. A model point may instead be entered **in
-force** after ``entry_year()`` completed contract years on stated balances — which is what
-the worked example does, and why ``result_cf()`` is indexed from
-``entry_mth() = 12 * entry_year()`` rather than always from zero.
+that runs every month. The phase is an int code, ``ACCUM`` 1 to ``TERMINATED`` 4, with
+``PRE_ISSUE`` 0 before issue and ``MATURED`` 5 after cover, and ``result_glwb()`` reports
+it by its label.
+
+**The opening state.** There is no issue-instant row: the single premium, the premium
+bonus and the acquisition expense are beginning-of-month flows of the issue month, and
+:mod:`~.FIA_US_S`'s issue values are credited there by their rules — ``P x (1 + b)`` to
+the account value, its fixed share to the fixed account, and 87.5% of the premium, the
+bonus excluded, to the Model #805 floor. A contract in force at the valuation date opens
+instead from twelve columns of its row, per contract, as it stands at the start of month
+0, before any month-0 event: the account value, the fixed account, the benefit base, the
+rollup base, the lifetime withdrawal, the Model #805 floor and the gross withdrawals to
+date entering month 0; and, at the anniversary on or before the valuation date, the one
+that opened the contract year under way, the account value and the fixed account the
+year's credit, fixed interest and free withdrawal are computed on, the phase as a code,
+the locked payout percentage and the index level the year's segment started at. Each is
+exactly what :mod:`~.FIA_US_S` carries into the month the contract is valued at, which
+:mod:`~.FIA_US_S` itself can say only on an anniversary, and of which it derives the
+fixed account from the allocation at issue. ``result_cf()`` has exactly ``proj_len()``
+rows, ``t = 0 .. proj_len() - 1``, and row ``t`` is the same month on every point.
 
 **Undiscounted.** Like every model in this library, this one projects *gross liability
 cash flows* only; reserves and discounting are a separate layer, and the notes' own
@@ -141,7 +177,9 @@ belong on that list rather than on the sourced one: the notes give the index-mar
 performance-trigger *forms* but declare no level for either, so ``spread_rate`` = 2.00%
 and ``trigger_rate`` = 4.50% are illustrative **[std]** levels that exercise those
 branches and nothing more. The cap (5.25% [S2]) and the participation rate (80%, from
-[R1]'s worked ``min(80% x 10%, 6%) = 6%``) are the sourced ones.
+[R1]'s worked ``min(80% x 10%, 6%) = 6%``) are the sourced ones. Running in force changes
+none of them: the five assumption tables are :mod:`~.FIA_US_S`'s, read in place, and the
+rate scenarios are its scenarios moved onto the valuation clock.
 
 **Exhaustion pays differently depending on its cause.** On the anniversary the account
 value runs out, the withdrawal requested exceeds the balance available to meet it. In
@@ -154,6 +192,7 @@ the year the excess withdrawal kills it. The cap sits on the *payment* only — 
 still carries the amount requested, so the excess still sets ``depletion_cause``, still
 drives the proportional reduction to 1 and still takes the benefit base to zero — and
 ``wd_unfunded_pp`` is the part kept out of the ledger.
+
 **This model is a mechanics demonstration, not a pricing or reserving result.** Replace
 the assumption tables with company data before drawing any conclusion from the output.
 
@@ -167,14 +206,14 @@ pins the gap open rather than closing it in either direction.
 
 **Not implemented.** Named here so the gaps cannot be mistaken for oversights. The
 monthly-sum crediting method ``max(f, sum_k min(R_k, c_m))``, which needs a **monthly
-index path** — a grid of months is not the same thing, and ``rate_scenario.csv`` states
-index levels at anniversaries only [S4][R1]; interim values in either documented form, both
+index path** — a grid of months is not the same thing, and the scenarios state index
+levels at anniversaries only [S4][R1]; interim values in either documented form, both
 daily marks of the embedded option rather than interpolations [S10][S11]; the cap
 re-declaration rule, because the notes state the *target* (set the cap so the one-year
 call-spread cost equals the option budget) but give no option-pricing function, so the
 base projection holds the snapshot scale level [R1][R6]; stochastic GLWB activation on the
 ``h(a)`` incidence table, which cannot be applied to a single deterministic cell —
-:func:`~.FIA_US_S.Projection.activation_rate` reports the
+:func:`~.FIA_US_SEC.Projection.activation_rate` reports the
 table and the base run activates at the model point's ``income_start_age`` instead;
 generational mortality projection with Scale G2, because the 2012 IAM/IAR family and the
 G2 scale may not be redistributed here [REG-R59][REG-R60]; joint-life survivorship, the
@@ -183,60 +222,47 @@ doubler, confinement and terminal illness waivers, and annuitization, all descri
 put out of scope by the notes themselves; additional premium; and ``check_margin()``,
 because the notes define no margin decomposition and the model projects no asset side.
 
-**Model points.** ``model_point_table.csv`` carries nine contracts on the anchor
-configuration — male 62 ANB, non-qualified, $100,000 single premium, GLWB elected at
-issue, income from attained age 70. Point 1 is the worked example, entered **in force**
-at anniversary 7 on the balances the notes state there; point 2 is the same cell issued
-at ``t = 0``; point 3 is the notes' "Where the step-up binds" block, growth mechanism (a);
-point 4 is growth mechanism (b), pure stacking with only half of index credits reaching
-the account value and the only non-zero fixed allocation, so it is the point that exercises
-the monthly fixed-account accrual; point 5 is joint life; point 6 carries no rider, so its
-shock lapse is 33%; point 7 overdraws at 105% of the maximum and so loses the guarantee at exhaustion;
-point 8 takes a pre-exercise withdrawal that attracts the charge, the clawback and the
-MVA; and point 9 defers income to attained age 85, past both the year the surrender charge
-expires and the end of the twenty-year growth window, so its shock lapse is the 10%
-rider-in-force-but-not-activated rate, its benefit base stops growing on the
-contract-year-20 leg of ``T_g`` rather than on the first withdrawal, and its payout
-percentage locks in the 80+ band. Between them they exercise both benefit-base growth
-mechanisms, all three shock-lapse rates, both legs of the growth window, both step-up
-binding cases, all four phases, both proportional-reduction denominators and both
-depletion attributions, so no branch of the notes' parameter set is dead code. A test
-asserts every point projects.
+**Model points.** ``model_point_table_sec.csv`` and ``rate_scenario_sec.csv`` are
+generated from :mod:`~.FIA_US_S` and its inputs, and the tests regenerate both and
+compare, so no row is typed by hand. Points 1 to 9 are the twins of :mod:`~.FIA_US_S`'s
+nine contracts on the anchor configuration — male 62 ANB, non-qualified, $100,000 single
+premium, GLWB elected at issue, income from attained age 70. Points 1, 3 and 7 are in
+force at the valuation date at anniversary 7, on the balances the notes state there, as
+:mod:`~.FIA_US_S` enters them: the worked example, the notes' "Where the step-up binds"
+block, and the anchor overdrawing at 105% of the maximum. Points 2, 4, 5, 6, 8 and 9 are
+issued at the valuation date: the anchor, pure stacking with the only non-zero fixed
+allocation, joint life, no rider, a pre-exercise withdrawal, and income deferred to
+attained age 85. Points 10 to 17 are S points restated in force at an S month, each
+opened with the state S carries into that month: the stacking point on its anniversary at
+month 60, with its fixed account; the anchor at month 95, the last month of contract year
+8, whose anniversary carries its first lifetime withdrawal; the joint-life point in income
+at month 150, mid-year; the overdrawing anchor near exhaustion at month 216; the anchor
+depleted at month 240, its account value 0 and its income paid by the rider; the
+pre-exercise point in its first policy year, at month 6; the no-rider point in its last
+policy year, the one entered at attained age 120, at month 696; and the stacking point in
+income at month 100, mid-year, its fixed account accrued since the anniversary. Point 18
+is the anchor issued 15 months after the valuation date. A test asserts that every point
+in the table projects.
 
-**Verification.** ``tests/test_fixed_indexed_annuity_us.py`` asserts all sixteen rows of
-the notes' worked example table and every line of its surrender trace, to the cent and to
-the eight decimals the MVA factor is displayed at; the "Where the step-up binds" variant
-block on point 3; the notes' statement that the step-up binds in contract year 1 on a
-new issue with a zero index credit; the depletion arithmetic — $11,997.42 a year,
-exhausted during contract year 19 at attained age 81 — and the survival of the income
-stream after it; the verbatim [S9] excess-withdrawal reduction and the verbatim [S10]
-clawback; the in-force and account-value roll-forwards, both through the no-argument
-``check_pols_roll_fwd()`` and ``check_av_roll_fwd()`` and through the per-month
-``check_*_resid(t)`` residuals they are built on; that every anniversary value of the
-account value, the benefit base, the Model #805 floor, the lifetime withdrawal, the phase
-and ``pols_if`` reproduces the annual-step model exactly, and that no contractual cash
-moves between anniversaries; that the ``pols_if`` column of
-``result_cf()`` is the weight carried by the cash flows on its own row; the payment cap
-on the terminating exhaustion branch; and one test per pitfall the notes state as a model
-mechanic. Three of the thirteen entries in the notes' Known modeling pitfalls list are
-not model mechanics and carry no test: that the behavioural assumptions must not be
-reused in a CARVM valuation, that "efficient policyholder selection" is not AG 33's
-language, and that the declared parameters are stale and state-varying are all statements
-about how the projection may be *used* rather than about what it computes, and no
-assertion can reach them. A fourth, "Interim values and index costs", is half covered —
-the interim-value structures it names are not implemented at all, while the index-cost
-haircut it also names is, and is asserted to come off ``R(t)`` ahead of both the cap and
-the participation rate. One line of the notes does **not** reproduce and is
-pinned both ways instead: the surrender trace's net proceeds of 115,741.64 is the sum of
-the *displayed* cent-rounded components, and carried at full precision — which the notes'
-own rounding convention asks for — the net is 0.55 cents lower. Every component
-reproduces exactly.
+**Verification.** On the six twins issued at the valuation date every cell this model
+shares with :mod:`~.FIA_US_S` agrees with it at every argument the S model evaluates in
+its sweep, the phases compared as their codes, but for those whose meaning changed —
+``model_point``, ``pols_if_init``, the five ``_init`` cells whose issue values are
+credited in the issue month instead, and ``result_pols``, which gains the month's new
+business — so every golden ``tests/test_fixed_indexed_annuity_us.py`` asserts on a cell
+that sweep reaches holds here too, with no number restated;
+``tests/test_model_conventions.py`` asserts it. The worked example's goldens sit on the
+in-force point 1, at policy month 95, which is ``t = 11`` here.
+``tests/test_fixed_indexed_annuity_us_sec.py`` splices: an S point restated in force at
+month ``d``, opened with S's own state there, continues the S projection from ``d`` on,
+cell by cell, S's own in-force points among them; a point issued ``k`` months late is the
+S projection ``k`` months on; and the committed tables are what S generates.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/fixed_indexed_annuity/FIA_US_S")
-    >>> model.Projection[1].result_cf()            # by month
+    >>> model = mx.read_model("products/fixed_indexed_annuity/FIA_US_SEC")
+    >>> model.Projection[1].result_cf()            # by month from the valuation date
     >>> model.Projection[1].result_cf_annual()     # summed into contract years
 """
 

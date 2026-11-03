@@ -541,6 +541,18 @@ def _fia_phase_is_one_of_four(proj, df):
         ["ACCUM", "INCOME", "DEPLETED", "TERMINATED"]).all()
 
 
+def _fia_sec_phase_is_one_of_four(proj, df):
+    """FIA_US_SEC: every month in cover sits in one of the four GLWB phases.
+
+    The frame starts at the valuation date, so a point issued after it carries its months
+    before issue, which ``result_glwb()`` labels ``PRE_ISSUE``.
+    """
+    phase = proj.result_glwb()["phase"]
+    before = phase.index < proj.t_entry()
+    assert (phase[before] == "PRE_ISSUE").all()
+    assert phase[~before].isin(["ACCUM", "INCOME", "DEPLETED", "TERMINATED"]).all()
+
+
 def _spia_liability_is_outgo(proj, df):
     """SPIA_US_S: gross outgo, never negative.
 
@@ -568,6 +580,7 @@ EXTRA_POINT_ASSERTIONS = {
     "DIA_US_S": _dia_pays_an_income,
     "DIA_US_SEC": _dia_sec_pays_an_income,
     "FIA_US_S": _fia_phase_is_one_of_four,
+    "FIA_US_SEC": _fia_sec_phase_is_one_of_four,
     "SPIA_US_S": _spia_liability_is_outgo,
     "SPIA_US_SEC": _spia_liability_is_outgo,
     "VA_US_S": _va_residuals,

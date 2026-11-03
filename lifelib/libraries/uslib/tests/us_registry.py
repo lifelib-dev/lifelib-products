@@ -112,6 +112,8 @@ MODELS = {
     "MYGA_US_SEC": ("products/fixed_deferred_annuity/MYGA_US_SEC",
                     {**MONTHLY, "twin": "MYGA_US_S", "stage": "E"}),
     "FIA_US_S": ("products/fixed_indexed_annuity/FIA_US_S", MONTHLY),
+    "FIA_US_SEC": ("products/fixed_indexed_annuity/FIA_US_SEC",
+                   {**MONTHLY, "twin": "FIA_US_S", "stage": "E"}),
     "VA_US_S": ("products/variable_annuity/VA_US_S", MONTHLY),
     "RILA_US_S": (
         "products/registered_index_linked_annuity/RILA_US_S", MONTHLY),
@@ -152,6 +154,10 @@ INPUT_FILES = {
     "FIA_US_S": {
         "model_point_table.csv", "mort_table.csv", "payout_rate_table.csv",
         "rate_scenario.csv", "rollup_table.csv", "surr_charge_table.csv",
+        "withdrawal_table.csv"},
+    "FIA_US_SEC": {
+        "model_point_table_sec.csv", "mort_table.csv", "payout_rate_table.csv",
+        "rate_scenario_sec.csv", "rollup_table.csv", "surr_charge_table.csv",
         "withdrawal_table.csv"},
     "IUL_US_S": {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",

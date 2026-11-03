@@ -3,14 +3,24 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-contract projection of :mod:`~.FIA_US_S`.
+"""The by-contract projection of :mod:`~.FIA_US_SEC`.
 
 The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
-projecting model point 1::
+projecting model point 1, the worked example's anchor cell in force at anniversary 7::
 
-    >>> Projection[1].result_cf()          # the worked-example anchor cell, by month
+    >>> Projection[1].result_cf()          # one row per month from the valuation date
     >>> Projection[1].result_cf_annual()   # the same, summed into contract years
     >>> Projection.point_id = 2            # or switch the default
+
+Switch the default, as any Reference, before the model computes anything.
+
+This is :mod:`~.FIA_US_S` taught to run in force at a valuation date, as lifelib's
+``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``. A formula of
+:mod:`~.FIA_US_S` is rewritten where it depends on where the projection starts, where it
+must answer for a month outside cover, where it passed a policy month as ``t``, or where
+it compared a phase or a switch as text; every other is :mod:`~.FIA_US_S`'s own.
+``products/fixed_indexed_annuity/model-sec.md`` lists the rewritten cells with the
+reason for each.
 
 .. rubric:: Input data
 
@@ -23,33 +33,75 @@ contrast ``basiclife.BasicTerm_S``, which keeps its inputs *inside* the model th
 modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``FIA_US_S`` folder without its parent's CSVs produces a model that reads
-and then fails on first evaluation.
+``FIA_US_SEC`` folder without its parent's CSVs produces a model that reads and then
+fails on first evaluation.
 
-The readers and the filename References live on the sibling
-:mod:`~.FIA_US_S.Data` Space, reached here through the ``data`` Reference, so
-each file is read once per model rather than once per model point:
+The readers and the filename References live on the sibling :mod:`~.FIA_US_SEC.Data`
+Space, reached here through the ``data`` Reference, so each file is read once per model
+rather than once per model point. Five assumption tables are the files
+:mod:`~.FIA_US_S` reads, read in place; the model point table and the rate scenarios are
+this model's own, generated from :mod:`~.FIA_US_S` and its inputs. The projection reads
+each table as ``Data`` returns it checked, its keys read by value, and through one cell
+of its own:
 
-=========================  ==================================  ==========================
-Reference (on Data)        Cells                               File
-=========================  ==================================  ==========================
-model_point_file           data.model_point_table()            model_point_table.csv
-mort_table_file            data.mort_table()                   mort_table.csv
-surr_charge_file           data.surr_charge_table()            surr_charge_table.csv
-rollup_file                data.rollup_table()                 rollup_table.csv
-payout_rate_file           data.payout_rate_table()            payout_rate_table.csv
-rate_scenario_file         data.rate_scenario()                rate_scenario.csv
-withdrawal_file            data.withdrawal_table()             withdrawal_table.csv
-=========================  ==================================  ==========================
+=========================  ==============================  ==========================
+Reference (on Data)        Cells the projection reads      File
+=========================  ==============================  ==========================
+model_point_file           data.model_point_table()        model_point_table_sec.csv
+mort_table_file            data.mort_rates()               mort_table.csv
+surr_charge_file           data.surr_charge_scale()        surr_charge_table.csv
+rollup_file                data.rollup_steps()             rollup_table.csv
+payout_rate_file           data.payout_rates()             payout_rate_table.csv
+rate_scenario_file         data.rate_scenario_steps()      rate_scenario_sec.csv
+withdrawal_file            data.wd_schedules()             withdrawal_table.csv
+=========================  ==============================  ==========================
+
+:func:`model_point`, :func:`mort_rate_base_at`, :func:`surr_charge_rate_py` with
+:func:`vest_rate_py`, :func:`rollup_rate_py`, :func:`payout_rate_at`,
+:func:`scenario_value` and :func:`wd_scheduled_at` are those cells, in that order. The
+first takes no key, and every accessor of the point reads it; each of the others is keyed
+by an age, a contract year, a count of years or an anniversary rather than by the month,
+and called by a monthly cell in cover only. The mortality, the rollup schedule, the scenario
+and the withdrawal programme are joined on a text key, the model point's ``sex``,
+``rollup_id``, ``scenario_id`` or ``wd_schedule_id``, inside that one cell, and Phase 2
+re-keys the four.
 
 .. rubric:: Projection basis
 
-``t`` is the **month index and it is 0-based**: ``t = 0`` is the first month of a model
-point projected from issue, ``duration(t) = t // 12`` is the completed contract years at
-the start of month ``t``, and the contractual label is ``policy_year(t) = duration(t) + 1``.
-The frame is ``t = entry_mth() … proj_len() - 1``, and ``proj_len()`` is ``12 *
-policy_term()``. The grid matches :mod:`.MYGA_US_S`, :mod:`.Term_US_S` and the rest of the
-library, and it is what the product assignment table records for this product.
+Monthly steps on two clocks. ``t`` counts months from the **valuation date**, 0-based,
+the clock ``basiclife.BasicTerm_SE`` runs on: ``t = 0`` is the valuation month for every
+model point, however old the contract, month ``t`` runs from time ``t`` to time
+``t + 1``, and the frame is ``t = 0 .. proj_len() - 1``, where :func:`proj_len` counts
+the months from the valuation date to the end of cover,
+``maturity_mth() - duration_mth_init()``. Row ``t`` is the same month for every point,
+so the frames of a block line up and sum row by row.
+
+``duration_mth(t)`` counts **policy months**, the months the contract has been in force
+at time ``t``: ``duration_mth(t) = duration_mth_init() + t``, where
+:func:`duration_mth_init` is read from the model point — positive for a contract in
+force at the valuation date, in any month of its contract year, 0 for one issued at it,
+``-k`` for one issued ``k`` months later, at most ten years later. It is
+:mod:`~.FIA_US_S`'s ``t``, the notes' month index, and everything contractual reads it:
+``duration(t) = duration_mth(t) // 12`` is the completed contract years at the start of
+month ``t``, the contractual label is ``policy_year(t) = duration(t) + 1``, and the
+anniversary month, where every annual event lands, is the one with
+``duration_mth(t) % 12 == 11``. The grid matches :mod:`.MYGA_US_S`, :mod:`.Term_US_S` and
+the rest of the library, and it is what the product assignment table records for this
+product.
+
+Two inputs read the valuation clock instead. The **rate scenario** — the index level and
+the MVA reference yield — is a path in calendar time, shared by every point of a block,
+so the ``t`` of *rate_scenario_sec.csv* is a valuation month; each anniversary's level is
+read at the valuation month that anniversary falls in, through :func:`scenario_value`,
+and the level at the anniversary that opened the year under way, where that anniversary
+precedes the valuation date, is the model point's :func:`index_level_prev_anniv_init`.
+And **expense inflation**, ``inflation_factor(t) = (1 + inflation_rate) ** (t / 12)``,
+keeps :mod:`~.FIA_US_S`'s formula on ``t``, so maintenance expense is in valuation-date
+dollars for every point alike. The surrender charge, the vesting, the rollup schedule, the
+growth window, the shock-lapse year, the MVA term, the withdrawal programme, the payout
+bands and the mortality stay on the policy clock, read at the contract year, the elapsed
+year count or the age. On a point issued at ``t = 0`` the two clocks coincide, and the
+model computes what :mod:`~.FIA_US_S` computes.
 
 **The monthly grid does not make the product monthly.** The technical notes make the
 anniversary the single event date — "All transactions occur **at** the anniversary and are
@@ -62,15 +114,17 @@ accrue month by month so a mid-year death or surrender is valued on the balance 
 has, and maintenance expense accrues where it is incurred. Because the monthly decrement
 rates compound to the annual ones and every contractual step still happens once a year,
 **every state value at an anniversary is identical to the annual grid's** — account value,
-benefit base, rollup base, lifetime withdrawal, Model #805 floor, phase and ``pols_if`` at
-``t = 12k``. What changes is the timing and the weighting of the cash, which is the point.
+benefit base, rollup base, lifetime withdrawal, Model #805 floor, phase and ``pols_if`` in
+the month opening each contract year. What changes is the timing and the weighting of the
+cash, which is the point.
 
 Three vocabulary cells carry the split, and the whole model is written in terms of them:
 :func:`duration` for anything keyed by contract year, :func:`is_anniv` for anything that
 happens once a year, and :func:`year_open_mth` for the month whose closing value opens the
 contract year — because on a monthly grid the previous *month* is no longer the previous
 *year*, and reaching for ``t - 1`` where a year is meant is the mistake this conversion
-exists to prevent.
+exists to prevent. :func:`year_open_mth` and :func:`anniv_mth` are months of the frame,
+on the valuation clock, computed from ``duration_mth(t) % 12``.
 
 ``age(t) = age_at_entry() + duration(t)`` is the attained age **opening the contract year**
 of month ``t``, so mortality over that year reads ``age(t)`` itself — the library
@@ -80,17 +134,31 @@ older, and that age is :func:`exercise_age`, ``covered_age(t) + 1``: it is what 
 lifetime-withdrawal percentage table and what clears the contractual minimum exercise age.
 
 **There is no issue-instant row.** The single premium, the premium bonus and the
-acquisition expense are beginning-of-month flows of month ``0`` on a new-issue model point,
-whose first projected month is ``t = 0``. A model point may instead enter **in force** after
-``entry_year()`` completed contract years, on balances stated in ``model_point_table.csv``
-— which is what the worked example does, its anniversary-7 balances being explicitly
-"illustrative ... broadly consistent with a seven-year deferral" **[std]** rather than
-derived. ``entry_year()`` is an elapsed count of whole years, so ``entry_mth() = 12 *
-entry_year()`` is the index of the model point's first projected month and the frame always
-opens on an anniversary. Every recursion opens there on the ``*_init`` cells, read through
-the opening timing (``av_pp_at(t, "BEF_INV")``, ``benefit_base_pp_at(t, "BEF_ROLLUP")``,
-:func:`phase_open`, :func:`rider_in_force_open`), and ``result_cf()`` is indexed from
-``entry_mth()``.
+acquisition expense are beginning-of-month flows of the issue month, the one with
+``duration_mth(t) = 0``, :func:`t_entry` on a point issued at or after the valuation
+date, alongside that month's own activity, and the issue values are credited there by
+:mod:`~.FIA_US_S`'s rules: ``P x (1 + b)`` to the account value through
+:func:`prem_to_av_pp`, its fixed share to the fixed account, and 87.5% of the premium,
+the bonus excluded, to the Model #805 floor through :func:`prem_to_mgsv_pp`; the benefit
+base and the rollup base open the first contract year at ``P`` under the rider. A model
+point may instead be in force at the valuation date, in any month of its contract year,
+on the opening state its row carries, per contract, as the contract stands at the start of
+month 0, before any month-0 event: the account value, the fixed account, the benefit
+base, the rollup base, the lifetime withdrawal, the Model #805 floor and the withdrawals
+to date entering month 0; and, at the anniversary on or before the valuation date, the
+account value and the fixed account, the phase as a code, the locked payout percentage and
+the index level. Each is exactly what :mod:`~.FIA_US_S` carries into the month the point
+is valued at. Every recursion opens at :func:`t_entry`: a monthly balance on its ``_init``
+column, 0 on new business, and a quantity of the year — the opening account value and
+fixed account, the benefit base, the rollup base, the lifetime withdrawal, the phase and
+the locked percentage — is read at the anniversary that opened the year three ways: from
+the frame where that anniversary is at or after :func:`t_entry`, from the model point's
+``_prev_anniv_init`` or ``_init`` column where the year opened before the valuation date,
+and by the issue rule in the first year of a contract issued at or after it. The rider
+state opening the year has no column: it is read from the frame, or from ``glwb_elected()``
+where that anniversary precedes :func:`t_entry`, a contract in force with the rider elected
+having it alive (:func:`rider_in_force_open`). ``result_cf()`` has exactly ``proj_len()``
+rows, ``t = 0 .. proj_len() - 1``.
 
 The anniversary's eight processing steps are the notes' own, all eight still annual and all
 eight landing in the anniversary month, and each intermediate value is reachable through a
@@ -121,177 +189,330 @@ interest in the year they are taken" [S1] carried to mid-year deaths and surrend
 **[std]**; crediting a part year would be the *daily interim value* variant the notes
 exclude.
 
+Outside cover, before issue and from :func:`proj_len` on, every count, cash flow,
+balance and rate is 0.0, every flag is ``False``, the phase is ``PRE_ISSUE`` before issue
+and ``MATURED`` after cover, and :func:`lapse_moneyness_factor` is 1.0, no adjustment;
+:func:`is_active` is the test, made before any table is read. One read reaches ahead of
+the month: :func:`lapse_rate` reads the phase, and :func:`lapse_moneyness_factor` the
+account value and the benefit base, at the anniversary closing the contract year,
+:func:`anniv_mth`, up to 11 months later and inside the frame, a state that depends on
+no count and on nothing after that anniversary.
+
 .. rubric:: Naming
 
 Cells names follow :mod:`.MYGA_US_S` — the deferred annuity chassis this
 product sits on — and through it lifelib's ``basiclife.BasicTerm_S`` and
 ``savings.CashValue_SE``: ``pols_*`` for policy counts, ``av_*`` for account values,
 plural nouns for cash flows, ``*_rate`` for rates, ``*_pp`` for per-contract amounts,
-``*_at(t, timing)`` for a quantity read at a point inside the anniversary. The technical
-notes use compact actuarial symbols instead. The mapping is:
+``*_at(t, timing)`` for a quantity read at a point inside the anniversary. What running in
+force adds is named as ``basiclife.BasicTerm_SE`` names it: ``duration_mth`` read from the
+model point, ``policy_count``, ``pols_new_biz``, ``pols_if_at`` with its ``"BEF_NB"``
+timing, ``is_active`` and ``result_pols``. ``duration_mth_init``, the policy months
+completed at the valuation date, takes ``UL_US_S``'s name, and ``t_entry`` and
+``maturity_mth`` are :mod:`.MYGA_US_SEC`'s. A column of the opening state is the cell it
+opens with ``_init`` added, ``av_pp_init`` for :func:`av_pp`; a balance at the anniversary
+on or before the valuation date adds ``_prev_anniv_init`` instead,
+``av_pp_prev_anniv_init``. A reader keyed by a contract year is ``<cell>_py`` and one keyed
+by an age or a year count ``<cell>_at``, as in :mod:`.MYGA_US_SEC`, and a cell that reads
+the anniversary opening the year is ``<cell>_year_open``, as :mod:`~.FIA_US_S`'s
+``av_pp_year_open``. The ``is_*`` cells decode the model point's text columns and the
+three string switches, once a point, into the flags the projection branches on, so that no
+monthly cell compares a column's or a switch's text and none calls a label accessor
+(``credit_method``, ``glwb_basis``, ``scenario_id``, ...), which is left to reporting. The
+text a monthly cell still compares is :mod:`~.FIA_US_S`'s timing and kind strings, which
+Phase 2 turns into int codes. The technical notes use compact actuarial symbols instead.
+The notes' month index is this model's ``duration_mth(t)``, so the notes' ``t`` in the
+left-hand column is ``duration_mth(t)`` throughout. The mapping is:
 
-================================================  ================================  ========================================
-Notes symbol                                      Cells                             Meaning
-================================================  ================================  ========================================
-t                                                 (the projection index)            Month index, 0-based
-(elapsed years)                                   duration(t)                       Completed contract years at month t
-(elapsed months)                                  duration_mth(t)                   Completed contract months; = t
-(the anniversary month)                           is_anniv(t)                       Last month of a contract year
-(that month's index)                              anniv_mth(t)                      Anniversary closing month t's year
-(the year's opening month)                        year_open_mth(t)                  Anniversary that opened it
-(contract year)                                   policy_year(t)                    Contract year containing t; duration + 1
-x                                                 age_at_entry                      Issue age (ANB)
-x + duration(t)                                   age(t)                            Attained age opening month t's contract year
-(younger covered life)                            covered_age(t)                    Younger covered age opening that year
-x + duration(t) + 1                               exercise_age(t)                   Covered age at the closing anniversary
-(none)                                            policy_term                       Contract years from issue to maturity_age
-(none)                                            proj_len                          Number of projected months; 12 x policy_term
-(in-force cell entry)                             entry_year                        Completed years at entry
-(none)                                            entry_mth                         First projected month; 12 x entry_year
-av_initial                                        av_pp_init                        AV at entry, else P x (1 + b)
-bb_initial                                        benefit_base_pp_init              BB at entry, else P
-mgv_initial                                       mgsv_pp_init                      MGV at entry, else 0.875 x P
-(RB at entry)                                     rollup_base_pp_init               RB at entry, else P
-(LW at entry)                                     lw_pp_init                        LW at entry, 0 before exercise
-(pi at entry)                                     payout_rate_init                  Payout percentage locked at entry
-(phase at entry)                                  phase_init                        Phase at entry
-P                                                 premium_pp                        Single premium
-b                                                 bonus_rate                        Premium bonus rate (7% [S5])
-b/(1+b)                                           bonus_factor                      Clawback factor -- **not** b [S10]
-v(t)                                              vest_rate(t)                      Vested bonus percentage [S5]
-alloc_indexed/alloc_fixed                         alloc_indexed / alloc_fixed       Account allocation at issue
-I(y)                                              index_level(y)                    Index level at **anniversary number** y
-R(t)                                              index_return(t)                   I(y+1)/I(y) - 1 over month t's year
-c                                                 cap_rate                          Declared annual cap (5.25% [S2])
-c_min                                             cap_rate_min                      Guaranteed minimum cap (0.25% [S4])
-c(t)                                              cap_rate_in_force()               Cap actually applied
-f                                                 floor_rate                        Index credit floor (0%)
-p, s, d                                           par_rate, spread_rate,            Participation rate [R1]; spread
-                                                  trigger_rate                      and trigger, levels **[std]**
-cr(t)                                             credit_rate(t)                    Credit rate for month t's contract year
-(cr on a return)                                  credit_rate_on(r, method)         The crediting engine itself
-IC(t)                                             index_credit_pp(t)                Index credit, in the anniversary month
-FI(t) monthly                                     fixed_interest_pp(t)              Fixed account interest for month t
-FI(t) annual                                      fixed_interest_ann_pp(t)          The contract year's, for the stack
-i_F, i_F,min                                      fixed_rate, fixed_rate_min        Declared / guaranteed fixed rate
-kappa                                             av_int_factor                     Share of IC reaching the AV [S3]
-(IC x kappa + FI)                                 inv_income_pp(t)                  Interest credited to the AV
-A(t)                                              av_indexed_pp(t)                  Indexed account balance
-F(t)                                              av_fixed_pp(t)                    Fixed account balance
-AV(t)                                             av_pp(t)                          Account value closing month t
-AV(0), AV(1), AV(2), AV(t)                        av_pp_at(t, timing)               BEF_INV / BEF_FEE / BEF_WD / EOY in
-                                                                                    order; BEF_PREM opens the month
-AV(0) of the contract year                        av_pp_year_open(t)                Balance opening month t's contract year
-F(0), A(0) of that year                           av_fixed_pp_year_open(t),         The fixed and indexed openings: the
-                                                  av_indexed_pp_year_open(t)        credit base and the fixed-interest base
-l(t) x AV(t)                                      av_at(t, timing)                  In-force weighted account value
-(shortfall at exhaustion)                         av_depletion_pp(t)                Withdrawal the AV could not fund
-phi                                               rider_charge_rate                 Rider charge rate (0.95% [S9])
-Phi(t)                                            rider_charge_pp(t)                Rider charge amount
-BB(t)                                             benefit_base_pp(t)                GLWB benefit base, closing
-BB(3), BB(4)                                      benefit_base_pp_at(t, timing)     BEF_ROLLUP/BEF_STEP_UP/BEF_WD/EOY
-RB(t)                                             rollup_base_pp(t)                 Rollup base
-g(t)                                              rollup_rate(t)                    Guaranteed simple rollup rate [S2]
-rollup(t)                                         rollup_pp(t)                      Rollup dollar increment
-m                                                 stack_factor                      Stacking factor (1.50 [S8][S9])
-stack(t)                                          stack_pp(t)                       Stacking credit
-T_g                                               in_growth_period(t)               Benefit base still growing
-(the step-up)                                     step_up_applies(t)                Whether the ratchet is tested
-LW(t)                                             lw_pp(t)                          Lifetime withdrawal amount, closing
-LW before/after step 5                            lw_pp_at(t, timing)               BEF_WD / EOY
-pi(a, basis)                                      payout_rate(a, basis)             Payout percentage by age band [S3]
-(pi locked at exercise)                           payout_rate_locked(t)             The percentage actually in force
-h(a)                                              activation_rate(a)                Activation incidence, reported only
-G(t)                                              wd_pp(t)                          Gross withdrawal requested
-min(G, LW)                                        wd_guar_pp(t)                     Guaranteed portion
-E(t)                                              wd_excess_pp(t)                   Excess above the guaranteed amount
-(unpayable withdrawal)                            wd_unfunded_pp(t)                 Requested but neither funded nor
-                                                                                    guaranteed, on TERMINATED
-(guaranteed portion paid)                         wd_guar_paid_pp(t)                min(G, LW) less its share of it
-(excess portion paid)                             wd_excess_paid_pp(t)              E(t) less its share of it
-FW(t)                                             free_wd_allow(t)                  Free withdrawal amount
-0.10 x AV(0)(t)                                   free_wd_base(t)                   Base of the free amount
-(FW consumed)                                     wd_free_pp(t)                     Free-allowance portion of the
-                                                                                    withdrawal
-(FW remaining)                                    free_wd_remain(t)                 Free amount left for the excess
-X(t) on a withdrawal                              wd_charge_base_pp(t)              Amount exposed to charge and MVA
-X(t) on a surrender                               surr_charge_base_pp(t)            Same, at a full surrender
-sc(t)                                             surr_charge_rate(t)               Surrender charge percentage [S5]
-SC(t) on a withdrawal                             wd_charge_pp(t)                   Surrender charge on the excess
-SC(t) on a surrender                              surr_charge_pp(t)                 Surrender charge on a surrender
-CB(t) on a withdrawal                             wd_clawback_pp(t)                 Non-vested bonus recovery
-CB(t) on a surrender                              surr_clawback_pp(t)               Same, at a full surrender
-(the clawback formula)                            bonus_clawback_on(...)            (1-A) x [B/(1+B)] x C [S10]
-MVA(t) on a withdrawal                            wd_mva_pp(t)                      Collared MVA on the excess
-MVA(t) on a surrender                             mva_pp(t)                         Collared MVA on a surrender
-(the MVA collar)                                  mva_pp_on(t, base, gross)         The collared MVA on any base
-(the MVA rate)                                    mva_rate(t)                       [(1+i0)/(1+it)]^(n/12) - 1 [S10]
-i0                                                mva_ref_yield_at_issue            Reference index at issue
-i_y                                               mva_ref_yield(y)                  Reference index at **anniversary number** y
-n/12                                              mva_term(t)                       Years left in the MVA period
-(MVA applies at all)                              mva_in_force(t)                   Inside the MVA period
-rho(t)                                            wd_reduction_rate(t)              Proportional reduction factor
-(rho's formula)                                   wd_reduction_rate_on(...)         The [S9] worked construction
-Wcum(t)                                           wd_cum_pp(t)                      Cumulative gross withdrawals
-G - SC - CB + MVA                                 wd_payment_pp(t)                  Cash paid on the withdrawal
-(pre-floor surrender value)                       surr_value_pp(t)                  AV - SC - CB + MVA
-CSV(t)                                            surr_benefit_pp(t)                Surrender benefit paid
-MGV(t)                                            mgsv_pp(t)                        Model #805 guaranteed minimum
-i_nf                                              mgsv_rate                         Nonforfeiture accumulation rate
-(the $50 charge)                                  mgsv_charge_pp(t)                 Annual contract charge, 0 **[std]**
-(statutory i_nf)                                  mgsv_rate_statutory(...)          Model #805 4B/4C indexed rate
-phase(t)                                          phase(t)                          Closing ACCUM/INCOME/DEPLETED/TERMINATED
-(phase during the year)                           phase_open(t)                     Phase steps 1-7 are processed under
-(first exercise)                                  is_exercise(t)                    The first lifetime withdrawal
-rider_in_force(t)                                 rider_in_force(t)                 Rider still alive closing month t [S9]
-rider_in_force(k-1)                               rider_in_force_open(t)            Rider alive opening the contract year
-depletion_cause(t)                                depletion_cause(t)                Excess / charge / negative MVA flag
-q(t)                                              mort_rate(t)                      Annual mortality of month t's contract year
-1 - (1-q)^(1/12)                                  mort_rate_mth(t)                  The monthly rate actually applied
-(A/E deviation)                                   mort_ae_factor                    Mortality A/E factor, 100% **[std]**
-w(t)                                              lapse_rate(t)                     Annual surrender rate of that year
-1 - (1-w)^(1/12)                                  lapse_rate_mth(t)                 The monthly rate actually applied
-w_base(t)                                         lapse_rate_base(t)                Base surrender table
-w_shock                                           shock_lapse_rate(t)               33% / 10% / 5% by rider state [R8]
-M_money(t)                                        lapse_moneyness_factor(t)         Moneyness suppression **[std]**
-l(k) at t = 12k                                   pols_if(t)                        In-force opening month t
-(closing the month)                               pols_if_at(t, "AFT_DECR")         In-force at the end of month t
-l(0)                                              pols_if_init                      In-force at entry
-(the four readings)                               pols_if_at(t, timing)             BEF_DECR/BEF_MORT/BEF_LAPSE/AFT_DECR
-l q_m                                             pols_death(t)                     Deaths in the month
-l (1-q_m) w_m                                     pols_lapse(t)                     Full surrenders in the month
-(none)                                            pols_maturity(t)                  Survivors at the horizon
-P at t = 0                                        premiums(t)                       Premium income
-min(G, LW) x l(t)                                 wd_guar(t)                        Guaranteed withdrawal outgo, paid
-(E - SC - CB + MVA) l(t)                          wd_excess(t)                      Excess withdrawal outgo, paid
-LW while DEPLETED                                 income_payments(t)                Post-depletion income outgo
-(all three together)                              withdrawals(t)                    Total withdrawal outgo
-(ledger benefit lines)                            claims(t, kind)                   Benefit outgo by kind
-                                                  claim_pp(t, kind)                 Benefit per contract by kind
-                                                  claims_from_av(t, kind)           Account value released by a claim
-                                                  claims_over_av(t, kind)           Benefit paid above the account value
-(no separate commission)                          commissions(t)                    Acquisition commission, 0 **[std]**
-0.06 P; (80/12) x 1.025^(t/12)                    expenses(t)                       Acquisition and monthly maintenance
-premium tax                                       premium_taxes(t)                  Premium tax, 0% **[std]**
-NetCF(t)                                          net_cf(t)                         Net cash flow for the month
-(the annual summary)                              result_cf_annual()                result_cf() summed into contract years
-================================================  ================================  ========================================
+========================  ==================================  ==============================
+Notes symbol              Cells                               Meaning
+========================  ==================================  ==============================
+t                         duration_mth(t)                     The notes' month index:
+                                                              completed policy months at the
+                                                              start of month t
+(valuation month)         (the projection index)              Months from the valuation
+                                                              date, 0-based
+(elapsed years)           duration(t)                         Completed contract years at
+                                                              month t
+(the anniversary month)   is_anniv(t)                         Last month of a contract year
+(that month's index)      anniv_mth(t)                        Month closing t's contract
+                                                              year, valuation clock
+(year-opening month)      year_open_mth(t)                    Month whose close opened it,
+                                                              valuation clock
+(contract year)           policy_year(t)                      Contract year containing t;
+                                                              duration + 1
+x                         age_at_entry                        Issue age (ANB)
+x + duration(t)           age(t)                              Attained age opening month t's
+                                                              contract year
+(younger covered life)    covered_age(t)                      Younger covered age opening
+                                                              that year
+x + duration(t) + 1       exercise_age(t)                     Covered age at the closing
+                                                              anniversary
+(none)                    policy_term                         Contract years from issue to
+                                                              maturity_age
+(cover from issue)        maturity_mth                        Policy month cover ends; 12 x
+                                                              policy_term
+(none)                    proj_len                            Months from the valuation date
+                                                              to the end of cover
+(months at t = 0)         duration_mth_init                   Completed policy months at the
+                                                              valuation date; -k if issued
+                                                              k months later
+(first month on books)    t_entry                             max(0, -duration_mth_init)
+(in cover)                is_active(t)                        Whether month t is inside
+                                                              cover
+(contracts)               policy_count                        Contracts the model point
+                                                              stands for
+av_initial                av_pp_init                          AV entering month 0; 0 on new
+                                                              business
+(F entering month 0)      av_fixed_pp_init                    Fixed account entering month 0
+AV(0) at entry            av_pp_prev_anniv_init               AV at the anniversary on or
+                                                              before the valuation date
+F(0) at entry             av_fixed_pp_prev_anniv_init         F at that anniversary
+bb_initial                benefit_base_pp_init                BB entering month 0
+mgv_initial               mgsv_pp_init                        MGV entering month 0
+(RB at entry)             rollup_base_pp_init                 RB entering month 0
+(LW at entry)             lw_pp_init                          LW entering month 0, 0 before
+                                                              exercise
+(pi at entry)             payout_rate_locked_prev_anniv_init  Payout percentage locked at
+                                                              that anniversary
+(phase at entry)          phase_prev_anniv_init               Phase code at that anniversary
+I(y) at entry             index_level_prev_anniv_init         Index level at that
+                                                              anniversary
+Wcum at entry             wd_cum_pp_init                      Withdrawals from issue to the
+                                                              valuation date
+P                         premium_pp                          Single premium
+b                         bonus_rate                          Premium bonus rate (7% [S5])
+b/(1+b)                   bonus_factor                        Clawback factor -- **not** b
+                                                              [S10]
+v(t)                      vest_rate(t)                        Vested bonus percentage [S5]
+v(y)                      vest_rate_py(y)                     The same, by contract year
+(allocation)              alloc_indexed / alloc_fixed         Account allocation at issue
+I(y)                      index_level(y)                      Index level at **anniversary
+                                                              number** y
+(the level by month)      scenario_value(y, name)             Scenario level at anniversary
+                                                              y's valuation month
+R(t)                      index_return(t)                     I(y+1)/I(y) - 1 over month t's
+                                                              year
+c                         cap_rate                            Declared annual cap (5.25%
+                                                              [S2])
+c_min                     cap_rate_min                        Guaranteed minimum cap (0.25%
+                                                              [S4])
+c(t)                      cap_rate_in_force()                 Cap actually applied
+f                         floor_rate                          Index credit floor (0%)
+p, s, d                   par_rate, spread_rate,              Participation rate [R1];
+                          trigger_rate                        spread and trigger, levels
+                                                              **[std]**
+(crediting method)        is_credit_cap                       The crediting method, decoded
+                          is_credit_par
+                          is_credit_par_cap
+                          is_credit_spread
+                          is_credit_trigger
+cr(t)                     credit_rate(t)                      Credit rate for month t's
+                                                              contract year
+(cr on a return)          credit_rate_on(r, method)           The crediting engine itself
+IC(t)                     index_credit_pp(t)                  Index credit, in the
+                                                              anniversary month
+FI(t) monthly             fixed_interest_pp(t)                Fixed account interest for
+                                                              month t
+FI(t) annual              fixed_interest_ann_pp(t)            The contract year's, for the
+                                                              stack
+i_F, i_F,min              fixed_rate, fixed_rate_min          Declared / guaranteed fixed
+                                                              rate
+kappa                     av_int_factor                       Share of IC reaching the AV
+                                                              [S3]
+(IC x kappa + FI)         inv_income_pp(t)                    Interest credited to the AV
+A(t)                      av_indexed_pp(t)                    Indexed account balance
+F(t)                      av_fixed_pp(t)                      Fixed account balance
+AV(t)                     av_pp(t)                            Account value closing month t
+AV(0), AV(1), AV(2)       av_pp_at(t, timing)                 BEF_INV / BEF_FEE / BEF_WD;
+                                                              EOY is AV(t); BEF_PREM opens
+                                                              the month
+AV(0) of the year         av_pp_year_open(t)                  Balance opening month t's
+                                                              contract year
+F(0), A(0) of the year    av_fixed_pp_year_open(t),           The fixed and indexed
+                          av_indexed_pp_year_open(t)          openings: the credit base and
+                                                              the fixed-interest base
+(premium credited)        prem_to_av_pp(t)                    P x (1 + b), in the issue
+                                                              month
+l(t) x AV(t)              av_at(t, timing)                    In-force weighted account
+                                                              value
+(AV shortfall)            av_depletion_pp(t)                  Withdrawal the AV could not
+                                                              fund
+phi                       rider_charge_rate                   Rider charge rate (0.95% [S9])
+Phi(t)                    rider_charge_pp(t)                  Rider charge amount
+BB(t)                     benefit_base_pp(t)                  GLWB benefit base, closing
+BB(3), BB(4)              benefit_base_pp_at(t, timing)       BEF_ROLLUP / BEF_STEP_UP /
+                                                              BEF_WD / EOY
+RB(t)                     rollup_base_pp(t)                   Rollup base
+RB(0) of the year         rollup_base_pp_year_open(t)         Rollup base opening the year
+(RB on a withdrawal)      is_rb_pro_rata                      rb_wd_convention, decoded
+                          is_rb_dollar
+g(t)                      rollup_rate(t)                      Guaranteed simple rollup rate
+                                                              [S2]
+g(y)                      rollup_rate_py(y)                   The same, by contract year
+rollup(t)                 rollup_pp(t)                        Rollup dollar increment
+m                         stack_factor                        Stacking factor (1.50
+                                                              [S8][S9])
+stack(t)                  stack_pp(t)                         Stacking credit
+T_g                       in_growth_period(t)                 Benefit base still growing
+(the step-up)             step_up_applies(t)                  Whether the ratchet is tested
+(step-up mode)            is_step_up_annual                   step_up_mode, decoded
+                          is_step_up_at_exercise
+LW(t)                     lw_pp(t)                            Lifetime withdrawal amount,
+                                                              closing
+LW before/after step 5    lw_pp_at(t, timing)                 BEF_WD / EOY
+pi(a, basis)              payout_rate(a, basis)               Payout percentage by age band
+                                                              [S3]
+pi(a)                     payout_rate_at(a)                   The same, on the point's basis
+(the basis)               is_single_basis                     glwb_basis, decoded
+                          is_joint_basis
+(pi locked at exercise)   payout_rate_locked(t)               The percentage actually in
+                                                              force
+h(a)                      activation_rate(a)                  Activation incidence, reported
+                                                              only
+G(t)                      wd_pp(t)                            Gross withdrawal requested
+(scheduled G)             wd_scheduled_pp(t)                  Ad hoc withdrawal at the
+                                                              anniversary
+(G by year count)         wd_scheduled_at(k)                  The same, by elapsed contract
+                                                              year
+min(G, LW)                wd_guar_pp(t)                       Guaranteed portion
+E(t)                      wd_excess_pp(t)                     Excess above the guaranteed
+                                                              amount
+(unpayable withdrawal)    wd_unfunded_pp(t)                   Requested but neither funded
+                                                              nor guaranteed, on TERMINATED
+(guaranteed part paid)    wd_guar_paid_pp(t)                  min(G, LW) less its share of
+                                                              it
+(excess portion paid)     wd_excess_paid_pp(t)                E(t) less its share of it
+FW(t)                     free_wd_allow(t)                    Free withdrawal amount
+0.10 x AV(0)(t)           free_wd_base(t)                     Base of the free amount
+(FW consumed)             wd_free_pp(t)                       Free-allowance portion of the
+                                                              withdrawal
+(FW remaining)            free_wd_remain(t)                   Free amount left for the
+                                                              excess
+X(t) on a withdrawal      wd_charge_base_pp(t)                Amount exposed to charge and
+                                                              MVA
+X(t) on a surrender       surr_charge_base_pp(t)              Same, at a full surrender
+sc(t)                     surr_charge_rate(t)                 Surrender charge percentage
+                                                              [S5]
+sc(y)                     surr_charge_rate_py(y)              The same, by contract year
+SC(t) on a withdrawal     wd_charge_pp(t)                     Surrender charge on the excess
+SC(t) on a surrender      surr_charge_pp(t)                   Surrender charge on a
+                                                              surrender
+CB(t) on a withdrawal     wd_clawback_pp(t)                   Non-vested bonus recovery
+CB(t) on a surrender      surr_clawback_pp(t)                 Same, at a full surrender
+(the clawback formula)    bonus_clawback_on(...)              (1-A) x [B/(1+B)] x C [S10]
+MVA(t) on a withdrawal    wd_mva_pp(t)                        Collared MVA on the excess
+MVA(t) on a surrender     mva_pp(t)                           Collared MVA on a surrender
+(the MVA collar)          mva_pp_on(t, base, gross)           The collared MVA on any base
+(the collar's basis)      is_collar_gross                     mva_collar_basis, decoded
+                          is_collar_surrender_value
+(the MVA rate)            mva_rate(t)                         [(1+i0)/(1+it)]^(n/12) - 1
+                                                              [S10]
+i0                        mva_ref_yield_at_issue              Reference index at issue
+i_y                       mva_ref_yield(y)                    Reference index at
+                                                              **anniversary number** y
+n/12                      mva_term(t)                         Years left in the MVA period
+(MVA applies at all)      mva_in_force(t)                     Inside the MVA period
+rho(t)                    wd_reduction_rate(t)                Proportional reduction factor
+(rho's formula)           wd_reduction_rate_on(...)           The [S9] worked construction
+Wcum(t)                   wd_cum_pp(t)                        Cumulative gross withdrawals
+G - SC - CB + MVA         wd_payment_pp(t)                    Cash paid on the withdrawal
+(SV before the floor)     surr_value_pp(t)                    AV - SC - CB + MVA
+CSV(t)                    surr_benefit_pp(t)                  Surrender benefit paid
+MGV(t)                    mgsv_pp(t)                          Model #805 guaranteed minimum
+(0.875 x P)               prem_to_mgsv_pp(t)                  The floor's issue value, in
+                                                              the issue month
+i_nf                      mgsv_rate                           Nonforfeiture accumulation
+                                                              rate
+(the $50 charge)          mgsv_charge_pp(t)                   Annual contract charge, 0
+                                                              **[std]**
+(statutory i_nf)          mgsv_rate_statutory(...)            Model #805 4B/4C indexed rate
+phase(t)                  phase(t)                            Closing phase code, ACCUM ..
+                                                              TERMINATED
+(phase opening a year)    phase_year_open(t)                  Phase code at the anniversary
+                                                              opening t's year
+(phase during the year)   phase_open(t)                       Phase steps 1-7 are processed
+                                                              under
+(first exercise)          is_exercise(t)                      The first lifetime withdrawal
+rider_in_force(t)         rider_in_force(t)                   Rider still alive closing
+                                                              month t [S9]
+rider_in_force(k-1)       rider_in_force_open(t)              Rider alive opening the
+                                                              contract year
+depletion_cause(t)        depletion_cause(t)                  Excess / charge / negative MVA
+                                                              flag
+q(t)                      mort_rate(t)                        Annual mortality of month t's
+                                                              contract year, capped at 1
+q at age x                mort_rate_base_at(x)                The table's rate at age x
+1 - (1-q)^(1/12)          mort_rate_mth(t)                    The monthly rate actually
+                                                              applied
+(A/E deviation)           mort_ae_factor                      Mortality A/E factor, 100%
+                                                              **[std]**
+w(t)                      lapse_rate(t)                       Annual surrender rate of that
+                                                              year
+1 - (1-w)^(1/12)          lapse_rate_mth(t)                   The monthly rate actually
+                                                              applied
+w_base(t)                 lapse_rate_base(t)                  Base surrender table
+w_shock                   shock_lapse_rate(t)                 33% / 10% / 5% by rider state
+                                                              [R8]
+M_money(t)                lapse_moneyness_factor(t)           Moneyness suppression
+                                                              **[std]**
+l(k), opening a year      pols_if(t)                          In force opening month t,
+                                                              after its new business
+(closing the month)       pols_if_at(t, "AFT_DECR")           In force at the end of month t
+l(0)                      pols_if_init                        In force at the valuation
+                                                              date; 0 for new business
+(new business)            pols_new_biz(t)                     Contracts issued in month t
+(the five readings)       pols_if_at(t, timing)               BEF_NB / BEF_DECR / BEF_MORT /
+                                                              BEF_LAPSE / AFT_DECR
+l q_m                     pols_death(t)                       Deaths in the month
+l (1-q_m) w_m             pols_lapse(t)                       Full surrenders in the month
+(none)                    pols_maturity(t)                    Survivors at the horizon
+P on new business         premiums(t)                         Premium income, in the issue
+                                                              month
+(premium credited)        prem_to_av(t)                       The same, in-force weighted
+min(G, LW) x l(t)         wd_guar(t)                          Guaranteed withdrawal outgo,
+                                                              paid
+(E - SC - CB + MVA) l(t)  wd_excess(t)                        Excess withdrawal outgo, paid
+LW while DEPLETED         income_payments(t)                  Post-depletion income outgo
+(all three together)      withdrawals(t)                      Total withdrawal outgo
+(ledger benefit lines)    claims(t, kind)                     Benefit outgo by kind
+(benefit per contract)    claim_pp(t, kind)                   Benefit per contract by kind
+(AV released)             claims_from_av(t, kind)             Account value released by a
+                                                              claim
+(paid above AV)           claims_over_av(t, kind)             Benefit paid above the account
+                                                              value
+(no separate commission)  commissions(t)                      Acquisition commission, 0
+                                                              **[std]**
+(80/12) x 1.025^(t/12)    expenses(t)                         Monthly maintenance, valuation
+                                                              clock, plus 0.06 P on issue
+1.025^(t/12)              inflation_factor(t)                 Expense inflation, valuation
+                                                              clock
+premium tax               premium_taxes(t)                    Premium tax, 0% **[std]**
+NetCF(t)                  net_cf(t)                           Net cash flow for the month
+(the annual summary)      result_cf_annual()                  result_cf() summed into
+                                                              contract years
+(none)                    result_pols()                       The counts behind result_cf
+(the model point)         model_point()                       The point's row of the table
+========================  ==================================  ==============================
 
 Six names needed care.
 
-**pols_if(t) is the notes' l(k) at the twelfth months.** Across this library
-``pols_if(t)`` is the number in force at the **start** of ``t`` and is the weight carried
-by that same row's cash flows — :mod:`.Term_US_S` has ``pols_if(0) == pols_if_init()`` and
-``savings.CashValue_SE`` has ``pols_if(t)`` equal to ``pols_if_at(t, "BEF_MAT")``. The
-notes define ``l(k)`` as the in-force probability at the *end* of contract year ``k``,
-which is anniversary ``k``, which is where contract year ``k + 1`` opens: on the monthly
-index that is month ``12k``, so ``pols_if(12k) = l(k)`` with
-``pols_if(entry_mth()) = l(0) = 1`` for a new issue. Because the monthly rates compound to
-the annual ones this equality is exact, not approximate.
+**pols_if(t) is the notes' l(k) in the month opening each contract year.** Across this
+library ``pols_if(t)`` is the number in force at the **start** of ``t`` and is the weight
+carried by that same row's cash flows — :mod:`.Term_US_S` has ``pols_if(0)`` the count
+issued and ``savings.CashValue_SE`` has ``pols_if(t)`` equal to
+``pols_if_at(t, "BEF_MAT")``. Here it is ``pols_if_at(t, "BEF_DECR")``, the count carried
+in plus the month's new business, before the month's decrements. The notes define
+``l(k)`` as the in-force probability at the *end* of contract year ``k``, which is
+anniversary ``k``, which is where contract year ``k + 1`` opens: on the monthly grid that
+is the month with ``duration_mth(t) = 12k``, so ``pols_if`` there is ``l(k)``, and in the
+issue month of a contract issued at or after the valuation date it is ``l(0)``, its
+``policy_count``. Because the monthly rates compound to the annual ones this equality is
+exact, not approximate.
 
 **The one place the finer grid changes an answer rather than its resolution** is the weight
 on the anniversary's own cash. A withdrawal, a rider charge or a surrender charge falls in
-month ``12k + 11`` and is weighted by ``pols_if(12k + 11)`` — the contracts that actually
+the anniversary month and is weighted by ``pols_if`` there — the contracts that actually
 *reach* the anniversary — where the annual grid weighted it by ``l(k)``, the contracts that
 entered the year. The second is an approximation the annual grid could not avoid: it pays a
 full year's guaranteed withdrawal to a contract that died in month three. The
@@ -362,15 +583,17 @@ Account value, following ``CashValue_SE``'s ``av_pp_at`` and named for the proce
 each precedes:
 
 ``"BEF_PREM"``
-    the balance carried into month ``t`` **before** the single premium: zero at ``t = 0``
-    on a new-issue model point, and the same as ``"BEF_INV"`` everywhere else. It exists so
-    that the account-value roll-forward closes on the first month too, the premium being a
+    the balance carried into month ``t`` **before** the single premium: at
+    :func:`t_entry`, :func:`av_pp_init`, the account value of a contract in force at the
+    valuation date and zero on new business, and ``AV(t-1)`` after it. It exists so that
+    the account-value roll-forward closes on the issue month too, the premium being a
     beginning-of-month flow rather than a row of its own.
 ``"BEF_INV"``
-    the balance opening month ``t`` after the premium: ``av_pp_init()`` at the first
-    projected month and ``AV(t-1)`` after it. In an anniversary month this is the notes'
-    ``AV(0)`` only when the fixed allocation is zero; in general the notes' ``AV(0)`` of the
-    contract year is :func:`av_pp_year_open`, eleven months earlier.
+    the balance opening month ``t`` after the premium: ``"BEF_PREM"`` plus
+    :func:`prem_to_av_pp`, which is ``P x (1 + b)`` in the issue month and zero in every
+    other. In an anniversary month this is the notes' ``AV(0)`` only when the fixed
+    allocation is zero; in general the notes' ``AV(0)`` of the contract year is
+    :func:`av_pp_year_open`, eleven months earlier.
 ``"BEF_FEE"``
     ``AV(1)``, after the month's interest — the fixed accrual every month, plus the index
     credit in an anniversary month — and before the rider charge.
@@ -391,16 +614,20 @@ Lifetime withdrawal: ``"BEF_WD"`` is the amount payable at the contract year's a
 ``"EOY"`` the closing value after the same reduction; away from an anniversary both carry
 the amount set at the last one, which is the income in force.
 
-Policy counts, following the chassis: ``"BEF_DECR"`` is the count entering the month and
-therefore equals :func:`pols_if` itself, ``"BEF_MORT"`` is the same (this product has no
-annuitization decrement), ``"BEF_LAPSE"`` is after that month's deaths, and ``"AFT_DECR"``
-is the closing count, which is also ``pols_if(t + 1)``. Both decrements are the **monthly**
-rates.
+Policy counts, following the chassis and ``basiclife.BasicTerm_SE``: ``"BEF_NB"`` is the
+count carried in from month ``t - 1``, before month ``t``'s new business, which is
+:func:`pols_if_init` at :func:`t_entry`; ``"BEF_DECR"`` adds :func:`pols_new_biz` and
+therefore equals :func:`pols_if` itself; ``"BEF_MORT"`` is the same (this product has no
+annuitization decrement); ``"BEF_LAPSE"`` is after that month's deaths; and ``"AFT_DECR"``
+is the closing count, which is also ``pols_if_at(t + 1, "BEF_NB")`` in every month but
+the last covered one. Both decrements are the **monthly** rates. ``"BEF_NB"`` is the one
+timing running in force adds; ``basiclife.BasicTerm_SE``'s ``"BEF_MAT"`` is not adopted,
+since the survivors leave at the end of the last covered month, as the S goldens have it.
 
 Benefit ``kind`` arguments are ``"DEATH"``, ``"LAPSE"`` and ``"MATURITY"``. Any other
 value of any of these raises ``ValueError``.
 
-.. rubric:: The three phases, and why the cause of depletion matters
+.. rubric:: The four phases, and why the cause of depletion matters
 
 ``ACCUM`` is deferral. ``INCOME`` starts at the first lifetime withdrawal and lasts while
 an account value remains. ``DEPLETED`` is what the product is sold for: the account value
@@ -423,6 +650,15 @@ The transition itself is annual and is tested only at the anniversary, which cos
 the account value can reach zero only where a withdrawal or a charge is taken, and both
 fall there. Between anniversaries :func:`phase` simply carries :func:`phase_open`.
 
+Each phase is an int code, named by a Reference of the phase's name: ``ACCUM`` 1,
+``INCOME`` 2, ``DEPLETED`` 3 and ``TERMINATED`` 4, so that every comparison of a phase is
+a comparison of numbers. Two more codes answer outside cover: ``PRE_ISSUE`` 0 before
+issue and ``MATURED`` 5 from :func:`proj_len` on, which no cell in cover reads.
+:func:`result_glwb`, a report, decodes the codes back into the labels, and the model point
+carries the phase at the anniversary on or before the valuation date as its code,
+:func:`phase_prev_anniv_init`. ``Data`` refuses ``TERMINATED`` in force, a deemed
+surrender of every contract.
+
 **The asymmetry reaches the cash, not only the phase label.** On the exhaustion
 anniversary itself the withdrawal requested exceeds what the account value can meet. In
 ``DEPLETED`` the insurer funds the whole shortfall, because that is the guarantee. On the
@@ -439,18 +675,23 @@ base to zero.
 The technical notes state no projection horizon; the ``DEPLETED`` liability is a life
 annuity, so the model runs through the final month of the contract year *entered* at
 attained age ``maturity_age`` = 120 **[std]**, the terminal age of the shipped mortality
-table — ``proj_len() = 12 * policy_term()`` months. The survivors of the last month leave
-through :func:`pols_maturity`, zero at every other ``t``, so that
+table — policy month :func:`maturity_mth` ``= 12 * policy_term()``, which is
+``proj_len() = maturity_mth() - duration_mth_init()`` months from the valuation date. The
+survivors of the last covered month, ``duration_mth(t) = maturity_mth() - 1``, which is
+``t = proj_len() - 1``, leave through :func:`pols_maturity`, zero at every other ``t``,
+so that::
 
-    pols_if(t) - pols_if(t+1) = pols_death(t) + pols_lapse(t) + pols_maturity(t)
+    pols_if(t) - pols_if_at(t + 1, "BEF_NB") = pols_death(t) + pols_lapse(t)
+                                               + pols_maturity(t)
 
-holds for every ``t``, including the last, ``t = proj_len() - 1``, where
-``pols_if(proj_len())`` is zero. Under the shipped table ``q`` reaches 1.000000 at age 120,
-hence a monthly rate of 1.0 in the first month of that contract year, so the projection
-closes itself and the term is numerically zero; it is kept because a substituted table with
-no terminal age would make it bite, and because without it the last month would appear to
-lose lives with no cause. The name follows ``BasicTerm_S.pols_maturity`` and the
-construction follows :mod:`.Term_US_S`.
+holds for every ``t`` — the start-of-month count opens the row, the exits are taken
+during it and the next month opens on what is left, before its own new business —
+including the last, where ``pols_if_at(proj_len(), "BEF_NB")`` is zero. Under the shipped
+table ``q`` reaches 1.000000 at age 120, hence a monthly rate of 1.0 in the first month of
+that contract year, so the projection closes itself and the term is numerically zero; it
+is kept because a substituted table with no terminal age would make it bite, and because
+without it the last month would appear to lose lives with no cause. The name follows
+``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_S`.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -467,7 +708,7 @@ _spaces = []
 # Cells
 
 def model_point():
-    """The selected model point as a Series."""
+    """The selected model point, its row of ``model_point_table_sec.csv``, as a Series."""
     return data.model_point_table().loc[point_id]                    # noqa: F821
 
 
@@ -477,7 +718,10 @@ def policy_id():
 
 
 def age_at_entry():
-    """x: the issue age (ANB) of the selected model point."""
+    """x: the issue age (ANB) of the selected model point.
+
+    The age at issue, not at the valuation date: ``age(0)`` is the attained age then.
+    """
     return int(model_point()["age_at_entry"])
 
 
@@ -501,37 +745,32 @@ def premium_pp():
     return float(model_point()["premium"])
 
 
+def policy_count():
+    """The number of contracts the model point stands for, its ``policy_count`` column.
+
+    A point in force at the valuation date counts the contracts in force then, before any
+    month-0 event; any other point counts the contracts it issues. Either way the count
+    enters the projection once: as :func:`pols_if_init` for the first, as
+    :func:`pols_new_biz` in the issue month for the second. Every per-contract value — the
+    account value, the benefit base, the lifetime withdrawal, the floor, the opening state —
+    is the same whatever the count, and every cash flow is a per-contract amount weighted by
+    it. ``FIA_US_S``'s ``pols_if_init`` column, renamed, as ``basiclife.BasicTerm_SE`` names
+    it.
+    """
+    return float(model_point()["policy_count"])
+
+
 def pols_if_init():
-    """l(0): in-force probability at entry, 1 for a single-contract model point."""
-    return float(model_point()["pols_if_init"])
+    """l(0): contracts in force at the valuation date, before any month-0 event.
 
-
-def entry_year():
-    """The completed contract years behind the model point when it enters the projection.
-
-    An elapsed count of whole years, which :func:`entry_mth` turns into the index of the
-    model point's **first projected month**, ``12 * entry_year()``.  ``0`` for a new issue,
-    whose month ``0`` carries the premium, the acquisition expense and the notes'
-    Initialisation block as its opening state and beginning-of-month flows.  A positive
-    value enters the contract **in force** on balances stated in the model point table,
-    which is what the worked example does: its anniversary-7 balances are described as
-    illustrative and broadly consistent with a seven-year deferral **[std]**, not derived
-    from one, so deriving them would mean retuning assumptions to force a match.  Every
-    recursion opens here.
+    ``policy_count()`` for a point already in force at ``t = 0``
+    (``duration_mth_init() > 0``), and 0 for one issued at or after it, whose contracts
+    enter through :func:`pols_new_biz` in the issue month instead, as in
+    ``basiclife.BasicTerm_SE``. So on a point issued at ``t = 0`` this is 0, and
+    ``pols_if(0)`` is the issued count. ``FIA_US_S``'s cell of the name is the count at its
+    entry, 1 for a single-contract model point, whether entered at issue or in force.
     """
-    return int(model_point()["entry_year"])
-
-
-def entry_mth():
-    """The model point's first projected **month**, ``12 * entry_year()``.
-
-    The frame is ``t = entry_mth() … proj_len() - 1``.  ``0`` for a new issue, whose month
-    ``0`` carries the premium, the acquisition expense and the notes' Initialisation block
-    as its opening state and beginning-of-month flows.  Elapsed time is stated in completed
-    contract years, so the frame always opens on an anniversary and every recursion opens
-    here.
-    """
-    return 12 * entry_year()
+    return policy_count() if duration_mth_init() > 0 else 0.0
 
 
 def bonus_rate():
@@ -560,8 +799,35 @@ def glwb_basis():
     The joint column of the payout table is the single column less 0.50%, read on the
     younger covered person [S1][S3].  Joint-life *survivorship* is **not implemented**:
     the notes specify the joint payout percentage but no second-life mortality basis.
+
+    A label for reporting: the projection reads the basis through its decodes,
+    :func:`is_single_basis` and :func:`is_joint_basis`, and no projection cell calls this.
     """
     return model_point()["glwb_basis"]
+
+
+def is_single_basis():
+    """Whether the rider is on the single-life basis, ``glwb_basis`` ``single``.
+
+    A decode of the model point's column, made once a point, as each ``is_*`` cell decodes
+    its own, so that the projection branches on a flag and no projection cell compares the
+    column's text or calls the label accessor, :func:`glwb_basis`, which is left to
+    reporting. :func:`payout_rate_at` reads it, for the single-life column of the payout
+    bands.
+    """
+    return bool(model_point()["glwb_basis"] == "single")
+
+
+def is_joint_basis():
+    """Whether the rider is on the joint-life basis, ``glwb_basis`` ``joint``.
+
+    The other decode of the column (:func:`is_single_basis`). :func:`covered_age` reads it,
+    for the younger covered life, and :func:`payout_rate_at` for the joint column. A basis
+    that is neither is read as single by :func:`covered_age` and raises in
+    :func:`payout_rate_at`, as ``FIA_US_S`` answers it in its ``covered_age`` and its
+    :func:`payout_rate`.
+    """
+    return bool(model_point()["glwb_basis"] == "joint")
 
 
 def joint_age():
@@ -594,12 +860,59 @@ def utilization_intensity():
 def credit_method():
     """The crediting method: ``cap``, ``par``, ``par_cap``, ``spread`` or ``trigger``.
 
-    All five are implemented in :func:`credit_rate_on`.  The notes' sixth variant,
-    monthly sum with a monthly cap, is **not implemented**: it needs a monthly grid,
-    which the notes exclude, and its floor convention is itself flagged as ambiguous
-    [S4][R1].
+    All five are implemented in :func:`credit_rate`, which branches on the decodes
+    :func:`is_credit_cap` to :func:`is_credit_trigger`, and in :func:`credit_rate_on`, the
+    engine ``FIA_US_S`` calls, kept for its tests. This accessor is a label for reporting:
+    no projection cell calls it. The notes' sixth variant, monthly sum with a monthly cap,
+    is **not implemented**: it needs a monthly grid, which the notes exclude, and its floor
+    convention is itself flagged as ambiguous [S4][R1].
     """
     return model_point()["credit_method"]
+
+
+def is_credit_cap():
+    """Whether the indexed account credits ``max(f, min(c, R))``, ``credit_method`` ``cap``.
+
+    A decode of the model point's column, made once a point, as each ``is_*`` cell decodes
+    its own, so that :func:`credit_rate` branches on flags and no projection cell compares
+    the column's text or calls :func:`credit_method`, which is left to reporting. The
+    composite's baseline [S2][S4][S10][R1].
+    """
+    return bool(model_point()["credit_method"] == "cap")
+
+
+def is_credit_par():
+    """Whether the indexed account credits ``max(f, p x R)``, ``credit_method`` ``par``.
+
+    A decode of the column, as :func:`is_credit_cap` is [S4][S10][R1].
+    """
+    return bool(model_point()["credit_method"] == "par")
+
+
+def is_credit_par_cap():
+    """Whether the account credits ``max(f, min(c, p x R))``, ``credit_method`` ``par_cap``.
+
+    A decode of the column, as :func:`is_credit_cap` is; [R1]'s worked case.
+    """
+    return bool(model_point()["credit_method"] == "par_cap")
+
+
+def is_credit_spread():
+    """Whether the account credits ``max(f, p x R - s)``, ``credit_method`` ``spread``.
+
+    A decode of the column, as :func:`is_credit_cap` is; the index-margin form [R1][S8].
+    """
+    return bool(model_point()["credit_method"] == "spread")
+
+
+def is_credit_trigger():
+    """Whether the account credits ``d`` when ``R >= 0`` and ``f`` otherwise, ``trigger``.
+
+    The last decode of ``credit_method``, as :func:`is_credit_cap` is: a method that is none
+    of the five raises in :func:`credit_rate`, as ``FIA_US_S``'s :func:`credit_rate_on`
+    raises.
+    """
+    return bool(model_point()["credit_method"] == "trigger")
 
 
 def cap_rate():
@@ -645,7 +958,15 @@ def mva_ref_yield_at_issue():
 
 
 def scenario_id():
-    """The index and reference-yield scenario, a key into *rate_scenario.csv*."""
+    """The index and reference-yield scenario, a key into *rate_scenario_sec.csv*.
+
+    The row's own copy of a ``FIA_US_S`` scenario on the valuation clock: ``FIA_US_S``'s id
+    on a contract issued at the valuation date, ``{id}-M{d}`` on one valued in force at
+    policy month ``d`` and ``{id}-F{k}`` on one issued ``k`` months after the valuation date
+    (``Data.rate_scenario``). A label for reporting: :func:`scenario_value`, the scenario's
+    one reader, joins on the model point's column itself, and no projection cell calls
+    this.
+    """
     return model_point()["scenario_id"]
 
 
@@ -655,73 +976,166 @@ def wd_schedule_id():
 
 
 def av_pp_init():
-    """AV at entry: the stated in-force balance, else ``P x (1 + b)`` [S5].
+    """AV entering month 0: the account value of a contract in force at the valuation date.
 
-    The bonus is credited to the **account value** at issue and earns index credits from
-    day one [S5]; it does **not** enter the benefit base [S9] or the nonforfeiture base
-    [S10].
+    The model point's ``av_pp_init`` column, ``FIA_US_S``'s ``av_initial``, per contract, at
+    the start of month 0, before any month-0 event; 0 on a contract issued at or after the
+    valuation date, which opens with no account value. ``FIA_US_S``'s cell computes the
+    issue value ``P x (1 + b)`` [S5] when its column is blank; here that rule credits the
+    issue month, through :func:`prem_to_av_pp`. The bonus is credited to the **account
+    value** at issue and earns index credits from day one [S5]; it does **not** enter the
+    benefit base [S9] or the nonforfeiture base [S10].
     """
-    given = model_point()["av_initial"]
-    if pd.isna(given):                                               # noqa: F821
-        return premium_pp() * (1.0 + bonus_rate())
-    return float(given)
+    return float(model_point()["av_pp_init"])
 
 
 def av_fixed_pp_init():
-    """F at entry: the fixed account share of :func:`av_pp_init`, allocated as premium."""
-    return alloc_fixed() * av_pp_init()
+    """F entering month 0: the fixed account within :func:`av_pp_init`, a column of its own.
+
+    The model point's ``av_fixed_pp_init`` column, per contract; 0 on a contract issued at
+    or after the valuation date, whose fixed share of the premium and bonus,
+    ``alloc_fixed() x P x (1 + b)``, is credited in the issue month. ``FIA_US_S`` derives
+    the fixed account at entry as ``alloc_fixed() x AV``, the split at issue, which holds at
+    issue only: the fixed account accrues its own interest month by month and takes the
+    rider charge first, so after issue the two accounts drift from that split, and a
+    contract re-entered in force from its own state needs the fixed account it actually
+    holds.
+    """
+    return float(model_point()["av_fixed_pp_init"])
+
+
+def av_pp_prev_anniv_init():
+    """AV(0) of the year under way: the account value at the anniversary on or before the
+    valuation date.
+
+    The model point's ``av_pp_prev_anniv_init`` column, per contract: the account value at
+    the anniversary that opened the contract year under way at the valuation date, the base
+    of that year's index credit, through its indexed part, and of its free withdrawal
+    allowance. :func:`av_pp_year_open` reads it wherever the year under way opened before
+    the first month on the books, on a contract valued in force, mid-year or on its
+    anniversary. On a contract valued on an anniversary the two instants are one, and
+    ``Data`` holds it equal to :func:`av_pp_init`; in the first policy year it is the issue
+    value, ``P x (1 + b)``, which ``Data`` holds to a cent. 0 on a contract not yet in
+    force.
+    """
+    return float(model_point()["av_pp_prev_anniv_init"])
+
+
+def av_fixed_pp_prev_anniv_init():
+    """F(0) of the year under way: the fixed account at the anniversary on or before the
+    valuation date.
+
+    The model point's ``av_fixed_pp_prev_anniv_init`` column, per contract, read by
+    :func:`av_fixed_pp_year_open` as :func:`av_pp_prev_anniv_init` is by
+    :func:`av_pp_year_open`: the base of the year's annual fixed interest, which the stack
+    reads, and the part of the account value outside the year's index segment. ``Data``
+    holds it equal to :func:`av_fixed_pp_init` on an anniversary, to the issue value's fixed
+    share in the first policy year, and, off an anniversary, the indexed account,
+    ``av_pp_init - av_fixed_pp_init``, equal to its value at the anniversary, since that
+    account moves only there. 0 on a contract not yet in force.
+    """
+    return float(model_point()["av_fixed_pp_prev_anniv_init"])
 
 
 def benefit_base_pp_init():
-    """BB at entry: the stated in-force base, else ``P`` -- the bonus stays out [S9]."""
-    if not glwb_elected():
-        return 0.0
-    given = model_point()["bb_initial"]
-    if pd.isna(given):                                               # noqa: F821
-        return premium_pp()
-    return float(given)
+    """BB entering month 0: the benefit base of a contract in force at the valuation date.
+
+    The model point's ``benefit_base_pp_init`` column, ``FIA_US_S``'s ``bb_initial``, per
+    contract. The base is flat between anniversaries, so it is also the base at the
+    anniversary on or before the valuation date, which that year's rollup and stack build on
+    and its rider charge is taken on. 0 without the rider, and 0 on a contract issued at or
+    after the valuation date, whose issue base, ``P`` — the bonus stays out [S9] — opens its
+    first contract year in :func:`benefit_base_pp_at`.
+    """
+    return float(model_point()["benefit_base_pp_init"])
 
 
 def rollup_base_pp_init():
-    """RB at entry: the stated in-force rollup base, else ``P`` [S2][S9]."""
-    if not glwb_elected():
-        return 0.0
-    given = model_point()["rb_initial"]
-    if pd.isna(given):                                               # noqa: F821
-        return premium_pp()
-    return float(given)
+    """RB entering month 0: the rollup base of a contract in force at the valuation date.
+
+    The model point's ``rollup_base_pp_init`` column, ``FIA_US_S``'s ``rb_initial``, per
+    contract, flat between anniversaries like the benefit base, so it is also the base the
+    year's rollup is computed on. 0 without the rider, and 0 on a contract issued at or
+    after the valuation date, whose issue value, ``P`` under the rider [S2][S9], opens its
+    first contract year in :func:`rollup_base_pp_year_open`.
+    """
+    return float(model_point()["rollup_base_pp_init"])
 
 
 def mgsv_pp_init():
-    """MGV at entry: the stated in-force floor, else 87.5% of premium [S10][R2].
+    """MGV entering month 0: the Model #805 floor of a contract in force.
 
-    87.5% of the single premium **excluding the bonus** [S10]; the worked example's
-    ``93,811.84 = 87,500 x 1.01^7`` is that value rolled forward seven years.
+    The model point's ``mgsv_pp_init`` column, ``FIA_US_S``'s ``mgv_initial``, per contract;
+    0 on a contract issued at or after the valuation date. ``FIA_US_S``'s cell computes the
+    issue value, 87.5% of the single premium **excluding the bonus** [S10][R2], when its
+    column is blank; here that rule credits the issue month, through
+    :func:`prem_to_mgsv_pp`. The worked example's ``93,811.84 = 87,500 x 1.01^7`` is that
+    value rolled forward seven years.
     """
-    given = model_point()["mgv_initial"]
-    if pd.isna(given):                                               # noqa: F821
-        return net_consideration_ratio * premium_pp()                # noqa: F821
-    return float(given)
+    return float(model_point()["mgsv_pp_init"])
 
 
 def lw_pp_init():
-    """LW at entry: zero before exercise, else the stated in-force income amount."""
-    given = model_point()["lw_initial"]
-    return 0.0 if pd.isna(given) else float(given)                   # noqa: F821
+    """LW entering month 0: the lifetime withdrawal amount of a contract in force.
+
+    The model point's ``lw_pp_init`` column, ``FIA_US_S``'s ``lw_initial``, per contract, 0
+    before exercise. Flat between anniversaries, so it is also the amount set at the
+    anniversary on or before the valuation date, the income in force, which
+    :func:`lw_pp_at` carries until the next anniversary. 0 on a contract issued at or after
+    the valuation date.
+    """
+    return float(model_point()["lw_pp_init"])
 
 
-def payout_rate_init():
-    """The payout percentage already locked at entry; zero before exercise."""
-    given = model_point()["payout_rate_initial"]
-    return 0.0 if pd.isna(given) else float(given)                   # noqa: F821
+def payout_rate_locked_prev_anniv_init():
+    """The payout percentage locked at the anniversary on or before the valuation date.
+
+    The model point's column, ``FIA_US_S``'s ``payout_rate_initial``: the percentage locked
+    at the first lifetime withdrawal, 0 before it, which :func:`payout_rate_locked` carries
+    where the contract year under way opened before the valuation date. ``Data`` holds it to
+    0 in ``ACCUM``, and in ``INCOME`` and ``DEPLETED`` to 0 exactly where
+    :func:`lw_pp_init` is 0: a contract that exercised below the first age band, or in a
+    band at 0%, locked 0. 0 on a contract not yet in force.
+    """
+    return float(model_point()["payout_rate_locked_prev_anniv_init"])
 
 
-def phase_init():
-    """The phase at entry: ``ACCUM`` unless the model point enters in force in income."""
-    value = model_point()["phase_initial"]
-    if value not in ("ACCUM", "INCOME", "DEPLETED", "TERMINATED"):
-        raise ValueError("invalid phase_initial")
-    return value
+def phase_prev_anniv_init():
+    """The phase at the anniversary on or before the valuation date, as a code.
+
+    The model point's column, ``FIA_US_S``'s ``phase_initial`` as an int: 1 ``ACCUM``, 2
+    ``INCOME`` or 3 ``DEPLETED`` on a contract in force, 0 on one not yet in force.
+    ``TERMINATED``, 4, is a deemed surrender of every contract, so ``Data`` refuses it in
+    force. :func:`phase_year_open` reads it where the contract year under way opened before
+    the valuation date: the phase that year's annual steps are processed under, unless the
+    year is the exercise year. ``FIA_US_S`` reads its column as text.
+    """
+    return int(model_point()["phase_prev_anniv_init"])
+
+
+def index_level_prev_anniv_init():
+    """I(y) of the year under way: the index level at the anniversary on or before the
+    valuation date.
+
+    The model point's column: the level at which the contract year's index segment started,
+    the base of its point-to-point credit. Once that anniversary precedes the valuation date
+    it is history, which the scenario, on the valuation clock, cannot give, so
+    :func:`index_level` reads it for that anniversary alone, on a contract valued mid-year.
+    On a contract valued on an anniversary the scenario sets the level at ``t = 0``, and
+    ``Data`` holds this equal to it. 0 on a contract not yet in force.
+    """
+    return float(model_point()["index_level_prev_anniv_init"])
+
+
+def wd_cum_pp_init():
+    """Wcum entering month 0: the gross withdrawals from issue to the valuation date.
+
+    The model point's column, per contract, which :func:`wd_cum_pp` opens on. 0 on a
+    contract not yet in force, and in the first policy year, before the first anniversary's
+    withdrawal. ``FIA_US_S`` counts its running total from the month it enters a contract,
+    from 0.
+    """
+    return float(model_point()["wd_cum_pp_init"])
 
 
 def policy_term():
@@ -736,35 +1150,111 @@ def policy_term():
     return maturity_age - age_at_entry() + 1                          # noqa: F821
 
 
-def proj_len():
-    """The number of contract **months** projected, ``12 * policy_term()``.
+def maturity_mth():
+    """The policy month at which cover ends: ``12 * policy_term()``.
 
-    The **exclusive end** of the frame counted from ``t = 0``: ``result_cf()`` runs
-    ``t = entry_mth() … proj_len() - 1``, so its last row is the final month of the
-    contract year entered at attained age ``maturity_age``.
+    The first policy month past the contract year entered at attained age ``maturity_age`` =
+    120 **[std]**, so the last covered month is ``maturity_mth() - 1``, 707 at issue age 62.
+    It is ``FIA_US_S``'s ``proj_len()``, its frame from issue on the policy clock;
+    :func:`proj_len` counts from the valuation date instead.
     """
     return 12 * policy_term()
+
+
+def proj_len():
+    """The number of months from the valuation date to the end of cover.
+
+    ``maturity_mth() - duration_mth_init()``: 708 for a contract issued at ``t = 0`` at
+    issue age 62, 624 for the anchor in force at anniversary 7, 12 for a contract valued in
+    its last policy year, at policy month 696, and 723 for one to be issued 15 months after
+    the valuation date. The frame is ``t = 0, 1, ..., proj_len() - 1``; ``proj_len()`` is
+    its exclusive end and the row count of :func:`result_cf`, and ``proj_len() - 1`` is the
+    last covered month.
+
+    A point at or past maturity at the valuation date has no frame, and raises here, naming
+    the point, rather than projecting nothing: an in-force extract should not carry it. So
+    does a point whose cover from issue is empty, issued past ``maturity_age``, which would
+    otherwise project a frame of zeros and never be issued.
+    """
+    if maturity_mth() <= 0:
+        raise ValueError(
+            f"point_id {point_id}: age_at_entry {age_at_entry()} is past "  # noqa: F821
+            f"maturity_age {maturity_age}: the contract has no cover")      # noqa: F821
+    n = maturity_mth() - duration_mth_init()
+    if n <= 0:
+        raise ValueError(
+            f"point_id {point_id}: duration_mth {duration_mth_init()} "  # noqa: F821
+            f"is at or past maturity, policy month {maturity_mth()}")
+    return n
 
 
 def policy_year(t):
     """The contract year month ``t`` falls in: ``duration(t) + 1``, the 1-based label.
 
-    Derived from ``t``, never indexed by.  It is the key that reads the surrender charge,
-    the vesting vector and the rollup schedule, all of which the sources state by contract
-    year, and it is the year whose annual decrement rates :func:`mort_rate` and
-    :func:`lapse_rate` return.
+    Derived from ``duration_mth(t)``, the policy clock, never indexed by; it is 0 or less
+    before issue, where every reader is guarded by :func:`is_active`. It is the key that
+    reads the surrender charge, the vesting vector and the rollup schedule, all of which the
+    sources state by contract year, and it is the year whose annual decrement rates
+    :func:`mort_rate` and :func:`lapse_rate` return.
     """
     return duration(t) + 1
 
 
-def duration_mth(t):
-    """Completed contract months at the start of month ``t``: ``t`` itself.
+def duration_mth_init():
+    """Completed policy months at the valuation date, the ``duration_mth`` column.
 
-    The cells exists so the monthly vocabulary reads the same here as in
-    :mod:`.Term_US_S` and ``savings.CashValue_SE``; an in-force model point opens the
-    frame at ``entry_mth()`` rather than re-basing ``t``.
+    The contract's age in months at ``t = 0``: 84 for the anchor in force at anniversary 7,
+    95 for it valued in the last month of contract year 8, 0 for a contract issued at the
+    valuation date, and -15 for one to be issued 15 months after it, which ``Data`` admits
+    up to ``future_horizon_mth`` months ahead. It is read as ``basiclife.BasicTerm_SE``
+    reads it, as a whole number whatever the column's type, and is the one fact the policy
+    clock takes from the model point. It replaces ``FIA_US_S``'s ``entry_year``, a count of
+    whole years, which is why ``FIA_US_S`` can enter a contract in force on an anniversary
+    only.
     """
-    return t
+    return int(model_point()["duration_mth"])
+
+
+def duration_mth(t):
+    """Completed policy months at the start of month ``t``, the **policy** clock.
+
+    ``duration_mth_init() + t``: ``t`` counts months from the valuation date and
+    ``duration_mth(t)`` months from issue, and the two move together. A closed form, where
+    ``basiclife.BasicTerm_SE`` adds one a month by recursion: the same numbers, without a
+    call chain as long as the frame. Negative before issue. It is ``FIA_US_S``'s ``t``, the
+    notes' month index, and everything contractual reads it, through :func:`duration`,
+    :func:`policy_year`, :func:`is_anniv` and :func:`age`. ``FIA_US_S`` enters a contract in
+    force by opening its frame late, at the policy month it has reached; here the frame
+    opens at the valuation date and the policy clock starts where the contract stands.
+    """
+    return duration_mth_init() + t
+
+
+def t_entry():
+    """The first month the contract is on the books: ``max(0, -duration_mth_init())``.
+
+    0 for a point in force at the valuation date or issued at it, ``k`` for one issued ``k``
+    months later. It is the base of every recursion: :func:`pols_if_at` opens there from
+    :func:`pols_if_init`; the account value, the fixed account, the Model #805 floor and the
+    withdrawals to date from the model point's opening state; and the state of the year —
+    the benefit base, the rollup base, the lifetime withdrawal, the phase, the locked
+    percentage and the rider — reads the anniversary that opened the year from the frame
+    only where that anniversary is at or after it, and from the opening state, or by the
+    issue rule, where it is not. No cell in cover reads a month before it.
+    """
+    return max(0, -duration_mth_init())
+
+
+def is_active(t):
+    """Whether month ``t`` is inside cover: issued, and not past the last covered month.
+
+    ``0 <= duration_mth(t) < maturity_mth()``. False before issue and from :func:`proj_len`
+    on. Outside cover every count is zero, and so every cash flow; so is every value state
+    and every contractual rate, every flag is ``False``, the phase is ``PRE_ISSUE`` or
+    ``MATURED``, no count cell evaluates a rate there, and no table is read at a contract
+    year or an attained age the contract does not have.
+    """
+    return 0 <= duration_mth(t) < maturity_mth()
 
 
 def duration(t):
@@ -791,23 +1281,31 @@ def is_anniv(t):
 
 
 def anniv_mth(t):
-    """The month that **closes** the contract year of month ``t``: ``12 * duration(t) + 11``.
+    """The month that **closes** the contract year of month ``t``, on the valuation clock.
 
-    Equal to ``t`` itself when :func:`is_anniv` is true.  It is where the annual
-    quantities of that contract year are evaluated — which is what makes
-    :func:`lapse_rate` a property of the year rather than of the month.
+    ``t + 11 - duration_mth(t) % 12``: the month of the frame whose policy month is the
+    year's last, ``12 * duration(t) + 11``, which is ``FIA_US_S``'s ``anniv_mth`` and its
+    ``t``; here the two clocks differ, so the month is counted from ``t``. Equal to ``t``
+    itself when :func:`is_anniv` is true. It is where the annual quantities of that contract
+    year are evaluated — which is what makes :func:`lapse_rate` a property of the year
+    rather than of the month — and it lies at most 11 months after ``t``, inside the frame,
+    since cover ends at the close of a contract year.
     """
-    return 12 * duration(t) + 11
+    return t + 11 - duration_mth(t) % 12
 
 
 def year_open_mth(t):
     """The month whose **closing** value opens the contract year of month ``t``.
 
-    ``12 * duration(t) - 1``, the anniversary closing the previous contract year.  It
-    falls below ``entry_mth()`` in the first projected contract year, where the notes'
-    Initialisation values stand in — which is the test every annual state cells makes.
+    ``t - 1 - duration_mth(t) % 12``, on the valuation clock: the anniversary month that
+    closed the previous contract year, policy month ``12 * duration(t) - 1``, which is
+    ``FIA_US_S``'s ``year_open_mth``. It falls below :func:`t_entry` in the first contract
+    year on the books — at ``t = -1`` or earlier on a contract valued in force, mid-year or
+    on its anniversary, and before issue on new business — where the opening state stands
+    in, the model point's ``_prev_anniv_init`` or ``_init`` column or the issue rule: which
+    is the test every annual state cell makes.
     """
-    return 12 * duration(t) - 1
+    return t - 1 - duration_mth(t) % 12
 
 
 def age(t):
@@ -828,8 +1326,10 @@ def covered_age(t):
     The annuitant's own age on a single-life basis; the **younger** covered person's on a
     joint-life basis [S1][S3].  Timed like :func:`age`, at the opening anniversary; the
     payout percentage and the minimum exercise age are read at :func:`exercise_age`.
+
+    It branches on :func:`is_joint_basis`, the decode of ``glwb_basis``.
     """
-    if glwb_basis() == "joint":
+    if is_joint_basis():
         return min(age_at_entry(), joint_age()) + duration(t)
     return age(t)
 
@@ -848,30 +1348,55 @@ def exercise_age(t):
 
 
 def scenario_value(y, name):
-    """Step-function lookup of column ``name`` in the model point's scenario at anniversary ``y``.
+    """The level of column ``name`` the model point's scenario sets at anniversary ``y``.
 
-    **The argument is an anniversary number, not the frame's month index.** The ``t``
-    column of *rate_scenario.csv* is an anniversary number, ``0`` at issue, and the file's
-    keys are read unshifted; callers pass ``duration(t)`` for the anniversary opening the
-    contract year of month ``t`` and ``duration(t) + 1`` for the one closing it.  Each row
-    states the level that holds from its own anniversary until the next row of the same
-    scenario, so a flat path is one row.  Anniversaries before the first row take the
-    first row's level.
+    **The argument is an anniversary number, from issue, not a month.** Callers pass
+    ``duration(t)`` for the anniversary opening the contract year of month ``t`` and
+    ``duration(t) + 1`` for the one closing it, as in ``FIA_US_S``. The scenario is on the
+    valuation clock (``Data.rate_scenario``), so the anniversary is turned into the
+    valuation month it falls in, ``m = 12 * y - duration_mth_init()``, here and nowhere
+    else, and the level is the last row of the point's scenario at or before ``m``: each row
+    holds from its month until the next row of the same scenario, so a flat path is one row.
+    The table is read with its months checked, ``data.rate_scenario_steps()``, the one cell
+    that reads it, by an explicit loop, and joined on the model point's ``scenario_id``
+    column, a join on text that Phase 2 re-keys.
+
+    ``FIA_US_S`` reads an anniversary before the scenario's first row at the first row's
+    level. Here a month with no row at or before it raises, naming the point: ``Data``
+    refuses a point whose scenario sets no level by its first month on the books, and no
+    cell asks for an anniversary before that month — :func:`index_level` reads the one
+    before the valuation date from the model point — so the raise is the guard behind that
+    refusal.
     """
-    sub = data.rate_scenario().loc[scenario_id()]                    # noqa: F821
-    keys = [i for i in sub.index if i <= y]
-    key = max(keys) if keys else min(sub.index)
+    m = 12 * y - duration_mth_init()
+    sub = data.rate_scenario_steps().loc[model_point()["scenario_id"]]  # noqa: F821
+    key = -1
+    for i in sub.index:
+        if key < i <= m:
+            key = i
+    if key < 0:
+        raise ValueError(
+            f"point_id {point_id}: scenario sets no level by month {m}")  # noqa: F821
     return float(sub.loc[key, name])
 
 
 def index_level(y):
-    """I(y): the index level at anniversary ``y``.
+    """I(y): the index level at anniversary ``y``, an anniversary number from issue.
 
-    **Keyed by anniversary number, not by the frame's month index** — a time-point
-    reading, so the return over a contract year differences this level against the next
-    anniversary's.  The S&P 500 **price** index in the composite; dividends are excluded
-    [S2][S6][R1].
+    **Keyed by anniversary number, not by a month** — a time-point reading, so the return
+    over a contract year differences this level against the next anniversary's. The S&P 500
+    **price** index in the composite; dividends are excluded [S2][S6][R1].
+
+    An anniversary at or after the first month the contract is on the books is read from the
+    scenario, :func:`scenario_value`. One before it, on a contract valued mid-year, is the
+    anniversary that opened the contract year under way, whose level is history the scenario
+    on the valuation clock cannot give: the model point's
+    :func:`index_level_prev_anniv_init`, where the year's segment started. On a contract
+    valued on an anniversary the scenario sets that level at ``t = 0``, and ``Data`` holds
+    the column to it.
     """
+    if 12 * y - duration_mth_init() < t_entry():
+        return index_level_prev_anniv_init()
     return scenario_value(y, "index_level")
 
 
@@ -881,7 +1406,11 @@ def index_return(t):
     The point-to-point segment runs from the anniversary opening the contract year of
     month ``t`` to the one closing it, where it matures.  The return is a property of the
     contract year, not of the month, and is the same for every month inside it.
+
+    0.0 outside cover, where no contract year is the contract's.
     """
+    if not is_active(t):
+        return 0.0
     y = duration(t)
     prior = index_level(y)
     if prior <= 0.0:
@@ -892,10 +1421,10 @@ def index_return(t):
 def cap_rate_in_force():
     """c(t): the annual cap actually applied.
 
-    The declared 5.25% snapshot held level **[std]**, never below the guaranteed minimum
-    cap of 0.25% [S4].  Set ``use_guaranteed_scale = True`` to run the contract on its
-    guaranteed minimums instead — the notes insist the guaranteed and current scales are
-    different assumption classes and "must not be mixed in the code".
+    The declared 5.25% snapshot held level **[std]**, never below the guaranteed minimum cap
+    of 0.25% [S4]. Set ``use_guaranteed_scale = True``, before the model computes anything,
+    to run the contract on its guaranteed minimums instead — the notes insist the guaranteed
+    and current scales are different assumption classes and "must not be mixed in the code".
     """
     if use_guaranteed_scale:                                         # noqa: F821
         return cap_rate_min                                          # noqa: F821
@@ -945,6 +1474,11 @@ def credit_rate_on(r, method):
     which is where a volatility-controlled index's embedded servicing cost belongs
     [S2][S10]; it is 0 in the base run **[std]**.  The monthly-sum method is not
     implemented — see :func:`credit_method`.
+
+    Kept as ``FIA_US_S``'s engine, for its tests and its own callers: no projection cell
+    calls it. :func:`credit_rate` computes the same arithmetic inline, in the same order, on
+    the decodes of ``credit_method``, so that no projection cell passes a float or a text
+    argument to a cell.
     """
     net = r - index_cost_rate                                        # noqa: F821
     if method == "cap":
@@ -965,10 +1499,30 @@ def credit_rate_on(r, method):
 def credit_rate(t):
     """cr(t): the credit rate the segment of month t's contract year matures at.
 
-    A property of the contract year, like :func:`index_return`; it is applied once, at
-    the anniversary where the segment matures.
+    A property of the contract year, like :func:`index_return`; it is applied once, at the
+    anniversary where the segment matures. ``FIA_US_S``'s engine, :func:`credit_rate_on`,
+    computed inline here, in its order, on the decodes :func:`is_credit_cap` to
+    :func:`is_credit_trigger` rather than on the text of ``credit_method``: ``max(f, raw)``,
+    where ``raw`` is the method's form of the return net of ``index_cost_rate``, each
+    documented at :func:`credit_rate_on`. A method that is none of the five raises, as in
+    ``FIA_US_S``. 0.0 outside cover.
     """
-    return credit_rate_on(index_return(t), credit_method())
+    if not is_active(t):
+        return 0.0
+    net = index_return(t) - index_cost_rate                          # noqa: F821
+    if is_credit_cap():
+        raw = min(cap_rate_in_force(), net)
+    elif is_credit_par():
+        raw = par_rate * net                                         # noqa: F821
+    elif is_credit_par_cap():
+        raw = min(cap_rate_in_force(), par_rate * net)               # noqa: F821
+    elif is_credit_spread():
+        raw = par_rate * net - spread_rate                           # noqa: F821
+    elif is_credit_trigger():
+        raw = trigger_rate if net >= 0.0 else floor_rate             # noqa: F821
+    else:
+        raise ValueError("invalid credit_method")
+    return max(floor_rate, raw)                                      # noqa: F821
 
 
 def index_credit_pp(t):
@@ -987,10 +1541,13 @@ def index_credit_pp(t):
     during the segment — the "Interest Credit Basis" [S6] — which collapses to the opening
     balance here because every transaction happens at an anniversary **[std]**.  Zero in
     ``DEPLETED`` and ``TERMINATED``, where steps 1-3 are skipped.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
-    if phase_open(t) in ("DEPLETED", "TERMINATED"):
+    opening = phase_open(t)
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return 0.0
     return av_indexed_pp_year_open(t) * credit_rate(t)
 
@@ -1003,10 +1560,14 @@ def fixed_interest_pp(t):
     else touches the fixed account between anniversaries, because every contractual
     transaction falls at one.  :func:`fixed_interest_ann_pp` is the annual figure the
     benefit-base stack is computed on.
+
+    Zero outside cover, and once the account value is exhausted, in ``DEPLETED`` and
+    ``TERMINATED``.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
-    if phase_open(t) in ("DEPLETED", "TERMINATED"):
+    opening = phase_open(t)
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return 0.0
     rate = (1.0 + fixed_rate_in_force()) ** (1.0 / 12.0) - 1.0
     return av_fixed_pp_at(t, "BEF_INV") * rate
@@ -1019,10 +1580,13 @@ def fixed_interest_ann_pp(t):
     :func:`fixed_interest_pp` compound to exactly this, so the annual figure is computed
     directly rather than accumulated — which is what keeps the benefit-base stack, and
     through it the whole guarantee, identical to the annual grid's.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
-    if phase_open(t) in ("DEPLETED", "TERMINATED"):
+    opening = phase_open(t)
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return 0.0
     return av_fixed_pp_year_open(t) * fixed_rate_in_force()
 
@@ -1054,12 +1618,15 @@ def rider_charge_pp(t):
     The charge is annual by contract [S9], so on the monthly grid it lands whole on the
     anniversary rather than being spread over the year; the monthly deduction documented
     at one carrier is a variant this composite does not adopt **[std]**.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
     if not rider_in_force_open(t):
         return 0.0
-    if phase_open(t) in ("DEPLETED", "TERMINATED"):
+    opening = phase_open(t)
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return 0.0
     return (min(rider_charge_rate, rider_charge_rate_max)             # noqa: F821
             * benefit_base_pp_at(t, "BEF_ROLLUP"))
@@ -1068,60 +1635,101 @@ def rider_charge_pp(t):
 def av_pp_at(t, timing):
     """AV per contract in **month** t, read at the point given by ``timing``.
 
-    ``"BEF_PREM"`` is the balance carried into the month before the single premium, zero
-    at ``t = 0`` on a new issue; ``"BEF_INV"`` is the balance opening the month after it,
-    which is ``av_pp_init()`` at the first projected month and ``AV(t-1)`` after that;
-    ``"BEF_FEE"`` is after the month's interest — the fixed accrual every month, plus the
-    index credit in an anniversary month; ``"BEF_WD"`` is after the rider charge; ``"EOY"``
-    is after the withdrawal.  **In a month that is not an anniversary the last three
-    coincide**, at the opening balance plus the fixed accrual, because every contractual
-    transaction falls at an anniversary.
+    ``"BEF_PREM"`` is the balance carried into the month before the single premium:
+    :func:`av_pp_init` at :func:`t_entry`, the account value of a contract in force at the
+    valuation date and zero on new business, and ``AV(t-1)`` after it; ``"BEF_INV"`` is the
+    balance opening the month after the premium, which adds :func:`prem_to_av_pp`,
+    ``P x (1 + b)`` in the issue month and zero in every other; ``"BEF_FEE"`` is after the
+    month's interest — the fixed accrual every month, plus the index credit in an
+    anniversary month; ``"BEF_WD"`` is after the rider charge; ``"EOY"`` is after the
+    withdrawal, the closing balance :func:`av_pp`. **In a month that is not an anniversary
+    the last three coincide**, at the opening balance plus the fixed accrual, because every
+    contractual transaction falls at an anniversary.
 
     Only ``"EOY"`` is floored at zero: **the 0% floor is on the index credit, not on the
     account value** [S7], so ``"BEF_WD"`` may legitimately sit below the opening balance or
-    below zero when the rider charge exceeds the credit.  Flooring it would silently remove
+    below zero when the rider charge exceeds the credit. Flooring it would silently remove
     the charge drag that produces depletion.
+
+    Each timing is built from the month's opening in one formula, in ``FIA_US_S``'s order,
+    so that reading any timing adds one cell to the chain beneath it; the chain itself is
+    :func:`av_pp`, one cell a month. 0.0 outside cover, at every timing.
     """
-    if t < entry_mth():
-        return av_pp_init()
+    if not is_active(t):
+        return 0.0
+    val = av_pp(t - 1) if t > t_entry() else av_pp_init()
     if timing == "BEF_PREM":
-        return 0.0 if t == entry_mth() == 0 else av_pp_at(t, "BEF_INV")
-    opening = av_pp_init() if t == entry_mth() else av_pp(t - 1)
+        return val
+    val = val + prem_to_av_pp(t)
     if timing == "BEF_INV":
-        return opening
-    val = opening + inv_income_pp(t)
+        return val
+    val = val + inv_income_pp(t)
     if timing == "BEF_FEE":
         return val
     val = val - rider_charge_pp(t)
     if timing == "BEF_WD":
         return val
     if timing == "EOY":
-        return max(0.0, val - wd_pp(t))
+        return av_pp(t)
     raise ValueError("invalid timing")
 
 
 def av_pp(t):
-    """AV(t): the account value per contract closing **month** t, after all processing."""
-    return av_pp_at(t, "EOY")
+    """AV(t): the account value per contract closing **month** t, after all processing.
+
+    ``max(0, AV(t-1) + premium + interest - rider charge - withdrawal)``, the steps of
+    :func:`av_pp_at` in its order, with the opening written inline — :func:`av_pp_init` at
+    :func:`t_entry` and ``av_pp(t - 1)`` after it — so that the account value's chain runs
+    one cell a month back to :func:`t_entry`, where ``FIA_US_S``'s runs through two, this
+    cell and :func:`av_pp_at`. 0.0 outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    opening = (av_pp(t - 1) if t > t_entry() else av_pp_init()) + prem_to_av_pp(t)
+    return max(0.0, opening + inv_income_pp(t) - rider_charge_pp(t) - wd_pp(t))
 
 
 def av_pp_year_open(t):
     """AV(0): the account value **opening** the contract year containing month ``t``.
 
-    The balance the annual index credit and the free withdrawal allowance are computed on:
-    the closing value of the anniversary before, or the Initialisation value in the first
-    projected contract year.  On an annual grid this would simply be the previous row's
-    close; on the monthly grid the previous *month* is not the previous *year*, which is
-    what this cells exists to keep straight.
+    The balance the annual index credit and the free withdrawal allowance are computed on,
+    read three ways. Where the anniversary that opened the year, :func:`year_open_mth`, is
+    at or after :func:`t_entry`, it is that anniversary's closing value, from the frame.
+    Where it is before, on a contract in force at the valuation date, valued mid-year or on
+    its anniversary, the year opened before the first month on the books, and it is the
+    model point's :func:`av_pp_prev_anniv_init`. And on a
+    contract issued at or after the valuation date the year is its first, and it is the
+    issue value, :func:`prem_to_av_pp` of the issue month, the notes' Initialisation value.
+    On an annual grid this would simply be the previous row's close; on the monthly grid the
+    previous *month* is not the previous *year*, which is what this cell exists to keep
+    straight. 0.0 outside cover.
     """
+    if not is_active(t):
+        return 0.0
     prev = year_open_mth(t)
-    return av_pp_init() if prev < entry_mth() else av_pp(prev)
+    if prev >= t_entry():
+        return av_pp(prev)
+    if duration_mth_init() > 0:
+        return av_pp_prev_anniv_init()
+    return prem_to_av_pp(t_entry())
 
 
 def av_fixed_pp_year_open(t):
-    """F(0): the fixed account balance opening the contract year containing month ``t``."""
+    """F(0): the fixed account balance opening the contract year containing month ``t``.
+
+    Read the three ways :func:`av_pp_year_open` is: from the frame; from the model point's
+    :func:`av_fixed_pp_prev_anniv_init` where the year opened before the valuation date; or,
+    in the first year of a contract issued at or after it, by the issue rule, the fixed
+    share of the premium and bonus, ``alloc_fixed() x P x (1 + b)``. 0.0 outside cover.
+    """
+    if not is_active(t):
+        return 0.0
     prev = year_open_mth(t)
-    return av_fixed_pp_init() if prev < entry_mth() else av_fixed_pp(prev)
+    if prev >= t_entry():
+        return av_fixed_pp(prev)
+    if duration_mth_init() > 0:
+        return av_fixed_pp_prev_anniv_init()
+    return alloc_fixed() * prem_to_av_pp(t_entry())
 
 
 def av_indexed_pp_year_open(t):
@@ -1137,32 +1745,51 @@ def av_fixed_pp_at(t, timing):
     only then proportionately across the indexed accounts [S9].  The notes give no
     allocation rule for withdrawals, so they are taken **pro rata** across the two accounts
     **[std]**; with the baseline 100% indexed allocation neither rule is visible.
+
+    At :func:`t_entry` the fixed account opens on :func:`av_fixed_pp_init`, the fixed
+    account in force at the valuation date, and in the issue month the premium's fixed
+    share, ``alloc_fixed()`` times :func:`prem_to_av_pp`, comes on top. Each timing is built
+    from the month's opening in one formula; the chain itself is :func:`av_fixed_pp`, one
+    cell a month. 0.0 outside cover, at every timing.
     """
-    if t < entry_mth():
-        return av_fixed_pp_init()
+    if not is_active(t):
+        return 0.0
+    val = av_fixed_pp(t - 1) if t > t_entry() else av_fixed_pp_init()
     if timing == "BEF_PREM":
-        return 0.0 if t == entry_mth() == 0 else av_fixed_pp_at(t, "BEF_INV")
-    opening = av_fixed_pp_init() if t == entry_mth() else av_fixed_pp(t - 1)
+        return val
+    val = val + alloc_fixed() * prem_to_av_pp(t)
     if timing == "BEF_INV":
-        return opening
-    val = opening + fixed_interest_pp(t)
+        return val
+    val = val + fixed_interest_pp(t)
     if timing == "BEF_FEE":
         return val
     val = max(0.0, val - rider_charge_pp(t))
     if timing == "BEF_WD":
         return val
     if timing == "EOY":
-        total = av_pp_at(t, "BEF_WD")
-        if total <= 0.0:
-            return 0.0
-        share = min(1.0, max(0.0, wd_pp(t) / total))
-        return max(0.0, val * (1.0 - share))
+        return av_fixed_pp(t)
     raise ValueError("invalid timing")
 
 
 def av_fixed_pp(t):
-    """F(t): the fixed account balance per contract closing month t."""
-    return av_fixed_pp_at(t, "EOY")
+    """F(t): the fixed account balance per contract closing month t.
+
+    The steps of :func:`av_fixed_pp_at` in its order: the opening written inline,
+    ``av_fixed_pp(t - 1)``, or :func:`av_fixed_pp_init` at :func:`t_entry`, plus the
+    premium's fixed share in the issue month; the month's accrual; the rider charge, floored
+    at zero; and the withdrawal's pro rata share. So the fixed account's chain runs one cell
+    a month back to :func:`t_entry`. 0.0 outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    opening = ((av_fixed_pp(t - 1) if t > t_entry() else av_fixed_pp_init())
+               + alloc_fixed() * prem_to_av_pp(t))
+    val = max(0.0, opening + fixed_interest_pp(t) - rider_charge_pp(t))
+    total = av_pp_at(t, "BEF_WD")
+    if total <= 0.0:
+        return 0.0
+    share = min(1.0, max(0.0, wd_pp(t) / total))
+    return max(0.0, val * (1.0 - share))
 
 
 def av_indexed_pp_at(t, timing):
@@ -1194,23 +1821,50 @@ def av_depletion_pp(t):
     the ``TERMINATED`` branch there is neither balance nor promise behind it and it is
     not paid at all.  :func:`wd_unfunded_pp` carries that half, and only that half is
     kept out of the ledger.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     return max(0.0, wd_pp(t) - av_pp_at(t, "BEF_WD"))
+
+
+def surr_charge_rate_py(y):
+    """sc(y): the surrender charge percentage of contract year ``y`` [S5].
+
+    9.1, 9, 8, 7, 6, 5, 4, 3, 2, 1% over the ten-year charge period and zero thereafter;
+    the last row of the table holds for every later year. The reader of the schedule's
+    charge column, keyed by the contractual 1-based contract year, from
+    ``data.surr_charge_scale()``, its years checked; :func:`surr_charge_rate` calls it in
+    cover only.
+    """
+    last = data.surr_charge_last_year()                              # noqa: F821
+    return float(data.surr_charge_scale().loc[min(y, last), "surr_charge_rate"])  # noqa
+
+
+def vest_rate_py(y):
+    """v(y): the vested percentage of the premium bonus in contract year ``y`` [S5].
+
+    0, 10, ..., 100% over eleven contract years; the last row holds for every later year.
+    The reader of the schedule's vesting column, as :func:`surr_charge_rate_py` is of its
+    charge; :func:`vest_rate` calls it in cover only.
+    """
+    last = data.surr_charge_last_year()                              # noqa: F821
+    return float(data.surr_charge_scale().loc[min(y, last), "vest_rate"])  # noqa
 
 
 def surr_charge_rate(t):
     """sc(t): the surrender charge percentage of month t's contract year [S5].
 
-    9.1, 9, 8, 7, 6, 5, 4, 3, 2, 1% over the ten-year charge period and zero thereafter;
-    the last row of the table holds for every later year.  The table is keyed by the
-    contractual 1-based contract year, ``policy_year(t)``, so the rate is the same in every
-    month of a year.
+    9.1, 9, 8, 7, 6, 5, 4, 3, 2, 1% over the ten-year charge period and zero thereafter; the
+    last row of the table holds for every later year. The schedule is keyed by the
+    contractual 1-based contract year and read at ``policy_year(t)``, through
+    :func:`surr_charge_rate_py`, so the rate is the same in every month of a year. 0.0
+    outside cover, before the schedule is read.
     """
-    table = data.surr_charge_table()                                 # noqa: F821
-    key = min(policy_year(t), int(table.index.max()))
-    return float(table.loc[key, "surr_charge_rate"])
+    if not is_active(t):
+        return 0.0
+    return surr_charge_rate_py(policy_year(t))
 
 
 def vest_rate(t):
@@ -1219,10 +1873,31 @@ def vest_rate(t):
     0, 10, ..., 100% over eleven contract years, read at ``policy_year(t)``.  On
     **death** 100% vests immediately [S5], which is why the death benefit carries no
     clawback.
+
+    Read from :func:`vest_rate_py`. 0.0 outside cover, before the schedule is read.
     """
-    table = data.surr_charge_table()                                 # noqa: F821
-    key = min(policy_year(t), int(table.index.max()))
-    return float(table.loc[key, "vest_rate"])
+    if not is_active(t):
+        return 0.0
+    return vest_rate_py(policy_year(t))
+
+
+def rollup_rate_py(y):
+    """g(y): the guaranteed simple rollup rate of contract year ``y`` [S2][S9].
+
+    The model point's schedule read as a step function of the contract year: the rate of the
+    schedule's last row at or before ``y``, found by an explicit loop, or 0 before its
+    first. The table's one reader, ``data.rollup_steps()``, its years checked, joined on the
+    model point's ``rollup_id`` column, a join on text that Phase 2 re-keys;
+    :func:`rollup_rate` calls it in cover only.
+    """
+    sub = data.rollup_steps().loc[model_point()["rollup_id"]]        # noqa: F821
+    key = 0
+    for i in sub.index:
+        if key < i <= y:
+            key = i
+    if key < 1:
+        return 0.0
+    return float(sub.loc[key, "rollup_rate"])
 
 
 def rollup_rate(t):
@@ -1232,12 +1907,12 @@ def rollup_rate(t):
     point's schedule: the blended baseline is 5.00% in years 1-10, 2.00% in years 11-20 and
     zero after [S2]; another documented design is a flat 3.00% over fifteen anniversaries
     [S9].
+
+    Read at ``policy_year(t)`` from :func:`rollup_rate_py`. 0.0 outside cover.
     """
-    sub = data.rollup_table().loc[rollup_id()]                       # noqa: F821
-    keys = [y for y in sub.index if y <= policy_year(t)]
-    if not keys:
+    if not is_active(t):
         return 0.0
-    return float(sub.loc[max(keys), "rollup_rate"])
+    return rollup_rate_py(policy_year(t))
 
 
 def payout_rate(a, basis):
@@ -1246,6 +1921,11 @@ def payout_rate(a, basis):
     Five inclusive attained-age bands; the joint column is the single column less 0.50%
     [S1][S3].  Zero below the first band, because no lifetime withdrawal is permitted
     there; the last band holds above its upper age.
+
+    Kept as ``FIA_US_S``'s cell, for its tests: no projection cell calls it, and it still
+    walks ``payout_rate_table()`` row by row. :func:`payout_rate_locked` reads
+    :func:`payout_rate_at`, the same percentages from the checked bands, on the decoded
+    basis.
     """
     if basis == "single":
         column = "payout_rate_single"
@@ -1261,6 +1941,29 @@ def payout_rate(a, basis):
     return float(last[column]) if a > int(last["age_hi"]) else 0.0
 
 
+def payout_rate_at(a):
+    """pi(a): the lifetime withdrawal percentage at attained age ``a`` on the point's basis.
+
+    :func:`payout_rate` on ``data.payout_rates()``, the bands expanded one row an age and
+    checked [S3]: the single-life column on :func:`is_single_basis` and the joint-life
+    column on :func:`is_joint_basis`, a basis that is neither raising, as
+    :func:`payout_rate` raises; 0 below the first band's age, because no lifetime withdrawal
+    is permitted there; and the last band's percentage above its last age. The table's one
+    reader, keyed by the age; :func:`payout_rate_locked` calls it in cover only, at the
+    exercise age.
+    """
+    if is_single_basis():
+        column = "payout_rate_single"
+    elif is_joint_basis():
+        column = "payout_rate_joint"
+    else:
+        raise ValueError("invalid glwb_basis")
+    lo, hi = data.payout_rate_first_age(), data.payout_rate_last_age()  # noqa: F821
+    if a < lo:
+        return 0.0
+    return float(data.payout_rates().loc[min(a, hi), column])        # noqa: F821
+
+
 def payout_rate_locked(t):
     """The payout percentage in force in the contract year of month t.
 
@@ -1271,15 +1974,22 @@ def payout_rate_locked(t):
     the band from the age at the most recent anniversary, letting it step up [S3]; another
     makes it depend on both issue age and the youngest covered person's age at exercise
     [S9]; a third uses sex-distinct factors [S5].
+
+    It is carried from the anniversary that opened the year: from the frame, or, where that
+    anniversary precedes the first month on the books, from the model point's
+    :func:`payout_rate_locked_prev_anniv_init` on a contract in force and 0 on new business;
+    in the exercise year it is :func:`payout_rate_at` the exercise age. 0.0 outside cover.
     """
-    if t < entry_mth():
-        return payout_rate_init()
+    if not is_active(t):
+        return 0.0
     if is_exercise(t):
-        return payout_rate(exercise_age(t), glwb_basis())
+        return payout_rate_at(exercise_age(t))
     prev = year_open_mth(t)
-    if prev < entry_mth():
-        return payout_rate_init()
-    return payout_rate_locked(prev)
+    if prev >= t_entry():
+        return payout_rate_locked(prev)
+    if duration_mth_init() > 0:
+        return payout_rate_locked_prev_anniv_init()
+    return 0.0
 
 
 def activation_rate(a):
@@ -1290,9 +2000,9 @@ def activation_rate(a):
     age is set by IRC 401(a)(9) as amended by SECURE 2.0 and finalized in T.D. 10001
     [REG-R57][REG-R58] and is not printed in the retrieved research material.
 
-    **Reported only.** A single deterministic cell cannot activate a fraction of itself,
-    so the base run exercises at the model point's ``income_start_age`` instead; this
-    cells exists so the incidence assumption is visible and testable rather than implied.
+    **Reported only.** A single deterministic cell cannot activate a fraction of itself, so
+    the base run exercises at the model point's ``income_start_age`` instead; this cell
+    exists so the incidence assumption is visible and testable rather than implied.
     """
     if a < activation_age_low:                                       # noqa: F821
         return 0.0
@@ -1301,6 +2011,30 @@ def activation_rate(a):
     if a == rmd_age:                                                 # noqa: F821
         return activation_rate_rmd                                   # noqa: F821
     return activation_rate_late                                      # noqa: F821
+
+
+def phase_year_open(t):
+    """The phase **opening** the contract year of month ``t``, as a code.
+
+    The phase at the anniversary that opened the year, read three ways, as
+    :func:`av_pp_year_open` is: the closing :func:`phase` there, from the frame; the model
+    point's :func:`phase_prev_anniv_init` where that anniversary precedes the valuation date
+    on a contract in force; and ``ACCUM`` on a contract issued at or after it, whose first
+    year opens in deferral. ``FIA_US_S`` writes this read inline in each of its readers;
+    here it is a cell of its own, read by :func:`is_exercise`, :func:`phase_open` and
+    :func:`in_growth_period`. ``PRE_ISSUE`` before issue and ``MATURED`` from
+    :func:`proj_len` on.
+    """
+    if duration_mth(t) < 0:
+        return PRE_ISSUE                                             # noqa: F821
+    if duration_mth(t) >= maturity_mth():
+        return MATURED                                               # noqa: F821
+    prev = year_open_mth(t)
+    if prev >= t_entry():
+        return phase(prev)
+    if duration_mth_init() > 0:
+        return phase_prev_anniv_init()
+    return ACCUM                                                     # noqa: F821
 
 
 def is_exercise(t):
@@ -1313,14 +2047,14 @@ def is_exercise(t):
     evaluated without a circular reference — and what makes it constant across the year,
     so every month of the exercise year reads the same phase and the same locked payout
     percentage.
+
+    The phase opening the year is :func:`phase_year_open`. False outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return False
     if not glwb_elected():
         return False
-    prev = year_open_mth(t)
-    prior = phase_init() if prev < entry_mth() else phase(prev)
-    if prior != "ACCUM":
+    if phase_year_open(t) != ACCUM:                                  # noqa: F821
         return False
     if not rider_in_force_open(t):
         return False
@@ -1330,19 +2064,20 @@ def is_exercise(t):
 def phase_open(t):
     """The phase the annual steps of month t's contract year are processed under.
 
-    The phase **opening the contract year** — ``phase_init()`` in the first projected year
-    and the closing phase of the previous anniversary after that — promoted to ``INCOME``
-    when the first lifetime withdrawal falls in this year.  Constant across the twelve
+    The phase **opening the contract year**, :func:`phase_year_open`, promoted to ``INCOME``
+    when the first lifetime withdrawal falls in this year. Constant across the twelve
     months, because every one of the eight steps belongs to the year rather than to the
-    month.  Steps 1-3 are skipped when this is ``DEPLETED`` and steps 1-7 when it is
-    ``TERMINATED``.
+    month. Steps 1-3 are skipped when this is ``DEPLETED`` and steps 1-7 when it is
+    ``TERMINATED``. A code, as every phase cell returns: ``PRE_ISSUE`` before issue and
+    ``MATURED`` from :func:`proj_len` on, which no cell in cover reads.
     """
-    if t < entry_mth():
-        return phase_init()
-    prev = year_open_mth(t)
-    opening = phase_init() if prev < entry_mth() else phase(prev)
-    if opening == "ACCUM" and is_exercise(t):
-        return "INCOME"
+    if duration_mth(t) < 0:
+        return PRE_ISSUE                                             # noqa: F821
+    if duration_mth(t) >= maturity_mth():
+        return MATURED                                               # noqa: F821
+    opening = phase_year_open(t)
+    if opening == ACCUM and is_exercise(t):                          # noqa: F821
+        return INCOME                                                # noqa: F821
     return opening
 
 
@@ -1355,8 +2090,10 @@ def depletion_cause(t):
     withdrawals and rider charges keeps it [S1][S5][S9].  One carrier's confinement and
     terminal illness waivers are themselves excess withdrawals that terminate the income
     rider [S1] — a trap if waivers are added.
+
+    False outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return False
     return (wd_excess_pp(t) > 0.0 or wd_charge_pp(t) > 0.0
             or wd_mva_pp(t) < 0.0)
@@ -1377,40 +2114,49 @@ def phase(t):
     exhausted in ``ACCUM`` terminates rather than depletes **[std]**: the notes define
     the depleted state only out of ``INCOME``, and before exercise there is no ``LW`` to
     pay.
+
+    The phase is an int code, named by the References ``ACCUM`` to ``TERMINATED``, and
+    :func:`result_glwb` decodes it back to the label. ``PRE_ISSUE`` before issue and
+    ``MATURED`` from :func:`proj_len` on.
     """
-    if t < entry_mth():
-        return phase_init()
+    if duration_mth(t) < 0:
+        return PRE_ISSUE                                             # noqa: F821
+    if duration_mth(t) >= maturity_mth():
+        return MATURED                                               # noqa: F821
     opening = phase_open(t)
-    if opening == "TERMINATED":
-        return "TERMINATED"
-    if opening == "DEPLETED":
-        return "DEPLETED"
+    if opening == TERMINATED:                                        # noqa: F821
+        return TERMINATED                                            # noqa: F821
+    if opening == DEPLETED:                                          # noqa: F821
+        return DEPLETED                                              # noqa: F821
     if not is_anniv(t):
         return opening
     if glwb_elected() and benefit_base_pp(t) <= 0.0:
-        return "TERMINATED"
+        return TERMINATED                                            # noqa: F821
     if av_pp(t) <= 0.0:
-        if opening == "INCOME" and not depletion_cause(t):
-            return "DEPLETED"
-        return "TERMINATED"
+        if opening == INCOME and not depletion_cause(t):             # noqa: F821
+            return DEPLETED                                          # noqa: F821
+        return TERMINATED                                            # noqa: F821
     return opening
 
 
 def rider_in_force_open(t):
     """Whether the GLWB rider is alive **opening** the contract year of month t.
 
-    ``glwb_elected()`` in the first projected contract year — an in-force model point
-    enters on the rider state its row states — and :func:`rider_in_force` at the previous
-    anniversary after that.  Kept as a cells of its own, like :func:`phase_open`, because
-    four formulas need the opening rider state and none of them may reach for a closing
-    one.
+    :func:`rider_in_force` at the previous anniversary where that anniversary is at or after
+    :func:`t_entry`, and ``glwb_elected()`` where it is before: in the first contract year
+    of a contract issued at or after the valuation date, and in the year under way on one in
+    force. The model point carries no rider status, because a contract in force with the
+    rider elected has the rider alive: ``Data`` refuses ``TERMINATED`` in force and a
+    benefit base of 0 under the rider, the two ways the rider dies short of death. Kept as a
+    cell of its own, like :func:`phase_open`, because five formulas need the opening rider
+    state and none of them may reach for a closing one. False outside cover.
     """
-    if t < entry_mth():
-        return bool(glwb_elected())
+    if not is_active(t):
+        return False
     prev = year_open_mth(t)
-    if prev < entry_mth():
-        return bool(glwb_elected())
-    return rider_in_force(prev)
+    if prev >= t_entry():
+        return rider_in_force(prev)
+    return bool(glwb_elected())
 
 
 def rider_in_force(t):
@@ -1422,14 +2168,16 @@ def rider_in_force(t):
     refund of past charges [S9].  Death is a decrement here, and cancellation and
     assignment are not modelled, so what survives is the base-reaching-zero and
     contract-termination legs.
+
+    False outside cover.
     """
-    if t < entry_mth():
-        return bool(glwb_elected())
+    if not is_active(t):
+        return False
     if not glwb_elected():
         return False
     if not rider_in_force_open(t):
         return False
-    if phase(t) == "TERMINATED":
+    if phase(t) == TERMINATED:                                       # noqa: F821
         return False
     return benefit_base_pp(t) > 0.0
 
@@ -1441,15 +2189,36 @@ def in_growth_period(t):
     year of exercise itself is still inside the window — the worked example credits both
     the rollup and the stack in contract year 8, the year income starts — which is why the
     test is on the phase *opening* the year.
+
+    The phase opening the year is :func:`phase_year_open`. False outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return False
     if not glwb_elected():
         return False
     if policy_year(t) > growth_period_max:                           # noqa: F821
         return False
-    prev = year_open_mth(t)
-    return (phase_init() if prev < entry_mth() else phase(prev)) == "ACCUM"
+    return phase_year_open(t) == ACCUM                               # noqa: F821
+
+
+def is_step_up_annual():
+    """Whether the step-up is tested at every anniversary, ``step_up_mode`` ``annual``.
+
+    A decode of the Reference, as each ``is_*`` cell decodes its column or Reference, so
+    that :func:`step_up_applies` branches on a flag and no projection cell compares the
+    Reference's text. Set ``step_up_mode`` before the model computes anything.
+    """
+    return bool(step_up_mode == "annual")                            # noqa: F821
+
+
+def is_step_up_at_exercise():
+    """Whether the step-up is tested at the first exercise only, ``step_up_mode``
+    ``at_exercise``.
+
+    The other decode of the Reference (:func:`is_step_up_annual`): a mode that is neither
+    raises in :func:`step_up_applies`, as in ``FIA_US_S``.
+    """
+    return bool(step_up_mode == "at_exercise")                       # noqa: F821
 
 
 def step_up_applies(t):
@@ -1468,19 +2237,44 @@ def step_up_applies(t):
     value of ``107,000`` against a benefit base of ``100,000``, so a first contract year
     with a zero index credit gives an account value of ``106,050`` against a base of
     ``105,000`` and the step-up binds.
+
+    The mode is read through its decodes, :func:`is_step_up_annual` and
+    :func:`is_step_up_at_exercise`, a mode that is neither raising. False outside cover.
     """
-    if not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return False
     if not glwb_elected():
         return False
-    if phase_open(t) in ("DEPLETED", "TERMINATED"):
+    opening = phase_open(t)
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return False
-    if step_up_mode == "annual":                                     # noqa: F821
+    if is_step_up_annual():
         return True
-    elif step_up_mode == "at_exercise":                              # noqa: F821
+    elif is_step_up_at_exercise():
         return is_exercise(t)
     else:
         raise ValueError("invalid step_up_mode")
+
+
+def rollup_base_pp_year_open(t):
+    """RB(0): the rollup base **opening** the contract year of month ``t``.
+
+    Read three ways, as :func:`av_pp_year_open` is: :func:`rollup_base_pp` at the
+    anniversary that opened the year, from the frame; the model point's
+    :func:`rollup_base_pp_init` where that anniversary precedes the valuation date on a
+    contract in force, the rollup base being flat between anniversaries; and the issue value
+    on a contract issued at or after it, ``P`` under the rider and 0 without it [S2][S9].
+    ``FIA_US_S`` writes this read inline in :func:`rollup_pp` and :func:`rollup_base_pp`;
+    here it is a cell of its own, which both read. 0.0 outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    prev = year_open_mth(t)
+    if prev >= t_entry():
+        return rollup_base_pp(prev)
+    if duration_mth_init() > 0:
+        return rollup_base_pp_init()
+    return premium_pp() if glwb_elected() else 0.0
 
 
 def rollup_pp(t):
@@ -1491,13 +2285,12 @@ def rollup_pp(t):
     base [S9]; the latter's fifteen-year table confirms a constant $3,000 a year on a
     $100,000 adjusted initial base [S9].  Compounding it inflates the base and every
     downstream charge and payment.
+
+    Computed on the rollup base opening the year, :func:`rollup_base_pp_year_open`.
     """
     if not is_anniv(t) or not in_growth_period(t):
         return 0.0
-    prev = year_open_mth(t)
-    opening = (rollup_base_pp_init() if prev < entry_mth()
-               else rollup_base_pp(prev))
-    return rollup_rate(t) * opening
+    return rollup_rate(t) * rollup_base_pp_year_open(t)
 
 
 def stack_pp(t):
@@ -1518,23 +2311,33 @@ def stack_pp(t):
 def benefit_base_pp_at(t, timing):
     """BB per contract in month t, read at the point given by ``timing``.
 
-    ``"BEF_ROLLUP"`` is the base **opening the contract year** — ``benefit_base_pp_init()``
-    in the first projected year and the base at the previous anniversary after it;
-    ``"BEF_STEP_UP"`` is after the rollup and the stack; ``"BEF_WD"`` is after the annual
-    step-up and is the base the lifetime withdrawal is computed on; ``"EOY"`` is after
-    step 5's proportional reduction.  All four steps are annual, so away from an
-    anniversary every timing returns the opening base and the benefit base is flat.
+    ``"BEF_ROLLUP"`` is the base **opening the contract year**; ``"BEF_STEP_UP"`` is after
+    the rollup and the stack; ``"BEF_WD"`` is after the annual step-up and is the base the
+    lifetime withdrawal is computed on; ``"EOY"`` is after step 5's proportional reduction.
+    All four steps are annual, so away from an anniversary every timing returns the opening
+    base and the benefit base is flat.
+
+    The opening base is read three ways, as :func:`av_pp_year_open` is: the base at the
+    previous anniversary, from the frame; the model point's :func:`benefit_base_pp_init`,
+    flat since the anniversary on or before the valuation date, where the year opened before
+    it; and the premium ``P``, the bonus kept out [S9], in the first year of a contract
+    issued at or after it.
 
     The base is **notional**: it has no cash value, cannot be withdrawn and cannot be taken
-    as a lump sum [S1][S9].
+    as a lump sum [S1][S9]. 0.0 outside cover, at every timing, and 0.0 without the rider or
+    once it has died.
     """
-    if t < entry_mth():
-        return benefit_base_pp_init()
+    if not is_active(t):
+        return 0.0
     if not glwb_elected() or not rider_in_force_open(t):
         return 0.0
     prev = year_open_mth(t)
-    opening = (benefit_base_pp_init() if prev < entry_mth()
-               else benefit_base_pp(prev))
+    if prev >= t_entry():
+        opening = benefit_base_pp(prev)
+    elif duration_mth_init() > 0:
+        opening = benefit_base_pp_init()
+    else:
+        opening = premium_pp()
     if timing == "BEF_ROLLUP":
         return opening
     val = opening + rollup_pp(t) + stack_pp(t)
@@ -1554,22 +2357,45 @@ def benefit_base_pp(t):
     return benefit_base_pp_at(t, "EOY")
 
 
+def is_rb_pro_rata():
+    """Whether a withdrawal reduces the rollup base pro rata, ``rb_wd_convention``
+    ``pro_rata``.
+
+    A decode of the Reference, as :func:`is_step_up_annual` is, read by
+    :func:`rollup_base_pp`.
+    """
+    return bool(rb_wd_convention == "pro_rata")                      # noqa: F821
+
+
+def is_rb_dollar():
+    """Whether a withdrawal reduces the rollup base dollar for dollar, ``rb_wd_convention``
+    ``dollar``.
+
+    The other decode of the Reference (:func:`is_rb_pro_rata`): a convention that is
+    neither raises in :func:`rollup_base_pp`, as in ``FIA_US_S``.
+    """
+    return bool(rb_wd_convention == "dollar")                        # noqa: F821
+
+
 def rollup_base_pp(t):
     """RB(t): the rollup base closing month t.
 
     Reduced in the same proportion as the benefit base under the baseline **[std]**
-    convention [S9], and only at an anniversary, where the reduction happens.  Set
-    ``rb_wd_convention = "dollar"`` for the alternative documented at another carrier,
-    ``RB(t) = max(0, RB(0) - G(t))`` — "Premium minus Withdrawals" [S2].
+    convention [S9], and only at an anniversary, where the reduction happens. Set
+    ``rb_wd_convention = "dollar"``, before the model computes anything, for the alternative
+    documented at another carrier, ``RB(t) = max(0, RB(0) - G(t))`` — "Premium minus
+    Withdrawals" [S2].
+
+    It opens the year on :func:`rollup_base_pp_year_open`, and reads the convention through
+    its decodes, :func:`is_rb_pro_rata` and :func:`is_rb_dollar`, a convention that is
+    neither raising. 0.0 outside cover.
     """
-    if t < entry_mth():
-        return rollup_base_pp_init()
-    prev = year_open_mth(t)
-    opening = (rollup_base_pp_init() if prev < entry_mth()
-               else rollup_base_pp(prev))
-    if rb_wd_convention == "pro_rata":                               # noqa: F821
+    if not is_active(t):
+        return 0.0
+    opening = rollup_base_pp_year_open(t)
+    if is_rb_pro_rata():
         return opening * (1.0 - wd_reduction_rate(t))
-    elif rb_wd_convention == "dollar":                               # noqa: F821
+    elif is_rb_dollar():
         return max(0.0, opening - wd_pp(t))
     else:
         raise ValueError("invalid rb_wd_convention")
@@ -1587,21 +2413,31 @@ def lw_pp_at(t, timing):
     applies so income never decreases [S3].  Unused ``LW`` does **not** carry forward [S9];
     one carrier is the exception, accumulating the shortfall without interest [S3].  In
     ``DEPLETED`` the amount is simply carried: there is no base to recompute it from.
+
+    The amount carried from the anniversary that opened the year is :func:`lw_pp` there,
+    from the frame, or, where that anniversary precedes the first month on the books, the
+    model point's :func:`lw_pp_init` on a contract in force and 0 on new business. 0.0
+    outside cover, at both timings; any other timing raises in cover.
     """
-    if t < entry_mth():
-        return lw_pp_init()
-    if timing not in ("BEF_WD", "EOY"):
+    if not is_active(t):
+        return 0.0
+    if timing != "BEF_WD" and timing != "EOY":
         raise ValueError("invalid timing")
     prev = year_open_mth(t)
-    prior = lw_pp_init() if prev < entry_mth() else lw_pp(prev)
+    if prev >= t_entry():
+        prior = lw_pp(prev)
+    elif duration_mth_init() > 0:
+        prior = lw_pp_init()
+    else:
+        prior = 0.0
     opening = phase_open(t)
     if not is_anniv(t):
-        return 0.0 if opening == "TERMINATED" else prior
-    if opening == "TERMINATED":
+        return 0.0 if opening == TERMINATED else prior               # noqa: F821
+    if opening == TERMINATED:                                        # noqa: F821
         val = 0.0
-    elif opening == "DEPLETED":
+    elif opening == DEPLETED:                                        # noqa: F821
         val = prior
-    elif opening == "INCOME":
+    elif opening == INCOME:                                          # noqa: F821
         candidate = payout_rate_locked(t) * benefit_base_pp_at(t, "BEF_WD")
         val = candidate if is_exercise(t) else max(prior, candidate)
     else:
@@ -1616,21 +2452,34 @@ def lw_pp(t):
     return lw_pp_at(t, "EOY")
 
 
+def wd_scheduled_at(k):
+    """The ad hoc withdrawal the point's programme schedules at contract year count ``k``.
+
+    ``data.wd_schedules()`` at ``(wd_schedule_id, k)``, an exact-key lookup, else zero: a
+    contract year with no row takes nothing. **The key is an elapsed contract year count**,
+    on the policy clock — a row keyed ``k`` is a withdrawal at the anniversary closing
+    contract year ``k + 1``. The table's one reader, its years checked, joined on the model
+    point's ``wd_schedule_id`` column, a join on text that Phase 2 re-keys;
+    :func:`wd_scheduled_pp` calls it in cover only, in the anniversary month.
+    """
+    table = data.wd_schedules()                                      # noqa: F821
+    key = (model_point()["wd_schedule_id"], k)
+    return float(table.loc[key, "wd_amount"]) if key in table.index else 0.0
+
+
 def wd_scheduled_pp(t):
-    """The ad hoc gross withdrawal scheduled at the anniversary of month t's year, else zero.
+    """The ad hoc gross withdrawal at the anniversary closing month t's contract year.
 
     Read from *withdrawal_table.csv*, which is **not** a step function: a contract year
-    with no row takes nothing.  **Its key column is an elapsed contract year count, not the
-    frame's month index** — a row keyed ``y`` is a withdrawal at the anniversary closing
-    contract year ``y + 1`` — so it is read at ``duration(t)`` and the file is unchanged by
-    the move to a monthly grid.  Lifetime withdrawals are generated by the rider, not
-    scheduled here.
+    with no row takes nothing. **Its key column is an elapsed contract year count, not a
+    month** — a row keyed ``y`` is a withdrawal at the anniversary closing contract year
+    ``y + 1`` — so it is read at ``duration(t)``, through :func:`wd_scheduled_at`, on the
+    policy clock. Lifetime withdrawals are generated by the rider, not scheduled here. Zero
+    in every other month, and outside cover.
     """
-    if not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
-    table = data.withdrawal_table()                                  # noqa: F821
-    key = (wd_schedule_id(), duration(t))
-    return float(table.loc[key, "wd_amount"]) if key in table.index else 0.0
+    return wd_scheduled_at(duration(t))
 
 
 def wd_pp(t):
@@ -1642,15 +2491,17 @@ def wd_pp(t):
     ``DEPLETED``, exactly ``LW``, paid by the insurer from its own funds; in ``ACCUM``,
     only the scheduled amount.  Gross by construction: a contract promising a stated net
     check would need a gross-up solve, which is not implemented.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
     opening = phase_open(t)
-    if opening == "TERMINATED":
+    if opening == TERMINATED:                                        # noqa: F821
         return 0.0
-    if opening == "DEPLETED":
+    if opening == DEPLETED:                                          # noqa: F821
         return lw_pp_at(t, "BEF_WD")
-    if opening == "INCOME":
+    if opening == INCOME:                                            # noqa: F821
         return utilization_intensity() * lw_pp_at(t, "BEF_WD") + wd_scheduled_pp(t)
     return wd_scheduled_pp(t)
 
@@ -1698,10 +2549,12 @@ def wd_unfunded_pp(t):
     withdrawal: :func:`wd_pp` still carries the amount requested, so the excess still
     sets :func:`depletion_cause` and still drives ``rho`` to 1 and the benefit base to
     zero.  Only :func:`wd_payment_pp` and the three ledger lines are reduced.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
-    if phase(t) != "TERMINATED":
+    if phase(t) != TERMINATED:                                       # noqa: F821
         return 0.0
     return wd_pp(t) - min(wd_pp(t), max(0.0, av_pp_at(t, "BEF_WD")))
 
@@ -1731,13 +2584,16 @@ def wd_excess_paid_pp(t):
 
 
 def wd_cum_pp(t):
-    """Wcum(t): cumulative gross withdrawals from entry to the end of month t.
+    """Wcum(t): cumulative gross withdrawals from issue to the end of month t.
 
-    A running total over months, though only the anniversary months add to it.
+    A running total over months, though only the anniversary months add to it. It opens at
+    :func:`t_entry` on the model point's :func:`wd_cum_pp_init`, the withdrawals taken
+    before the valuation date, 0 on new business; ``FIA_US_S``'s counts from the month it
+    enters a contract, from 0. 0.0 outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
-    prior = 0.0 if t == entry_mth() else wd_cum_pp(t - 1)
+    prior = wd_cum_pp(t - 1) if t > t_entry() else wd_cum_pp_init()
     return prior + wd_pp(t)
 
 
@@ -1759,7 +2615,7 @@ def free_wd_allow(t):
 
 
 def wd_free_pp(t):
-    """The free-allowance portion of the anniversary's withdrawal: the part of FW(t) it uses.
+    """The free-allowance portion of the anniversary's withdrawal, the part of FW it uses.
 
     The chassis name for this quantity (``MYGA_US_S``, ``UL_US_S``,
     ``RILA_US_S``), so the library spells the free-allowance portion
@@ -1774,10 +2630,12 @@ def wd_free_pp(t):
     what the worked example uses, leaving ``12,800.00 - 10,144.16 = 2,655.84`` against
     the surrender.  The alternative leaves the whole ``FW(t)`` available against the
     excess.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
-    if phase_open(t) == "INCOME":
+    if phase_open(t) == INCOME:                                      # noqa: F821
         return min(free_wd_allow(t), lw_pp_at(t, "BEF_WD"))
     return min(free_wd_allow(t), wd_pp(t))
 
@@ -1796,15 +2654,17 @@ def wd_charge_base_pp(t):
 
     ``max(0, G(t) - FW(t))`` before exercise and ``max(0, E(t) - remaining free)`` after
     it **[std]** — withdrawals up to ``LW`` carry no surrender charge, no MVA and no
-    bonus clawback **even when ``LW`` exceeds the free withdrawal amount** [S9].  Zero
+    bonus clawback **even when LW exceeds the free withdrawal amount** [S9].  Zero
     once the account value is gone: post-depletion income is not a chargeable withdrawal.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     opening = phase_open(t)
-    if opening in ("DEPLETED", "TERMINATED"):
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return 0.0
-    if opening == "INCOME":
+    if opening == INCOME:                                            # noqa: F821
         return max(0.0, wd_excess_pp(t) - free_wd_remain(t))
     return max(0.0, wd_pp(t) - free_wd_allow(t))
 
@@ -1815,10 +2675,12 @@ def surr_charge_base_pp(t):
     The chassis calls this ``surr_excess_pp``; renamed here only for symmetry with
     :func:`wd_charge_base_pp`, because ``E(t)`` already names a different quantity in
     these notes.  The construction is the chassis's and the source is the same [S10].
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
-    if phase(t) == "DEPLETED":
+    if phase(t) == DEPLETED:                                         # noqa: F821
         return 0.0
     return max(0.0, av_pp(t) - free_wd_remain(t))
 
@@ -1861,15 +2723,21 @@ def mva_term(t):
 
     The MVA period is the ten-year surrender charge period [S7][S10], and the notes state
     the term in **months** — which is what the monthly grid can now say exactly:
-    ``surr_charge_period - (t + 1)/12``, a transaction in month ``t`` being settled at its
-    end.  At the worked example's anniversary 8 — month 95, the close of contract year 8 —
-    that is ``10 - 96/12 = 2`` years, the ``n = 24`` months the notes quote, so every
-    anniversary value is the annual grid's; a surrender six months earlier now carries the
-    30 months it actually has instead of being rounded to the anniversary.  The remaining
-    term reaches zero at anniversary 10, so a transaction carries a live adjustment through
-    contract year 9 and none in contract year 10.
+    ``surr_charge_period - (duration_mth(t) + 1)/12``, on the policy clock, a transaction in
+    month ``t`` being settled at its end. At the worked example's anniversary 8 — policy
+    month 95, the close of contract year 8, which is ``t = 11`` on the anchor in force at
+    anniversary 7 — that is ``10 - 96/12 = 2`` years, the ``n = 24`` months the notes quote,
+    so every anniversary value is the annual grid's; a surrender six months earlier now
+    carries the 30 months it actually has instead of being rounded to the anniversary. The
+    remaining term reaches zero at anniversary 10, so a transaction carries a live
+    adjustment through contract year 9, and none at anniversary 10 itself; a surrender
+    earlier in contract year 10 carries the months left.
+
+    0.0 outside cover. ``FIA_US_S`` writes ``(t + 1)/12``, its ``t`` being the policy month.
     """
-    return max(0.0, surr_charge_period - (t + 1) / 12.0)             # noqa: F821
+    if not is_active(t):
+        return 0.0
+    return max(0.0, surr_charge_period - (duration_mth(t) + 1) / 12.0)  # noqa: F821
 
 
 def mva_in_force(t):
@@ -1899,6 +2767,26 @@ def mva_rate(t):
             / (1.0 + mva_ref_yield(duration(t) + 1))) ** mva_term(t) - 1.0
 
 
+def is_collar_gross():
+    """Whether the MVA collar is measured on the gross withdrawal, ``mva_collar_basis``
+    ``gross``.
+
+    A decode of the Reference, as :func:`is_step_up_annual` is, read by :func:`mva_pp_on`.
+    Set ``mva_collar_basis`` before the model computes anything.
+    """
+    return bool(mva_collar_basis == "gross")                         # noqa: F821
+
+
+def is_collar_surrender_value():
+    """Whether the MVA collar is measured on the account value, ``mva_collar_basis``
+    ``surrender_value``.
+
+    The other decode of the Reference (:func:`is_collar_gross`): a basis that is neither
+    raises in :func:`mva_pp_on`, as in ``FIA_US_S``.
+    """
+    return bool(mva_collar_basis == "surrender_value")               # noqa: F821
+
+
 def mva_pp_on(t, base, gross):
     """The collared MVA on a currency ``base`` withdrawn as ``gross`` in month t.
 
@@ -1926,11 +2814,16 @@ def mva_pp_on(t, base, gross):
 
     **The two are identical on the surrender path**, where ``G(t) = AV(t)``, so the
     worked example reproduces under either; they differ only where the notes say nothing.
+
+    The basis is read through its decodes, :func:`is_collar_gross` and
+    :func:`is_collar_surrender_value`, a basis that is neither raising. ``FIA_US_S``'s
+    float-parameter engine, kept for its two callers, :func:`mva_pp` and :func:`wd_mva_pp`,
+    into which Phase 2 inlines it.
     """
     raw = mva_rate(t) * base
-    if mva_collar_basis == "gross":                                  # noqa: F821
+    if is_collar_gross():
         reference = gross
-    elif mva_collar_basis == "surrender_value":                      # noqa: F821
+    elif is_collar_surrender_value():
         reference = av_pp(t)
     else:
         raise ValueError("invalid mva_collar_basis")
@@ -1998,13 +2891,15 @@ def wd_reduction_rate(t):
     Pre-exercise the denominator is the gross account value after the rider charge;
     post-exercise it is that value **net of the guaranteed amount** [S9].  Zero when
     there is no excess: a withdrawal inside ``LW`` leaves the guarantee untouched.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     opening = phase_open(t)
-    if opening in ("DEPLETED", "TERMINATED"):
+    if opening == DEPLETED or opening == TERMINATED:                 # noqa: F821
         return 0.0
-    if opening == "INCOME":
+    if opening == INCOME:                                            # noqa: F821
         return wd_reduction_rate_on(av_pp_at(t, "BEF_WD"),
                                     lw_pp_at(t, "BEF_WD"), wd_pp(t))
     return wd_reduction_rate_on(av_pp_at(t, "BEF_WD"), 0.0, wd_pp(t))
@@ -2032,7 +2927,7 @@ def surr_value_pp(t):
     on the pre-deduction excess, then the floor** — the chassis's order, and the one
     contractual element the FIA notes inherit rather than restate.
     """
-    if phase(t) == "DEPLETED":
+    if phase(t) == DEPLETED:                                         # noqa: F821
         return 0.0
     return (av_pp(t) - surr_charge_pp(t) - surr_clawback_pp(t) + mva_pp(t))
 
@@ -2044,7 +2939,7 @@ def surr_benefit_pp(t):
     binding floor is **not** a separate cash flow — it raises the benefit, and
     ``MGV - SV`` is a reconciliation quantity only.
     """
-    if phase(t) == "DEPLETED":
+    if phase(t) == DEPLETED:                                         # noqa: F821
         return 0.0
     return max(surr_value_pp(t), mgsv_pp(t))
 
@@ -2056,10 +2951,27 @@ def mgsv_charge_pp(t):
     with premium tax actually paid and indebtedness [R2].  All are zero here **[std]**
     because no retrieved product declares an actual annual policy fee, which makes the
     modeled floor slightly conservative.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
     return mgsv_annual_charge                                        # noqa: F821
+
+
+def prem_to_mgsv_pp(t):
+    """The consideration credited to the Model #805 floor per contract, in the issue month.
+
+    87.5% of the single premium **excluding the bonus** [S10][R2],
+    ``net_consideration_ratio x P``, in the month whose ``duration_mth(t)`` is 0, and 0 in
+    every other: the floor's issue value, which ``FIA_US_S``'s ``mgsv_pp_init()`` computes
+    when its column is blank, credited in the issue month instead, as :func:`prem_to_av_pp`
+    credits the account value's. :func:`mgsv_pp` adds it to the opening before the month's
+    accrual.
+    """
+    if duration_mth(t) == 0:
+        return net_consideration_ratio * premium_pp()                # noqa: F821
+    return 0.0
 
 
 def mgsv_pp(t):
@@ -2074,15 +2986,19 @@ def mgsv_pp(t):
     what that file warns against carrying across.
 
     Accruing monthly rather than once at the anniversary is what makes the floor mean
-    something for a mid-year death or surrender, which is where it most often binds.  The
-    opening value is ``0.875 x P`` excluding the bonus at issue [S10][R2].
-    ``rider_charge_from_mgsv`` switches on the treatment documented at two carriers, one
-    deducting the rider charge from the floor and the other its allocation charge
-    [S1][S2][S3][S4]; the composite does not **[std]**.
+    something for a mid-year death or surrender, which is where it most often binds. It
+    opens at :func:`t_entry` on :func:`mgsv_pp_init`, the floor in force at the valuation
+    date, and in the issue month the consideration :func:`prem_to_mgsv_pp`, ``0.875 x P``
+    excluding the bonus [S10][R2], comes on top, both written inline, so that the floor's
+    chain runs one cell a month. ``rider_charge_from_mgsv`` switches on the treatment
+    documented at two carriers, one deducting the rider charge from the floor and the other
+    its allocation charge [S1][S2][S3][S4]; the composite does not **[std]**.
+
+    0.0 outside cover.
     """
-    if t < entry_mth():
-        return mgsv_pp_init()
-    opening = mgsv_pp_init() if t == entry_mth() else mgsv_pp(t - 1)
+    if not is_active(t):
+        return 0.0
+    opening = (mgsv_pp(t - 1) if t > t_entry() else mgsv_pp_init()) + prem_to_mgsv_pp(t)
     accrued = opening * (1.0 + mgsv_rate) ** (1.0 / 12.0)            # noqa: F821
     if not is_anniv(t):
         return max(0.0, accrued)
@@ -2120,28 +3036,47 @@ def mgsv_rate_is_compliant(cmt5, option_cost):
     return mgsv_rate >= mgsv_rate_statutory(cmt5, option_cost)       # noqa: F821
 
 
+def mort_rate_base_at(x):
+    """The table's annual mortality rate at attained age ``x`` and the model point's sex.
+
+    ``data.mort_rates()`` at ``(x, sex)``, the table's one reader, keyed by the age and
+    joined on the model point's ``sex`` column, a join on text that Phase 2 re-keys;
+    :func:`mort_rate` calls it in cover only, at :func:`age`. ``Data`` refuses a point whose
+    sex the table lacks, or whose attained age in its first month on the books it gives no
+    rate at.
+    """
+    key = (x, model_point()["sex"])
+    return float(data.mort_rates().loc[key, "mort_rate"])            # noqa: F821
+
+
 def mort_rate(t):
     """q(t): the **annual** mortality rate of the contract year containing month t.
 
-    Read at ``age(t)``, the attained age opening that contract year — the library
-    convention of :mod:`.Term_US_S` and :mod:`.MYGA_US_S`.  The rate actually applied to a
-    month is :func:`mort_rate_mth`; this cells stays annual so the table is read the way
-    it is published and so the assumption is visible at the frequency it is set at.
+    Read at ``age(t)``, the attained age opening that contract year — the library convention
+    of :mod:`.Term_US_S` and :mod:`.MYGA_US_S`. The rate actually applied to a month is
+    :func:`mort_rate_mth`; this cell stays annual so the table is read the way it is
+    published and so the assumption is visible at the frequency it is set at.
 
     The shipped table is the same illustrative Makeham annuitant curve as
-    ``products/fixed_deferred_annuity`` **[std]**, *not* a published basis.  The prescribed
+    ``products/fixed_deferred_annuity`` **[std]**, *not* a published basis. The prescribed
     basis is the 2012 IAM Basic / 2012 IAR generational family with Projection Scale G2,
-    ``q_x^(2012+n) = q_x^(2012) x (1 - G2_x)^n``, rounding applied from the 2012 period
-    rate each time and never by compounding an already rounded rate [REG-R59][REG-R60]; it
-    may not be redistributed here, so swap it in by repointing ``Data.mort_table_file``.
-    Generational projection is **not implemented** for the same reason.  ``mort_ae_factor``
-    carries the A/E deviation, 100% **[std]** against the 2020-2024 payout experience study
-    [REG-R61]; the spelling is the library's shared one, so the A/E factor reads the same
-    in every model that has one.  The rate is capped at 1, the bound second, so that a
-    missing input, a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.
+    ``q_x^(2012+n) = q_x^(2012) x (1 - G2_x)^n``, rounding applied from the 2012 period rate
+    each time and never by compounding an already rounded rate [REG-R59][REG-R60]; it may
+    not be redistributed here, so swap it in by repointing ``Data.mort_table_file`` before
+    the model computes anything. Generational projection is **not implemented** for the same
+    reason. ``mort_ae_factor`` carries the A/E deviation, 100% **[std]** against the
+    2020-2024 payout experience study [REG-R61]; the spelling is the library's shared one,
+    so the A/E factor reads the same in every model that has one.
+
+    The table's rate is read at :func:`mort_rate_base_at`, and capped at 1 as ``FIA_US_S``
+    caps it, the bound second, ``min(q, 1.0)``, so that a NaN stays NaN rather than reading
+    as certain death. ``Data`` refuses a blank rate in any case. At the shipped A/E of 100%
+    the capped rate is the table's at every age, 1.0 at 120. 0.0 outside cover, before the
+    table is read.
     """
-    base = float(data.mort_table().loc[(age(t), sex()), "mort_rate"])  # noqa: F821
-    return min(mort_ae_factor * base, 1.0)                           # noqa: F821
+    if not is_active(t):
+        return 0.0
+    return min(mort_ae_factor * mort_rate_base_at(age(t)), 1.0)      # noqa: F821
 
 
 def mort_rate_mth(t):
@@ -2165,10 +3100,14 @@ def shock_lapse_rate(t):
     fixed-deferred shock lapse — roughly 52%-56% for fixed-rate deferred annuities
     [REG-R63, unverified] — to an FIA with an in-force rider materially understates the
     tail the product is sold for.
+
+    Zero outside cover.
     """
+    if not is_active(t):
+        return 0.0
     if not glwb_elected() or not rider_in_force_open(t):
         return shock_lapse_no_rider                                  # noqa: F821
-    if phase_open(t) == "ACCUM":
+    if phase_open(t) == ACCUM:                                       # noqa: F821
         return shock_lapse_rider_idle                                # noqa: F821
     return shock_lapse_rider_active                                  # noqa: F821
 
@@ -2182,7 +3121,11 @@ def lapse_rate_base(t):
     above pre-shock levels.  The notes' separate ``M_shock`` multiplier is absorbed here,
     because the shock is stated as an absolute rate rather than as a factor on the
     ultimate; see the Space docstring.
+
+    Zero outside cover, where no contract year is the contract's.
     """
+    if not is_active(t):
+        return 0.0
     year = policy_year(t)
     if year == surr_charge_period + 1:                               # noqa: F821
         return shock_lapse_rate(t)
@@ -2208,7 +3151,14 @@ def lapse_moneyness_factor(t):
     factor is a property of the year like the base rate it multiplies.  Reading it month
     by month would let the fixed-account accrual drift the ratio within the year and make
     the annual surrender assumption depend on where in the year it is sampled.
+
+    :func:`anniv_mth` lies at most 11 months after ``t``, inside the frame, and the account
+    value and the benefit base read there depend on no count and on nothing after that
+    anniversary, so the read opens no chain past it. 1.0 outside cover, no adjustment, where
+    ``FIA_US_S`` has no guard and would read a month past the frame.
     """
+    if not is_active(t):
+        return 1.0
     a = anniv_mth(t)
     av = av_pp(a)
     if av <= 0.0:
@@ -2229,16 +3179,19 @@ def lapse_rate(t):
 
     Evaluated on the phase **closing** the contract year, at :func:`anniv_mth`, so it is
     one rate for the whole year; :func:`lapse_rate_mth` is what a month actually applies.
+
+    :func:`anniv_mth` lies at most 11 months after ``t``, inside the frame; the phase read
+    there depends on no count and on nothing after that anniversary. 0.0 outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     a = anniv_mth(t)
-    if phase_open(a) == "TERMINATED":
+    if phase_open(a) == TERMINATED:                                  # noqa: F821
         return 0.0
     closing = phase(a)
-    if closing == "TERMINATED":
+    if closing == TERMINATED:                                        # noqa: F821
         return 1.0
-    if closing == "DEPLETED":
+    if closing == DEPLETED:                                          # noqa: F821
         return 0.0
     return min(lapse_rate_max,                                       # noqa: F821
                lapse_rate_base(t) * lapse_moneyness_factor(t))
@@ -2267,74 +3220,124 @@ def lapse_rate_mth(t):
 
 
 def pols_if(t):
-    """The in-force probability at the **start** of month t.
+    """The in-force count at the **start** of month t, the weight of row t.
 
-    The library convention, set by :mod:`.Term_US_S` and ``savings.CashValue_SE``: this is
-    the count entering the month, before its decrements, and it is the weight carried by
-    every cash flow reported on the same row of :func:`result_cf`.  At an anniversary month
-    ``12k + 11`` it is the count that reaches the anniversary and therefore the weight the
-    year's withdrawal and charges carry — on the annual grid that weight was the count
-    entering the year, which is the one place the finer grid changes the answer rather than
-    only the resolution.
+    ``pols_if_at(t, "BEF_DECR")``: the count carried in from month t - 1 plus month t's new
+    business, before month t's decrements. The library convention, set by
+    :mod:`.Term_US_S` and ``savings.CashValue_SE``: it is the weight carried by every cash
+    flow reported on the same row of :func:`result_cf`. At an anniversary month it is the
+    count that reaches the anniversary and therefore the weight the year's withdrawal and
+    charges carry — on the annual grid that weight was the count entering the year, which is
+    the one place the finer grid changes the answer rather than only the resolution.
 
-    ``pols_if(entry_mth()) = pols_if_init()``, the recursion runs
-    ``pols_if(t + 1) = pols_if(t)(1 - q_m(t))(1 - w_m(t))`` with death before surrender
-    **[std]**, and it is zero from ``proj_len()`` on, where the survivors of the last
-    projected month have left through :func:`pols_maturity`.  Because the monthly rates
-    compound to the annual ones, ``pols_if(12k)`` is exactly the annual-grid model's
-    ``pols_if(k)``: the notes' ``l(k)``.
+    A point in force at the valuation date opens with :func:`pols_if_init`, and one issued
+    at or after it with its issued count in the issue month; on a point issued at ``t = 0``
+    this is exactly ``FIA_US_S``'s ``pols_if``. Death comes before surrender **[std]**. Zero
+    outside cover: before issue, and from ``t = proj_len()`` on, where the survivors of the
+    last covered month have left through :func:`pols_maturity`. Because the monthly rates
+    compound to the annual ones, ``pols_if`` in the month opening a contract year is exactly
+    the annual-grid model's count there: the notes' ``l(k)``. It is
+    ``basiclife.BasicTerm_SE``'s ``BEF_DECR`` count, not its ``pols_if``, which is the count
+    before maturity.
     """
-    if t <= entry_mth():
-        return pols_if_init()
-    if t >= proj_len():
-        return 0.0
-    return pols_if_at(t - 1, "AFT_DECR")
+    return pols_if_at(t, "BEF_DECR")
+
+
+def pols_new_biz(t):
+    """Number of contracts issued in month t: ``policy_count()`` in the issue month.
+
+    The issue month is the one with ``duration_mth(t) == 0``: ``t = 0`` for a point issued
+    at the valuation date, ``t = k`` for one issued ``k`` months later. A point already in
+    force at the valuation date has none.
+    """
+    return policy_count() if duration_mth(t) == 0 else 0.0
 
 
 def pols_if_at(t, timing):
     """In-force in month t read at the point given by ``timing``.
 
-    ``"BEF_DECR"`` and ``"BEF_MORT"`` are both the count entering the month, which is
-    :func:`pols_if` itself — this product has no annuitization decrement, so the chassis's
-    two timings coincide.  ``"BEF_LAPSE"`` is after deaths, and ``"AFT_DECR"`` is the count
-    at the *end* of month t and therefore ``pols_if(t + 1)``.  Both decrements are the
-    **monthly** rates.
+    The timings in processing order:
+
+    ``"BEF_NB"``
+        the count carried in from month t - 1, before month t's new business: the survivors
+        of month t - 1's deaths and surrenders, out of month t - 1's ``"BEF_DECR"`` count.
+        At :func:`t_entry`, the first month on the books, it is :func:`pols_if_init`, the
+        count in force at the valuation date (0 for a point issued at or after it), and the
+        recursion reads no earlier month. Zero outside cover, so the survivors of the last
+        covered month leave as :func:`pols_maturity`.
+    ``"BEF_DECR"``
+        ``"BEF_NB"`` plus :func:`pols_new_biz`, before any decrement; the same number as
+        :func:`pols_if`, and the weight on that month's cash flows.
+    ``"BEF_MORT"``
+        the same count: this product has no annuitization decrement, so the chassis's two
+        timings coincide.
+    ``"BEF_LAPSE"``
+        after that month's deaths.
+    ``"AFT_DECR"``
+        after its surrenders, the count at the *end* of month t, which is
+        ``pols_if_at(t + 1, "BEF_NB")`` in every month but the last covered one, where
+        :func:`pols_maturity` takes it out.
+
+    Both decrements are the **monthly** rates, death before surrender **[std]**.
+    ``"BEF_NB"`` and ``"BEF_DECR"`` are ``basiclife.BasicTerm_SE``'s names, and any timing
+    but these five raises. ``"BEF_NB"`` forms the count left at the end of month t - 1
+    itself — month t - 1's ``"BEF_NB"`` plus its :func:`pols_new_biz`, after its two
+    decrements, the products ``"AFT_DECR"`` takes in the order it takes them — rather than
+    calling for it. So the chain of calls from month t back to :func:`t_entry` is one cell a
+    month, where ``FIA_US_S``'s ran through two. Every count is zero outside cover, before
+    any rate is read.
     """
-    if t < entry_mth():
-        return pols_if_init()
-    pols = pols_if(t)
-    if timing in ("BEF_DECR", "BEF_MORT"):
-        return pols
-    pols = pols * (1.0 - mort_rate_mth(t))
-    if timing == "BEF_LAPSE":
-        return pols
-    pols = pols * (1.0 - lapse_rate_mth(t))
-    if timing == "AFT_DECR":
-        return pols
+    if timing == "BEF_NB":
+        if not is_active(t):
+            return 0.0
+        if t == t_entry():
+            return pols_if_init()
+        return ((pols_if_at(t - 1, "BEF_NB") + pols_new_biz(t - 1))
+                * (1.0 - mort_rate_mth(t - 1)) * (1.0 - lapse_rate_mth(t - 1)))
+    elif timing == "BEF_DECR" or timing == "BEF_MORT":
+        return pols_if_at(t, "BEF_NB") + pols_new_biz(t)
+    elif timing == "BEF_LAPSE" or timing == "AFT_DECR":
+        if not is_active(t):
+            return 0.0
+        pols = pols_if_at(t, "BEF_DECR") * (1.0 - mort_rate_mth(t))
+        if timing == "BEF_LAPSE":
+            return pols
+        return pols * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
 
 
 def pols_death(t):
-    """Deaths in month t, on the monthly mortality rate."""
-    return (0.0 if t < entry_mth()
-            else pols_if_at(t, "BEF_MORT") * mort_rate_mth(t))
+    """Deaths in month t, on the monthly mortality rate.
+
+    Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    return pols_if_at(t, "BEF_MORT") * mort_rate_mth(t)
 
 
 def pols_lapse(t):
-    """Full surrenders in month t, on the survivors of that month's mortality."""
-    return (0.0 if t < entry_mth()
-            else pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t))
+    """Full surrenders in month t, on the survivors of that month's mortality.
+
+    Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
-    """Survivors leaving at the projection horizon, non-zero only at ``proj_len() - 1``.
+    """Survivors leaving at the projection horizon, non-zero only in the last covered month.
 
-    Not a decrement — the horizon runs out — but needed for the in-force roll-forward to
-    close.  Numerically zero under the shipped mortality table, whose annual rate reaches
-    1.000000 at age 120, hence a monthly rate of 1.0, so the projection closes itself; see
-    the Space docstring.
+    That month is ``duration_mth(t) = maturity_mth() - 1``, the frame's last row,
+    ``t = proj_len() - 1``. Not a decrement — the horizon runs out — but needed for the
+    in-force roll-forward to close. Numerically zero under the shipped mortality table,
+    whose annual rate reaches 1.000000 at age 120, hence a monthly rate of 1.0, so the
+    projection closes itself; see the Space docstring.
     """
-    return pols_if_at(t, "AFT_DECR") if t == proj_len() - 1 else 0.0
+    if duration_mth(t) != maturity_mth() - 1:
+        return 0.0
+    return pols_if_at(t, "AFT_DECR")
 
 
 def pols_decr(t, kind):
@@ -2360,7 +3363,7 @@ def claim_pp(t, kind):
     All three are **zero in DEPLETED**: there is no account value, no surrender value and
     no death benefit, and the only exit is death [S1][S9].
     """
-    if phase(t) == "DEPLETED":
+    if phase(t) == DEPLETED:                                         # noqa: F821
         return 0.0
     if kind == "DEATH":
         return max(av_pp(t), mgsv_pp(t))
@@ -2386,26 +3389,36 @@ def claim_from_av_pp(t, kind):
 
 
 def premiums(t):
-    """Premium income: the single premium, at the **start** of month 0 on a new issue.
+    """Premium income: the single premium, at the **start** of the issue month.
 
-    There is no issue-instant row, so the premium is a beginning-of-month flow of the
-    first projected month rather than a row of its own.  An in-force model point paid its
-    premium before the projection starts, so this is zero throughout for it — as are the
-    acquisition expense and the premium tax that key off it.
+    ``premium_pp() x pols_new_biz(t)``: there is no issue-instant row, so the premium is a
+    beginning-of-month flow of the issue month, the one with ``duration_mth(t) = 0``, rather
+    than a row of its own, and it is paid per contract issued. A point in force at the
+    valuation date paid its premium before it, so this is zero throughout for it — as are
+    the acquisition expense and the premium tax that key off it.
     """
-    if t == 0 and entry_mth() == 0:
-        return premium_pp() * pols_if_init()
-    return 0.0
+    return premium_pp() * pols_new_biz(t)
 
 
 def prem_to_av_pp(t):
-    """Premium and bonus credited to the account value per contract, at issue only."""
-    return av_pp_init() if (t == 0 and entry_mth() == 0) else 0.0
+    """Premium and bonus credited to the account value per contract, in the issue month.
+
+    ``P x (1 + b)`` [S5] in the month whose ``duration_mth(t)`` is 0, and 0 in every other:
+    the issue value ``FIA_US_S``'s ``av_pp_init()`` computes when its column is blank,
+    credited in the issue month instead, where :func:`av_pp_at` adds it at ``"BEF_INV"``.
+    Zero outside cover by its terms, no month outside cover being the issue month.
+    """
+    if duration_mth(t) == 0:
+        return premium_pp() * (1.0 + bonus_rate())
+    return 0.0
 
 
 def prem_to_av(t):
-    """Premium and bonus credited to the block's account value, at issue only."""
-    return prem_to_av_pp(t) * pols_if_init() if t == 0 else 0.0
+    """Premium and bonus credited to the block's account value, in the issue month only.
+
+    :func:`prem_to_av_pp` per contract issued, weighted by :func:`pols_new_biz`.
+    """
+    return prem_to_av_pp(t) * pols_new_biz(t)
 
 
 def wd_guar(t):
@@ -2417,8 +3430,10 @@ def wd_guar(t):
     cannot pay a guaranteed withdrawal the account value could not fund and the destroyed
     rider no longer covers.  Zero in ``DEPLETED``, where the same payment is reported as
     :func:`income_payments` so the two lines partition the total rather than overlap.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or phase_open(t) == "DEPLETED":
+    if not is_active(t) or phase_open(t) == DEPLETED:                # noqa: F821
         return 0.0
     return wd_guar_paid_pp(t) * pols_if(t)
 
@@ -2429,8 +3444,10 @@ def wd_excess(t):
     Weighted by ``pols_if(t)``, the count entering the month, and on
     :func:`wd_excess_paid_pp`: the excess is the first part of an under-funded withdrawal to
     go unpaid.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     net = (wd_excess_paid_pp(t) - wd_charge_pp(t) - wd_clawback_pp(t) + wd_mva_pp(t))
     return net * pols_if(t)
@@ -2447,10 +3464,12 @@ def income_payments(t):
     would multiply the guarantee twelvefold and break the partition
     ``withdrawals = wd_guar + wd_excess + income_payments`` that :func:`result_cf`
     documents.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or not is_anniv(t):
+    if not is_active(t) or not is_anniv(t):
         return 0.0
-    if phase_open(t) != "DEPLETED":
+    if phase_open(t) != DEPLETED:                                    # noqa: F821
         return 0.0
     return lw_pp_at(t, "BEF_WD") * pols_if(t)
 
@@ -2463,8 +3482,12 @@ def withdrawals(t):
     four are published by :func:`result_cf`, so **summing every column of that frame
     double-counts the withdrawal**; the ledger identity is on the total, and the split is
     there because the notes report the three categories separately.
+
+    Zero outside cover.
     """
-    return 0.0 if t < entry_mth() else wd_payment_pp(t) * pols_if(t)
+    if not is_active(t):
+        return 0.0
+    return wd_payment_pp(t) * pols_if(t)
 
 
 def claims(t, kind=None):
@@ -2509,10 +3532,16 @@ def premium_taxes(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor in month t, ``1.025^(t/12)``.
+    """The expense inflation factor in month t, ``1.025^(t/12)``, on the valuation clock.
 
-    A fractional power of the annual rate, so twelve months of it compound to exactly one
-    year of inflation and the factor at each anniversary is the annual grid's.
+    ``t`` counts months from the valuation date, so the factor is 1 at the valuation date
+    for every point, and maintenance expense is in valuation-date dollars, as
+    ``basiclife.BasicTerm_SE`` inflates it: a contract issued later inflates from the
+    valuation date, not from its issue, and one in force carries none of its years before
+    it. ``FIA_US_S`` inflates from issue on its policy clock, so its in-force points,
+    entered at policy month 84, carry ``1.025^7`` that this model's twins of them do not. A
+    fractional power of the annual rate, so twelve months of it compound to exactly one year
+    of inflation.
     """
     return (1.0 + inflation_rate) ** (t / 12.0)                      # noqa: F821
 
@@ -2520,16 +3549,19 @@ def inflation_factor(t):
 def expenses(t):
     """Insurer expenses: acquisition at issue and inflating maintenance monthly **[std]**.
 
-    6.0% of the single premium in month 0 on a new issue, and $80 per contract per year
-    inflating at 2.5% — **one twelfth of it a month**, weighted by the in-force at the
-    start of the month.  Spreading the maintenance charge is the point of the finer grid
-    for this line: it is an insurer cost accruing continuously, not a contractual event
-    tied to the anniversary, so it now falls where it is incurred and is weighted by
-    survivors who have not yet left.  ``premiums(t)`` is zero everywhere but the first
-    month, so the acquisition term simply drops out elsewhere.  Both are standardizations:
-    no retrieved document discloses FIA acquisition cost or per-contract maintenance.
+    6.0% of the single premium in the issue month, per contract issued and uninflated, as
+    ``basiclife.BasicTerm_SE`` charges acquisition, and $80 per contract per year inflating
+    at 2.5% from the valuation date — **one twelfth of it a month**, weighted by the
+    in-force at the start of the month. Spreading the maintenance charge is the point of the
+    finer grid for this line: it is an insurer cost accruing continuously, not a contractual
+    event tied to the anniversary, so it now falls where it is incurred and is weighted by
+    survivors who have not yet left. ``premiums(t)`` is zero everywhere but the issue month,
+    so the acquisition term simply drops out elsewhere. Both are standardizations: no
+    retrieved document discloses FIA acquisition cost or per-contract maintenance.
+
+    Zero outside cover.
     """
-    if t < entry_mth() or t >= proj_len():
+    if not is_active(t):
         return 0.0
     return (expense_acq_rate * premiums(t)                           # noqa: F821
             + expense_maint / 12.0 * inflation_factor(t) * pols_if(t))  # noqa: F821
@@ -2552,46 +3584,66 @@ def av_at(t, timing):
     """The in-force weighted account value in month t; see :func:`av_pp_at`.
 
     Every timing inside the month carries ``pols_if(t)`` — the count entering it — because
-    all processing happens before the decrements.  ``"EOY"`` carries the count *leaving*
-    the month, ``pols_if(t + 1)``: zero at the horizon, where :func:`pols_maturity` has
-    taken the survivors out.
+    all processing happens before the decrements. ``"EOY"`` carries the count *leaving* the
+    month, ``pols_if_at(t + 1, "BEF_NB")``, the next month's count before its new business:
+    zero at the horizon, where :func:`pols_maturity` has taken the survivors out.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     if timing in ("BEF_PREM", "BEF_INV", "BEF_FEE", "BEF_WD"):
         return av_pp_at(t, timing) * pols_if(t)
     if timing == "EOY":
-        return av_pp(t) * pols_if(t + 1)
+        return av_pp(t) * pols_if_at(t + 1, "BEF_NB")
     raise ValueError("invalid timing")
 
 
 def inv_income(t):
-    """Interest credited to the whole block in month t."""
-    return 0.0 if t < entry_mth() else inv_income_pp(t) * pols_if(t)
+    """Interest credited to the whole block in month t; zero outside cover."""
+    if not is_active(t):
+        return 0.0
+    return inv_income_pp(t) * pols_if(t)
 
 
 def rider_charges(t):
-    """Rider charges deducted from the whole block's account value in month t."""
-    return 0.0 if t < entry_mth() else rider_charge_pp(t) * pols_if(t)
+    """Rider charges deducted from the whole block's account value in month t.
+
+    Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    return rider_charge_pp(t) * pols_if(t)
 
 
 def wd_from_av(t):
-    """The account value released by month t's withdrawals, gross of charge and MVA."""
-    return 0.0 if t < entry_mth() else wd_pp(t) * pols_if(t)
+    """The account value released by month t's withdrawals, gross of charge and MVA.
+
+    Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    return wd_pp(t) * pols_if(t)
 
 
 def av_depletion(t):
-    """The block's withdrawal outgo the account value could not fund in month t."""
-    return 0.0 if t < entry_mth() else av_depletion_pp(t) * pols_if(t)
+    """The block's withdrawal outgo the account value could not fund in month t.
+
+    Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    return av_depletion_pp(t) * pols_if(t)
 
 
 def av_change(t):
     """The change in the block's account value over month t.
 
     Closing less **opening**, the opening being read at ``"BEF_PREM"`` so that the single
-    premium of a new issue's month 0 is a movement rather than part of the balance brought
-    in.  Away from the first month ``av_at(t, "BEF_PREM")`` is exactly the previous
-    month's closing value.
+    premium of the issue month is a movement rather than part of the balance brought in; on
+    a point in force at the valuation date the opening at ``t = 0`` is its block's account
+    value entering month 0. Away from :func:`t_entry`, ``av_at(t, "BEF_PREM")`` is exactly
+    the previous month's closing value.
     """
     return av_at(t, "EOY") - av_at(t, "BEF_PREM")
 
@@ -2609,8 +3661,10 @@ def check_av_roll_fwd_resid(t):
 
     The per-``t`` residual is kept because it is what a debugging session wants when
     :func:`check_av_roll_fwd` returns ``False``; the boolean is defined in terms of it.
+
+    Zero outside cover.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
     expected = (prem_to_av(t) + inv_income(t) - rider_charges(t) - wd_from_av(t)
                 + av_depletion(t)
@@ -2620,70 +3674,83 @@ def check_av_roll_fwd_resid(t):
 
 
 def check_av_roll_fwd():
-    """Check the account value roll-forward: ``True`` when it closes at every projected t.
+    """Check the account value roll-forward: ``True`` when it closes in every month.
 
-    No argument and a bool, following ``savings.CashValue_SE`` and the rest of this
-    library, so one test can call the same check across every model.  The signed residual
-    for a single month is :func:`check_av_roll_fwd_resid`.
-
-    The tolerance is absolute and loose enough for an account value of order $100,000
-    accumulated over a century of months; it is not a modelling assumption.
+    No argument and a bool, following ``savings.CashValue_SE`` and the rest of this library,
+    so one test can call the same check across every model. The signed residual for a single
+    month is :func:`check_av_roll_fwd_resid`, and this is
+    ``abs(resid) <= check_tol_av x max(policy_count(), 1)`` over
+    ``t = 0 .. proj_len() - 1``: the tolerance scales with the count, since the residual is
+    rounding on that many contracts. On a point counting one contract it is ``FIA_US_S``'s
+    absolute 1e-6, loose enough for an account value of order $100,000 accumulated over a
+    century of months; it is not a modelling assumption. A residual that is not a number
+    fails, as ``FIA_US_S``'s ``math.isclose`` fails it: the test is that the residual is
+    within the tolerance, which no comparison with NaN is.
     """
-    res = []
-    for t in range(entry_mth(), proj_len()):
-        res.append(math.isclose(check_av_roll_fwd_resid(t), 0.0,      # noqa: F821
-                                abs_tol=1e-6))
-    return all(res)
+    tol = check_tol_av * max(policy_count(), 1.0)                    # noqa: F821
+    for t in range(proj_len()):
+        if not abs(check_av_roll_fwd_resid(t)) <= tol:
+            return False
+    return True
 
 
 def check_pols_roll_fwd_resid(t):
     """In-force roll-forward residual for month t; the signed float.
 
-    ``pols_if(t) - pols_if(t+1) = deaths + surrenders + horizon exits``.  Zero to floating
-    point for every ``t``, including the last, ``t = proj_len() - 1``, where
-    ``pols_if(proj_len())`` is zero and :func:`pols_maturity` carries the survivors out.
+    ``pols_if(t) - pols_if_at(t + 1, "BEF_NB") = deaths + surrenders + horizon exits``: the
+    start-of-month count opens the row, the exits are taken during it, and the next month
+    opens on what is left, before its own new business. Zero to floating point for every
+    ``t``, including the last, ``t = proj_len() - 1``, where the next month's count is zero
+    and :func:`pols_maturity` carries the survivors out.
+
+    Zero outside cover, before ``t + 1`` is read, as ``FIA_US_S`` guards it before its
+    frame: so at ``t = proj_len()`` nothing reads a month past it.
     """
-    if t < entry_mth():
+    if not is_active(t):
         return 0.0
-    return (pols_if(t) - pols_if(t + 1) - pols_death(t)
+    return (pols_if(t) - pols_if_at(t + 1, "BEF_NB") - pols_death(t)
             - pols_lapse(t) - pols_maturity(t))
 
 
 def check_pols_roll_fwd():
-    """Check the in-force roll-forward: ``True`` when it closes at every projected t.
+    """Check the in-force roll-forward: ``True`` when it closes in every month.
 
     No argument and a bool, as for :func:`check_av_roll_fwd`; the signed residual for a
-    single month is :func:`check_pols_roll_fwd_resid`.
+    single month is :func:`check_pols_roll_fwd_resid`. The tolerance is
+    ``check_tol_pols x max(policy_count(), 1)``, 1e-12 on a point counting one contract,
+    scaling with the count as the residual does. A residual that is not a number fails, as
+    in :func:`check_av_roll_fwd`.
     """
-    res = []
-    for t in range(entry_mth(), proj_len()):
-        res.append(math.isclose(check_pols_roll_fwd_resid(t), 0.0,    # noqa: F821
-                                abs_tol=1e-12))
-    return all(res)
+    tol = check_tol_pols * max(policy_count(), 1.0)                  # noqa: F821
+    for t in range(proj_len()):
+        if not abs(check_pols_roll_fwd_resid(t)) <= tol:
+            return False
+    return True
 
 
 def result_cf():
-    """Result table of cashflows, indexed by the **month** ``t`` from ``entry_mth()``.
+    """Result table of cashflows, one row per month ``t = 0 .. proj_len() - 1``.
 
-    The frame runs ``t = entry_mth() … proj_len() - 1``, one row per projected month and
-    **no issue-instant row**: the first row of a new-issue model point carries the premium
-    and the acquisition expense as beginning-of-month flows alongside that month's own
-    activity.  :func:`result_cf_annual` sums it into contract years.
+    Row 0 is the valuation month for every model point, so the frames of a block line up and
+    sum row by row, and a point issued after the valuation date has zeros until its issue
+    month. There is **no issue-instant row**: the issue month's row carries the premium and
+    the acquisition expense as beginning-of-month flows alongside that month's own activity.
+    :func:`result_cf_annual` sums it into contract years.
 
     ``pols_if`` is the in-force count at the **start** of month ``t``, which is the weight
-    every cash flow on the same row carries — dividing a row's cash flow by its
-    per-contract amount returns this column exactly.  Every withdrawal and benefit driven
-    by the contract falls in an anniversary month, so those columns are zero in eleven
-    rows out of twelve; deaths, surrenders and maintenance expense fall in every row.
+    every cash flow on the same row carries — dividing a row's cash flow by its per-contract
+    amount returns this column exactly. Every withdrawal and benefit driven by the contract
+    falls in an anniversary month, so those columns are zero in eleven rows out of twelve;
+    deaths, surrenders and maintenance expense fall in every row.
 
     ``withdrawals`` is the library-wide column for partial withdrawal payments and is the
-    total; the three columns after it — ``wd_guar``, ``wd_excess`` and
-    ``income_payments`` — partition that total into the notes' own ledger categories.
-    **They are published alongside it, not instead of it, so summing every column of the
-    frame double-counts the withdrawal.**  ``net_cf`` is income-positive, as everywhere
-    in this library.
+    total; the three columns after it — ``wd_guar``, ``wd_excess`` and ``income_payments`` —
+    partition that total into the notes' own ledger categories. **They are published
+    alongside it, not instead of it, so summing every column of the frame double-counts the
+    withdrawal.** The columns are ``FIA_US_S``'s. ``net_cf`` is income-positive, as
+    everywhere in this library.
     """
-    ts = list(range(entry_mth(), proj_len()))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
@@ -2705,20 +3772,24 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of in-force movements, indexed by the month t.
+    """Result table of in-force movements, one row per month ``t = 0 .. proj_len() - 1``.
 
-    ``pols_if`` opens the row and ``pols_if_aft_decr`` closes it, and the two decrement
-    columns are the **monthly** rates actually applied; the annual rates they are converted
-    from are :func:`mort_rate` and :func:`lapse_rate`, constant across each contract year.
-    The closing column is the opening figure of the next row in every month but the last,
-    where :func:`pols_maturity` takes the survivors out and the projection stops.  The
-    identity ``check_pols_roll_fwd_resid`` asserts is therefore
-    ``pols_if(t) - pols_if(t+1) = pols_death + pols_lapse + pols_maturity``.
+    ``pols_if`` opens the row and ``pols_if_aft_decr`` closes it; ``pols_new_biz``, second,
+    is the month's new business, which ``pols_if`` holds. The two decrement columns are the
+    **monthly** rates actually applied; the annual rates they are converted from are
+    :func:`mort_rate` and :func:`lapse_rate`, constant across each contract year, and all
+    four are 0 outside cover. The closing column is the next row's count before its new
+    business in every month but the last, where :func:`pols_maturity` takes the survivors
+    out and the projection stops. The identity ``check_pols_roll_fwd_resid`` asserts is
+    therefore
+    ``pols_if(t) - pols_if_at(t + 1, "BEF_NB") = pols_death + pols_lapse + pols_maturity``.
+    ``FIA_US_S``'s report, with ``pols_new_biz`` added.
     """
-    ts = list(range(entry_mth(), proj_len()))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "pols_if": [pols_if(t) for t in ts],
+            "pols_new_biz": [pols_new_biz(t) for t in ts],
             "mort_rate": [mort_rate(t) for t in ts],
             "mort_rate_mth": [mort_rate_mth(t) for t in ts],
             "lapse_rate": [lapse_rate(t) for t in ts],
@@ -2733,15 +3804,17 @@ def result_pols():
 
 
 def result_av():
-    """Result table of the per-contract account value and surrender trace, indexed by month.
+    """Result table of the per-contract account value and surrender trace, by month.
 
     The first eight columns walk the worked example's account value rows, now month by
     month: ``fixed_interest_pp`` accrues in every row, ``index_credit_pp``,
     ``rider_charge_pp`` and ``wd_pp`` only in anniversary rows.  The rest are the surrender
     trace, available in **every month** rather than only at the anniversaries the notes
     tabulate — which is the reading a mid-year surrender needs.
+
+    One row per month ``t = 0 .. proj_len() - 1``, with zeros outside cover.
     """
-    ts = list(range(entry_mth(), proj_len()))
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
             "av_pp_bef_inv": [av_pp_at(t, "BEF_INV") for t in ts],
@@ -2766,15 +3839,24 @@ def result_glwb():
     """Result table of the GLWB rider state per contract, indexed by the month t.
 
     The benefit base is **notional** — no cash value, not withdrawable, not payable as a
-    lump sum [S1][S9] — so none of these columns is a cash flow.  They are the drivers of
-    the rider charge, the lifetime withdrawal and, in the end, the post-depletion income.
-    Every one of them is annual: the rider state is flat between anniversaries and steps at
-    each one, so the rows of interest are the anniversary rows ``t = 12k + 11``.
+    lump sum [S1][S9] — so none of these columns is a cash flow. They are the drivers of the
+    rider charge, the lifetime withdrawal and, in the end, the post-depletion income. Every
+    one of them is annual: the rider state is flat between anniversaries and steps at each
+    one, so the rows of interest are the anniversary rows, those with
+    ``duration_mth(t) % 12 == 11``.
+
+    One row per month ``t = 0 .. proj_len() - 1``. The ``phase`` column holds the label of
+    each month's phase code, ``ACCUM``, ``INCOME``, ``DEPLETED`` and ``TERMINATED`` as in
+    ``FIA_US_S``, and ``PRE_ISSUE`` before issue: a report may hold text where every
+    projection cell holds the code.
     """
-    ts = list(range(entry_mth(), proj_len()))
+    labels = {PRE_ISSUE: "PRE_ISSUE", ACCUM: "ACCUM", INCOME: "INCOME",  # noqa: F821
+              DEPLETED: "DEPLETED", TERMINATED: "TERMINATED",          # noqa: F821
+              MATURED: "MATURED"}                                      # noqa: F821
+    ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
         {
-            "phase": [phase(t) for t in ts],
+            "phase": [labels[phase(t)] for t in ts],
             "rollup_pp": [rollup_pp(t) for t in ts],
             "stack_pp": [stack_pp(t) for t in ts],
             "bb_pp_bef_step_up": [benefit_base_pp_at(t, "BEF_STEP_UP") for t in ts],
@@ -2794,20 +3876,23 @@ def result_glwb():
 def result_cf_annual():
     """:func:`result_cf` summed into contract years, indexed by ``policy_year``.
 
-    Every cash flow column is the total of its twelve months; ``pols_if`` is the count at
-    the **start** of the contract year, ``pols_if(12 * duration)``, which is the number the
-    annual-step model carried on the same row.
+    Every cash flow column is the total of its months in cover; ``pols_if`` is the count in
+    the first month of the contract year in the frame. Months outside cover are left out, so
+    a point issued after the valuation date starts at policy year 1, and a point in force
+    mid-year starts at the year under way, whose first row is that part of the year from the
+    valuation date on. On a point issued at the valuation date it is ``FIA_US_S``'s report.
 
     Against the annual grid this agrees exactly on ``pols_if``, ``premiums``,
     ``commissions`` and ``premium_taxes``, the last three being the single premium and two
-    rates on it.  It does **not** agree on the withdrawal columns, the claims or the
+    rates on it. It does **not** agree on the withdrawal columns, the claims or the
     expenses, and so not on ``net_cf``: a withdrawal taken at the anniversary is now
     weighted by the contracts that **reach** it rather than by those that entered the year,
-    claims fall in the month of exit, and maintenance expense accrues monthly.  That gap is
+    claims fall in the month of exit, and maintenance expense accrues monthly. That gap is
     the point of the finer grid — see the Space docstring.
     """
     df = result_cf()
-    years = pd.Index([duration(t) + 1 for t in df.index],            # noqa: F821
+    df = df.loc[[t for t in df.index if is_active(t)]]
+    years = pd.Index([policy_year(t) for t in df.index],             # noqa: F821
                      name="policy_year")
     out = df.drop(columns="pols_if").groupby(years).sum()
     out.insert(0, "pols_if", df["pols_if"].groupby(years).first())
@@ -2923,6 +4008,22 @@ expense_maint = 80.0
 inflation_rate = 0.025
 
 premium_tax_rate = 0.0
+
+check_tol_av = 1e-06
+
+check_tol_pols = 1e-12
+
+PRE_ISSUE = 0
+
+ACCUM = 1
+
+INCOME = 2
+
+DEPLETED = 3
+
+TERMINATED = 4
+
+MATURED = 5
 
 math = ("Module", "math")
 

@@ -704,6 +704,25 @@ def test_build_sec_table_writes_twins_a_derived_and_a_future_row(s_model):
     assert _foreign_text(table, s_table, {"pols_if_init": "policy_count"}) == []
 
 
+def test_future_state_sets_a_future_rows_columns_from_s_and_k(s_model):
+    """A future row takes ``future_state``'s values; the twins and the derived row do not.
+
+    Two columns: ``sum_assured``, which S's table has, so the twins and the derived row
+    keep S's value; and ``fresh``, which S's lacks and nothing else sets, so it is a column
+    of its own, after the state columns, blank on every row but the future one.  Without
+    ``future_state`` among the columns the table is built with, the second would be dropped
+    without a word.
+    """
+    spec = dataclasses.replace(SPEC, future_state={
+        "sum_assured": lambda s, k: s.sum_assured() + k,
+        "fresh": lambda s, k: f"{s.plan()}-{k}"})
+    table, _ = build_sec_table(spec, s_model)
+    assert table["sum_assured"].tolist() == [100000.0, 100000.0, 100000.0, 100003.0]
+    assert list(table.columns) == SEC_COLUMNS[:-3] + ["fresh", *SEC_COLUMNS[-3:]]
+    assert table["fresh"].isna().tolist() == [True, True, True, False]
+    assert table["fresh"].iloc[3] == "T10-3"
+
+
 def test_generated_text_is_s_text_or_composed_from_s_keys(tmp_path):
     """With a ``provenance`` column in S: twins copy it, the generated rows cite S by key.
 
@@ -737,6 +756,8 @@ def test_generated_text_is_s_text_or_composed_from_s_keys(tmp_path):
     ({"twin_state": {"policy_count": lambda s, d: 2.0}}, "the generator owns them"),
     ({"state": {"provenance": lambda s, d: "x"}}, "the generator owns them"),
     ({"companions": {"model_point_table_sec.csv": lambda m, t: t}}, "would replace"),
+    ({"future_state": {"policy_count": lambda s, k: 2.0}}, "the generator owns them"),
+    ({"future_state": {"duration_mth": lambda s, k: 0}}, "the generator owns them"),
 ])
 def test_a_spec_that_could_clobber_s_or_the_generator_is_refused(change, error):
     with pytest.raises(ValueError, match=error):
