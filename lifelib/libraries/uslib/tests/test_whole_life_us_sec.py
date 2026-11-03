@@ -50,8 +50,9 @@ and the product's own facts:
 * Then the two clocks on the shipped points, the worked example's pre-frame values as the
   opening state, a policy valued mid-year, the dividend options and the graded benefit in
   force, the last dividend, expense inflation on the valuation clock, acquisition on new
-  business, the values outside cover, the block, an in-force extract, the runner, the
-  docstrings, the shared input tables, and what the default grid reaches.
+  business, the cap on mortality and a NaN that reaches it, the values outside cover, the
+  block, an in-force extract, the runner, the docstrings, the shared input tables, and
+  what the default grid reaches.
 
 SEC month ``t`` is S month ``t + source_mth`` throughout, the direction in which
 ``sec_support`` takes its ``t_offset``: ``d`` for a point restated at S month ``d``, 108
@@ -86,6 +87,7 @@ Phase 2 changes the call syntax only (C1).
 """
 import dataclasses
 import itertools
+import math
 import os
 import re
 import shutil
@@ -93,6 +95,7 @@ import subprocess
 import sys
 
 import modelx as mx
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -1701,6 +1704,134 @@ def _outside_cover_faults(p, where):
     if read:
         faults.append(f"{where}: evaluated outside cover: {read}")
     return faults
+
+
+# ---------------------------------------------------------------------------
+# The cap on mortality
+#
+# mort_rate caps the annual rate at 1, as WholeLife_US_S's does.  At the shipped A/E of 0.7
+# the rate stays below 0.18 to the end of every frame, so neither the committed points nor
+# the splice grid come near the cap.  One point is made to pass it: S's point 2, a male
+# non-tobacco cell issued at 45, alone in a copy of S's table, under the splice's
+# References with the A/E at 5.0 (CAPPED_REFS).  The product, 5.0 times the guaranteed
+# table's rate, first passes 1 at attained age 97, at 1.027, and stays past it to the end
+# of the frame.
+CAPPED_POINT = 2
+CAPPED_REFS = {**SPLICED_REFS, "ae_best_est": 5.0}
+CAPPED_MTH = 12 * (97 - 45)     # the first month at attained age 97, where it passes 1
+
+
+def test_an_annual_mortality_past_1_is_capped_in_both_models(tmp_path):
+    """Where the annual mortality product passes 1, both models' rate is 1.
+
+    On the point of :data:`CAPPED_POINT`, under :data:`CAPPED_REFS`, ``WholeLife_US_S``'s
+    product of the A/E and the guaranteed table's rate passes 1 in month
+    :data:`CAPPED_MTH` and stays past it to the end of the frame.  Both models cap it:
+    ``mort_rate`` and the monthly rate, ``1 - (1 - q)^(1/12)``, are 1.0 in every one of
+    those months, the float, not the int 1, which compares equal to it, and S's are floats
+    below 1 in every month before.  So every policy in force at the start of the first
+    capped month dies in it, and none is in force after it, and every report holds finite
+    floats alone.
+
+    Four rows of the point, built from S by the generator: issued at the valuation date
+    and 12 months after it, and restated in force in the month before the cap, opened with
+    S's count and state there, each compared with S in every cell, the capped months
+    included, as T1, T3 and the splice compare them, to 1e-9 relative with no absolute
+    floor, since the count before the cap falls to 8e-8, but for the roll-forward
+    residuals, rounding around 0, which keep the floor of 1e-9 (USLIB-SEC-PLAN.md §5.2);
+    and restated five months into the capped year, opened with S's state there and one
+    policy, since S's count there is 0.  On each, the rate is 1.0 from its first capped
+    month, every policy in force there dies in it, and the count is 0.0 after it.
+    """
+    table = pd.read_csv(model_path(TWIN).parent / "model_point_table.csv",
+                        index_col="point_id")
+    s = mx.read_model(temp_inputs(tmp_path / "s", model_path(TWIN),
+                                  model_points=table.loc[[CAPPED_POINT]]),
+                      name=_name("capped_s"))
+    sec = None
+    try:
+        for ref, value in CAPPED_REFS.items():
+            setattr(s.Projection, ref, value)
+        sp = _point(s, CAPPED_POINT)
+        end, ae = sp.proj_len(), CAPPED_REFS["ae_best_est"]
+        cap = next(t for t in range(end) if ae * sp.mort_rate_guar(t) > 1)
+        assert (cap, sp.age(cap)) == (CAPPED_MTH, 97)
+        after = range(cap, end)
+        assert all(ae * sp.mort_rate_guar(t) > 1 for t in after)
+        for rate in (sp.mort_rate, sp.mort_rate_mth):
+            assert all(type(rate(t)) is float and rate(t) < 1.0 for t in range(cap))
+            assert [(type(rate(t)), rate(t)) for t in after] == [(float, 1.0)] * len(after)
+        _sweep_s(sp)
+        assert sp.pols_if(cap) > 0.0 and sp.pols_death(cap) == sp.pols_if(cap)
+        assert [sp.pols_if(t) for t in range(cap + 1, end)] == [0.0] * (len(after) - 1)
+        spec = dataclasses.replace(
+            SPEC, derived=((CAPPED_POINT, cap - 1), (CAPPED_POINT, cap + 5)),
+            future=((CAPPED_POINT, 12),))
+        rows, companions = build_sec_table(spec, s)
+        assert companions == {}
+        rows.loc[rows["source_mth"] == cap + 5, "policy_count"] = 1.0
+        sec = mx.read_model(_sec_inputs(tmp_path / "sec", rows), name=_name("capped"))
+        for ref, value in CAPPED_REFS.items():
+            setattr(sec.Projection, ref, value)
+        # Each row with the month its rate is first capped, on its own clock, and the
+        # exemptions of its comparison with S: none for the row S's count does not open.
+        cases = ((("twin", CAPPED_POINT, 0), cap, TWIN_EXEMPT_DEFAULT | SPEC.exempt),
+                 (("future", CAPPED_POINT, -12), cap + 12, FUTURE_EXEMPT),
+                 (("derived", CAPPED_POINT, cap - 1), 1, SPLICE_EXEMPT),
+                 (("derived", CAPPED_POINT, cap + 5), 0, None))
+        residuals = frozenset(name for name in sp.cells if name.endswith("_resid"))
+        for case, first, exempt in cases:
+            p = _row(sec, *case)
+            if exempt is not None:
+                assert twin_mismatches(sp, p, t_offset=case[2], exempt=exempt | residuals,
+                                       atol=0.0) == [], case
+                others = exempt | (set(sp.cells) - residuals)
+                assert twin_mismatches(sp, p, t_offset=case[2], exempt=others) == [], case
+            capped, later = range(first, p.proj_len()), range(first + 1, p.proj_len())
+            for rate in (p.mort_rate, p.mort_rate_mth):
+                assert [(type(rate(t)), rate(t)) for t in capped] == (
+                    [(float, 1.0)] * len(capped)), case
+            assert p.pols_if(first) > 0.0 and p.pols_death(first) == p.pols_if(first), case
+            assert [p.pols_if(t) for t in later] == [0.0] * len(later), case
+            for report in REPORTS:
+                frame = p.cells[report]()
+                assert (frame.dtypes == "float64").all(), (case, report)
+                assert np.isfinite(frame.to_numpy()).all(), (case, report)
+    finally:
+        if sec is not None:
+            sec.close()
+        s.close()
+
+
+def _nan_in_month(t):
+    """NaN, what a blank rate carries: the formula a test puts in place of a cell's."""
+    return float("nan")
+
+
+def test_a_nan_that_reaches_the_cap_stays_nan():
+    """A NaN that reaches the cap on mortality stays NaN, and is not read as 1.
+
+    ``min`` keeps its first argument unless a later one compares smaller, in modelx and
+    compiled alike, and no comparison with NaN holds, so with its bound first the cap would
+    turn a NaN into 1.0: a blank rate read as certain death, every flow finite.  It is
+    written ``min(q, 1.0)``, as ``WholeLife_US_S`` writes it.  To send it a NaN, the
+    formula of ``mort_rate_guar``, which feeds it, is replaced by one returning NaN, in a
+    model read for the test, which modelx allows.  ``mort_rate`` must then be the float
+    NaN in the first month and the last, and so must the monthly rate and the count after
+    the first month.
+    """
+    model = mx.read_model(model_path(SEC), name=_name("nan"))
+    try:
+        model.Projection.cells["mort_rate_guar"].formula = _nan_in_month
+        p = _row(model, "twin", CAPPED_POINT, 0)
+        calls = [("mort_rate", (0,)), ("mort_rate", (p.proj_len() - 1,)),
+                 ("mort_rate_mth", (0,)), ("pols_if", (1,))]
+        lost = [f"{name}{args} = {value!r}" for name, args in calls
+                for value in [p.cells[name](*args)]
+                if not (type(value) is float and math.isnan(value))]
+        assert not lost, f"the cap loses a NaN mort_rate_guar(): {lost}"
+    finally:
+        model.close()
 
 
 def test_every_guarded_cell_holds_its_outside_cover_value(spliced):

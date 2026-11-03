@@ -69,10 +69,7 @@ as in ``basiclife/BasicTerm_SE``. On a point issued at ``t = 0`` the two clocks
 coincide, and the model computes what :mod:`~.Term_US_S` computes, except that
 acquisition is charged per policy issued rather than once per model point, and that
 ``pols_if_init()`` is the count already in force at the valuation date, 0 for such a
-point, whose policies enter as new business at ``t = 0``. Where :mod:`~.Term_US_S`'s
-annual mortality passes 1 its monthly rate is complex, and this model caps the annual
-rate at 1, which changes no value :mod:`~.Term_US_S` computes as a real number but that
-rate itself.
+point, whose policies enter as new business at ``t = 0``.
 
 Decrements follow suit in two speeds. ``mort_rate(t)`` and ``lapse_rate(t)`` are the
 **annual** rates of the policy year containing month ``t`` — the vectors the technical

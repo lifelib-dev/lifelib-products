@@ -2137,10 +2137,11 @@ def mort_rate(t):
     Generational projection is **not implemented** for the same reason.  ``mort_ae_factor``
     carries the A/E deviation, 100% **[std]** against the 2020-2024 payout experience study
     [REG-R61]; the spelling is the library's shared one, so the A/E factor reads the same
-    in every model that has one.
+    in every model that has one.  The rate is capped at 1, the bound second, so that a
+    missing input, a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.
     """
     base = float(data.mort_table().loc[(age(t), sex()), "mort_rate"])  # noqa: F821
-    return min(1.0, mort_ae_factor * base)                           # noqa: F821
+    return min(mort_ae_factor * base, 1.0)                           # noqa: F821
 
 
 def mort_rate_mth(t):

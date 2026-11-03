@@ -1520,12 +1520,13 @@ def mort_rate(t):
     small illustrative one **[std]**, *not* the 2015 VBT the notes recommend -- that
     family is licensed and may not be reproduced here.  Ages beyond the table take its
     last row, where the rate is 1.0; the cap is what keeps a class factor above 1 from
-    pushing the terminal rate past certainty.
+    pushing the terminal rate past certainty.  It puts its bound second, so that a missing
+    input, a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.
     """
     tbl = data.mort_table()                                          # noqa: F821
     a = min(max(age(t), int(tbl.index.min())), int(tbl.index.max()))
-    return min(1.0, float(tbl.loc[a, "mort_rate"]) * class_factor()
-               * mort_ae_factor * mort_improve_factor(t))            # noqa: F821
+    return min(float(tbl.loc[a, "mort_rate"]) * class_factor()
+               * mort_ae_factor * mort_improve_factor(t), 1.0)       # noqa: F821
 
 
 def mort_rate_mth(t):

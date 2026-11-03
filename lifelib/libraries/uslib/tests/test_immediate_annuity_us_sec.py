@@ -52,10 +52,10 @@ holds the rest of the plan's tests (its §5.2) and the product's own facts:
 * Then the product's own facts: the worked example's derived rows, survival per life, the
   payments to date on the annuity-date clock, the commutation fraction, the CMT's change
   since each contract's own annuity date, the simple discount, improvement on the policy
-  clock and inflation on the valuation clock, the capped mortality rate, no premium and no
-  acquisition, the name clash, the stop rule, the values outside cover, the block, an
-  in-force extract, the runner, the docstrings, the shared input tables, invalid values,
-  and what the default grid reaches.
+  clock and inflation on the valuation clock, the capped mortality rate and a NaN that
+  reaches either cap, no premium and no acquisition, the name clash, the stop rule, the
+  values outside cover, the block, an in-force extract, the runner, the docstrings, the
+  shared input tables, invalid values, and what the default grid reaches.
 
 SEC month ``t`` is S month ``t + source_mth`` throughout, the direction in which
 ``sec_support`` takes its ``t_offset``: ``d`` for a point restated at S month ``d``, ``-k``
@@ -96,6 +96,7 @@ Phase 2's int codes (C1).
 import dataclasses
 import gc
 import itertools
+import math
 import os
 import re
 import shutil
@@ -133,7 +134,7 @@ NAN = float("nan")
 #   search, from k = 1, and its trim, 1,600.00 at policy month 246;
 # 20, the anchor on the primary trigger, rated 1.25 and commencing in 2020: the primary
 #   trigger on probabilities, another calendar origin for the improvement, and the rating's
-#   cap, min(1, 1.25 q), binding from attained age 117, before omega;
+#   cap, min(1.25 q, 1), binding from attained age 117, before omega;
 # 21, the commuting anchor in an issue state that bars the withdrawal;
 # 22, certain_only paying annually in advance, with the right: commutation on the one form
 #   without a life contingency, and a commutation month with no certain instalment left to
@@ -2336,14 +2337,13 @@ def test_mortality_improvement_is_calendar_dated_on_the_policy_clock(sec_model, 
 
 # The cap on mortality
 #
-# SPIA_US_S caps the annual rate twice, q_be = min(1.0, AE * q_base) and
-# q_rated = min(1.0, theta * q_be), so that its monthly rate stays real at any rating, and
-# this model keeps both as S has them (USLIB-SEC-PLAN.md §5.1, step 6: where the S model
-# caps already, SEC changes nothing).  The first binds at the limiting age, where the base
-# rate is 1 and AE 1.084, and the second below it, on a rated life.  The rows on which one
-# binds inside the frame, each a row of the committed table or of the splice's core, as
-# (row_kind, S point, source_mth): the life it binds on and the first month it binds in, on
-# the row's clock.
+# SPIA_US_S caps the annual rate twice, q_be = min(AE * q_base, 1.0) and
+# q_rated = min(theta * q_be, 1.0), so that its monthly rate stays real at any rating, and
+# this model caps both as S does, each with its bound second (USLIB-SEC-PLAN.md §5.1,
+# step 6).  The first binds at the limiting age, where the base rate is 1 and AE 1.084,
+# and the second below it, on a rated life.  The rows on which one binds inside the frame,
+# each a row of the committed table or of the splice's core, as (row_kind, S point,
+# source_mth): the life it binds on and the first month it binds in, on the row's clock.
 CAPPED = {
     ("twin", 8, 0): (1, 660),       # the anchor's primary at the limiting age: the A/E cap
     ("derived", 8, 695): (1, 0),    # the same in its last month, the primary dead by then
@@ -2395,6 +2395,55 @@ def test_a_capped_annual_mortality_is_the_float_1_and_kills_every_life(sec_model
     assert not found, f"a capped rate that is not the float 1.0: {found[:5]}"
     assert _mismatches(_point(s_model, 8), _row(sec_model, "twin", 8, 0),
                        exempt=TWIN_EXEMPT_DEFAULT | SPEC.exempt, atol=0.0) == []
+
+def _nan_rate(t, life):
+    """NaN, what a blank rate carries: the formula a test puts in place of a cell's.
+
+    It names no global of this module: modelx runs a formula in the model's namespace.
+    """
+    return float("nan")
+
+
+def _nan_factor():
+    """NaN, what a blank factor carries: the formula a test puts in place of a cell's."""
+    return float("nan")
+
+
+# The two caps a NaN must pass through, as (the cap, the cell whose formula returns NaN in
+# a model read for the test, that formula).  mort_rate_base feeds the A/E cap and, through
+# it, the rating cap; rating_factor feeds the rating cap alone.  Bound first, either cap
+# would turn the NaN into 1.0: every life dead in the first month, every flow finite.
+NAN_CAPS = [
+    ("q_be = min(AE * q_base, 1.0)", "mort_rate_base", _nan_rate),
+    ("q_rated = min(theta * q_be, 1.0)", "rating_factor", _nan_factor),
+]
+
+
+@pytest.mark.parametrize("cap, cell, formula", NAN_CAPS,
+                         ids=["the AE cap", "the rating cap"])
+def test_a_nan_that_reaches_a_cap_stays_nan(cap, cell, formula):
+    """A NaN that reaches either cap on mortality stays NaN, and is not read as 1.
+
+    ``min`` keeps its first argument unless a later one compares smaller, in modelx and
+    compiled alike, and no comparison with NaN holds, so with its bound first a cap would
+    turn a NaN into 1.0: a blank rate read as certain death, every flow finite.  Each cap
+    is written with its bound second, as ``SPIA_US_S`` writes it.  To send one a NaN, the
+    formula of the cell that feeds it (:data:`NAN_CAPS`) is replaced by one returning NaN,
+    in a model read for the test, which modelx allows.  On the anchor's twin, the primary's
+    ``mort_rate`` and ``mort_rate_mth`` must then be the float NaN, in the first month and
+    the last.
+    """
+    model = mx.read_model(model_path(SEC), name=_name("nan"))
+    try:
+        model.Projection.cells[cell].formula = formula
+        p = _row(model, "twin", 8, 0)
+        lost = [f"{name}({t}, 1) = {value!r}"
+                for name in ("mort_rate", "mort_rate_mth") for t in (0, p.proj_len() - 1)
+                for value in [p.cells[name](t, 1)]
+                if not (type(value) is float and math.isnan(value))]
+        assert not lost, f"{cap} loses a NaN {cell}(): {lost}"
+    finally:
+        model.close()
 
 
 def test_expense_inflation_runs_on_the_valuation_clock(sec_model, s_model):

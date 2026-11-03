@@ -450,7 +450,6 @@ surrender-charge schedules.
 | `prem_persistency`, `coi_rate_guar`, `lapse_rate_base`, `corridor_factor`, `mort_rate` | the table read in the monthly cell, at `policy_year(t)` or `age(t)`, clamped to the extent of the key column as pandas reads it | one reader keyed by the year or the age — `prem_persistency_py`, `coi_rate_guar_py`, `lapse_rate_base_py`, `corridor_factor_at`, `mort_rate_base_at` — with `UL_US_S`'s clamp, to the extents `Data` reads from each key column once it has checked the keys and the rates, called inside cover only | No table is read at a year or an age the policy does not have, each is read once a year or an age, and a blank, text or fractional key, keys that repeat or leave a gap and a rate that is not a number are refused by name, where `UL_US_S`'s extent skips a blank key and cuts the table short, and a blank rate is a missing value |
 | `surr_charge_rate`, `lapse_shock_year` | the schedule's row read in each | `surr_charge_rate_max()` and `surr_charge_runoff_years()`, one reader for each of the schedule's two columns, each asking `data.surr_charge_count()` first, which checks the table | The same numbers for any schedule, with no table read in a monthly cell; a blank charge, which `UL_US_S`'s `max` reads as no charge, is refused |
 | `premium_pp`, `db_pp`, `face_reduction_pp`, `corridor_factor` | branches on the text of `premium_type()`, `db_option()` and `qual_test()` | branches on six decodes, `is_level_premium()`, `is_single_premium()`, `is_target_premium()`, `is_db_option_a()`, `is_db_option_b()` and `is_gpt()` | No monthly cell compares text. The label accessors stay for reporting, and an unknown value still raises |
-| `mort_rate` | the base rate times the class factor and the A/E | the same, capped at 1.0 | The tobacco classes take the product past 1 at the oldest ages, where the monthly rate has no real value: on StdTob at the shipped A/E from attained age 113, where `UL_US_S` projects complex numbers. The cap changes `UL_US_S`'s annual rate where it passes 1, and no monthly rate, count or flow that `UL_US_S` computes as a real number |
 | `class_factor` | the factor of the point's class, read from the table | the same, once `data.class_count()` has checked the table's classes and factors | A blank factor, a missing value to `UL_US_S`, would reach the cap on `mort_rate`, `min(q, 1.0)`, which keeps it missing |
 | `prem_persistency`, `premium_pp`, `wd_pp`, `wd_used_year`, `sum_assured_at`, `corridor_factor`, `db_pp`, `coi_rate_guar`, `coi_pp`, `maint_fee_pp`, `surr_charge_rate`, `cum_prem_pp`, `gpt_limit`, `gpt_ok`, `seven_pay_limit`, `is_mec`, `mort_rate`, `lapse_rate_base`, `lapse_rate_sc_mult` | unguarded: no `UL_US_S` frame has a month before issue | zero or false outside cover, `is_active(t)`, before any table or rate is read; `lapse_rate_sc_mult` 1.0 | A future point's months before issue have `t ≥ 0` and policy years down to −2, and policy year 0 is the shock year of a point with no surrender charge. At `t = proj_len()` nothing is charged, paid or withdrawn, whatever `omega_age` and `charges_cease_age` are set to |
 | `av_change`, `expenses` | `av_change` reads `t + 1`; maintenance on `pols_if(t)` | zero outside cover | At `t = proj_len()` the carried count would bear an expense, and `av_change` would read a month past the frame |
@@ -578,12 +577,12 @@ and the policy year has not. The mortality cap moves no number of any committed 
   fails; on S's in-force point withdrawing on Option B, whose loan comes to exceed its cash
   value, both checks hold where `UL_US_S`'s margin identity fails; acquisition falls on new
   business alone; a tobacco point at the shipped A/E, as new business and restated in force
-  the month before the cap and inside the capped year, is `UL_US_S`'s in every cell where
-  S's value is real, the capped rate excepted, to 1e-9 with no absolute floor, and from
-  `t = 936`, attained age 113, where the cap first binds, its rate is the float 1.0, every
-  life in force dies in that month, nothing is in force after it, and its numbers are real
-  and finite, with both checks closing, where `UL_US_S`'s turn complex; every monthly cell
-  holds its value outside cover
+  the month before the cap, is `UL_US_S`'s in every cell, the capped months included, to
+  1e-9 with no absolute floor, and on those rows and one restated inside the capped year,
+  from `t = 936` at issue, attained age 113, where the cap first binds, its rate is the
+  float 1.0 in both models, every life in force dies in that month, nothing is in force
+  after it, and its numbers are real and finite, with both checks closing; every monthly
+  cell holds its value outside cover
   and reads no table there, before issue and at `proj_len()`; the points of a block sum row
   by row; an extract without the generator's three columns, relabelled, projects the same
   numbers; and `run_sec.py` prints the model's numbers, for a point issued at the valuation

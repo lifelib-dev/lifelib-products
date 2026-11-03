@@ -113,10 +113,7 @@ issued, where `Term_US_S` charges it once per model point, whatever the count. O
 `Term_US_S`'s own points, which count one policy each, every cash flow and every count
 agrees, and so does every other cell the two models share but two whose meaning changed:
 `pols_if_init()`, now the count already in force at the valuation date, 0 for new
-business, and `model_point()`, a row of another table. Where `Term_US_S`'s annual
-mortality passes 1 its monthly rate is complex, and this model caps the annual rate at 1
-instead (*Departures from Term_US_S*), which changes no value `Term_US_S` computes as a
-real number but the annual rate itself.
+business, and `model_point()`, a row of another table.
 
 ## The in-force interface
 
@@ -275,7 +272,6 @@ stays NaN (below).
 | `inflation_factor` | `1.02^(t/12)`, `t` the policy month | the same formula, `t` the valuation month | Unit costs in valuation-date dollars |
 | `pols_maturity`, `phase` | expiry at `t = proj_len() − 1`, and `t ≥ proj_len()` | at `duration_mth(t) = expiry_mth() − 1`, and `≥ expiry_mth()` | One definition of cover, on the policy clock; `phase` gains `PRE_ISSUE` |
 | `prem_due`, `premium_pp_ann`, `mort_rate_base`, `conv_elig`, `comm_rate` and the decrement counts | unguarded: no `Term_US_S` frame has a month outside cover | zero or false outside cover, before any table or rate is read | A policy year or an attained age the policy does not have is never looked up, and no scale reads a month before issue as a policy year |
-| `mort_rate` | uncapped | `min(…, 1.0)`, the bound second | Past 1, the monthly rate is complex; a NaN stays NaN (below) |
 | `plt_mort_factor_init_formula`, `plt_mort_factor` | `min(8.0, …)`, `max(2.0, …)` | `min(…, 8.0)`, `max(…, 2.0)` | A NaN stays NaN, as at the cap; the same float wherever the argument is a number (below) |
 | `result_cf_annual` | whole policy years | the policy years in the frame, the months before issue left out | An in-force point's first row holds the rest of its current policy year, and its `pols_if` is the count at the valuation date |
 | `result_pols` | — | new | The counts behind `result_cf()`, after `basiclife/BasicTerm_SE`'s `result_pols()` |
@@ -288,22 +284,19 @@ Its `pols_if`, `premiums`, `claims`, `commissions`, `premium_taxes` and `conv_cr
 six columns too; its maintenance expense is `1.02^(3/12)` above S's, and its acquisition is
 $300 exactly.
 
-`mort_rate` caps the annual rate at 1, as `SPIA_US_S` caps its `q_be` and `q_rated`, and
-`DIA_US_S`, `FIA_US_S` and `ULSG_US_S` cap their mortality, but writes the cap
-`min(q, 1.0)`, the product first and the bound second (below). `Term_US_S` does not cap,
-and past 1 its monthly rate, `1 − (1 − q)^(1/12)`, is complex, so the cap
-changes no value `Term_US_S` computes as a real number but the annual rate itself, which
-`Term_US_S` leaves above 1. At 1 the monthly rate is 1, so every policy in force at the
+`mort_rate` caps the annual rate at 1, written `min(q, 1.0)`, the product first and the
+bound second, as `Term_US_S` writes it (below). Past 1 the monthly rate,
+`1 − (1 − q)^(1/12)`, has no real value. At 1 it is 1, so every policy in force at the
 start of the first month the cap binds dies in that month, and none is in force after
-it. On the shipped mortality and class tables the uncapped rate passes 1 only after the
-level period. At the issue ages [`product-spec.md`](product-spec.md) admits, it first does
-so, at the lowest M(1), in the tobacco class on the twenty-year plan issued at 65, its
-oldest tobacco issue age: at attained age 94, the tenth PLT year, once M(1) passes 5.9152,
-which the notes' rule gives at a jump ratio past 9.9367. There a non-tobacco class needs
-an M(1) above 8, the most the rule gives, so an override. The model does not refuse an
-older issue age. Where the first PLT year falls at attained age 94, as on the ten-year
-plan issued at 84, the rate passes 1 there once M(1) passes 4.5652 in the tobacco class
-and 7.9891 in the standard non-tobacco class, the least M(1) that does so on any point the
+it. On the shipped mortality and class tables the product passes 1 only after the level
+period. At the issue ages [`product-spec.md`](product-spec.md) admits, it first does so,
+at the lowest M(1), in the tobacco class on the twenty-year plan issued at 65, its oldest
+tobacco issue age: at attained age 94, the tenth PLT year, once M(1) passes 5.9152, which
+the notes' rule gives at a jump ratio past 9.9367. There a non-tobacco class needs an M(1)
+above 8, the most the rule gives, so an override. The model does not refuse an older
+issue age. Where the first PLT year falls at attained age 94, as on the ten-year plan
+issued at 84, the product passes 1 there once M(1) passes 4.5652 in the tobacco class and
+7.9891 in the standard non-tobacco class, the least M(1) that does so on any point the
 model projects. At M(1) = 8 the anchor cell issued at 70 in the tobacco class passes 1 at
 attained age 90, in policy year 21, as a test shows (*Tests*, below). No committed point
 comes near it, nor any point of the splice grid.
@@ -311,15 +304,16 @@ comes near it, nor any point of the splice grid.
 The order of the cap's arguments matters. Python's `min` and the compiled cell alike keep
 the first argument unless a later one compares smaller, and no comparison with NaN holds,
 so `min(1.0, q)` is 1.0 where `q` is NaN: a blank class factor would read as certain death
-in the first month, every count and cash flow finite, where `Term_US_S`, uncapped,
-projects NaN. `min(q, 1.0)` is NaN there, in both engines, and wherever `q` is a number it
-is the float `min(1.0, q)` is, 1.0 included, so the order changes no number the model
-computes. The notes' M(1) rule, `min(8.0, 1 + 0.55 × (J − 1))`, and the floor of the
-post-level-term grading, `max(2.0, …)`, are written with their bounds second for the same
-reason, and are the same floats wherever their arguments are numbers. An infinity is a
-number, though, and the cap reads an infinite class factor as certain death in either
-order, so `Data` also refuses, by name, every value a cap, a `min` or a `max` reads that is
-blank, text or infinite (*What it refuses*, below): no NaN, and no infinity, reaches one.
+in the first month, every count and cash flow finite. `min(q, 1.0)` is NaN there, in both
+engines, and wherever `q` is a number it is the float `min(1.0, q)` is, 1.0 included, so
+the order changes no number the model computes. The notes' M(1) rule,
+`min(8.0, 1 + 0.55 × (J − 1))`, and the floor of the post-level-term grading,
+`max(2.0, …)`, are written with their bounds second for the same reason, where
+`Term_US_S` writes them with their bounds first, and are the same floats wherever their
+arguments are numbers. An infinity is a number, though, and the cap reads an infinite
+class factor as certain death in either order, so `Data` also refuses, by name, every
+value a cap, a `min` or a `max` reads that is blank, text or infinite (*What it refuses*,
+below): no NaN, and no infinity, reaches one.
 
 ## The compiled model
 
@@ -556,9 +550,10 @@ The compiled model refuses what modelx refuses, with the same message. modelx ra
   the jump ratio and so the M(1) rule read, by every schedule at fault and every policy
   year in it; an `age_at_entry`, whose attained age indexes the mortality table, and a
   `plt_mort_factor_override`, by `point_id`. A blank override is the notes' rule, and is
-  read so. `Term_US_S`, uncapped, met each only when a projection reached it: it raised on
-  text and on a blank or infinite age, read a negative infinite M(1) override as its
-  grading's floor, 2.0, without a word, and projected NaN or an infinity from the rest.
+  read so. `Term_US_S` met each only when a projection reached it: it raised on text and on
+  a blank or infinite age, read an infinite factor, base rate or M(1) override as certain
+  death at its cap and a negative infinite M(1) override as its grading's floor, 2.0,
+  without a word, and projected NaN or an infinity from the rest.
 - A key beyond a table, by the one cell that reads it, where `Term_US_S`'s `.loc` raised
   `KeyError`: `point_id 2: mort_table.csv has no rate at attained age 30`, from
   `mort_rate_base`, and `point_id 2: premium_rates.csv has no premium for policy year 61`,
@@ -575,14 +570,14 @@ the last row is refused in both, with an `IndexError` at the first read of a vec
 last point, under that point's own `point_id()`.
 
 An annual mortality above 1 is not refused but capped, in both: `mort_rate` caps the
-product of the base rate, the class factor and M(d) at 1 (*Departures from Term_US_S*,
-above). Uncapped, as in `Term_US_S`, the monthly rate, `1 − (1 − q)^(1/12)`, would be
-complex in modelx and NaN compiled, silently. Capped, both compute 1, and a compile test
-holds the two equal on points where the cap binds, new business and in force. A NaN
-product would stay NaN through the cap, in both, as it would through the M(1) rule's
-`min` and the grading's `max`, each of which the compiled model computes as a comparison
-that keeps the value unless the bound is smaller, or larger; `Data`'s refusals of a value
-that is not a finite number keep any NaN from reaching them.
+product of the base rate, the class factor and M(d) at 1, as `Term_US_S` does
+(*Departures from Term_US_S*, above). Uncapped, the monthly rate, `1 − (1 − q)^(1/12)`,
+would be complex in modelx and NaN compiled, silently. Capped, both compute 1, and a
+compile test holds the two equal on points where the cap binds, new business and in
+force. A NaN product would stay NaN through the cap, in both, as it would through the
+M(1) rule's `min` and the grading's `max`, each of which the compiled model computes as a
+comparison that keeps the value unless the bound is smaller, or larger; `Data`'s refusals
+of a value that is not a finite number keep any NaN from reaching them.
 
 ### Speed
 
@@ -692,14 +687,13 @@ one to compare.
   `run_sec.py --cython` says it cannot build.
 - **The cap**: on the anchor cell issued at 70 in the tobacco class, with M(1) at 8.0 and
   a tobacco schedule, in copies of the tables, under the splice's References, inflation
-  at 0 and conversion on, `Term_US_S`'s annual mortality passes 1 from policy year 21, at
-  attained age 90, to the end of cover, and its monthly rate is complex in every one of
-  those months. This model's `mort_rate` and `mort_rate_mth` are the float 1.0 there;
-  every policy in force at the start of that year's first month dies in it, and none is
-  in force after it; `result_cf()`, `result_pols()` and `result_cf_annual()` hold finite
-  floats; and every cell the two models share agrees, to 1e-9 relative with no absolute
-  floor, in every month before it, and from it on wherever `Term_US_S` computes a real
-  number, the annual rate excepted. So does the point restated in force the month before
+  at 0 and conversion on, the product of the base rate, the class factor and M(d) passes 1
+  from policy year 21, at attained age 90, to the end of cover. In both models
+  `mort_rate` and `mort_rate_mth` are the float 1.0 there; every policy in force at the
+  start of that year's first month dies in it, and none is in force after it; the
+  reports hold finite floats; and every cell the two models share agrees, to 1e-9
+  relative with no absolute floor, at every argument `Term_US_S` evaluates, the capped
+  months and the reports included. So does the point restated in force the month before
   the cap, opened with `Term_US_S`'s count and compared cell by cell as a splice row is.
   It loses every policy in the capped month, and the point in force five months into that
   year loses every policy in the first month it projects. And a NaN sent to the cap, to

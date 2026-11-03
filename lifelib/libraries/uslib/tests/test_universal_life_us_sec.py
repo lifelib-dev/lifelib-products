@@ -63,9 +63,9 @@ the rest of the plan's tests (its §5.2) and the product's own facts:
   outside cover, each new opening-state column on the variants, the survivors the end of
   the projection carries, expense inflation and the declared rates on the valuation
   clock, a check whose residual is not a number, the margin identity once a loan exceeds
-  the cash value, acquisition on new business, the mortality cap, the docstrings, the
-  shared input tables, what the default grid reaches, the block, an in-force extract and
-  the runner.
+  the cash value, acquisition on new business, the mortality cap and a NaN that reaches
+  it, the docstrings, the shared input tables, what the default grid reaches, the block,
+  an in-force extract and the runner.
 
 SEC month ``t`` is S month ``t + source_mth`` throughout, the direction in which
 ``sec_support`` takes its ``t_offset``: ``d`` for a point restated at S month ``d``, 0 for
@@ -304,9 +304,8 @@ FULL_ONLY = (pytest.mark.sec_full,
 #   mort_ae_factor at 0.56, which leaves lives at the end of every frame, so that the
 #     survivors carried into t = proj_len(), which S's roll-forwards read there, are
 #     compared on every row, and which keeps every class's annual rate below 1, StdTob's
-#     oldest at 1.75 x 0.56 = 0.98, so that S can project the tobacco variant at all: at
-#     an A/E of 1 its rate passes 1 at attained age 113, where S's monthly rate is complex
-#     (the mortality cap test);
+#     oldest at 1.75 x 0.56 = 0.98: at an A/E of 1 its product passes 1 at attained age
+#     113, where both models cap it (the mortality cap test);
 #   charges_cease_age at 100, inside every frame, where the shipped 121 is one past the
 #     table's last age: premiums, charges and withdrawals cease in cover, at attained age
 #     100, policy month 780 at issue age 35;
@@ -2710,25 +2709,31 @@ def test_acquisition_is_charged_on_new_business_only(tmp_path):
 # ---------------------------------------------------------------------------
 # The cap on mortality
 #
-# mort_rate caps the annual rate at 1, where UL_US_S's passes it and its monthly rate turns
-# complex (model-sec.md, *Departures from UL_US_S*).  At the shipped A/E UL_US_S's StdTob
-# class, 1.75 times the base table, passes 1 at attained age 113, at 1.095, and stays past
-# it to the end of the projection.  The committed points are all StdNT, and the splice's A/E
-# of 0.56 keeps every class below 1, so neither comes near it.  One point is made to pass
-# it, the way the variants are made: S's anchor cell in the StdTob class, with its own COI
-# rows (SPLICED_EDITS), alone in a copy of S's table, under the splice's References with
-# the A/E back at the shipped 1.0 (CAPPED_REFS).
+# mort_rate caps the annual rate at 1, as UL_US_S's does.  At the shipped A/E UL_US_S's
+# StdTob class, 1.75 times the base table, takes the product past 1 at attained age 113, at
+# 1.095, and keeps it past 1 to the end of the projection.  The committed points are all
+# StdNT, and the splice's A/E of 0.56 keeps every class below 1, so neither comes near it.
+# One point is made to pass it, the way the variants are made: S's anchor cell in the StdTob
+# class, with its own COI rows (SPLICED_EDITS), alone in a copy of S's table, under the
+# splice's References with the A/E back at the shipped 1.0 (CAPPED_REFS).
 CAPPED = (1, {"policy_id": "UL-900020", "rate_class": "StdTob"})
 CAPPED_REFS = {**SPLICED_REFS, "mort_ae_factor": 1.0}
-CAPPED_MTH = 936        # the first month at attained age 113, where the rate passes 1
+CAPPED_MTH = 936        # the first month at attained age 113, where the product passes 1
+
+
+def _uncapped_mort_rate(proj, t):
+    """``UL_US_S``'s annual mortality product in month t, the one its cap bounds."""
+    table = proj.data.mort_table()
+    a = min(max(proj.age(t), int(table.index.min())), int(table.index.max()))
+    return float(table.loc[a, "mort_rate"]) * proj.class_factor() * proj.mort_ae_factor
 
 
 def _sweep_months(proj):
     """Evaluate every monthly cell of an S point at every month of its frame.
 
-    At each of its timings or kinds, as :func:`_sweep_s` reaches them, but without the
-    checks, whose ``math.isclose`` raises on the complex values ``UL_US_S`` projects past
-    the cap.  Its reports hold those values and raise nothing.
+    At each of its timings or kinds, as :func:`_sweep_s` reaches them, so that the cap test
+    compares every monthly cell in every month the cap binds, those no report or check
+    reads among them.
     """
     arguments = {**BY_ARGUMENT, **OPENING, "av_pp_at": AV_TIMINGS,
                  "av_at": (*AV_TIMINGS, "EOM")}
@@ -2743,40 +2748,33 @@ def _sweep_months(proj):
                     proj.cells[name](t, _code(proj, label))
 
 
-def test_an_annual_mortality_past_1_is_capped_where_ul_us_s_turns_complex(tmp_path):
-    """Where ``UL_US_S``'s annual mortality passes 1, this model's is 1.
+def test_an_annual_mortality_past_1_is_capped_in_both_models(tmp_path):
+    """Where the annual mortality product passes 1, both models' rate is 1.
 
-    On the point of :data:`CAPPED`, ``UL_US_S``'s ``mort_rate`` passes 1 in month
-    :data:`CAPPED_MTH` and stays past it to the end of the projection, and its monthly
-    rate, ``1 - (1 - q)^(1/12)``, is complex in every one of those months and a float in
-    every month before: the domain is real, on a point the contract issues.  This model's
-    ``mort_rate`` is 1.0 in those months, and so is its monthly rate, so every policy in
-    force at the start of the first dies in it, and none is in force after it.  Both rates
-    are the float 1.0, not the int 1, which compares equal to it.  ``result_cf()``,
+    On the point of :data:`CAPPED`, ``UL_US_S``'s product of the base rate, the class
+    factor and the A/E (:func:`_uncapped_mort_rate`) passes 1 in month :data:`CAPPED_MTH`
+    and stays past it to the end of the projection, on a point the contract issues.  Both
+    models cap it: ``mort_rate`` and the monthly rate, ``1 - (1 - q)^(1/12)``, are 1.0 in
+    every one of those months, the float, not the int 1, which compares equal to it, and
+    S's are floats below 1 in every month before.  So every policy in force at the start of
+    the first capped month dies in it, and none is in force after it.  ``result_cf()``,
     ``result_pols()`` and ``result_av()`` hold finite floats alone, and both checks hold.
 
-    The cap changes ``UL_US_S``'s annual rate where it passes 1, and no monthly rate, count
-    or flow that ``UL_US_S`` computes as a real number.  In every cell of S's this model
-    agrees with S at every argument S cached (``sec_support.twin_mismatches``), in every
-    month before the cap binds, and from that month on wherever S's value is not complex,
-    but for ``mort_rate`` itself and, in the issue month, the count before new business,
-    which S counts as in force (:func:`_issued_later`); the comparison's ``arg_map`` leaves
-    the rest out.  It holds them to 1e-9 relative with no absolute floor, because the
-    counts before the cap fall to 2.9e-13, where the default floor of 1e-9 would compare
-    them against nothing.
-    The count that enters the capped month is still real there, and agrees; the next
-    month's is complex.  S's reports hold S's complex values, so they are left out too;
-    their columns are cells the comparison makes.
+    In every cell of S's this model agrees with S at every argument S cached
+    (``sec_support.twin_mismatches``), the capped months and the reports included, but, in
+    the issue month, the count before new business, which S counts as in force
+    (:func:`_issued_later`).  It holds them to 1e-9 relative with no absolute floor,
+    because the counts before the cap fall to 2.9e-13, where the default floor of 1e-9
+    would compare them against nothing.  S is swept as the splice sweeps it
+    (:func:`_sweep_s`), and every monthly cell in every month (:func:`_sweep_months`).
 
     Four rows of the point, built from S by the generator under :data:`CAPPED_REFS`:
     issued at the valuation date and 25 months after it; restated in force in the month
     before the cap, opened with S's count and state there, and compared cell by cell as a
     splice row is; and restated five months into the capped year, opened with S's state
-    there and one policy, since S's count there is complex.  On each, the rate is 1.0 from
-    its first capped month, every policy in force there dies in it, and the count is 0.0
-    after it.  A cap applied to new business only passes both comparisons, which leave out
-    the capped rate and S's complex values, and fails only through those assertions on the
-    rows in force.
+    there and one policy, since S's count there is 0.  On each, the rate is 1.0 from its
+    first capped month, every policy in force there dies in it, and the count is 0.0
+    after it.
     """
     base, changes = CAPPED
     s_table = pd.read_csv(model_path(TWIN).parent / "model_point_table.csv",
@@ -2790,15 +2788,18 @@ def test_an_annual_mortality_past_1_is_capped_where_ul_us_s_turns_complex(tmp_pa
             setattr(s.Projection, ref, value)
         sp = _point(s, base)
         end = sp.proj_len()
-        cap = next(t for t in range(end) if sp.mort_rate(t) > 1)
+        cap = next(t for t in range(end) if _uncapped_mort_rate(sp, t) > 1)
         assert (cap, sp.age(cap)) == (CAPPED_MTH, 113)
-        assert sp.mort_rate(cap) == pytest.approx(0.625687 * 1.75, rel=1e-12)
+        assert _uncapped_mort_rate(sp, cap) == pytest.approx(0.625687 * 1.75, rel=1e-12)
         after = range(cap, end)
-        assert all(sp.mort_rate(t) > 1 for t in after)
-        assert all(type(sp.mort_rate_mth(t)) is float for t in range(cap))
-        assert all(type(sp.mort_rate_mth(t)) is complex for t in after)
+        assert all(_uncapped_mort_rate(sp, t) > 1 for t in after)
+        for rate in (sp.mort_rate, sp.mort_rate_mth):
+            assert all(type(rate(t)) is float and rate(t) < 1.0 for t in range(cap))
+            assert [(type(rate(t)), rate(t)) for t in after] == [(float, 1.0)] * len(after)
+        _sweep_s(sp)
         _sweep_months(sp)
-        assert type(sp.pols_if(cap)) is float and type(sp.pols_if(cap + 1)) is complex
+        assert sp.pols_if(cap) > 0.0 and sp.pols_death(cap) == sp.pols_if(cap)
+        assert [sp.pols_if(t) for t in range(cap + 1, end)] == [0.0] * (len(after) - 1)
         spec = dataclasses.replace(SPEC, derived=((base, cap - 1),), future=((base, 25),))
         table, _ = build_sec_table(spec, s)
         inside = cap + 5
@@ -2811,17 +2812,6 @@ def test_an_annual_mortality_past_1_is_capped_where_ul_us_s_turns_complex(tmp_pa
                             name=_name("capped"))
         for ref, value in CAPPED_REFS.items():
             setattr(sec.Projection, ref, value)
-        reports = {name for name in sp.cells if name.startswith("result_")}
-
-        def real_and_uncapped(name, args):
-            if name in reports or _issued_later(name, args) is None:
-                return None
-            params = sp.cells[name].parameters
-            if "t" in params and args[params.index("t")] >= cap and (
-                    name == "mort_rate" or isinstance(sp.cells[name](*args), complex)):
-                return None
-            return args
-
         # Each row with the month its rate is first capped and, for the three S's count
         # opens, the exemptions of its comparison with S.
         rows = ((("twin", base, 0), cap, FUTURE_EXEMPT),
@@ -2833,7 +2823,7 @@ def test_an_annual_mortality_past_1_is_capped_where_ul_us_s_turns_complex(tmp_pa
             p = projection(sec, key)
             if exempt is not None:
                 assert _twin(sp, p, t_offset=case[2], exempt=exempt,
-                             arg_map=real_and_uncapped, atol=0.0) == [], case
+                             arg_map=_issued_later, atol=0.0) == [], case
             capped, later = range(first, p.proj_len()), range(first + 1, p.proj_len() + 1)
             for rate in (p.mort_rate, p.mort_rate_mth):
                 assert [(type(rate(t)), rate(t)) for t in capped] == (
@@ -2852,6 +2842,37 @@ def test_an_annual_mortality_past_1_is_capped_where_ul_us_s_turns_complex(tmp_pa
         if sec is not None:
             sec.close()
         s.close()
+
+
+def _nan_factor():
+    """NaN, what a blank factor carries: the formula a test puts in place of a cell's."""
+    return float("nan")
+
+
+def test_a_nan_that_reaches_the_cap_stays_nan():
+    """A NaN that reaches the cap on mortality stays NaN, and is not read as 1.
+
+    ``min`` keeps its first argument unless a later one compares smaller, in modelx and
+    compiled alike, and no comparison with NaN holds, so with its bound first the cap would
+    turn a NaN into 1.0: a blank class factor read as certain death, every flow finite.
+    It is written ``min(q, 1.0)``, as ``UL_US_S`` writes it.  ``Data`` refuses a blank
+    factor or rate as it reads the tables, so to send the cap a NaN, the formula of
+    ``class_factor``, which feeds it, is replaced by one returning NaN, in a model read for
+    the test, which modelx allows.  ``mort_rate`` must then be the float NaN in the first
+    month and the last, and so must the monthly rate and the count after the first month.
+    """
+    model = mx.read_model(model_path(SEC), name=_name("nan"))
+    try:
+        model.Projection.cells["class_factor"].formula = _nan_factor
+        p = _row(model, "twin", 1, 0)
+        calls = [("mort_rate", (0,)), ("mort_rate", (p.proj_len() - 1,)),
+                 ("mort_rate_mth", (0,)), ("pols_if", (1,))]
+        lost = [f"{name}{args} = {value!r}" for name, args in calls
+                for value in [p.cells[name](*args)]
+                if not (type(value) is float and math.isnan(value))]
+        assert not lost, f"the cap loses a NaN class_factor(): {lost}"
+    finally:
+        model.close()
 
 
 def _docs(model):

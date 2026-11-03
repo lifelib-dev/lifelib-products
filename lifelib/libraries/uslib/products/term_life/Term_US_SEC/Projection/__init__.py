@@ -137,10 +137,7 @@ policy each: there every cell the two share agrees at every argument
 :mod:`~.Term_US_S` evaluates in its sweep, but for two whose meaning changed,
 ``pols_if_init``, now the count already in force at the valuation date, and
 ``model_point``, a row of another table. That is how the S worked example carries over,
-and ``tests/test_model_conventions.py`` asserts it cell by cell. Where
-:mod:`~.Term_US_S`'s annual mortality passes 1 its monthly rate is complex, and this model
-caps the annual rate at 1 instead (:func:`mort_rate`), which changes no value
-:mod:`~.Term_US_S` computes as a real number but the annual rate itself.
+and ``tests/test_model_conventions.py`` asserts it cell by cell.
 
 .. rubric:: Counts
 
@@ -753,29 +750,26 @@ def mort_rate_base(t):
 def mort_rate(t):
     """The **annual** mortality rate of the policy year containing month t, at most 1.
 
-    Base x class factor x PLT deterioration, capped at 1, as ``SPIA_US_S``, ``DIA_US_S``,
-    ``FIA_US_S`` and ``ULSG_US_S`` cap theirs, but written ``min(q, 1.0)``: the product
-    first, the float bound second. ``min`` keeps its first argument unless a later one
-    compares smaller, in Python and in the compiled cell alike, and no comparison with NaN
-    holds, so ``min(1.0, q)`` would be 1.0 where ``q`` is NaN, a blank input read as
-    certain death, silently. ``min(q, 1.0)`` is NaN there, and wherever ``q`` is a number
-    it is the float ``min(1.0, q)`` is, 1.0 included. ``Data`` refuses a blank, text or
-    infinite value wherever the product reads one, so that none reaches it. The PLT
-    duration is ``d = policy_year(t) - n``, so the multiplier applies from
-    ``duration_mth(t) = 12n`` (``d = 1``) on. :func:`mort_rate_mth` is the rate actually
-    applied in the month.
+    Base x class factor x PLT deterioration, capped at 1, as ``Term_US_S`` caps it,
+    ``min(q, 1.0)``: the product first, the float bound second. ``min`` keeps its first
+    argument unless a later one compares smaller, in Python and in the compiled cell
+    alike, and no comparison with NaN holds, so ``min(1.0, q)`` would be 1.0 where ``q``
+    is NaN, a blank input read as certain death, silently. ``min(q, 1.0)`` is NaN there,
+    and wherever ``q`` is a number it is the float ``min(1.0, q)`` is, 1.0 included.
+    ``Data`` refuses a blank, text or infinite value wherever the product reads one, so
+    that none reaches it. The PLT duration is ``d = policy_year(t) - n``, so the
+    multiplier applies from ``duration_mth(t) = 12n`` (``d = 1``) on. :func:`mort_rate_mth`
+    is the rate actually applied in the month.
 
-    ``Term_US_S`` does not cap. Past 1 its monthly rate, ``1 - (1 - q)^(1/12)``, is
-    complex, so the cap changes no value ``Term_US_S`` computes as a real number but the
-    annual rate itself, which ``Term_US_S`` leaves above 1. At 1 the monthly rate is 1,
-    and every policy in force at the start of the month dies in it. On the shipped
-    mortality and class tables the uncapped rate passes 1 only after the level period. At
-    the issue ages ``product-spec.md`` admits, it first does so, at the lowest M(1), in the
-    tobacco class on the twenty-year plan issued at 65, its oldest tobacco issue age: at
-    attained age 94, once M(1) passes 5.9152, which the notes' rule gives at a jump ratio
-    past 9.9367. There a non-tobacco class needs an M(1) above 8, the most the rule gives,
-    so an override. The model does not refuse an older issue age. Where the first PLT year
-    falls at attained age 94, as on the ten-year plan issued at 84, the rate passes 1 there
+    Past 1 the monthly rate, ``1 - (1 - q)^(1/12)``, has no real value. At 1 it is 1, and
+    every policy in force at the start of the month dies in it. On the shipped mortality
+    and class tables the product passes 1 only after the level period. At the issue ages
+    ``product-spec.md`` admits, it first does so, at the lowest M(1), in the tobacco class
+    on the twenty-year plan issued at 65, its oldest tobacco issue age: at attained age
+    94, once M(1) passes 5.9152, which the notes' rule gives at a jump ratio past 9.9367.
+    There a non-tobacco class needs an M(1) above 8, the most the rule gives, so an
+    override. The model does not refuse an older issue age. Where the first PLT year falls
+    at attained age 94, as on the ten-year plan issued at 84, the product passes 1 there
     once M(1) passes 4.5652 in the tobacco class and 7.9891 in the standard non-tobacco
     class, the least M(1) that does so on any point the model projects.
     """

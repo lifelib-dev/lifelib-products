@@ -1735,19 +1735,18 @@ def mort_rate(t):
     row, where the rate is 1.0.  The base rate is read at the attained age of month t by
     :func:`mort_rate_base_at`.
 
-    The product is capped at 1.0, as ``ULSG_US_S``'s is and ``UL_US_S``'s is not.  A class
-    factor above 1 -- 1.50 and 1.75 for the two tobacco classes -- carries the oldest
-    ages' rates past 1, where the monthly rate ``1 - (1 - q)^(1/12)`` has no real value,
-    and ``UL_US_S`` projects complex numbers there; at the shipped A/E a StdTob point's
-    rate first passes 1 at attained age 113.  Where the product is at most 1, which is
-    every rate ``UL_US_S``'s own points reach, the cap changes nothing.  It is written
-    ``min(q, 1.0)``, the same float as ``min(1.0, q)`` wherever ``q`` is a number: Python's
-    ``min``, and the compiled cell, keep their first argument unless a later one is
-    smaller, so ``min(1.0, q)`` would turn a blank base rate or class factor, which
-    ``UL_US_S`` reads as a missing value, into 1.0, certain death with every flow finite,
-    where ``min(q, 1.0)`` keeps it missing.  ``Data`` refuses both as it reads the tables
-    (``data.mort_age_last()``, ``data.class_count()``), before any rate is read.  Zero
-    outside cover.
+    The product is capped at 1.0, as ``UL_US_S``'s and ``ULSG_US_S``'s are.  A class factor
+    above 1 -- 1.50 and 1.75 for the two tobacco classes -- carries the oldest ages' rates
+    past 1, where the monthly rate ``1 - (1 - q)^(1/12)`` has no real value; at the shipped
+    A/E a StdTob point's product first passes 1 at attained age 113.  Where the product is
+    at most 1, which is every rate ``UL_US_S``'s own points reach, the cap changes nothing.
+    It is written ``min(q, 1.0)``, as ``UL_US_S`` writes it, the same float as
+    ``min(1.0, q)`` wherever ``q`` is a number: Python's ``min``, and the compiled cell,
+    keep their first argument unless a later one is smaller, so ``min(1.0, q)`` would turn
+    a blank base rate or class factor, which ``UL_US_S`` reads as a missing value, into
+    1.0, certain death with every flow finite, where ``min(q, 1.0)`` keeps it missing.
+    ``Data`` refuses both as it reads the tables (``data.mort_age_last()``,
+    ``data.class_count()``), before any rate is read.  Zero outside cover.
     """
     if not is_active(t):
         return 0.0

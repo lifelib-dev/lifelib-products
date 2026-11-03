@@ -1147,8 +1147,12 @@ def mort_rate(t):
     consistency trap: the same table drives claim outgo here and the dividend's mortality
     margin through mort_rate_scale(), with opposite signs. :func:`mort_rate_mth` is the
     rate actually applied in the month.
+
+    Capped at 1, written ``min(q, 1.0)``, as ``WholeLife_US_S`` caps it: past 1 the monthly
+    rate has no real value, and with the bound second a missing input, a NaN, stays NaN,
+    where ``min(1.0, q)`` would read it as 1. No shipped point reaches the cap.
     """
-    return ae_best_est * mort_rate_guar(t)                           # noqa: F821
+    return min(ae_best_est * mort_rate_guar(t), 1.0)                 # noqa: F821
 
 
 def mort_rate_mth(t):
