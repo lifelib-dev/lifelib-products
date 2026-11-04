@@ -10,11 +10,12 @@ product passes 1, in ``SPIA_US_S`` alone, at its terminal ages, either order giv
 and no shipped point sends a cap a NaN, so neither the S models' own modules nor the twin
 identity can see how the cap is written, nor whether it is there, but for both of
 ``SPIA_US_S``'s caps at once: with either alone its rate is still 1.0.  The cap tests of
-``DIA_US_SEC``, ``FIA_US_SEC``, ``Term_US_SEC``, ``UL_US_SEC``, ``VUL_US_SEC`` and
-``WholeLife_US_SEC`` see their S model's cap and its float bound, where the product
-passes 1, and ``SPIA_US_SEC``'s splice sees ``SPIA_US_S``'s rating cap, on a point rated
-1.25, but none of them sees the order of an S model's cap.  ``VUL_US_SEC``'s NaN test
-sees ``VUL_US_S``'s, since it reads both models and sends the cap of each a NaN.
+``DIA_US_SEC``, ``FIA_US_SEC``, ``RILA_US_SEC``, ``Term_US_SEC``, ``UL_US_SEC``,
+``VUL_US_SEC`` and ``WholeLife_US_SEC`` see their S model's cap and its float bound,
+where the product passes 1, and ``SPIA_US_SEC``'s splice sees ``SPIA_US_S``'s rating
+cap, on a point rated 1.25.  Of these only ``RILA_US_SEC``'s also sees the order of an S
+model's cap, reading both models with ``mort_ae_factor`` a NaN, and ``VUL_US_SEC``'s NaN
+test sees ``VUL_US_S``'s, since it reads both models and sends the cap of each a NaN.
 
 So each S model is read for the test, the product is fed a NaN and then a factor that takes
 it past 1, through each name in :data:`MORT_CAP_FEEDS` in turn, and ``mort_rate`` and

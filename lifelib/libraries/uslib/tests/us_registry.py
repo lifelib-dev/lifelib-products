@@ -119,6 +119,8 @@ MODELS = {
     "VA_US_S": ("products/variable_annuity/VA_US_S", MONTHLY),
     "RILA_US_S": (
         "products/registered_index_linked_annuity/RILA_US_S", MONTHLY),
+    "RILA_US_SEC": ("products/registered_index_linked_annuity/RILA_US_SEC",
+                    {**MONTHLY, "twin": "RILA_US_S", "stage": "E"}),
     # Annuity — payout
     "SPIA_US_S": ("products/immediate_annuity/SPIA_US_S", MONTHLY),
     "SPIA_US_SEC": ("products/immediate_annuity/SPIA_US_SEC",
@@ -176,6 +178,10 @@ INPUT_FILES = {
     "RILA_US_S": {
         "guar_min_rate_table.csv", "lapse_table.csv", "market_scenario.csv",
         "model_point_table.csv", "mort_table.csv", "surr_charge_table.csv",
+        "withdrawal_table.csv"},
+    "RILA_US_SEC": {
+        "guar_min_rate_table.csv", "lapse_table.csv", "market_scenario_sec.csv",
+        "model_point_table_sec.csv", "mort_table.csv", "surr_charge_table.csv",
         "withdrawal_table.csv"},
     "SPIA_US_S": {
         "improvement_scale.csv", "model_point_table.csv", "mort_table.csv",

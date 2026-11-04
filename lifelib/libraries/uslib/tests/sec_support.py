@@ -1003,7 +1003,8 @@ class SecSpec:
     ``companions``
         companion filename to ``callable(s_model, table)``, which builds that file from the
         S model and the finished SEC table (a copy, free to modify): DIA's premium schedule,
-        FIA's rate scenarios re-based to each row, and VA's re-based scenario (D8).
+        FIA's rate scenarios and RILA's market scenarios re-based to each row, and VA's
+        re-based scenario (D8).
     ``model_point_file``
         the SEC table's own filename.
 
@@ -1437,6 +1438,132 @@ _VUL_STATE = {
         "sum_assured_at", lambda s: s.sum_assured() if s.duration_mth_init() > 0 else 0.0),
     "corridor_override_m1": _vul_no_pin,
     "coi_rate_override_m1": _vul_no_pin,
+}
+
+
+def _rila_entering(name):
+    """What ``RILA_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``, or 0.0 at ``d = 0``: a contract issued at the valuation
+    date opens with no state, and S credits its purchase payment in its issue month.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > 0 else 0.0
+    return extract
+
+
+def _rila_prev_anniv(s, d):
+    """``RILA_US_S``'s free-withdrawal base for the contract year of month ``d``.
+
+    The Account Value before withdrawals at the anniversary on or before month ``d``, S's
+    ``av_pp_at(12 cy - 1, "BEF_WD")`` at the close of the month the anniversary ends; the
+    purchase payment in the first contract year, which opened at issue, as S's
+    ``free_wd_base`` reads it there; and 0.0 at ``d = 0``, where nothing is in force yet.
+    """
+    if d <= 0:
+        return 0.0
+    if d < 12:
+        return s.premium_pp()
+    return s.av_pp_at(12 * (d // 12) - 1, "BEF_WD")
+
+
+def _rila_mid_term(s, d):
+    """Whether the term ``RILA_US_S`` has in force at month ``d`` began before ``d``.
+
+    On a contract in force, ``d > 0``, every month but a Term Start Date: terms run from
+    issue in steps of ``12 x term_years`` policy months.
+    """
+    return d > 0 and d % (12 * s.term_years()) != 0
+
+
+def _rila_term_start(name):
+    """``RILA_US_S``'s market ``name`` on the Term Start Date of the term in force at ``d``.
+
+    Where that date precedes ``d``, S's scenario at the term's start, the value S locks
+    there; blank otherwise, where the SEC model reads the start from the scenario (the
+    frozen-weight shape of USLIB-SEC-PLAN.md §7.12, *Record — M12*).
+    """
+    def extract(s, d):
+        if not _rila_mid_term(s, d):
+            return float("nan")
+        return s.market_state(s.term_start_month(d), name)
+    return extract
+
+
+def _rila_cap(s, d):
+    """``RILA_US_S``'s cap in force at ``d``, where S re-solved it at a renewal before it.
+
+    On a capped option under ``nge_reset`` whose term in force at ``d`` began at a
+    renewal, after issue and before ``d``: S's ``cap_rate(d)``, the cap solved on the
+    market of that renewal and floored at the guaranteed minimum. Blank otherwise: the cap
+    of an initial term, or of any term off ``nge_reset``, is the model point's rule.
+    """
+    if not _rila_mid_term(s, d) or s.is_uncapped() or not s.nge_reset():
+        return float("nan")
+    if s.term_start_month(d) <= 0:
+        return float("nan")
+    return s.cap_rate(d)
+
+
+def _rila_scenario_id(s, d):
+    """The row's scenario: S's own at ``d = 0``, else S's re-based to month ``d`` (D8)."""
+    return s.scenario_id() if d == 0 else f"{s.scenario_id()}-M{d}"
+
+
+def _rila_rebased_scenarios(s_model, table):
+    """``market_scenario_sec.csv``: S's scenarios on the valuation clock, each row's copy
+    re-based.
+
+    S keys a level by its month end from issue, which is the valuation clock of a contract
+    issued at the valuation date, so S's scenarios open the file as they stand, under
+    their own ids, for the twins.  Each row whose ``scenario_id`` is none of S's gets its
+    source point's path re-based to its ``duration_mth`` by :func:`shift_months`, as a
+    step function: ``d`` for a row restated in force at ``d``, whose month-0 level is the
+    one S holds at ``d``, and ``-k`` for one issued ``k`` months on, whose copy holds no
+    level before its issue month.  The path is keyed from issue, so each copy moves by the
+    months from issue to the row's valuation date, its ``duration_mth``, which is its
+    ``source_mth`` only because ``RILA_US_S`` has no point in force.  S's scenarios are
+    read through S's reader, so the companion follows S's ``market_scenario_file``, and
+    each copied row keeps S's ``provenance``.
+    """
+    s_table = s_model.Data.model_point_table()
+    by_policy = dict(zip(s_table["policy_id"], s_table["scenario_id"]))
+    s_scen = s_model.Data.market_scenario().reset_index()
+    out, made = [s_scen], set(s_scen["scenario_id"])
+    for row in table.to_dict("records"):
+        sid = row["scenario_id"]
+        if sid in made:
+            continue
+        path = s_scen[s_scen["scenario_id"] == by_policy[row["source_policy_id"]]]
+        out.append(shift_months(path, "month_end", int(row["duration_mth"]))
+                   .assign(scenario_id=sid))
+        made.add(sid)
+    return pd.concat(out, ignore_index=True)
+
+
+# RILA_US_SEC's opening state (D6): what RILA_US_S carries into month d, each read as S's
+# own formulas read it.  The Investment Amount, the Fixed and Holding Accounts, the Account
+# Value, the Free Withdrawal Amount still unused and the return-of-premium base entering
+# the month, each S's close of month d - 1; the Account Value before withdrawals at the
+# anniversary on or before d, the base of the contract year's Free Withdrawal Amount;
+# where the term in force at d began before d, the index level, the Market Value Rate and
+# the option-pricing market of its Term Start Date, with the cap S re-solved at that
+# renewal on a capped option under nge_reset; and the row's scenario, S's re-based to d.
+_RILA_STATE = {
+    "inv_amt_pp_init": _rila_entering("inv_amt_pp"),
+    "fixed_acct_pp_init": _rila_entering("fixed_acct_pp"),
+    "holding_acct_pp_init": _rila_entering("holding_acct_pp"),
+    "av_pp_init": _rila_entering("av_pp"),
+    "av_pp_prev_anniv_init": _rila_prev_anniv,
+    "free_wd_remain_init": _rila_entering("free_wd_remain"),
+    "rop_pp_init": _rila_entering("rop_pp"),
+    "index_at_term_start_init": _rila_term_start("index_level"),
+    "mvr_at_term_start_init": _rila_term_start("mvr"),
+    "risk_free_at_term_start_init": _rila_term_start("risk_free"),
+    "div_yield_at_term_start_init": _rila_term_start("div_yield"),
+    "impl_vol_at_term_start_init": _rila_term_start("impl_vol"),
+    "cap_rate_init": _rila_cap,
+    "scenario_id": _rila_scenario_id,
 }
 
 
@@ -1976,6 +2103,95 @@ SEC_SPECS: dict[str, SecSpec] = {
         twin_state={c: f for c, f in _VUL_STATE.items()
                     if c in ("la_pp_init", "sum_assured_init")},
         exempt=frozenset({"result_pols"}),
+    ),
+    # RILA's state is thirteen columns and the row's scenario (_RILA_STATE above): seven
+    # amounts per contract entering the valuation month, the Investment Amount, which is
+    # also the crediting basis, the Fixed and Holding Accounts, the Account Value, of
+    # either sign since the interim value can fall below 0 [S2], the Account Value before
+    # withdrawals at the anniversary on or before d, the Free Withdrawal Amount still
+    # unused and the return-of-premium base; and, where the term in force began before d,
+    # the index level, the Market Value Rate and the option-pricing market of its Term
+    # Start Date, with the cap re-solved at that renewal on a capped option under
+    # nge_reset, each given only where its date precedes the valuation month, the
+    # projection reading the scenario at or after it (the frozen-weight shape of §7.12's
+    # Record — M12).  S has no in-force point, so every twin is new business, and the
+    # columns take S's own opening at issue: every amount 0, every fixing blank.  Terms
+    # align with issue, so no term-start month is a column, and RILA_US_S has no
+    # Performance Lock, so no lock is one either.
+    #
+    # The derived rows are the anchor in the last month of its first term (1 at 71); the
+    # worked example's withdrawal programme on the anniversary after its $8,000 midpoint
+    # withdrawal (2 at 36); the reset point mid-term after its first renewal, its cap
+    # re-solved there (13 at 80), and valued at that renewal (13 at 72); a Step option on
+    # a one-year term mid-term, its Fixed Account fed by two term ends (4 at 30); the
+    # legacy interim-value family the month before the charge-free year's first term end
+    # (15 at 59); the uncapped option mid-term (12 at 40); and the notional family in its
+    # last covered month (7 at 119).  The future row is the anchor issued 13 months on, more
+    # than a year out, so that a read before issue lands at policy year -1, and
+    # future_state gives it its own re-based scenario.  T2's splice grid is built from this
+    # spec in a temporary table, not committed.
+    #
+    # The scenario is a companion, market_scenario_sec.csv (D8): S keys its levels by the
+    # month end from issue, and its shipped paths step at months 36 and 72, so each derived
+    # and future row reads its own copy re-based to its month, under an id of its own.  It
+    # is read through S's reader, market_scenario(), whose Data Reference
+    # market_scenario_file names it.
+    #
+    # T1 holds on RILA at any count: S weights its premium and its acquisition by
+    # pols_if(0), the count issued, as SEC weights them by the contracts issued.  It skips
+    # one S cell besides the default three:
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and the product module compares the report
+    #     itself with S's, column by column.
+    # S caches claims(t, kind=None) and claims_over_av(t, kind=None) under (t, None); at
+    # stage EC, where that default becomes a named total (R12), T1 needs an arg_map for
+    # those keys.  No projection cell calls a label accessor or compares the model point's
+    # text: crediting_type, iv_family and amort_rule are decoded into the ten is_* bools,
+    # each read where S asks its question, and the three joins on text keys read
+    # model_point() in the one cell that reads each table (mort_rate_base_at on sex,
+    # market_state on scenario_id and wd_amount_pm on wd_schedule_id).  The text a
+    # projection cell still compares is S's own: the timing, kind, bucket, leg and market
+    # strings, which R9 numbers, and opt_legs' tuple of leg names (R10).  The
+    # float-parameter cells are S's, for Phase 2 to inline or re-key (R14): norm_cdf, the
+    # five Black-Scholes cells, opt_component, opt_portfolio, opt_portfolio_abs,
+    # credit_rate_at and opt_budget_at_cap.  S's tests call opt_component, opt_portfolio,
+    # credit_rate_at and bs_binary_call directly.  SEC adds none, and no uncached cell.
+    #
+    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 0
+    # to 85 (product-spec); Data refuses an issue age below 0 and one whose attained age in
+    # the first month on the books the mortality table does not rate, below 40 as shipped,
+    # and no cell refuses one above 85, as in S, so Phase 2 refuses an issue age outside
+    # 0 to 85 in proj_len(), beside the cover check:
+    #   t: 0 to 1,201.  The longest frame is maturity_mth() - duration_mth_init(), where
+    #     maturity_mth() is 12 x max(maturity_age - age_at_entry, maturity_min_years): 1,080
+    #     months at the youngest issue age, 0, and maturity_age, 90, plus
+    #     future_horizon_mth, 120, so the frame's last month is 1,199.  Phase 2's sweep
+    #     calls every cell at t = proj_len(), 1,200.  Every monthly cell holds t to
+    #     proj_len(): the count's residual and the Account Value after the withdrawal are
+    #     0.0 there before they read t + 1, so the furthest count read is
+    #     pols_if_at(proj_len(), "BEF_NB"), 0.0, which both read in the last covered month.
+    #     market_state holds the instant proj_len() + 1, 1,201, which index_level, mvr,
+    #     risk_free, div_yield and impl_vol, unguarded, read at t = proj_len().
+    #   x (mort_rate_base_at): attained ages from the youngest issue age, 0, to the oldest
+    #     issue age, 85, plus maturity_min_years, 10, less 1: 0 to 94.
+    #   cy (surr_charge_rate_at): complete contract years at a month end, 0 to the longest
+    #     policy_term(), 90 at issue age 0; lapse_shock_year reads the table's own years.
+    #   y (lapse_rate_base_py): contract years 1 to 91, the policy_year of the last
+    #     covered month at issue age 0.
+    #   m (wd_amount_pm): policy month ends 1 to 1,080, at issue age 0.
+    # Phase 2's market_state becomes per-field [scenario, month] arrays, whose months run to
+    # the frame's end, and its future copies keep their months before issue unreadable.
+    "RILA_US_SEC": SecSpec(
+        twin="RILA_US_S",
+        derived=((1, 71), (2, 36), (13, 80), (13, 72), (4, 30), (15, 59), (12, 40),
+                 (7, 119)),
+        future=((1, 13),),
+        state=_RILA_STATE,
+        twin_state={c: f for c, f in _RILA_STATE.items() if c != "scenario_id"},
+        exempt=frozenset({"result_pols"}),
+        companions={"market_scenario_sec.csv": _rila_rebased_scenarios},
+        future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},
     ),
 }
 

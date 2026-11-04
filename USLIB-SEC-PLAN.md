@@ -2,13 +2,14 @@
 
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
 and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
-and §7.2). The other ten run in three streams (§5.3), and the first two products of each
-are done: UL and VUL in the Life stream, MYGA and FIA in the Deferred annuity stream, and
-SPIA and DIA in the Payout stream (M3 and M4, M7 and M8, and M11 and M12, the *Records* of
-§7.3 and §7.6, §7.10 and §7.11, and §7.9 and §7.12). Term's compile step, M14, brought
-forward to run beside the streams (D2), is done on Linux, 2026-11-02; its Windows gate
-awaits the `cython` job's first run (§7.1, *Record — M14*). The open decisions of §8.2 are
-settled, the last of them, item 4, on 2026-11-03.
+and §7.2). The other ten run in three streams (§5.3). The Payout stream is complete: SPIA,
+DIA and RILA are done (M11, M12 and M10, the *Records* of §7.9, §7.12 and §7.8). In each
+of the other two the first two products are done: UL and VUL in the Life stream, and MYGA
+and FIA in the Deferred annuity stream (M3 and M4, and M7 and M8, the *Records* of §7.3
+and §7.6, and §7.10 and §7.11). Term's compile step, M14, brought forward to run beside
+the streams (D2), is done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's
+first run (§7.1, *Record — M14*). The open decisions of §8.2 are settled, the last of
+them, item 4, on 2026-11-03.
 Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
 phase records what it actually did, including where the implementation departed from the
 plan.
@@ -353,15 +354,18 @@ a message of its own (precised at M1).
   Phase 2's `Data` cell under each table reader: Term 16 (8 measured at M1, 9 at stage
   EC); UL 20 (16 measured); VUL 25 (20 or 21 measured, since its cold `net_cf` ends in the
   first month's deduction, whose cost of insurance reads the death benefit's corridor,
-  down to `corridor_factor_at`, `Data.corridor_age_last` and `Data.corridor_factors`).
-  MYGA's 16 leaves none: on a model just read, twin 3's cold `net_cf` runs 16 over, down
-  to `Data`'s first read of the age-cap table (§7.10, *Record — M7*), so MYGA's C step
-  raises it. The bound holds on the committed points and at the contract's maximum, since
-  the 1 MiB stack test has a fourfold margin under gcc and passes a chain of two cells a
-  month (M14; precised at M4). A chain whose first month makes R2's admitted read may run
-  up to 11 more again, the read's state chain opening beneath it, as FIA's count does: a
-  cold `pols_if` alone runs 25 over its months, 997 levels at the longest cover, where a
-  cold `net_cf` runs 7 to 10 over (precised at M8).
+  down to `corridor_factor_at`, `Data.corridor_age_last` and `Data.corridor_factors`);
+  RILA 24 (13 to 21 measured on its committed points, since its month 0 prices its term's
+  option under the interim value, and 21 where a renewal under `nge_reset` re-solves the
+  cap there; precised at M10). MYGA's 16 leaves none: on a model just read, twin 3's cold
+  `net_cf` runs 16 over, down to `Data`'s first read of the age-cap table (§7.10, *Record
+  — M7*), so MYGA's C step raises it. The bound holds on the committed points, their
+  deepest among them, and at the contract's maximum, since the 1 MiB stack test has a
+  fourfold margin under gcc and passes a chain of two cells a month (M14; precised at M4
+  and M10). A chain whose first month makes R2's admitted read may run up to 11 more
+  again, the read's state chain opening beneath it, as FIA's count does: a cold `pols_if`
+  alone runs 25 over its months, 997 levels at the longest cover, where a cold `net_cf`
+  runs 7 to 10 over (precised at M8).
 - **`pols_if(t)` is `pols_if_at(t, "BEF_DECR")`**, not BasicTerm_SE's `BEF_MAT`. The
   library settled `pols_if(t)` as the count that weights row `t`, and this is the definition
   under which it equals the S model's `pols_if` on every new-business point.
@@ -414,21 +418,28 @@ and the splice identity of §5.2 tests it.
   that opened the policy year under way. Its column is `<cell>_prev_anniv_init`, after
   `WholeLife_US_S`'s `div_prev_anniv`, where `prev_anniv` is the anniversary that opened
   the year and `anniv` alone the one that ends it. On a point valued on an anniversary the
-  two instants are one, and `Data` checks that the columns agree. In the first policy year
-  the year opened at issue, so each such column equals the issue value: 0 for WholeLife's
-  additions and loan, the premium for an account value. A contract-year-to-date
-  accumulator is measured at the start of month 0 like any balance, and where its cell's
-  name does not say that it restarts each year, its column adds `_ytd_init`, as VA's do
-  (§7.7). WholeLife's dividend credited at the anniversary, which `div_prev_anniv` returns
-  through the year under way, is `div_prev_anniv_init`, a `<cell>_init` like the others
-  (§7.2 names it `div_prev_init`).
+  two instants are one, and `Data` checks that the columns agree, unless the year-opening
+  value is taken before the anniversary month's transactions, as RILA's free-withdrawal
+  base is, where `Data` checks it is at least the opening value, to a cent (precised at
+  M10). In the first policy year the year opened at issue, so each such column equals the
+  issue value: 0 for WholeLife's additions and loan, the premium for an account value. A
+  contract-year-to-date accumulator is measured at the start of month 0 like any balance,
+  and where its cell's name does not say that it restarts each year, its column adds
+  `_ytd_init`, as VA's do (§7.7). WholeLife's dividend credited at the anniversary, which
+  `div_prev_anniv` returns through the year under way, is `div_prev_anniv_init`, a
+  `<cell>_init` like the others (§7.2 names it `div_prev_init`).
 - A quantity fixed at issue and not re-derivable from static data (a payout amount, a
   locked rate, a solved premium, an index level at term start) is a column too, for the
   reason BasicTerm_SE reads its premium from a table.
 - A rate fixed at a past date that is not issue, such as a declared rate or a yield locked
   at the start of the period under way, is a column too, `<cell>_init`, the value in force
   entering month 0. It is read only where the fixing month precedes `t_entry()`; a fixing
-  at month 0 itself reads the scenario at the valuation date (precised at M7).
+  at month 0 itself reads the scenario at the valuation date (precised at M7). In each
+  product still to come, a value fixed at a term's or a segment's start takes DIA's
+  frozen-weight shape instead, as RILA's do: a column, or a row of IUL's segment ladder
+  (§7.4), only where the period began before the valuation month, blank or absent
+  otherwise, and checked present exactly where it is read (§7.12, *Record — M12*; precised
+  at M10).
 - Where S computes an issue value by rule rather than reading it, as MYGA's `av_pp_init()`
   and `mgsv_pp_init()` do, the rule moves into the issue month's credit and the cell
   becomes the in-force accessor, 0 on new business; T1 exempts the cell with that reason.
@@ -452,22 +463,37 @@ and the splice identity of §5.2 tests it.
   more. A measure that is not such a balance may take either sign: a tax measure such as
   premiums less withdrawals, or the shadow account, which `ULSG_US_S` never floors (§7.5).
   A quantity every policy in force holds, such as UL's face, is refused at zero (precised
-  at M3).
+  at M3). A product whose account value is a market valuation the contract lets fall below
+  0, as RILA's interim value is [S2], accepts any finite value and refuses instead a
+  contract in force that holds no balance, a state `RILA_US_S` reaches only by a full
+  withdrawal, which it keeps in force (precised at M10).
 - A `Data` rule that ties one amount of money to another, as an allowance to the base it
   is a share of, compares to a cent, so that an extract may carry each amount to the cent:
   each amount so carried is within half a cent of its exact value, so the rule can miss by
   half a cent from each, the base's scaled by the rate, and at half a cent ties fall to
-  floating point. Two columns that hold one amount at instants that coincide may still be
-  compared exactly, as WholeLife's are on an anniversary. `Data` holds a carried allowance
-  to what makes it, as MYGA's does: the issue allowance in the first contract year; on an
-  anniversary under `pct_av`, the rate times the account value; and under `interest_only`,
-  at most the interest to the anniversary that opened the year, exactly that in the second
-  year. A balance S lets fall below 0, as MYGA's floor and `P_accum`, is checked only as a
-  finite number (precised at M7).
+  floating point. An amount held exactly, as a premium paid or a programme's amount, adds
+  nothing to a miss. A rule whose carried amounts can miss by a whole cent, as one that
+  ties more than two, or adds an exact amount to one of two, allows half a cent from each
+  and half a cent more, so that such a miss never falls to floating point: on a valuation
+  at a renewal, whose month before closed a term, RILA's opening Account Value is its
+  Investment Amount plus its two accounts to two and a half cents, since the four, carried
+  to the cent, can miss by two cents, which half-even rounding reaches at exact ties
+  (100.125, 200.125 and 300.125 against 600.375), and a miss of one cent reads
+  0.010000000009 (precised at M10). Each such rule is tested on an extract with every
+  amount carried to the cent, not only with one column moved. Two columns that hold one
+  amount at instants that coincide may still be compared exactly, as WholeLife's are on an
+  anniversary. `Data` holds a carried allowance to what makes it, as MYGA's does: the
+  issue allowance in the first contract year; on an anniversary under `pct_av`, the rate
+  times the account value; and under `interest_only`, at most the interest to the
+  anniversary that opened the year, exactly that in the second year. A balance S lets fall
+  below 0, as MYGA's floor and `P_accum`, is checked only as a finite number (precised at
+  M7).
 - A contract in force whose benefits all rest on its account value has an account value
   above 0, and `Data` refuses 0, naming the point, as MYGA's does (precised at M7). A
   product whose rider pays on after the account value is exhausted, as FIA's and VA's
-  lifetime withdrawals do, accepts 0 and guards its ratios instead.
+  lifetime withdrawals do, accepts 0 and guards its ratios instead; and one whose account
+  value can fall below 0 under the contract, as RILA's can, accepts any finite value and
+  refuses instead a contract in force that holds nothing (above; precised at M10).
 - The S tables' mixed spellings — `_init`, `_initial`, `_inforce`, `duration_inforce`
   (years), `duration_mth_init`, `entry_year` — become this one vocabulary in the SEC tables.
   Each `model-sec.md` records the mapping.
@@ -533,14 +559,15 @@ too, from the S model and its table as they stand: a twin from its S row, a futu
 an S new-business row. No row is typed by hand, so the test covers the whole table, text
 included.
 
-This matters because S rows do change after the fact. MYGA points 5 and 6, RILA point 9 and
-VA point 6 have had their `provenance` reworded under `CLAUDE.md`'s rule, and FIA point 3's
-roll-up key has been renamed. A hand-copied twin of FIA point 3 would now raise `KeyError`
-against the shared roll-up table, and no projected number would ever reveal the four stale
-`provenance` cells.
+This matters because S rows do change after the fact. MYGA points 5 and 6, RILA points 4,
+5, 7, 9 and 12 and VA point 6 have had their `provenance` reworded under `CLAUDE.md`'s
+rule, RILA's 4, 5, 7 and 12 at M10's landing, and FIA point 3's roll-up key has been
+renamed. A hand-copied twin of FIA point 3 would now raise `KeyError` against the shared
+roll-up table, and no projected number would ever reveal the eight stale `provenance`
+cells.
 
 Some SEC rows need inputs S never had:
-- a scenario re-based to the row's valuation date (VA, FIA);
+- a scenario re-based to each row's valuation date by its `duration_mth` (FIA, VA, RILA);
 - an in-force ladder (IUL);
 - premium schedule rows (DIA), whose shared `premium_schedule.csv` is keyed by `point_id` and
   knows no derived or future point (§7.12).
@@ -1165,10 +1192,29 @@ conventions suite.
   scaled products, whose sides round apart where they nearly cancel: VUL's `av_change`,
   `net_cf`, `net_cf_ga`, `margin_expense` and `margin_mortality` are held to 1e-12 of
   their largest magnitude on the point (`av_change` moves by up to 1.7e-8 of itself at 95
-  keys, each within 1.2e-13 of its peak; precised at M4).
-- **T5 — Validation.** Each malformed in-force row raises in `Data`, naming its point.
-  A row malformed only against a rule of the product, such as a point past its cover,
-  raises in `proj_len()`, naming it too (D6).
+  keys, each within 1.2e-13 of its peak; precised at M4). A counted cell that is a
+  difference of counted values, as RILA's `av_change`, `net_cf`, `claims_over_av` and two
+  aggregate residuals are, may instead be held to the residuals' 1e-9 floor, since
+  cancellation leaves it ulps of its operands off the exact multiple, past 1e-12 of
+  itself: on RILA's `av_change` on row 21 at `t = 1` by 6.5e-11 against an exact multiple
+  of −17.38, and on its Account Value residual on row 16 at `t = 0` by 1.1e-10 against an
+  exact multiple of 2.7e-11. A check whose tolerance scales with the count is shown at a
+  count where each residual exceeds its unscaled tolerance on some row: RILA's Account
+  Value residual is 2.4e-5 at a million contracts and 9.9e-5 at 3e6, inside its unscaled
+  1e-4, and 2.9e-4, past it, at 1e7 (precised at M10).
+- **T5 — Validation.** Each malformed in-force row raises in `Data`, naming its point. A
+  row malformed only against a rule of the product, such as a point past its cover, raises
+  in `proj_len()`, naming it too (D6). Each rule over a window of contract months is
+  refused just inside each end of the window, its first month as well as its last, and
+  accepted just outside, and each tolerance is pinned from both sides: RILA's maturity
+  month, the first anniversary for its remainder and anniversary rules, months 1 and 11
+  for its first-year rules, the remainder's cent and the renewal identity's two and a half
+  cents. And every state the S model reaches on the splice's inputs, restated in force at
+  its month, is accepted, at each window's edges by default (RILA's: every month of the
+  first contract year, every sixth month, each anniversary and renewal among them, and
+  every year's last month) and at every month on the full grid, except a state the product
+  refuses by name, which the test sets aside and shows refused: RILA's contract emptied by
+  a full withdrawal, which `RILA_US_S` keeps in force holding nothing (precised at M10).
 - **T6 — Regeneration.** The committed SEC table and its generated companions, every row
   and column, equal what `gen_sec_points.py` produces from the S model and its inputs as
   committed. So an edit to an S row that an SEC file copies or derives from — a reworded
@@ -1227,7 +1273,17 @@ says when it measured under load, and K6 is measured again on the merged branch 
   Term's regenerates Term's M14 fingerprint, committed alone (decided at M7's landing).
   §7.1's *Precised at M3*, item 11's comparison of the committed future row with its S
   point, frame by frame, is taken into FIA at M13 too, before its fingerprint is frozen
-  (§7.11, *Record — M8*).
+  (§7.11, *Record — M8*). M10's precisions of T4 and T5 are taken at M13 too, not at a C
+  step, since they gate Phase 1. T5's window rules and tolerances, each pinned at its
+  edges, and its every-state test go into the eight products landed before RILA, Term,
+  WholeLife, UL, VUL, MYGA, FIA, SPIA and DIA, none of which has an every-state test; and
+  RILA pins from both sides its first-year and first-term tolerances, which its module
+  accepts only where they hold exactly, and refuses its first-term rule at month 1, its
+  first, where its module has no case. T4's scaled check, shown at a count where a
+  residual exceeds its unscaled tolerance, goes into WholeLife, whose count check scales
+  with the count and whose residual exceeds the unscaled 1e-10 on 18 of its 22 rows at a
+  millionfold count, which no test shows. A product that lands short of either takes it up
+  at M13 too (decided at M10's landing).
 - `python tools/doccheck.py` reports zero.
 - The existing CI matrix is green inside its 90-minute timeout. The SEC suites roughly
   double the projected volume, so §8's K6 measures that before the timeout is touched.
@@ -1889,8 +1945,9 @@ follows.
   `codes=codes(sec_proj)`, `{}` at stage E unless the product brings a code forward, as
   FIA does its phases (precised at M8), through one helper of the module's own (§5.2, T1).
 - Bound the cold depth by a test on a fresh read at the longest cover: one cell a month
-  back to `t_entry()` plus the product's own fixed overhead, Term's 16, UL's 20 and VUL's
-  25, and no fixed level ceiling (D5, F7; precised at M4).
+  back to `t_entry()` plus the product's own fixed overhead, Term's 16, UL's 20, VUL's 25
+  and RILA's 24, measured on every committed point and asserted on the deepest among them,
+  and no fixed level ceiling (D5, F7; precised at M4 and M10).
 - Set every Reference, `Data`'s included, on a model just read and before any call: a
   compiled model clears no cache (K7).
 - Each refusal is a `raise ValueError` naming the point, in table-driven lists whose cases
@@ -3749,14 +3806,14 @@ stage's faults, and the last three from the design and the build:
   calling cell is keyed by, for a policy month or year passed as `t`, not only for a base
   at `t == 0` (R1a): `VUL_US_S`'s `fa_pricing_pp(m)` credits `fixed_return_mth(m)`, which
   a flat input hides, and `RILA_US_S`'s `free_wd_base(t)` reads
-  `av_pp_at(12 * cy - 1, "BEF_WD")`, for which §7.8 lists `av_prev_anniv_init`. Test each
-  by what it should read. A path made at issue, as VUL's pricing path, takes a formula
-  override that moves the rate along `t`, which moves S's path and must leave SEC's. A
-  balance at an anniversary takes the year-opening read and a T2 row valued mid-year
-  (§7.1's template, item 6, precised at M2; §7.10, *Record — M7*, *Year-opening state*),
-  with no override where the balance moves between anniversaries: on `RILA_US_S`'s point 3
-  restated at 18, its month `12 * cy - 1` taken on the valuation clock reads policy month
-  29's 99,123.92 for contract year 2's base, 101,441.58.
+  `av_pp_at(12 * cy - 1, "BEF_WD")`, for which §7.8 lists `av_pp_prev_anniv_init`. Test
+  each by what it should read. A path made at issue, as VUL's pricing path, takes a
+  formula override that moves the rate along `t`, which moves S's path and must leave
+  SEC's. A balance at an anniversary takes the year-opening read and a T2 row valued
+  mid-year (§7.1's template, item 6, precised at M2; §7.10, *Record — M7*, *Year-opening
+  state*), with no override where the balance moves between anniversaries: on
+  `RILA_US_S`'s point 3 restated at 18, its month `12 * cy - 1` taken on the valuation
+  clock reads policy month 29's 99,123.92 for contract year 2's base, 101,441.58.
 - *Months as results.* Exempt a result cell whose value is a month from `twin_mismatches`,
   with its reason, assert it by its formula, compare the flags it searches month by month,
   and let T1 compare it at offset 0: S point 3 restated at 37 on VUL's splice finds its
@@ -3983,21 +4040,38 @@ the fixed and holding accounts, `rop_base`, and `lock_flag` / `lock_value` — b
 ignores them, and the Performance Lock is not implemented.
 
 *E:*
-- Opening state:
-  - `ia_init`, with its basis;
-  - `term_start_index` and `term_start_mvr`;
-  - the term-start option-pricing inputs — rate, dividend yield and volatility, or the
-    budget alone under straight-line amortisation;
-  - `cap_init`, because the cap is re-solved at renewal under `nge_reset`;
-  - `fa_init`, `ha_init`, `rop_init`;
-  - `av_prev_anniv_init`, the AV at the anniversary on or before the valuation date (D6),
-    because the free-withdrawal base reads the absolute month `12*cy - 1`;
-  - `fw_remain_init`, `av_init`;
-  - a term-start month, if terms need not align with issue.
-- The market scenario, keyed from issue in S, moves to `t`, with term-start values from the
-  model point for terms that began before `t = 0`. `market_state(k < 0)` would fail on
-  `max([])`. Withdrawals stay on the policy clock.
-- Splice months: 35, 36, 59, 60, 71, 72 (term ends and the renewal), and one mid-term month.
+- Opening state (D6), thirteen columns beside the count, each what `RILA_US_S` carries
+  into month 0: the amounts per contract `inv_amt_pp_init` (also the crediting basis),
+  `fixed_acct_pp_init`, `holding_acct_pp_init`, `av_pp_init`, of either sign [S2],
+  `av_pp_prev_anniv_init`, the Account Value before withdrawals at the anniversary on or
+  before the valuation date, which the free-withdrawal base reads at the absolute month
+  `12 cy - 1`, `free_wd_remain_init` and `rop_pp_init`; where the term under way began
+  before the valuation month, in DIA's frozen-weight shape (§7.12, *Record — M12*), its
+  market, `index_at_term_start_init` (above 0, since `index_perf` divides by it),
+  `mvr_at_term_start_init`, `risk_free_at_term_start_init`, `div_yield_at_term_start_init`
+  and `impl_vol_at_term_start_init`, under either amortization rule; and `cap_rate_init`
+  where that term began at a renewal under `nge_reset`. Terms align with issue, so no
+  term-start month is a column, and `RILA_US_S` has no Performance Lock, so no lock is one
+  (settled at M10).
+- The market scenario, keyed from issue in S, moves to `t` as a companion,
+  `market_scenario_sec.csv`, read through S's reader by repointing `market_scenario_file`
+  (D8): S's scenarios under their own ids for the twins, and for each derived and future
+  row a copy re-based by its `duration_mth`. A term begun before `t = 0` takes its start
+  from the model point, one starting at or after it from the scenario. `market_state`'s
+  parameter is `t`. Withdrawals, terms, anniversaries and the Maturity Date stay on the
+  policy clock, compared with `duration_mth(t)` (settled at M10).
+- Splice months: either side of each Term End Date and renewal (35, 36, 59, 60, 71 and 72;
+  11, 12, 23 and 24 on a one-year term), months mid-term (5, 30, 40, 59, 80, 107), the
+  anniversaries 12 and 24 and a year's last month, the months around each withdrawal and
+  the last covered months (119, 359), on stepped copies of the paths in which every field
+  steps, each row valued mid-term on a copy whose state at `t = 0` is moved off its five
+  term-start columns, its state at `t = 1` written first (§7.11, *Record — M8*), with ten
+  variants: a three-year term; a one-year term under `nge_reset`; a behavioural rate above
+  the free rate; a Floor option whose cap binds; a crash path, alone, with a behavioural
+  rate above the free rate, and with a positive request on a negative account value; a
+  withdrawal above the account value; an Edge term ending exactly at its buffer; and a
+  withdrawal at a negative interim value on a positive account value, which the accounts
+  alone pay (settled at M10).
 
 *C:*
 - Strings: six, plus `opt_legs()`, which returns a tuple of strings, and becomes int leg
@@ -4022,6 +4096,859 @@ ignores them, and the Performance Lock is not implemented.
   invalid escape. It raises a `SyntaxWarning` on every import, the only such case in the six
   libraries, and the SEC copy would inherit it. *Fixed on 2026-11-03 (§8.2, item 4): the
   docstring is a raw string, the same text at run time.*
+
+#### Record — M10, done 2026-11-04
+
+Built in two commits, as D1 requires: `RILA_US_S` copied with only `_name` changed, then
+the enhancement, by M1's process: a design prototyped and critiqued before the build,
+tests written against the build and checked by injected faults, then a review under the
+three lenses. The design departed from §7.8's *E* where reading `RILA_US_S` cell by cell
+showed it short: the term-start market is carried in full under either amortization rule,
+not the budget alone, since `updated_expiry` reprices from it; the term-start values and a
+re-solved cap are columns only where the term under way began before the valuation month,
+in DIA's frozen-weight shape; terms align with issue, so no term-start month is a column;
+the account value takes either sign, since the interim value can fall below 0 under the
+contract, where D6 refused a negative balance and §7.10's chassis had RILA follow MYGA;
+the market is a companion, which D8 listed for VA and FIA alone; and month 0 prices the
+term's option, so the depth bound's overhead is 24, not the 16 D5 gave at e011a0c. So
+§7.8's *E* takes three bullets as built, and D5, D6, D8, K5 and §5.2's T4 and T5 take
+precisions. The review made 25 findings, 4 of them blockers and 3 major, and three were
+each made under two lenses. The generated table copied two provenance cells of
+`RILA_US_S`'s that named one carrier's crediting option and another carrier's defined
+term, which `CLAUDE.md` forbids in an input file, and two crediting-option labels it left
+for a ruling; the floor on the option's share of a withdrawal never bound with an effect,
+so that dropping it passed every test, the full grid's included; no case was refused at
+the Maturity Date itself, nor at the first anniversary, where the remainder and
+anniversary rules start, so that moving either window, or admitting the Maturity Date,
+passed the default module; the renewal identity refused 8 of 74 renewal valuations carried
+to the cent; `nge_reset` written 1 or 0, which `Data` documents, was written by no test,
+so that a decode refusing 1 and 0 passed; and the depth test left out the deepest
+committed row, under comments that misstated the depths. The fix stage applied all but two
+and rejected a detail of a third with evidence: the provenance is S's, which the SEC table
+copies and RILA's build could not edit, so a commit of its own at landing rewords all four
+cells in `RILA_US_S`'s table (*Landing*, below); running the docutils parse test in CI
+changes files shared across products, and is left to M13, as FIA's module leaves it; and a
+cent and a half, the review's slack for the renewal identity, would refuse a valid extract
+at half-even ties, so the identity holds to two and a half cents. A re-review found every
+fix right and complete, and made two more findings, both minor, on the wording of a
+carried item and a test's docstring, which a second fix applied. Nine defects found in
+`RILA_US_S` are carried below: one, the provenance, is corrected in `RILA_US_S` itself, in
+the landing's commit before the copy; three, on a negative account value, are in both
+models; and the other five are fixed or refused in `RILA_US_SEC` only. M10 was built on
+e011a0c, M12's landing, before M8 and M4 landed, and rebased at landing onto VUL's
+(*Landing*, below).
+
+**What exists now.**
+- `RILA_US_SEC` at stage `E`. Of `RILA_US_S`'s 156 `Projection` cells, 63 are unchanged,
+  21 have new text only and 72 are rewritten; none is removed or renamed. It adds 36
+  cells, 192 in all: `policy_count`, `duration_mth_init`, `maturity_mth`, `t_entry`,
+  `is_active` and `pols_new_biz`; the thirteen opening-state accessors; ten bool decodes,
+  `is_cap_crediting`, `is_step_crediting`, `is_edge_crediting`, `is_floor_crediting`,
+  `is_iv_portfolio`, `is_iv_notional`, `is_iv_delta`, `is_iv_legacy`, `is_straight_line`
+  and `is_updated_expiry`; four keyed readers, `mort_rate_base_at`, `surr_charge_rate_at`,
+  `lapse_rate_base_py` and `wd_amount_pm`; and three readers of a term's start,
+  `risk_free_at_term_start`, `div_yield_at_term_start` and `impl_vol_at_term_start`,
+  beside S's `index_at_term_start` and `mvr_at_term_start`, rewritten to read so. Its
+  References are S's, `math` among them, at S's values. `Data` keeps S's eight cells:
+  three unchanged, four with a new docstring and `model_point_table` rewritten to check
+  the table as it reads it, in 37 refusals in turn. It adds six count cells, 14 in all,
+  `market_scenario_count`, `mort_table_count`, `surr_charge_count`, `guar_min_rate_count`,
+  `lapse_table_count` and `withdrawal_count`, each beside S's reader of its table,
+  unchanged, and the Reference `future_horizon_mth = 120`; `model_point_file` and
+  `market_scenario_file` name the two `_sec` files.
+- `model_point_table_sec.csv` holds 24 rows generated from RILA's `SecSpec`. Fifteen are
+  S's points as twins, issued at the valuation date, since `RILA_US_S` has no point in
+  force. Eight are derived: the anchor, S point 1, in the last month of its first term, at
+  71, the Term End Date at +40% falling at `t = 0`; S point 2 on its third anniversary,
+  after the $8,000 withdrawal of the month that closed on it, at 36; S point 13, under
+  `nge_reset`, mid-term after its first renewal, its cap re-solved there at 99.7038%, at
+  80, and valued at that renewal, at 72; S point 4, a Step option on a one-year term, with
+  30,835.04 in its Fixed Account from two term ends, at 30; S point 15, the pre-AG 54
+  engine, in the month that closes on its fifth anniversary, the [S2] withdrawal charge
+  example falling at `t = 0`, at 59; S point 12, the uncapped option at issue age 81,
+  mid-term, at 40; and S point 7, interim value family (b), in its last covered month,
+  at 119. The last is the anchor issued 13 months on. Its companion,
+  `market_scenario_sec.csv`, holds 27 rows: S's four scenarios as they stand, for the
+  twins, and for each derived and future row a copy re-based by its `duration_mth`,
+  `{id}-M{d}` or `{id}-F{k}`. A case-insensitive search of both files for the publishers,
+  products, options, accounts and defined terms that
+  `registered_index_linked_annuity/sources.md` and its research notes cite, 116 names at
+  the second fix, each name's words matched also when joined or run together, found four
+  provenance cells of the table, copied from S's points 4, 5, 7 and 12, that named the
+  cited carriers' crediting options and one carrier's defined term; regenerated from S's
+  table as the landing's commit rewords it, the table holds none (*Verified at landing*,
+  below).
+- `tests/test_registered_index_linked_annuity_us_sec.py` has 44 tests in 305 cases, 230 by
+  default and 75 behind `sec_full` (K6). T2 runs on 101 rows restated from S's fifteen
+  points and ten variants, at the months of their events, a core of 37; T3 on 16 future
+  rows, seven S points and seven variants 13 months on and the anchor 1 and 120 months on,
+  a core of 6. S has no in-force point, so `IN_FORCE_TWINS` is empty. A test asserts that
+  the core reaches every crediting method, interim-value family, amortization rule, sex,
+  scenario, programme, term and kind of valuation month, `nge_reset` both ways, an
+  uncapped option, participation above 1 and an issue age past the return-of-premium band,
+  and on the splice's model 20 conditions at the valuation date and 38 bindings and
+  branches in the frame; at the fix stage line coverage showed it running all 641
+  `Projection` lines and 273 `Data` lines the full grid runs. T4 runs at 2.5 contracts. T5
+  covers 100 malformed model point tables, each refused by its own rule, as a map of each
+  case's first raise showed; 41 malformed assumption tables, each refused by its count
+  cell naming the file's lines; 5 points `proj_len()` refuses, at and past the Maturity
+  Date and with a remainder above the year's allowance, on the first anniversary among
+  them; and 3 values no decode knows, each raising S's message. An every-state test
+  restates each S point of the splice at every month of its first year, every sixth month
+  and every year's last month, and `Data` and `proj_len()` accept each state but a
+  contract a full withdrawal emptied, which it shows refused. The accepted edges read a
+  renewal valuation with every amount carried to the cent, `nge_reset` written 1 or 0 and
+  1.0 or 0.0, and a buffer and a floor of 0. A NaN residual fails every check, a NaN A/E
+  stays NaN through the cap, and at 10^8 contracts both roll-forward checks close on their
+  scaled tolerance, each residual above its unscaled one on some row. The SEC conventions,
+  33 cases, pass but for `test_net_cf_is_income_positive`, skipped as on `RILA_US_S`,
+  since neither model has the notes-orientation companion cells.
+- `run_sec.py`; `model-sec.md`, with *The opening state*, which shows each column on a
+  committed row with what it gives when wrong: point 16's `I_s` of 100 credits 40%, an
+  interim value of 140,000.00 at `t = 0`, which 80 would make 75% and 175,000.00; point
+  22's `r_0` of 4.00% against a current 5.00% gives its interim value a rate adjustment of
+  0.975582 and 78,979.80, where 5.00% would give 81,145.33; point 18's re-solved cap of
+  99.7038%, at 20%, would value its short call at the cap at −14,233.12 rather than
+  −2,688.05; point 17's remainder of 480.31 of the year's 8,480.31 makes a surrender's
+  charge at `t = 0` 3,820.47, against 3,420.47 with the allowance whole; and the two
+  columns that reach no report, `av_pp_init` and `av_pp_prev_anniv_init`, which `Data`
+  holds instead; the registry entry with its `INPUT_FILES`; and four generated pages.
+  doccheck reported 501 pages and 0 warnings on e011a0c with RILA added.
+- Shared files, added to in place: in `sec_support.py`, RILA's state extractors,
+  `_rila_entering`, `_rila_prev_anniv`, `_rila_mid_term`, `_rila_term_start`, `_rila_cap`
+  and `_rila_scenario_id`, its companion's builder, `_rila_rebased_scenarios`, and
+  `_RILA_STATE`, after VUL's, and its spec after VUL's, the spec's comment giving the
+  state, the rows, the companion, T1's one exemption, the keys S caches under `None`, the
+  text still compared, the float-parameter cells and Phase 2's sizes with their inputs;
+  FIA's `SecSpec.future_state`, which RILA's future row needs, copied byte for byte from
+  FIA's tree before FIA landed and kept once at landing, with FIA's two additions to
+  `test_sec_support.py`; in `us_registry.py`, the entry directly after `RILA_US_S`'s, with
+  no flag of its own, since its `pols_if` is `BEF_DECR`, and its `INPUT_FILES`; and in
+  uslib's `index.md`, the RILA row of the models table, the sentence on the SEC models and
+  the inputs row, which names RILA's market scenarios beside FIA's. Outside RILA's files,
+  a commit of its own before the copy rewords the provenance of `RILA_US_S`'s points 4, 5,
+  7 and 12 by design, each now naming the design its point exercises as the technical
+  notes define it, and keeping its source keys, as dd90cfe reworded point 9's provenance;
+  no value a model reads moves (*Landing*, below).
+
+**Departures and precisions.**
+- *The clocks* (D3, D7; R1a). `duration_mth(t) = duration_mth_init() + t`, a closed form,
+  and `maturity_mth()`, new, keeps S's frame from issue, `12 × policy_term()`, so that
+  `proj_len()` is the months from the valuation date to the Maturity Date. Every test of a
+  month against a contractual date reads the policy clock, the maturity included: the
+  terms and their Term Start and End Dates, the anniversaries, the withdrawal programme,
+  read by `wd_amount_pm(duration_mth(t) + 1)`, and the free-withdrawal base, which S reads
+  as `av_pp_at(12 cy - 1, "BEF_WD")`, a policy month passed as `t`, and SEC at
+  `12 cy - 1 - duration_mth_init()`, or from `av_pp_prev_anniv_init()` where that month
+  precedes `t_entry()` (§7.6, *Record — M4*, *Policy months in S's cells*). Expense
+  inflation is `(1 + i)^(t // 12)` on the valuation clock, where S steps it on the
+  contract's anniversaries, so point 16's expenses are S's divided by `1.025^6`, or by
+  `1.025^5` at `t = 0, 12, 24, …`; the purchase payment, its premium tax and acquisition
+  fall on `pols_new_biz(t)` in the issue month, per contract issued, uninflated.
+- *The count* (D5; §7.12, *Record — M12*, *The count*). MYGA's chain, one cell a month,
+  where S's ran through two: `"BEF_NB"` forms the survivors of month `t - 1` itself,
+  `"BEF_DECR"` adds new business, and S's three later timings are kept, guarded outside
+  cover, their branch a comparison chain rather than a tuple display. `pols_if` is
+  `"BEF_DECR"`, a decrement chain's count, with no registry flag.
+  `check_pols_roll_fwd_resid` and `av_at`'s `"AFT_WD"` read `pols_if_at(t + 1, "BEF_NB")`,
+  where S reads `pols_if(t + 1)`, which would count the next month's new business as a
+  gain of month `t`.
+- *The opening state* (§7.8, *E*; D6) is thirteen columns beside `policy_count` and
+  `duration_mth`, each what `RILA_US_S` carries into month 0, read as S's own formulas
+  read it: six amounts per contract, S's close of month `d - 1`, `inv_amt_pp_init`, also
+  the crediting basis, `fixed_acct_pp_init`, `holding_acct_pp_init`, `av_pp_init`,
+  `free_wd_remain_init` and `rop_pp_init`; `av_pp_prev_anniv_init`, S's base at the
+  anniversary that opened the contract year, or the purchase payment in the first year;
+  and, where the term under way began before the valuation month, its five term-start
+  market values and, at a renewal under `nge_reset`, `cap_rate_init`. Those six take DIA's
+  frozen-weight shape (§7.12, *Record — M12*, *Term-start inputs*), not M7's value
+  entering month 0: a blank is the honest value where the scenario supplies the start, so
+  `Data` holds every given index above 0 with no exception; the values are facts fixed at
+  a past date, which a change to the market at the valuation date must not move; and their
+  presence is checked both ways, so a twin written in M7's form is refused. The full
+  term-start market is carried under both amortization rules, since `updated_expiry`
+  reprices from it and T1 and T2 read it at S's `"TERM_START"` keys; the cap only where a
+  renewal under `nge_reset` re-solved it, since elsewhere it is the model point's rule. No
+  term-start month is a column, terms aligning with issue, and no lock is one, `RILA_US_S`
+  having no Performance Lock.
+- *Either sign* (D6, precised). The interim value can fall below 0 under the contract
+  [S2], and S carries a contract through it, so `Data` accepts any finite `av_pp_init` and
+  `av_pp_prev_anniv_init`, holds the investment amount, the two accounts, the remainder
+  and the return-of-premium base at 0 or more, and refuses instead a contract in force
+  that holds no investment amount and no account balance. `RILA_US_S` reaches that state
+  only by a full withdrawal, and keeps the contract in force holding nothing, as variant
+  21 from policy month 30. `Data` refuses it by design, a departure from S, since a
+  contract that holds nothing is no longer in force: the every-state test sets the state
+  aside by name and shows it refused (§5.2, T5, precised).
+- *The anniversary and renewal rules* (D6, precised). On an anniversary valuation,
+  `duration_mth` a positive multiple of 12, `av_pp_prev_anniv_init` is the base before the
+  anniversary month's withdrawal and `av_pp_init` the value after it, so `Data` checks
+  that the base is at least the value, to a cent, where D6 has the two agree: they differ
+  by the withdrawal, as on point 17 by its $8,000. On a renewal valuation, a positive
+  multiple of `12 × term_years`, the month before closed a term, where the interim value
+  is the Investment Amount, so `av_pp_init` is the investment amount plus the two
+  accounts, to two and a half cents, the one rule of RILA's that ties more than two
+  amounts; every other rule between amounts holds to a cent.
+- *`proj_len()`* refuses, naming the point, a point at or past its Maturity Date, and from
+  the second contract year a remainder above the year's Free Withdrawal Amount,
+  `free_wd_rate × av_pp_prev_anniv_init()`, to a cent, each a rule that needs a
+  `Projection` Reference. The remainder rule applies only where the base is 0 or more: on
+  a negative base S's allowance is negative, and a behavioural rate above the free rate
+  leaves a positive remainder no allowance bounds, a state S reaches, as variant 22 does,
+  restated at 24 and 30 and accepted. With the S-side fix of the negative allowance
+  (*Carried, outside the SEC models*), the rule would apply at every base, against the
+  floored amount, `free_wd_rate × max(0.0, av_pp_prev_anniv_init())`, and its guard, the
+  guard's docstring sentence and `model-sec.md`'s note would go: the guard dropped alone
+  would refuse the remainder of 0 the fix leaves on a negative base.
+- *`Data` checks the model point table* (§7.1's template, item 9) in 37 refusals, in the
+  template's order, the first that fails raising and naming the missing column or every
+  point at fault: the fifteen in-force columns, a unique `point_id`, the count, a whole
+  duration and the horizon; the terms, `term_years` before every check that reads the term
+  clock: the issue age, whole and 0 or more, and the term, whole and 1 or more, each read
+  by value where S truncates by `int()`; the premium above 0; the buffer and the floor,
+  fractions 0 or more and below 1; the participation above 0; the cap blank or 0 or more;
+  the step, the edge and the behavioural rate 0 or more; `nge_reset` read by value, `True`
+  or `False`, 1 or 0, 1.0 or 0.0, where S's `bool()` reads any text as `True`; and
+  `nge_reset` set only on a capped `CAP` option, which S projects silently, its solver
+  pricing the cap portfolio on a Floor option and doing nothing on a Step, an Edge or an
+  uncapped one. Then the opening state: the balances 0 or more and the account values
+  finite; each term-start value in its range, the index and the volatility above 0, the
+  rates above −1; nothing held before issue; the term-start values and the cap given
+  exactly where they are read; a contract in force holding something; the
+  return-of-premium base at most the premium; in the first contract year a remainder of 0
+  and the purchase payment as the base; both accounts 0 before the first Term End Date;
+  and the renewal and anniversary rules. Last, each point's keys, each table's count cell
+  asked first: its scenario, which must set its levels by the point's first month on the
+  books, its programme, its term among the guaranteed minimums, its sex and attained age
+  in the mortality table, and a re-solved cap at least its term's guaranteed minimum. Left
+  to the projection, as in S: a mortality table that stops before the maturity age.
+- *The tables* (§7.1, *Precised at M3*, item 9). Each of the five assumption tables and
+  the scenarios has an int count cell beside S's reader, unchanged, as DIA's and UL's do,
+  and the one cell that reads the table asks it first: the new keyed readers,
+  `mort_rate_base_at(x)`, `surr_charge_rate_at(cy)`, `lapse_rate_base_py(y)` and
+  `wd_amount_pm(m)`, and S's `guar_min_rate` and `market_state`, rewritten to. Each count
+  cell reads its keys by value once and refuses, naming the file, the column and the
+  lines: a key blank, text or not whole, a key on two rows, a gap where its reader reads
+  every key, a sex other than `M` or `F`, a surrender charge table whose years do not run
+  from 0, one row a year, which S would read as no charge in the missing year, and a lapse
+  table whose first year is not 1; and a value blank, text, infinite or out of its range,
+  but a mortality rate above 1, which is accepted and capped, where §5.1's step 6,
+  precised at M4 after RILA's build, refuses a probability past 1.
+- *Text* (R6). The ten decodes carry every branch on `crediting_type`, `iv_family` and
+  `amort_rule`, each reading its column from `model_point()`, as each join reads its key,
+  so that no projection cell compares the model point's text or calls a label accessor; a
+  value no decode knows raises S's message where S raises it, in a table-driven
+  `UNDECODABLE` list. The text a projection cell still compares is S's own: the timing,
+  kind, bucket, leg and market strings, which R9 numbers, and `opt_legs`' tuple of leg
+  names (R10).
+- *The market* (D7; D8, precised). The scenario is a path in calendar time, so it moves to
+  `t`: `market_state`'s parameter is renamed `t`, as SPIA's time-point cells' were, so
+  that the twin comparison shifts it and the rules test reads it as a month, every caller
+  passing it by position. It joins on `model_point()['scenario_id']`, after
+  `Data.market_scenario_count()`, S's step search kept. Its file is a companion,
+  `market_scenario_sec.csv`, read through S's reader by repointing `market_scenario_file`:
+  S's four scenarios under their own ids for the twins, and for each derived and future
+  row a copy re-based by its `duration_mth`, the future row's named through
+  `SecSpec.future_state`. A term begun before `t = 0` takes its start from the model
+  point, one starting at or after it from the scenario, at the time its Term Start Date
+  falls at.
+- *Guards* (R1). Outside cover every count, rate, factor and amount of a month is 0.0 and
+  every flag `False`, but the two surrender multipliers, 1.0, each returned before any
+  market, rate or table is read; the clock's arithmetic and the six market readers have no
+  guard, and no cell calls them there, and `duration_mth` and `inflation_factor`,
+  unguarded too, are defined in every month. `result_iv` writes `index_level` 0.0 there,
+  since a future row's copy holds no level before issue. `check_pols_roll_fwd_resid` and
+  `av_at`'s `"AFT_WD"` are 0.0 outside cover before they read `t + 1` (§7.11, *Record —
+  M8*, *Checks*), so every monthly cell holds `t` to `proj_len()`, and only `market_state`
+  the instant `proj_len() + 1`, which the five scenario readers read when Phase 2's sweep
+  calls them at `t = proj_len()`; the guard test fails a month-keyed cell that holds a
+  month past `proj_len()`, and `market_state` an instant past `proj_len() + 1`.
+- *The checks* (§7.1, *Precised at M3*, item 11; §7.1, *Record — M14*, precised at M4).
+  S's three residual cells stay signed differences with no `float(...)`, and S's
+  `all(abs(r) <= tol ...)` is kept, so a NaN fails each check. The two roll-forward
+  tolerances scale with `max(policy_count(), 1)`, since each residual is an aggregate over
+  the point's contracts: at a million contracts S's fixed 1e-12 on the count fails on 23
+  of the 24 committed rows, all but row 23, whose one-month frame closes exactly. The
+  term-end identity, per contract, keeps S's tolerance.
+- *The cap on mortality* (§5.1, step 6). `mort_rate` caps as `RILA_US_S` does since §8.2
+  item 4's fix, `min(rate * mort_ae_factor, 1.0)`, the bound second, behind the guard,
+  `rate` read at `mort_rate_base_at(age(t))`, so the cap is no departure. Its test reads
+  both models at an A/E of 10.0, under which the product first passes 1 in months 348, 108
+  and 96 on points 1, 7 and 12: the annual and monthly rates are `(float, 1.0)` from
+  there, every contract in force dies in the capped month, on each point's twin and on the
+  point restated the month before the cap, and every cell agrees with S, the capped months
+  included, at 1e-9 relative with no absolute floor; read with a NaN A/E, both models'
+  rate is NaN.
+- *Chains of one cell a month* (D5, precised). The Investment Amount, which ran through
+  three cells a month in S, the two accounts and the free-withdrawal carry, which ran
+  through two, and the count each form the previous month's close themselves, S's
+  arithmetic in S's order. `CHAIN_OVERHEAD` is 24, against Term's 16, UL's 20 and VUL's 25
+  (D5, precised at M10): the chains are one cell a month, and the overhead is month 0's
+  pricing of the term's option under the interim value, 13 to 21 levels on the committed
+  points (*Measured for K6 and F7*, below).
+- *T4 and T5* (§5.2, precised). T4 multiplies the count by 2.5 with premium tax and the
+  Holding Account's share switched on, and holds `av_change`, `net_cf`, `claims_over_av`
+  and the two aggregate residuals, differences of counted values, to the residuals' 1e-9
+  floor, every other counted cell to 1e-12 relative and every other cell bit for bit; and
+  the roll-forward checks close at 10^8 contracts, where each residual exceeds the
+  tolerance it would have had unscaled, as at a million contracts the Account Value's did
+  not. T5 refuses each window rule just inside each end of its window and accepts it just
+  outside, but for the first-term rule at month 1, its first: the first-year rules at
+  months 1 and 11, accepted at 12; the first-term rule at its term's last month, 71, and
+  11 on a one-year term, accepted at that term's renewal, 12; the anniversary rule at 12
+  and 36, accepted at 11 and 13; and the remainder rule and the cover check at the first
+  anniversary and the Maturity Date, where each starts, the cover check accepted at 119.
+  It accepts every state S reaches on the splice's inputs but the one set aside by name.
+  It pins from both sides the cents of the remainder, the return-of-premium base and the
+  anniversary rule, and the renewal identity's two and a half cents; the first-year rules,
+  refused at a remainder of 100.00 and at a base two cents off the premium, and the
+  first-term rule, refused at an account of 1.00, are accepted only where they hold
+  exactly. These and the first-term rule's month 1 are short of T5 as precised, which M13
+  takes up (§5.4).
+- *The rules test* (§5.2, T2) holds every splice row to R1, R1a and R2: no call at a
+  negative month, none from `t_entry()` on reading a month before it, none at `t` reading
+  beyond `t + 1`, read directly or through a precedent keyed by no month, followed to
+  every month-keyed call it reads (§7.12, *Record — M12*, *Tests*), and no table read at a
+  key the contract does not have. RILA admits no look-ahead. Each row is swept and
+  recorded before it is compared with S, since the comparison plants S's keys in SEC's
+  cache.
+- *The splice* (§5.2, T2; §7.8, *E*). Ten variants change S's columns only: a three-year
+  term at a 55% cap; a one-year term under `nge_reset`; a behavioural rate of 15%, above
+  the free rate; a Floor option on a three-year term whose cap of 8% binds; the crash
+  path, alone, with a behavioural rate of 15%, and with a $5,000 request at policy month
+  end 22 on a negative account value; a $250,000 withdrawal at month end 30, above the
+  account value; an Edge term ending exactly at its 25% buffer; and a $5,000 withdrawal at
+  month end 42 at a negative interim value on a positive account value, which the accounts
+  alone pay. Its References, in both models: inflation at 0; the Holding Account's share
+  of a term end switched on at 4%, the Fixed Account's moved to 11%; premium tax at 2%; an
+  A/E of 1.05; a lapse shock of 27.5, which takes the shock year to `lapse_rate_max` where
+  the moneyness factor is about 0.91 or more and not elsewhere; the moneyness floor at
+  0.9, which binds on the down paths; the trading cost at 0.15% and the interim value's
+  expense rate at 0.08%, the credit spread at 1.2% and the free term-end lapse at 12%,
+  each set apart from the Reference it ships equal to; and a declared account rate of
+  0.5%, so that the account rate's 1% floor binds. Its tables: paths in which every field
+  steps; contract year 1's surrender rate at 1.5% and year 0's withdrawal charge at 7.5%,
+  each set apart; the one-year term's guaranteed cap, step and edge raised to 11%, 8.5%
+  and 6.5%, so that each binds, and the longer terms' edge floors set apart from their
+  step floors; and the variants' three programmes. Each row valued mid-term, 78 of the 101
+  and 31 of the core's 37, runs on a copy whose state at `t = 0` is moved by a quarter in
+  each field off its term-start columns, after that state is written to `t = 1` where the
+  copy has no row there, and its comparison leaves out `market_state` at `t = 0` alone.
+- *The committed rows* (§7.1, *Precised at M3*, item 11). Each derived and future row
+  continues its S point from its month at the shipped assumptions, its four reports frame
+  by frame and every other cell at every argument S cached, to 1e-9 relative with no
+  absolute floor, the residuals at the floor, on its own copy of its scenario from the
+  committed companion, the cells expense inflation moves left out; the future row takes
+  T3's exemptions, which the helper takes as a parameter.
+- *The runner* takes `Projection`'s key from the model, freezes the collector before each
+  pass, releases and collects each point, in `--block` asks every point for its frame
+  first and sums the frames by `groupby`, routes every count of months it prints through
+  `months()`, and refuses a label the table lacks, naming its labels, and one that is not
+  a number with its usage line, without a traceback. It prints the option budget of the
+  term in force on the notional entering `t_entry()`, which a withdrawal since the term's
+  start reduced.
+- *Text-only changes.* S's 38 lines over 92 characters, 2 in `Data` and 36 in
+  `Projection`, 33 of them in the symbol map, are wrapped in SEC only, and five inherited
+  docstring defects corrected in SEC only (*Carried, outside the SEC models*), and the
+  symbol map gives `claim_pp`, `claims_from_av` and `claims_over_av` rows of their own
+  (§7.11, *Record — M8*, *Docstring tables*). `result_pols` gives `pols_if`, then
+  `pols_new_biz`, then S's columns; T1 exempts it, and the module compares it with S's
+  column by column. `INPUT_FILES` was written by `gen_input_files.py --write`.
+- *§7.10's carried items* (*Record — M7*), the deferred chassis: every chain one cell a
+  month; the past fixings, the term-start market and the re-solved cap, read only where
+  their fixing precedes `t_entry()`, with core rows inside a fixed period, the anchor at
+  40 and the reset point at 80; the year-opening state as `av_pp_prev_anniv_init` and
+  `free_wd_remain_init`, with the anchor in a year's last month, 11, in the core; `Data`'s
+  money rules to a cent, the renewal identity's two and a half apart, each carried value
+  held where its rule fixes it, each window rule refused just inside each end and accepted
+  just outside, but the first-term rule at month 1 (*T4 and T5*, above), and each rule's
+  removal run as a fault; each point's join keys checked last, and what `Data` cannot
+  check said; the tables through count cells beside S's readers, which §7.1's item 9
+  admits beside MYGA's checked copies, with a `TABLES` case for each kind of fault, each
+  refused through a projection too, and keys written as floats; the decodes, each join key
+  read from `model_point()` in the one cell that reads its table, and the text still
+  compared named in the spec's comment; and of its *Tests*, acquisition per contract at
+  2.5 contracts, the scaled checks at 10^8 contracts, each spliced row's scenario re-based
+  and stepped, S's unreached cells and arguments evaluated in `_sweep`, every per-month
+  charge, ratio and clamp guarded, the depth at the longest cover at issue age 0 on
+  mortality extended below the table, the cap as `RILA_US_S`'s, each T5 case refused by
+  its own rule and every count of months the runner prints through `months()`. It departs
+  from *A zero account value* (*Either sign*, above), and its rules test walks precedents
+  by a helper of its own, `_months_read`, admitting no look-ahead, where the item copies
+  `_month_reads`. Its future rows are seven S points and seven variants 13 months on, with
+  the anchor 1 and 120 months on, not every point and variant: RILA's C step probes the
+  future rows of the other eight S points and three variants.
+- *§7.9's carried items* (*Record — M11*): of the payout chassis, its *RILA (M10)* item,
+  SPIA's decodes, the age-keyed reader, valuation-clock inflation and `proj_len()`'s
+  refusal of a point at or past its maturity, the maturity kept as RILA's own claim with
+  no hand-off to `SPIA_US_SEC`, and the term-start index level and MVR of a term begun
+  before `t = 0` as opening-state columns, and of its *Tests* the guard test on future
+  rows 13 months on; the rest of the chassis does not arise, RILA's count being a
+  decrement chain and RILA having no survival per life, certain period, static schedule,
+  payout clock, commutation, reference rate or mortality improvement. And the items every
+  product takes: T4 at 2.5 contracts with every assumption that ships at zero switched on,
+  asserting every counted cell; T2 and T3 at no absolute floor, the residuals at 1e-9, and
+  a fault below the floor, which the cap test catches; each cap or floor bound where it
+  has an effect, after the review's blocker, but `roll_fwd_tol`'s floor (*§7.6's carried
+  items*, below); each malformed case refused by its own rule, which the drops showed, and
+  read through a projection as well; each splice row recorded before it is compared; the
+  collector frozen and unfrozen; and the set-apart edits checked to move no branch and the
+  core chosen by line coverage. A level change since each point's start does not arise:
+  `RILA_US_S` carries none in one Reference, its market being a path.
+- *§7.12's carried items* (*Record — M12*): the term-start inputs in DIA's frozen-weight
+  shape, above; S's readers unchanged, with a count cell beside each, DIA's form, which
+  §7.12 asks the record to name; every flag column validated by value and decoded from the
+  checked value, and the option combination the product's interlock forbids refused by
+  name; the rules test walking each precedent keyed by no month to the month-keyed calls
+  it reads; the cap tested over both models; both of §7.1's item 11's tests from the
+  start, every committed derived and future row compared with its S point frame by frame,
+  the future row with T3's exemptions, and a residual that is not a number failing each
+  check, sent through References set before the model computes anything, `mort_ae_factor`
+  and `trading_cost_rate`, each check asserted only where its residual goes NaN; and the
+  count a decrement chain, `BEF_DECR`, with no flag. Far-ahead pricing and a residual that
+  sums ahead do not arise: RILA prices each month's options in closed form from the
+  month's market and the term's start, re-solving a cap by S's bisection in one cell, and
+  its residuals are monthly identities. Of the five items every product takes, it meets
+  the first, its helper taking the exemption set as a parameter, and the third, the rows
+  its product tests read on the splice's inputs built in the splice's fixture while S is
+  swept, each S point released after its last T2 case and the collector frozen again after
+  the last; the fourth and fifth do not arise, RILA summing no schedule by a loop and its
+  companion being a market. It meets the second in part: the term-end identity's residual
+  is NaN at every Term End Date and 0.0 in every other month, but the two roll-forward
+  residuals are NaN in every month, so no month shows those checks failing on the NaN and
+  not on a finite residual. RILA's C step takes up the rest on the row issued 13 months
+  on, whose roll-forward residuals, at a NaN A/E, are 0.0 before its issue at `t = 13` and
+  NaN from it.
+- *§7.11's carried items* (*Record — M8*), read at da763e8, M8's landing, from the tests
+  stage on: into RILA, *Checks*, S's `all(...)` kept and the count's residual and
+  `av_at`'s `"AFT_WD"` guarded, and *Term-start state*, through the moved copies; into
+  every product, *Each rule entry by entry*, a map of each case's first `RAISE` over the
+  62 refusal sites in `model_point_table`, the six count cells and `proj_len()`, each
+  case's first its own and every column of every looped rule some case's first, with no
+  `NOT_ISSUED` list, since RILA adds no issue-age bound at stage `E`; *The core by line
+  coverage*, the core running every line the full grid runs and no set-apart edit moving a
+  core row's lines; *Boundaries met exactly*, the Edge term ending at its buffer and point
+  4's flat Step years, RILA having no banded table; *`Data`'s state rules against S*, the
+  every-state test; *Past the frame, and a NaN*; *Docstring tables*, `_table_overruns`,
+  `_map_faults` and the docutils parse test, which skips where docutils is absent, as
+  FIA's does, and so in CI, which M13 settles across products; and *Depth and status*, the
+  ascending sweep measured on both models, RILA having no status column. *Switches and
+  bounds S ships idle* it leaves, with reasons: `RILA_US_S` ships no switch, every
+  Reference being a number, and each bound S ships idle binds in the main splice,
+  `lapse_rate_max` through the shock of 27.5, the account rate's floor through a declared
+  rate of 0.5%, the moneyness floor at 0.9 and the guaranteed minimum rates through the
+  raised floors, while `db_rop_max_issue_age` and `maturity_min_years` bind on S point 12
+  and `nge_cap_search_max` and `nge_solve_iter` are the cap solver's bracket and its
+  iteration count, but the cap on mortality, which the splice's A/E of 1.05 leaves idle at
+  every covered age and the cap test binds instead, on reads of both models at an A/E of
+  10.0, and `roll_fwd_tol`'s floor, which no point's premium binds (*§7.6's carried
+  items*, below); so there is no second splice fixture.
+- *The template* (§7.1's *Records*, as M2 and M3 precised them) *and M14's carried items*
+  (§7.1, *Record — M14*) are taken at stage `E`, among them the runner keyed by the model,
+  an extract relabelled and reversed, every Reference set on a model just read, each
+  refusal in a table-driven list, the reports on the valuation clock with zeros before
+  issue, every branch of a cell returning its one type, which the guard test asserts, no
+  new float-parameter or uncached cell, and `codes=codes(sec_proj)` in the module's one
+  call of `twin_mismatches`. Not yet: the runner's `--cython`, `--build` and `_tool()`,
+  the `create()`-copy test and the compiled runner test's refusal leg, and `proj_len()`'s
+  refusal of an issue age outside 0 to 85, which RILA's C step takes up (*Carried into
+  Phase 2*, below).
+- *§7.6's carried items* (*Record — M4*) postdate the build. It meets *Every bound binds*,
+  each floor, cap and clamp S writes bound with an effect in the core's frame, the
+  mortality cap in the cap test at an A/E of 10.0, but the floors on the Fixed and Holding
+  Accounts' shares of a withdrawal, which no state reaches, neither account falling below
+  0, and `roll_fwd_tol`'s floor, `max(1.0, premium_pp())`, which binds only on a premium
+  below 1, every point's being 50,000 or more, with no second splice fixture, since every
+  other bound S ships idle binds in the main splice (§7.11's, above); *Residuals as
+  floats*, S's signed residuals kept with no `float(...)`; *A bound stated only once
+  probed*, the shock's binding on some rows and not others, which the module's comment on
+  `SPLICED_REFS` states, asserted both ways by the core-reach test, and the depth comments
+  corrected to the measurements at the review; *Events in their own month*, core rows at a
+  term end, a renewal, an anniversary, a year's last month, a withdrawal and the maturity
+  at `t = 0`; *Shared helpers and the runner*, the helpers prefixed `_rila_` and the month
+  singular, though a label that is not a number is refused with the usage line, not yet
+  with the table's labels, which RILA's C step adds; *Policy months in S's cells*, the
+  free-withdrawal base read on the valuation clock and T2 rows valued mid-year; and
+  *Tables keyed by what the point names*, the scenario's months held to what its
+  step-function reader reads, a repeat refused and a gap let stand. *Months as results*
+  does not arise: the cells it shares with S that return a month, `duration_mth`,
+  `term_elapsed_mth` and `term_start_month`, count policy months in both models, which T1
+  and T2 compare equal at each row's offset, and no cell finds a month by a search of the
+  frame, as VUL's first default month does. *Reach by the raw value* it meets but for two
+  bounds whose predicates read the bounded value: the surrender rate's, equal to
+  `lapse_rate_max`, and the behavioural withdrawal's, equal to its allowance. It does not
+  meet *Every value column*: its mortality rate's bound at 1 is no refusal (*The tables*,
+  above), every other ranged column has a refusal but not one past each bound, and its
+  accepted edges read the bounds of the count, the buffer, the floor and the cap alone;
+  nor *Keys and clamps*: no case writes the charge table's first year as −1 or shortens a
+  table below its cover; nor *Core-removal faults*: no fault dropped a core row. RILA's C
+  step takes up these three; it also takes up the two predicates that read the bounded
+  value, and `roll_fwd_tol`'s floor with a case at a premium below 1.
+
+**Measured for K6 and F7.** Every time below was taken with other workflows sharing the
+machine's four CPUs, all but the landing's at load averages of 1.1 to 3.6.
+- *Comparisons.* At the second fix the default module ran 230 passed, and over the full
+  grid at the fix stage 305 passed, so each of the full grid's 101 T2 and 16 T3 rows
+  continued S in every cell the two share, at every argument S cached from the row's month
+  on, to 1e-9 relative with no absolute floor, the residuals at the 1e-9 floor, but T1's
+  exemptions, `result_pols` among them, compared column by column, and the two cells a
+  restated or future row changes by design, `proj_len` and `scenario_id`, the row's own
+  copy, and on rows valued mid-term `market_state` at `t = 0`, which no cell of theirs
+  reads. T1 compares the twins with its exemptions alone.
+- *Time.* By default the module ran 230 passed and 75 skipped in four runs at the fix
+  stage, on the same code but comments: in 287.12 s and 318.34 s at 2.72 GB before the
+  stage's restart, and in 381.96 s and 382.90 s after it, peaking at 2.73 GB and 2.74 GB
+  in one process; at the tests stage, 225 passed and 74 skipped, in 318.62 s and 316.02 s.
+  Over the full grid it ran 305 passed in 517.07 s and 442.13 s at the fix stage, peaking
+  at 3.18 GB, 299 passed in 442.15 s at the tests stage, and 305 passed in 544.08 s at
+  landing. So the default run takes 287 to 383 s, 4.8 to 6.4 minutes, about 1.6 to 2.1
+  times the three minutes K6 projects for each product from WholeLife's module and past
+  the design's five minutes in every run but the fastest, and about 105 to 215 s more than
+  WholeLife's module, with the core already in place. In the second fix's suite its tests
+  took 384.4 s, the most of any module in a suite that held neither FIA's nor VUL's, ahead
+  of the conventions (352.2 s), DIA's (225.3 s), UL's (203.6 s) and MYGA's (200.7 s). Most
+  of it is fixed: the splice's fixture, paid by the every-state test (35.4 s of its
+  43.4 s), the accepted edges (39.8 s), the guard test (25.2 s), T4 (24.9 s), the
+  committed model's cold sweep (23.2 s), the depth test (18.7 s), the runner (17.8 s), the
+  cap test (17.1 s) and the extract (15.8 s), about 226 s together, where T2's 37 core
+  rows took 53.4 s, 0.12 s to 3.08 s a row. The design's remedy past five minutes,
+  thinning the core of 360-month rows that reach no branch another core row lacks, was not
+  taken, since the core runs exactly the `Projection` and `Data` lines the full grid runs;
+  a cut would come from those rows or from the fixed costs, and nothing was moved behind
+  `sec_full`. M13, which measures the matrix, weighs it. The SEC conventions, 32 passed
+  and 1 skipped, took 35.78 s alone and 33.7 s in the suite. On e011a0c with RILA added,
+  the uslib suite ran 2,524 passed and 441 skipped in 2,041.19 s (34 min 01 s) at the fix
+  stage, 1,944.12 s (32 min 24 s) at the re-review and 2,003.85 s (33 min 24 s) at the
+  second fix, peaking at 3.72 GB in one process. On the landing's tree, after M8 and M4,
+  the suite ran 3,063 passed and 535 skipped in 52 min 31 s (*Verified at landing*,
+  below).
+- *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()` and
+  13 to 21 more on the committed points: 378 levels on point 1's 360-month frame, where
+  `RILA_US_S`'s runs 1,095, 359 Investment Amounts with nine cells above them and ten
+  below, where month 0's interim value prices the term's option budget at its Term Start
+  Date's market. Over the chain the twins run 16 to 19 and the rows in force 13 to 21, the
+  most on row 19, S point 13 valued at its renewal at 72, whose month 0 re-solves the cap
+  under the option budget; row 24, issued 13 months on, runs 18, its chains stopping at
+  its issue. At the longest cover, issue age 0 and 1,080 months, on mortality extended
+  below 40, it runs 1,098 levels, both at the valuation date and issued 120 months on,
+  about 273 KiB of C stack at gcc's 255 bytes a level. Called alone, each chain's head
+  runs 10 to 16 above its chain, and the depth test bounds each on row 16 under the same
+  overhead. Swept in ascending `t`, the committed points run 14 to 19 deep, 19 on twin 13
+  and row 19, where `RILA_US_S`'s points run 14 to 18, as deep as SEC's twins but on
+  points 4, 5, 12 and 13, one level less: their deepest stack runs under the count, where
+  SEC's `pols_if` reads `"BEF_DECR"` and it `"BEF_NB"`. `CALL_DEPTH` is 40 and
+  `CHAIN_OVERHEAD` 24, asserted on twins 1 and 3, rows 16, 18 and 19, the future row and
+  both frames at issue age 0. Phase 2's `t` cache is 1,202 values (*Carried into Phase 2*,
+  below).
+
+**Faults.** Each fault went alone into its own copy of the library, and the tests aimed at
+it ran through the gate, at most two at a time but for about two minutes at the tests
+stage, when three or four did.
+- *Tests stage:* 88 faults, all caught. O01 to O15, each opening column ignored or read
+  from the wrong place, each term-start value read from the scenario at `t = 0` and the
+  cap read as declared or re-solved among them, were caught by T2 on 14 to 35 rows each,
+  the committed rows, the opening-state test and the column-shows test, O15 by the last
+  alone. R01 to R36 were R1a's rewrites: the clock and term arithmetic, the programme read
+  at `t + 1`, the maturity, new business, the premium and acquisition at `t = 0`, the
+  openings at `t > 0`, inflation on the policy clock, which only the inflation test
+  catches, the cap's fixing, `k <= t_entry()`, the market keyed from issue, a derived row
+  on S's own scenario, nine rewrites of `t > t_entry()` as `t > 0`, six of them caught
+  only by the rules test's early-read walk on future rows, and the issue month written as
+  `t == 0`. D01 and D02, a term-start value or a cap given where the term starts at or
+  after the valuation month, fail `MALFORMED`. X01 to X14 hit the checks and guards: X07,
+  a 1% count error below the floor, is caught only by the cap test, and X13, the Account
+  Value's tolerance left unscaled, was missed at a million contracts and is caught since
+  the test runs at 10^8. Y01 to Y16 are each aimed at a test no other fault reached; Y17
+  and Y18 drop the guards before `t + 1`, caught by the guard test, and Y19 reads the
+  anniversary rule a month late, caught by the every-state test alone; and Z01 and Z02
+  make the Step and Edge boundaries exclusive, Z02 caught only on the Edge term valued at
+  its buffer, variant 24 at 23. And 62 rule drops, each run on the cases a map of each
+  case's first `RAISE` gave it, each failed every case aimed at it.
+- *Review (tests lens):* 37 faults, of which 30, V01 to V24 and N05 to N10, were caught.
+  Seven survived the default module and the conventions: the cover check admitting the
+  Maturity Date (N01), the remainder rule's window moved off month 12 (N02), `nge_reset`'s
+  1 and 0 refused (N03), a buffer or floor of 0 refused (N04), the anniversary rule's
+  window moved off month 12 (N11), the remainder rule's cent widened by 1% of the
+  allowance (N12), and the option's floor in the withdrawal allocation dropped (N13); N01,
+  N02, N11 and N13 together passed the full grid too.
+- *Fix stage:* on the final code, each alone in its own copy, all caught: N01 by the
+  refusal at the Maturity Date, N02 by the remainder refused on the first anniversary, N03
+  and N03b, 1 and 0 refused and swapped, by the accepted edges, N04 by the edges' buffer
+  of 0, N11 by the base refused on the first anniversary, N12 by the remainder just over a
+  cent, and N13 by T2 on the dip variant at 41; the renewal slack at 1, 1.5 and 2 cents by
+  the edges, and at 3.5 cents by `MALFORMED`'s +0.03 case; `BEF_TERM_SURR` dropped from
+  `pols_if_at`'s chain by T2 on point 1 at 11; and the five term-start columns read from
+  the scenario at `t_entry()`, on the six mid-term rows the review named: the index on all
+  six, against two without the moved copies, the MVR on four, the notional family reading
+  none, and the rate, the yield and the volatility on all six each.
+- *Re-review:* eleven faults re-run on the current tree, each in its own copy, all caught
+  by the case aimed at each: N13, N01, N02, N11, N03b, N04 and N12; the slack at 2 and 3.5
+  cents; and the MVR and the volatility read from the scenario at `t_entry()`, each by the
+  core's T2 row of point 1 at 11. The second fix ran none: it changed one docstring line.
+
+**Carried into every product still to come.** What RILA, the Payout stream's last, adds to
+what the earlier records carry. Each item goes to the products in progress from this
+landing (§5.3), VA's build among them, which takes what applies, and each record says what
+it took. They came from the design and its critique, the tests stage, and the review and
+the fixes it led to, its faults among them:
+- *Re-based scenarios.* Where S keys a path from issue, re-base it into copies in a
+  companion file read through S's reader by repointing its `*_file` Reference, as RILA's
+  and FIA's are. Move each row's copy by its `duration_mth`, never its `source_mth`, and
+  name it by the months it moves, so that rows moved alike share one: `{id}-M{m}` for a
+  `duration_mth` `m` above 0, S's own `{id}` at 0 and `{id}-F{k}` for a row issued `k`
+  months on, named through `SecSpec.future_state`. The two months agree only where S keeps
+  the policy clock or the row comes from S's new business, as on every row of RILA's and
+  FIA's tables, so that their `-M{d}` ids, keyed by `source_mth`, name the months moved:
+  on VA's point 2 they differ by 26, so its in-force twin reads `base-M26`, set through
+  `SecSpec.twin_state`, not S's own `base`, and a row restated from it at S month 14 reads
+  `base-M40`, as a new-business `base` point's row at 40 does (§7.11, *Record — M8*,
+  *Scenarios*). `IUL_US_S` reads no file for its index path, which `index_level(t)`
+  computes from two References, `index_level_init` and `index_return_ann`, so no reader
+  stands to repoint: §7.4 moves the formula itself to `t`, IUL's rate-path test runs under
+  an override of `index_level` (§7.3, *Record — M3*, *Tests*), and IUL's record says how a
+  row restated at month `d` reproduces S's index credits from `d`.
+- *Time-point parameters.* Rename to `t` a parameter that holds a month or an instant on
+  the valuation clock, as RILA's `market_state(k, name)` and SPIA's `lives_if(k, life)`
+  were, so that the twin comparison shifts it and the rules test reads it as a month, and
+  call it by position. Name one on the policy clock otherwise, VA's policy month in
+  `t_of_month(m)` and contract quarter in `vix_sq(k)` and `phi_glwb_vix(k)` among them, so
+  that neither the comparison shifts it nor the rules test reads it as a valuation month,
+  as SPIA's `cum_annuity_pp(k)` and DIA's `lives_if_pm(k, life)` are (R2) and RILA's
+  `wd_amount_pm(m)` is. Move a second month beside `t`, as IUL's segment month `m`,
+  through `arg_map`.
+- *Start values.* Give a term's or a segment's start value DIA's frozen-weight shape
+  (§7.12, *Record — M12*): a column, or a row of IUL's ladder (§7.4), only where the
+  period began before the valuation month, its presence checked both ways and its value
+  above 0 where a cell divides by it. Carry a re-solved rate as a column only where static
+  data cannot re-derive it, as RILA's cap re-solved at a renewal under `nge_reset`.
+- *Stepped paths and moved copies.* Splice on paths in which every field steps, within
+  each period and across its starts: on S's flat fields a start value read from the
+  current market passes every comparison. On every row valued mid-period whose state at
+  `t = 0` a correct model never reads, as on RILA's mid-term rows and FIA's mid-year rows,
+  move the companion's state at `t = 0` off each start column, after writing that state to
+  `t = 1` where a month-end reader needs it, and leave that instant out of the comparison
+  on those rows alone (§7.11, *Record — M8*, *Term-start state*). Where a correct model
+  reads it, leave it unmoved: `IUL_US_S`'s sweep opens a segment every month and
+  `seg_return(t)` reads `index_level(t - 12)` and `index_level(t)`, so a row's level at
+  `t = 0` closes any segment maturing then and opens the next, and moving it moves both
+  credits. Its path moves every month, so a ladder's start read from it in the frame
+  misses, and the rules test refuses one read before `t_entry()` (R1); but on its level
+  return every segment's return is 6.4%, so splice on a path whose return varies between
+  segments, through an override of `index_level`, or else a start derived from the two
+  References passes.
+- *Binding floors and clamps.* Make each floor and clamp bind with an effect (§7.9,
+  *Record — M11*; §7.6, *Record — M4*, *Every bound binds*), a positive request on a
+  negative account value among them, and a bucket's floor in a withdrawal allocation,
+  which needs that bucket below 0 while the total stays above it, as RILA's dip variant
+  takes its interim value below 0 while its accounts keep the account value above it:
+  without it, dropping the option's floor passed every test, a blocker of RILA's review.
+- *Cent slacks.* Hold a `Data` rule whose carried amounts can miss by a whole cent, as one
+  that ties more than two, or adds an exact amount to one of two, to half a cent from each
+  and half a cent more, as RILA's renewal identity is held to two and a half cents. An
+  amount held exactly, as a premium paid or a programme's amount, adds nothing: a carried
+  amount held to such inputs or to 0 stays at a cent, as do an allowance held to its base
+  and a bound between two carried amounts (D6, precised at M7 and M10). Test each rule on
+  an extract with every amount carried to the cent, not only with one column moved, and
+  pin each tolerance from both sides.
+- *Window rules.* Test every rule over a window of contract months at both ends, refused
+  just inside each and accepted just outside, its first month as well as its last, the
+  Maturity Date and the first anniversary among them: RILA's remainder and anniversary
+  rules, refused only at month 36, passed every test with their windows moved off month
+  12, and its cover check with the Maturity Date admitted, as MYGA's second-year rule,
+  tested at month 12 alone, passed narrowed to that month or widened to month 24 (§7.10,
+  *Record — M7*, *Data's checks*, precised).
+- *Flag spellings.* Validate each flag column on every spelling its `Data` accepts,
+  asserting the decoded flags and that the rows reading them project bit for bit: RILA's
+  accepts 1 or 0 and 1.0 or 0.0 beside `True` or `False`, and a decode cut to `True` and
+  `False`, or with 1 and 0 swapped, passed its module until its fix. The life chassis
+  accepts `True` or `False` alone (§7.3, *Record — M3*, *Model point values*), so ULSG and
+  IUL show 1, 0, 1.0 and 0.0 refused, of which VUL's module shows 1 alone: the chassis
+  keeps S's `bool()`, which reads a `"0"` in a text column as true.
+- *Timing branches.* Write a branch over several timings as a comparison chain, never a
+  tuple display, which C5 reports as building a Python object.
+- *NaN checks.* Keep S's generator, as RILA keeps `all(abs(r) <= tol ...)`, or a loop that
+  stops at `if not abs(r) <= tol`, `<` where S has it, as `VA_US_S`'s
+  `all(abs(r) < tol ...)` does (§7.11, *Record — M8*, *Past the frame, and a NaN*, and its
+  *Carried into VA (M9)*, *Checks*), and send a NaN through a pricing Reference as well as
+  through one the counts read: RILA's `trading_cost_rate` reaches the Account Value's
+  residual and the term-end identity's, and its `mort_ae_factor` the counts', where S's
+  moneyness factor, its bound first, loses a NaN on its way to the count.
+- *Reads of `t + 1`.* Guard every read of `t + 1` with `is_active(t)`, as RILA's count
+  residual and `av_at`'s `"AFT_WD"` are and VA's `check_pols_roll_fwd_resid` and `av_at`
+  must be (§7.11, *Record — M8*), and have the guard test bound month-keyed cells at
+  `proj_len()` and instant-keyed readers, as `market_state`, at `proj_len() + 1`.
+- *Depth.* Size `CHAIN_OVERHEAD` from the cold depth with the pricing stack under month 0,
+  measured on every committed point, and put the deepest in the depth test's bound: RILA's
+  month 0 prices its option under the interim value, 13 to 21 levels beyond the chain, and
+  its review found the test leaving out row 19, the deepest. Measure the ascending sweep
+  on S and SEC alike (§7.11, *Record — M8*, *Depth and status*): `BEF_NB` adds a level
+  where the deepest stack runs under the count.
+- *The every-state test.* Restate every state S reaches on the splice's inputs, at each
+  window's edges by default and at every month on the full grid, and assert that `Data`
+  and `proj_len()` accept it, with the product's named exceptions set aside and shown
+  refused (§5.2, T5, precised at M10).
+- *Coverage and the drop sweep.* Map each malformed case to the refusal it meets first, by
+  `sys.monitoring`'s `RAISE` events, before dropping each rule, and run each drop on the
+  cases it refuses first; measure line coverage by `LINE` events on the code objects
+  registered at each read, since coverage.py attributes no line of a modelx formula, and
+  choose the core by it (§7.11, *Record — M8*, *Each rule entry by entry* and *The core by
+  line coverage*).
+- *States S reaches.* Accept a state S reaches, a negative interim value or a shadow
+  account never floored, and refuse instead what no contract in force can be, as a
+  contract holding nothing (D6, precised at M10); check every allowance and base that can
+  go negative, not only the withdrawal it feeds.
+- *Set-apart References.* Set apart the shipped References that rewritten cells read and
+  that ship equal, as RILA's trading cost and interim-value expense, its credit spread and
+  its account rate's floor, and its free term-end lapse and free withdrawal rate; check
+  each set-apart edit by the lines each core row runs as well as by its test; and check
+  that no splice shock pins a rate to its bound in every month, as a lapse shock of 30
+  pinned RILA's shock year to `lapse_rate_max` on every row.
+- *Name search.* Before generating, search every input CSV the generator copies,
+  case-insensitively, for the option, account, share-class and defined-term names the
+  research notes record, as well as the publishers and products `sources.md` cites, each
+  name's words matched also when joined or run together, and reword each hit in the S file
+  that holds it, S's table or a file the generator copies into a companion, in a commit of
+  its own (`CLAUDE.md`): RILA's twins copied four such cells from S's provenance, and its
+  scenario companion keeps S's provenance on every row.
+- *Docstring checks.* Copy `_map_faults`, `_table_overruns` and the docutils parse test
+  (§7.11, *Record — M8*, *Docstring tables*), give each cell its own row in the symbol
+  map, and scan each table for an identifier split across lines, which neither check sees:
+  one of RILA's rows rendered `AFT_WD` as two words. `VA_US_S`'s map has run-in rows too
+  (§7.11, *Record — M8*).
+- *Time the module early.* Time the module on the prototype and split it into a core and a
+  full grid from the start (K6): RILA's default run passed three minutes at every stage,
+  and five in every run but one.
+
+**Carried into Phase 2.**
+- *Caches and bounds:* `t` 0..1,201, 1,202 values: 1,080 months of cover at the youngest
+  issue age, 0, to `maturity_age` 90, plus the 120-month horizon, the frame's last month
+  1,199; every monthly cell holds `t` to `proj_len()`, 1,200, the count's residual and
+  `av_at`'s `"AFT_WD"` being 0.0 there before they read `t + 1`, and `market_state` the
+  instant `proj_len() + 1`, 1,201, which `index_level`, `mvr`, `risk_free`, `div_yield`
+  and `impl_vol` read unguarded at `t = proj_len()`. `x` (`mort_rate_base_at`) 0..94; `cy`
+  (`surr_charge_rate_at`) 0..90; `y` (`lapse_rate_base_py`) 1..91; `m` (`wd_amount_pm`)
+  1..1,080; the stack 1,098 levels at issue age 0. These size `sample_sec.py`,
+  `run_sec.py --cython` and the Windows job's stack. `sample_sec.py` calls the cells and
+  arguments no report or check reaches, which the module's `_sweep` evaluates over each
+  frame, `fixed_leg_yield`, `nge_spread_implied`, the free-withdrawal base and allowance
+  at every month, the option-pricing market, the decomposition and each leg after the
+  withdrawal, `opt_portfolio_abs` at `"TERM_START"` and `claims_over_av` by kind among
+  them, and the label accessors, which no projection cell calls (R17).
+- *Issue age:* Phase 2's `proj_len()` refuses one outside 0..85, beside the cover check
+  (§7.1, *Record — M14*; §6.1, step 6). `Data` refuses one below 0 and one whose attained
+  age in the first month on the books the mortality table does not rate, below 40 as
+  shipped; nothing refuses one above 85, as in S.
+- *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, with the
+  `create()`-copy test and the compiled runner test's refusal leg (R4; §6.1, step 7).
+- *T1 and codes:* S caches `claims(t, kind=None)` and `claims_over_av(t, kind=None)` under
+  `(t, None)`, which need a T1 `arg_map` at stage `EC` (R12). `_mismatches`, the module's
+  one call of `twin_mismatches`, passes `codes=codes(sec_proj)`.
+- *Engine functions* (R14): the float-parameter cells, all S's, for Phase 2 to inline or
+  re-key: `norm_cdf`, `bs_d1`, `bs_d2`, `bs_call`, `bs_put`, `bs_binary_call`,
+  `opt_component`, `opt_portfolio`, `opt_portfolio_abs`, `credit_rate_at` and
+  `opt_budget_at_cap`. S's tests call `opt_component`, `opt_portfolio`, `credit_rate_at`
+  and `bs_binary_call` directly. SEC adds none, and no uncached cell. The Black–Scholes
+  cells' `math` calls and `math.inf` are S's, which C5 refuses: RILA's Phase 2 admits them
+  by cell or gives them a C form (§7.1, *Record — M14*, *Carried into M15 or later*).
+- *`Data`'s share:* `market_state` becomes per-field `[scenario, month]` arrays, each
+  future copy's months before issue unreadable; the ten decodes move into `Data` (R6), and
+  the six count cells become R7's checking ints.
+- *Strings:* R9 numbers the timing, kind, bucket, leg and market strings; `opt_legs`'
+  tuple of leg names falls under R10.
+
+**Carried, outside the SEC models.**
+- Nine S-side items for §8.2 item 4, found in `RILA_US_S`, which §8.2 item 4's fix, to
+  mortality alone, leaves as they were: the first three, on a negative account value, are
+  in both models, `RILA_US_SEC` reproducing S; the sixth is corrected in `RILA_US_S` at
+  landing; and the rest are fixed or refused in `RILA_US_SEC` only. The figures are on the
+  build's probe inputs, a crash path:
+  - the Free Withdrawal Amount goes negative on a negative base: at policy month 23 the
+    base is −28,760, and the allowance and the behavioural withdrawal are both −2,875.98,
+    which `wd_pp`'s clamp passes. The fix is
+    `free_wd_allow = free_wd_rate × max(0.0, free_wd_base(t))`, with the behavioural
+    withdrawal floored at 0, since flooring the withdrawal alone would charge a withdrawal
+    charge on a zero withdrawal; it moves no shipped number. No step makes it, and no
+    decision of §8.2 asks for it. Until one does, `RILA_US_SEC` reproduces S, the crash
+    variants pin it, and `proj_len()`'s remainder rule applies only where the base is 0 or
+    more;
+  - `check_av_roll_fwd()` is False on the crash path, −2,738.25 at month 23 and −868.49 at
+    35, the negative withdrawal booked while the account is unmoved, in both models;
+  - S pays a negative surrender value at a negative Account Value, −30,684.39 at month 19,
+    and the death benefit of a contract issued past 80, the Account Value alone, is
+    negative there too;
+  - `nge_reset` on a Floor option solves the cap portfolio, and on a Step, an Edge or an
+    uncapped option does nothing: `RILA_US_SEC`'s `Data` refuses both;
+  - `nge_reset()` reads any text as `True`: `RILA_US_SEC`'s `Data` validates the flag by
+    value;
+  - four provenance cells of S's table, points 4, 5, 7 and 12, named the cited carriers'
+    crediting options and one carrier's defined term, which the SEC table's twins copied:
+    the landing's commit before the copy rewords them by design (*Landing*, below);
+  - 38 lines exceed 92 characters, 2 in `Data` and 36 in `Projection`, 33 of them in the
+    symbol map: wrapped in `RILA_US_SEC` only;
+  - docstring defects: the *Timing arguments* name `roll_index_share` of `"BEF_ROLL"`, no
+    cell, for `roll_share("OPTION")`; `wd_rate_ann` (line 484) and the model docstring
+    (line 195) point to a README no folder holds; "this cells" stands in
+    `opt_budget_at_cap` (line 820) and `pols_if` (line 1830); and `inv_amt_pp`'s formula
+    follows a single colon, so it renders as a blockquote: corrected in `RILA_US_SEC`
+    only;
+  - the symbol map runs `claim_pp`, `claims_from_av` and `claims_over_av` into `claims`'
+    row, which M8's landing found: `RILA_US_SEC` gives each a row of its own.
+
+**Landing.** Rebased from e011a0c onto cf0e402, after M8 and M4. `RILA_US_S` has capped
+its annual mortality with the bound second, `min(rate * mort_ae_factor, 1.0)`, since
+ed73164, the second of §8.2 item 4's commits, before RILA's build, and `RILA_US_SEC`'s
+`mort_rate` caps the same way behind its guard, through its keyed reader, `rate` being
+`mort_rate_base_at(age(t))`, so that fix changed no formula of `RILA_US_SEC`. uslib's
+`index.md` took two conflicts: the sentence that lists the SEC models, which now names all
+nine, and the row on input files, which now names RILA's market scenarios beside DIA's
+schedule and the FIA's scenarios. `sec_support.py` took four, where RILA's state
+extractors, re-based scenarios, state and spec follow FIA's and VUL's, all kept: RILA,
+built on DIA's tip, had put its three helper groups after DIA's, where FIA's went too, so
+that the merge set each beside FIA's, and the landing keeps the groups in landing order.
+`SecSpec.future_state`, its test and its two refusal cases in `test_sec_support.py`, which
+RILA had copied from FIA's build before FIA landed, merged as the tip's, one copy each.
+Before the copy, a commit of its own, be7dbd7, rewords the provenance of `RILA_US_S`'s
+points 4, 5, 7 and 12, which named the cited carriers' crediting options and one carrier's
+defined term, by design, keeping their source keys (CLAUDE.md), and the landing
+regenerated `model_point_table_sec.csv` from it, which moved those four twins' provenance
+alone. `INPUT_FILES`, regenerated with
+`gen_input_files.py lifelib/libraries/uslib --write` on the merged tree, came out
+unchanged. The landing also corrected `model-sec.md`'s census of `RILA_US_S`'s cells,
+which gave the docs stage's 64 unchanged and 20 with new text only, to 63 and 21, and a
+comment in the test module, which put the count at which the Account Value's residual
+first passes its unscaled tolerance near 1e8, to between 3e6 and 1e7. After its review the
+landing named `RILA_US_SEC` in `test_mortality_caps.py`'s docstring, as M4's landing named
+`VUL_US_SEC`, since its cap test sees `RILA_US_S`'s cap and float bound and, reading both
+models with a NaN A/E factor, the cap's order; named RILA's market scenarios among the
+companions `SecSpec`'s docstring lists, beside DIA's premium schedule and the FIA's rate
+scenarios, and the FIA's and RILA's among those `gen_sec_points.py`'s docstring lists,
+which had named DIA's and VA's alone; and added month 5 to the months mid-term that the
+test module's comment on the splice's months lists.
+
+**Verified at landing**, with three other workflows, VA's and ULSG's builds and the
+drafting of this record, sharing the machine. The uslib suite, with modelx-cython
+installed and so the compile tests included, gave 3,063 passed and 535 skipped in
+3,151.38 s (52 min 31 s), its two warnings modelx's renames of `Term_US_S` and `VUL_US_S`
+in the round-trip tests. RILA brings 230 passes and 75 skips in its module, 32 passes and
+1 skip in its SEC conventions, the notes-orientation check, which fourteen other models
+skip, and one pass in the compiled convention that reads every SEC model. Over its full
+grid, RILA's module gave 305 passed in 544.08 s, and the `cython` selection 11 passed and
+none skipped under `USLIB_REQUIRE_CYTHON=1`, in 159.97 s. doccheck built 509 pages with 0
+warnings. `gen_sec_points.py --check` found the files of the nine SEC models current, and
+`gen_sec_fingerprint.py Term_US_SEC --check` reproduced the fingerprint. md_lint reported
+0, `gen_scaffolding.py --dry-run` 0 files in each of the six libraries, and
+`gen_citation_links.py --dry-run` nothing on its 315 source tags. A case-insensitive
+search of `model_point_table_sec.csv`, `market_scenario_sec.csv` and `RILA_US_S`'s
+`model_point_table.csv` for 116 names, the publishers, products, options and defined terms
+that `registered_index_linked_annuity/sources.md` and the product's research notes cite,
+each name's words matched also when joined by spaces, underscores, hyphens or dots or run
+together, found none but generic terms: Term Start Date, Investment Amount, index
+performance and the header of the `cap_rate_init` column. These runs came before those
+text edits (*Landing*, above) and before the landing wrote this plan's M10 text, which no
+test, generator or doccheck reads. On the tree as committed, `test_mortality_caps.py` gave
+32 passed and `test_sec_support.py` 53 passed, `gen_sec_points.py --check` found the files
+of the nine SEC models current, doccheck built 509 pages with 0 warnings, and md_lint
+reported 0 on uslib and on this plan.
 
 ### 7.9 SPIA — `SPIA_US_SEC` (E: L, C: M)
 
@@ -4891,26 +5818,31 @@ the products in progress from this landing (§5.3), and each record says what it
 - *Issue values and past fixings* (D6, precised). An issue value S computes by rule stays
   a rule, credited in the issue month, and its cell becomes the in-force accessor, T1
   exempting it. A rate fixed at a past date is a `<cell>_init` column, read only where its
-  fixing month precedes `t_entry()`, as RILA's `cap_init` and term-start market state are,
-  with a core row inside each fixed period, as MYGA's at 61 and 89 are. Keep S's
-  month-valued cells, as MYGA keeps `redeclare_month` and `gp_start_month`, and convert
-  once in each reader.
+  fixing month precedes `t_entry()`, as MYGA's `credit_rate_init` is, with a core row
+  inside each fixed period, as MYGA's at 61 and 89 are. In each product still to come, a
+  value fixed at a term's or a segment's start takes DIA's frozen-weight shape instead, as
+  RILA's `cap_rate_init` and its five term-start market values do (D6, precised at M10).
+  Keep S's month-valued cells, as MYGA keeps `redeclare_month` and `gp_start_month`, and
+  convert once in each reader.
 - *Year-opening state.* Keep S's contract-year keys, with T2's `_on_the_books` and the
   rules test's year check, and carry each product's own state: FIA's year-open account
-  value and F, VA's withdrawals used this year, RILA's `av_prev_anniv_init` and
-  `fw_remain_init`. MYGA's allowance column fits only where the allowance is read at the
-  anniversary alone. For each year-keyed state read from the frame, put a row valued in a
-  year's last month, `d % 12 == 11`, in the core, with an `AT_VALUATION` entry: MYGA's
-  interest-only look-back one month off passed the core until point 5 at 11 joined it.
+  value and F, VA's withdrawals used this year, RILA's `av_pp_prev_anniv_init` and
+  `free_wd_remain_init` (as named at M10). MYGA's allowance column fits only where the
+  allowance is read at the anniversary alone. For each year-keyed state read from the
+  frame, put a row valued in a year's last month, `d % 12 == 11`, in the core, with an
+  `AT_VALUATION` entry: MYGA's interest-only look-back one month off passed the core until
+  point 5 at 11 joined it.
 - *Data's checks.* Compare to a cent each rule that ties one amount of money to another
   (D6, precised). Hold each carried value to what makes it where its rule fixes it: FIA's
-  F and year-open account value to the anniversary rules, and RILA's `av_prev_anniv_init`
-  likewise. VA's withdrawals used this year are checked as zero or more and no further: VA
-  recomputes its allowance every month from the earnings and the remaining premium, so the
-  amount used can exceed the allowance at the valuation date. Test a rule on a window of
-  contract months at both ends, refused just inside and accepted just outside: MYGA's
-  second-year rule passed every test while it was tested at month 12 alone. Run each new
-  check's removal as a fault.
+  F and year-open account value to the anniversary rules, and RILA's
+  `av_pp_prev_anniv_init` likewise, at least the account value on an anniversary, the base
+  being taken before that month's withdrawal (D6, precised at M10). VA's withdrawals used
+  this year are checked as zero or more and no further: VA recomputes its allowance every
+  month from the earnings and the remaining premium, so the amount used can exceed the
+  allowance at the valuation date. Test a rule on a window of contract months at both
+  ends, refused just inside and accepted just outside: MYGA's second-year rule passed
+  every test while it was tested at month 12 alone. Run each new check's removal as a
+  fault.
 - *Join keys.* Check each point's text keys against the tables they key, by point, last in
   `model_point_table`. A scenario must set its levels by the point's first month on the
   books, `t = 0` or its issue month if later, never by `t = 0` for every point, since T3's
@@ -4922,8 +5854,9 @@ the products in progress from this landing (§5.3), and each record says what it
 - *A zero account value.* MYGA refuses it in force. FIA's and VA's lifetime withdrawals go
   on after the account value is exhausted, so both accept 0 with a live rider, keep a
   guard on every ratio over the account value, as their S moneyness factors already have,
-  and test a row in force at 0 that projects its whole frame (D6, precised). RILA, with no
-  such rider, can follow MYGA.
+  and test a row in force at 0 that projects its whole frame (D6, precised). RILA's account
+  value, which its interim value can take below 0, is accepted at any sign, and a contract
+  holding nothing is refused instead (D6, precised at M10).
 - *Tables and text.* Read every assumption table through a checked `Data` cell beside S's
   unchanged reader (§7.10, *E*), with its extents as int `Data` cells, a `TABLE_FAULTS`
   case per table with a key written as text, each refused through a projection too, and a
@@ -5619,8 +6552,8 @@ took:
 - *Term-start state.* `RILA_US_S` locks five market inputs at a term's start: the index
   level, the MVR, and the risk-free rate, dividend yield and volatility that
   `opt_component`'s `"TERM_START"` branch and `opt_budget_at_cap` read. Of a term begun
-  before `t = 0` each is an opening-state column (§7.8, *E*; §7.9, *Record — M11*), or the
-  last three the budget alone where §7.8 allows it. On every row valued inside a term the
+  before `t = 0` each is an opening-state column (§7.8, *E*; §7.9, *Record — M11*), the
+  last three under either amortization rule (§7.8). On every row valued inside a term the
   splice moves the generated companion's value of each at `t = 0` off the term's start, so
   that T2 compares the columns and not the scenario's copy of them: FIA's fault M11, the
   year's opening index level read from the scenario, passed every T2 case until its splice
@@ -6282,7 +7215,7 @@ says what it took.
 - *Term-start inputs* take DIA's frozen-weight shape: a column only where the term began
   before the valuation month, blank otherwise and derived bit for bit, `Data` checking its
   presence both ways and its range, the term-start index level above 0, since `index_perf`
-  divides by it. §7.10's *Record — M7* gives `cap_init` and the term-start market state
+  divides by it. §7.10's *Record — M7* gives the cap and the term-start market state
   D6's value entering month 0 instead, on every row, as MYGA's `credit_rate_init` holds
   it: 0 on a point not yet in force, and on a row valued at a term start the expiring
   term's, unread. Each form's `Data` refuses a twin written in the other, so RILA's record
@@ -6478,7 +7411,7 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
 - **K4 — Future new business on market products.** Each future point needs its inputs
   re-based in T3; RILA and VA carry the most. D4's fallback exists for exactly this.
 - **K5 — A wide in-force interface.**
-  - VA adds about ten opening-state columns, RILA about twelve, and IUL a 12-slot ladder.
+  - VA adds about ten opening-state columns, RILA thirteen, and IUL a 12-slot ladder.
   - Each must come from an administration extract that may not carry it — a VA's highest
     quarterly value this contract year, a RILA's term-start volatility.
   - Ladders go in long companion tables keyed `(point_id, slot)`. Two or three funds stay
@@ -6486,6 +7419,14 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
   - Each `model-sec.md` documents, column by column, what the field is and the instant it is
     measured at. Where an approximation is defensible, its consequence is stated, and it
     stays out of the model.
+  - *M10:* RILA's thirteen are seven amounts, five term-start market values and the
+    re-solved cap. Two of the amounts reach no report: `av_pp_init` opens month 0's
+    investment return and `av_change`, which cancel in the Account Value's roll-forward,
+    and `av_pp_prev_anniv_init` feeds the year's base and allowance outside anniversary
+    months and `proj_len()`'s remainder rule; `Data`'s renewal and anniversary rules and
+    T2 still hold both. The five term-start values are given only where the term under way
+    began before the valuation month, and the cap only where that term began at a renewal
+    under `nge_reset`; each is blank elsewhere (§7.8, *Record — M10*).
 - **K6 — CI time.**
   - The matrix already takes up to 33 minutes against a 90-minute limit, and the SEC suites
     roughly double the projected volume.
@@ -6608,6 +7549,24 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     one process, and on the landing's tree, after d3a7be8, M12 and M8, and before its
     review added two cases, 2,798 passed and 459 skipped in 40 min 08 s. All times were
     taken with other workflows sharing the machine.
+  - *M10:* RILA's module runs by default a core of 37 T2 and 6 T3 cases, which a test
+    asserts reaches each listed property and line coverage showed running every
+    `Projection` and `Data` line the full grid runs, in 287 to 383 s, 4.8 to 6.4 minutes
+    (230 passed and 75 skipped at the fix stage), at a peak of 2.74 GB in one process. Its
+    full grid, 101 and 16 cases, runs in 442 to 544 s, at 3.18 GB at the fix stage, and
+    its SEC conventions take 34 to 36 s. That is about 1.6 to 2.1 times the three minutes
+    this risk projects for each product from WholeLife's module, and past the design's
+    five minutes in every run but the fastest, with the core already in place. Most of it
+    is fixed: nine fixtures and whole-model tests take about 226 s together, where T2's 37
+    core rows take 53 s. The design's remedy past five minutes, thinning the core of
+    360-month rows that reach no branch another core row lacks, was not taken, since the
+    core runs exactly the lines the full grid runs, so a cut would come from those rows or
+    from the fixed costs. M13, which measures the matrix, weighs it. By default the module
+    costs about 105 to 215 s more than WholeLife's, and over the full grid about 145 to
+    245 s more. The uslib suite on e011a0c with RILA added ran 2,524 passed and 441
+    skipped in 32 min 24 s to 34 min 01 s, at a peak of 3.72 GB in one process, and on the
+    landing's tree, after M8 and M4, 3,063 passed and 535 skipped in 52 min 31 s. All
+    times were taken with other workflows sharing the machine.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares what the cells return and raise.
@@ -6712,8 +7671,8 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, M8, FIA, and M4, VUL, are **done**, 2026-11-03 (§7.12, §7.11, §7.6) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
-| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4) | the whole matrix green under its timeout |
+| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, M8, FIA, and M4, VUL, are **done**, 2026-11-03 (§7.12, §7.11, §7.6), and M10, RILA, the Payout stream's last, is **done**, 2026-11-04 (§7.8) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
+| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, and RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1 (§5.4); and how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
