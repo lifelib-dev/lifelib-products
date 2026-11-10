@@ -85,9 +85,12 @@ and the product's own facts:
   (``UNDECODABLE``); the future horizon is a Reference that bounds future business, and at
   0 refuses it; a point past its cover, or with none at all, and an opening state that a
   rule needing a ``Projection`` Reference forbids, are refused by ``proj_len()``
-  (``NOT_ISSUED``), each window of months at both ends; the edges of the interface are
+  (``NOT_ISSUED``), each window of months at both ends, and each such rule follows its
+  Reference moved off its shipped value (``MOVED``); the edges of the interface are
   accepted, each value column at the bounds of its range, each flag spelled each way
-  ``Data`` reads it and an extract carried to the cent among them; and a table shortened
+  ``Data`` reads it and an extract carried to the cent among them, and so is every state
+  ``VA_US_S`` reaches on its points and variants, under each of the five sets of inputs
+  on which those states differ, two of them on the full grid alone; and a table shortened
   below its cover is read past its end as ``VA_US_S`` reads it.
 * T6, regeneration: the committed ``model_point_table_sec.csv`` and its two scenario
   companions are what the generator makes of ``VA_US_S`` and its inputs as they stand, and
@@ -1333,10 +1336,11 @@ GRIDS = {"spliced": (GRID, CORE_GRID),
          "switched": (SWITCHED_GRID, frozenset(SWITCHED_CORE))}
 
 
-def _s_table_with(variants):
+def _s_table_with(variants, taxed=True):
     """S's committed table with ``variants`` appended, under their own point_ids, and the
     premium tax of the splice (:data:`PREMIUM_TAX`) on every point issued at S's t = 0 but
-    a variant that sets its own."""
+    a variant that sets its own; with ``taxed`` False, every point's premium tax as S
+    ships it, 0."""
     table = pd.read_csv(model_path(TWIN).parent / "model_point_table.csv",
                         index_col="point_id")
     rows = []
@@ -1345,6 +1349,8 @@ def _s_table_with(variants):
         row.index = pd.Index([point_id], name="point_id")
         rows.append(row)
     table = pd.concat([table, *rows])
+    if not taxed:
+        return table
     own = [point_id for point_id, (_, changes) in variants.items()
            if "premium_tax_rate" in changes]
     new = (table["duration_mth_init"] == 0) & ~table.index.isin(own)
@@ -1393,12 +1399,17 @@ class _Splices:
     each pair is read once a run.  Each S point is swept the first time a case asks for it
     (:meth:`s_point`), and released once the last case this run selects for it has been
     compared (:meth:`done`).  The pair's SEC model's calls of ``min`` and ``max`` are
-    listed as it is read (:attr:`bounds`, :class:`_BoundSides`).
+    listed as it is read (:attr:`bounds`, :class:`_BoundSides`).  And as a pair is first
+    read, while the generator has every S point of it projected and before any case
+    releases one, the every-state test's table of the states its S model reaches is built
+    from it and kept, a folder on disk (:meth:`every_state`), so that the test projects no
+    S point again for the two sets of inputs the pairs are read under.
     """
 
     def __init__(self, root):
         self.root, self.which, self.s, self.sec = root, None, None, None
         self.swept, self.left, self.bounds = set(), {}, None
+        self.every = {}
 
     def pair(self, which):
         """``(s, sec)`` under ``which``'s References, read now if not already held."""
@@ -1410,8 +1421,23 @@ class _Splices:
             self.left = {}
             for _, s_point, _ in _selected(grid, core):
                 self.left[s_point] = self.left.get(s_point, 0) + 1
+            if which not in self.every:
+                self.every[which] = _every_state_table(self.root / which / "every",
+                                                       self.s, SEC_EDITS)
             _freeze()
         return self.s, self.sec
+
+    def every_state(self, which):
+        """``(folder, rows)``: the every-state test's table on ``which``'s pair's inputs.
+
+        Built as the pair was first read (:meth:`pair`); where no test has read it, the pair
+        is read now and closed once its table is built, so that the test that asks reads
+        the table with no pair beside it.
+        """
+        if which not in self.every:
+            self.pair(which)
+            self.close()
+        return self.every[which]
 
     def s_point(self, which, point_id):
         """S point ``point_id`` of ``which``'s pair, swept (:func:`_sweep_s`)."""
@@ -4280,6 +4306,141 @@ def test_run_sec_block_asks_every_point_for_its_frame_first(tmp_path):
             f"month 720" in done.stderr.decode(errors="replace"))
 
 
+# proj_len()'s rules on the four Projection References they read, omega_age,
+# av_depletion_threshold, vix_corridor_lo and vix_corridor_hi, each read with its Reference
+# moved off its shipped value before the model computes anything.  NOT_ISSUED and the
+# edges test hold each rule at the shipped value, where a rule written on a copy of it,
+# 120, 0.005, 0.006 or 0.025, passes them all; moved, the copy parts from the Reference.
+# Each case is (case, the References moved, its copies), and each copy (label, the row it
+# copies as (kind, S point, month), the columns changed on it, and the message, or the
+# frame's length where the point projects):
+#   omega_age lowered to 119: the anchor issued at 119 is refused, as having no cover, and
+#     at 118 projects its twelve months; the never-withdrawing basic death benefit valued
+#     at 708, where its cover now ends, a contract year's start whose step-up base is 0,
+#     is refused, and at 707 projects its one month: at the shipped 120 each projects;
+#   omega_age raised to 121: the anchor issued at 120 projects twelve months, and the basic
+#     death benefit valued at 720 twelve, each refused at the shipped 120 (NOT_ISSUED);
+#   the depletion threshold lowered to 0.002: on the never-withdrawing roll-up depleted at
+#     560, an account value of 0.0021, just above it, is not depleted, so its GAWA% locked
+#     with no withdrawal is refused, and 0.002 is depleted and read; with no GAWA% locked,
+#     0.002 is refused as depleted, and 0.0021 read; and on the highest quarterly step-up
+#     at 40 a history of 0.002 is refused and one of 0.0021 read.  At the shipped 0.005
+#     each of the six reads the other way;
+#   the corridor's top raised to 3%: the VIX fee at 41 with a prior of 3% is read, which
+#     at the shipped 2.5% is refused (NOT_ISSUED), and one of 3.01% is refused;
+#   its foot lowered to 0.4%: a prior of 0.4% is read, which at the shipped 0.6% is
+#     refused, and one of 0.39% is refused;
+#   its foot moved to the first quarter's rate, phi_glwb_curr, 1.25%, and a hundredth of a
+#     percent past it, where the proviso that holds the prior to the foot, from a first
+#     rate at or above it, turns: a prior of 1.24% is refused at the first and read at the
+#     second;
+#   its foot and top moved to meet at 1.2%, and the top a hundredth of a percent below the
+#     foot, where the proviso that the corridor runs upward turns: a prior of 1.19% is
+#     refused where they meet and read where the top is below the foot.
+_UNLOCKED = ("point_id {label}: gawa_pct_init must be 0 on a policy that has not withdrawn "
+             "and is not depleted, its account value above av_depletion_threshold 0.002: "
+             "the GAWA% locks at the first withdrawal or at depletion; it is 0.062")
+_BARE_DEPLETED = ("point_id {label}: gawa_pct_init must be more than 0 on a depleted "
+                  "policy that has not withdrawn: depletion locks the GAWA% of the "
+                  "attained age it falls at, which the point's grid gives as more than 0 "
+                  "at every attained age the policy reached before the valuation month")
+_NO_HISTORY = ("point_id {label}: stepup_base_pp_ytd_init must be above "
+               "av_depletion_threshold 0.002 on a policy not depleted, duration_mth % 12 3 "
+               "or more: every quarter end of the year before the valuation month closed "
+               "above it; it is 0.002")
+_MOVED_CORRIDOR = ("point_id {{label}}: phi_glwb_init must be at most vix_corridor_hi, "
+                   "{hi}, and at least vix_corridor_lo, {lo}, where phi_glwb_curr is, from "
+                   "the third contract quarter, duration_mth 6 or more: the clip holds "
+                   "every rate after the first there; it is {phi}")
+_NEVER, _HQ, _VIX = ("derived", 8, 560), ("derived", 5, 40), ("derived", 6, 41)
+_ANCHOR, _BASIC = ("twin", 1, 0), ("derived", 7, 719)
+_NO_STEPUP = {"stepup_base_pp_ytd_init": 0.0}
+_NO_GAWA = {"gawa_pct_init": 0.0, "gawa_pp_init": 0.0}
+MOVED = [
+    ("omega_age lowered to 119", {"omega_age": 119}, {
+        101: (_ANCHOR, {"age_at_entry": 119}, "point_id {label}: age_at_entry 119 is at or "
+              "past omega_age 119: the contract has no cover"),
+        102: (_ANCHOR, {"age_at_entry": 118}, 12),
+        103: (_BASIC, {"duration_mth": 708, **_NO_STEPUP}, "point_id {label}: "
+              "duration_mth 708 is at or past the end of cover, policy month 708"),
+        104: (_BASIC, {"duration_mth": 707}, 1)}),
+    ("omega_age raised to 121", {"omega_age": 121}, {
+        101: (_ANCHOR, {"age_at_entry": 120}, 12),
+        102: (_BASIC, {"duration_mth": 720, **_NO_STEPUP}, 12)}),
+    ("the depletion threshold lowered to 0.002", {"av_depletion_threshold": 0.002}, {
+        101: (_NEVER, {"sa_pp_init_1": 0.0021}, _UNLOCKED),
+        102: (_NEVER, {"sa_pp_init_1": 0.002}, 160),
+        103: (_NEVER, {"sa_pp_init_1": 0.002, **_NO_GAWA}, _BARE_DEPLETED),
+        104: (_NEVER, {"sa_pp_init_1": 0.0021, **_NO_GAWA}, 160),
+        105: (_HQ, {"stepup_base_pp_ytd_init": 0.002}, _NO_HISTORY),
+        106: (_HQ, {"stepup_base_pp_ytd_init": 0.0021}, 680)}),
+    ("the corridor's top raised to 3%", {"vix_corridor_hi": 0.03}, {
+        101: (_VIX, {"phi_glwb_init": 0.03}, 679),
+        102: (_VIX, {"phi_glwb_init": 0.0301},
+              _MOVED_CORRIDOR.format(hi=0.03, lo=0.006, phi=0.0301))}),
+    ("the corridor's foot lowered to 0.4%", {"vix_corridor_lo": 0.004}, {
+        101: (_VIX, {"phi_glwb_init": 0.004}, 679),
+        102: (_VIX, {"phi_glwb_init": 0.0039},
+              _MOVED_CORRIDOR.format(hi=0.025, lo=0.004, phi=0.0039))}),
+    ("the corridor's foot at the first quarter's rate", {"vix_corridor_lo": 0.0125}, {
+        101: (_VIX, {"phi_glwb_init": 0.0124},
+              _MOVED_CORRIDOR.format(hi=0.025, lo=0.0125, phi=0.0124))}),
+    ("the corridor's foot past the first quarter's rate", {"vix_corridor_lo": 0.0126}, {
+        101: (_VIX, {"phi_glwb_init": 0.0124}, 679)}),
+    ("the corridor's foot and top meeting", {"vix_corridor_lo": 0.012,
+                                             "vix_corridor_hi": 0.012}, {
+        101: (_VIX, {"phi_glwb_init": 0.0119},
+              _MOVED_CORRIDOR.format(hi=0.012, lo=0.012, phi=0.0119))}),
+    ("the corridor's top below its foot", {"vix_corridor_lo": 0.012,
+                                           "vix_corridor_hi": 0.0119}, {
+        101: (_VIX, {"phi_glwb_init": 0.0119}, 679)}),
+]
+
+
+@pytest.mark.parametrize("case, refs, copies", MOVED, ids=[c[0] for c in MOVED])
+def test_each_rule_on_a_reference_moves_with_the_reference(tmp_path, case, refs, copies):
+    """Each rule ``proj_len()`` states on a ``Projection`` Reference reads the Reference.
+
+    A rule that needs a Reference is stated on it, never on a copy of its shipped value,
+    and is tested where the two part: at the shipped value they agree, so a rule written
+    on a copy passes every test that leaves the Reference where it ships, as no other VA
+    test moves ``omega_age``, ``av_depletion_threshold``, ``vix_corridor_lo`` or
+    ``vix_corridor_hi`` (USLIB-SEC-PLAN.md §7.7, *Record — M9*, *Rules on a Reference*,
+    taken at M13, §5.4).  So each case of :data:`MOVED` reads a model with those
+    References moved, set before it computes anything, on the committed table with copies
+    of its rows appended under ids of their own, and each rule follows the Reference:
+    refused just inside the moved bound, each copy's projection raising ``ValueError``
+    that names the point and the moved value, the message matched whole, and read where a
+    rule on the shipped value would refuse it, or the other way about, the copy projecting
+    its frame, every number finite and the three checks closing.  The provisos of the
+    corridor's foot turn where the Reference moves them past the first quarter's rate and
+    past the corridor's top.  ``phi_glwb_curr`` is moved already, by the switched
+    References and by the edges and bounds tests.
+    """
+    committed = _committed()
+    rows = [committed.loc[[_label(committed, *row)]].assign(**columns, row_kind="copy")
+            .set_axis([label]) for label, (row, columns, _) in copies.items()]
+    table = pd.concat([committed, *rows]).rename_axis("point_id")
+    model = _read(_sec_inputs(tmp_path, table), "moved", refs)
+    try:
+        assert list(model.Data.model_point_table().index) == list(table.index)
+        for label, (_, _, outcome) in copies.items():
+            p = _point(model, label)
+            if isinstance(outcome, int):
+                frame = p.result_cf()
+                assert len(frame) == p.proj_len() == outcome, label
+                assert np.isfinite(frame.to_numpy()).all(), label
+                assert p.check_av_roll_fwd() and p.check_pols_roll_fwd(), label
+                assert p.check_charge_split(), label
+            else:
+                with pytest.raises(Exception) as excinfo:
+                    p.result_cf()
+                assert _raised(excinfo.value) == "ValueError: " + outcome.format(
+                    label=label), label
+    finally:
+        model.close()
+
+
 def _zero_band(table):
     """The GAWA grids with one that pays 0% from 60 to 64, for a test."""
     extra = pd.DataFrame([("zero_mid", age, pct, "a test") for age, pct in
@@ -4555,6 +4716,147 @@ def test_an_extract_carried_to_the_cent_is_read(tmp_path):
     finally:
         base.close()
         model.close()
+
+
+# The sets of inputs the every-state test restates VA_US_S's states under, the five on
+# which those states differ (USLIB-SEC-PLAN.md §5.2, T5, precised at M9; §7.7, Record —
+# M9).  First S's own: its nine points on its shipped inputs and References, the set the
+# committed table is generated from.  Then the four VA's probes ran on at M9, each S's
+# table with the variants on the splice's inputs (SPLICED_EDITS), which step the VIX and
+# CMT path S's point 6 reads: under S's shipped References with no premium tax, as S
+# ships every point; under the splice's References with the splice's premium tax on new
+# business (PREMIUM_TAX) and with none; and under the switched References with that tax.
+# As (whether the table holds the variants on the splice's inputs, whether new business
+# pays the premium tax, the References).  S's depletions close otherwise under each: on
+# exactly 0 on its own inputs and on every taxed point under the splice's References,
+# where its untaxed variants 24 and 25 close on 5.7e-15 and -2.3e-14, and so do S's
+# points 8 and 7 untaxed; under S's shipped References with the variants on -1.1e-13, on
+# variants 18 and 19 at policy month 752; and under the switched References on 2.9e-15,
+# on S's point 5 at policy month 287.
+#
+# By default the test runs under the three sets the module reads S under anyway: S's
+# own, which the committed table is generated from, and the splice's and the switched
+# pairs' (_Splices), whose tables are built while those pairs are read.  The two sets only
+# this test reads, S's shipped References with the variants and the splice's untaxed,
+# each of which costs a projection of every S point and variant of its own, run on the
+# full grid (EVERY_STATE_FULL_ONLY), where every set runs.
+EVERY_STATE_INPUTS = {
+    "shipped": (False, False, {}),
+    "shipped with the variants": (True, False, {}),
+    "spliced": (True, True, SPLICED_REFS),
+    "spliced untaxed": (True, False, SPLICED_REFS),
+    "switched": (True, True, SWITCHED_REFS),
+}
+EVERY_STATE_FULL_ONLY = frozenset({"shipped with the variants", "spliced untaxed"})
+
+
+def _every_state_months(sp):
+    """The S months, from 1, at which the every-state test restates S point ``sp``.
+
+    By default the edges of the windows of policy months that ``Data``'s and
+    ``proj_len()``'s rules hold (USLIB-SEC-PLAN.md §5.2, T5): every month of the first two
+    policy years, in which each window opens and closes, the first year's and the VIX
+    prior's quarters in the first, a contract year's start and the step-up history's
+    window from its third month in both; each later year's first month, its start, and
+    its last; and the month either side of each in which the account runs out, where a
+    depletion can close on a rounding about 0, which ``av_depletion_threshold`` reads.
+    With ``USLIB_SEC_FULL=1``, every month of the frame.
+    """
+    n = sp.proj_len()
+    if SEC_FULL:
+        return list(range(1, n))
+    months = set()
+    for d in range(1, n):
+        m = sp.duration_mth(d)
+        if m < 24 or m % 12 in (0, 11):
+            months.add(d)
+        if sp.depleted_flag(d - 1) != sp.depleted_flag(d - 2):
+            months |= {d - 1, d}
+    return sorted(d for d in months if d >= 1)
+
+
+def _every_state_table(root, s, edits):
+    """The states ``s``'s points reach, restated in force: ``(folder, rows)``.
+
+    Each month of :func:`_every_state_months` of each point and variant of ``s``, an S
+    model whose References are set, a derived row of a table the generator builds beside
+    every point's twin, written with its two scenario companions into a copy of the
+    product directory under ``root``, with ``edits``, the inputs S read, beside them.
+    ``rows`` is the table's length.
+    """
+    states = []
+    for key, point_id in zip(point_keys(s), s.Data.model_point_table().index):
+        states += [(point_id, d) for d in _every_state_months(projection(s, key))]
+    spec = dataclasses.replace(SPEC, derived=tuple(states), future=())
+    table, companions = build_sec_table(spec, s)
+    folder = temp_inputs(root, model_path(SEC), model_points=table,
+                         model_point_file=spec.model_point_file,
+                         edits={**(edits or {}), **companions})
+    return folder, len(table)
+
+
+@pytest.mark.parametrize("inputs", [
+    pytest.param(name, id=name, marks=FULL_ONLY if name in EVERY_STATE_FULL_ONLY else ())
+    for name in EVERY_STATE_INPUTS])
+def test_every_state_s_reaches_is_accepted_in_force(splices, tmp_path, inputs):
+    """Every state ``VA_US_S`` reaches is a valid opening state, under each set of inputs.
+
+    ``Data``'s rules and ``proj_len()``'s hold an opening state to what a contract in force
+    can be, so they must accept each state the S model reaches: a rule exercised only on
+    the rows the other tests choose could refuse a state S reaches elsewhere (D6).  And
+    those states differ with S's inputs: its depletions close on exactly 0 on some points
+    and on a rounding of either sign about 0 on others, which ``av_depletion_threshold``
+    reads as depleted, and which do so depends on the References and the premium tax
+    (:data:`EVERY_STATE_INPUTS`).  So under each of the five sets of inputs on which they
+    differ (USLIB-SEC-PLAN.md §5.2, T5, precised at M9; §7.7, *Record — M9*, taken at
+    M13, §5.4), S's own and the four VA's probes ran on, every point and variant of S,
+    read with the set's table, inputs and References set before it computes anything, is
+    restated in force by the generator at the edges of the windows of months
+    (:func:`_every_state_months`), or with ``USLIB_SEC_FULL=1`` at every month of its
+    frame, 18,476 states a set with the variants and 6,445 on S's own, into one table
+    (:func:`_every_state_table`).  A model read with the same References reads the table
+    through ``Data``, and no row's ``proj_len()`` refuses it, each row released once asked.
+    No state is set aside: ``VA_US_S`` reaches none that the product refuses by name.
+
+    By default it runs under S's own inputs, read here, and the splice's and the switched
+    pairs', whose tables were built from the pairs' S models as they were read
+    (:meth:`_Splices.every_state`); the two sets of inputs only this test reads run on the
+    full grid (:data:`EVERY_STATE_FULL_ONLY`).  A closed model's objects live until the
+    next is read, so once the table is read what is alive is frozen out of the collector
+    (:func:`_freeze`), and returned to it as the test ends.
+    """
+    variants, taxed, refs = EVERY_STATE_INPUTS[inputs]
+    if inputs in REFS:
+        folder, rows = splices.every_state(inputs)
+    else:
+        source = model_path(TWIN)
+        if variants:
+            source = temp_inputs(tmp_path / "s", source, edits=SPLICED_EDITS,
+                                 model_points=_s_table_with(VARIANTS, taxed))
+        s = _read(source, "every_s", refs)
+        try:
+            folder, rows = _every_state_table(tmp_path / "every", s,
+                                              SEC_EDITS if variants else None)
+        finally:
+            s.close()
+    model = _read(folder, "every", refs)
+    try:
+        table = model.Data.model_point_table()
+        twins = int((table["row_kind"] == "twin").sum())
+        assert len(table) == rows and rows - twins > 100 * twins, (len(table), rows, twins)
+        _freeze()
+        refused = []
+        for i, key in enumerate(point_keys(model)):
+            try:
+                projection(model, key).proj_len()
+            except Exception as err:            # reported, so every row is asked
+                refused.append(_raised(err))
+            _release(model, key, collect=i % 500 == 499)
+        assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+    finally:
+        model.close()
+        gc.unfreeze()
+        gc.collect()
 
 
 def _with_withdrawal(table, programme, name, month, amount):
