@@ -30,11 +30,13 @@ tests (its §5.2) and the product's own facts:
   backward over the frame; the policy clock is a closed form; and a cold call runs one
   cell a month back to issue, on the committed points and at the contract's extremes.
 * T4, the count algebra: the count rolls forward through new business and decrements, and
-  doubling ``policy_count`` doubles every flow and moves no per-policy value.
+  multiplying ``policy_count`` by 2.5, with conversion switched on, multiplies every flow
+  and every counted cell by 2.5 and moves no per-policy value.
 * T5, validation: each malformed in-force row is refused as the table is read, naming its
   point; the future horizon is a Reference that bounds future business, and at 0 refuses
   it; a point past its cover, or one the contract does not issue, is refused by the
-  frame; and the edges of the interface are accepted.
+  frame, each bound just inside it; the edges of the interface are accepted; and so is
+  every state ``Term_US_S`` reaches, on each set of inputs on which those states differ.
 * Phase 2's decoding: every value a column can hold decodes as ``Term_US_S`` reads it,
   what cannot be decoded is refused by name, and so is a read beyond a table; and a value
   a cap, a ``min`` or a ``max`` reads, a class factor, a base rate, a premium, an issue
@@ -81,6 +83,7 @@ import dataclasses
 import itertools
 import json
 import math
+import os
 import re
 import shutil
 import subprocess
@@ -500,19 +503,25 @@ def test_an_in_force_point_continues_its_s_projection(spliced, kind, s_point, mo
     against S row ``t + d`` in every ``result_cf`` column and fails frames that end apart;
     the cell comparison then evaluates every cell of S's but :data:`SPLICE_EXEMPT`, at
     every argument S cached inside its own frame from month ``d`` on, moved onto SEC's
-    clock, the state cell ``pols_if`` and every result column among them, to 1e-9.  An S
-    cell this model lacked would fail it.  The variants' cases, on S points 3 to 5, are the
-    only ones that see the conversion window's age limit, a premium cycle shorter than a
-    year, a level period other than ten years, and cover that ends with the level period.
-    Those on points 6 to 15 are the only ones that see a sex, a class or a band other than
-    the anchor cell's, each with a premium schedule of its own, so they are what holds
-    ``Data``'s decoding and its join of the schedule to ``Term_US_S``'s lookups.
+    clock, the state cell ``pols_if`` and every result column among them.  Both compare to
+    1e-9 relative with no absolute floor (USLIB-SEC-PLAN.md §5.2, T2, precised at M11): on
+    the tobacco variant the count falls to 1.1e-6 by the last month of cover, and its
+    lapses to 9.2e-9, where a floor of 1e-9 would pass an error of 11%.  ``Term_US_S`` has
+    no roll-forward residual, the one kind of cell, a rounding about an exact 0, that keeps
+    the floor.  An S cell this model lacked would fail it.  The variants' cases, on S
+    points 3 to 5, are the only ones that see the conversion window's age limit, a premium
+    cycle shorter than a year, a level period other than ten years, and cover that ends
+    with the level period.  Those on points 6 to 15 are the only ones that see a sex, a
+    class or a band other than the anchor cell's, each with a premium schedule of its own,
+    so they are what holds ``Data``'s decoding and its join of the schedule to
+    ``Term_US_S``'s lookups.
     """
     s, sec = spliced
     s_proj, sec_proj = _point(s, s_point), _row(sec, kind, s_point, month)
-    assert frame_mismatches(s_proj.result_cf(), sec_proj.result_cf(), t_offset=month) == []
+    assert frame_mismatches(s_proj.result_cf(), sec_proj.result_cf(), t_offset=month,
+                            atol=0.0) == []
     assert twin_mismatches(s_proj, sec_proj, t_offset=month, exempt=SPLICE_EXEMPT,
-                           codes=codes(sec_proj)) == []
+                           codes=codes(sec_proj), atol=0.0) == []
 
 
 # ---------------------------------------------------------------------------
@@ -526,8 +535,9 @@ def test_future_new_business_is_the_s_projection_k_months_on(spliced, s_point, k
     SEC rows ``k ..`` are S rows ``0 ..``, ending together at the end of cover, and every
     cell of S's but :data:`FUTURE_EXEMPT` agrees at every argument S cached inside its own
     frame, moved ``k`` later, ``result_cf_annual`` included: once its pre-issue months are
-    dropped, its policy years are S's.  An S cell this model lacked would fail it.  Before
-    issue every ``result_cf`` and ``result_pols`` column is an exact zero, and the policies
+    dropped, its policy years are S's.  Both compare to 1e-9 relative with no absolute
+    floor, as the splice does.  An S cell this model lacked would fail it.  Before issue
+    every ``result_cf`` and ``result_pols`` column is an exact zero, and the policies
     arrive in month ``k`` as new business.
 
     The last assertion is R1 and D4's base rule made testable.  After every report, no
@@ -543,9 +553,9 @@ def test_future_new_business_is_the_s_projection_k_months_on(spliced, s_point, k
     s_proj, sec_proj = _point(s, s_point), _row(sec, "future", s_point, -k)
     df, pols = sec_proj.result_cf(), sec_proj.result_pols()
     sec_proj.result_cf_annual()
-    assert frame_mismatches(s_proj.result_cf(), df, t_offset=-k) == []
+    assert frame_mismatches(s_proj.result_cf(), df, t_offset=-k, atol=0.0) == []
     assert twin_mismatches(s_proj, sec_proj, t_offset=-k, exempt=FUTURE_EXEMPT,
-                           codes=codes(sec_proj)) == []
+                           codes=codes(sec_proj), atol=0.0) == []
     assert list(df.index[:k]) == list(pols.index[:k]) == list(range(k))
     assert (df.loc[:k - 1] == 0.0).all().all()
     assert (pols.loc[:k - 1] == 0.0).all().all()
@@ -731,32 +741,66 @@ def test_the_count_rolls_forward_through_new_business_and_decrements(sec_model):
         assert ((pols["pols_if"] - expected).abs() <= 1e-12).all(), point_id
 
 
-def test_doubling_the_count_doubles_every_flow_and_no_per_policy_value(sec_model, tmp_path):
-    """``policy_count`` is a weight: twice the count, twice every flow, the same per policy.
+# What T4 multiplies policy_count by: not a whole number, because a count of policies need
+# not be one, so that a flow which read the count as whole policies would not follow it.
+COUNT_FACTOR = 2.5
 
-    The committed table with every count doubled is read from a copy.  On every point
-    ``result_cf``, ``result_pols`` and ``result_cf_annual`` are twice the committed model's,
-    element by element, to 1e-12 relative: a doubled count is a computed float, which may
-    come back from the CSV within two ulps (``sec_support``'s module docstring).  And every
-    cell outside :data:`COUNTED` (the premium per policy, the face amount, the rates, both
-    clocks, the flags) agrees with the committed model at every argument the committed
-    model's sweep cached.
+
+def test_scaling_the_count_scales_every_flow_and_no_per_policy_value(tmp_path):
+    """``policy_count`` is a weight: 2.5 times the count, 2.5 times every flow, the same per
+    policy.
+
+    The committed table, and a copy with every count multiplied by :data:`COUNT_FACTOR`,
+    are each read with :data:`CONVERSION_ON` set before either computes anything: the two
+    conversion rates, which ship at zero, switched on at the splice's values, so that every
+    flow is nonzero on some point, the conversions and their credit among them, which the
+    shipped zeros make 0 on every point.  On every point ``result_cf``, ``result_pols`` and
+    ``result_cf_annual`` are 2.5 times the committed table's, element by element, to 1e-12
+    relative: a scaled count is a computed float, which may come back from the CSV within
+    two ulps (``sec_support``'s module docstring).  So is every other cell of
+    :data:`COUNTED`, at every argument the sweep of the committed table's point cached: the
+    survivors of the month's deaths, which no report shows, and the count at each timing
+    among them.  And every cell outside :data:`COUNTED` (the premium per policy, the face
+    amount, the rates, both clocks, the phases, the flags) agrees bit for bit at every
+    argument that sweep cached.  So a flow that dropped the count, or read it as whole
+    policies, which a table of counts of 1 hides from every comparison with S and a count
+    doubled hides here, fails (USLIB-SEC-PLAN.md §5.2, T4, precised at M11).  Each counted
+    cell is nonzero on some point.
     """
     table = _committed()
-    doubled = mx.read_model(_sec_inputs(tmp_path, table.assign(
-        policy_count=2 * table["policy_count"])), name=_name("doubled"))
+    base = mx.read_model(_sec_inputs(tmp_path / "base", table), name=_name("counted"))
+    scaled = mx.read_model(_sec_inputs(tmp_path / "scaled", table.assign(
+        policy_count=COUNT_FACTOR * table["policy_count"])), name=_name("scaled"))
+    reports = ("result_cf", "result_pols", "result_cf_annual")
+    counted = sorted(COUNTED - set(reports))
+    nonzero = set()
     try:
-        for key, two_key in zip(point_keys(sec_model), point_keys(doubled)):
-            base, two = projection(sec_model, key), projection(doubled, two_key)
-            sweep(base)
-            for report in ("result_cf", "result_pols", "result_cf_annual"):
-                b, d = base.cells[report](), two.cells[report]()
+        for model in (base, scaled):
+            for ref, value in CONVERSION_ON.items():
+                setattr(model.Projection, ref, value)
+        for key, scaled_key in zip(point_keys(base), point_keys(scaled)):
+            one, many = projection(base, key), projection(scaled, scaled_key)
+            sweep(one)
+            for report in reports:
+                b, d = one.cells[report](), many.cells[report]()
                 assert d.index.equals(b.index) and list(d.columns) == list(b.columns)
-                bad = ((d - 2 * b).abs() > 1e-12 * (2 * b).abs()).any()
+                want = COUNT_FACTOR * b
+                bad = ((d - want).abs() > 1e-12 * want.abs()).any()
                 assert not bad.any(), (key, report, list(bad[bad].index))
-            assert twin_mismatches(base, two, exempt=TWIN_EXEMPT_DEFAULT | COUNTED) == []
+            for name in counted:
+                for args in _cached_args(one.cells[name]):
+                    want = COUNT_FACTOR * one.cells[name](*args)
+                    got = many.cells[name](*args)
+                    assert abs(got - want) <= 1e-12 * abs(want), (key, name, args, got,
+                                                                  want)
+                    if want != 0.0:
+                        nonzero.add(name)
+            assert twin_mismatches(one, many, exempt=TWIN_EXEMPT_DEFAULT | COUNTED,
+                                   rtol=0.0, atol=0.0) == []
     finally:
-        doubled.close()
+        scaled.close()
+        base.close()
+    assert nonzero == set(counted), f"0 on every point: {sorted(set(counted) - nonzero)}"
 
 
 # ---------------------------------------------------------------------------
@@ -866,14 +910,16 @@ def test_a_point_past_its_cover_is_refused_by_proj_len(tmp_path):
     assert message in done.stderr.decode(errors="replace")
 
 
-def _premium_rates_with_t5(rates):
-    """``premium_rates.csv`` with a T5 scale, the anchor cell's own under the plan T5: a
-    level period the contract does not offer, with a premium for every year of cover, so
-    that nothing but ``proj_len()`` stands between such a point and its projection.  A
-    copy's file only, never the committed one."""
-    anchor = rates[_anchor_rows(rates)]
-    t5 = anchor.assign(plan="T5", provenance="the anchor cell's, for a test")
-    return pd.concat([rates, t5], ignore_index=True)
+def _premium_rates_with_plan(plan):
+    """An edit of ``premium_rates.csv`` that adds a scale for ``plan``, the anchor cell's
+    own under it: a level period the contract does not offer, with a premium for every year
+    of cover, so that nothing but ``proj_len()`` stands between such a point and its
+    projection.  A copy's file only, never the committed one."""
+    def edit(rates):
+        anchor = rates[_anchor_rows(rates)]
+        added = anchor.assign(plan=plan, provenance="the anchor cell's, for a test")
+        return pd.concat([rates, added], ignore_index=True)
+    return edit
 
 
 # What the contract does not issue, refused by proj_len() as a point past its cover is, as
@@ -881,9 +927,16 @@ def _premium_rates_with_t5(rates):
 # and the bound which, lowered, lets the point project).  Data decodes a plan and reads an
 # issue age as Term_US_S does, so each reads; the plans are T10, T20 and T30, and none
 # issues below 18 (product-spec.md), from which spec_sec.py sizes the compiled caches.
+# Each bound is refused just inside it, nine years and age 17, and accepted at it: every
+# committed point's plan is T10 or longer, and the depth test projects the contract's
+# extremes, issued at 18 (USLIB-SEC-PLAN.md §5.2, T5, precised at M10).
 NOT_ISSUED = [
+    ("a nine-year level period", _set("plan", [2], "T9"),
+     {"premium_rates.csv": _premium_rates_with_plan("T9")}, 2,
+     "point_id 2: the plan's level period, 9 years, is below policy_term_min, 10",
+     ("policy_term_min", 9)),
     ("a five-year level period", _set("plan", [2], "T5"),
-     {"premium_rates.csv": _premium_rates_with_t5}, 2,
+     {"premium_rates.csv": _premium_rates_with_plan("T5")}, 2,
      "point_id 2: the plan's level period, 5 years, is below policy_term_min, 10",
      ("policy_term_min", 5)),
     ("a level period of no years", _set("plan", [2], "T0"), None, 2,
@@ -902,16 +955,18 @@ def test_a_point_the_contract_does_not_issue_is_refused_by_proj_len(tmp_path, ca
                                                                     bound):
     """``proj_len()`` refuses a level period below ten years and an issue age below 18.
 
-    Each reads: ``Data`` decodes ``T5`` as a level period of 5, ``T0`` as 0 and ``T-5`` as
-    -5, as ``Term_US_S`` reads its plans, and an issue age is any whole number.
-    ``Term_US_S`` projects such a point as far as its tables let it, and so would modelx
-    here, but the compiled model's caches are sized from the contract, from issue at 18,
-    PLT years after the shortest level period, ten years, and the shipped horizon
+    Each reads: ``Data`` decodes ``T9`` as a level period of 9, ``T5`` as 5, ``T0`` as 0
+    and ``T-5`` as -5, as ``Term_US_S`` reads its plans, and an issue age is any whole
+    number.  ``Term_US_S`` projects such a point as far as its tables let it, and so would
+    modelx here, but the compiled model's caches are sized from the contract, from issue
+    at 18, PLT years after the shortest level period, ten years, and the shipped horizon
     (``spec_sec.py``): a point issued at 17 runs past them, and so does a five-year plan
     issued at 18, whose PLT years run to 72.  So the frame refuses such a point, naming it,
     as it refuses a point past its cover, and every report with it, in modelx as compiled.
-    The five-year plan has a schedule of its own in the copy, and projects once
-    ``policy_term_min`` is lowered to 5: the Reference is what refuses it.
+    Each bound is refused just inside it, at nine years and at 17, where a bound off by one
+    would let the point through.  The nine- and five-year plans have schedules of their own
+    in the copy, and each projects once ``policy_term_min`` is lowered to its level period:
+    the Reference is what refuses it.
     """
     model = mx.read_model(_sec_inputs(tmp_path, edit(_committed()), edits),
                           name=_name("not_issued"))
@@ -954,6 +1009,121 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
         assert (late.t_entry(), late.proj_len(), late.pols_new_biz(120)) == (120, 840, 1.0)
     finally:
         model.close()
+
+
+# The every-state test restates each S point at the edges of its windows by default, and at
+# every month of its frame with USLIB_SEC_FULL=1, which one leg of the CI matrix sets
+# (USLIB-SEC-PLAN.md K6).
+SEC_FULL = os.environ.get("USLIB_SEC_FULL") == "1"
+
+
+def _every_state_months(start, end):
+    """The S months a point whose S frame runs from ``start`` to ``end`` is restated at.
+
+    By default the edges of its windows (USLIB-SEC-PLAN.md §5.2, T5): every month of the
+    first policy year, each anniversary and the month before it, where the level period,
+    the conversion window and the shock close and a year's premiums fall due, and the last
+    month of the frame, where cover ends.  With ``USLIB_SEC_FULL=1``, every month.  Each
+    after ``start``, the twin's month.
+    """
+    if SEC_FULL:
+        return list(range(start + 1, end))
+    months = {*range(1, 12), end - 1, *(m for a in range(12, end, 12) for m in (a - 1, a))}
+    return sorted(m for m in months if start < m < end)
+
+
+def _states(s):
+    """Each ``(S point, month)`` of :func:`_every_state_months` on every point of ``s``."""
+    labels = s.Data.model_point_table().index
+    return [(point_id, d) for key, point_id in zip(point_keys(s), labels)
+            for d in _every_state_months(0, projection(s, key).proj_len())]
+
+
+def _restated(root, s, states, edits=None):
+    """The twins of ``s``'s points and a row in force at each of ``states``, ``(S point,
+    month)``, built by the generator out of ``s`` into a copy of the product directory
+    whose other inputs ``edits`` changes: ``(folder, table)``."""
+    spec = dataclasses.replace(SEC_SPECS[SEC], derived=tuple(states), future=())
+    table, companions = build_sec_table(spec, s)
+    assert companions == {}
+    return _sec_inputs(root, table, edits), table
+
+
+def _refused_in_force(folder, refs):
+    """What ``Data`` and ``proj_len()`` refuse of the table in ``folder``, read with
+    ``refs`` set first: ``Data``'s refusal, or each row's ``proj_len()``'s, each by the line
+    that names it.  Each row is released once asked, as ``run_sec.py --block`` releases its
+    points."""
+    model = mx.read_model(folder, name=_name("every"))
+    try:
+        for ref, value in refs.items():
+            setattr(model.Projection, ref, value)
+        try:
+            model.Data.model_point_table()
+        except Exception as err:                # reported, with the rows' states
+            return [f"Data: {_raised(err)}"]
+        refused = []
+        for key in point_keys(model):
+            try:
+                projection(model, key).proj_len()
+            except Exception as err:            # reported, so every row is asked
+                refused.append(_raised(err))
+            del model.Projection[key]
+        return refused
+    finally:
+        model.close()
+
+
+def test_every_state_s_reaches_is_accepted_in_force(s_model, spliced, tmp_path):
+    """Every state ``Term_US_S`` reaches is a valid opening state (T5).
+
+    ``Data``'s rules and ``proj_len()``'s hold an opening state to what a policy in force
+    can be, so they must accept each state the S model reaches: a rule exercised only on
+    the rows the other tests choose could refuse a state S reaches elsewhere (D6).  So each
+    point of S is restated in force by the generator at the edges of its windows, or with
+    ``USLIB_SEC_FULL=1`` at every month of its frame (:func:`_every_state_months`), into
+    one table beside the twins: ``Data`` reads it, and no row's ``proj_len()`` refuses it
+    (USLIB-SEC-PLAN.md §5.2, T5, precised at M10).  Term's state is its count, which the
+    conversion rates and the cap on mortality move and expense inflation does not, so the
+    test runs on each set of inputs on which the counts S reaches differ (precised at M9):
+
+    * S as shipped, its two points under its own References, conversion off, as T1 and
+      the committed rows read it (``s_model``);
+    * the splice's, its two points and thirteen variants under :data:`SPLICED_REFS`,
+      conversion on (``spliced``);
+    * the cap's, its point under the splice's References (:data:`CAPPED`), whose count
+      falls below 1e-7 before the cap binds and is exactly 0 from it, which neither other
+      set reaches.
+
+    ``Term_US_SEC`` refuses no state ``Term_US_S`` reaches, so none is set aside.
+    """
+    s_row, _ = _capped_tables()
+    capped = mx.read_model(temp_inputs(tmp_path / "capped", model_path(TWIN),
+                                       model_points=s_row, edits=SPLICED_EDITS),
+                           name=_name("every_capped"))
+    try:
+        for ref, value in SPLICED_REFS.items():
+            setattr(capped.Projection, ref, value)
+        sets = {"shipped": (s_model, {}, None),
+                "spliced": (spliced[0], SPLICED_REFS, SPLICED_EDITS),
+                "capped": (capped, SPLICED_REFS, SPLICED_EDITS)}
+        found, counts = {}, {}
+        for tag, (s, refs, edits) in sets.items():
+            states = _states(s)
+            folder, table = _restated(tmp_path / tag, s, states, edits)
+            assert len(table) == len(s.Data.model_point_table()) + len(states)
+            rows = table.set_index(["source_policy_id", "source_mth"])
+            counts[tag] = rows["policy_count"]
+            refused = _refused_in_force(folder, refs)
+            if refused:
+                found[tag] = f"{len(refused)} refused, first: {refused[:5]}"
+    finally:
+        capped.close()
+    assert not found, found
+    shipped, splice, cap = counts["shipped"], counts["spliced"], counts["capped"]
+    both = shipped.index.intersection(splice.index)
+    assert len(both) and (shipped[both] != splice[both]).any()
+    assert (cap == 0.0).any() and ((cap > 0.0) & (cap < 1e-7)).any()
 
 
 # ---------------------------------------------------------------------------
@@ -1437,7 +1607,8 @@ def test_a_policy_in_force_mid_art_pays_its_next_premium_on_its_anniversary(sec_
     12's, at M(2); the lapse rate and the commission are the ART years'.  Every column that
     does not carry inflation is S's from month 126 on.  Summed into policy years, the table
     opens at year 11 with the rest of that year, which holds no premium and counts the
-    policies in force at the valuation date, and from year 12 on it is S's.
+    policies in force at the valuation date, and from year 12 on it is S's.  Both compare
+    to 1e-9 relative with no absolute floor, as the splice does.
 
     The opening count is S's, read back from the CSV, so it is compared with S's value to
     1e-12; among the SEC model's own cells the equality is exact.
@@ -1452,12 +1623,12 @@ def test_a_policy_in_force_mid_art_pays_its_next_premium_on_its_anniversary(sec_
     cols = ["pols_if", "premiums", "claims", "commissions", "premium_taxes",
             "conv_credits"]
     assert frame_mismatches(s.result_cf(), p.result_cf(), t_offset=126,
-                            columns=cols) == []
+                            columns=cols, atol=0.0) == []
     ann, s_ann = p.result_cf_annual(), s.result_cf_annual()
     assert list(ann.index) == list(range(11, 61))
     assert ann.loc[11, "pols_if"] == p.pols_if(0) and ann.loc[11, "premiums"] == 0.0
     pd.testing.assert_frame_equal(ann.loc[12:, cols], s_ann.loc[12:, cols],
-                                  rtol=1e-9, atol=1e-9)
+                                  rtol=1e-9, atol=0.0)
 
 
 def test_expense_inflation_runs_on_the_valuation_clock(sec_model, s_model):
