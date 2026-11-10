@@ -96,7 +96,7 @@ the twins of S's points, in force or not, ``-k`` for one issued ``k`` months on.
 **The core grid and the full one** (USLIB-SEC-PLAN.md K6).  A ULSG projection runs up to
 985 months on the grid, and T2 and T3 over every case, 59 restated rows, three in-force
 twins, ten variants issued at the valuation date and 15 future points, would take this
-module far past three minutes in every run.  By default they run a core of 28 and 6
+module far past three minutes in every run.  By default they run a core of 26 and 6
 cases, chosen by the lines of the model each row runs, so that between them they reach
 every line, every opening-state column, every kind of valuation month and every premium
 pattern and mode the full grid reaches, which ``test_the_core_grid_reaches_every_branch``
@@ -390,11 +390,8 @@ CORE_SPLICES = {
     ("derived", 6, 213): "withdrawals outrunning an exhausted account, semi-annual, F",
     ("derived", 8, 12): "the corridor binding from t = 0, PTob, its COI scale read past "
                         "its last age",
-    ("derived", 9, 272): "monthly, no surrender charge, no endorsement, a guarantee to 99 "
-                         "failing at t = 0",
     ("derived", 10, 12): "the persistency pin alone",
     ("derived", 11, 12): "the precision pin alone",
-    ("derived", 12, 12): "issue age 40 on GUL10: mortality read below its first age",
     ("derived", 13, 240): "a counter of 1 carried in and reset by the anniversary premium",
     ("twin", 6, 0): "issued at the valuation date: semi-annual, withdrawals from year 2",
     ("twin", 9, 0): "issued at the valuation date: monthly, a guarantee to 99, a year "
