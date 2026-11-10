@@ -1768,6 +1768,51 @@ _VA_STATE = {
 }
 
 
+def _ulsg_entering(name, opening):
+    """What ``ULSG_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``, or, where month ``d`` opens S's frame, the opening value
+    S's own formulas read there.  ``ULSG_US_S`` opens every point's frame at its own month
+    0, in force or not, so that is ``d = 0``, the month a twin is read at.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > 0 else opening(s)
+    return extract
+
+
+def _ulsg_grace_entering(s, d):
+    """The months ``ULSG_US_S``'s point ``s`` has spent in grace entering month ``d``.
+
+    S's ``grace_mth(d - 1)``, or 0 where month ``d`` opens S's frame, as S reads it.  A
+    month by which S's lapse latch has shut is refused, naming the point and the month:
+    the policy lapsed at the start of the month after its grace expired, its count there is
+    0, and the in-force interface carries no latch, so no policy is in force to restate.
+    Read so, the counter a row carries is below ``grace_months`` (``ULSG_US_SEC``'s
+    ``proj_len()`` refuses one that is not), and it may reset in the row's first month, as
+    S's does wherever the month's deduction stops failing.
+    """
+    if d > 0 and s.is_lapsed(d):
+        raise ValueError(
+            f"ULSG_US_S point {s.point_id} has lapsed by month {d}: its grace expired, "
+            f"so no policy is in force to restate")
+    return s.grace_mth(d - 1) if d > 0 else 0
+
+
+# ULSG_US_SEC's opening state (D6): what ULSG_US_S carries into month d, each read as S's
+# own formulas read it.  The account value, the shadow account and the loan entering month d
+# are S's own opening timings; the premiums paid to date are the close of month d - 1, S's
+# cum_prem_pp, or S's own column where d opens S's frame; and the grace counter carried in
+# is S's grace_mth(d - 1), the months already spent in grace, read as 0 where d opens S's
+# frame, as S reads it, at a month S has not yet lapsed by.
+_ULSG_STATE = {
+    "av_pp_init": lambda s, d: s.av_pp_at(d, "BEF_PREM"),
+    "sg_pp_init": lambda s, d: s.sg_pp_at(d, "BEF_PREM"),
+    "loan_bal_init": lambda s, d: s.loan_bal_pp_at(d, "BEF_INT"),
+    "cum_prem_init": _ulsg_entering("cum_prem_pp", lambda s: s.cum_prem_init()),
+    "grace_mth_init": _ulsg_grace_entering,
+}
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -2488,6 +2533,125 @@ SEC_SPECS: dict[str, SecSpec] = {
                     "rate_scenario_sec.csv": _va_rebased_rates},
         future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},
         model_state=_va_funds,
+    ),
+    # ULSG's state is S's four columns under their own names, the account value, the
+    # shadow account, the loan and the premiums paid to date, and one more, the months
+    # already spent in grace (_ULSG_STATE above).  pols_if_init becomes policy_count (the
+    # default), and duration_mth is S's own column: ULSG_US_S runs on the projection clock
+    # already, and its point 1, the worked example in force 300 months, opens its frame at
+    # its own t = 0, so that twin's source_mth is 0 (§5.2).  On the twins grace_mth_init
+    # takes what S itself assumes there, 0, so each twin reproduces S; S's four columns stay
+    # as its table has them.  The derived rows are S point 1 at 81, a month into its grace,
+    # its shadow account below 0, which lapses at t = 1; S point 2 on its 20th anniversary,
+    # at 240, its first return-of-premium window at t = 0; S point 2 at 305, mid-year, its
+    # account value exhausted and the guarantee carrying it, where the valuation date's
+    # anniversaries, on which a year of improvement accrues, and its own part; and S point
+    # 3 in its last covered month, 731, a one-row frame whose t = 1 is the month carried
+    # into.  No row is restated at or after a lapse: the in-force interface carries no lapse
+    # latch, a policy that has lapsed is not in force, and the grace counter's extractor
+    # refuses such a month, naming the point (S point 1 from 82, point 2 from 504 and point
+    # 4 from 236), as proj_len() refuses a hand-made row whose grace has expired.  The
+    # future row is S point 2 issued 25 months after the valuation date, off its
+    # anniversaries and more than a year on, so that the months before issue read policy
+    # years -2 to 0, where a missing guard would show.  The two pins hold in every month, so
+    # each derived and future row copies its twin's, which are blank on S points 2 to 4.
+    # T2's splice grid is built from this spec in a temporary table, not committed.
+    #
+    # T1 holds on ULSG at any count: S charges acquisition on the policies in force in the
+    # issue month, the policies issued, as SEC does.  It skips five S cells besides the
+    # default three:
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_guaranteed_ul_us_sec.py compares the
+    #     report itself with S's, on every column both hold.
+    #   solve_len, sg_pp_solve, guar_min_sg and no_lapse_premium: S's funding-premium
+    #     solve, a side calculation that no projection cell of S reads and S's sweep reaches
+    #     none of, so T1 has no key of theirs to lose.  SEC reads the premium from its model
+    #     point, a value fixed at issue (D6), as basiclife.BasicTerm_SE reads its premium
+    #     from a table, and leaves the solve to S.  Kept unchanged, the solve replays the
+    #     shadow account from the frame's first month, its base an R1a test at t == 0, so on
+    #     a row in force it solves from the valuation date, and on a row issued later, whose
+    #     months before issue enter its minimum at 0, it raises "no funding premium found";
+    #     its cells take the premium as a float, with dict caches of 7,900 to 18,300
+    #     entries (R14).  MYGA, FIA, DIA, RILA and VA keep S's engine cells at stage E,
+    #     for S's tests and T1, which call them; ULSG's solve is no engine of its
+    #     projection, and its tests stay S's.  A user solves a row in force by giving
+    #     ULSG_US_S an S row that carries the row's state, which solves from that row's
+    #     own start.
+    # S's net_cf calls claims(t) with its kind=None default, so S's sweep caches claims
+    # under (t, None).  Phase 2 replaces that default with a total cell (R12), and its T1
+    # then needs an arg_map from those keys to it.  The label accessors (sex, rate_class,
+    # premium_type, premium_mode, surr_charge_id) are called by no projection cell, so
+    # Phase 2 declares them reporting.  The pins, has_prem_persistency_override and
+    # coi_rate_dp, each call pd.isna once a point, and become a value array and a 0/1 flag
+    # array (R8).  coi_rate and sg_coi_rate round a rate per t with round(r, dp), which
+    # Phase 2 precomputes in Data (R16), and is_rop_anniv tests membership of
+    # rop_table.csv's index, which becomes a zero-padded array.  No cell takes a float
+    # parameter, and SEC adds no uncached cell.
+    #
+    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 18
+    # to 80, S4's Standard classes to 85 (product-spec), and S projects any age its tables
+    # serve: the shipped COI scale serves the anchor cell from attained age 45 only.  At
+    # stage E Data refuses an issue age only below 0 or not whole, and proj_len() one at
+    # or past charges_cease_age; Phase 2's proj_len() refuses one below 18, as UL's C step
+    # does, and every size below rests on it:
+    #   t: 0 to 1,356, 1,357 values: 12 x (charges_cease_age 121 - youngest issue age 18)
+    #     = 1,236 months of cover, plus future_horizon_mth 120, and t = proj_len(), which
+    #     the count, the account value's opening timing and the lapse latch are carried
+    #     into and pols_lapse_grace(proj_len() - 1) reads through is_lapsed(t + 1).
+    #   mort_improve_factor and mort_improve_rate: t from 0, before issue on a future row,
+    #     each at least 12 months back in mort_improve_rate.
+    #   policy years y (lapse_rate_base_py): 1 to 103, the year of the last covered month
+    #     at the youngest issue age; the lapse table's last year, 21 as shipped, clamps it.
+    #   attained ages a (mort_rate_base_at, corridor_factor_at, coi_rate_guar_at): the
+    #     youngest issue age, 18, to 120, read only in cover.  Each table's reader clamps
+    #     the age to the table's first and last ages, as S's does, and Data accepts any run
+    #     of ages: the mortality table's first, 45 as shipped, clamps from below with an
+    #     effect on the shipped table, at issue ages below 45; on the shipped tables the
+    #     corridor's first age, 18, binds only below issue age 18, which Data accepts at
+    #     stage E and Phase 2's proj_len() refuses, and neither table's last age binds in
+    #     cover, which ends at 120, the mortality table's last age, below the corridor's,
+    #     121; on a table shorter than the cover each of the three binds with an effect,
+    #     which test_guaranteed_ul_us_sec.py shows on tables shortened at both ends.  The
+    #     COI scale clamps at its cell's last age, 121 as shipped, and has no lower clamp,
+    #     as in S: an age below its cell's first raises S's KeyError at the read, until R7.
+    #     db_pp's inner floor, max(AV', 0.0), changes no death benefit while every corridor
+    #     factor is 0 or more and the face above 0, which Data holds both to: where AV' is
+    #     below 0 the corridor's amount is 0 or less either way, and the face wins.
+    #   anniversaries y (is_rop_anniv): 0 to 102, each anniversary in cover;
+    #     rop_ratio_anniv and rop_rate_anniv at the table's anniversaries alone.
+    #   depth: a cold net_cf of the last month runs one cell a month back to t_entry() and
+    #     14 to 18 more on the committed rows, and at the longest cover, issue age 18, 17
+    #     more at the valuation date, 1,252 levels, and 21 issued 120 months on, 1,256,
+    #     where the first month's mortality reads the improvement factor of the ten years
+    #     before issue: about 313 KiB of C stack at gcc's 255 bytes a level.  Each chain's
+    #     head called cold and alone, on a read of its own, runs at most 12 more on the
+    #     committed rows, the count's the deepest, which runs 13 more at the longest cover
+    #     at the valuation date and 17 issued 120 months on.  The factor is one cell a
+    #     year, at most 27 deep called cold.  An ascending sweep needs a
+    #     recursion limit of 16 on the committed rows, against ULSG_US_S's 14, and 19 on a
+    #     row issued 120 months on, whose first month reads the factor cold, so
+    #     sample_sec.py and run_sec.py --cython size theirs from future_horizon_mth; the
+    #     limit grows with the horizon up to the factor's cap of 20 years.  In modelx's
+    #     export, sys.setrecursionlimit set after the import, the cold net_cf of the last
+    #     month needs 916 on the twin of S point 1, 432 months, 1,516 on the committed rows
+    #     of 732 months on the books, the twin of S point 3 and the row issued 25 months on,
+    #     and 2,524 at the longest cover, issued now and 120 months on; the ascending sweep
+    #     of the reports and checks needs 54 everywhere, against ULSG_US_S's 3,929 to 5,977
+    #     cold on its four points and 52 ascending.
+    # The lapse rate is min(lapse_rate_cap, max(lapse_rate_floor, rate)), in S's order:
+    # with the two References from 0 to 1 it is a probability whatever its product, so no
+    # count turns complex through it.  The mortality cap is S's, min(q, 1.0), and no
+    # departure.
+    "ULSG_US_SEC": SecSpec(
+        twin="ULSG_US_S",
+        duration_of=lambda row: int(row["duration_mth"]),
+        derived=((1, 81), (2, 240), (2, 305), (3, 731)),
+        future=((2, 25),),
+        state=_ULSG_STATE,
+        twin_state={"grace_mth_init": _ULSG_STATE["grace_mth_init"]},
+        exempt=frozenset({"result_pols", "solve_len", "sg_pp_solve", "guar_min_sg",
+                          "no_lapse_premium"}),
     ),
 }
 

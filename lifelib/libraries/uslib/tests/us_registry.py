@@ -109,6 +109,8 @@ MODELS = {
     "VUL_US_SEC": ("products/variable_ul/VUL_US_SEC",
                    {**MONTHLY, "twin": "VUL_US_S", "stage": "E"}),
     "ULSG_US_S": ("products/guaranteed_ul/ULSG_US_S", MONTHLY),
+    "ULSG_US_SEC": ("products/guaranteed_ul/ULSG_US_SEC",
+                    {**MONTHLY, "twin": "ULSG_US_S", "stage": "E"}),
     # Annuity — deferred
     "MYGA_US_S": ("products/fixed_deferred_annuity/MYGA_US_S", MONTHLY),
     "MYGA_US_SEC": ("products/fixed_deferred_annuity/MYGA_US_SEC",
@@ -201,6 +203,10 @@ INPUT_FILES = {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv", "rop_table.csv",
         "surr_charge_table.csv"},
+    "ULSG_US_SEC": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "lapse_table.csv", "model_point_table_sec.csv", "mort_table.csv",
+        "rop_table.csv", "surr_charge_table.csv"},
     "UL_US_S": {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",

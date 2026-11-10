@@ -68,12 +68,13 @@ it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compilin
 `basiclife/BasicTerm_SC` does; `Term_US_SEC` is the first to compile, and its
 `model-sec.md` says how. On the `_S` model's new-business points, issued at the
 valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where the worked
-example's point is already in force, as whole life's, the FIA's and the variable annuity's
-are, the `_SEC` twin of that point continues the `_S` projection from the month it is
-valued at, its expenses apart, which inflate from the valuation date. Each `model-sec.md`
-says what running in force changes.
+example's point is already in force, as whole life's, the FIA's, the variable annuity's and
+guaranteed UL's are, the `_SEC` twin of that point continues the `_S` projection from the
+month it is valued at, its expenses apart, which inflate from the valuation date. Each
+`model-sec.md` says what running in force changes.
 `Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`,
-`DIA_US_SEC`, `FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC` and `VA_US_SEC` are the first ten.
+`DIA_US_SEC`, `FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC` and `ULSG_US_SEC` are
+the first eleven.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -100,7 +101,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 | [Universal life](products/universal_life/index.md) | `UL_US_S`, `UL_US_SEC` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
 | [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
 | [Variable UL](products/variable_ul/index.md) | `VUL_US_S`, `VUL_US_SEC` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
-| [Guaranteed UL](products/guaranteed_ul/index.md) | `ULSG_US_S` | monthly | UL chassis + shadow-account secondary guarantee (AG 38 §8E Design #1), funded by a solved level no-lapse premium; lapse-supported economics |
+| [Guaranteed UL](products/guaranteed_ul/index.md) | `ULSG_US_S`, `ULSG_US_SEC` | monthly | UL chassis + shadow-account secondary guarantee (AG 38 §8E Design #1), funded by a solved level no-lapse premium; lapse-supported economics |
 
 **Annuity**
 
