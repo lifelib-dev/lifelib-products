@@ -66,11 +66,16 @@ cover sits in one of the four GLWB phases.  This module holds the rest of the pl
   a projection reads a value from it (``TABLE_FAULTS``); a text value no decode knows
   raises ``FIA_US_S``'s own message in both models (``UNDECODABLE``); the future horizon
   is a Reference that bounds future business, and at 0 refuses it; a point past
-  maturity, or with no cover at all, is refused by ``proj_len()`` (``NOT_ISSUED``); and the
-  edges of the interface are accepted.
+  maturity, or with no cover at all, is refused by ``proj_len()`` (``NOT_ISSUED``); the
+  edges of the interface are accepted, each rule over a window of policy months refused
+  just inside each end and read just outside, and each tolerance pinned from both sides;
+  and every state ``FIA_US_S`` reaches, restated in force under each set of References on
+  which those states differ, is accepted, exactly and carried to the cent, but a contract
+  terminated, refused by name.
 * T6, regeneration: the committed ``model_point_table_sec.csv`` and its scenario companion
   are what the generator makes of ``FIA_US_S`` and its inputs as they stand, and every
-  text cell in them is S's or composed from S's keys.
+  text cell in them is S's or composed from S's keys; and every committed row in force,
+  and the one issued later, is its S point from its month on, cell by cell.
 * Then the product's own facts: the two clocks on the shipped points, the opening state as
   S carries it, each column shown on a committed row, the year under way read from its
   columns, the phase as a code, the scenario on the valuation clock, withdrawals on the
@@ -952,18 +957,19 @@ def _compare(s_proj, sec_proj, month, exempt, columns=None):
     return found
 
 
-def _continues_s(s_proj, sec_proj, month):
+def _continues_s(s_proj, sec_proj, month, exempt=SPLICE_EXEMPT):
     """Where a committed row departs from S's point ``s_proj`` from S month ``month`` on.
 
     The splice's comparison (:func:`_compare`), on the committed model at the shipped
-    assumptions.  The shipped 2.5% expense inflation runs from issue in S and from the
-    valuation date here (D7), so :data:`INFLATED`'s two columns, and
+    assumptions, skipping ``exempt``, T2's exemptions or, on the row issued later, T3's
+    (:data:`FUTURE_EXEMPT`).  The shipped 2.5% expense inflation runs from issue in S and
+    from the valuation date here (D7), so :data:`INFLATED`'s two columns, and
     :data:`INFLATION_CELLS`, differ by design and are left out; the inflation test holds
     them.  The committed companion re-bases each row's scenario to its month, so nothing
     else moves with the clock, and every other column and cell must agree.
     """
     keep = [c for c in s_proj.result_cf().columns if c not in INFLATED]
-    return _compare(s_proj, sec_proj, month, SPLICE_EXEMPT | INFLATION_CELLS, keep)
+    return _compare(s_proj, sec_proj, month, exempt | INFLATION_CELLS, keep)
 
 
 def _case_id(kind, s_point, month):
@@ -1626,6 +1632,132 @@ def _future_facts(proj, k):
 
 
 # ---------------------------------------------------------------------------
+# The every-state test (T5)
+#
+# Every state FIA_US_S reaches, restated in force by the generator, must be an opening
+# state Data and proj_len() accept, but a state the product refuses by name, which is set
+# aside and shown refused (USLIB-SEC-PLAN.md §5.2, T5, precised at M10 and M9).  The test
+# runs under each set of inputs on which the states S reaches differ, and names them: the
+# splice's References and the switched ones, each on its pair, beside the splice's tests,
+# and S's shipped References and inputs, on the committed S, in the T5 section.
+
+TERMINATED = _FIA_PHASE_CODES["TERMINATED"]
+
+
+def _every_state_months(sp):
+    """The months S point ``sp`` is restated at by the every-state test, after S's entry.
+
+    By default the edges of the windows ``Data`` and ``proj_len()`` hold a state over:
+    every month of the first policy year, where the first year's rules hold, each
+    anniversary, where the anniversary's exact rules hold, and the month before it, where
+    the rules off an anniversary hold last, and the last month of its frame, where
+    ``proj_len()``'s window ends.  With ``USLIB_SEC_FULL=1``, every month.
+    """
+    entry, n = sp.entry_mth(), sp.proj_len()
+    if SEC_FULL:
+        return list(range(entry + 1, n))
+    months = {*range(1, 12), n - 1}
+    months |= {12 * y + k for y in range(1, n // 12 + 1) for k in (-1, 0)}
+    return sorted(m for m in months if entry < m < n)
+
+
+def _states_s_reaches(s):
+    """The states ``s``'s points reach, as ``(S point, month)``: ``(kept, terminated)``.
+
+    Each month of :func:`_every_state_months` of each point of ``s``.  ``terminated``
+    holds the months that open in ``TERMINATED``, the phase at the anniversary on or
+    before the month read as the generator reads it, the one state the product refuses by
+    name: ``FIA_US_S`` keeps a contract on its frame once a withdrawal or an anniversary has
+    terminated it, every contract surrendered, and none is in force in that phase (D6).
+    ``kept`` holds every other.
+    """
+    phase = SPEC.state["phase_prev_anniv_init"]
+    kept, terminated = [], []
+    for key, point_id in zip(point_keys(s), s.Data.model_point_table().index):
+        sp = projection(s, key)
+        for d in _every_state_months(sp):
+            (terminated if phase(sp, d) == TERMINATED else kept).append((point_id, d))
+    return kept, terminated
+
+
+def _restated(s, states):
+    """The generator's table of ``s``'s twins and a derived row at each of ``states``.
+
+    Built out of ``s`` as it stands, so each row opens with the state of the very run ``s``
+    made, on its scenario re-based to its month.  Returns ``(table, companion)``.
+    """
+    spec = dataclasses.replace(SPEC, derived=tuple(states), future=())
+    table, companions = build_sec_table(spec, s)
+    return table, companions[COMPANION]
+
+
+def _read_restated(root, table, companion, refs, edits=None):
+    """The model of ``table`` and ``companion``, beside ``edits``, ``refs`` set first."""
+    return _read(temp_inputs(root, model_path(SEC), model_points=table,
+                             model_point_file=TABLE,
+                             edits={**(edits or {}), COMPANION: companion}), "every", refs)
+
+
+def _refused_in_force(s, states, root, refs, edits=None):
+    """What ``Data`` and ``proj_len()`` refuse of ``states`` of ``s``, restated in force.
+
+    ``Data`` reads the table of :func:`_restated`, and then every row is asked for its
+    frame and released, the collector run every 500.  Then ``Data`` reads the table again
+    with every amount of money carried to the cent (:data:`MONEY`), as an extract carries
+    it, which each rule between amounts allows for (§5.2, T5, precised at M10).  Returns
+    each refusal, the line naming it, ``Data``'s or each row's ``proj_len()``'s.  S has
+    computed every state once the table is built, so it is frozen out of the collector
+    then (:func:`_freeze`), and the collections the released rows trigger scan the rows
+    alone.
+    """
+    table, companion = _restated(s, states)
+    _freeze()
+    refused = []
+    model = _read_restated(root / "exact", table, companion, refs, edits)
+    try:
+        try:
+            read = model.Data.model_point_table()
+        except Exception as err:                # reported, with the rows' states
+            return [f"Data: {_raised(err)}"]
+        assert len(read) == len(table) == len(s.Data.model_point_table()) + len(states)
+        for i, key in enumerate(point_keys(model)):
+            try:
+                projection(model, key).proj_len()
+            except Exception as err:            # reported, so every row is asked
+                refused.append(_raised(err))
+            _release(model, key, collect=i % 500 == 499)
+    finally:
+        model.close()
+    cents = table.assign(**{column: table[column].round(2) for column in MONEY})
+    model = _read_restated(root / "cents", cents, companion, refs, edits)
+    try:
+        model.Data.model_point_table()
+    except Exception as err:                    # reported, beside the exact table's
+        refused.append(f"Data, carried to the cent: {_raised(err)}")
+    finally:
+        model.close()
+    return refused
+
+
+def _refused_by_name(s, state, root, refs, edits=None):
+    """``Data`` refuses ``state`` of ``s``, a contract terminated, restated, by name.
+
+    The message, matched whole, names the row and says why no contract is in force in
+    ``TERMINATED``.
+    """
+    table, companion = _restated(s, [state])
+    model = _read_restated(root, table, companion, refs, edits)
+    try:
+        with pytest.raises(Exception) as excinfo:
+            model.Data.model_point_table()
+        point = _label(table.set_index("point_id"), "derived", *state)
+        assert _raised(excinfo.value) == "ValueError: " + _says(
+            _IN_FORCE_PHASE, [point]).format(file=TABLE)
+    finally:
+        model.close()
+
+
+# ---------------------------------------------------------------------------
 # T2 -- the splice
 
 
@@ -1720,6 +1852,39 @@ def test_future_new_business_is_the_s_projection_k_months_on(splices, splice_rec
     """
     found = _splice_case(splices, splice_records, "spliced", ("future", s_point, -k))
     assert not found, f"{len(found)} faults, first:\n  " + "\n  ".join(found[:20])
+
+
+def test_every_state_s_reaches_is_accepted_in_force(splices, tmp_path):
+    """Every state the splice's S reaches is a valid opening state, but one (T5).
+
+    ``Data``'s rules and ``proj_len()``'s hold an opening state to what a contract in force
+    can be, so they must accept each state ``FIA_US_S`` reaches: a rule exercised only on
+    the rows the other tests choose could refuse a state S reaches elsewhere (D6; §5.2, T5,
+    precised at M10).  So every S point of the splice, S's nine and the eight variants,
+    under the splice's References and inputs, is restated in force by the generator at the
+    edges of its windows, or with ``USLIB_SEC_FULL=1`` at every month after its entry
+    (:func:`_every_state_months`), each on its scenario re-based to its month, into one
+    table beside the twins: ``Data`` reads it, and no row's ``proj_len()`` refuses it; and
+    ``Data`` reads it again with every amount carried to the cent, as an extract carries it
+    (:func:`_refused_in_force`).  But for one state, set aside first: a contract
+    terminated, which ``FIA_US_S`` keeps on its frame in ``TERMINATED``, the overdraw's from
+    policy month 228 and variant 13's, emptied by its withdrawal in accumulation, from 36,
+    and which ``Data`` refuses by name, since that phase is a surrender of every contract.
+    It is the only state set aside, and a table holding one is refused, naming the point
+    (:func:`_refused_by_name`).  The test runs under each set of inputs on which the states
+    S reaches differ (§5.2, T5, precised at M9): the splice's here, the switched
+    References' and S's shipped References and inputs.  The module's other References,
+    probed at every month on the same points, reach no other state: the cap test's A/E
+    moves none but the count, and under T4's raised credit floor and the guaranteed scale
+    ``Data`` and ``proj_len()`` refuse none but a contract terminated.
+    """
+    s, _ = splices.pair("spliced")
+    kept, terminated = _states_s_reaches(s)
+    assert {point for point, _ in terminated} == {7, 13}, terminated[:5]
+    assert {point for point, _ in kept} == set(s.Data.model_point_table().index)
+    refused = _refused_in_force(s, kept, tmp_path / "every", SPLICED_REFS, SEC_EDITS)
+    assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+    _refused_by_name(s, terminated[0], tmp_path / "terminated", SPLICED_REFS, SEC_EDITS)
 
 
 # ---------------------------------------------------------------------------
@@ -1912,6 +2077,27 @@ def test_the_switched_references_continue_s(splices, splice_records, kind, s_poi
     """
     found = _splice_case(splices, splice_records, "switched", (kind, s_point, month))
     assert not found, f"{len(found)} faults, first:\n  " + "\n  ".join(found[:20])
+
+
+def test_every_state_s_reaches_under_the_switched_references_is_accepted_in_force(
+        splices, tmp_path):
+    """Under :data:`SWITCHED_REFS` too, every state S reaches is accepted, but one (T5).
+
+    The switches and the bounds S ships idle move the states ``FIA_US_S`` reaches, so the
+    every-state test runs here too (§5.2, T5, precised at M9): every S point of the
+    switched pair, the variants and the cap of 0.1% among them, restated in force at the
+    edges of its windows, or at every month with ``USLIB_SEC_FULL=1``, is read by ``Data``,
+    exactly and carried to the cent, and has a frame (:func:`_refused_in_force`), but a
+    contract terminated, ``TERMINATED``, the overdraw's and variant 13's, which a table
+    holding one is refused for, by name.
+    """
+    s, _ = splices.pair("switched")
+    kept, terminated = _states_s_reaches(s)
+    assert {point for point, _ in terminated} == {7, 13}, terminated[:5]
+    assert {point for point, _ in kept} == set(s.Data.model_point_table().index)
+    refused = _refused_in_force(s, kept, tmp_path / "every", SWITCHED_REFS, SEC_EDITS)
+    assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+    _refused_by_name(s, terminated[0], tmp_path / "terminated", SWITCHED_REFS, SEC_EDITS)
 
 
 # ---------------------------------------------------------------------------
@@ -2626,9 +2812,16 @@ def test_the_roll_forward_checks_close_on_a_million_contracts(tmp_path):
 # the overdraw near exhaustion, 216; 14, the anchor depleted, 240, an anniversary; 15, the
 # pre-exercise programme in its first policy year, 6; 16, no rider in the last policy year,
 # 696; 17, the fixed account in income mid-year, 100; and 18, the anchor issued 15 months
-# on.  The checks that turn on the policy month are tested at the ends of their window,
-# months 1 and 11 of the first policy year, and month 12, where they no longer hold, is an
-# accepted edge; and the money rules at a cent either side of their tolerance.  Where a
+# on.  The checks that turn on the policy month are tested at the ends of their window
+# (§5.2, T5, precised at M10): the first policy year's at months 1 and 11, accepted at 12;
+# an anniversary's at the first, 12, accepted at 11 and 13; the rules off an anniversary at
+# months 1, 11 and 13, either side of the first anniversary, where the anniversary's exact
+# rules leave no state to accept; and no state before issue at the horizon, -120, as well
+# as at 0 and -15, accepted at 1.  The money rules are pinned from both sides of their
+# tolerance, 1.1 cents past a cent refused and 0.9 of a cent read, on both signs where a
+# rule takes an absolute value, the indexed account's at 3.1 and 2.9 cents; the rules a
+# cent cannot touch, two values of one instant on an anniversary, are refused half a cent
+# apart.  Where a
 # fault breaks two rules by its nature, a value no rule can take alone, the case is named
 # for the order it pins: the earlier rule must refuse it, with its own message, before the
 # later one would refuse it otherwise (listed above MALFORMED).  The last checks join each
@@ -2752,6 +2945,37 @@ def _in_first_year(point, month, **columns):
     return _cells(point, duration_mth=month, **columns)
 
 
+def _moved_by(point, month, column, by):
+    """An edit that moves row ``point`` to month ``month`` and its ``column`` by ``by``."""
+    return _both(_set("duration_mth", [point], month), _plus(column, [point], by))
+
+
+def _in_first_year_fixed(table, point, month, accrued):
+    """The columns that move row ``point`` of ``table`` to ``month`` of its first year.
+
+    Its values at the anniversary become its issue values, which Data requires there: the
+    account value ``premium x (1 + bonus_rate)``, the fixed account its share of it, and
+    the benefit and rollup bases the premium.  Entering month 0 its fixed account has
+    ``accrued`` more, and its account value with it, so the indexed account is flat, as
+    between anniversaries.
+    """
+    issued = table.at[point, "premium"] * (1.0 + table.at[point, "bonus_rate"])
+    fixed = (1.0 - table.at[point, "alloc_indexed"]) * issued
+    return {"duration_mth": month, "av_pp_prev_anniv_init": issued,
+            "av_fixed_pp_prev_anniv_init": fixed, "av_pp_init": issued + accrued,
+            "av_fixed_pp_init": fixed + accrued,
+            "benefit_base_pp_init": table.at[point, "premium"],
+            "rollup_base_pp_init": table.at[point, "premium"]}
+
+
+def _at_first_anniversary(column, by):
+    """Row 10, valued on its anniversary at 60, moved to the first anniversary, 12, and
+    ``column`` moved by ``by``: unmoved, the row reads there, no first-year rule holding."""
+    def edit(table):
+        return _cells(10, duration_mth=12, **{column: table.at[10, column] + by})(table)
+    return edit
+
+
 # The cases whose fault no rule can be the only one to refuse, each refused by the rule
 # whose message it asserts, and, with that rule dropped, by the second named here, so that
 # each pins the order of the two: a blank or a text duration_mth, before the scenario's and
@@ -2856,6 +3080,9 @@ MALFORMED = [
     *[(f"{column} on future business", _set(column, [18], _no_state_value(column)),
        _says(_NO_STATE, [18], column=column))
       for column in ("lw_pp_init", "phase_prev_anniv_init")],
+    ("lw_pp_init on future business issued at the horizon",
+     _cells(18, duration_mth=-120, lw_pp_init=_no_state_value("lw_pp_init")),
+     _says(_NO_STATE, [18], column="lw_pp_init")),
     ("TERMINATED in force", _set("phase_prev_anniv_init", [13], 4),
      _says(_IN_FORCE_PHASE, [13])),
     ("no phase in force", _set("phase_prev_anniv_init", [11], 0),
@@ -2919,12 +3146,22 @@ MALFORMED = [
                       + 0.02)(t),
      _says(_FIXED_PART, [17], part="av_fixed_pp_prev_anniv_init",
            whole="av_pp_prev_anniv_init")),
+    ("an anniversary fixed account 1.1 cents above its account value, mid-year",
+     lambda t: _cells(17, av_fixed_pp_init=t.at[17, "av_pp_init"],
+                      av_fixed_pp_prev_anniv_init=t.at[17, "av_pp_prev_anniv_init"]
+                      + 0.011)(t),
+     _says(_FIXED_PART, [17], part="av_fixed_pp_prev_anniv_init",
+           whole="av_pp_prev_anniv_init")),
     *[(f"an account value at the anniversary off its issue value, month {month}",
        _in_first_year(15, month, av_pp_init=100000.0, av_pp_prev_anniv_init=100000.0),
        _says(_FIRST_YEAR, [15], column="av_pp_prev_anniv_init"))
       for month in (1, 11)],
     ("an issue account value 1.1 cents off in the first policy year",
      _both(_plus("av_pp_init", [15], 0.011), _plus("av_pp_prev_anniv_init", [15], 0.011)),
+     _says(_FIRST_YEAR, [15], column="av_pp_prev_anniv_init")),
+    ("an issue account value 1.1 cents under in the first policy year",
+     _both(_plus("av_pp_init", [15], -0.011),
+           _plus("av_pp_prev_anniv_init", [15], -0.011)),
      _says(_FIRST_YEAR, [15], column="av_pp_prev_anniv_init")),
     ("a benefit base off the premium in the first policy year",
      _cells(15, benefit_base_pp_init=100.0, rollup_base_pp_init=100.0),
@@ -2949,13 +3186,30 @@ MALFORMED = [
      _set("av_fixed_pp_prev_anniv_init", [10], 18000.0),
      _says(_ANNIVERSARY, [10], column="av_fixed_pp_prev_anniv_init",
            entering="av_fixed_pp_init")),
+    *[(f"an anniversary {what} half a cent apart at the first anniversary",
+       _at_first_anniversary(column, 0.005),
+       _says(_ANNIVERSARY, [10], column=column, entering=entering))
+      for what, column, entering in (
+          ("account value", "av_pp_prev_anniv_init", "av_pp_init"),
+          ("fixed account", "av_fixed_pp_prev_anniv_init", "av_fixed_pp_init"))],
     ("a stale year-open account value mid-year",
      _set("av_pp_prev_anniv_init", [12], 100000.0), _says(_INDEXED, [12])),
     ("the indexed account 3.1 cents off mid-year", _plus("av_pp_init", [17], 0.031),
      _says(_INDEXED, [17])),
+    ("the indexed account 3.1 cents under mid-year", _plus("av_pp_init", [17], -0.031),
+     _says(_INDEXED, [17])),
+    *[(f"the indexed account 3.1 cents off at month {month}",
+       _moved_by(point, month, "av_pp_init", 0.031), _says(_INDEXED, [point]))
+      for point, month in ((15, 1), (15, 11), (17, 13))],
     ("the fixed account fallen a dollar mid-year", _anniversary_less(17, 1.0),
      _says(_FIXED_FALLEN, [17])),
     ("the fixed account fallen 1.1 cents mid-year", _anniversary_less(17, 0.011),
+     _says(_FIXED_FALLEN, [17])),
+    ("the fixed account fallen 1.1 cents at month 11",
+     lambda t: _cells(10, **_in_first_year_fixed(t, 10, 11, -0.011))(t),
+     _says(_FIXED_FALLEN, [10])),
+    ("the fixed account fallen 1.1 cents at month 13",
+     _both(_set("duration_mth", [17], 13), _anniversary_less(17, 0.011)),
      _says(_FIXED_FALLEN, [17])),
     ("an unknown scenario mid-year", _set("scenario_id", [11], "Worked-M95"),
      _says(_SCENARIO, [11])),
@@ -2964,6 +3218,9 @@ MALFORMED = [
      _says(_SCENARIO, [1])),
     ("an anniversary index level apart from the scenario's",
      _set("index_level_prev_anniv_init", [10], 4999.0), _says(_ANNIVERSARY_LEVEL, [10])),
+    ("an anniversary index level half a cent apart at the first anniversary",
+     _at_first_anniversary("index_level_prev_anniv_init", 0.005),
+     _says(_ANNIVERSARY_LEVEL, [10])),
     ("a rollup schedule the table lacks", _set("rollup_id", [3], "Simple"),
      _says(_ROLLUP, [3])),
     ("a programme the table lacks", _set("wd_schedule_id", [8], "Preexercise"),
@@ -3469,11 +3726,12 @@ def _beyond_120(table):
 # maturity_age lowered to 100, the anchor depleted at 240 moved on to 468, the month its
 # cover then ends, is refused, and the anchor issued at 101, past the age the contract
 # matures at, is refused as a contract with no cover at all, which at the shipped 120
-# projects.  At the shipped 120, on a copy whose mortality reads at 121 (_beyond_120), the
-# last policy year's point moved on to 708 is refused likewise, and moved on to 707, its
-# last covered month, projects that month.  Every table is the committed one relabeled
-# 100 + point_id and written in reverse order (_relabeled), so that the label a refusal
-# names is no position.
+# projects, as issued at 100 it projects its one year of cover, the age just outside that
+# window (§5.2, T5, precised at M10).  At the shipped 120, on a copy whose mortality reads
+# at 121 (_beyond_120), the last policy year's point moved on to 708 is refused likewise,
+# and moved on to 707, its last covered month, projects that month.  Every table is the
+# committed one relabeled 100 + point_id and written in reverse order (_relabeled), so
+# that the label a refusal names is no position.
 NOT_ISSUED = [
     ("in force at a lowered maturity", ("derived", 2, 240), {"duration_mth": 468},
      {"maturity_age": 100}, {},
@@ -3482,6 +3740,8 @@ NOT_ISSUED = [
      {"maturity_age": 100}, {},
      "point_id {label}: age_at_entry 101 is past maturity_age 100: the contract has no "
      "cover"),
+    ("issued at a lowered maturity_age", ("twin", 2, 0), {"age_at_entry": 100},
+     {"maturity_age": 100}, {}, None),
     ("issued at 101 under the shipped maturity_age", ("twin", 2, 0), {"age_at_entry": 101},
      {}, {}, None),
     ("in force at the shipped maturity", ("derived", 6, 696), {"duration_mth": 708}, {},
@@ -3552,10 +3812,17 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
       value at the anniversary, the benefit base and the rollup base each apart from its
       issue value, which the first-year rule no longer requires;
     * the money rules a part of a cent inside their tolerance: the issue account value
-      0.9 of a cent off in the first year; the fixed account 0.9 of a cent above the
-      account value; the indexed account 2.9 cents off mid-year, where 3.1 is refused
-      (the malformed table); and the fixed account 0.9 of a cent below its anniversary
-      value, where 1.1 cents is refused;
+      0.9 of a cent off in the first year, and 0.9 under; the fixed account 0.9 of a cent
+      above the account value, at both instants on an anniversary and at the anniversary's
+      alone mid-year; the indexed account 2.9 cents off mid-year, and 2.9 under, where 3.1
+      is refused (the malformed table); and the fixed account 0.9 of a cent below its
+      anniversary value, where 1.1 cents is refused;
+    * an anniversary's exact rules just outside their window (§5.2, T5, precised at M10),
+      either side of the first anniversary: the fixed account in income moved to month 13,
+      and the fixed account in its first year's last month, 11, on its issue values with
+      interest accrued since, each with its account value and fixed account at the
+      anniversary apart from those entering month 0 and an index level apart from the one
+      its scenario sets at ``t = 0``, which the anniversary rules refuse at month 12;
     * a blank joint age under the joint basis, which reads the issue age, as S does;
     * a count of 0, a point that projects zeros;
     * a lifetime withdrawal and a locked percentage of 0, in ``INCOME`` on the joint row
@@ -3593,6 +3860,15 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
         109: (joint, {"policy_count": 0.0}),
         110: (joint, {"lw_pp_init": 0.0, "payout_rate_locked_prev_anniv_init": 0.0}),
         111: (depleted, {"lw_pp_init": 0.0, "payout_rate_locked_prev_anniv_init": 0.0}),
+        112: (first, {"av_pp_init": at[first, "av_pp_init"] - 0.009,
+                      "av_pp_prev_anniv_init": at[first, "av_pp_prev_anniv_init"] - 0.009}),
+        113: (fixed_mid, {"av_pp_init": at[fixed_mid, "av_pp_init"] - 0.029}),
+        114: (fixed_mid, {"av_fixed_pp_init": at[fixed_mid, "av_pp_init"],
+                          "av_fixed_pp_prev_anniv_init":
+                          at[fixed_mid, "av_pp_prev_anniv_init"] + 0.009}),
+        115: (fixed_mid, {"duration_mth": 13, "index_level_prev_anniv_init": 1700.0}),
+        116: (fixed_anniv, {**_in_first_year_fixed(committed, fixed_anniv, 11, 10.0),
+                            "index_level_prev_anniv_init": 1500.0}),
     }
     rows = [committed.loc[[row]].assign(**changes, row_kind="copy").set_axis([label])
             for label, (row, changes) in copies.items()]
@@ -3606,6 +3882,11 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
             _release(model, _key(model, label))
         assert [_point(model, label).policy_year(0) for label in (101, 102, 103)] == [
             1, 1, 2]
+        for label, year in ((115, 2), (116, 1)):
+            p = _point(model, label)
+            assert p.policy_year(0) == year, label
+            assert p.av_pp_prev_anniv_init() < p.av_pp_init(), label
+            assert p.av_fixed_pp_prev_anniv_init() < p.av_fixed_pp_init(), label
         blank = _point(model, 108)
         assert blank.is_joint_basis() and blank.joint_age() == blank.age_at_entry() == 62
         assert blank.covered_age(0) == 62 + 150 // 12
@@ -3623,6 +3904,26 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
             0.0, 0.0, 0.0)
     finally:
         model.close()
+
+
+def test_every_state_s_reaches_as_shipped_is_accepted_in_force(s_model, tmp_path):
+    """At S's shipped References and inputs too, every state S reaches is accepted, but one.
+
+    The states ``FIA_US_S`` reaches differ from the splice's here, on S's own scenarios,
+    programmes and mortality, so the every-state test runs here too (§5.2, T5, precised at
+    M9): each of S's nine points restated in force at the edges of its windows, or at
+    every month after its entry with ``USLIB_SEC_FULL=1`` (:func:`_every_state_months`), is
+    read by ``Data``, exactly and carried to the cent, and has a frame
+    (:func:`_refused_in_force`), but a contract terminated, ``TERMINATED``, the overdraw's
+    from policy month 228, which a table holding one is refused for, by name.
+    """
+    kept, terminated = _states_s_reaches(s_model)
+    assert {point for point, _ in terminated} == {7}, terminated[:5]
+    assert min(terminated) == (7, 228)
+    assert {point for point, _ in kept} == set(s_model.Data.model_point_table().index)
+    refused = _refused_in_force(s_model, kept, tmp_path / "every", {})
+    assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+    _refused_by_name(s_model, terminated[0], tmp_path / "terminated", {})
 
 
 # ---------------------------------------------------------------------------
@@ -3817,6 +4118,29 @@ def test_the_opening_state_is_what_s_carries_into_the_valuation_month(sec_model,
         codes_ = [_code(anchor, label) for label in timing]
         assert anchor.cells[cell](11, *codes_) == s1.cells[cell](95, *timing), cell
     assert anchor.av_pp(11) == pytest.approx(122865.84, abs=0.005)
+
+
+def test_the_committed_future_row_is_s_anchor_15_months_on(sec_model, s_model):
+    """The committed row issued 15 months on is S's anchor 15 months on, cell by cell.
+
+    T6 holds the row to the generator only to 1e-12, and the block test holds it only in a
+    sum beside two other rows, column by column of ``result_cf``.  So it is compared alone
+    with its S point, the anchor, frame by frame, as T3 compares a future row on the
+    splice's inputs (§7.1, *Precised at M3*, item 11, taken into FIA at M13, §5.4): SEC
+    rows ``15 ..`` are S rows ``0 ..``, ending together, in ``result_cf`` and every column
+    of ``result_pols`` S's has, and every cell of S's but T3's exemptions
+    (:data:`FUTURE_EXEMPT`), at every argument S cached, moved 15 months later, to 1e-9
+    relative with no absolute floor but on the residuals (:func:`_continues_s`).  The
+    shipped 2.5% expense inflation runs from issue in S and from the valuation date here
+    (D7), 15 months apart, so the two columns and the cells it moves are left out, as on
+    the rows in force; the inflation test holds them.  Before issue the row holds T3's facts
+    (:func:`_future_facts`): a row of zeros a month, ``PRE_ISSUE``, no decrement rate and
+    no table read before the contract's first age, year or anniversary.
+    """
+    p, s2 = _row(sec_model, "future", 2, -15), _point(s_model, 2)
+    assert p.duration_mth_init() == -15 and p.scenario_id() == f"{s2.scenario_id()}-F15"
+    found = _continues_s(s2, p, -15, FUTURE_EXEMPT) + _future_facts(p, 15)
+    assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found[:20])
 
 
 def test_each_opening_state_column_shows_on_a_committed_row(sec_model, tmp_path):
