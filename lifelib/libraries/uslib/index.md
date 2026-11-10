@@ -141,19 +141,20 @@ registry, the directory on disk and the model's own `_name` all agree.
 Cells names come from lifelib — `basiclife/BasicTerm_S` first, then `savings/CashValue_SE` —
 so a name means the same thing in every model here and the same thing it means in lifelib.
 Where a cross-model review found one concept under two names, the conflict was settled once
-and the ruling is asserted, not merely documented:
+and the ruling is asserted, not merely documented. The `_SEC` models, which run in force at
+a valuation date, keep each ruling except where their column says otherwise:
 
-| Convention | Settled as |
-|---|---|
-| Time index | `t` is **0-based** and counts policy months: `t = 0` is the issue month of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `duration(t) + 1`, never the index |
-| In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` |
-| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event is never spread across the year to match: a dividend declaration, a shock lapse and a paid-up-additions purchase land whole on the anniversary month, and a premium lands whole on each date the elected mode bills it |
-| Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly |
-| Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` |
-| Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` |
-| Account value | `av_pp_at(t, timing)` / `av_at(t, timing)` with the `CashValue_SE` timing strings; `prem_to_av_pp` is the premium credited to it |
-| Withdrawals | `withdrawals(t)`, in a `withdrawals` column — an owner election, not a claim |
-| Benefit columns | `claims_death`, `claims_lapse`, `claims_maturity`, … named for the `kind` argument that produces them |
+| Convention | Settled as | In the `_SEC` models |
+|---|---|---|
+| Time index | `t` is **0-based** and counts policy months: `t = 0` is the issue month of a policy projected from issue, period `t` runs from time `t` to time `t + 1`, and `proj_len()` is the number of periods from `t = 0` — the exclusive end of the frame, `result_cf()` covering `t = t_first, ..., proj_len() - 1`. A policy year is the derived 1-based label `duration(t) + 1`, never the index | `t` counts months from the **valuation date**: `t = 0` is the valuation month for every point, however old the policy, and every frame runs `t = 0, ..., proj_len() - 1`, so the points' frames sum row by row into a block. The policy's own age is the policy clock, `duration_mth(t) = duration_mth_init() + t`, which every contractual cell reads, `duration(t)`, `policy_year(t)` and `age(t)` keeping their formulas on it. A point issued `k` months on holds zeros, not NaN, before its issue month, and nothing is active there. On a point issued at `t = 0` the two clocks coincide, and the model reproduces its `_S` twin |
+| In-force count | `pols_if(t)` is the count at the **start** of period `t`, and is the weight on that same `result_cf()` row's cash flows. End-of-period state is reachable through `pols_if_at(t, timing)` | The same weight, `pols_if(t) == pols_if_at(t, "BEF_DECR")`: the count carried in from `t - 1`, `pols_if_at(t, "BEF_NB")`, plus the month's new business, `pols_new_biz(t)`, whose column in `result_pols()` sums to the new-business points' `policy_count`. `result_cf()` keeps the `_S` columns exactly, and the counts the family adds are in `result_pols()`. The payout annuities differ: SPIA's `pols_if` is its `_S` closing measure, and DIA's the count on the books weighted by the probability that a covered life is alive |
+| Annual rates on a monthly grid | An assumption published annually stays annual in the unsuffixed cells and is converted at `1 - (1 - q)^(1/12)` for the month. A **contractually** annual event is never spread across the year to match: a dividend declaration, a shock lapse and a paid-up-additions purchase land whole on the anniversary month, and a premium lands whole on each date the elected mode bills it | As in the `_S` models |
+| Rates | `mort_rate` / `lapse_rate` are **annual**; `mort_rate_mth` / `lapse_rate_mth` are monthly | As in the `_S` models |
+| Net cash flow | `net_cf` is **income-positive** in every model. Where a product's notes print the stream outgo-positive (whole life, both payout annuities), that orientation survives verbatim as `liability_cf`, and `net_cf(t) == -liability_cf(t)` | As in the `_S` models |
+| Roll-forward checks | `check_*()` takes no argument and returns `bool` over all `t` (the `CashValue_SE` form); a per-`t` residual lives at `check_*_resid(t)` | As in the `_S` models |
+| Account value | `av_pp_at(t, timing)` / `av_at(t, timing)` with the `CashValue_SE` timing strings; `prem_to_av_pp` is the premium credited to it | As in the `_S` models |
+| Withdrawals | `withdrawals(t)`, in a `withdrawals` column — an owner election, not a claim | As in the `_S` models |
+| Benefit columns | `claims_death`, `claims_lapse`, `claims_maturity`, … named for the `kind` argument that produces them | As in the `_S` models |
 
 Absences are product facts, not gaps: a SPIA has no `premiums` and no lapse decrement, the
 payout annuities model `lives_if` (annuitant survival) alongside `pols_if` (contracts with
