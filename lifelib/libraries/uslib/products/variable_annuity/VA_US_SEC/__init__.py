@@ -3,17 +3,22 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""Reference liability cash flow model for U.S. variable annuities with guarantees.
+"""In-force reference liability cash flow model for U.S. variable annuities with guarantees.
 
-:mod:`~.VA_US_S` is the executable counterpart of
-``products/variable_annuity/technical-notes.md`` in the lifelib-products library. It
-projects gross liability cash flows for a single-contract model point of an individual
+:mod:`~.VA_US_SEC` projects the contracts :mod:`~.VA_US_S` projects from a **valuation
+date** rather than from issue. Each is a single-contract model point of an individual
 deferred variable annuity carrying two written options: a **guaranteed lifetime
 withdrawal benefit** (GLWB) tracked on a Guaranteed Withdrawal Balance that grows by a
 bonus and ratchets to contract value, and a **guaranteed minimum death benefit** (GMDB)
 tracked on a roll-up Benefit Base. Contract value follows separate-account fund
 performance with no insurer guarantee; both benefit bases are shadow accounts that never
-fall with the market.
+fall with the market. A model point may be a contract already in force at that date, in
+any month of its contract year, before or after its first withdrawal and with its account
+value exhausted or not, one issued at it, or one to be issued in the ten years after it,
+as in lifelib's ``basiclife/BasicTerm_SE``, which extends ``basiclife/BasicTerm_S`` the
+same way. Its formulas are the executable counterpart of
+``products/variable_annuity/technical-notes.md``, and
+``products/variable_annuity/model-sec.md`` explains what running in force changes.
 
 **Relation to the chassis.** The deferred annuity chassis of this library is
 :mod:`.MYGA_US_S`, and the naming, the Data/Projection split and the
@@ -27,14 +32,15 @@ unit ledger, a four-base charge stack and two path-dependent guarantees.
 
 **Spaces.** The model contains two:
 
-:mod:`~.VA_US_S.Data`
-    Reads the eight input CSVs and holds their filename References. It takes no
+:mod:`~.VA_US_SEC.Data`
+    Reads the five assumption CSVs it shares with :mod:`~.VA_US_S`, its own model point
+    table and its own two scenarios, and holds their filename References. It takes no
     parameters, so each file is read **once per model**.
 
-:mod:`~.VA_US_S.Projection`
+:mod:`~.VA_US_SEC.Projection`
     The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
     ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.VA_US_S.Data` Space.
+    Reference, which resolves to the single :mod:`~.VA_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -45,24 +51,26 @@ Input data is **external**: CSVs in the model folder's parent directory, read at
 rather than stored inside the model. The model folder itself holds no data, so the model
 and its inputs must travel together.
 
-**Projection basis.** Monthly steps. ``t`` counts **projection months** and is
-**0-based**: ``t = 0`` is the first projected month, the frame is
-``t = 0, 1, ..., proj_len() - 1`` and ``len(result_cf()) == proj_len()``. The purchase
-payment falls at the beginning of month ``t = 0``, not on a separate entry-instant row,
-and the state carried into the frame — ``av_pp_init()``, ``gwb_pp_init()`` and the rest
-of the ``*_init()`` family — is the opening balance every recursion reads at ``t = 0``,
-``S_init() if t == 0 else S(t - 1)``, never at a negative index. The *policy*
-month is ``duration_mth(t) = duration_mth_init() + t``, the months already **elapsed** at
-the start of month ``t``: 0 in an at-issue cell's first month and
-``duration_mth_init()`` in an in-force cell's. Every calendar test is written on
-``duration_mth``, never on ``t``. ``policy_year(t) = duration_mth(t)//12 + 1`` is the
-1-based contract year, so Contract Anniversaries fall at the **end** of the months with
-11, 23, 35, ... elapsed policy months and Contract Quarterly Anniversaries at the end of
-those with 2, 5, 8, ... **[std]**. Every model in this library runs on a monthly grid;
-here it is not merely the house convention but forced, because the base contract charge
-accrues daily on separate-account value, the rider charges are assessed quarterly on
-benefit bases, and the roll-up and bonus are credited annually — three different clocks,
-and changing any one changes the answer.
+**Projection basis.** Monthly steps on two clocks. ``t`` counts months from the valuation
+date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the valuation month
+for every model point, however old the contract, month ``t`` runs from time ``t`` to time
+``t + 1``, and the frame runs ``t = 0, 1, ..., proj_len() - 1``, where ``proj_len()``
+counts the months from the valuation date to the end of cover, and
+``len(result_cf()) == proj_len()``. ``duration_mth(t)`` counts the policy months
+**elapsed** at the start of month ``t``, ``duration_mth_init() + t`` from the model
+point's ``duration_mth`` at ``t = 0``, and the contract runs on it: 0 in its issue month,
+``policy_year(t) = duration_mth(t)//12 + 1`` the 1-based contract year, Contract
+Anniversaries at the **end** of the months with 11, 23, 35, ... elapsed policy months and
+Contract Quarterly Anniversaries at the end of those with 2, 5, 8, ... **[std]**. The
+transaction programmes, the GAWA% grid, the withdrawal charge scale and the mortality read
+that clock. The fund returns, the VIX-squared averages and the CMT rate run on ``t``
+instead, a market path shared by every point of a block, and so does expense inflation,
+which keeps maintenance expense in valuation-date dollars. On a point issued at ``t = 0``
+the two clocks coincide, and the model computes what :mod:`~.VA_US_S` computes. Every
+model in this library runs on a monthly grid; here it is not merely the house convention
+but forced, because the base contract charge accrues daily on separate-account value, the
+rider charges are assessed quarterly on benefit bases, and the roll-up and bonus are
+credited annually — three different clocks, and changing any one changes the answer.
 
 Within a month: at the beginning of the month (BOM) the premium buys units at the prior
 unit value and raises ``GWB``, ``BB``, ``NP``, ``RP``, ``RB``, ``GAWA`` and ``ADJ``, then
@@ -75,20 +83,43 @@ the seven guarantee events in the notes' order; then the depletion test; then de
 **death first, then surrender** **[std]**. If the contract is already depleted the whole
 of that is skipped and the post-depletion GLWB payment routine runs instead.
 
-``proj_len()`` is the **number of months projected** and runs to attained age
-``omega_age`` = 120 **[std]**, the terminal age of the mortality table, because once the
-account is exhausted the For Life Guarantee is a pure life-contingent annuity at GAWA.
-The horizon month is therefore ``t = proj_len() - 1``, and the survivors there are
-carried out through ``pols_maturity()`` so the in-force roll-forward closes.
+Cover runs to attained age ``omega_age`` = 120 **[std]**, the terminal age of the
+mortality table, because once the account is exhausted the For Life Guarantee is a pure
+life-contingent annuity at GAWA. The last covered month is therefore
+``t = proj_len() - 1``, and the survivors there are carried out through
+``pols_maturity()`` so the in-force roll-forward closes.
 
-``pols_if(t)`` is the count in force at the **start** of month ``t`` — the notes'
-``l(t-1)`` — and is the weight carried by every cash flow on that row, so the in-force
-column of ``result_cf()`` reconciles with the cash flows printed beside it. The notes'
-own end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")``. Two other names follow the
-library rather than the notes: ``lapse_rate(t)`` is the **annual** surrender rate and
-``lapse_rate_mth(t)`` the monthly one, matching ``mort_rate`` / ``mort_rate_mth``; and
-the net premium credited to the account value is ``prem_to_av_pp(t)``, the per-contract
-form of ``prem_to_av(t)``.
+``pols_if(t)`` is the count in force at the **start** of month ``t``, after the month's
+new business — the notes' ``l(t-1)`` — and is the weight carried by every cash flow on that
+row, so the in-force column of ``result_cf()`` reconciles with the cash flows printed
+beside it. A point in force at the valuation date opens with its ``policy_count``, and
+one issued at or after it takes its ``policy_count`` as ``pols_new_biz`` in its issue
+month; ``result_pols()`` sets the counts out. The notes' own end-of-month ``l(t)`` is
+``pols_if_at(t, "AFT_DECR")``. Two other names follow the library rather than the notes:
+``lapse_rate(t)`` is the **annual** surrender rate and ``lapse_rate_mth(t)`` the monthly
+one, matching ``mort_rate`` / ``mort_rate_mth``; and the net premium credited to the
+account value is ``prem_to_av_pp(t)``, the per-contract form of ``prem_to_av(t)``.
+
+**The opening state.** There is no issue-instant row: the single premium, the guarantee
+bases' initialization and the acquisition expense are beginning-of-month flows of the
+issue month, and :mod:`~.VA_US_S`'s issue values are credited there by its own rules. A
+contract in force at the valuation date opens instead from twenty columns of its row, per
+contract, as it stands at the start of month 0, before any month-0 event, each exactly
+what :mod:`~.VA_US_S` carries into the month the contract is valued at: the value of each
+subaccount, which :mod:`~.VA_US_S` would split from one account value by the target
+allocation; the GWB, the Bonus Base, the GAWA, the GMDB Benefit Base, the cumulative Net
+Premiums, the Remaining Premium and the GWB Adjustment; the locked GAWA%, the end of the
+Bonus Period and whether a withdrawal has been taken; for the contract year under way, the
+withdrawals to date, the free allowance they used, the GMDB's dollar-for-dollar reduction
+and proportional factor so far, and whether the year has taken a withdrawal; the GMDB
+Benefit Base at the anniversary that opened the year; the year's highest quarterly
+account value before the valuation month; and, on the VIX-linked fee, the rate of the
+quarter before. A contract whose opening account value is exhausted is depleted from
+month 0, which no column states. ``Data`` refuses, as it reads the table, an opening state
+no contract can be in, and ``proj_len()`` one that a ``Projection`` Reference shows to be
+so, the depletion threshold or the VIX fee's rates, each naming the point.
+``result_cf()`` has exactly ``proj_len()`` rows, ``t = 0 .. proj_len() - 1``, and row
+``t`` is the same month on every point.
 
 **Undiscounted.** Like every model in this library, this one projects *gross liability
 cash flows* only. Reserves and discounting are a separate layer: the notes cite VM-21's
@@ -123,9 +154,12 @@ reading that lets the ``basic`` GMDB election's proportional withdrawal reductio
 against the notes' unreduced ``NP`` floor — the two tables contradict each other and the
 elected form is taken to govern, which the README sets out in full; the capping of
 charges and withdrawals at the available account value; and the attained age 120
-horizon. **This model is a mechanics demonstration, not a pricing or reserving
-result.** Replace the assumption tables with company data before drawing any conclusion
-from the output.
+horizon. Running in force changes none of them: the five assumption tables are
+:mod:`~.VA_US_S`'s, read in place, and the two scenarios are its scenarios moved onto the
+valuation clock.
+
+**This model is a mechanics demonstration, not a pricing or reserving result.** Replace
+the assumption tables with company data before drawing any conclusion from the output.
 
 **Not implemented.** Named here so the gaps cannot be mistaken for oversights.
 The **stochastic scenario interface** — real-world and risk-neutral scenario sets, proxy
@@ -151,52 +185,61 @@ completed years since receipt of the premium being withdrawn [S2], which coincid
 the contract duration only while the contract is single premium — model point 4 is not,
 and a test pins the divergence. The **charge-increase opt-out**, the terminal illness and
 extended care waivers, spousal continuation, joint-life elections and the transfer charge
-are all described in the sources and not modelled. And ``check_margin()`` is absent: the model
-projects no asset side, so there is no charge-versus-cost decomposition to check;
+are all described in the sources and not modelled. And ``check_margin()`` is absent: the
+model projects no asset side, so there is no charge-versus-cost decomposition to check;
 ``check_av_roll_fwd()``, ``check_pols_roll_fwd()`` and ``check_charge_split()`` are
 implemented and all three close to floating point. Each takes **no argument and returns
 a bool** covering every projected month, as ``savings.CashValue_SE`` does, with the
 signed per-month residual available as ``check_av_roll_fwd_resid(t)`` and its two
 counterparts for when one of them fails.
 
-**Model points.** ``model_point_table.csv`` carries nine contracts on the same anchor
-cell — male 60 ANB, single Designated Life, non-qualified, $100,000 single premium,
-60/40 allocation, the single-life Core GLWB and the Roll-up GMDB — that differ only in the
-switches the technical notes make first-class parameters. Point 1 is the worked-example
-anchor, projected from issue on a return path reverse-engineered so that the notes' own
-carried state at the beginning of the 27th policy month — ``t = 26`` there — falls out of
-the projection exactly. Point 2 is the same carried state entered directly as an
-**in-force cell** with 26 elapsed policy months, so the worked-example month is its
-``t = 0`` and reproduces without depending on that return path — the two readings agree
-to the cent and a test pins both. Point 3 runs a declining market to exhaustion and
-exercises depletion and the insurer-funded GLWB payment stream; point 4 the excess-withdrawal
-algebra and a subsequent premium; point 5 the highest-quarterly step-up basis and the
-annual-ratchet GMDB; point 6 the VIX-squared fee reset and the CMT-linked roll-up;
-point 7 a never-withdraw cell on the included proportional return-of-premium death
-benefit with no withdrawal charge, which is what exercises the GWB Adjustment Date and
-the five-yearly discretionary fee increase; point 8 a never-withdraw cell on the Roll-up
-GMDB, whose Benefit Base compounds cleanly to the age-81 cutoff with no withdrawal
-adjustment to muddy it and whose rider fees on the two bases eventually exhaust the
-account in its 555th policy month, ``t = 554``; and point 9 the same proportional
-return-of-premium death benefit as point 7 but **withdrawing** from age 70, which is what makes that form's
-``G <- G x (1 - W/AV_pre)`` reduction bite. A test asserts every point projects.
+**Model points.** ``model_point_table_sec.csv``, ``return_scenario_sec.csv`` and
+``rate_scenario_sec.csv`` are generated from :mod:`~.VA_US_S` and its inputs, and the
+tests regenerate all three and compare, so no row is typed by hand. Points 1 to 9 are the
+twins of :mod:`~.VA_US_S`'s nine contracts on the same anchor cell — male 60 ANB, single
+Designated Life, non-qualified, $100,000 single premium, 60/40 allocation, the single-life
+Core GLWB and the Roll-up GMDB — that differ only in the switches the technical notes make
+first-class parameters. Point 1 is the worked-example anchor, issued at the valuation date
+on a return path reverse-engineered so that the notes' own carried state at the beginning
+of the 27th policy month — ``t = 26`` there — falls out of the projection exactly. Point 2
+is the same carried state in force at the valuation date with 26 elapsed policy months,
+so the worked-example month is its ``t = 0``, on its scenario re-based by 26 months; the
+two readings agree to the cent and a test pins both. Points 3 to 9 are issued at the
+valuation date: a declining market to exhaustion, the excess-withdrawal algebra and a
+subsequent premium, the highest-quarterly step-up basis and the annual-ratchet GMDB, the
+VIX-squared fee reset and the CMT-linked roll-up, two never-withdraw cells, on the
+included return-of-premium death benefit and on the Roll-up GMDB, and the return of
+premium withdrawing from age 70. Points 10 to 22 are S points restated in force at an S
+month, each opened with the state :mod:`~.VA_US_S` carries into that month: the anchor in
+its first policy year at month 6, at the year's start that takes its first withdrawal at
+month 120 and in that year's last month at 131; the declining point depleted at a year's
+start at month 144; the excess programme in the month of its excess withdrawal and five
+months after, at 60 and 65; the highest-quarterly point mid-year at 40; the VIX-fee point
+at 41, in a quarter's last month; the never-withdrawing Roll-up point depleted without a
+withdrawal, at 560; the never-withdrawing return of premium in its last policy month at
+719 and before its GWB Adjustment Date at 100; S's in-force point 2 at its month 14,
+policy month 40; and the withdrawing return of premium mid-year at 125. Point 23 is the
+anchor issued 15 months after the valuation date. A test asserts that every point in the
+table projects.
 
-**Verification.** ``tests/test_variable_annuity_us.py`` asserts every row and column of
-the notes' worked example: the two subaccount balances at each of the six printed steps,
-the two growth factors to seven decimals, the pro-rata weights to six, the two rider
-fees, the end-of-month balances, all three memo lines (M&E and admin inside the unit
-value, the fund expense that is *not* insurer revenue, and total insurer charge income),
-the GMDB test with its gross and net figures, the moneyness ratios and lapse multiplier,
-the CDSC and free-withdrawal memo, and the GAWA memo — on **both** the at-issue and the
-in-force reading of the anchor. It also asserts the carried state the notes narrate at
-anniversaries 1 and 2, both roll-forwards at every month, and one test per entry in the
-notes' "Known modeling pitfalls" list.
+**Verification.** On the eight twins issued at the valuation date every cell this model
+shares with :mod:`~.VA_US_S` agrees with it at every argument the S model evaluates in its
+sweep, but for those whose meaning changed — ``model_point``, ``pols_if_init`` and
+``result_pols``, which gains the month's new business — so every golden
+``tests/test_variable_annuity_us.py`` asserts on a cell that sweep reaches holds here too,
+with no number restated; ``tests/test_model_conventions.py`` asserts it. The worked
+example's goldens sit on point 1 at ``t = 26`` and on point 2 at ``t = 0``.
+``tests/test_variable_annuity_us_sec.py`` splices: an S point restated in force at month
+``d``, opened with S's own state there, continues the S projection from ``d`` on, cell by
+cell, S's own in-force point among them; a point issued ``k`` months late is the S
+projection ``k`` months on; and the committed tables are what S generates.
 
 Example:
 
     >>> import modelx as mx
-    >>> model = mx.read_model("products/variable_annuity/VA_US_S")
-    >>> model.Projection[1].result_cf()
+    >>> model = mx.read_model("products/variable_annuity/VA_US_SEC")
+    >>> model.Projection[1].result_cf()            # by month from the valuation date
+    >>> model.Projection[2].result_cf()            # the worked example's month at t = 0
 """
 
 from modelx.serialize.jsonvalues import *

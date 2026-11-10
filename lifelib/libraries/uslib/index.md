@@ -68,12 +68,12 @@ it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compilin
 `basiclife/BasicTerm_SC` does; `Term_US_SEC` is the first to compile, and its
 `model-sec.md` says how. On the `_S` model's new-business points, issued at the
 valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where the worked
-example's point is already in force, as whole life's and the FIA's are, the `_SEC` twin
-of that point continues the `_S` projection from the month it is valued at, its expenses
-apart, which inflate from the valuation date. Each `model-sec.md` says what running in
-force changes.
+example's point is already in force, as whole life's, the FIA's and the variable annuity's
+are, the `_SEC` twin of that point continues the `_S` projection from the month it is
+valued at, its expenses apart, which inflate from the valuation date. Each `model-sec.md`
+says what running in force changes.
 `Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`,
-`DIA_US_SEC`, `FIA_US_SEC`, `VUL_US_SEC` and `RILA_US_SEC` are the first nine.
+`DIA_US_SEC`, `FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC` and `VA_US_SEC` are the first ten.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -108,7 +108,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 |---|---|---|---|
 | [Fixed deferred (MYGA)](products/fixed_deferred_annuity/index.md) | `MYGA_US_S`, `MYGA_US_SEC` | monthly | Single-premium book-value annuity: multi-year declared rate, surrender charge plus market value adjustment, Model #805 floor — the **deferred base chassis** |
 | [Fixed indexed (FIA)](products/fixed_indexed_annuity/index.md) | `FIA_US_S`, `FIA_US_SEC` | monthly | Index-linked credits at a 0% floor, premium bonus with vesting, and a guaranteed lifetime withdrawal benefit that continues after the account value is exhausted |
-| [Variable annuity](products/variable_annuity/index.md) | `VA_US_S` | monthly | Separate-account deferred annuity: subaccount units net of M&E, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base |
+| [Variable annuity](products/variable_annuity/index.md) | `VA_US_S`, `VA_US_SEC` | monthly | Separate-account deferred annuity: subaccount units net of M&E, a guaranteed minimum death benefit, and a lifetime withdrawal rider fee-assessed on the benefit base |
 | [Registered index-linked (RILA)](products/registered_index_linked_annuity/index.md) | `RILA_US_S`, `RILA_US_SEC` | monthly | SEC-registered buffered annuity: point-to-point terms with a downside buffer and upside cap, and an AG 54 interim value |
 | [Immediate (SPIA)](products/immediate_annuity/index.md) | `SPIA_US_S`, `SPIA_US_SEC` | monthly | Single premium converted immediately into a payment stream; life only, period certain, joint and survivor, refund forms, compound COLA — the **payout chassis** |
 | [Deferred income (DIA/QLAC)](products/deferred_income_annuity/index.md) | `DIA_US_S`, `DIA_US_SEC` | monthly | Flexible-premium contract with **no account value**: each premium buys a paid-up income slice, with a return-of-premium deferral death benefit and a QLAC variant |
@@ -257,7 +257,7 @@ python -m pytest tests -q
 * - `products/<product>/<Model>/`
   - The modelx model itself. Formulas only — no embedded data.
 * - `products/<product>/*.csv`
-  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, with any `*_sec.csv` companion beside or in place of a table, such as DIA's premium schedule, or the FIA's rate scenarios or RILA's market scenarios re-based to each model point, each generated from the `_S` model and its inputs and checked against them by the tests.
+  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, with any `*_sec.csv` companion beside or in place of a table, such as DIA's premium schedule, or the FIA's rate scenarios, RILA's market scenarios or the variable annuity's return and rate scenarios re-based to each model point, each generated from the `_S` model and its inputs and checked against them by the tests.
 * - `products/<product>/run.py`
   - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block, and `--cython` runs the compiled model.
 * - `products/<product>/sample_sec.py`, `spec_sec.py`

@@ -2,9 +2,9 @@
 
 Each ``<Name>_US_SEC`` model reads its own model point table, ``model_point_table_sec.csv``,
 and some read ``*_sec.csv`` companions beside it: DIA's premium schedule, FIA's and RILA's
-scenarios re-based to each row, and VA's re-based scenario (USLIB-SEC-PLAN.md D8).  None
-of those rows is typed by hand.  Every one is generated from the S model and its inputs as
-they stand: a twin from its S row, a derived in-force row from S's own state at a chosen
+scenarios re-based to each row, and VA's two re-based scenarios (USLIB-SEC-PLAN.md D8).
+None of those rows is typed by hand.  Every one is generated from the S model and its inputs
+as they stand: a twin from its S row, a derived in-force row from S's own state at a chosen
 month, a future row from an S new-business row.  The T6 test regenerates them and compares,
 so the committed files cannot drift from S.  When S changes, a reworded ``provenance`` cell
 or a renamed lookup key, T6 fails until the files are regenerated, in the same commit.

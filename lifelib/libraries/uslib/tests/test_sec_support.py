@@ -723,6 +723,44 @@ def test_future_state_sets_a_future_rows_columns_from_s_and_k(s_model):
     assert table["fresh"].iloc[3] == "T10-3"
 
 
+def _by_sum_assured(model):
+    """A ``model_state``: a column for each sum assured of ``model``'s table, the count S
+    carries into the row's month on a point of that sum, and 0.0 on another."""
+    sums = sorted(set(model.Data.model_point_table()["sum_assured"]))
+    return {f"pols_{x:.0f}": (lambda s, d, x=x: s.pols_if(d) if s.sum_assured() == x
+                              else 0.0) for x in sums}
+
+
+def test_model_state_takes_its_columns_from_the_s_model_the_table_is_built_from(
+        s_model, tmp_path):
+    """``model_state`` gives state columns named by the S model the table is built from.
+
+    On Term's table, whose two points each assure 100,000, :func:`_by_sum_assured` gives one
+    column, which comes before the state's and is set as the state is: the twins at their
+    ``source_mth``, the derived row at its month, the future row its twin's.  On a copy
+    whose second point assures 200,000 it gives a column for each, read off that copy, as
+    VA's subaccount values are read off the fund table the generator's S model reads.
+    """
+    spec = dataclasses.replace(SPEC, model_state=_by_sum_assured,
+                               state={"fresh": lambda s, d: float(d)})
+    table, _ = build_sec_table(spec, s_model)
+    assert list(table.columns) == [*SEC_COLUMNS[:-3], "pols_100000", "fresh",
+                                   *SEC_COLUMNS[-3:]]
+    assert table["pols_100000"].tolist() == [1.0, 1.0, s_model.Projection[1].pols_if(12),
+                                             1.0]
+    assert table["fresh"].iloc[2] == 12.0
+    folder = temp_inputs(tmp_path, model_path(TERM), edits={
+        "model_point_table.csv": lambda df: df.assign(sum_assured=[100000.0, 200000.0])})
+    model = _read("sums", folder)
+    try:
+        table, _ = build_sec_table(spec, model)
+    finally:
+        model.close()
+    assert [c for c in table.columns if c.startswith("pols_")] == [
+        "pols_100000", "pols_200000"]
+    assert table["pols_200000"].tolist() == [0.0, 1.0, 0.0, 0.0]
+
+
 def test_generated_text_is_s_text_or_composed_from_s_keys(tmp_path):
     """With a ``provenance`` column in S: twins copy it, the generated rows cite S by key.
 
@@ -773,6 +811,10 @@ def test_a_spec_that_could_clobber_s_or_the_generator_is_refused(change, error):
     ({"column_map": {"no_such_column": None}}, "no_such_column"),
     ({"column_map": {"sex": "plan"}}, "two columns one name"),
     ({"duration_of": lambda row: -1}, "never future business"),
+    ({"model_state": lambda m: {"policy_count": lambda s, d: 2.0}},
+     "the generator owns them"),
+    ({"model_state": lambda m: {"fresh": lambda s, d: 0.0},
+      "state": {"fresh": lambda s, d: 1.0}}, "state or twin_state sets too"),
 ])
 def test_build_sec_table_rejects_a_spec_that_does_not_fit_the_s_table(s_model, change,
                                                                     error):

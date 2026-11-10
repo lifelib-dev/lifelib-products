@@ -117,6 +117,8 @@ MODELS = {
     "FIA_US_SEC": ("products/fixed_indexed_annuity/FIA_US_SEC",
                    {**MONTHLY, "twin": "FIA_US_S", "stage": "E"}),
     "VA_US_S": ("products/variable_annuity/VA_US_S", MONTHLY),
+    "VA_US_SEC": ("products/variable_annuity/VA_US_SEC",
+                  {**MONTHLY, "twin": "VA_US_S", "stage": "E"}),
     "RILA_US_S": (
         "products/registered_index_linked_annuity/RILA_US_S", MONTHLY),
     "RILA_US_SEC": ("products/registered_index_linked_annuity/RILA_US_SEC",
@@ -211,6 +213,10 @@ INPUT_FILES = {
         "cdsc_table.csv", "fund_table.csv", "gawa_pct_table.csv",
         "model_point_table.csv", "mort_table.csv", "rate_scenario.csv",
         "return_scenario.csv", "transaction_table.csv"},
+    "VA_US_SEC": {
+        "cdsc_table.csv", "fund_table.csv", "gawa_pct_table.csv",
+        "model_point_table_sec.csv", "mort_table.csv", "rate_scenario_sec.csv",
+        "return_scenario_sec.csv", "transaction_table.csv"},
     "VUL_US_S": {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",

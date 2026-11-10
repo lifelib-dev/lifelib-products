@@ -576,6 +576,22 @@ def _va_residuals(proj, df):
             assert proj.check_av_roll_fwd_resid(t) == pytest.approx(0.0, abs=1e-6)
 
 
+def _va_sec_residuals(proj, df):
+    """VA_US_SEC: both roll-forward residuals at four sampled months, scaled by the count.
+
+    ``VA_US_S``'s fact on the valuation clock: the months are the first projected month,
+    two anniversaries of S's anchor and the last month of a 25-year frame, each guarded so
+    that a shorter frame samples what it has, and each bound is the model's own,
+    ``check_tol_pols`` and ``check_tol_av`` times ``max(policy_count(), 1)``, kept strict
+    as S's is, so that a residual that is not a number fails.
+    """
+    scale = max(proj.policy_count(), 1.0)
+    for t in (0, 60, 120, 299):
+        if t < proj.proj_len():
+            assert abs(proj.check_pols_roll_fwd_resid(t)) < proj.check_tol_pols * scale
+            assert abs(proj.check_av_roll_fwd_resid(t)) < proj.check_tol_av * scale
+
+
 EXTRA_POINT_ASSERTIONS = {
     "DIA_US_S": _dia_pays_an_income,
     "DIA_US_SEC": _dia_sec_pays_an_income,
@@ -584,6 +600,7 @@ EXTRA_POINT_ASSERTIONS = {
     "SPIA_US_S": _spia_liability_is_outgo,
     "SPIA_US_SEC": _spia_liability_is_outgo,
     "VA_US_S": _va_residuals,
+    "VA_US_SEC": _va_sec_residuals,
 }
 
 

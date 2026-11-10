@@ -2,14 +2,14 @@
 
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
 and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
-and §7.2). The other ten run in three streams (§5.3). The Payout stream is complete: SPIA,
-DIA and RILA are done (M11, M12 and M10, the *Records* of §7.9, §7.12 and §7.8). In each
-of the other two the first two products are done: UL and VUL in the Life stream, and MYGA
-and FIA in the Deferred annuity stream (M3 and M4, and M7 and M8, the *Records* of §7.3
-and §7.6, and §7.10 and §7.11). Term's compile step, M14, brought forward to run beside
-the streams (D2), is done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's
-first run (§7.1, *Record — M14*). The open decisions of §8.2 are settled, the last of
-them, item 4, on 2026-11-03.
+and §7.2). The other ten run in three streams (§5.3). The Payout and Deferred annuity
+streams are complete: SPIA, DIA and RILA are done (M11, M12 and M10, the *Records* of
+§7.9, §7.12 and §7.8), and so are MYGA, FIA and VA (M7, M8 and M9, the *Records* of §7.10,
+§7.11 and §7.7). In the Life stream UL and VUL are done (M3 and M4, the *Records* of §7.3
+and §7.6). Term's compile step, M14, brought forward to run beside the streams (D2), is
+done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1,
+*Record — M14*). The open decisions of §8.2 are settled, the last of them, item 4, on
+2026-11-03.
 Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
 phase records what it actually did, including where the implementation departed from the
 plan.
@@ -357,7 +357,10 @@ a message of its own (precised at M1).
   down to `corridor_factor_at`, `Data.corridor_age_last` and `Data.corridor_factors`);
   RILA 24 (13 to 21 measured on its committed points, since its month 0 prices its term's
   option under the interim value, and 21 where a renewal under `nge_reset` re-solves the
-  cap there; precised at M10). MYGA's 16 leaves none: on a model just read, twin 3's cold
+  cap there; precised at M10); VA 20 (17 measured, on the chain heads `bonus_end` and
+  `gmdb_factor_acc` called cold alone on twin 4, whose first month opens the withdrawals',
+  the bases' and the account value's chains beneath them; a cold `net_cf` runs 10 to 15
+  over; precised at M9). MYGA's 16 leaves none: on a model just read, twin 3's cold
   `net_cf` runs 16 over, down to `Data`'s first read of the age-cap table (§7.10, *Record
   — M7*), so MYGA's C step raises it. The bound holds on the committed points, their
   deepest among them, and at the contract's maximum, since the 1 MiB stack test has a
@@ -365,7 +368,9 @@ a message of its own (precised at M1).
   and M10). A chain whose first month makes R2's admitted read may run up to 11 more
   again, the read's state chain opening beneath it, as FIA's count does: a cold `pols_if`
   alone runs 25 over its months, 997 levels at the longest cover, where a cold `net_cf`
-  runs 7 to 10 over (precised at M8).
+  runs 7 to 10 over (precised at M8); `VA_US_SEC`'s cold `pols_if` alone runs 20 over,
+  1,040 levels at its longest cover, 1,020 months from issue age 35, where a cold `net_cf`
+  runs 14 over, 1,034 levels (precised at M9).
 - **`pols_if(t)` is `pols_if_at(t, "BEF_DECR")`**, not BasicTerm_SE's `BEF_MAT`. The
   library settled `pols_if(t)` as the count that weights row `t`, and this is the definition
   under which it equals the S model's `pols_if` on every new-business point.
@@ -460,7 +465,10 @@ and the splice identity of §5.2 tests it.
 - No balance a policy holds, such as an account value or a loan, is negative in force, so
   a point the S model carries into a negative one, as `UL_US_S` carries its account value
   in permanent shortfall, is restated no later than the last month it is still zero or
-  more. A measure that is not such a balance may take either sign: a tax measure such as
+  more. A rounding below 0 that S's arithmetic closes a balance on is no such negative:
+  `VA_US_SEC` restates a row the month after a depletion that closed its account value on
+  −2.3e-14, and holds each subaccount value to 0 or more within a cent (below; precised at
+  M9). A measure that is not such a balance may take either sign: a tax measure such as
   premiums less withdrawals, or the shadow account, which `ULSG_US_S` never floors (§7.5).
   A quantity every policy in force holds, such as UL's face, is refused at zero (precised
   at M3). A product whose account value is a market valuation the contract lets fall below
@@ -479,9 +487,12 @@ and the splice identity of §5.2 tests it.
   Investment Amount plus its two accounts to two and a half cents, since the four, carried
   to the cent, can miss by two cents, which half-even rounding reaches at exact ties
   (100.125, 200.125 and 300.125 against 600.375), and a miss of one cent reads
-  0.010000000009 (precised at M10). Each such rule is tested on an extract with every
-  amount carried to the cent, not only with one column moved. Two columns that hold one
-  amount at instants that coincide may still be compared exactly, as WholeLife's are on an
+  0.010000000009 (precised at M10). A carried amount held to 0 alone stays at a cent:
+  `VA_US_SEC`'s subaccount values, which a depletion can close on a rounding below 0, are
+  each held to 0 or more within a cent, where a rule of 0 or more refused the state S
+  reached (precised at M9). Each such rule is tested on an extract with every amount
+  carried to the cent, not only with one column moved. Two columns that hold one amount at
+  instants that coincide may still be compared exactly, as WholeLife's are on an
   anniversary. `Data` holds a carried allowance to what makes it, as MYGA's does: the
   issue allowance in the first contract year; on an anniversary under `pct_av`, the rate
   times the account value; and under `interest_only`, at most the interest to the
@@ -561,10 +572,12 @@ included.
 
 This matters because S rows do change after the fact. MYGA points 5 and 6, RILA points 4,
 5, 7, 9 and 12 and VA point 6 have had their `provenance` reworded under `CLAUDE.md`'s
-rule, RILA's 4, 5, 7 and 12 at M10's landing, and FIA point 3's roll-up key has been
-renamed. A hand-copied twin of FIA point 3 would now raise `KeyError` against the shared
-roll-up table, and no projected number would ever reveal the eight stale `provenance`
-cells.
+rule, RILA's 4, 5, 7 and 12 at M10's landing; FIA point 3's roll-up key has been renamed;
+and so, at M9's landing, have the key of VA's GAWA% grid, which all nine of VA's points
+name, and that of VA point 5's GMDB election. A hand-copied twin of FIA point 3 would now
+raise `KeyError` against the shared roll-up table, one of any VA point would be refused
+for a grid the GAWA% table lacks, and no projected number would ever reveal the eight
+stale `provenance` cells.
 
 Some SEC rows need inputs S never had:
 - a scenario re-based to each row's valuation date by its `duration_mth` (FIA, VA, RILA);
@@ -691,12 +704,19 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   still one cell a month, so the sweep's depth is that chain's (precised at M8: FIA's
   sweep reaches 371 on point 9, where the account value runs out and the floor's chain is
   first read, against S's 370; exported, the same sweep needs a recursion limit of 747,
-  against Term's 51 and WholeLife's 128). Each product's rules test admits it by its
-  reader and the cell it reads, at `anniv_mth(t)` and nowhere else, and checks that the
-  month read is inside the frame, so `spec_sec.py` sizes no cache beyond the frame for it.
-  WholeLife's term-blend layer reads the year's dividend so (`oyt_face` reads
-  `div_credited`, §7.2), and FIA's `lapse_rate` and `lapse_moneyness_factor` the state
-  closing the contract year (§7.11). Under `pua_div_on = True`, the layers of WholeLife's
+  against Term's 51 and WholeLife's 128); `VA_US_SEC`'s sweep of its committed points
+  reaches 569 on point 8, where the GAWA's chain is first read at policy month 563,
+  against `VA_US_S`'s 1,123; exported, the cold `net_cf` needs a recursion limit of 1,478
+  on the committed points and 2,078 at the longest cover, and the ascending sweep 1,143,
+  or 1,527 on a contract issued at 35 that depletes at month 752 (precised at M9). Each
+  product's rules test admits it by its reader and the cell it reads, at `anniv_mth(t)`
+  and nowhere else, and checks that the month read is inside the frame, so `spec_sec.py`
+  sizes no cache beyond the frame for it. WholeLife's term-blend layer reads the year's
+  dividend so (`oyt_face` reads `div_credited`, §7.2), and FIA's `lapse_rate` and
+  `lapse_moneyness_factor` the state closing the contract year (§7.11). `VA_US_SEC`'s
+  `lapse_wd_factor` reads `is_wd_year` there (§7.7); `is_wd_year` itself, called mid-year,
+  scans the year's months after its own, which no cell of the model asks of it and C4's
+  full sweep does (precised at M9). Under `pua_div_on = True`, the layers of WholeLife's
   earlier years reach that dividend through the paid-up additions entering the year, which
   their cost reduced.
 - **R3** Phase 1 adds no new Python-object machinery: no new string-valued cells, no new
@@ -923,6 +943,15 @@ behaviour and 9 in wording, and all were fixed before the commit.
   future rows from S's point and `k`, FIA's re-based scenario id among them; it may not
   set `policy_count` or the generator's columns, and a column it names that S lacks, and
   that neither `state` nor `twin_state` sets, is blank on the twins and the derived rows.
+- `SecSpec.model_state` (added at M9, appended after `future_state`) is
+  `callable(s_model)`, giving more state columns, column to `callable(s_proj, d)`, whose
+  names the S model's inputs give: `VA_US_SEC`'s subaccount values, a column for each
+  subaccount the fund table of the S model the generator reads holds, so that a splice
+  whose fund table adds a subaccount gets its column and no spec reads an input file at
+  import. Its columns come after `duration_mth` and before `twin_state`'s, and are set on
+  the twins at their `source_mth` and on the derived rows at `d`, a future row copying its
+  twin's; it may not set `policy_count`, a column the generator owns, or one `state` or
+  `twin_state` sets.
 - `frame_mismatches` also fails frames that end apart. Both run to the end of cover, so a
   differing end means `proj_len()` is wrong.
 - T1 removes its own reads from the read-once log. Under pytest older than 9.2 the SEC
@@ -944,9 +973,11 @@ new skips are the eight SEC conventions, each skipped for want of a model.
   - IUL_US_SEC's twin of point 5 needs its own `check_margin` exemption.
   - The DIA, FIA, SPIA and VA product facts need SEC entries. SPIA's has one,
     `EXTRA_POINT_ASSERTIONS["SPIA_US_SEC"]` (M11), DIA's one,
-    `EXTRA_POINT_ASSERTIONS["DIA_US_SEC"]` (M12), and FIA's one,
+    `EXTRA_POINT_ASSERTIONS["DIA_US_SEC"]` (M12), FIA's one,
     `EXTRA_POINT_ASSERTIONS["FIA_US_SEC"]`, S's four phases in cover and `PRE_ISSUE`
-    before `t_entry()` (M8).
+    before `t_entry()` (M8), and VA's one, `EXTRA_POINT_ASSERTIONS["VA_US_SEC"]`,
+    `VA_US_S`'s two roll-forward residuals at four sampled months on the valuation clock,
+    inside the model's own tolerances scaled by the count (M9).
   - DIA's check reads `income_start_mth()`, a policy month (R1a), so it needs an SEC form.
     `DIA_US_SEC`'s reads the income at `max(T - duration_mth_init(), t_entry())` on the
     valuation clock, positive and the payout schedule's (M12).
@@ -1123,17 +1154,22 @@ conventions suite.
   residuals, the `check_*_resid` cells, move by an ulp of what they close when an opening
   state comes back from the CSV one ulp off, and with no floor on them
   `WholeLife_US_SEC`'s splice fails 13 of its 105 rows there and nowhere else (precised at
-  M11). Valuation-clock inputs are shifted by `d` in the temporary input directory, and
-  `inflation_rate` is set to 0 in both models (D7), as is mortality improvement where it
-  runs from the projection start; improvement dated by the calendar on the policy clock,
-  as SPIA's is, is not neutralized (precised at M11). A missing state variable fails here
-  and nowhere else. Every assumption that ships at zero is switched on, in both models
-  alike but for a market's change since a term's start (below), so the splice can see it.
-  Where the shipped points leave a branch unreached, a variant S point is spliced too,
-  added to a temporary copy of S's table (precised at M1). A variant changes S's columns,
-  never a formula, wherever S has a column for the behaviour, as UL's withdrawals and
-  over-funding do, so that the splice runs unchanged once the model compiles (K7; precised
-  at M3).
+  M11). A cell that is both, a count-weighted amount whose per-contract factor is a
+  rounding about 0 in some months and a real amount on a count far below 1 in others,
+  takes the floor only at the months where both models' per-contract factor is below it,
+  and none at the others: `VA_US_SEC`'s payments in force fall to 1.1e-8, where the floor
+  passes an error of 9%, and its GWB runs down to a rounding of 9.5e-12 against 0.0
+  (precised at M9). Valuation-clock inputs are shifted by `d` in the temporary input
+  directory, and `inflation_rate` is set to 0 in both models (D7), as is mortality
+  improvement where it runs from the projection start; improvement dated by the calendar
+  on the policy clock, as SPIA's is, is not neutralized (precised at M11). A missing state
+  variable fails here and nowhere else. Every assumption that ships at zero is switched
+  on, in both models alike but for a market's change since a term's start (below), so the
+  splice can see it. Where the shipped points leave a branch unreached, a variant S point
+  is spliced too, added to a temporary copy of S's table (precised at M1). A variant
+  changes S's columns, never a formula, wherever S has a column for the behaviour, as UL's
+  withdrawals and over-funding do, so that the splice runs unchanged once the model
+  compiles (K7; precised at M3).
 
   A market's change since a term's start that S carries as one Reference (D7) is switched
   on in S, where it is each point's change since its own start. The SEC table is read
@@ -1215,6 +1251,13 @@ conventions suite.
   every year's last month) and at every month on the full grid, except a state the product
   refuses by name, which the test sets aside and shows refused: RILA's contract emptied by
   a full withdrawal, which `RILA_US_S` keeps in force holding nothing (precised at M10).
+  Run it under each set of inputs on which the states S reaches differ, and say which it
+  ran on: `VA_US_S` closes on exactly 0 each depletion on its shipped points and inputs,
+  as it does every taxed point's on the splice's inputs, but others on a rounding of
+  either sign about 0: under its shipped References two variants at policy month 752, on
+  −1.1e-13 untaxed and on 5.1e-14 with the splice's tax; under the splice's References two
+  untaxed points, on 5.7e-15 and −2.3e-14; and under the switched References one shipped
+  point with the splice's tax, at policy month 287, on 2.9e-15 (precised at M9).
 - **T6 — Regeneration.** The committed SEC table and its generated companions, every row
   and column, equal what `gen_sec_points.py` produces from the S model and its inputs as
   committed. So an edit to an S row that an SEC file copies or derives from — a reworded
@@ -1283,7 +1326,15 @@ says when it measured under load, and K6 is measured again on the merged branch 
   residual exceeds its unscaled tolerance, goes into WholeLife, whose count check scales
   with the count and whose residual exceeds the unscaled 1e-10 on 18 of its 22 rows at a
   millionfold count, which no test shows. A product that lands short of either takes it up
-  at M13 too (decided at M10's landing).
+  at M13 too (decided at M10's landing). VA, landed after RILA, tests its window rules at
+  both ends and pins its tolerances from both sides, but has no every-state test: its
+  probes restated every state `VA_US_S` reaches on its points and variants under four sets
+  of inputs, 18,502 a set, and `Data` and `proj_len()` accepted each, so it takes the test
+  up at M13 (§7.7, *Record — M9*), and with it a test of each rule it states on a
+  Reference with that Reference moved off its shipped value, which no VA test makes. M9's
+  precision of T5 is taken at M13 too: RILA's every-state test, which ran on the splice's
+  inputs alone, says so and runs under each other set of inputs on which the states
+  `RILA_US_S` reaches differ.
 - `python tools/doccheck.py` reports zero.
 - The existing CI matrix is green inside its 90-minute timeout. The SEC suites roughly
   double the projected volume, so §8's K6 measures that before the timeout is touched.
@@ -1945,9 +1996,9 @@ follows.
   `codes=codes(sec_proj)`, `{}` at stage E unless the product brings a code forward, as
   FIA does its phases (precised at M8), through one helper of the module's own (§5.2, T1).
 - Bound the cold depth by a test on a fresh read at the longest cover: one cell a month
-  back to `t_entry()` plus the product's own fixed overhead, Term's 16, UL's 20, VUL's 25
-  and RILA's 24, measured on every committed point and asserted on the deepest among them,
-  and no fixed level ceiling (D5, F7; precised at M4 and M10).
+  back to `t_entry()` plus the product's own fixed overhead, Term's 16, UL's 20, VUL's 25,
+  RILA's 24 and VA's 20, measured on every committed point and asserted on the deepest
+  among them, and no fixed level ceiling (D5, F7; precised at M4, M10 and M9).
 - Set every Reference, `Data`'s included, on a model just read and before any call: a
   compiled model clears no cache (K7).
 - Each refusal is a `raise ValueError` naming the point, in table-driven lists whose cases
@@ -2841,10 +2892,12 @@ departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, no
   itself, in S's order, so that each is one cell a month: VUL's `sa_pp_at`, `fa_pp_at`,
   `la_pp_at` and `loan_bal_pp_at`; ULSG's `av_pp_at`, `sg_pp_at`, `loan_bal_pp_at` and
   `grace_mth`; IUL's `fa_pp_at`, `lca_pp_at` and `av_pp_at`, and the segment ladder. Probe
-  every chain head cold, on a read of its own, in an order that leaves each chain cold
-  until its head is called, since a cold `net_cf` sees only the chain it descends first.
-  At the build, with S's two-cell loan, a cold `loan_bal_pp` on twin 3 needed a recursion
-  limit of 1,825, where a cold `net_cf` needed 925.
+  every chain head cold and alone, each on a read of its own, since a cold `net_cf` sees
+  only the chain it descends first, and a head that reads other chains runs deepest only
+  while those are cold too (precised at M9, where the heads were called in turn on one
+  read, in an order that leaves each chain cold until its head is called; §7.7, *Record —
+  M9*, *Chain heads*). At the build, with S's two-cell loan, a cold `loan_bal_pp` on twin
+  3 needed a recursion limit of 1,825, where a cold `net_cf` needed 925.
 - *The frame's end.* None of the three S models matures a policy (`pols_maturity` is 0.0
   in each), and each frame ends at a horizon: VUL's at attained age 122, `omega_age` 121
   plus one, ULSG's at `charges_cease_age` 121 and IUL's at `maturity_age` 121. Copy UL's
@@ -2957,7 +3010,8 @@ departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, no
 - *Tests.* Copy UL's: `_settle`'s records, the rules test's taken before the comparison
   (§7.9) and the row released after it; the guard test, whose disjoint sets cover every
   cell whose first parameter is `t`; the cold-depth test, the deepest call on one read and
-  each chain head on a second; the rate-path test with its S comparison, through a copy of
+  each chain head on a read of its own, where UL's calls them in turn on a second
+  (precised at M9); the rate-path test with its S comparison, through a copy of
   `scenario_table.csv` for VUL's fund returns, which keeps it runnable compiled (K7), and
   under an override of `index_level` for IUL's index path; the NaN-residual test; the
   committed rows against S; the rules scan's edge count; the margin test with a loan above
@@ -3748,7 +3802,14 @@ stage's faults, and the last three from the design and the build:
   two such bounds in one default test on the twin of S point 4 instead, which asserts that
   both bind, short of that fixture (*Carried items not yet taken*). Four of VUL's bounds
   bound nowhere, the full grid's rows included, so that dropping any one passed the
-  default module, its review's blocker.
+  default module, its review's blocker. (Precised at M9: a side that S's own dynamics keep
+  from binding is named idle with its premise, checked by a probe over every month of
+  every point of S on the splice's inputs under every set of References; one that binds
+  only on a path no shipped point takes is given a variant with that path, VA's GWB floors
+  and GAWA cap on a 60% grid with a path that falls a year then gains 10% a month; and one
+  that binds only on rows outside the core is named with the test that binds it, which
+  asserts it, VA's GWB above the Adjustment on the committed rows and the mortality clamp
+  on a shortened table.)
 - *Every value column.* Before writing the record, list every value column of every input
   file a projection reads, the model point table's included, with the rule that holds it
   (§5.1, step 6, precised at M4), and give each column with a range a case past each bound
@@ -3983,33 +4044,78 @@ plan, `gen_sec_points.py --check` found the files of the eight SEC models curren
 acquisition expense and `av_change`'s opening — and these move to the issue month (D4).
 Point 2 is in force at 26 months, carrying GWB, BB, RB, NP, RP, ADJ and the bonus end.
 
-*E:* re-opening points at `d = 40` and `125` puts `net_cf` off by up to 156 and 773,
-because these are missing:
-- per-fund values `sa_init_i`: S splits the opening AV by the target allocation;
-- contract-year-to-date accumulators that S resets at `t = 0` as though a year began:
-  `sum_wd_pp`, `free_wd_used_cum_pp`, `gmdb_dfd_acc_pp` and `gmdb_factor_acc`, as
-  `*_ytd_init`;
-- `wd_this_year_init`, because `is_wd_year` scans `t >= 0` only;
-- `rb_prev_anniv_init`, the RB at the anniversary on or before the valuation date (D6);
-- the highest quarterly contract value so far this contract year, the step-up base;
-- `phi_glwb_init`, the VIX-linked fee of the last quarter to end before the valuation
-  month, the clip's prior for the first fee on the books, which S recurses from quarter 1
-  (precised at M8);
-- `depleted_init`. S opens through `depleted_flag(-1)`, which is also an `IndexError` once
-  compiled.
-
-*E — clocks:*
-- The return and rate scenarios are keyed by elapsed **policy** month in S and move to `t`
-  (D7); the transaction table stays on the policy clock.
-- Inflation (`valuation_year + duration(t)`) mixes the clocks and moves to projection
-  years.
-- So the worked example's two readings — point 1 at `t = 26` equals point 2 at `t = 0` —
-  hold in SEC only on a scenario re-based by 26 months. That scenario is a generated,
-  SEC-only companion (D8).
-- Splice months: 26, 40, 60, 71, 125, 131, 143, and a depleted month.
+*E (as built, M9):*
+- Opening state, under D6's names: `policy_count`, `duration_mth`; the subaccount values
+  `sa_pp_init_<i>`, a column for each subaccount the fund table of the S model the
+  generator reads holds (`SecSpec.model_state`), two as shipped, blank where a point's set
+  lacks one (S split the account value by the target allocation), read through
+  `Data.fund_values_init()`, each 0 or more to within a cent, since a depletion can close
+  on a rounding of either sign about 0; the seven bases `gwb_pp_init`, `bb_pp_init`,
+  `gawa_pp_init`, `rb_pp_init`, `np_pp_init`, `rp_pp_init`, `adj_pp_init`; `gawa_pct_init`
+  and `bonus_end_init`, S's; `has_wd_init`, a column (S infers it from `gawa_pct_init`,
+  wrong after a depletion without a withdrawal, which locks the GAWA%); the contract year
+  to date, `sum_wd_pp_ytd_init`, `free_wd_used_cum_pp_ytd_init`,
+  `gmdb_dfd_acc_pp_ytd_init`, `gmdb_factor_acc_ytd_init` and `wd_this_year_init`;
+  `rb_pp_prev_anniv_init`, read three ways; `stepup_base_pp_ytd_init`, the year's highest
+  quarterly account value before the valuation month, on any step-up basis; and
+  `phi_glwb_init`, the VIX fee of the last quarter to end before it. No depletion column:
+  a contract enters a month depleted exactly where its opening account value is at or
+  below the threshold, that rounding above 0 or below it among them, the test being the
+  threshold's, never 0's.
+- The opening state's rules: `Data` refuses what the table alone shows no contract can be
+  in, 33 rules from 39 raise sites, naming every point at fault: among them, `has_wd_init`
+  needs a GAWA% above 0, and a GWB and a GAWA% above 0 need a GAWA above 0, unless the
+  point's grid gave 0% at an attained age the contract reached before the valuation month
+  (`Data.gawa_pct_zero_band`), a route S has to each. `proj_len()` refuses, naming the
+  point, what needs a `Projection` Reference: a GAWA% locked on a contract neither
+  withdrawn nor depleted; none on one depleted without a withdrawal, but for the same 0%
+  proviso, read from `Data.gawa_pct_zero_by_point()`, a vector built in `Data`; on the
+  highest-quarterly basis, a step-up history at or below `av_depletion_threshold` on a
+  contract not depleted and three months or more into its year; and, on the `vix` fee
+  rule, a prior other than `phi_glwb_curr` in the second contract quarter, and from the
+  third one above `vix_corridor_hi`, or below `vix_corridor_lo` where `phi_glwb_curr` is
+  at or above it and the corridor runs upward. Each rule over a window of months, or of
+  the ages a grid is read at, is tested at both ends, and each rule stated on a Reference
+  on both sides of where the Reference and a stand-in for it part: the depletion threshold
+  at half a cent and part of it, read as depleted, and at 0.6 cents, not; the step-up
+  history at the threshold, refused; the corridor's foot not required from a first rate
+  below it.
+- The phase stays text, a leaf, with `PRE_ISSUE` before issue; `codes()` is `{}`.
+- Clocks: both scenarios are generated companions on the valuation clock, read through S's
+  readers, one copy for each scenario and months moved, re-based to the row's
+  `duration_mth` and shared by rows moved alike (`-M{m}`, `-F{k}`); the transaction
+  programmes, the bands, the CDSC and mortality stay on the policy clock; expense
+  inflation counts projection years. `lapse_wd_factor` reads the year at `anniv_mth(t)`,
+  R2's admitted read.
+- S's goldens hold on twin 1 at `t = 26` and twin 2 at `t = 0`, twin 2 reading `base-M26`.
+- Splice: S's point 2 as an in-force twin at offset 0; the anchor at 12, 24, 26, 40, 60,
+  71, 119, 120, 125, 131, 143 and the depleted months 228, 230 and 240, on S's own events;
+  the other points and thirteen of the seventeen variants at months either side of each
+  event, a quarter end at the valuation month, a year's last month, a withdrawal in a
+  year's last month, a premium in the valuation month after a withdrawal, the month an
+  account runs out, with and without a withdrawal, and a depleted contract not for life at
+  a year's start with its GWB below its GAWA among them, and rows restated the month after
+  a depletion that closed on 5.7e-15 and on −2.3e-14, with no premium tax, and on a fund
+  set of three subaccounts; each variant's twin issued at the valuation date, compared
+  with S cell by cell, skipping what a restated row skips; 27 future rows; and a switched
+  fixture, 11 rows. Variants meet the contract's age boundaries exactly, issue ages 69 and
+  70 either side of the roll-up rate's split and a Bonus-Base-raising step-up at attained
+  ages 81, the restart age, and 82; and their own paths and programmes bind every bound S
+  ships idle but those that cannot bind: the GWB's two floors at 0, the GAWA's cap at the
+  GWB after an excess, the dollar-for-dollar use above the allowance and, under the
+  switched References, the GWB cap at a premium after issue. S's return paths are not
+  stepped; the rates are, on `variant` alone. The GWB Adjustment runs at 200% in the
+  splice, where it binds. The cells whose exact value can be 0 while the computed one is
+  rounding, the residuals and the GWB a contract not for life runs down to 0 with its
+  per-contract readers, are compared at the 1e-9 floor, and the payments in force, a
+  count-weighted cell that falls to 1e-8, with none but at the months where both models
+  pay less than the floor a contract. The References a rewritten cell reads that ship
+  equal to another are set apart on the twins in a test of their own.
 
 *C:*
-- 13 string attributes and `phase(t)` are decoded.
+- Ten decodes arrived at stage E (M9), each comparing its column once; the other text
+  still compared is S's timing and kind strings and seven joins on text keys, each in the
+  cells that read its table, and `phase(t)`'s labels, a leaf, which R10 codes.
 - To arrays:
   - fund sets to `alloc[fund_set, i]`, with a per-point fund-set number (R7);
   - returns, VIX and CMT, which S finds by a step search on every call, to
@@ -4023,12 +4129,1056 @@ because these are missing:
   its float argument, the moneyness or the VIX average, is a local and not a cache key.
   S's tests call all three directly, so S's cells stay for them, admitted by name, or go
   with a T1 exemption (R14). `math.floor` becomes integer arithmetic.
-- Generator expressions in eight cells, including the hot `av_pp_at`.
-- `t_of_month` returns negative `t` before entry, unguarded on `vix_sq`'s path.
+- S's generator expressions are explicit loops in SEC (M9). `t_of_month` returns a
+  negative `t` before the valuation date, which `is_wd_year` takes as its scan's lower
+  bound, clipped at `t_entry()`, and SEC reads `vix_sq` only for quarters on the books.
+  Caches from issue age 35, the youngest the GLWB allows: `t` 0..1,140; policy months
+  0..1,019; completed years 0..84; attained ages 35..119; contract quarters 1..340.
+  `proj_len()` reads `Data.gawa_pct_zero_by_point()`, a bool by point, which becomes an
+  array by position, and its refusals read the `Projection` References directly. Called
+  mid-year, as C4's full sweep calls every cell at every month, `is_wd_year` scans the
+  year's months after its own, inside the frame, a read no cell of the model makes.
 - Never reached: `charge_income_pp`, `claims_over_av`, `gmdb_claims`, `net_cf_ga`,
   `wd_charges`, `sa_weight`, `phase`, and three string attributes.
 - S's `test_every_switch_is_exercised_by_a_model_point` pins `duration_mth_init` to
   `{0, 26}`; the conventions suite's `_va_residuals` samples `t = 0, 60, 120, 299`.
+
+#### Record — M9, done 2026-11-05
+
+Built in two commits, as D1 requires: `VA_US_S` copied with only `_name` changed, then the
+enhancement, by M1's process: a design prototyped and critiqued before the build, tests
+written against the build and checked by injected faults, then a review under the three
+lenses. The design departed from §7.7's *E* where reading `VA_US_S` cell by cell showed it
+short: the withdrawal status is a column, `has_wd_init`, which §7.7 did not list, since a
+depletion without a withdrawal locks the GAWA% from which `VA_US_S` infers a withdrawal,
+and the depleted status takes none, the opening account value making it exact; both
+scenarios are companions, each row's copy re-based by its `duration_mth`, where §7.7 had
+one scenario re-based by 26 months; and the year chains, called cold alone, run 17 levels
+over their months, so the depth bound's overhead is 20, as UL's is, not Term's 16. The
+second fix took the subaccount values' columns from the S model the generator reads,
+through a new field of the shared harness, `SecSpec.model_state`. So §7.7's *E* is
+rewritten as built, with three bullets of its *C*, and D5, D6, D8, R2, K5, §4's *Record*,
+§5.2's T2 and T5, §8.2's item 4 and the carried lists of §7.1's *Record — M14*, §7.3,
+§7.6, §7.9, §7.10 and §7.11 take precisions. The review made 30 findings, 2 of them
+blockers and 11 major, and three were each made under two lenses. Two reads the plan names
+were exercised by no row: the year-open roll-up base's issue rule on a contract issued at
+the valuation date, so that a fault there passed the module, the conventions and the full
+grid, and the GLWB's payment from the GWB's column at `t = 0`. `Data` accepted four
+opening states no contract can be in: a depleted contract with a GWB but no GAWA, which
+then pays nothing for life, a VIX prior the clip cannot give, a step-up history of 0 on
+the highest-quarterly basis three months or more into the year of a contract not depleted,
+and a GAWA% locked on a contract neither withdrawn nor depleted. Seven sides of bounds
+bound on no row compared with S, and no case read a value column at its bounds or a table
+past its end; the Bonus Period's restart age and the roll-up rate's issue-age split were
+met by no row; the core lacked two kinds of valuation month the full grid has; and no test
+held `VA_US_SEC`'s References to `VA_US_S`'s. The fix stage applied all but one and placed
+two others otherwise, each with evidence: running the docutils parse test in CI changes
+files shared across products, and is left to M13, as FIA's and RILA's modules leave it;
+the rules on the VIX prior and the step-up history need `Projection` References, which
+`Data` cannot read, so `proj_len()` holds them; and `is_wd_year`'s scan ahead, which Phase
+2's full sweep makes mid-year, is recorded for Phase 2, since an `is_wd_year` answering
+`False` off its anniversaries would fail T1 wherever `VA_US_S`'s surrender rate reads it.
+A re-review found the blockers fixed and made five more findings, one major: the depletion
+threshold, on which `depleted_open` and `proj_len()`'s new rules turn, was tested nowhere
+it differs from 0, so that both written against 0 passed every test. Four were minor: the
+new rules' other bounds and provisos, the subaccount columns read from the shipped fund
+table at import, the every-state claim, which held only on its probe's inputs, and a floor
+on the count-weighted payments that hid an error of several per cent. A second fix applied
+all five, holding the subaccount values to a cent where the finding proposed half a cent.
+Sixteen defects found in `VA_US_S` are carried below: two, the keys of the GAWA% grid and
+the GMDB election, are corrected in `VA_US_S` itself, in the landing's commit before the
+copy; three are in both models; and the other eleven are fixed or answered in `VA_US_SEC`
+only. M9 was built on da763e8, M8's landing, before M4 and M10 landed, and rebased at
+landing onto RILA's (*Landing*, below).
+
+**What exists now.**
+- `VA_US_SEC` at stage `E`. Of `VA_US_S`'s 200 `Projection` cells, 74 are unchanged, 15
+  have new text only and 111 are rewritten; none is removed or renamed. It adds 31 cells,
+  231 in all: `policy_count`; the clock's `maturity_mth`, `t_entry`, `is_active`,
+  `anniv_mth` and `year_open_mth`; `pols_new_biz` and `depleted_open`; ten bool decodes,
+  two of `glwb_stepup_basis`, three of `gmdb_option`, three of `fee_reset_rule` and two of
+  `rollup_rule`; nine opening-state accessors, `sa_pp_init(i)`, `sum_wd_pp_ytd_init`,
+  `free_wd_used_cum_pp_ytd_init`, `gmdb_dfd_acc_pp_ytd_init`, `gmdb_factor_acc_ytd_init`,
+  `wd_this_year_init`, `rb_pp_prev_anniv_init`, `stepup_base_pp_ytd_init` and
+  `phi_glwb_init`; and four keyed readers, `prem_scheduled_pm`, `wd_scheduled_pm`,
+  `surr_charge_rate_at` and `mort_rate_base_at`. Its References are S's, `math` and `pd`
+  among them, at S's values, and three of its own, `check_tol_av`, `check_tol_pols` and
+  `check_tol_charge`, S's literal tolerances. `Data` keeps S's nine cells: six unchanged,
+  the two scenario readers with a new docstring and `model_point_table` rewritten to check
+  the table as it reads it, 33 rules from 39 refusal sites. It adds eleven:
+  `fund_values_init`, which reads the subaccount values; seven checked tables,
+  `mort_rates`, `fund_sets`, `return_scenario_steps`, `rate_scenario_steps`,
+  `gawa_pct_bands`, `cdsc_scale` and `transactions`, which the projection reads in place
+  of S's readers, unchanged beside them; the extent `mort_last_age`; and
+  `gawa_pct_zero_band` with `gawa_pct_zero_by_point`, which read the GAWA% grid at the
+  ages a contract reached before the valuation month. `model_point_file` and the
+  scenarios' two `*_file` References name the `_sec` files, and `future_horizon_mth = 120`
+  is new.
+- `model_point_table_sec.csv` holds 23 rows generated from VA's `SecSpec`: S's nine points
+  as twins, S point 2 among them, in force at 26 on `base-M26`; thirteen derived rows, S
+  point 1 at 6, 120 and 131, point 3 at 144, depleted at a contract year's start, point 4
+  at 60 and 65, around its excess withdrawal, point 5 at 40 on the highest-quarterly
+  basis, point 6 at 41 on the VIX-linked fee, point 8 at 560, depleted without a
+  withdrawal, point 7 at 719, its last policy month, and at 100, before its GWB Adjustment
+  Date, point 2 restated 14 months on, in force 40 months, and point 9 at 125; and S point
+  1 issued 15 months on. Its companions, `return_scenario_sec.csv`, 60 rows, and
+  `rate_scenario_sec.csv`, 18, hold S's three scenarios as they stand, for the twins
+  issued at the valuation date, and for every other row a copy re-based by its
+  `duration_mth`, `{id}-M{m}` or `{id}-F{k}`, which rows moved alike share: points 16 and
+  20 both read `base-M40`. The subaccount columns are `sa_pp_init_1` and `sa_pp_init_2`,
+  the two subaccounts the shipped fund table holds. A case-insensitive search of the three
+  files for the publishers and products `variable_annuity/sources.md` cites found none at
+  the second fix, only two keys the generator copies from `VA_US_S`'s table, each a cited
+  carrier's, which the landing renamed (*Landing*, below): the GAWA% grid's, named after
+  the carrier's benefit option, to `s3_single`, by source key and design, and the GMDB
+  election's, the carrier's abbreviation for its death benefit on quarterly anniversaries,
+  on an election that ratchets at each contract anniversary, to `ratchet`, by design. The
+  fund set `core_60_40`, a 60/40 split, describes its rows by design and is kept.
+- `tests/test_variable_annuity_us_sec.py` has 49 tests in 375 cases, 286 by default and 89
+  behind `sec_full` (K6). T2 runs on 88 rows: S's in-force twin 2 at offset 0; 70 rows
+  restated from S's nine points and thirteen of the seventeen variants at the months of
+  their events; and the seventeen variants' twins issued at the valuation date, each
+  compared with its S point cell by cell, skipping what a restated row skips; a core
+  of 26. T3 runs on 27 future rows, each of S's eight new-business points and seventeen
+  variants a month on and the anchor and the VIX-fee point 15 and 13 months on, a core of
+  8; and a second pair of models, read with the switched References, on 11 rows, a core
+  of 6. A test asserts that the core reaches every fund set, GAWA grid, sex, scenario,
+  programme, election and charge schedule, S's in-force point and every kind of valuation
+  month, and on the splice's models 23 conditions at the valuation date, 31 in the frame
+  and 6 under the switched References; and that each side of every `min` and `max` in
+  `Projection` wins on some core row, the other below it, but ten sides it names idle,
+  each with its reason, and two it names bound elsewhere, each with the test that binds
+  it. At the fix stage line coverage showed the core running all 797 `Projection` lines
+  the spliced full grid runs, and every line the switched grid runs. T4 runs at 2.5
+  contracts on seven committed rows with the premium tax charged, and the roll-forward
+  checks close at a million contracts on three, each residual above its unscaled
+  tolerance. T5 covers 118 malformed model point tables, each refused by its own rule; 61
+  malformed assumption tables and companions, a key written as text in each table among
+  them; the 138 refusal entries of `Data`'s eight checking cells, each the first refusal
+  of some case; 19 cases of `proj_len()`, refused at each end of each window or read just
+  outside it; and 4 values no decode knows. The accepted edges, the value columns at their
+  bounds, an extract carried to the cent, two tables stopped below their cover and the
+  References that ship equal, set apart, each have a test. The SEC conventions, 33 cases,
+  pass but for `test_net_cf_is_income_positive`, skipped as on `VA_US_S`, since neither
+  model has the notes-orientation companion cells.
+- `run_sec.py`; `model-sec.md`, with *The opening state*, which shows each column on a
+  committed row with what it gives when changed: point 11's subaccounts, 71,849.14 and
+  36,585.76, which `VA_US_S`'s split of the account value by the allocation would make
+  65,060.94 and 43,373.96, taking the account value at `t = 11` to 97,688.70 rather than
+  97,893.67; point 15's year to date, without which its Benefit Base would roll up whole
+  at `t = 6`, to 141,851.91 rather than 117,727.68; point 18's withdrawal status, `False`
+  with a GAWA% of 6.2% locked at depletion, which `VA_US_S`'s inference would read as a
+  withdrawal; and point 17's VIX prior of 1.6626%, at 1.00% of which the clip would hold
+  its quarter to 1.40% and its fee at `t = 0` to 413.00 rather than 490.46; the registry
+  entry with its `INPUT_FILES`; and four generated pages. doccheck reported 505 pages and
+  0 warnings on da763e8 with VA added.
+- Shared files, added to in place: in `sec_support.py`, VA's state extractors,
+  `_va_entering`, `_va_fund`, `_va_funds`, `_va_year_start`, `_va_year_first`, `_va_ytd`,
+  `_va_factor`, `_va_has_wd`, `_va_wd_this_year`, `_va_rb_prev_anniv`, `_va_stepup_ytd`,
+  `_va_phi_prior` and `_va_scenario_id`, its companions' builders, `_va_rebased`,
+  `_va_rebased_returns` and `_va_rebased_rates`, and `_VA_STATE`, after RILA's, and its
+  spec after RILA's, the spec's comment giving the state and its renames, the rows, the
+  companions, T1's one exemption, the keys S caches under `None`, the text still compared
+  and Phase 2's sizes with their inputs. The harness gains a field, `SecSpec.model_state`,
+  appended after `future_state` (§4, *Record*, precised at M9): `callable(s_model)`,
+  giving the state columns whose names the S model's inputs give, VA's subaccount values a
+  column for each subaccount of the fund table of the S model the generator reads, so that
+  no spec reads an input file at import. `_model_state` calls it and refuses a column the
+  generator owns, `policy_count` or one `state` or `twin_state` sets, and
+  `test_sec_support.py` gains its test, on Term's table and a copy whose second point
+  assures another sum, and its two refusal cases. No other spec sets it, and each other
+  SEC model's generated files are as they were, `gen_sec_points.py --check` finding all
+  ten current at landing (*Verified at landing*, below). In `us_registry.py`, the entry
+  directly after `VA_US_S`'s, with no flag of its own, since its `pols_if` is `BEF_DECR`,
+  and its `INPUT_FILES`; in `test_model_conventions.py`, `VA_US_S`'s sampled residual fact
+  on the valuation clock, `EXTRA_POINT_ASSERTIONS["VA_US_SEC"]`, its bounds the model's
+  own tolerances scaled by the count; in `gen_sec_points.py`'s docstring, VA's two
+  re-based scenarios; and in uslib's `index.md`, the VA row of the models table, the
+  sentence on the SEC models, the sentence on worked examples already in force and the
+  inputs row, which names VA's return and rate scenarios beside DIA's schedule and the
+  FIA's and RILA's scenarios. Outside VA's files, a commit of its own before the copy
+  renames the GAWA% grid's key, which named a cited carrier's benefit option, to
+  `s3_single`, by source key and design, in `gawa_pct_table.csv`, in
+  `model_point_table.csv`'s `glwb_option` and in `VA_US_S`'s docstring that quotes it, its
+  six rows' provenance now saying single-life option at a 1.25% charge elected at issue
+  (`CLAUDE.md`); no value a model reads moves, the key being joined alike in both files.
+  The same commit renames the key of point 5's GMDB election, which abbreviated the
+  carrier's death benefit on quarterly anniversaries, a design the election, an annual
+  ratchet, does not have, to `ratchet`, by design, in `model_point_table.csv`'s
+  `gmdb_option`, in `rb_pp`'s test of it, in the docstrings, tests and `model.md` that
+  name it and in `technical-notes.md`'s parameter table; no value moves. The landing
+  regenerated `model_point_table_sec.csv` from it, which changed those keys alone, the
+  grid's on its 23 rows and the election's on rows 5 and 16, renamed the grid key's three
+  uses in the test module, one of them a malformed spelling, now `S3_Single`, and named
+  the election's decode `is_gmdb_ratchet` (*Landing*, below).
+
+**Departures and precisions.**
+- *The clocks* (D3, D7; R1a). `duration_mth(t) = duration_mth_init() + t`, a closed form;
+  `maturity_mth()`, new, keeps S's frame from issue, `12 × policy_term()`, the policy
+  month of attained age `omega_age`, so that `proj_len()` is the months from the valuation
+  date to the end of cover; and `anniv_mth(t)` and `year_open_mth(t)`, new, are the
+  contract year's edges as months of the frame, `t + 11 - duration_mth(t) % 12` and
+  `t - 1 - duration_mth(t) % 12`. Every test of a month against a contractual event reads
+  the policy clock: the transaction programmes, the GAWA% bands, the withdrawal charge
+  scale, mortality, the bonus, the step-up and the GWB Adjustment, each where `VA_US_S`
+  keys it, `t_of_month(m)` converting a policy month once where a cell reads one. The two
+  scenarios move to `t` (*The scenarios*, below). Expense inflation is
+  `(1 + i)^(valuation_year - 2015 + t // 12)`, on the valuation clock, where S counts the
+  contract's completed years, so point 2's maintenance expense is S's per-contract term
+  divided by `1.025^2` in the first ten months of each projection year and by `1.025^3` in
+  the last two. The single premium and the acquisition fall in the issue month, the month
+  with `duration_mth(t) = 0`, per contract issued, and never on a point in force, where
+  `VA_US_S` charges its acquisition at `t == 0` on its in-force point 2.
+- *The count* (D5; §7.12, *Record — M12*, *The count*). MYGA's chain, one cell a month,
+  where S's ran through two: `"BEF_NB"` forms the survivors of month `t - 1` itself,
+  `"BEF_DECR"` adds new business, and S's two later timings are kept, guarded outside
+  cover. `pols_if` is `"BEF_DECR"`, with no registry flag. `check_pols_roll_fwd_resid` and
+  `av_at`'s `"EOM"` read `pols_if_at(t + 1, "BEF_NB")`, where S reads `pols_if(t + 1)`,
+  which would count the next month's new business as a gain of month `t`.
+- *The opening state* (§7.7, *E*; D6) is twenty columns beside `policy_count` and
+  `duration_mth`, each what `VA_US_S` carries into month 0, read as S's own formulas read
+  it: the subaccount values, `sa_pp_init_<i>`, a column for each subaccount the S model's
+  fund table holds, two as shipped, blank where a point's set lacks one, read through
+  `Data.fund_values_init()`, their sum the opening account value, where `VA_US_S` splits
+  `av_init` by the target allocation, right only while the subaccounts hold their targets;
+  the seven bases, S's `_init` columns renamed after the cells they open; the locked GAWA%
+  and the Bonus Period's end, S's; the withdrawal status (*The withdrawal status*, below);
+  the contract year to date, four values and the year's withdrawal flag, which S restarts
+  at `t = 0` as though every valuation were a year's start; the Benefit Base at the
+  anniversary that opened the year, read three ways, from the frame, from the column in
+  force and by S's issue rule on new business; the year's highest quarterly account value
+  before the valuation month, on any step-up basis, read on the highest-quarterly basis
+  alone; and the VIX-linked fee of the last quarter to end before the valuation month, the
+  clip's prior in the quarter under way. Each recursion opens at `t_entry()` on its column
+  and reads its previous month first, and the issue values `VA_US_S` computes from the
+  premium stay rules, in the issue month.
+- *Depletion at the threshold* (D6, precised; §7.11, *Record — M8*, *Depletion*). A
+  contract in force enters month 0 depleted exactly where its opening account value is at
+  or below `av_depletion_threshold`, half a cent, and new business never does:
+  `depleted_open(t)` is that test at `t_entry()` and `depleted_flag(t - 1)` after it, and
+  each rule of `proj_len()` that turns on depletion reads the same test, the threshold's,
+  never 0's. `VA_US_S` runs an account down by scaling each subaccount by one less the
+  share a charge or a withdrawal takes, so a depletion closes on 0 or on a rounding of
+  either sign about it: on exactly 0 on S's shipped points and inputs, and on every taxed
+  point under the splice's References, but on 5.7e-15 and −2.3e-14 on two untaxed points
+  under the splice's References, on two variants under S's own, on −1.1e-13 untaxed and on
+  5.1e-14 with the splice's tax, and on 2.9e-15 on S's point 5 under the switched
+  References with the splice's tax. So `Data` holds each subaccount value to 0 or more
+  within a cent, where a rule of 0 or more refused the state S reached (D6, precised at
+  M9). Both sides are tested: an opening account value of exactly the threshold, 0.005,
+  and of 0.003 reads as depleted, one of 0.006 does not, its locked GAWA% then refused,
+  and S points 8 and 7 without the premium tax, restated the month after depletions that
+  closed on 5.7e-15 and −2.3e-14, continue S, the first of which only the threshold reads
+  as depleted. A depleted opening makes `glwb_payment_pp` read `gawa_pp_init()` and
+  `gwb_pp_init()` at `t_entry()`, where `VA_US_S` reads the month before its frame.
+- *The withdrawal status* (§7.11, *Record — M8*, *Depletion*, precised). `VA_US_S` infers
+  a withdrawal from a GAWA% above 0, which a depletion without one also locks: its point 8
+  never withdraws, runs out at policy month 554 and locks 6.2%. So the status is a column,
+  `has_wd_init`, `VA_US_S`'s own `has_wd_by` entering the month, which point 18 carries
+  `False` with that 6.2% locked. It moves the first-withdrawal test, the GAWA's increase
+  on a later premium, the GWB Adjustment, which a withdrawal voids and a depletion does
+  not, and the CMT-linked roll-up's spread. `Data` ties it to the Adjustment, the year's
+  withdrawal flag and the locked GAWA% and GAWA, and `proj_len()` to the depletion
+  threshold (*`proj_len()`*, below).
+- *The zero band* (D6; §7.11, *Record — M8*, *`Data`'s state rules against S*). A GAWA% of
+  0 with a withdrawal, a GAWA of 0 with a GWB and a GAWA% above 0, and a GAWA% of 0 on a
+  contract depleted without a withdrawal are each a state `VA_US_S` reaches exactly where
+  the point's grid gave 0% at an attained age reached before the valuation month: a first
+  withdrawal or a depletion at such an age locks 0, and the GAWA freezes at depletion
+  while the GAWA% is read again each month while 0. So each rule holds unless that grid
+  did, read by `Data.gawa_pct_zero_band(grid, youngest, oldest)`, an explicit loop over
+  the ages, and by `proj_len()` from `Data.gawa_pct_zero_by_point()`, a vector by point
+  built in `Data` (R2). A probe found 862, 659 and 4 such states on three paths through a
+  0% band, all accepted. The window of ages is tested at both ends, as a window of months:
+  on the shipped grid a withdrawal with no GAWA% locked is refused issued at 35, the
+  grid's first age, and accepted at 34; and on a grid of 0% from 60, issued at 59, refused
+  at 12 months, where only age 59 was reached, and accepted at 13.
+- *`proj_len()`* (D6) refuses, naming the point, a point with no cover, its issue age at
+  or past `omega_age`, and one at or past the end of cover; and, on a contract in force,
+  five opening states a `Projection` Reference forbids, each stated on the Reference,
+  never on a stand-in for it, as an account value above 0 for one above the threshold or a
+  prior above 0 for one equal to `phi_glwb_curr`: a GAWA% locked on a contract neither
+  withdrawn nor depleted; none locked on one depleted without a withdrawal, outside a zero
+  band; on the highest-quarterly basis, a step-up history at or below the threshold on a
+  contract not depleted and three months or more into its year, every quarter end of the
+  year having closed above it; and, on the `vix` fee rule, a prior other than
+  `phi_glwb_curr` in the second contract quarter, and from the third one above
+  `vix_corridor_hi`, or below `vix_corridor_lo` where `phi_glwb_curr` is at or above it
+  and the corridor runs upward, since the clip's band about a first rate below the foot
+  can keep later rates below it. Each window is tested at both ends and each rule where
+  the Reference and a stand-in part: the history refused at 39 and 47 and at the threshold
+  itself, and read at 38 and 48 and at 0.0051; the second quarter's prior refused at 3 and
+  5 and read at 2 and 6; and, on a first rate of 0.1%, below the corridor's foot, a third
+  quarter's prior of 0.5%, the rate the clip gives there, read.
+- *`Data` checks the model point table* (§7.1's template, item 9) in 33 rules from 39
+  refusal sites, in the template's order, the first that fails raising and naming the
+  missing column or every point at fault: the in-force columns, a unique `point_id`, the
+  count, a whole duration and the horizon; the ages and the Bonus Period's end whole, each
+  read by value where S truncates by `int()`; the two flags read by value, `True` or
+  `False`, 1 or 0, 1.0 or 0.0; the premium and the withdrawal intensity 0 or more and the
+  premium tax from 0 to below 1; and the twelve amounts of the opening state 0 or more and
+  the GAWA%, the year's proportional factor and the VIX prior from 0 to 1. Then the
+  opening state: none before issue; at a year's start an empty year to date, exactly, and
+  the year-open Benefit Base equal to the one entering month 0, the two instants being
+  one; no step-up history before the year's first quarter end; a VIX prior only on the
+  `vix` rule past the first quarter; in the first policy year the year-open Benefit Base
+  the issue value, to a cent; the Bonus Period's end 1 or more in force; no GWB Adjustment
+  after a withdrawal; a GAWA above 0 only with a GAWA% above 0; and the year to date
+  consistent, the free allowance used and the dollar-for-dollar reduction each within the
+  withdrawals to date, to a cent, but never against the allowance (§7.10, *Record — M7*,
+  *Data's checks*, precised at M9). Last, each point's keys, each table's checked copy
+  read first: its fund set, each subaccount the set holds with its column, 0 or more
+  within a cent; its return scenario, setting a return for each such subaccount by the
+  point's first month on the books, and its rate scenario, on a point the `vix` fee or the
+  `cmt_linked` roll-up reads it for; its programme; its grid, with the withdrawal status's
+  and the GAWA's zero-band rules; its charge schedule; and a mortality rate at its sex and
+  its attained age in that first month. Left to the projection, as in S: a mortality table
+  that stops below `omega_age`, which reads its last rate on.
+- *The tables* (§7.1, *Precised at M3*, item 9; §7.10, *E*). Each of the seven assumption
+  tables and companions is read through a checked copy in `Data` that the projection reads
+  alone, MYGA's form, beside S's reader, unchanged: `mort_rates`, `fund_sets`,
+  `return_scenario_steps`, `rate_scenario_steps`, `gawa_pct_bands`, `cdsc_scale` and
+  `transactions`, with `mort_last_age` the mortality table's extent. Each reads its keys
+  by value once and refuses, naming the file, the column and the lines, a key blank, text
+  or not whole, a key on two rows, a gap where its reader reads every key, and a value
+  blank, text, infinite or out of its range, a mortality rate outside 0 to 1 among them;
+  the scenarios, step functions, refuse a month below 0 or not whole and a repeat, and let
+  a gap stand. The keyed readers, `mort_rate_base_at(x)`, `surr_charge_rate_at(k)`,
+  `prem_scheduled_pm(m)` and `wd_scheduled_pm(m)`, and S's `gawa_pct_at_age(a)`, rewritten
+  as a loop, each read one table, and a test holds each to S's own lookup at every key the
+  contract can ask for.
+- *Text* (R6). The ten decodes carry every branch on `glwb_stepup_basis`, `gmdb_option`,
+  `fee_reset_rule` and `rollup_rule`, each reading its column from `model_point()`, so
+  that no projection cell calls a label accessor; a value no decode knows raises S's
+  message where S raises it, in a table-driven `UNDECODABLE` list. The other text a
+  projection cell compares is S's timing and kind strings and seven joins on text keys,
+  each in the cells that read its table: the fund set on `fund_set`, in `sub_ids`, `alloc`
+  and `fund_expense_rate`; the two scenarios on `scenario_id`, in `inv_return_mth` and
+  `scenario_rate`; the programme on `txn_id`, in `prem_scheduled_pm` and
+  `wd_scheduled_pm`; the GAWA% grid on `glwb_option`, in `gawa_pct_at_age`; the withdrawal
+  charge scale on `cdsc_schedule`, in `surr_charge_rate_at`; and mortality on `sex`, in
+  `mort_rate_base_at`. The phase stays S's text, a leaf no cell, report, check or runner
+  reads, with `PRE_ISSUE` before issue, and `codes()` is `{}` (§7.11, *Record — M8*,
+  *Year-open reads and phases*).
+- *The scenarios* (D7; D8, precised). Both are paths in calendar time that S keys by the
+  elapsed policy month, so both move to `t` as companions, `return_scenario_sec.csv` and
+  `rate_scenario_sec.csv`, read through S's readers by repointing `return_scenario_file`
+  and `rate_scenario_file`, `inv_return_mth` and `scenario_rate` reading them at `t` by
+  explicit loops that raise where no level is set, where S falls back to
+  `max(duration_mth(t), 0)`. Each row's copy is re-based by its `duration_mth`, the
+  returns subaccount by subaccount, and named by the months it moves, so that rows moved
+  alike share one: S's in-force point 2 reads `base-M26`, where FIA's rule, keyed by
+  `source_mth`, would give it S's own `base`. `Data` joins each point on a scenario that
+  sets its levels by the point's first month on the books, the rate scenario only on a
+  point that reads it.
+- *The withdrawal year's look-ahead* (R2; §7.11, *Record — M8*). `lapse_wd_factor(t)`
+  reads `is_wd_year(anniv_mth(t))`, the year's answer at the anniversary closing it, where
+  S scans the year from `t`, up to 11 months ahead; the rules test admits that read by
+  reader, cell and month and walks its dependency condition, and `LOOK_AHEAD_MTHS` is 11.
+  `is_wd_year` answers from `wd_this_year_init` for the year's months before `t = 0` and
+  scans those on the books from `t_entry()`; called mid-year, as Phase 2's full sweep
+  calls it, it scans the year's months after its own, a read no cell of the model makes
+  (R2, precised at M9). A variant withdraws mid-year and in a contract year's last month,
+  and core rows value it in a withdrawal month after another and at the last.
+- *Guards* (R1). Outside cover every count, rate, charge and amount is 0.0, every flag
+  `False`, the four factors that multiply a base or a rate, `gmdb_wd_factor`,
+  `gmdb_factor_acc`, `lapse_dyn_mult` and `lapse_wd_factor`, 1.0, `bonus_end` the int 0
+  and the phase `PRE_ISSUE` or `EXPIRED`, each returned before any table or rate is read,
+  where `VA_US_S` leaves `lapse_dyn_mult` and `lapse_wd_factor` unguarded.
+  `check_pols_roll_fwd_resid` and `av_at`'s `"EOM"` are 0.0 outside cover before they read
+  `t + 1`, so no month past the frame is read. On the future rows the scenario readers
+  raise before issue, their copies holding no level there, which the guard test asserts.
+- *The checks* (§7.1, *Precised at M3*, item 11; §7.11, *Record — M8*, *Checks*). S's
+  three residual cells stay signed differences with no `float(...)`. Each check is a loop
+  over the frame that returns `False` at the first month `if not abs(r) < tol`, S's strict
+  bound, so that a NaN fails, as it fails S's generator. The account value's and the
+  count's tolerances scale with `max(policy_count(), 1)`, through References that hold S's
+  literals, `check_tol_av`, 1e-6, and `check_tol_pols`, 1e-12; the charge split, per
+  contract, keeps `check_tol_charge`, 1e-8, unscaled. A NaN asset charge, a Reference set
+  before the model computes, makes the account value's and the charge split's residuals
+  NaN at `t = 0` and 0.0 after, `VA_US_S`'s subaccount step reading the NaN account value
+  as not above 0; the count's residual takes its NaN only through a replaced formula of
+  `mort_rate_base_at` (*Carried into Phase 2*, below).
+- *Mortality* (§5.1, step 6). `VA_US_S` reads its annual mortality from the table at the
+  attained age and sex, with no factor, the age capped at the table's last, and
+  `VA_US_SEC` reads it the same way, through `mort_rate_base_at(x)`, behind its guard: no
+  rate past 1 can arise, so there is no cap in either model, and none to depart from
+  (§8.2, item 4). `Data` refuses a rate outside 0 to 1, and the shipped table reaches 1.0
+  at 120, past every frame. So VA has no cap test; its NaN test, on a model whose
+  `mort_rate_base_at` returns NaN, finds the annual and monthly rates, the next month's
+  count and the count's residual NaN and both roll-forward checks `False`, on the twins of
+  S points 1 and 2.
+- *Chains of one cell a month* (D5, precised). The count, each subaccount, with the
+  month's steps inline, where S's ran through `sa_pp` and `sa_pp_at`, the seven bases,
+  `adj_pp` inline where S read `adj_pp_bef_anniv`, the statuses `has_wd_by`,
+  `depleted_flag`, `gawa_pct_fixed` and `bonus_end`, the year to date and the VIX-linked
+  rate, one cell a quarter, each form the previous month's close themselves, S's
+  arithmetic in S's order, and S's generator expressions are explicit loops.
+  `CHAIN_OVERHEAD` is 20, as UL's is, where Term's is 16: the chains are one cell a month,
+  but the year chains, called cold alone on twin 4, open the withdrawals', the bases' and
+  the account value's chains in their first month, and run 17 over (D5, precised at M9;
+  *Measured for K6 and F7*, below).
+- *The splice* (§5.2, T2; §7.7, *E*). Seventeen variants change S's columns only, each
+  with input rows of its own where it needs them: a programme paying a premium at policy
+  month 62 and withdrawing at 66, 69 and 83, the last month of contract year 7; a path
+  that exhausts a never-withdrawing account at 56; the female table; a second fund set and
+  a second GAWA% grid; issue ages 55, restated depleted not for life at a year's start
+  with its GWB below its GAWA, and 72; a path whose quarter ends swing; issue ages 55 and
+  56, never withdrawing, for the Bonus Period's restart age; 69 and 70, either side of the
+  roll-up rate's split, the first paying 60,000 at policy month 100, the second on a 60%
+  grid, a path that falls through a year and then gains 10% a month, and withdrawals that
+  take the GWB to its floors and the GAWA to the GWB; a CMT that falls mid-year, cutting
+  the year's allowance below its dollar-for-dollar use; a contract not for life at 59
+  withdrawing 130% of its limit from 62; S points 8 and 7 without the premium tax, whose
+  depletions close on a rounding; and the anchor on a fund set of three subaccounts. Its
+  References, in both models: inflation at 0; the acquisition expense and commission,
+  which ship at 0, at 150 and 5%; and the GWB Adjustment at 200%, at which it binds, where
+  at the shipped 105% the bonus keeps the GWB above it; with the premium tax at 2% in the
+  table's copy. S's return paths are not stepped, since the grid's months follow their
+  events; the rates are, on `variant` alone. Each variant's twin, issued at the valuation
+  date, is compared with its S point cell by cell, skipping what a restated row skips; the
+  twins alone reached the year-open Benefit Base's issue rule at `t = 0`. The comparison
+  holds every cell to 1e-9 relative with no absolute floor, but the residuals and the GWB
+  that a contract not for life runs down to a rounding, with its per-contract readers, at
+  the 1e-9 floor, and the payments in force, a count-weighted cell, at none but the months
+  where both models pay below the floor a contract (§5.2, T2, precised at M9). A second
+  pair of models, read with the switched References, a current GLWB charge of 0.7%, a GWB
+  cap of 151,000 and a shock-year surrender rate of 125%, runs 11 rows, on which the
+  corridor's foot, the GWB cap at a premium after issue and the surrender rate's bound of
+  1 bind, and step-ups raise the Bonus Base at attained ages 81, the restart age, and 82.
+- *T4 and T5* (§5.2, precised). T4 multiplies the count by 2.5 on seven committed rows
+  with the premium tax and the zero-shipped expenses switched on, and holds every counted
+  cell to 1e-12 relative, `av_change` to 1e-12 of the two balances it is the difference
+  of, and finds every other cell unchanged; and the roll-forward checks close at a million
+  contracts on three rows, each residual somewhere above the tolerance it would have had
+  unscaled (§5.2, T4, precised at M10). T5 refuses each window rule just inside each end
+  of its window and accepts it just outside, `Data`'s and `proj_len()`'s, the zero band's
+  window of ages among them, and pins each tolerance from both sides, two cents off
+  refused and a part of a cent read. It has no every-state test: probes restated every
+  state `VA_US_S` reaches, on its points and variants, at every month, 18,502 a set of
+  inputs, under S's shipped References without the premium tax, the splice's with and
+  without it and the switched References with it, and `Data` and `proj_len()` accepted
+  each; M13 takes the test in, and a test of each rule on a Reference with that Reference
+  moved off its shipped value, which VA's tests do not make (§5.4).
+- *The rules test* (§5.2, T2) holds every splice row of both grids to R1, R1a and R2: no
+  call at a negative month, none from `t_entry()` on reading a month before it, none at
+  `t` reading beyond `t + 1` but the withdrawal year's admitted read, directly or through
+  a precedent keyed by no month, followed to every month-keyed call it reads by
+  `_month_reads`, FIA's helper, and no table read at an age, a year, a quarter or a policy
+  month before the books. Each row is swept and recorded before it is compared with S.
+- *The committed rows* (§7.1, *Precised at M3*, item 11). Each derived row and the future
+  row continue their S points from their months at the shipped assumptions, frame by frame
+  and in every other cell, but the cells expense inflation moves, on their own copies of
+  the scenarios from the committed companions, the future row with T3's exemptions, which
+  `_continues_s` takes as a parameter.
+- *The runner* takes `Projection`'s key from the model, passes each timing through the
+  model's References where it defines one, freezes the collector before each pass,
+  releases and collects each point, in `--block` asks every point for its frame first and
+  sums the frames by `groupby`, writes every count of months through `months()`, prints
+  point 1, the worked example's anchor, by default, and refuses a label the table lacks, a
+  number or not, naming its labels, without a traceback.
+- *Text-only changes.* S's 144 lines over 92 characters, 139 in `Projection`'s docstring,
+  one in `inv_return_mth`'s, the 94-character code line of `gwb_pp_aft_stepup` and three
+  in the model docstring, are wrapped in SEC only, and S's docstring faults are corrected
+  in SEC only (*Carried, outside the SEC models*). The symbol map is laid out again at 28,
+  30 and 30 characters, 191 rows, each with text in every column, and maps all 31 new
+  cells. `INPUT_FILES` was written by `gen_input_files.py --write`.
+- *§7.10's carried items* (*Record — M7*), the deferred chassis: every chain one cell a
+  month, the subaccounts among them; the issue values as rules in the issue month, and the
+  VIX prior, a rate fixed at a past quarter, read only for the quarter under way at
+  `t_entry()`, with a core row inside a quarter, point 6 at 41; the year-opening state as
+  the year to date, the year flag, the year-open Benefit Base, the step-up history and the
+  VIX prior, with core rows in a year's last month, the anchor at 119, the swinging
+  highest-quarterly path at 11 and the mid-year programme at 83, and `AT_VALUATION`
+  entries; `Data`'s money rules to a cent, two values of one instant compared exactly,
+  each carried value held where its rule fixes it, the withdrawals used this year held to
+  0 or more and within the year's withdrawals to date, never against the allowance
+  (precised at M9), each window rule refused just inside each end and accepted just
+  outside, and each rule's removal run as a fault; each point's keys checked last, and
+  what `Data` cannot check said, the rules that need a `Projection` Reference in
+  `proj_len()`; a zero account value accepted with the GLWB alive, every ratio over it
+  guarded, and depleted rows projecting their whole frame; the tables through checked
+  copies beside S's readers, with a `TABLE_FAULTS` case per table with a key written as
+  text, each refused through a projection too, keys written as floats, and the decodes,
+  but *Tables and text* only in part: each join key is read in every cell that reads its
+  table, the fund set's in three of S's cells and the programme's in two keyed readers,
+  where the item has one cell read it, until R7's arrays replace the joins (*Text*,
+  above); and of its *Tests*, `_month_reads` admitting the withdrawal year's read,
+  acquisition per contract at three contracts, the scaled checks at a million contracts,
+  S's unreached cells in `_sweep_s`, every per-month charge, ratio and clamp guarded,
+  every new-business point and variant issued a month on, the depth at the longest cover
+  at issue age 35 on mortality extended below the table, no cap, `VA_US_S` reading its
+  rate with no factor, each T5 case built so that only its check fails, and every count of
+  months the runner prints through `months()`. It departs from *Tests* in one: its spliced
+  rows read S's return paths as they stand, not stepped, since the grid's months follow
+  their events (§7.9, *Record — M11*, precised at M9).
+- *§7.11's carried items* (*Record — M8*), its *Carried into VA (M9)*, all met: *Year-open
+  reads and phases*, the year-open Benefit Base read three ways and carried in force as a
+  column, not by S's fallback, a variant that pays a premium at policy month 62 and
+  withdraws at 66, 69 and 83 valued in core rows at 64, 69 and 83, and the phase S's
+  strings with `PRE_ISSUE`; *Openings and the year to date*, every opening at `t_entry()`,
+  the year to date as four columns and the year flag, the subaccount values as columns,
+  and the VIX prior and the step-up history as columns; *Depletion*, derived from the
+  opening account value at the threshold, the GLWB paid from the columns at `t_entry()`,
+  with core rows depleted at a year's start, mid-year and not for life, and the withdrawal
+  status a column (*The withdrawal status*, above); *Scenarios*, the companions re-based
+  by `duration_mth`, named by the months they move, the returns by subaccount, and joined
+  by the first month on the books; *Checks*, S's strict bound kept in loops and both reads
+  of `t + 1` guarded; and *The withdrawal year's look-ahead*, the one read at
+  `anniv_mth(t)` admitted, rows withdrawing mid-year in T2, and the count's cold depth
+  measured before it was bounded, 20 over its months.
+- *§7.11's carried items* (*Record — M8*), every product's: *Each rule entry by entry*, a
+  committed test that maps each of the 138 refusal entries of `Data`'s eight checking
+  cells to the case it refuses first, each case's first its own, with `MALFORMED`,
+  `UNDECODABLE` and `NOT_ISSUED` table-driven from the start; *The core by line coverage*,
+  the core running every `Projection` line the full grids run and the set-apart rates
+  moving no row's lines, each reach predicate requiring its branch to run; *Boundaries met
+  exactly*, after the review, the Bonus Period's restart age and the roll-up rate's split
+  met on both sides, both sides of the step-up base's two boundaries and the year-open
+  Benefit Base's by core rows, and the GAWA% grid read at every age by the keyed-reader
+  test; *`Data`'s state rules against S*, by probes over every month of every point and
+  variant under four sets of inputs, the accepted edges holding the zero-band states in
+  each status that reaches them; *Past the frame, and a NaN*, the guard test failing a key
+  past `proj_len()` and each check S's strict bound; *Docstring tables*,
+  `_table_overruns`, `_rows_with_a_blank_column`, which S's five run-in rows fail, and the
+  docutils parse test, which skips where docutils is absent, as FIA's and RILA's do, and
+  so in CI, which M13 settles; and *Depth and status*, the ascending sweep measured on
+  both models, 569 on point 8 against S's 1,123, the depleted status derived and the
+  withdrawal status carried, the state making only the first exact. It meets *Switches and
+  bounds S ships idle* with one departure: a second pair of models, read with the switched
+  References, with a core of its own and its reach assertion, but the GWB Adjustment at
+  200% in the main splice, where the switched GWB cap would hide it.
+- *§7.9's carried items* (*Record — M11*). The payout chassis does not bind VA. Of the
+  items every product takes, it meets T4 at 2.5 contracts with every assumption that ships
+  at zero switched on, asserting every counted cell; T2 and T3 at no absolute floor but on
+  the residuals and the GWB family, and a fault below the floor, the payments' column
+  rounded to nine decimals, which the floor the column had before the second fix hid,
+  caught (§5.2, T2, and §7.9; precised at M9); each cap or floor bound where it has an
+  effect, after the review; each malformed case refused by its own rule, which the faults
+  dropping each rule showed, and read through a projection as well; each splice row
+  recorded before it is compared; the collector frozen and unfrozen; and the set-apart
+  edit checked to move no branch and the core chosen by line coverage, with the precisions
+  VA adds to that item (§7.9, precised at M9). A level change since each point's start
+  does not arise, `VA_US_S` carrying none in a Reference.
+- *§7.12's carried items* (*Record — M12*). It meets the first, `_continues_s` taking the
+  exemption set as a parameter; and the second in part: a NaN asset charge, a Reference
+  set before the model computes, makes the account value's and the charge split's
+  residuals NaN at `t = 0` and 0.0 in every later month, but no Reference reaches the
+  count as NaN, `VA_US_S`'s mortality having no factor and each lapse Reference passing
+  `min(1.0, ...)`, S's bound first, which reads a NaN as 1, so the count's test replaces
+  `mort_rate_base_at`'s formula, which runs on modelx alone (*Carried into Phase 2*,
+  below). It meets the third in part: each spliced S point is swept when a case first asks
+  for it and released after the last case selected for it, and the collector frozen at
+  each pair's read, but its product tests read the committed model in fixtures of their
+  own, run after every test that reads a model of its own, which took the module's peak
+  from 4.71 to 3.67 GB at the tests stage. The fourth and fifth do not arise, VA summing
+  no schedule and its companions being scenarios, each copy whole.
+- *The template* (§7.1's *Records*, as M2 and M3 precised them) *and M14's carried items*
+  (§7.1, *Record — M14*) are taken at stage `E`, among them the runner keyed by the model,
+  which passes timings through the model's References, an extract relabelled and without
+  the generator's columns, every Reference set on a model just read, each refusal in a
+  table-driven list, the reports on the valuation clock with zeros before issue, every
+  branch of a cell returning its one type, which the guard test asserts, no new
+  float-parameter or uncached cell, and `codes=codes(sec_proj)` in the module's one call
+  of `twin_mismatches`. Not yet: the runner's `--cython`, `--build` and `_tool()`, the
+  `create()`-copy test and the compiled runner test's refusal leg, and a `Projection`
+  Reference for each of the product's bounds on the issue age, which VA's C step adds
+  (*Carried into Phase 2*, below).
+- *§7.6's carried items* (*Record — M4*) postdate the build, and VA took them at its tests
+  stage and its fixes. It meets *Every bound binds*: `_BoundSides`, a record of each `min`
+  and `max` call in `Projection` by the values it compares, shows each side winning on a
+  core row, but ten sides named idle, two SEC's own tolerances scaled by a count above 1
+  and eight that cannot bind by a premise a probe over every month of every S point and
+  variant confirmed, and two named bound elsewhere, the GWB above the Adjustment on the
+  committed rows at the shipped 105% and the mortality's age clamp on a shortened table,
+  each by a test that asserts it; variants on paths of their own bind the GWB's floors at
+  0, the GAWA's cap at the GWB after an excess and the dollar-for-dollar floor, and the
+  switched References the GWB cap at a premium after issue (§7.6, precised at M9). It
+  meets *Every value column*, each column with a range read at each bound and refused past
+  it, the subaccount floor at −0.01 read and −0.0101 refused; *Residuals as floats*, S's
+  signed residuals kept with their tolerances; *A bound stated only once probed*, each
+  residue and every-state statement from a probe over every month of every point; *Reach
+  by the raw value*, by `_BoundSides`; *Events in their own month*, core rows in the month
+  an account runs out, the month after, at a premium after a withdrawal and at a
+  withdrawal in a year's last month; *Keys and clamps*, the withdrawal charge's completed
+  years written from −1 and below 0, a charge schedule stopped at three years on 5.5% and
+  mortality at 110, each read past its end as S reads it, and the three-subaccount fund
+  set's third subaccount stepping apart; *Shared helpers and the runner*, VA's helpers
+  prefixed `_va_`, the month singular and a label the table lacks refused with its labels;
+  *Core-removal faults*, its tests stage dropping rows that alone reach a branch, each
+  failing the core-reach test; *Policy months in S's cells*, every policy month `VA_US_S`
+  passes to a cell keyed by `t` going through `t_of_month`, each such cell rewritten or
+  read on rows T2 compares; *Months as results*, `t_of_month` exempt with its reason and
+  compared by T1 at offset 0; and *Tables keyed by what the point names*, VA's scenario
+  check being the item's own example.
+- *§7.8's carried items* (*Record — M10*) postdate the build too, and reached VA at its
+  two fixes. Before them it met eight, its own being the examples of several: *Re-based
+  scenarios*; *Time-point parameters*, every policy-clock parameter `m`, `k`, `a` or `x`
+  and every valuation-clock one `t`; *Start values*, VA's being the step-up history and
+  the VIX prior, values of quarters that ended before the valuation month, each checked
+  both ways, and not the year-open Benefit Base, which is D6's year-opening column, as
+  RILA's `av_pp_prev_anniv_init` is: given on every row in force, the issue value in the
+  first policy year and the base entering month 0 at a year's start; *Stepped paths and
+  moved copies* as far as they reach VA, which reads no start value from a scenario, the
+  VIX prior being a column: its rates step on `variant`, beside `cmtdrop`, and S's return
+  paths are not stepped, since the grid's months follow their events (§7.9, *Record —
+  M11*, precised at M9); *Reads of `t + 1`*; *Depth*; *Coverage and the drop sweep*; and
+  *Time the module early*. At its first fix it took *Flag spellings*, 1 or 0 and 1.0 or
+  0.0 read and projecting bit for bit, *Window rules*, each of `proj_len()`'s windows
+  refused at both ends and read just outside them, and *Cent slacks*, an extract carried
+  to the cent read; at its second, *Window rules* for the zero band's ages, *Cent slacks*
+  for a carried amount held to 0, *States S reaches*, S's negative rounding accepted, and
+  *Set-apart References*, in a test of their own on the twins, since setting the pairs
+  apart in the splice would move the events its months follow. It meets *Binding floors
+  and clamps*, every floor and clamp binding with an effect, a positive request on a
+  negative account value not arising, since no charge or withdrawal is due once a contract
+  is depleted at the threshold; and *Docstring checks*, a scan at the second fix finding
+  no identifier split across a line in the symbol map's 191 rows or at any line end of the
+  three model files. It meets *Name search*: the landing searched the product's eleven
+  CSVs for the publishers and products `sources.md` cites, the names on the build's two
+  lists, other carriers and share classes, and every capitalized name and acronym the
+  product's research notes give, its options, riders, accounts and defined terms among
+  them (*Verified at landing*, below); the two keys the second fix's search found, the
+  GAWA% grid's and the GMDB election's, the landing renamed in `VA_US_S`'s files, in a
+  commit of its own before the copy (*Landing*, below). It meets *NaN checks* in part, the
+  count's NaN sent through a replaced formula, and *Timing branches* in part, its own
+  branches comparison chains but `claim_from_av_pp` keeping S's
+  `kind in ('DEATH', 'LAPSE', 'MATURITY')`, a tuple display, as MYGA's and FIA's landed
+  claim cells do; VA's C step takes both. It does not meet *The every-state test*, which
+  M13 takes in (§5.4).
+
+**Measured for K6 and F7.** Every time below was taken with other workflows, or the
+stage's own fault runs and probes, sharing the machine's four CPUs, at load averages of
+1.3 to 7.
+- *Comparisons.* At the second fix the default module ran 286 passed and the full grid 89
+  passed, so each of the full grids' 88 T2, 27 T3 and 11 switched rows continued S in
+  every cell the two share, at every argument S cached from the row's month on, to 1e-9
+  relative with no absolute floor, the residuals and the rounded GWB family at the 1e-9
+  floor and the payments in force at none but their residue months; but T1's exemptions,
+  `result_pols` among them, compared column by column, and the cells a restated or future
+  row changes by design, `proj_len`, `duration_mth_init`, `t_of_month`, `scenario_id` and
+  `policy_id`, and on every row but a future one, the twins among them, `is_inforce` and
+  the opening-state cells, and on S's in-force twin `expenses`, `net_cf` and `net_cf_ga`
+  at `t = 0`, where S charges its acquisition. So T2 skips on its twins what it skips on a
+  restated row; T1 compares the committed twins with its exemptions alone.
+- *Time.* By default the module ran 285 passed in 671.9 s and, with the set-apart
+  References test added, 286 passed in 767.5 s at the second fix, peaking at 3.85 GB in
+  one process, and 862.6 s inside that stage's suite, the suite's most expensive module;
+  at the fix stage, 269 passed in 619.2 s, after a run of 596.1 s with one failure since
+  fixed, both at 3.85 GB, and 679.2 s inside that stage's first suite, and on its final
+  tree 277 passed in 676.5 s inside its second suite and 668.1 s inside the re-review's;
+  at the tests stage, 248 passed in 480 to 493 s, at 3.67 GB. Its 89 full-only cases ran
+  alone in 568.3 s at 3.96 GB at the second fix, and 83 in 483 to 485 s at 3.31 GB at the
+  fix stage. So the default run takes 596 to 768 s, 9.9 to 12.8 minutes, about 3.3 to 4.3
+  times the three minutes K6 projects for each product from WholeLife's module, with the
+  core already in place, and about 415 to 600 s more than WholeLife's module. Most of it
+  is fixed: at the fix stage the switched pair's read with its first core case took
+  59.6 s, T2's pair read with its first core case 46.0 s, the committed points' cold sweep
+  44.9 s, T4 36.6 s, the runner 32.9 s, the edges 22.8 s, the bounds 18.4 s, the depth
+  test 18.2 s, `VA_US_S`'s sweep 17.3 s and the extract 13.1 s, about 310 s together, and
+  the set-apart References test, added at the second fix, 62.8 s more, where each core row
+  added at the fix stage took 1.3 s to 9 s. The design's fallback past about five and a
+  half minutes, the static future rows behind `sec_full`, was not taken, since the core's
+  reach test needs two of them for the second fund set and the second grid; a cut would
+  come from the fixed costs, and nothing was moved behind `sec_full`. M13, which measures
+  the matrix, weighs it. The SEC conventions, 32 passed and 1 skipped, took 66.2 s alone
+  at the fix stage, 97.5 s and 66.2 s inside its two suites, 68.2 s inside the re-review's
+  and 72.2 s inside the second fix's.
+- *The suite.* On da763e8 with VA added the uslib suite ran 2,847 passed and 505 skipped
+  in 3,134.8 s (52 min 15 s) at the second fix, at a peak of 4.82 GB in one process; at
+  the fix stage 2,827 passed and 499 skipped in 54 min 29 s and, on its final tree, 2,835
+  passed in 47 min 40 s, and at the re-review 2,835 passed in 47 min 11 s, each at a peak
+  of 4.74 GB; and at the tests stage 2,806 passed and 483 skipped in 45 min 10 s, at
+  4.59 GB. The tests stage traced the peak to the long session's heap: after VA's module
+  nothing of its own is alive, no model and nothing frozen, and there the two S modules
+  after it took the process from 3.96 GB to 4.59 GB, though alone they peak at 0.71 GB
+  together, as the S modules after FIA's take it from 3.25 GB to 3.72 GB. One process per
+  SEC module would bound the suite at VA's module's peak, 3.85 GB by default, and 3.96 GB
+  for its 89 full-only cases run alone, the whole module under `USLIB_SEC_FULL=1` not
+  measured, a choice for M13 to settle with CI (K6, *M9*). On the landing's tree, after M4
+  and M10, the suite ran 3,385 passed and 625 skipped in 53 min 34 s (*Verified at
+  landing*, below).
+- *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()` and
+  10 to 15 more on the committed points: 734 levels on point 1's 720-month frame, where
+  `VA_US_S`'s runs 1,447, and 708 on point 2's 694, against 1,395. A cold `pols_if` alone
+  runs up to 20 over, 740 levels against `VA_US_S`'s 1,463, its first month opening R2's
+  admitted read and the withdrawals' chain beneath it; the chain heads `bonus_end` and
+  `gmdb_factor_acc`, called cold alone on twin 4, run 17 over. At the longest cover, issue
+  age 35 and 1,020 months, on mortality extended below 40, a cold `net_cf` runs 1,034
+  levels and a cold `pols_if` 1,040, both at the valuation date and issued 120 months on.
+  Swept in ascending `t`, the committed points reach 569 on point 8, where the GAWA's
+  chain is first read at policy month 563, every other point staying under 160, and
+  `VA_US_S`'s same sweep 1,123. Exported, the cold `net_cf` needs a recursion limit of
+  1,478 on the committed points and 2,078 at the longest cover, a cold `pols_if` 2,086,
+  and the ascending sweep 1,143, or 1,527 on a contract issued at 35 that depletes at
+  month 752, which sweeps to 761 levels under modelx, above `CALL_DEPTH`, which bounds the
+  committed points alone. `CALL_DEPTH` is 600, `CHAIN_OVERHEAD` 20 and `LOOK_AHEAD_MTHS`
+  11, and Phase 2's `t` cache is 1,141 values (*Carried into Phase 2*, below).
+
+**Faults.** Each fault went alone into its own copy of the library, and the tests aimed at
+it ran through the gate, at most two at a time.
+- *Critique:* four mutations of the prototype passed every planned test: the step-up
+  base's read of the frame written `>` for `>=`, its column's guard `<=` for `<`, the
+  withdrawal year's scan ending a month short and the opening dollar-for-dollar use read
+  as 0. Rows on each side of each boundary, a withdrawal in a contract year's last month
+  and a row valued in a withdrawal month after another joined the grid and the core at the
+  tests stage.
+- *Tests stage:* 112 faults defined and 111 run, of which 109 were caught, each of the
+  module's 45 tests failing under at least one: each opening column ignored or read from
+  the wrong place, the two subaccounts swapped as one, the opening account value split by
+  the allocation, each year-to-date value reset at the valuation date,
+  `rb_prior_anniv_pp`'s year-open value ignored, the step-up history dropped, the VIX
+  prior recursed from quarter 1, the returns on the policy clock or re-based by
+  `source_mth`, new business entering month 0 depleted, the GLWB paid from
+  `gawa_pp(t - 1)` at `t = 0`, the withdrawal year's scan cut at `t + 1`, `av_at`'s
+  `"EOM"` unguarded and each of R1a's rewrites. Of the two not caught by the test aimed at
+  them, one, the VIX prior's extractor reading the quarter itself, writes the same table
+  on the committed rows, and T2 catches it; the other, an inserted literal mark closed by
+  later text, was no fault, and an unclosed emphasis in its place fails the docutils test.
+  The sweep found two boundaries met exactly that no row reached, the year-open base read
+  from the frame at `t_entry()` and the year's quarter end at month −1 as its highest, and
+  a row on each, the anchor at 119 and the swinging path at 3, joined the grid and the
+  core.
+- *Review:* the year-open base read from its column, not by the issue rule, on a contract
+  issued at the valuation date, and the payment's cap at the GWB's column dropped at
+  `t_entry()` passed the default module, the conventions and the full grid; the Bonus
+  Period's restart bound written `<` passed all three, and its restart age's Reference
+  changed and the roll-up split's bound written `>` the default module and the
+  conventions; the GAWA% and the withdrawal status read as on new business at a premium
+  after a withdrawal passed the default module, caught only on the full grid; a depletion
+  flagged a month late was caught only by the NaN test, incidentally; and the GWB cap's
+  Reference changed passed the default module and the conventions.
+- *Fix stage:* 40 faults, each alone in its own copy, all caught, all in the default run
+  but the GWB family's floor removed, caught on the full grid with 50 mismatches: the
+  review's reproductions, each by the core row added for it; each floor and cap S ships
+  idle dropped, by the variants that bind them; the References changed, by the test that
+  holds them to S's; the clamps zeroed, by the shortened tables; the value columns' bounds
+  opened, by the bounds test; and each new rule of `Data` and `proj_len()` dropped or its
+  window moved, by `MALFORMED` and `NOT_ISSUED`.
+- *Re-review:* each of the review's reproductions failed the default run, but seven faults
+  aimed at the new rules' bounds passed: `depleted_open` written against 0, on the whole
+  default module, and `proj_len()`'s depletion test against 0, the history rule against 0,
+  the corridor's foot always required, each end of the zero band's ages moved and the
+  GAWA's zero-band proviso ignored, each on a selection of 141 cases.
+- *Second fix:* 13 faults, each caught in the default run: the seven the re-review ran, by
+  the row restated the month after a depletion closing above 0, the edges, `MALFORMED` and
+  `NOT_ISSUED`; the subaccount columns read from the shipped fund table again, by the
+  three-subaccount row; the subaccount floor at 0, by the row after a depletion closing
+  below 0 and the bounds test, and at two cents, by `MALFORMED`; the payments' report
+  column rounded to nine decimals, which failed 24 core T2 cases on that column alone,
+  where under the comparison before that stage it passed all 23 of its own; the payments
+  rounded in the cell, through `net_cf`; and the bonus read at the younger roll-up rate,
+  both 6%, by the set-apart References test alone, every core T2 case passing.
+
+**Carried into every product still to come.** What VA, the Deferred annuity stream's last,
+adds to what the earlier records carry. Each item goes to the products still to come from
+this landing (§5.3), ULSG, built and not yet landed, and IUL, each taking what applies,
+and each record says what it took. They came from the design and its critique, the build,
+the tests stage, and the review, the re-review and the fixes they led to, their faults
+among them:
+- *Variants' twins.* Compare the twin of every variant issued at the valuation date with
+  its S point cell by cell, as T1 compares the committed twins: an issue rule at `t = 0`
+  that S's shipped points never take is reached nowhere else, as VA's year-open roll-up
+  base by its issue rule on a contract that withdraws in its first year, a blocker of its
+  review. A variant in force at the valuation date takes no issue rule there: its twin is
+  a splice case at offset 0, as S's in-force points are on the projection clock (§5.2,
+  T2), as `VUL_US_SEC`'s variants 9, 11 and 12 are (§7.6, *Record — M4*), and as the two
+  variants of ULSG's point 1, in force 300 months, are in its build.
+- *Rules on a Reference.* State every rule that needs a `Projection` Reference on that
+  Reference, in `proj_len()`, never on a stand-in for it, and test it where the two part:
+  at the Reference's value, at part of it and just past it, as VA's depletion threshold at
+  0.005, 0.003 and 0.006 and its step-up history at the threshold; with the Reference
+  moved off its shipped value, where alone a rule on a literal copy of that value parts
+  from it, as `Term_US_SEC`'s five-year plan projects once `policy_term_min` is lowered to
+  5 (§7.1, *Record — M14*, *The contract's bounds*); and each proviso where it turns, as
+  the corridor's foot with a first rate below it. VA's depletion rules written against 0
+  passed every test until its re-review; and no VA test moves `av_depletion_threshold`,
+  `vix_corridor_lo` or `vix_corridor_hi` off its shipped value, so a rule on a literal
+  copy of any of the three would pass every VA test too, until M13 takes that leg into VA
+  (§5.4).
+- *Bands that reach a zero.* Where a state column's zero is reachable through a grid's or
+  a table's band, write each rule on it with that proviso: in `Data`, read from the band,
+  where the table alone decides the rule, as VA's withdrawal status's and GAWA's rules
+  read `Data.gawa_pct_zero_band`; in `proj_len()`, from a vector by point built in `Data`
+  (R2), where the rule needs a `Projection` Reference, as VA's rule of a contract depleted
+  without a withdrawal reads `Data.gawa_pct_zero_by_point()`. Test the window of ages each
+  reads at both ends, as a window of months: VA's 0% GAWA% lock arises below its grid's
+  first band or in a band at 0%, and a rule moved off either end of its ages passed every
+  test until its re-review.
+- *Rounding about a bound.* Search S for states its arithmetic closes on a rounding about
+  a bound, as a balance run down by a scale of one less a share, under more than one set
+  of inputs, S's shipped References and the splice's, with and without each assumption the
+  splice switches on; restate a row the month after each, hold that column to its bound
+  within a cent (D6, precised at M9), and read it by the test S applies there, never by a
+  stand-in for that test: VA's depletion by `av_depletion_threshold`, never by 0; but
+  where S's own test is 0's, by 0, the rounding's sign then deciding S's branch, as
+  `VA_US_SEC` keeps `lapse_rate`'s `av_pp(t) <= 0.0` so that T2 holds, and as `IUL_US_S`'s
+  `seg_count` (`> 0`) and `seg_share` (`pool <= 0`) are to be kept: a variant of its point
+  1 paying 1,500 a year monthly closes a segment on 5.6e-17, to which `seg_share` gives
+  the next month's whole segment deduction, and with a half-cent test there `seg_count`
+  counts it for five months where S counts none. Under the splice's References VA's taxed
+  depletions close on exactly 0 and two untaxed ones on 5.7e-15 and −2.3e-14; under S's
+  own, two variants close on 5.1e-14 with the splice's tax and on −1.1e-13 without it; and
+  under the switched References, with the splice's tax, S's point 5 closes on 2.9e-15.
+- *Every state, on named inputs.* Qualify every claim that every state S reaches is
+  accepted with the inputs its probe ran on, and run the every-state test under each set
+  of inputs on which those states differ (§5.2, T5, precised at M9): VA's probe ran on the
+  splice's taxed inputs alone until its re-review.
+- *Columns S's inputs name.* Take state columns whose names S's inputs give, as a fund or
+  subaccount list, from the S model the generator reads, through `SecSpec.model_state`,
+  never from a file read at import, so that a splice's copy that adds one gets its column
+  (§4, *Record*, precised at M9). IUL's segment ladder takes no such columns, though S's
+  `seg_term_mth` sets its slots: it goes in the long companion keyed `(point_id, slot)`,
+  built by its spec's `companions` from the same S model (§7.4, K5, D8).
+- *Count-weighted cells.* Give a count-weighted cell no floor: send only the months where
+  its per-contract factor is below the floor in both models, 0 in one and a rounding about
+  it in the other among them, to the floored pass, as VA's `_residue_months`,
+  `_split_paid` and `_paid_frames` do, and show it with a fault confined to the report's
+  column, since a fault in the cell also shows in a total compared at no floor (§5.2, T2,
+  precised at M9). VA's floor on its payments in force hid an error of several per cent
+  where they fall to 1e-8, and at policy month 336 on its variant 23 valued at 125, S pays
+  its GWB's rounding, 9.5e-12 a contract, against the row's 0.0.
+- *References held to S's.* Hold every Reference of the SEC model equal to S's but those
+  it adds and the `*_file` References it repoints, and set apart, in a test of their own
+  on the twins, the References a rewritten cell reads that ship equal to another, where
+  moving them in the splice would move the events its months are chosen on, with a fault
+  that reads one of a pair for the other: VA's GWB cap and Bonus Period restart age
+  changed passed its module and its conventions, and its bonus read at the younger roll-up
+  rate failed the set-apart test alone.
+- *Contract boundaries.* Meet each contractual age and band boundary exactly, on both
+  sides, with variants, under the switched References where only they reach it (§7.11,
+  *Record — M8*, *Boundaries met exactly*): VA's Bonus Period restart age and its roll-up
+  rate's issue-age split were met by no row until its review.
+- *Idle sides by probe.* Check each side of every `min` and `max` by a record of the
+  values each call compares, as VA's `_BoundSides` does, which found 21 idle sides on a
+  core every hand-written predicate passed. Name a side idle only with a premise a probe
+  confirms over every month of every S point, both on S's own inputs and References and on
+  the splice's inputs, its variants among them, under each set of References a splice
+  fixture reads, and over every row of the full grids; and name one bound outside the core
+  with the test that binds it, which asserts it (§7.6, *Record — M4*, *Every bound binds*,
+  precised at M9). On S's own inputs alone, 22 of the 108 sides of `VA_US_S` that bind on
+  the splice's show idle, five bound under the switched References alone; on the splice's
+  alone, VA's tests stage named idle the GWB above the Adjustment, bound at the shipped
+  105%.
+- *Each kind of valuation month.* Put a core row on each kind of valuation month the full
+  grid has, with an `AT_VALUATION` predicate for it: VA's core lacked a premium at the
+  valuation month after a withdrawal and an account running out in the valuation month
+  until its review, and the month after a depletion that closes on a rounding until its
+  re-review.
+- *Chain heads.* Measure every chain head called cold alone, each on a read of its own,
+  never in turn after other heads on one read, before fixing `CHAIN_OVERHEAD`, not only
+  the last month's `net_cf`: a head that reads other chains runs deepest only while those
+  are cold too. VA's year chains open the withdrawals', the bases' and the account value's
+  chains in their first month and run 17 over, where its `net_cf` runs 15 (D5, precised at
+  M9). ULSG's build calls its heads in turn on one read, as §7.3's chassis had it, and so
+  finds `sg_pp_at`, `is_lapsed` and `pols_if_at` 5, 2 and 8 over on twin 3, where each on
+  a read of its own runs 10, 11 and 12 (§7.3, *Record — M3*, *Chains* and *Tests*,
+  precised at M9).
+- *Statuses S infers.* Check every status S infers from another column after every path, a
+  depletion, a lapse, an exhaustion: derive one only where the state makes it exact, as
+  VA's depletion is, and otherwise carry it as a column tied by `Data`'s rules, as VA's
+  withdrawal status is, which S infers from a GAWA% that a depletion also locks.
+- *Calls as literals.* Write a call with its arguments as a literal, `pols_if(t)`, never
+  as a `:func:` role followed by literal arguments, which renders as `pols_if() (t)`, as
+  ten of `VA_US_S`'s do.
+- *Faults that pass.* Before recording a fault that passes as a gap, show that it is
+  effective and not equivalent on the data its test reads: of VA's tests stage's faults,
+  the VIX prior's extractor reading the quarter itself writes the same committed table, so
+  that T6 cannot see it, and T2 caught the same edit on a row that reads the prior; and a
+  literal mark inserted in a docstring was closed by the docstring's own later text, so
+  that it was no fault.
+- *Memory.* Run the tests that read a model of their own before those that read the
+  module's committed fixtures, which took VA's module's peak from 4.71 to 3.67 GB, and
+  measure the suite's peak in one process, which M13 bounds against the CI runners'
+  memory: at M9 it reached 4.82 GB, the long session's heap, not any one module's (K6,
+  *M9*).
+
+**Carried into Phase 2.**
+- *Caches and bounds:* from issue age 35, the youngest the GLWB allows, to attained age
+  `omega_age`, 120: `t` 0..1,140, 1,141 values, 1,020 months of cover plus the 120-month
+  horizon, the frame's last month 1,139, every cell that reads `t + 1` guarded at
+  `t = proj_len()`; policy months `m` (`prem_scheduled_pm`, `wd_scheduled_pm`) 0..1,019;
+  completed years `k` (`surr_charge_rate_at`) 0..84; attained ages (`mort_rate_base_at`,
+  `gawa_pct_at_age`) 35..119; contract quarters (`phi_glwb_vix`, `vix_sq`) 1..340. These
+  size `sample_sec.py`, `run_sec.py --cython` and the Windows job's stack, whose recursion
+  limits are the export's. A cold `net_cf` needs 1,478 on the committed points and 2,078
+  at the longest cover, and the count's cells more: a cold `pols_if` 1,486 and 2,086, and
+  `pols_decr`, the deepest call measured, 1,490 and 2,090, each 4 more on point 6's
+  design, the VIX fee's (measured at M9's landing). The ascending sweep needs 1,143, or
+  1,527 on the depleting contract issued at 35. `phi_glwb_vix`'s base is a static key,
+  `max(duration_mth_init(), 0) // 3 + 1`.
+- *`proj_len()`:* its refusals read `Projection` References and
+  `Data.gawa_pct_zero_by_point()` by `point_id` label; compiled, the vector becomes an
+  array by position, and the refusals stay Python raises before the frame. No `Projection`
+  Reference bounds the issue age, 35 to 80 for the GLWB, 79 or younger for the GMDB and 85
+  at most: `Data`'s mortality join refuses an age the table does not rate, below 40 as
+  shipped, and the join reads the first month on the books alone, so a substituted table
+  that stops below `omega_age` reads its last rate on. Phase 2 makes each bound a
+  Reference that `proj_len()` checks (§6.1, step 6).
+- *Reads past `t + 1` in C4's sweep:* C4's full sweep calls every monthly cell at every
+  month, where the model asks `is_wd_year` at a contract year's last month alone and
+  `phi_glwb` at a quarter's last month alone. Called mid-year, `is_wd_year` scans the
+  year's months after its own; called in a quarter's first month, `phi_glwb` reads the VIX
+  at the quarter's last, two months on, through `phi_glwb_vix` and `vix_sq`. Each reads
+  past `t + 1` only what it reads at its year's or its quarter's last month, inside the
+  frame, so no cache size or stack depth moves, and no Phase 2 test judges R2 on that
+  sweep: C4 compares values, and the rules test judges Phase 1's sweep, which makes
+  neither read. A C step that judges R2 on C4's sweep admits both by reader, cell and
+  month, `is_wd_year`'s at each month of its year after `t`, where VA's `_closing` admits
+  `anniv_mth(t)` alone, and `phi_glwb`'s at its quarter's last month, or sweeps each cell
+  at the months the model asks it.
+- *A NaN through the count:* the count's NaN test replaces `mort_rate_base_at`'s formula,
+  on modelx alone, since `VA_US_S`'s mortality has no factor Reference and every lapse
+  Reference passes `min(1.0, ...)`, S's bound first, which reads a NaN as 1. The C step
+  needs a compiled route to the count: a Reference it adds as a recorded departure, or a
+  test that reads the compiled count from a `Data` array set to NaN.
+- *Text and branches:* `phase(t)` stays text until R10 codes it; S's generator expressions
+  are explicit loops already; `claim_from_av_pp` keeps S's
+  `kind in ('DEATH', 'LAPSE', 'MATURITY')`, a tuple display C5 reports (§7.8, *Record —
+  M10*, *Timing branches*), as MYGA's and FIA's landed claim cells do, which the C step
+  writes as a comparison chain; and `rollup_rate`'s `math.floor` becomes integer
+  arithmetic.
+- *Engine functions* (R14): the float-parameter cells, all S's, for Phase 2 to inline:
+  `lapse_itm_mult(m)`, `fee_rate_vix_raw` and `fee_rate_vix_clip`. SEC adds none, and no
+  uncached cell.
+- *T1 and the comparison:* S caches `claims(t, None)` and `claims_over_av(t, None)` under
+  `None`, which needs a T1 `arg_map` at stage `EC` (R12); a compiled comparison skips S's
+  `phi_glwb_vix` and `vix_sq` before a row's first quarter on the books, as T2's
+  `_on_the_books` does; and `_BoundSides` wraps the builtins `min` and `max`, so the
+  core-reach test's check of each side runs on the modelx model alone.
+- *`Data`'s share:* the subaccount floor reads a carried amount a cent below 0, which
+  compiled arrays read the same; `SecSpec.model_state` runs in the generator alone, and
+  the fingerprints read the generated table.
+- *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, its
+  timings already passed through the model's References by `code(label)`, with the
+  `create()`-copy test and the compiled runner test's refusal leg (R4; §6.1, step 7).
+
+**Carried, outside the SEC models.**
+- Sixteen S-side items for §8.2 item 4, found in `VA_US_S`, which §8.2 item 4's fix, to
+  mortality alone, leaves as they were, `VA_US_S` reading its table's rate with no factor
+  and needing no cap: the fifteenth and the sixteenth are corrected in `VA_US_S` at
+  landing, each being a name an input file may not hold (§8.2, item 4, precised at M9);
+  the ninth, tenth and eleventh are in both models, `VA_US_SEC` reproducing S; and the
+  rest are fixed, corrected or answered in `VA_US_SEC` only:
+  - `has_wd_init` is inferred from a GAWA% above 0, wrong after a depletion without a
+    withdrawal, which locks the GAWA% too: `VA_US_SEC` carries the status as a column;
+  - the account value of a point in force is split by the target allocation, right only
+    while the subaccounts hold their targets: `VA_US_SEC` carries each subaccount's value;
+  - the acquisition expense is charged at `t == 0` on the in-force point 2, 0 as shipped:
+    `VA_US_SEC` charges it in the issue month alone;
+  - expense inflation counts the contract's completed years: `VA_US_SEC` counts projection
+    years (D7);
+  - the scenario readers fall back to `max(duration_mth(t), 0)`: `VA_US_SEC` reads
+    companions on the valuation clock that raise where no level is set;
+  - `depleted_flag(t - 1)` is read below `t = 0` in the first month, and
+    `glwb_payment_pp`'s `gawa_pp(t - 1)` recurses below 0 without end on a depleted point
+    valued at a contract year's start: `VA_US_SEC` reads `depleted_open` and the columns
+    there;
+  - `check_pols_roll_fwd_resid` and `av_at`'s `"EOM"` read `pols_if(t + 1)`, guarded only
+    below 0: `VA_US_SEC` guards both with `is_active(t)`;
+  - `lapse_dyn_mult` and `lapse_wd_factor` are unguarded outside cover: `VA_US_SEC` guards
+    both;
+  - `min(gwb_cap, g)`, the bound first, reads a NaN GWB as the cap, in both models, the
+    order kept as §5.1's step 6 allows;
+  - the subaccount step's `if base > 0.0 else 0.0` reads a NaN account value as a
+    depletion, in both models;
+  - `lapse_rate` zeroes the surrender rate where `av_pp(t) <= 0.0`, not at the depletion
+    threshold, so in a month whose depletion closes on a rounding above 0 the contract
+    still lapses at its rate: on S point 8 without the premium tax, under the splice's
+    References, at policy month 524, an account value of 5.66e-15 lapses 2.76e-6 contracts
+    at 7.5% a year, where the same depletion on exactly 0 lapses none; `VA_US_SEC` keeps
+    S's test, so T2 holds, and S would read the threshold, or `depleted_flag(t)`;
+  - `depleted_flag`'s docstring says the charge and withdrawal caps drive the account to
+    exactly zero, where off the shipped inputs a depletion closes on a rounding of either
+    sign about 0: `VA_US_SEC`'s says so;
+  - docstring faults: 144 lines over 92 characters, 139 in `Projection`'s docstring, one
+    in `inv_return_mth`'s, a 94-character code line in `gwb_pp_aft_stepup` and three in
+    the model docstring; five symbol-map rows that docutils reads into the wrong cells;
+    `Data`'s "Five of these carry a compound key", where seven do; "Zero on an at-issue
+    cell" in `bonus_end_init`'s docstring, and "this cells" in `wd_free_pp`'s, `np_pp`'s
+    and `av_at`'s; and ten `:func:` roles followed by literal arguments, which render as
+    `pols_if() (t)`: corrected in `VA_US_SEC` only;
+  - the shipped inputs never read a clamp with an effect, every withdrawal charge schedule
+    ending on 0 and the mortality table running to cover's end, so S's tests cannot tell a
+    clamp from a 0 past the end: `VA_US_SEC`'s test reads both tables stopped below their
+    cover;
+  - the GAWA% grid's key named a cited carrier's benefit option, and its rows' provenance
+    the option: the landing's commit before the copy renames the key to `s3_single`, by
+    source key and design, and the provenance to the single-life option at a 1.25% charge
+    elected at issue (*Landing*, below);
+  - point 5's GMDB election was keyed by the carrier's abbreviation for its death benefit
+    on quarterly anniversaries, which the election, an annual ratchet at each contract
+    anniversary, is not: the same commit renames it `ratchet`, by design (*Landing*,
+    below).
+
+**Landing.** Rebased from da763e8 onto 2ba7fba, after M4 and M10. `VA_US_S` reads its
+annual mortality from the table with no factor, so §8.2 item 4's fix, made before VA's
+build, left it uncapped, as it needs no cap, and `VA_US_SEC` reads the rate the same way,
+through its keyed reader, `mort_rate_base_at(age(t))`, with no cap either. uslib's
+`index.md` took three conflicts: the sentence that lists the SEC models, which now names
+all ten; the models table, which takes VA's row from the build and RILA's from the tip;
+and the row on input files, which now names the variable annuity's return and rate
+scenarios beside DIA's schedule, the FIA's rate scenarios and RILA's market scenarios.
+`gen_sec_points.py`'s docstring took one, and now names VA's two re-based scenarios beside
+DIA's schedule and the FIA's and RILA's scenarios. `sec_support.py` was rebuilt by a
+three-way merge of VA's changes without its own sections, which left one conflict,
+`SecSpec`'s docstring on the companions, resolved to name all four; VA's state extractors,
+re-based scenarios and state follow RILA's, and its spec RILA's, in landing order, and
+`SecSpec.model_state`, its docstring entry and the generator's lines that read it merged
+clean. Before the copy, a commit of its own, efe7878, renames the key of `VA_US_S`'s GAWA%
+grid, which named the cited carrier's benefit option, `s3_single`, by source key and
+design, in `gawa_pct_table.csv` and `model_point_table.csv` and in the docstring that
+quotes it, and its six rows' provenance now says "single-life option at a 1.25% charge
+elected at issue" (CLAUDE.md); no value a model reads moves. The same commit renames the
+key of point 5's GMDB election, which abbreviated the carrier's death benefit on quarterly
+anniversaries, a design the election, an annual ratchet at each contract anniversary, does
+not have, to `ratchet`, by design, in `model_point_table.csv`, in `rb_pp`'s test of it, in
+the docstrings, tests and `model.md` that name it and in `technical-notes.md`'s parameter
+table; no value moves either. The landing regenerated `model_point_table_sec.csv` from it,
+which moved those keys alone, the grid's on its 23 rows and the election's on rows 5 and
+16, renamed the grid key's three uses in the test module, the election's two there and its
+one in `model-sec.md`, and named `VA_US_SEC`'s decode of the election `is_gmdb_ratchet`,
+in its symbol map and docstrings and on the generated page. `INPUT_FILES`, regenerated
+with `gen_input_files.py lifelib/libraries/uslib --write` on the merged tree, came out
+unchanged. After its review the landing corrected, in text alone, three accounts of how
+`VA_US_SEC` reads its tables, in `Projection`'s docstring, the test module's docstrings
+and a row of `model-sec.md`'s departures, which had every table read through one cell,
+where the fund table is read through three and the programme through two; the test
+module's and `model-sec.md`'s accounts of the variants' twins, which had them compared as
+T1 compares the committed twins, where each is compared with S cell by cell, as a restated
+row is; and the test module's comment on the payments in force, which gave S's payment a
+contract on variant 23 at policy month 336 as 1.8e-12, S's total on its 0.19 contracts in
+force, where it is 9.5e-12.
+
+**Verified at landing**, with the landing's own full grid, compile tests and doccheck,
+sharing the machine. The uslib suite, with modelx-cython installed and so the compile
+tests included, gave 3,385 passed and 625 skipped in 3,214.38 s (53 min 34 s), its two
+warnings modelx's renames of `Term_US_S` and `VUL_US_S` in the round-trip tests. VA brings
+286 passes and 89 skips in its module, 32 passes and 1 skip in its SEC conventions, the
+skip the notes-orientation check, which finds no companion cells to read, one pass in the
+compiled convention that reads every SEC model, and three passes in `test_sec_support.py`,
+`SecSpec.model_state`'s test and its two refusal cases. Over its full grid, VA's module
+gave 375 passed in 935.75 s, and the `cython` selection 11 passed and none skipped under
+`USLIB_REQUIRE_CYTHON=1`, in 116.59 s. doccheck built 513 pages with 0 warnings.
+`gen_sec_points.py --check` found the files of the ten SEC models current, and
+`gen_sec_fingerprint.py Term_US_SEC --check` reproduced the fingerprint. md_lint reported
+0, `gen_scaffolding.py --dry-run` 0 files in each of the six libraries, and
+`gen_citation_links.py --dry-run` nothing on its 321 source tags. A case-insensitive
+search of VA's eleven CSVs, the three generated files and `VA_US_S`'s eight tables, for
+908 terms, the names, words and numbers of the publishers, registrants, filings and
+products that `variable_annuity/sources.md` and the build's two name lists cite and of
+other carriers and share classes, and every capitalized name and acronym the product's
+research notes give, its options, riders, accounts and defined terms among them, each
+term's words matched also when joined by spaces, underscores, hyphens or dots or run
+together, found none but generic terms: words and acronyms such as fixed, source, force,
+same, value, floor, single life, rate sheet, default, entry, valuation, an advisory share
+class, VIX, CMT, GLWB, GMDB, GWB and GAWA; the sources' defined terms for what the tables
+model, Account Value, Benefit Base, Contract Value, Contract Year, Completed Years,
+Designated Lives, Excess Withdrawal, GWB Adjustment Date, Highest Quarterly Contract
+Value, Remaining Premium, Roll-up GMDB and Valuation Date; and the design keys
+`core_60_40`, a 60/40 split, and `annual_CV` and `highest_quarterly_CV`, the step-up
+bases. These runs came before the landing wrote this plan's M9 text, which no test,
+generator or doccheck reads.
 
 ### 7.8 RILA — `RILA_US_SEC` (E: L, C: L)
 
@@ -5342,7 +6492,14 @@ while building:
 - T2 and T3 with no absolute floor wherever a compared value can fall below about 1e-7,
   except on the roll-forward residuals, which keep the 1e-9 floor: MYGA's, FIA's, VA's and
   RILA's are rounding, up to about 3e-11, in most months, where SPIA's are exact zeros
-  (§5.2, precised). A fault sweep includes a fault below the floor.
+  (§5.2, precised). A fault sweep includes a fault below the floor. (Precised at M9: the
+  residuals are one kind of cell whose exact value can be 0 while the computed one is
+  rounding about it, each of which keeps the floor (§5.2, precised at M11): `VA_US_SEC`'s
+  GWB, which a contract not for life runs down to a rounding of 9.5e-12 against 0.0, keeps
+  it with its per-contract readers. But a count-weighted cell, real on a count far below
+  1, takes the floor only at the months where both models' per-contract factor is below
+  it, and none at the others: VA's payments in force fall to 1.1e-8, where the floor
+  passes an error of 9% (§5.2, T2, precised at M9).)
 - A level change since each point's own start, as S carries it in one Reference, is split
   in two: an `_init` column, the change seen by the valuation date, and the Reference, the
   change made at the valuation date on the one path every point shares, which no contract
@@ -5359,7 +6516,16 @@ while building:
   at teardown, after closing them (`gc.unfreeze()`, then `gc.collect()`); quadratic checks
   stay out of swept splice copies.
 - A set-apart edit of an input is checked to move no branch, and the core is chosen by
-  line coverage.
+  line coverage. (Precised at M9: an edit of an S path whose events the grid's months
+  follow is not set apart; VA's stepped returns moved 15 rows' lines and were dropped, the
+  variants carrying new paths, and its stepped CMT moved a branch of the GMDB's excess
+  until lowered. Check each set-apart edit on the rows that read it before choosing
+  months. Line coverage cannot tell `>=` from `>`: VA's step-up base read the frame and
+  the year's column under two boundaries every grid row passed either way, until a row
+  valued at a quarter end at `t = 0` and one in a year's last month joined the core; nor
+  can it see a branch that only the twin issued at the valuation date takes, VA's
+  year-open roll-up base by the issue rule at `t = 0`, which only a variant's twin
+  compared with S showed.)
 
 **Carried into Phase 2.**
 - *Caches and bounds:* §7.9's *C*. The figures above size `sample_sec.py`,
@@ -5837,12 +7003,13 @@ the products in progress from this landing (§5.3), and each record says what it
   F and year-open account value to the anniversary rules, and RILA's
   `av_pp_prev_anniv_init` likewise, at least the account value on an anniversary, the base
   being taken before that month's withdrawal (D6, precised at M10). VA's withdrawals used
-  this year are checked as zero or more and no further: VA recomputes its allowance every
-  month from the earnings and the remaining premium, so the amount used can exceed the
-  allowance at the valuation date. Test a rule on a window of contract months at both
-  ends, refused just inside and accepted just outside: MYGA's second-year rule passed
-  every test while it was tested at month 12 alone. Run each new check's removal as a
-  fault.
+  this year are checked as zero or more and within the year's withdrawals to date, to a
+  cent, as its dollar-for-dollar reduction is, but never against the allowance: VA
+  recomputes its allowance every month from the earnings and the remaining premium, so the
+  amount used can exceed the allowance at the valuation date (precised at M9). Test a rule
+  on a window of contract months at both ends, refused just inside and accepted just
+  outside: MYGA's second-year rule passed every test while it was tested at month 12
+  alone. Run each new check's removal as a fault.
 - *Join keys.* Check each point's text keys against the tables they key, by point, last in
   `model_point_table`. A scenario must set its levels by the point's first month on the
   books, `t = 0` or its issue month if later, never by `t = 0` for every point, since T3's
@@ -6475,26 +7642,37 @@ the deferred chassis. Each item goes to VA's stream from this landing, with the 
   needs each one's value for the year under way as a column. `sa_pp_at` splits
   `av_pp_init` by `alloc(i)`, FIA's `alloc_fixed × AV` error in another form once the
   funds drift apart: the per-fund values are opening state, wide `_init_<i>` columns for
-  its two subaccounts, as K5 and §7.7 have them, or a companion keyed by `point_id` for a
-  wider fund set (§7.1, *Record — M14*). `phi_glwb_vix(k)` recurses over contract quarters
-  from the first, and the highest-quarterly step-up takes the largest account value at
-  `t`, `t - 3`, `t - 6` and `t - 9`, leaving out any before `t = 0`. So the rate of the
-  last quarter to end before the valuation month, the clip's prior for the first fee on
-  the books, is a column, `phi_glwb_init` (§7.7), and the largest account value at the
-  year's quarterly anniversaries before the valuation month is one more, as §7.7 and K5
-  have it, read at the anniversary closing the year under way alone (§7.10, *Record — M7*,
-  *Issue values and past fixings*).
+  its two subaccounts (`sa_pp_init_<i>`, as built at M9, one for each subaccount the fund
+  table of the S model the generator reads holds, through `SecSpec.model_state`, blank
+  where a point's set lacks one, each 0 or more to within a cent), as K5 and §7.7 have
+  them, or a companion keyed by `point_id` for a wider fund set (§7.1, *Record — M14*).
+  `phi_glwb_vix(k)` recurses over contract quarters from the first, and the
+  highest-quarterly step-up takes the largest account value at `t`, `t - 3`, `t - 6` and
+  `t - 9`, leaving out any before `t = 0`. So the rate of the last quarter to end before
+  the valuation month, the clip's prior for the first fee on the books, is a column,
+  `phi_glwb_init` (§7.7), and the largest account value at the year's quarterly
+  anniversaries before the valuation month is one more, as §7.7 and K5 have it, read at
+  the anniversary closing the year under way alone (§7.10, *Record — M7*, *Issue values
+  and past fixings*).
 - *Depletion.* `depleted_flag` is absorbing, and from the month after it is set `sa_pp_at`
   holds every fund at 0, so at each month end the flag is set exactly where `av_pp(t)` is
   at or below `av_depletion_threshold`, as in every month of S's nine points, eight of
-  which deplete. So §7.7's `depleted_init` is a status the opening account value makes
-  exact, and takes no column (*Depth and status*, below): a contract in force at the
-  valuation date enters month 0 depleted exactly where `av_pp_init()` is at or below the
-  threshold, and new business, whose `av_pp_init()` is 0, never does. A depleted opening
-  makes `glwb_payment_pp` read `gawa_pp(t - 1)` and `gwb_pp(t - 1)` at `t = 0`, which S
-  never does: read `gawa_pp_init()` and `gwb_pp_init()` there, since, as S's cells stand,
-  a depleted point valued at a contract-year start recurses below `t = 0` without end, and
-  put such a row in the core.
+  which deplete. So the `depleted_init` §7.7 listed until M9 is a status the opening
+  account value makes exact, and takes no column (*Depth and status*, below): a contract
+  in force at the valuation date enters month 0 depleted exactly where `av_pp_init()` is
+  at or below the threshold, and new business, whose `av_pp_init()` is 0, never does. A
+  depleted opening makes `glwb_payment_pp` read `gawa_pp(t - 1)` and `gwb_pp(t - 1)` at
+  `t = 0`, which S never does: read `gawa_pp_init()` and `gwb_pp_init()` there, since, as
+  S's cells stand, a depleted point valued at a contract-year start recurses below `t = 0`
+  without end, and put such a row in the core. The withdrawal status, which S infers from
+  `gawa_pct_init`, is not derived: a depletion without a withdrawal locks the GAWA%, so it
+  is a column, `has_wd_init`, which `Data` ties to the GWB Adjustment, the year flag and
+  the locked GAWA% and GAWA, and `proj_len()` to the depletion threshold (M9). The test is
+  the threshold's, never 0's: off the splice's premium tax a depletion can close on a
+  rounding of either sign about 0, 5.7e-15 or −2.3e-14 under the splice's References,
+  which only the threshold reads as depleted where it is above 0; the splice restates a
+  row the month after each, and the edges read an opening account value of exactly the
+  threshold and of part of it as depleted (M9).
 - *Scenarios.* `inv_return_mth` and `scenario_rate` key VA's scenarios by elapsed policy
   month and read `max(duration_mth(t), 0)` inside a list comprehension. Copy FIA's
   companion: `*_sec.csv` scenarios read through S's readers by repointing their `*_file`
@@ -7411,7 +8589,7 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
 - **K4 — Future new business on market products.** Each future point needs its inputs
   re-based in T3; RILA and VA carry the most. D4's fallback exists for exactly this.
 - **K5 — A wide in-force interface.**
-  - VA adds about ten opening-state columns, RILA thirteen, and IUL a 12-slot ladder.
+  - VA adds twenty opening-state columns, RILA thirteen, and IUL a 12-slot ladder.
   - Each must come from an administration extract that may not carry it — a VA's highest
     quarterly value this contract year, a RILA's term-start volatility.
   - Ladders go in long companion tables keyed `(point_id, slot)`. Two or three funds stay
@@ -7427,6 +8605,16 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     T2 still hold both. The five term-start values are given only where the term under way
     began before the valuation month, and the cap only where that term began at a renewal
     under `nge_reset`; each is blank elsewhere (§7.8, *Record — M10*).
+  - *M9:* VA's twenty are the subaccount values, one column for each subaccount the S
+    model's fund table holds, two as shipped, blank where a point's set lacks one; the
+    seven bases; the locked GAWA% and the Bonus Period's end; the withdrawal status, which
+    S infers from the GAWA%, wrongly after a depletion without a withdrawal; the contract
+    year to date, four values and the year's withdrawal flag; the Benefit Base at the
+    anniversary that opened the year; the year's highest quarterly account value before
+    the valuation month; and the VIX-linked fee of the last quarter to end before it. The
+    depleted status takes none, the opening account value making it exact. Each shows on a
+    committed row, and an extract with every amount carried to the cent is read (§7.7,
+    *Record — M9*).
 - **K6 — CI time.**
   - The matrix already takes up to 33 minutes against a 90-minute limit, and the SEC suites
     roughly double the projected volume.
@@ -7567,6 +8755,31 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     skipped in 32 min 24 s to 34 min 01 s, at a peak of 3.72 GB in one process, and on the
     landing's tree, after M8 and M4, 3,063 passed and 535 skipped in 52 min 31 s. All
     times were taken with other workflows sharing the machine.
+  - *M9:* VA's module runs by default a core of 26 T2, 8 T3 and 6 switched-Reference
+    cases, which a test asserts reaches each listed condition and binds each side of every
+    `min` and `max` in `Projection` but the ten it names idle and the two it names bound
+    elsewhere, and which line coverage at the fix stage showed running every `Projection`
+    line the full grids run, in 672 s and 768 s at the second fix (286 passed and 89
+    skipped as landed) and 596 to 679 s at the first, at a peak of 3.85 GB in one process;
+    inside the second fix's suite it took 863 s, the suite's most expensive module. Its 89
+    full-only cases run alone in 568 s at 3.96 GB, and its SEC conventions take 66 to
+    98 s. That is about 3.3 to 4.3 times the three minutes this risk projects for each
+    product from WholeLife's module, with the core already in place, as every module
+    landed since WholeLife's has run past it. Most of it is fixed: the two splice pairs'
+    reads, the committed points' cold sweep, T4, the runner, the edges, the bounds, the
+    depth test, `VA_US_S`'s sweep and the extract took about 310 s together at the fix
+    stage, and the set-apart References test 63 s more at the second, where each core row
+    added at the fix stage took 1.3 s to 9 s, so a cut would come from those fixed costs.
+    M13, which measures the matrix, weighs it. By default the module costs about 415 to
+    600 s more than WholeLife's. The uslib suite on da763e8 with VA added ran 2,847 passed
+    and 505 skipped in 52 min 15 s, and on the landing's tree, after M4 and M10, 3,385
+    passed and 625 skipped in 53 min 34 s. Its peak, unmeasured there, was 4.82 GB in one
+    process at the second fix and 4.74 GB at the fix stage, the long session's heap: VA's
+    module leaves nothing of its own alive, and the S modules after it raise that heap, so
+    one process per SEC module would bound the suite at VA's module's peak, 3.85 GB by
+    default and 3.96 GB for its full-only cases alone, the whole module with
+    `USLIB_SEC_FULL=1` unmeasured, which M13 settles with CI. All times were taken with
+    other workflows, or the stage's own runs, sharing the machine.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares what the cells return and raise.
@@ -7657,10 +8870,13 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
    `VA_US_S`'s and `IUL_US_S`'s at 1 among them (§5.1, step 6). The stubs stay,
    `ULSG_US_S`'s and `IUL_US_S`'s too (§7.3, *Record — M3*), and so do the other S-side
    items the records list, each fixed in its SEC model only where its record says so, and
-   otherwise in neither, `test_term_life_us.py`'s race among them (§7.1, *Record — M1*). The
-   records written before these fixes describe the models as they were then: `Term_US_S`,
-   `UL_US_S`, `VUL_US_S` and `IUL_US_S` uncapped, and the caps of `SPIA_US_S`, `DIA_US_S`,
-   `FIA_US_S`, `ULSG_US_S` and `SPIA_US_SEC` bound first.
+   otherwise in neither, `test_term_life_us.py`'s race among them (§7.1, *Record — M1*),
+   but for a name an input file may not hold under `CLAUDE.md`, which a commit of its own
+   corrects in the S model's files at its product's landing, as RILA's provenance was at
+   M10 and VA's GAWA% grid and GMDB election keys at M9 (the *Records* of §7.8 and §7.7;
+   precised at M9). The records written before these fixes describe the models as they
+   were then: `Term_US_S`, `UL_US_S`, `VUL_US_S` and `IUL_US_S` uncapped, and the caps of
+   `SPIA_US_S`, `DIA_US_S`, `FIA_US_S`, `ULSG_US_S` and `SPIA_US_SEC` bound first.
 5. **The `cython` CI job on Windows from the start (D13).** MSVC and the 1 MB main-thread
    stack are where a compiled model differs most. *Confirmed.*
 
@@ -7671,8 +8887,8 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | # | Milestone | Content | Gate |
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
-| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, M8, FIA, and M4, VUL, are **done**, 2026-11-03 (§7.12, §7.11, §7.6), and M10, RILA, the Payout stream's last, is **done**, 2026-11-04 (§7.8) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
-| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, and RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1 (§5.4); and how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*) | the whole matrix green under its timeout |
+| M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, M8, FIA, and M4, VUL, are **done**, 2026-11-03 (§7.12, §7.11, §7.6), and M10, RILA, the Payout stream's last, is **done**, 2026-11-04 (§7.8), and M9, VA, the Deferred annuity stream's last, is **done**, 2026-11-05 (§7.7) | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
+| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1, VA's every-state test and its test of each rule on a Reference with that Reference moved off its shipped value, both of which it landed without, and M9's T5 precision taken into RILA's every-state test (§5.4); how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*; §7.7, *Record — M9*); and the suite's peak memory in one process, 4.82 GB at M9, bounded against the CI runners' memory (K6, *M9*) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
