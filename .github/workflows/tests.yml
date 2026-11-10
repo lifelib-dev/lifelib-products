@@ -49,10 +49,13 @@ jobs:
         # each grid that reaches every branch the full one does, and the cases beyond it
         # skip unless USLIB_SEC_FULL is 1 (USLIB-SEC-PLAN.md K6), so without this leg they
         # would run nowhere. On WholeLife, measured locally, it adds about two minutes.
+        # The same leg installs docutils for the docstring parse tests, which skip
+        # without it, as on every other leg and in lifelib's CI (USLIB-SEC-PLAN.md §5.4).
         include:
           - os: ubuntu-latest
             python-version: '3.13'
             sec-full: '1'
+            docutils: '1'
 
     steps:
     - name: Checkout code
@@ -72,14 +75,24 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    - name: Install docutils for the docstring parse tests
+      # The tests marked `docutils` read each model's docstrings as the docs build does.
+      # docutils is no requirement of the models, so `requirements.txt` leaves it out and
+      # those tests skip without it; this leg installs it, and sets
+      # USLIB_REQUIRE_DOCUTILS below, under which such a skip fails.
+      if: matrix.docutils == '1'
+      run: pip install docutils
+
     - name: Run the model suites with pytest
       # Bare `pytest` from the root, as lifelib's CI runs it. The suites are slow --
       # every model reproduces its technical notes' worked example, cell by cell -- so
       # report the slowest tests to keep an eye on which models dominate the run.
       # USLIB_SEC_FULL is '1' on the one leg the matrix gives `sec-full`, and empty on
-      # every other, where the full splice grids' cases skip.
+      # every other, where the full splice grids' cases skip. USLIB_REQUIRE_DOCUTILS is
+      # '1' on the leg that installs docutils, where a docstring parse test must run.
       env:
         USLIB_SEC_FULL: ${{ matrix.sec-full }}
+        USLIB_REQUIRE_DOCUTILS: ${{ matrix.docutils }}
       run: pytest -q --durations=10
 
   cython:

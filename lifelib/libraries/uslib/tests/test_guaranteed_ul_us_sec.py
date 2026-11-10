@@ -5716,6 +5716,7 @@ def _doctree(core, doc, stream):
                                                     "warning_stream": stream})
 
 
+@pytest.mark.docutils
 def test_the_docstrings_parse_as_rst(sec_model, s_model):
     """Every docstring of the model parses as reStructuredText, and renders as written.
 

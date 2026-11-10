@@ -4976,6 +4976,7 @@ def test_the_docstrings_describe_the_valuation_clock(sec_model, s_model):
     assert _table_overruns(broken) == ["(shortfall at exhaustion) av_depletion_pp(t)"]
 
 
+@pytest.mark.docutils
 def test_the_docstrings_parse_as_rst(sec_model):
     """Every docstring of the model parses as reStructuredText, without a warning.
 

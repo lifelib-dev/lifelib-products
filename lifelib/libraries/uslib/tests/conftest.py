@@ -1,4 +1,4 @@
-"""Shared fixtures for the reference-model tests, and the suite's two pytest markers.
+"""Shared fixtures for the reference-model tests, and the suite's three pytest markers.
 
 The registry these fixtures read — :data:`MODELS`, :data:`LIB` and :func:`model_path` —
 lives in :mod:`us_registry` rather than here, and the test modules import it from there.
@@ -19,6 +19,13 @@ SEC model's full splice grid beyond the core that runs by default, which skip, w
 reason shown, unless ``USLIB_SEC_FULL=1`` is set (USLIB-SEC-PLAN.md K6), and
 ``pytest -m sec_full`` selects them.  One leg of the CI matrix sets it, so they run in
 every CI run, on that leg.
+
+The ``docutils`` marker is registered here for the same reason.  It marks the tests that
+read a model's docstrings through docutils as the docs build does, which skip where
+docutils is absent: it is not a requirement of the models, and lifelib's CI does not
+install it.  The CI leg that runs the full grids installs it and sets
+``USLIB_REQUIRE_DOCUTILS=1``, under which such a skip fails, as ``USLIB_REQUIRE_CYTHON=1``
+fails a compile test's (USLIB-SEC-PLAN.md §5.4).
 """
 import modelx as mx
 import pytest
@@ -27,7 +34,8 @@ from us_registry import LIB, ANNUAL, MONTHLY, MODELS, model_path  # noqa: F401
 
 
 def pytest_configure(config):
-    """Register the ``cython`` marker the compile tests carry, and ``sec_full``."""
+    """Register the ``cython`` marker the compile tests carry, ``sec_full`` and
+    ``docutils``."""
     config.addinivalue_line(
         "markers",
         "cython: compiles a model with modelx-cython; skips without modelx-cython or a C "
@@ -36,6 +44,9 @@ def pytest_configure(config):
         "markers",
         "sec_full: a case of an SEC model's full splice grid; skips unless "
         "USLIB_SEC_FULL=1")
+    config.addinivalue_line(
+        "markers",
+        "docutils: parses docstrings with docutils; skips where docutils is absent")
 
 
 @pytest.fixture(scope="module")
@@ -65,23 +76,32 @@ def sec_build(tmp_path_factory):
     return SecBuilds(tmp_path_factory)
 
 
+# Each marker whose skip a CI job forbids, with the variable that forbids it.
+REQUIRED = (("cython", "USLIB_REQUIRE_CYTHON"), ("docutils", "USLIB_REQUIRE_DOCUTILS"))
+
+
 @pytest.hookimpl(wrapper=True)
 def pytest_runtest_makereport(item, call):
-    """Under ``USLIB_REQUIRE_CYTHON=1``, report a ``cython`` test that skips as failed.
+    """Under ``USLIB_REQUIRE_CYTHON=1``, report a ``cython`` test that skips as failed, and
+    under ``USLIB_REQUIRE_DOCUTILS=1`` a ``docutils`` test.
 
     ``sec_support.require_cython`` fails a compile test that finds the toolchain missing,
     but a test can skip before its body runs: one parametrized over the SEC models at
     stage ``"EC"`` skips, "got empty parameter set", when the registry holds none.  In the
     ``cython`` CI job any such skip is a green run that compiled nothing (D13), so it is
-    turned into a failure here, whatever skipped it.
+    turned into a failure here, whatever skipped it.  A docstring parse test skips where
+    docutils is absent, and on the CI leg that installs docutils such a skip is a green
+    run that parsed nothing, so it fails there the same way.
     """
     import os
     report = yield
-    if (report.skipped and not hasattr(report, "wasxfail")
-            and item.get_closest_marker("cython") is not None
-            and os.environ.get("USLIB_REQUIRE_CYTHON") == "1"):
-        given = report.longrepr
-        reason = given[-1] if isinstance(given, tuple) else given
-        report.outcome = "failed"
-        report.longrepr = f"USLIB_REQUIRE_CYTHON=1 forbids a skip, and it skipped: {reason}"
+    if report.skipped and not hasattr(report, "wasxfail"):
+        for marker, variable in REQUIRED:
+            if (item.get_closest_marker(marker) is not None
+                    and os.environ.get(variable) == "1"):
+                given = report.longrepr
+                reason = given[-1] if isinstance(given, tuple) else given
+                report.outcome = "failed"
+                report.longrepr = f"{variable}=1 forbids a skip, and it skipped: {reason}"
+                break
     return report

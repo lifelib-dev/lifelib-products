@@ -3949,6 +3949,7 @@ def test_the_docstrings_describe_the_valuation_clock(sec_model, s_model):
     assert not unsaid, f"phrases RILA_US_S does not say, so STALE holds nothing: {unsaid}"
 
 
+@pytest.mark.docutils
 def test_the_docstrings_parse_as_rst(sec_model):
     """Every docstring of the model parses as reStructuredText, without a warning.
 
