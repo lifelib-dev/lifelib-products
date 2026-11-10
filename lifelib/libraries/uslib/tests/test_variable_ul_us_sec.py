@@ -62,8 +62,11 @@ the rest of the plan's tests (its §5.2) and the product's own facts:
   below 0, and a run-off that is not a whole number of years, 1 or more, while the bounds
   of each range are read; a text value no decode knows raises ``VUL_US_S``'s message; the
   future horizon is a Reference that bounds future business, and at 0 refuses it; a point
-  at or past the end of the projection is refused by ``proj_len()``; and the edges of the
-  interface are accepted, the tables' keys written as floats among them.
+  at or past the end of the projection is refused by ``proj_len()``; the edges of the
+  interface are accepted, the tables' keys written as floats among them, each rule over a
+  window of policy months refused just inside each end and read just outside; and every
+  state ``VUL_US_S`` reaches, restated in force under each set of References on which
+  those states differ, is accepted, but an account below 0, refused by name.
 * T6, regeneration: the committed ``model_point_table_sec.csv`` is what the generator makes
   of ``VUL_US_S`` and its table as they stand, and each of its derived and future rows
   projects its S point's numbers from its month on.
@@ -581,7 +584,7 @@ def _row(model, kind, s_point, month):
     return projection(model, _row_key(model, kind, s_point, month))
 
 
-def _release(model, key):
+def _release(model, key, collect=True):
     """Drop the ItemSpace at ``key``, the registry's key, and every value it has cached.
 
     A projected VUL point holds tens of megabytes of cached values and their dependency
@@ -590,10 +593,12 @@ def _release(model, key):
     (USLIB-SEC-PLAN.md F5), and collected at once.  That costs little, because the swept
     models the module holds are frozen out of the collector (:func:`_freeze`), so the
     collection scans only what the row made.  Asked for again, the ItemSpace is made afresh
-    and recomputes.
+    and recomputes.  With ``collect`` false the collection is left to the caller, as the
+    every-state test leaves it, whose thousands of rows each hold one value.
     """
     del model.Projection[key]
-    gc.collect()
+    if collect:
+        gc.collect()
 
 
 def _freeze():
@@ -1484,6 +1489,124 @@ def _record_of(spliced, records, case):
 
 
 # ---------------------------------------------------------------------------
+# The every-state test (T5)
+#
+# Every state VUL_US_S reaches, restated in force by the generator, must be an opening state
+# Data and proj_len() accept, but a state the product refuses by name, which is set aside
+# and shown refused (USLIB-SEC-PLAN.md §5.2, T5, precised at M10 and M9).  The test runs
+# under each set of inputs on which the states S reaches differ, and names them: the
+# splice's, in the splice's class, S's shipped References and inputs, and BOUND_REFS, the
+# References under which two bounds S ships idle bind, in the T5 section.
+
+
+def _below(sp, d):
+    """Whether an account of S point ``sp`` enters month ``d`` below 0.
+
+    Each subaccount and the fixed option, at ``VUL_US_S``'s opening timing, the values the
+    generator restates: the one bound of ``Data``'s that a state S reaches can fail.
+    """
+    accounts = [sp.sa_pp_at(d, i, "BEF_PREM") for i in sp.subaccount_ids()]
+    return min(*accounts, sp.fa_pp_at(d, "BEF_PREM")) < 0.0
+
+
+def _every_state_months(sp):
+    """The months S point ``sp`` is restated at by the every-state test.
+
+    By default the edges of the windows ``Data`` and ``proj_len()`` hold a state over,
+    and ``Data`` keys no rule of ``VUL_US_SEC``'s to a policy year or an anniversary: every
+    month of its first year on S's frame, where the in-force rules' window opens, the month
+    either side of each change in the sign of an account entering a month
+    (:func:`_below`), where a state meets the bound ``Data`` holds the accounts to, and
+    the last month of its frame, where ``proj_len()``'s window ends.  With
+    ``USLIB_SEC_FULL=1``, every month of its frame.
+    """
+    n = sp.proj_len()
+    if SEC_FULL:
+        return list(range(1, n))
+    below = [_below(sp, d) for d in range(n)]
+    months = {*range(1, min(12, n)), n - 1}
+    for d in range(1, n):
+        if below[d] != below[d - 1]:
+            months |= {d - 1, d}
+    return sorted(m for m in months if m >= 1)
+
+
+def _states_s_reaches(s):
+    """The states ``s``'s points reach, as ``(S point, month)``: ``(kept, below)``.
+
+    Each month of :func:`_every_state_months` of each point of ``s``, an S model, each
+    point read in ascending months.  ``below`` holds the months an account enters below 0
+    (:func:`_below`), the one state the product refuses by name: ``VUL_US_S`` carries an
+    account below 0 once a permanent shortfall begins, or from issue where a withdrawal
+    outruns the account, since it has no grace that would end such a policy, and no policy
+    in force holds one (D6).  ``kept`` holds every other.
+    """
+    kept, below = [], []
+    for key, point_id in zip(point_keys(s), s.Data.model_point_table().index):
+        sp = projection(s, key)
+        for d in _every_state_months(sp):
+            (below if _below(sp, d) else kept).append((point_id, d))
+    return kept, below
+
+
+def _restated(s, states, root, refs, edits=None):
+    """A model of ``s``'s twins and a derived row at each of ``states``, and its table.
+
+    The generator builds the table out of ``s`` as it stands, so each row opens with the
+    state of the very run ``s`` made; the rows keep S's scenarios, which neither ``Data``
+    nor ``proj_len()`` reads.  The model is read beside ``edits`` with ``refs`` set first.
+    Returns ``(model, table)``, the table indexed by ``point_id``.
+    """
+    spec = dataclasses.replace(SPEC, derived=tuple(states), future=())
+    table, companions = build_sec_table(spec, s)
+    assert companions == {}
+    folder = temp_inputs(root, model_path(SEC), model_points=table,
+                         model_point_file=spec.model_point_file, edits=edits)
+    return _read(folder, "every", refs), table.set_index("point_id")
+
+
+def _refused_in_force(s, states, root, refs, edits=None):
+    """What ``Data`` and ``proj_len()`` refuse of ``states`` of ``s``, restated in force.
+
+    ``Data`` reads the table of :func:`_restated`, and then every row is asked for its
+    frame and released, the collector run every 500.  Returns each refusal, the line naming
+    it, ``Data``'s or each row's ``proj_len()``'s.
+    """
+    model, table = _restated(s, states, root, refs, edits)
+    try:
+        try:
+            read = model.Data.model_point_table()
+        except Exception as err:                # reported, with the rows' states
+            return [f"Data: {_raised(err)}"]
+        assert len(read) == len(table) == len(s.Data.model_point_table()) + len(states)
+        refused = []
+        for i, key in enumerate(point_keys(model)):
+            try:
+                projection(model, key).proj_len()
+            except Exception as err:            # reported, so every row is asked
+                refused.append(_raised(err))
+            _release(model, key, collect=i % 500 == 499)
+        return refused
+    finally:
+        model.close()
+
+
+def _refused_by_name(s, state, root, refs, edits=None):
+    """``Data`` refuses ``state`` of ``s``, an account below 0, restated in force, by name.
+
+    The message, matched whole, names the row and says when a point in permanent shortfall
+    may be restated; the first subaccount is the first account it names.
+    """
+    model, table = _restated(s, [state], root, refs, edits)
+    try:
+        _refused_exactly(model.Data.model_point_table, _AV_NUMBER.format(
+            column="sa_pp_init_1", point=_label(table, "derived", *state)).format(
+                file=TABLE))
+    finally:
+        model.close()
+
+
+# ---------------------------------------------------------------------------
 # The splice: T2, T3 and what their rows show
 #
 # Every test that reads the splice's models is in this class, whose fixtures they are, so
@@ -1982,6 +2105,40 @@ class TestTheSplice:
         assert list(block.index) == list(range(936))
         assert frame_mismatches(expected, block, atol=0.0) == []
 
+    def test_every_state_s_reaches_is_accepted_in_force(self, spliced, tmp_path):
+        """Every state the splice's S reaches is a valid opening state, but one (T5).
+
+        ``Data``'s rules and ``proj_len()``'s hold an opening state to what a policy in
+        force can hold, so they must accept each state ``VUL_US_S`` reaches: a rule
+        exercised only on the rows the other tests choose could refuse a state S reaches
+        elsewhere (D6; §5.2, T5, precised at M10).  So every S point of the splice, S's four
+        and the nine variants, under the splice's References and inputs and swept, is
+        restated in force by the generator at the edges of its windows, or with
+        ``USLIB_SEC_FULL=1`` at every month of its frame (:func:`_every_state_months`), into
+        one table beside the twins: ``Data`` reads it, and no row's ``proj_len()`` refuses
+        it (:func:`_refused_in_force`).  But for one state, set aside first: an account
+        below 0, which ``VUL_US_S`` reaches on S's point 3 and variant 5 once their
+        permanent shortfall begins and on variant 13 from its first month, where its
+        withdrawal outruns its account, and which ``Data`` refuses by name, since no policy
+        in force holds one.  It is the only state set aside, and a table holding one is
+        refused, naming the point and saying what to do.  This is one of the three sets of
+        inputs the test runs under, each one on which the states S reaches differ (§5.2,
+        T5, precised at M9): the splice's here, S's shipped References and inputs, and
+        :data:`BOUND_REFS` (the T5 section).  Expense inflation and the A/E move no state
+        but the count, which ``Data`` holds only to a number, zero or more, so the
+        splice's References with either changed reach these states; and at the module's
+        other inputs, the cap test's point, the loan test's and the rising returns, probed
+        at every month, ``Data`` and ``proj_len()`` refuse none but an account below 0.
+        """
+        s = spliced[0]
+        kept, below = _states_s_reaches(s)
+        assert {point for point, _ in below} == {3, 5, 13}, sorted(set(below))[:5]
+        assert {point for point, _ in kept} == set(s.Data.model_point_table().index) - {13}
+        refused = _refused_in_force(s, kept, tmp_path / "every", SPLICED_REFS,
+                                    SPLICED_EDITS)
+        assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+        _refused_by_name(s, below[0], tmp_path / "below", SPLICED_REFS, SPLICED_EDITS)
+
 
 # ---------------------------------------------------------------------------
 # D3's closed-form clock, R2's forward recursions and D5's chains, on the committed model
@@ -2467,8 +2624,15 @@ def test_scaling_the_count_scales_every_flow_and_no_per_policy_value(tmp_path):
 # rule would; a negative or text collateral or loan, or one on a row not yet in force,
 # beside the rule that pairs the two; a negative, infinite or text face in force, which
 # the in-force face rules would read as written; and a negative pin on the future row.  A
-# {file} in a message is the table's filename: every case is read from a file of its own
-# (the malformed fixture).
+# rule over a window of policy months is refused just inside each end of it (§5.2, T5,
+# precised at M10): an opening state on a point not yet in force at the horizon, -120, as
+# well as at 0 and -25, where that window's last month is 0; a face in force of 0, or above
+# the face at issue, a month in force, the first month of the in-force rules' window; and
+# a pin on a point issued a month after the valuation date and at the horizon, the ends of
+# its window, as well as at -25.  The edges test accepts each just outside its window,
+# where a state can be: an opening state a month in force, and a pin on a point issued at
+# the valuation date.  A {file} in a message is the table's filename: every case is read
+# from a file of its own (the malformed fixture).
 
 _NUMBER = ("{{file}}: {column} must be a number, zero or more; it is not at point_id "
            "[{point}]")
@@ -2593,6 +2757,21 @@ MALFORMED = [
        _PIN_LATER.format(column=column, point=9))
       for column, value in (("corridor_override_m1", 2.15),
                             ("coi_rate_override_m1", 0.04))],
+    ("sa_pp_init_1 before issue, issued at the horizon",
+     _moved(9, -120, sa_pp_init_1=100.0), _NOT_IN_FORCE.format(column="sa_pp_init_1",
+                                                                point=9)),
+    ("a zero face a month in force", _moved(5, 1, sum_assured_init=0.0),
+     "{file}: sum_assured_init must be above 0 on a policy in force, duration_mth above 0, "
+     "which holds a face; it is not at point_id [5]"),
+    ("a face above the face at issue a month in force",
+     _moved(5, 1, sum_assured_init=500000.01),
+     "{file}: sum_assured_init must be at most sum_assured, the face at issue, since face "
+     "increases are not modelled; it is not at point_id [5]"),
+    *[(f"a {column} on a point issued {when}", _moved(9, month, **{column: value}),
+       _PIN_LATER.format(column=column, point=9))
+      for column, value, month, when in (
+          ("corridor_override_m1", 2.15, -1, "a month on"),
+          ("coi_rate_override_m1", 0.04, -120, "at the horizon"))],
 ]
 
 
@@ -3172,9 +3351,17 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
       in force equal to the face at issue, and an account at 0 in every subaccount and the
       fixed option are a policy in force, projected from the values given;
     * a point in its last covered month, 923, has a frame of one row;
-    * and a policy issued 120 months after the valuation date, the shipped
+    * a policy issued 120 months after the valuation date, the shipped
       ``future_horizon_mth``, is the last one the table admits, with a frame of 1,044
-      months, 924 of cover after 120 before issue.
+      months, 924 of cover after 120 before issue;
+    * and the windows of policy months, each just outside where a state can be (§5.2, T5,
+      precised at M10), on copies appended under ids of their own: S point 3's row at 12
+      moved to a month in force, 1, holds an opening state, which the rule of a policy not
+      yet in force refuses at 0, and its face in force, which the in-force face rules hold
+      from 1; and the twin of S's point 3, issued at the valuation date, holds both pins,
+      which the rule of a policy issued later refuses at -1, each applied at ``t = 0``, its
+      issue month, as ``VUL_US_S`` applies a pin on its own new business, and the rule's
+      rate from ``t = 1``.
     """
     committed = _committed()
     zero = _label(committed, "derived", 4, 768)
@@ -3184,8 +3371,15 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
     empty = _label(committed, "derived", 3, 593)
     future = _label(committed, "future", 3, -25)
     probes = [_label(committed, "twin", p, 0) for p in (1, 3, 4)] + [future]
+    a_month_in, pinned_new = 101, 102
+    copies = {a_month_in: (equal, {"duration_mth": 1}),
+              pinned_new: (_label(committed, "twin", 3, 0),
+                           {"corridor_override_m1": 2.5, "coi_rate_override_m1": 0.04})}
 
     def edit(table):
+        table = pd.concat([table, *(
+            table.loc[[row]].assign(**changes, row_kind="copy").set_axis([label])
+            for label, (row, changes) in copies.items())]).rename_axis("point_id")
         table = _set("policy_count", [zero], 0.0)(table)
         table = _set("corridor_override_m1", [pinned], 0.0)(table)
         table = _set("la_pp_init", [whole], table.at[whole, "loan_bal_init"])(table)
@@ -3246,9 +3440,68 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
         assert all(math.isfinite(v) for v in p.result_cf().to_numpy().ravel())
         p = _point(model, future)
         assert (p.t_entry(), p.proj_len(), p.pols_new_biz(120)) == (120, 1044, 1.0)
+        p = _point(model, a_month_in)
+        assert (p.duration_mth(0), p.t_entry(), p.proj_len()) == (1, 0, 923)
+        for column, (cell, args) in STATE.items():
+            assert p.cells[cell](*args) == committed.at[equal, column], column
+        assert 0.0 < p.sum_assured_init() <= p.sum_assured()
+        assert math.isfinite(p.net_cf(0))
+        p = _point(model, pinned_new)
+        assert (p.duration_mth(0), p.pols_new_biz(0)) == (0, p.policy_count())
+        assert (p.has_corridor_override_m1(), p.corridor_factor(0)) == (True, 2.5)
+        assert (p.has_coi_rate_override_m1(), p.coi_rate(0)) == (True, 0.04)
+        assert p.corridor_factor(1) == p.corridor_factor_at(p.age(1)) != 2.5
+        assert p.coi_rate(1) == p.coi_rate_at(p.policy_year(1)) != 0.04
+        assert math.isfinite(p.net_cf(0))
     finally:
         plain.close()
         model.close()
+
+
+def test_every_state_s_reaches_where_its_bounds_bind_is_accepted_in_force(tmp_path):
+    """Under :data:`BOUND_REFS` too, every state S reaches is accepted, but one.
+
+    At the guaranteed COI scale and the declared rate at its floor, with the behaviour
+    module on, the References under which two of ``VUL_US_S``'s bounds bind, every one of
+    S's four points runs into a permanent shortfall, S's point 4 after its loan has passed
+    its cash value, so the states S reaches differ again, and the every-state test runs
+    here too (§5.2, T5, precised at M9): on S read afresh with them set before it computes
+    anything, each point restated in force at the edges of its windows, or at every month
+    with ``USLIB_SEC_FULL=1``, is read by ``Data`` and has a frame
+    (:func:`_refused_in_force`), but an account below 0, on every point, which a table
+    holding one is refused for, by name.  It runs before the committed S is first read, so
+    the two never sit in memory together.
+    """
+    s = _read(model_path(TWIN), "s_every_bounds", BOUND_REFS)
+    try:
+        kept, below = _states_s_reaches(s)
+        assert {point for point, _ in below} == {1, 2, 3, 4}, below[:3]
+        assert {point for point, _ in kept} == {1, 2, 3, 4}
+        refused = _refused_in_force(s, kept, tmp_path / "every", BOUND_REFS)
+        assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+        _refused_by_name(s, below[0], tmp_path / "below", BOUND_REFS)
+    finally:
+        s.close()
+
+
+def test_every_state_s_reaches_as_shipped_is_accepted_in_force(s_model, tmp_path):
+    """At S's shipped References and inputs too, every state S reaches is accepted, but one.
+
+    The states ``VUL_US_S`` reaches differ from the splice's here, with the behaviour module
+    off, charges to the end of the table and S's own scenarios, so the every-state test runs
+    here too (§5.2, T5, precised at M9): each of S's four points, swept, restated in force
+    at the edges of its windows, or with ``USLIB_SEC_FULL=1`` at every month of its frame
+    (:func:`_every_state_months`), is read by ``Data`` and has a frame
+    (:func:`_refused_in_force`), but an account below 0, which S's point 3 reaches once its
+    permanent shortfall begins, at policy month 594, the month after the committed row at
+    593, and which a table holding it is refused for, by name.
+    """
+    kept, below = _states_s_reaches(s_model)
+    assert {point for point, _ in below} == {3} and min(below)[1] == 594, below[:3]
+    assert {point for point, _ in kept} == {1, 2, 3, 4}
+    refused = _refused_in_force(s_model, kept, tmp_path / "every", {})
+    assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+    _refused_by_name(s_model, below[0], tmp_path / "below", {})
 
 
 # ---------------------------------------------------------------------------
