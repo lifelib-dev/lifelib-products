@@ -59,8 +59,9 @@ tests (its §5.2) and the product's own facts:
   value, by the count cell beside its reader, naming the file's lines; a point at or past
   its maturity, or carrying more free withdrawal than its year allows, is refused by
   ``proj_len()``; a value no decode knows is refused where the projection meets it; the
-  future horizon is a Reference that bounds future business; and every state S reaches
-  in the splice, the edges of the interface, and keys written as floats, are accepted.
+  future horizon is a Reference that bounds future business; and every state S reaches,
+  on the splice's inputs and on its shipped ones, the edges of the interface, and keys
+  written as floats, are accepted.
 * T6, regeneration: the committed ``model_point_table_sec.csv`` and
   ``market_scenario_sec.csv`` are what the generator makes of ``RILA_US_S`` and its inputs
   as they stand, and each derived and future row in them is its S point from its month
@@ -1253,38 +1254,40 @@ def _every_state_months(n):
                    *range(11, n, 12)})
 
 
-def test_every_state_s_reaches_is_accepted_in_force(spliced, tmp_path):
-    """Every state ``RILA_US_S`` reaches is a valid opening state, but a contract emptied.
+def _states_s_reaches(s):
+    """The states ``s``'s points reach, as ``(S point, month)``: ``(kept, emptied)``.
 
-    ``Data``'s rules and ``proj_len()``'s hold an opening state to what a contract in force
-    can be, so they must accept each state the S model reaches, at References off their
-    shipped values as at them: a rule exercised only on the rows the other tests choose
-    could refuse a state S reaches elsewhere (D6).  So every S point of the splice, under
-    the splice's References and swept, is restated in force at every month of its first
-    year, every sixth month after, each anniversary and each renewal among them, and the
-    last month of each year, where the windows of ``Data``'s first-year, anniversary,
-    renewal and term-start rules open and close (:func:`_every_state_months`), or with
-    ``USLIB_SEC_FULL=1`` at every month of its frame, by the generator, into one table:
-    ``Data`` accepts the table, and no row's
-    ``proj_len()`` refuses it.  But for one state, set aside first: ``RILA_US_S`` keeps a
-    contract in force once a withdrawal has taken its whole value, holding nothing, as the
-    programme of variant 21 leaves it from policy month 30, and ``Data`` refuses a contract
-    in force that holds nothing, which its docstring states.  It is the only state set
-    aside, and a table holding it is refused, by name.
+    Each month of :func:`_every_state_months` of each point of ``s``, an S model whose
+    References are set.  ``emptied`` holds the months a contract enters holding nothing,
+    its Investment Amount and both accounts 0, the one state the product refuses by name:
+    ``RILA_US_S`` keeps a contract in force once a withdrawal has taken its whole value.
+    ``kept`` holds every other.
     """
-    s = spliced[0]
-    twins = len(s.Data.model_point_table())         # each S point's twin leads the table
     kept, emptied = [], []
     for key, point_id in zip(point_keys(s), s.Data.model_point_table().index):
         p = projection(s, key)
         for d in _every_state_months(p.proj_len()):
             held = p.inv_amt_pp(d - 1) + p.fixed_acct_pp(d - 1) + p.holding_acct_pp(d - 1)
             (kept if held != 0.0 else emptied).append((point_id, d))
-    assert emptied and all(p == 21 and d >= 30 for p, d in emptied), emptied
-    model = _read(_sec_built(tmp_path / "every", s, kept, (), SPLICED_EDITS), "every",
-                  SPLICED_REFS)
+    return kept, emptied
+
+
+def _refused_in_force(s, states, root, edits, refs):
+    """What ``Data`` and ``proj_len()`` refuse of ``states`` of ``s``, restated in force.
+
+    The generator builds one table of every point's twin and a derived row at each state,
+    beside ``edits``, S's edited inputs (:func:`_sec_built`), which a model read with
+    ``refs`` set first reads through ``Data``, and then asks every row for its frame,
+    releasing each, collecting every 500.  Returns each refusal, the line naming it,
+    ``Data``'s or each row's ``proj_len()``'s.
+    """
+    model = _read(_sec_built(root, s, states, (), edits), "every", refs)
     try:
-        assert len(model.Data.model_point_table()) == twins + len(kept)
+        try:
+            read = model.Data.model_point_table()
+        except Exception as err:                # reported, with the rows' states
+            return [f"Data: {_raised(err)}"]
+        assert len(read) == len(s.Data.model_point_table()) + len(states)
         refused = []
         for i, key in enumerate(point_keys(model)):
             try:
@@ -1292,9 +1295,40 @@ def test_every_state_s_reaches_is_accepted_in_force(spliced, tmp_path):
             except Exception as err:            # reported, so the scan goes on
                 refused.append(_raised(err))
             _release(model, key, collect=i % 500 == 0)
-        assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+        return refused
     finally:
         model.close()
+
+
+def test_every_state_s_reaches_is_accepted_in_force(spliced, tmp_path):
+    """Every state ``RILA_US_S`` reaches is a valid opening state, but a contract emptied.
+
+    ``Data``'s rules and ``proj_len()``'s hold an opening state to what a contract in force
+    can be, so they must accept each state the S model reaches, at References off their
+    shipped values as at them: a rule exercised only on the rows the other tests choose
+    could refuse a state S reaches elsewhere (D6).  This test runs on the splice's inputs:
+    S's table with the variants, on the splice's market paths, surrender and charge rates,
+    guaranteed minimums and programmes (:data:`SPLICED_EDITS`), under the splice's
+    References (:data:`SPLICED_REFS`); the next runs on S's shipped ones, the other set
+    of inputs the module reads every S point under, on which S's states differ (§5.2,
+    T5, precised at M9).  So every S point of the splice, swept, is restated in force at
+    every month of its first year, every sixth month after, each anniversary and each
+    renewal among them, and the last month of each year, where the windows of ``Data``'s
+    first-year, anniversary, renewal and term-start rules open and close
+    (:func:`_every_state_months`), or with ``USLIB_SEC_FULL=1`` at every month of its
+    frame, by the generator, into one table: ``Data`` accepts the table, and no row's
+    ``proj_len()`` refuses it (:func:`_refused_in_force`).  But for one state, set aside
+    first: ``RILA_US_S`` keeps a contract in force once a withdrawal has taken its whole
+    value, holding nothing, as the programme of variant 21 leaves it from policy month 30,
+    and ``Data`` refuses a contract in force that holds nothing, which its docstring
+    states.  It is the only state set aside, and a table holding it is refused, by name.
+    """
+    s = spliced[0]
+    twins = len(s.Data.model_point_table())         # each S point's twin leads the table
+    kept, emptied = _states_s_reaches(s)
+    assert emptied and all(p == 21 and d >= 30 for p, d in emptied), emptied
+    refused = _refused_in_force(s, kept, tmp_path / "every", SPLICED_EDITS, SPLICED_REFS)
+    assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
     model = _read(_sec_built(tmp_path / "emptied", s, emptied[:1], (), SPLICED_EDITS),
                   "emptied", SPLICED_REFS)
     try:
@@ -1303,6 +1337,36 @@ def test_every_state_s_reaches_is_accepted_in_force(spliced, tmp_path):
                  f"account balance; none does at point_id [{twins + 1}]")
     finally:
         model.close()
+
+
+def test_every_state_s_reaches_as_shipped_is_accepted_in_force(tmp_path):
+    """Every state ``RILA_US_S`` reaches as shipped is a valid opening state too.
+
+    The test above runs on the splice's inputs, and S's states differ on its own: its
+    fifteen points on its shipped market paths, the Holding Account empty, the Fixed
+    Account taking 15% of a term end, the declared account rate above its floor and the
+    interim value's References as shipped, the set of References and inputs the committed
+    table is generated from and the other the module reads every S point under
+    (USLIB-SEC-PLAN.md §5.2, T5, precised at M9, taken at M13, §5.4).  So ``RILA_US_S``,
+    read in place, is restated in force at the same months (:func:`_every_state_months`),
+    or with ``USLIB_SEC_FULL=1`` at every month of each frame, by the generator, into one
+    table: ``Data`` accepts it, and no row's ``proj_len()`` refuses it
+    (:func:`_refused_in_force`).  No state is set aside, since no shipped programme takes
+    a contract's whole value.  The References the module moves for one test alone, T4's
+    switched-on assumptions, the cap test's A/E and the maturity age and free rate
+    :data:`REFUSED` admits under, move S's states from these in one respect each, the
+    split between the two accounts, the count, the remainder and the months of cover, and
+    a probe at M13 read each such state at every month.
+    """
+    s = _read(model_path(TWIN), "every_s")
+    try:
+        kept, emptied = _states_s_reaches(s)
+        assert not emptied, emptied[:5]
+        assert len(kept) > 800, len(kept)
+        refused = _refused_in_force(s, kept, tmp_path / "every", None, {})
+        assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
+    finally:
+        s.close()
 
 
 def _record(case, proj):
@@ -1921,11 +1985,17 @@ def test_acquisition_and_the_premium_fall_on_new_business_only(sec_model, tmp_pa
 # term-start columns, and nge_reset on row 20, where it would ask for a cap.  The rules
 # that hold a window of contract months are tested at both ends, refused just inside here
 # and in REFUSED, the anniversary rule and proj_len()'s remainder rule at month 12, where
-# each starts, and accepted just outside
-# (test_the_edges_of_the_in_force_interface_are_accepted).  Each
-# case is read by a model of its own, its file named by a Reference set before the model
-# computes anything (the malformed fixture), so a {file} in a message is the case's own
-# filename.
+# each starts, and the first-term rule at month 1, its first, as at 71 and, on a one-year
+# term, at 11, its last, and accepted just outside
+# (test_the_edges_of_the_in_force_interface_are_accepted).  And each tolerance is pinned
+# from both sides, refused just past it here or in REFUSED and accepted just inside it
+# there (USLIB-SEC-PLAN.md §5.2, T5, precised at M10): the cents of the return-of-premium
+# base, the anniversary rule and the remainder rule within two cents past, and the cent the
+# first year's rules and the first term's hold the remainder, the base on either side of
+# the premium and the two accounts to a tenth of a cent past, each read a part of a cent
+# inside it.  Each case is read by a model of its own, its file named by a Reference set
+# before the model computes anything (the malformed fixture), so a {file} in a message is
+# the case's own filename.
 
 _NUMBER = "{file}: {c} must be a number, zero or more; it is not at point_id [{p}]"
 _SIGNED = ("{file}: {c} must be a finite number, of either sign, the interim value being "
@@ -2140,6 +2210,20 @@ MALFORMED = [
     ("a fixed account on a one-year term at month 11",
      _in_first_year(20, 11, fixed_acct_pp_init=1.0),
      _m(_FIRST_TERM, c="fixed_acct_pp_init", p=20)),
+    ("a fixed account on a one-year term at month 1",
+     _in_first_year(20, 1, fixed_acct_pp_init=1.0),
+     _m(_FIRST_TERM, c="fixed_acct_pp_init", p=20)),
+    ("a free withdrawal amount just over a cent in the first contract year",
+     _in_first_year(16, 1, free_wd_remain_init=0.011), _m(_REMAIN, p=16)),
+    *[(f"a base just over a cent {side} the premium in the first contract year",
+       _in_first_year(16, month, av_pp_prev_anniv_init=100000.0 + gap), _m(_PREV, p=16))
+      for side, month, gap in (("above", 11, 0.011), ("below", 1, -0.011))],
+    ("a holding account just over a cent at month 1, the first term's first",
+     _in_first_year(22, 1, holding_acct_pp_init=0.011),
+     _m(_FIRST_TERM, c="holding_acct_pp_init", p=22)),
+    ("a fixed account just over a cent in the first term's last month",
+     _moved(22, 71, fixed_acct_pp_init=0.011),
+     _m(_FIRST_TERM, c="fixed_acct_pp_init", p=22)),
     ("an account value three cents above the balances at a renewal",
      _plus("av_pp_init", [19], 0.03), _m(_RENEWAL, p=19)),
     ("an account value three cents below the balances at a renewal",
@@ -4262,6 +4346,10 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, s_model, tm
       first term's, the Step option moved to its first renewal, month 12, with a Fixed
       Account; and the anniversary rule's, the anchor at months 11 and 13 with a base
       below its account value;
+    * inside both windows, at months 1 and 11, the anchor carrying each amount the first
+      year's and the first term's rules hold to a cent within it: a remainder and both
+      accounts of 0.009, and a base 0.009 above the premium at month 1 and below it at
+      month 11, each of which ``MALFORMED`` refuses a tenth of a cent past the cent;
     * a buffer of 0 on the anchor in force and a floor of 0 on the Floor option, each the
       least its rule admits.
 
@@ -4310,6 +4398,10 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, s_model, tm
                     "free_wd_remain_init": 5000.0}),
         114: (p16, {"buffer": 0.0}),
         115: (floor_twin, {"floor_rate": 0.0}),
+        **{label: (p16, {"duration_mth": month, "av_pp_prev_anniv_init": 100000.0 + gap,
+                         "free_wd_remain_init": cent, "fixed_acct_pp_init": cent,
+                         "holding_acct_pp_init": cent})
+           for label, month, gap in ((116, 1, cent), (117, 11, -cent))},
     }
     reset_rows = (reset_twin, p18, p19)
 
