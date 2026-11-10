@@ -54,8 +54,11 @@ plan's tests (its §5.2) and the product's own facts:
   key or a value, by the count cell beside its reader, naming the file's lines, and each
   again through a projection; a point at or past the stop rule, owing nothing, or
   accelerating inside a commuted guarantee, is refused by ``proj_len()``; the future
-  horizon is a Reference that bounds future business, and at 0 refuses it; and the edges
-  of the interface, and assumption keys written as floats, are accepted.
+  horizon is a Reference that bounds future business, and at 0 refuses it; the edges of
+  the interface, and assumption keys written as floats, are accepted, each check over a
+  window of contract months refused just inside each end and read just outside it; and
+  every state S reaches, restated in force, is accepted, but a contract owing nothing,
+  which is refused by name.
 * T6, regeneration: the committed ``model_point_table_sec.csv`` and
   ``premium_schedule_sec.csv`` are what the generator makes of ``DIA_US_S`` and its inputs
   as they stand, and each derived and future row in them is its S point from its month on,
@@ -86,13 +89,15 @@ line when the module was written, the core's cases execute every line of ``Proje
 full grid's execute.  The other cases, and the rules test's scan of their rows, carry the
 ``sec_full`` marker and are skipped, with the reason shown, unless ``USLIB_SEC_FULL=1`` is
 set.  They are never dropped: one leg of the CI matrix sets it, and ``USLIB_SEC_FULL=1
-python -m pytest -m sec_full`` on this module runs them alone.  Memory is the other cost.  A
-projected point holds its cached values and their dependency graph, so a row read once, a
-splice case's or a point of a temporary copy, is released as soon as it has been read
-(``_release``), and the splice's rows are held one at a time, however large the grid.  The
-three models the module sweeps once and holds, the splice's S model and the committed S and
-SEC models, are frozen out of the collector (``gc.freeze``), so that a collection scans only
-what a test has made since, and the freeze is undone as the module ends (:func:`_freeze`).
+python -m pytest -m sec_full`` on this module runs them alone.  The every-state test
+restates S's states at the edges of the product's windows by default, and at every month
+of every frame with ``USLIB_SEC_FULL=1``.  Memory is the other cost.  A projected point
+holds its cached values and their dependency graph, so a row read once, a splice case's
+or a point of a temporary copy, is released as soon as it has been read (``_release``),
+and the splice's rows are held one at a time, however large the grid.  The three models
+the module sweeps once and holds, the splice's S model and the committed S and SEC models,
+are frozen out of the collector (``gc.freeze``), so that a collection scans only what a
+test has made since, and the freeze is undone as the module ends (:func:`_freeze`).
 
 Every test keeps four rules.  Each model is read under a name of its own and closed:
 ``test_deferred_income_annuity_us.py`` reads S under its default name, and reading a model
@@ -111,6 +116,7 @@ Phase 2's int codes (C1).
 import dataclasses
 import gc
 import itertools
+import math
 import os
 import re
 import shutil
@@ -1016,7 +1022,7 @@ def s_model():
 
 @pytest.fixture(scope="module")
 def spliced(tmp_path_factory):
-    """S and SEC on the splice's inputs: ``(s, sec, s_later, events)``.
+    """S and SEC on the splice's inputs: ``(s, sec, s_later, events, every)``.
 
     S is read from a copy of the product directory whose table has the variants appended,
     whose premium schedule has their premiums, and whose mortality table and improvement
@@ -1034,7 +1040,9 @@ def spliced(tmp_path_factory):
     one swept point at a time.  The rows the product's own tests read on the splice's inputs
     (:data:`EVENT_ROWS`) are built into a table of their own from the same swept S model, in
     the folder ``events``, which the ``events`` fixture reads, so that no S point is
-    projected again for them.
+    projected again for them; and so are the states the every-state test restates,
+    ``every`` (:func:`_every_state_table`), whose S points T2 releases before that test
+    runs.
 
     Everything alive once S is swept, S's points among them, is then frozen out of the
     collector (:func:`_freeze`), so that the collection after each row's release scans only
@@ -1053,10 +1061,11 @@ def spliced(tmp_path_factory):
     sec_folder = _sec_built(root / "sec", s, derived, _selected(FUTURES, CORE_FUTURES),
                             SPLICED_EDITS)
     events = _sec_built(root / "events", s, EVENT_ROWS, EVENT_FUTURES, SPLICED_EDITS)
+    every = _every_state_table(root / "every", s, SPLICED_EDITS)
     sec = _read(sec_folder, "sec_spliced", SEC_REFS)
     s_later = _read(s_folder, "s_spliced_later", LATER_REFS)
     _freeze()
-    yield s, sec, s_later, events
+    yield s, sec, s_later, events, every
     s_later.close()
     sec.close()
     s.close()
@@ -1961,9 +1970,29 @@ def test_scaling_the_count_scales_every_flow_and_no_per_contract_value(tmp_path)
 # income start month on point 20, whose frozen weight's presence rule reads the start
 # month; the broken adjustment pair on point 19, past its income start month, where the
 # start month in force it gives is blank; the life probabilities on point 18, which
-# carries no frozen weight to break as well.  Each case is read by a model of its own, its
-# file named by a Reference set before the model computes anything (the malformed
-# fixture), so a {file} in a message is the case's own filename.
+# carries no frozen weight to break as well.
+#
+# Each check over a window of contract months is refused just inside each end of its
+# window, its first month as well as its last, and read just outside it (the edges test),
+# where an off-by-one would let a row through (USLIB-SEC-PLAN.md §5.2, T5, precised at
+# M10).  An income start month is refused at -1 and read at 0.  An acceleration or a
+# commutation, payout-phase options, are refused at policy months 0 and 239 and read at
+# 240, the income start month, and at -1, never; on the adjustment's twin, deferred to 300,
+# an acceleration is refused at 299 and read at 300.  The interlock is refused five months
+# either side of the commutation and read six months either side: six before by the edges
+# test, and six after in REFUSED, where proj_len() refuses it instead.  The at-issue
+# check and the guarantee-period column's are refused at -120, the horizon, and at 0, and
+# read at 1, a contract a month in force.  The frozen weights are refused given at -120
+# and at their month, the income start month and the commutation month, and blank the
+# month after, and read blank at their month and given after it.  The two checks on the
+# adjustment's months, its new start month after the exercise and the exercise before the
+# income start month, are refused where the months meet and read a month apart.  The two
+# bounds between the frozen weights and the lives are held exactly, with no tolerance:
+# each is read at equality and refused an ulp past it, l_last(t_c) above l_last(T) and
+# either weight below the life alive, so that neither a floating-point slack nor a strict
+# inequality passes.  Each case is read by a model of its own, its file named by a
+# Reference set before the model computes anything (the malformed fixture), so a {file}
+# in a message is the case's own filename.
 
 _INTEGER = "{file}: {c} must be {what}; it is not at point_id [{p}]"
 _LIFE = ("{file}: lives_if_init_{n} must be a probability, 0 to 1; it is not at "
@@ -2054,6 +2083,7 @@ MALFORMED = [
      _m(_START, p=20)),
     ("a negative income start month", _set("income_start_mth", [1], -12),
      _m(_START, p=1)),
+    ("an income start month of -1", _set("income_start_mth", [1], -1), _m(_START, p=1)),
     ("an adjustment month written as text", _set("adjust_mth", [22], "x"),
      _m(_OPTION, c="adjust_mth", p=22)),
     ("a fractional adjustment month", _set("adjust_mth", [22], 120.5),
@@ -2086,7 +2116,20 @@ MALFORMED = [
      "deferral option; it does not at point_id [13]"),
     ("an acceleration in deferral", _set("accel_mth", [18], 200),
      _m(_PAYOUT_OPTION, c="accel_mth", option="payment acceleration", p=18)),
+    ("an acceleration at issue", _set("accel_mth", [14], 0),
+     _m(_PAYOUT_OPTION, c="accel_mth", option="payment acceleration", p=14)),
+    ("an acceleration the month before the income start month",
+     _set("accel_mth", [14], 239),
+     _m(_PAYOUT_OPTION, c="accel_mth", option="payment acceleration", p=14)),
+    ("an acceleration the month before an adjusted income start month",
+     _set("accel_mth", [13], 299),
+     _m(_PAYOUT_OPTION, c="accel_mth", option="payment acceleration", p=13)),
     ("a commutation in deferral", _set("commute_mth", [15], 200),
+     _m(_PAYOUT_OPTION, c="commute_mth", option="commutation", p=15)),
+    ("a commutation at issue", _set("commute_mth", [15], 0),
+     _m(_PAYOUT_OPTION, c="commute_mth", option="commutation", p=15)),
+    ("a commutation the month before the income start month",
+     _set("commute_mth", [15], 239),
      _m(_PAYOUT_OPTION, c="commute_mth", option="commutation", p=15)),
     ("an acceleration five months after a commutation", _set("accel_mth", [15], 257),
      "{file}: accel_mth and commute_mth must fall six months apart or more, the product's "
@@ -2182,25 +2225,52 @@ MALFORMED = [
      _m(_AT_ISSUE, c="ref_rate_shift_init", p=15)),
     ("a rate change on future business", _set("ref_rate_shift_init", [26], -0.005),
      _m(_AT_ISSUE, c="ref_rate_shift_init", p=26)),
+    ("a life not alive on business issued at the horizon",
+     _moved(26, -120, lives_if_init_1=0.9), _m(_AT_ISSUE, c="lives_if_init_1", p=26)),
     ("no guarantee period on a refund form in force",
      _set("guarantee_mths_pricing_init", [18], NAN), _m(_NG_GIVEN, p=18)),
     ("a guarantee period at issue", _set("guarantee_mths_pricing_init", [1], 40.0),
      _m(_NG_BLANK, p=1)),
     ("a guarantee period on a period certain",
      _set("guarantee_mths_pricing_init", [20], 120.0), _m(_NG_BLANK, p=20)),
+    ("no guarantee period a month in force",
+     _moved(18, 1, guarantee_mths_pricing_init=NAN), _m(_NG_GIVEN, p=18)),
+    ("a guarantee period on business issued at the horizon",
+     _moved(26, -120, guarantee_mths_pricing_init=40.0), _m(_NG_BLANK, p=26)),
     ("no l_last(T) past the income start month", _set("surv_to_payout_init", [19], NAN),
      _m(_S2P_GIVEN, p=19)),
     ("l_last(T) in deferral", _set("surv_to_payout_init", [18], 0.99),
      _m(_S2P_BLANK, p=18)),
+    ("l_last(T) at the income start month", _set("duration_mth", [19], 240),
+     _m(_S2P_BLANK, p=19)),
+    ("l_last(T) on business issued at the horizon",
+     _moved(26, -120, surv_to_payout_init=0.9), _m(_S2P_BLANK, p=26)),
     ("no l_last(t_c) past the commutation", _set("commute_weight_init", [21], NAN),
      _m(_CW_GIVEN, p=21)),
     ("l_last(t_c) with no commutation", _set("commute_weight_init", [20], 0.6),
      _m(_CW_BLANK, p=20)),
+    ("l_last(t_c) at the commutation month", _set("duration_mth", [21], 252),
+     _m(_CW_BLANK, p=21)),
+    ("l_last(t_c) on business issued at the horizon",
+     _moved(26, -120, commute_mth=252, commute_frac=1.0, commute_weight_init=0.5),
+     _m(_CW_BLANK, p=26)),
     ("l_last(t_c) above l_last(T)", _set("commute_weight_init", [21], 0.9),
+     _m(_ORDER, p=21)),
+    ("l_last(t_c) an ulp above l_last(T)",
+     _both(_set("surv_to_payout_init", [21], 0.75),
+           _set("commute_weight_init", [21], math.nextafter(0.75, 1.0))),
      _m(_ORDER, p=21)),
     ("l_last(T) below the life alive", _set("surv_to_payout_init", [19], 0.5),
      _m(_FLOOR, c="surv_to_payout_init", p=19)),
     ("l_last(t_c) below the life alive", _set("commute_weight_init", [21], 0.6),
+     _m(_FLOOR, c="commute_weight_init", p=21)),
+    ("l_last(T) an ulp below the life alive",
+     _both(_set("lives_if_init_1", [19], 0.5),
+           _set("surv_to_payout_init", [19], math.nextafter(0.5, 0.0))),
+     _m(_FLOOR, c="surv_to_payout_init", p=19)),
+    ("l_last(t_c) an ulp below the life alive",
+     _both(_set("lives_if_init_1", [21], 0.5),
+           _set("commute_weight_init", [21], math.nextafter(0.5, 0.0))),
      _m(_FLOOR, c="commute_weight_init", p=21)),
     ("l_last(T) below two joint lives' last survivor",
      _both(_set("lives_if_init_1", [23], 0.5), _set("lives_if_init_2", [23], 0.5),
@@ -2283,7 +2353,12 @@ _PREMIUM_AMT = ("{file}: premium_amt must be a number, zero or more; it is not a
 # policy month 60, and row 26's two.  DIA_US_S takes int() of the raw month, so that 60.5
 # is 60 and text raises Python's own message, and a point with no premium row projects
 # silently, buying no income; here the months and amounts are read by value, each checked
-# against the point it names, and a point that buys nothing is refused.
+# against the point it names, and a point that buys nothing is refused.  The two checks
+# over a window of policy months are refused at each end and read just outside it (the
+# edges test), USLIB-SEC-PLAN.md §5.2's T5 (precised at M10): a premium before the
+# valuation date, on row 18 at 59, at policy months 0 and 58, and read at 59, due in the
+# valuation month; and one at or after the income start month, at 240 and at the adjusted
+# 300, and read at 239.
 SCHEDULES = [
     *[(f"no {column} column", _drop(column), f"{{file}} has no {column} column")
       for column in ("point_id", "premium_mth", "premium_amt")],
@@ -2303,6 +2378,10 @@ SCHEDULES = [
     ("a negative premium", _premium(18, "premium_amt", -1.0), _m(_PREMIUM_AMT, p=18)),
     ("a blank premium", _premium(26, "premium_amt", NAN), _m(_PREMIUM_AMT, p=26)),
     ("a premium before the valuation date", _added(18, 58),
+     "{file}: a premium falls before the valuation date at point_id [18]: those paid "
+     "before it are in cum_premium_pp_init and annual_income_init, and the schedule holds "
+     "the premiums still due"),
+    ("a premium at issue on a contract in force", _added(18, 0),
      "{file}: a premium falls before the valuation date at point_id [18]: those paid "
      "before it are in cum_premium_pp_init and annual_income_init, and the schedule holds "
      "the premiums still due"),
@@ -2582,16 +2661,25 @@ def test_an_assumption_tables_keys_written_as_floats_are_read_by_value(sec_model
 # the valuation date, every covered life having died before its income start month, whose
 # death benefit was paid, or after it, its certain period over or the form having none,
 # the refund, if any, having been paid at the last death.  The table reads in each: the
-# rules need the certain period, which an installment refund derives in Projection.  As
-# (case, point_id, edit, message).
+# rules need the certain period, which an installment refund derives in Projection.  Each
+# window is refused at its first month and at its last and read just outside it (the
+# edges test), USLIB-SEC-PLAN.md §5.2's T5 (precised at M10): every life dead in deferral
+# at 1, the first month in force, and at 240, the income start month, where the at-issue
+# check refuses 0, and read inside the guarantee at 241; after the period certain's
+# guarantee at 360 and 719, the frame's last month, and read at 359; and on a form with
+# no certain period at 241 and 719.  The stop rule is refused at 720 and read at 719, the
+# committed row 25; past each frame's last month the stop rule refuses first.  As (case,
+# point_id, edit, message).
 _OWED = "point_id {p}: duration_mth {d}: no payment is owed after the valuation date: "
 # Row 21, a month after its full commutation at policy month 252, accelerating inside the
 # guarantee that runs to 359: six months after the commutation, the least the interlock
 # allows, so that Data reads the table and only proj_len() refuses it; and at 358, where
 # the lump sum pulls forward 359, the guarantee's last month, valued before the exercise
-# and at it.  Variant 35, accelerating at 359, pulls forward the life tail alone, and
-# projects (T2).
-_ACCEL = ("point_id 21: accel_mth {a} pulls forward guaranteed instalments that the "
+# and at it.  The commuting twin, point 15, accelerating at 258 on the books from issue,
+# at the valuation date and issued 120 months on, the window's first month.  An
+# acceleration at 359, which pulls forward the life tail alone, and one valued a month
+# after it, its lump sum paid, are read (the edges test).
+_ACCEL = ("point_id {p}: accel_mth {a} pulls forward guaranteed instalments that the "
           "commutation at policy month 252 reduced, the guarantee running to policy month "
           "359: the lump sum would pay the cohort that commuted its instalments again")
 REFUSED = [
@@ -2616,11 +2704,27 @@ REFUSED = [
      _OWED.format(p=23, d=672) + "every covered life has died, and the form has no "
      "certain period"),
     ("an acceleration six months after a commutation, inside its guarantee", 21,
-     _set("accel_mth", [21], 258), _ACCEL.format(a=258)),
+     _set("accel_mth", [21], 258), _ACCEL.format(p=21, a=258)),
     ("an acceleration pulling forward a guarantee's last month", 21,
-     _set("accel_mth", [21], 358), _ACCEL.format(a=358)),
+     _set("accel_mth", [21], 358), _ACCEL.format(p=21, a=358)),
     ("an acceleration inside a commuted guarantee at the valuation date", 21,
-     _moved(21, 358, accel_mth=358), _ACCEL.format(a=358)),
+     _moved(21, 358, accel_mth=358), _ACCEL.format(p=21, a=358)),
+    ("an acceleration inside a commuted guarantee at issue", 15,
+     _set("accel_mth", [15], 258), _ACCEL.format(p=15, a=258)),
+    ("an acceleration inside a commuted guarantee issued at the horizon", 15,
+     _moved(15, -120, accel_mth=258), _ACCEL.format(p=15, a=258)),
+    ("every life dead in the first month in force", 18,
+     _moved(18, 1, lives_if_init_1=0.0),
+     _OWED.format(p=18, d=1) + "every covered life has died before the income start "
+     "month, 240"),
+    ("every life dead in the last month, after the certain period", 20,
+     _moved(20, 719, lives_if_init_1=0.0),
+     _OWED.format(p=20, d=719) + "every covered life has died, and the certain period "
+     "ended at policy month 360"),
+    ("every life dead in the last month, no certain period", 25,
+     _set("lives_if_init_1", [25], 0.0),
+     _OWED.format(p=25, d=719) + "every covered life has died, and the form has no "
+     "certain period"),
 ]
 
 
@@ -2719,30 +2823,103 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
     guarantee pays its beneficiary, through the frozen ``l_last(T)``: the period certain at
     300 with its life dead pays 0.715 of each instalment until its guarantee ends at policy
     month 360, ``t = 60``, and nothing after.
+
+    Each window of contract months is read just outside it (USLIB-SEC-PLAN.md §5.2, T5,
+    precised at M10), by copies of committed rows appended under ids of their own, each
+    with its source's premiums still due, and each reading and projecting its whole frame
+    in finite numbers: an income start month of 0, the least a policy month can be; the
+    adjustment exercised the month before the income start month, and the new start month
+    the month after the exercise; an acceleration and a commutation at the income start
+    month, 240, and an acceleration at the adjustment's 300; a commutation at -1, never; an
+    acceleration six months before a commutation; the deferral row a month in force, its
+    guarantee-period column given; the anchor at its income start month and the commuting
+    point at its commutation month, each frozen weight blank and derived; a premium due in
+    the valuation month and one the month before the income start month; the period
+    certain with its life dead at 241 and 359, inside its guarantee, paying its
+    beneficiary; and an acceleration inside a commuted guarantee valued the month after
+    it, its lump sum paid, and one in the guarantee's last month, which pulls forward the
+    life tail alone.  And each bound between the frozen weights and the lives is read at
+    equality: ``l_last(t_c)`` at ``l_last(T)``, and each weight at the life alive.
     """
     committed = _committed()
     zero = _label(committed, "derived", 1, 241)
     later = _label(committed, "future", 8, -13)
     dead = _label(committed, "derived", 7, 300)
     fall = _label(committed, "derived", 15, 253)
+    deferral = _label(committed, "derived", 14, 59)
+    copies = {101: (zero, {"income_start_mth": 0.0}),
+              102: (13, {"adjust_mth": 239.0}),
+              103: (13, {"adjust_start_mth": 121.0}),
+              104: (14, {"accel_mth": 240.0}),
+              105: (13, {"accel_mth": 300.0}),
+              106: (15, {"commute_mth": 240.0}),
+              107: (15, {"commute_mth": -1.0}),
+              108: (15, {"accel_mth": 246.0}),
+              109: (deferral, {"duration_mth": 1.0}),
+              110: (zero, {"duration_mth": 240.0, "surv_to_payout_init": NAN}),
+              111: (fall, {"duration_mth": 252.0, "commute_weight_init": NAN}),
+              112: (fall, {"surv_to_payout_init": 0.75, "commute_weight_init": 0.75}),
+              113: (zero, {"lives_if_init_1": 0.5, "surv_to_payout_init": 0.5}),
+              114: (fall, {"lives_if_init_1": 0.5, "commute_weight_init": 0.5}),
+              115: (deferral, {}),
+              116: (17, {}),
+              117: (dead, {"duration_mth": 241.0, "lives_if_init_1": 0.0}),
+              118: (dead, {"duration_mth": 359.0, "lives_if_init_1": 0.0}),
+              119: (fall, {"duration_mth": 359.0, "accel_mth": 358.0}),
+              120: (fall, {"accel_mth": 359.0})}
 
     def edit(table):
-        table = _set("policy_count", [zero], 0.0)(table)
         table = table.assign(**{c: table[c].astype(float) for c in _WHOLE})
+        rows = [table.loc[[row]].assign(**changes).set_axis([label])
+                for label, (row, changes) in copies.items()]
+        table = pd.concat([table, *rows]).rename_axis("point_id")
+        table = _set("policy_count", [zero], 0.0)(table)
         table = _set("duration_mth", [later], -120.0)(table)
         table = _set("accel_mth", [1], -1.0)(table)
         table = _set("ref_rate_shift_init", [fall], -0.0025)(table)
         return _set("lives_if_init_1", [dead], 0.0)(table)
 
     def schedule_edit(schedule):
-        schedule = _added(13, 250)(schedule)
+        rows = [schedule[schedule["point_id"] == row].assign(point_id=label)
+                for label, (row, _) in copies.items()]
+        schedule = pd.concat([schedule, *rows], ignore_index=True)
+        schedule = _added(115, 59)(_added(116, 239)(_added(13, 250)(schedule)))
         return schedule.assign(premium_mth=schedule["premium_mth"].astype(float))
 
     model = _read_edited(tmp_path, edit, schedule_edit=schedule_edit)
     try:
         read = model.Data.model_point_table()
         assert all(read[c].dtype == float for c in (*_WHOLE, *_CHECKED)), read.dtypes
-        assert len(read) == len(committed)
+        assert len(read) == len(committed) + len(copies)
+        for label in copies:
+            key = _key(model, label)
+            frame = projection(model, key).result_cf()
+            assert len(frame) == projection(model, key).proj_len() > 0, label
+            assert all(math.isfinite(v) for v in frame.to_numpy().ravel()), label
+            _release(model, key)
+        at = {label: _point(model, label) for label in copies}
+        assert at[101].income_start_mth() == 0
+        assert (at[102].adjust_mth(), at[102].income_start_mth()) == (239, 300)
+        assert (at[103].adjust_mth(), at[103].income_start_mth()) == (120, 121)
+        assert at[104].accel_mth() == at[104].income_start_mth() == 240
+        assert at[105].accel_mth() == at[105].income_start_mth() == 300
+        assert at[106].commute_mth() == at[106].income_start_mth() == 240
+        assert (at[107].commute_mth(), at[108].accel_mth()) == (-1, 246)
+        assert at[109].duration_mth(0) == 1 and at[109].guarantee_mths_pricing_init() > 0
+        assert at[110].duration_mth(0) == at[110].income_start_mth() == 240
+        assert at[111].duration_mth(0) == at[111].commute_mth() == 252
+        assert at[111].commutations(0) > 0.0
+        assert at[112].commute_weight_init() == at[112].surv_to_payout_init() == 0.75
+        assert at[113].surv_to_payout_init() == at[113].lives_if_init(1) == 0.5
+        assert at[114].commute_weight_init() == at[114].lives_if_init(1) == 0.5
+        assert (at[115].premium_pp(0), at[116].premium_pp(239)) == (1000.0, 1000.0)
+        for label in (117, 118):
+            paid = [at[label].annuity_payments(t) for t in range(at[label].proj_len())]
+            last = 360 - at[label].duration_mth_init()
+            assert at[label].lives_if_last(0) == 0.0 and all(paid[:last]), label
+            assert paid[last:] == [0.0] * (len(paid) - last), label
+        assert at[119].accel_mth() == at[119].duration_mth_init() - 1
+        assert at[120].accel_mth() == 359
         assert model.Data.premium_schedule_table()["premium_mth"].dtype == "int64"
         df = _point(model, zero).result_cf()
         assert len(df) == 479 and (df == 0.0).all().all()
@@ -2779,6 +2956,171 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
         assert paid[60:] == [0.0] * (len(paid) - 60)
     finally:
         model.close()
+
+
+# Every state DIA_US_S reaches, restated in force at its month, is an opening state Data's
+# checks and proj_len()'s accept, but a state the product refuses by name: a check
+# exercised only on the rows the tests above choose could refuse a state S reaches
+# elsewhere (D6).  DIA_US_S keeps a contract on its books after it owes nothing, every
+# covered life dead before its income start month or after its certain period, or on a
+# form with none, and projects it as zeros to its stop rule, where proj_len() refuses it by
+# name (REFUSED): the every-state test sets each such state aside and shows it refused.
+
+
+def _every_state_months(sp):
+    """The months S point ``sp``, projected, is restated at by the every-state test.
+
+    By default the edges of each window a check of ``Data`` or ``proj_len()`` reads a
+    month against (USLIB-SEC-PLAN.md §5.2, T5, precised at M10): policy month 1, the first
+    past the at-issue check's window and inside the guarantee-period column's; each
+    premium month and the month after it, where the premium leaves the schedule for the
+    premiums paid; the income start month in force and the month either side, where the
+    deferral ends and ``l_last(T)`` becomes a column; the month of the first instalment and
+    the month after it, below monthly in arrears a payment step after the income start
+    month; each option month and the month after it, where ``l_last(t_c)`` becomes a
+    column and an acceleration leaves the books; the guarantee's last month and the first
+    after it; the month before each covered life's survival reaches 0, and the month it
+    does; and the frame's last month, before the stop rule.  With ``USLIB_SEC_FULL=1``,
+    every month of its frame.
+    """
+    n = sp.proj_len()
+    if SEC_FULL:
+        return list(range(1, n))
+    start = sp.income_start_mth()
+    end = start + sp.certain_mths_eff()
+    first = next(t for t in range(start, n) if sp.is_payment_mth(t))
+    months = {1, start - 1, start, start + 1, first, first + 1, end - 1, end, n - 1}
+    for m in (*sp.premium_by_mth(), sp.adjust_mth(), sp.accel_mth(), sp.commute_mth()):
+        if m >= 0:
+            months |= {m, m + 1}
+    for life in _lives(sp):
+        zero = next((d for d in range(n) if sp.lives_if(d, life) == 0.0), None)
+        if zero is not None:
+            months |= {zero - 1, zero}
+    return sorted(d for d in months if 1 <= d < n)
+
+
+def _owing(sp, d):
+    """Why S point ``sp`` restated at month ``d`` owes nothing after it, as ``proj_len()``
+    says it, or None where it owes a payment.
+
+    As ``proj_len()`` reads a contract in force with every covered life dead,
+    ``DIA_US_S``'s survival exactly 0: valued at or before its income start month in
+    force, or at or after the end of its certain period, or on a form with none.  Inside a
+    guarantee the beneficiary is paid.
+    """
+    if any(sp.lives_if(d, life) > 0.0 for life in _lives(sp)):
+        return None
+    start = sp.income_start_mth()
+    end = start + sp.certain_mths_eff()
+    if d <= start:
+        return f"every covered life has died before the income start month, {start}"
+    if d < end:
+        return None
+    if end > start:
+        return (f"every covered life has died, and the certain period ended at policy "
+                f"month {end}")
+    return "every covered life has died, and the form has no certain period"
+
+
+def _every_state_table(root, s, edits):
+    """The states ``s``'s points reach, restated in force: ``(folder, rows, owing)``.
+
+    Each month of :func:`_every_state_months` of each point of ``s``, an S model already
+    swept, a derived row of a table the generator builds beside every point's twin, with
+    its premium schedule, written into ``folder`` under ``root`` with ``edits`` beside
+    them, the inputs S read (:func:`_sec_built`).  ``rows`` is the table's length, and
+    ``owing`` holds ``{(S point, month): why}`` for each state owing nothing
+    (:func:`_owing`).
+    """
+    states, owing = [], {}
+    for key, point_id in zip(point_keys(s), s.Data.model_point_table().index):
+        sp = projection(s, key)
+        for d in _every_state_months(sp):
+            states.append((point_id, d))
+            why = _owing(sp, d)
+            if why is not None:
+                owing[(point_id, d)] = why
+    folder = _sec_built(root, s, states, (), edits)
+    return folder, len(s.Data.model_point_table()) + len(states), owing
+
+
+def _departures(model, rows, owing):
+    """Where ``Data`` and ``proj_len()`` depart from what the every-state test expects.
+
+    ``model`` holds a table of ``rows`` rows (:func:`_every_state_table`), which ``Data``
+    must read, and its premium schedule.  Each row's ``proj_len()`` must give a frame, but
+    a state of ``owing``, ``{(S point, month): why}``, which it must refuse, naming the
+    row, its month and why.  Each row is released once asked, the collector run every
+    500.  Returns each departure, the line that names it.
+    """
+    try:
+        table = model.Data.model_point_table()
+        model.Data.premium_schedule_table()
+    except Exception as err:                    # reported, with the rows' states
+        return [f"Data: {_raised(err)}"]
+    assert len(table) == rows
+    twins = table.index[table["row_kind"] == "twin"]
+    point_of = dict(zip(table.loc[twins, "policy_id"], twins))
+    found = []
+    for i, (key, label) in enumerate(zip(point_keys(model), table.index)):
+        state = (point_of[table.at[label, "source_policy_id"]],
+                 int(table.at[label, "source_mth"]))
+        why = owing.get(state) if table.at[label, "row_kind"] == "derived" else None
+        try:
+            projection(model, key).proj_len()
+            if why is not None:
+                found.append(f"point_id {label}, S point {state}: it has a frame")
+        except Exception as err:                # reported, so every row is asked
+            text = str(err)
+            if why is None or not ("ValueError" in text
+                                   and _OWED.format(p=label, d=state[1]) + why in text):
+                found.append(_raised(err))
+        _release(model, key, collect=i % 500 == 499)
+    return found
+
+
+def test_every_state_s_reaches_is_accepted_in_force(s_model, spliced, tmp_path):
+    """Every state ``DIA_US_S`` reaches is a valid opening state, but one owing nothing.
+
+    ``Data``'s checks and ``proj_len()``'s hold an opening state to what a contract in
+    force can be, so they must accept each state the S model reaches (D6).  So every S
+    point, swept, is restated in force by the generator at the edges of its windows, or
+    with ``USLIB_SEC_FULL=1`` at every month of its frame (:func:`_every_state_months`),
+    into one table beside the twins, with its premiums still due: ``Data`` reads the table
+    and the schedule, and every row's ``proj_len()`` gives a frame.  But for the states set
+    aside, which ``DIA_US_S`` keeps on its books, projecting zeros to its stop rule, and
+    ``proj_len()`` refuses, each by name, its row, its month and why it owes nothing
+    (:func:`_owing`): on the splice, variant 18, the anchor on a male life on the table
+    basis, dead from policy month 685, after mortality's cap at 117, its form a cash refund
+    with no certain period (USLIB-SEC-PLAN.md §5.2, T5, precised at M10).  No state S
+    reaches is an acceleration ``proj_len()`` refuses: no point accelerates inside a
+    guarantee a commutation before it reduced.
+
+    It runs under each set of inputs on which the states S reaches differ (§5.2, T5,
+    precised at M9).  S's shipped References, on S's own table: the committed S model,
+    whose points see no change in the reference rate, price at the shipped A/E of 1 and
+    reprice at the pricing rate, and none of whose contracts has every covered life dead
+    before its stop rule, so that none owes nothing.  And the splice's References,
+    set-apart tables and variants (:data:`SPLICED_REFS`): the reference rate up 50 basis
+    points in every state, and the A/E at 1.05, under which variant 18's male life reaches
+    mortality's cap at 117 and dies with certainty.  Under :data:`LATER_REFS`, under which
+    the splice reads S a second time, S's states are the splice's but for the reference
+    rate's change, 0 as under the shipped References, which ``Data`` holds only to be a
+    number.  The splice's table is built while its S model is swept, in the ``spliced``
+    fixture, before T2 releases its points.
+    """
+    sets = (("shipped", _every_state_table(tmp_path / "shipped", s_model, None), {},
+             set()),
+            ("spliced", spliced[4], SEC_REFS, {18}))
+    for name, (folder, rows, owing), refs, owing_points in sets:
+        assert {p for p, _ in owing} == owing_points, (name, sorted(owing)[:5])
+        model = _read(folder, "every", refs)
+        try:
+            found = _departures(model, rows, owing)
+        finally:
+            model.close()
+        assert not found, f"{name}: {len(found)} departures, first: {found[:5]}"
 
 
 # What the decodes refuse, as (case, the table's edit, the point, the cell it is read
