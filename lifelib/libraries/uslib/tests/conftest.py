@@ -17,13 +17,13 @@ job, which installs both, sets ``USLIB_REQUIRE_CYTHON=1``, and there such a skip
 The ``sec_full`` marker is registered here for the same reason.  It marks the cases of an
 SEC model's full splice grid beyond the core that runs by default, which skip, with the
 reason shown, unless ``USLIB_SEC_FULL=1`` is set (USLIB-SEC-PLAN.md K6), and
-``pytest -m sec_full`` selects them.  One leg of the CI matrix sets it, so they run in
-every CI run, on that leg.
+``pytest -m sec_full`` selects them.  CI's ``sec`` job sets it on its Linux legs, one
+module to a leg, so they run in every CI run.
 
 The ``docutils`` marker is registered here for the same reason.  It marks the tests that
 read a model's docstrings through docutils as the docs build does, which skip where
 docutils is absent: it is not a requirement of the models, and lifelib's CI does not
-install it.  The CI leg that runs the full grids installs it and sets
+install it.  The CI legs that run the full grids install it and set
 ``USLIB_REQUIRE_DOCUTILS=1``, under which such a skip fails, as ``USLIB_REQUIRE_CYTHON=1``
 fails a compile test's (USLIB-SEC-PLAN.md §5.4).
 """

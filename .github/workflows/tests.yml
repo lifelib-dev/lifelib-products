@@ -11,6 +11,10 @@
 # It runs the compile tests, which need modelx-cython and a C compiler. lifelib's CI will
 # not install modelx-cython, and there, as in the `test` job here, those tests skip
 # (USLIB-SEC-PLAN.md D13).
+#
+# The third job, `sec`, runs uslib's twelve `_US_SEC` test modules, which the `test` job
+# leaves out: in every leg of it they took the leg to its 90-minute timeout (Tests run 14,
+# USLIB-SEC-PLAN.md K6). One module to a leg, so no leg holds them all.
 
 name: Tests
 
@@ -45,17 +49,6 @@ jobs:
         # `requirements.txt` asks for pandas >= 2.2 and numpy >= 1.26, whose current
         # releases require 3.11 or later themselves.
         python-version: ['3.11', '3.12', '3.13', '3.14']
-        # One leg also runs the SEC models' full splice grids. Every leg runs a core of
-        # each grid that reaches every branch the full one does, and the cases beyond it
-        # skip unless USLIB_SEC_FULL is 1 (USLIB-SEC-PLAN.md K6), so without this leg they
-        # would run nowhere. On WholeLife, measured locally, it adds about two minutes.
-        # The same leg installs docutils for the docstring parse tests, which skip
-        # without it, as on every other leg and in lifelib's CI (USLIB-SEC-PLAN.md §5.4).
-        include:
-          - os: ubuntu-latest
-            python-version: '3.13'
-            sec-full: '1'
-            docutils: '1'
 
     steps:
     - name: Checkout code
@@ -75,25 +68,13 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Install docutils for the docstring parse tests
-      # The tests marked `docutils` read each model's docstrings as the docs build does.
-      # docutils is no requirement of the models, so `requirements.txt` leaves it out and
-      # those tests skip without it; this leg installs it, and sets
-      # USLIB_REQUIRE_DOCUTILS below, under which such a skip fails.
-      if: matrix.docutils == '1'
-      run: pip install docutils
-
     - name: Run the model suites with pytest
-      # Bare `pytest` from the root, as lifelib's CI runs it. The suites are slow --
-      # every model reproduces its technical notes' worked example, cell by cell -- so
-      # report the slowest tests to keep an eye on which models dominate the run.
-      # USLIB_SEC_FULL is '1' on the one leg the matrix gives `sec-full`, and empty on
-      # every other, where the full splice grids' cases skip. USLIB_REQUIRE_DOCUTILS is
-      # '1' on the leg that installs docutils, where a docstring parse test must run.
-      env:
-        USLIB_SEC_FULL: ${{ matrix.sec-full }}
-        USLIB_REQUIRE_DOCUTILS: ${{ matrix.docutils }}
-      run: pytest -q --durations=10
+      # `pytest` from the root, as lifelib's CI runs it, every library in one process. The
+      # suites are slow -- every model reproduces its technical notes' worked example,
+      # cell by cell -- so report the slowest tests to keep an eye on which models
+      # dominate the run. uslib's `_US_SEC` modules are left to the `sec` job below; the
+      # SEC models' conventions, their registry and `sec_support` still run here.
+      run: pytest -q --durations=10 --ignore-glob='*test_*_us_sec.py'
 
   cython:
     # The tests marked `cython`, which compile a model with modelx-cython and check the
@@ -150,3 +131,62 @@ jobs:
       # session and hold the compiled model to modelx. A run that selects nothing exits 5
       # and fails, which is wanted for the same reason a skip is.
       run: pytest -q -m cython --durations=10 lifelib/libraries/uslib/tests
+
+  sec:
+    # uslib's `_US_SEC` test modules, one to a leg (USLIB-SEC-PLAN.md K6). Each module
+    # runs a core of its splice grid by default, and the rest of the grid, marked
+    # `sec_full`, skips unless USLIB_SEC_FULL is 1. The core runs on Windows and macOS,
+    # the full grid, which holds the core, on Linux; one Python, as the `cython` job has,
+    # since the `test` job runs every interpreter over the S models these modules compare
+    # with.
+    name: SEC ${{ matrix.module }} (${{ matrix.grid }}) on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    # Measured locally under load, the slowest module, IUL's, took about 15 minutes over
+    # its core and 34 over its full grid. An hour is room for a slower runner, and fails a
+    # hung leg long before the six-hour default.
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        module: [term_life, whole_life, universal_life, variable_ul, guaranteed_ul,
+                 indexed_ul, fixed_deferred_annuity, fixed_indexed_annuity,
+                 variable_annuity, registered_index_linked_annuity, immediate_annuity,
+                 deferred_income_annuity]
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        grid: [core, full]
+        exclude:
+          - {os: ubuntu-latest, grid: core}
+          - {os: windows-latest, grid: full}
+          - {os: macos-latest, grid: full}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.13'
+        cache: 'pip'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Install docutils for the docstring parse tests
+      # The tests marked `docutils` read each model's docstrings as the docs build does.
+      # docutils is no requirement of the models, so `requirements.txt` leaves it out and
+      # those tests skip without it; the full-grid legs install it, and set
+      # USLIB_REQUIRE_DOCUTILS below, under which such a skip fails (USLIB-SEC-PLAN.md
+      # §5.4).
+      if: matrix.grid == 'full'
+      run: pip install docutils
+
+    - name: Run the module with pytest
+      env:
+        USLIB_SEC_FULL: ${{ matrix.grid == 'full' && '1' || '' }}
+        USLIB_REQUIRE_DOCUTILS: ${{ matrix.grid == 'full' && '1' || '' }}
+      run: >-
+        pytest -q --durations=10
+        lifelib/libraries/uslib/tests/test_${{ matrix.module }}_us_sec.py
