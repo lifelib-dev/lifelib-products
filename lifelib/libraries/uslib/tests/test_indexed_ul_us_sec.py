@@ -110,31 +110,37 @@ value by ``IUL_US_S``'s own tests of zero, in a month where a live segment or th
 nonzero rounding below the floor in either model (:func:`_rounding_map`).  A count is never
 floored.
 
-**The core grid and the full one** (USLIB-SEC-PLAN.md K6).  An IUL projection runs up to
-912 months on the grid, and T2 and T3 over every case would take this module far past
-three minutes in every run.  By default they run a core, chosen by the lines of the model
-each row runs, so that between them they reach every line, every opening-state column,
-every kind of valuation month and every premium pattern and mode the full grid reaches,
-which ``test_the_core_grid_reaches_every_branch`` asserts, each bound by the raw value it
-bounds and each side of every ``min`` and ``max`` by the values it compares.  The core
-does not make the module short: its default run took 936 to 955 seconds over two runs
-under load, the longest of the product modules.  The other cases, the rules test's scan of
-their rows, the second fixture's other rows, the every-state test's months between the
-windows' edges and its run under the main splice's References, the depth test's cold
-calls and ascending sweeps at the contract's longest cover, the splice at a segment term of
-24 months, the References set apart from those they ship equal to and the runner's test on
-the committed table carry the ``sec_full`` marker and are skipped, with the reason shown,
-unless ``USLIB_SEC_FULL=1`` is set.  They are never dropped: one leg of the CI matrix sets
-it, and ``USLIB_SEC_FULL=1 python -m pytest -m sec_full tests/test_indexed_ul_us_sec.py``
-runs them alone.  Memory is the other cost: a projected point holds tens of megabytes of
-cached values and their dependency graph, so a row read once is released as soon as it has
-been read (``_release``), the splice's rows are held one at a time, and so are the splice's
-S points: the generator builds a splice's rows one S point at a time, and each comparison
-sweeps the one S point it needs (``_swept``).  Each splice's two models are fixtures of the
-class that holds every test reading them, so they are closed before the committed model and
-S are first read, and the tests that read models of their own run next, before those are
-first read, so that none of the models they read sits in memory beside them
-(USLIB-SEC-PLAN.md §7.7, *Record — M9*, *Memory*).
+**The core grid and the full one** (USLIB-SEC-PLAN.md K6).  An IUL projection runs up to 912
+months on the grid, and T2 and T3 over every case would take this module far past three
+minutes in every run.  By default they run a core, chosen by the lines of the model each row
+runs, so that between them they reach every line, every opening-state column, every kind of
+valuation month and every premium pattern and mode the full grid reaches, which
+``test_the_core_grid_reaches_every_branch`` asserts, each bound by the raw value it bounds
+and each side of every ``min`` and ``max`` by the values it compares, and which holds,
+besides, the row on which each fault the build's and M13's sweeps recorded was first caught.
+The splice's three comparisons are parametrized by S point at class scope (``_held``), so
+that pytest runs every case of one S point together and ``_swept`` sweeps each S point once
+a run, not once for each test that compares one of its rows.  The core does not make the
+module short: its default run took 912 seconds under load at M13, the longest of
+the product modules, where it took 936 to 955 at M6 (USLIB-SEC-PLAN.md K6, weighed at M13).
+The other cases, the rules test's scan of their rows, the second fixture's other rows, the
+every-state test's months between the windows' edges and its run under the main splice's
+References, the depth test's cold calls but the deepest and its ascending sweeps at the
+contract's longest cover, the splice at a segment term of 24 months, the References set
+apart on S's twins, the index path's override, the flag spellings, the block and the
+runner's test on the committed table carry the ``sec_full`` marker and are skipped, with the
+reason shown, unless ``USLIB_SEC_FULL=1`` is set.  Each was moved only where every fault the
+sweeps recorded keeps a catcher in the default run.  They are never dropped: one leg of the
+CI matrix sets it, and ``USLIB_SEC_FULL=1 python -m pytest -m sec_full
+tests/test_indexed_ul_us_sec.py`` runs them alone.  Memory is the other cost: a projected
+point holds tens of megabytes of cached values and their dependency graph, so a row read
+once is released as soon as it has been read (``_release``), the splice's rows are held one
+at a time, and so are the splice's S points: the generator builds a splice's rows one S
+point at a time, and each comparison sweeps the one S point it needs (``_swept``).  Each
+splice's two models are fixtures of the class that holds every test reading them, so they
+are closed before the committed model and S are first read, and the tests that read models
+of their own run next, before those are first read, so that none of the models they read
+sits in memory beside them (USLIB-SEC-PLAN.md §7.7, *Record — M9*, *Memory*).
 
 Every test keeps five rules.  Each model is read under a name of its own and closed:
 ``test_indexed_ul_us.py`` reads S under its default name, and reading a model under a name
@@ -373,9 +379,7 @@ FUTURES = ((4, 25), (1, 1), (5, 13), (8, 13), (9, 13), (14, 13), (19, 13), (11, 
 CORE_SPLICES = {
     ("derived", 1, 12): "a segment maturing at t = 0 from the ladder's slot 12, an annual "
                         "premium and the deductions it carried",
-    ("derived", 1, 60): "the committed row's: an anniversary at t = 0, the corridor later",
     ("derived", 1, 119): "the surrender charge's first month without, at t = 0",
-    ("derived", 1, 240): "the guarantee's expiry month at t = 0, no shock on a cash value",
     ("derived", 1, 660): "charges ceasing at t = 0, at attained age 100",
     ("derived", 1, 911): "the last covered month, a frame of one row",
     ("derived", 2, 131): "Option B in the shock year's last month, the lapse cap binding",
@@ -385,10 +389,8 @@ CORE_SPLICES = {
     ("derived", 5, 22): "the guarantee failing at t = 0, decided by the accumulator",
     ("derived", 5, 373): "the fixed account entering t = 0 below 0, the loan above the "
                          "cash value",
-    ("derived", 5, 578): "the account value entering t = 0 below 0",
     ("derived", 6, 240): "the expiry shock at t = 0 on a policy with no cash value",
     ("derived", 8, 84): "the MEC latch carried in where S's 7-pay test passes",
-    ("derived", 9, 48): "a target premium past its guideline cap, the latch carried in",
     ("derived", 11, 12): "a split allocation, its fixed account closing on roundings "
                          "about zero in S's months 22, 23 and 590",
     ("derived", 12, 84): "a loan drawn with its collateral carried apart, IUL07's lapse "
@@ -403,8 +405,6 @@ CORE_SPLICES = {
     ("twin", 7, 0): "issued at the valuation date: PPlus, monthly, underfunded",
     ("twin", 9, 0): "issued at the valuation date: a target premium",
     ("twin", 10, 0): "issued at the valuation date: a single premium capped at its GSP",
-    ("twin", 11, 0): "issued at the valuation date: a single premium below its GSP, no "
-                     "surrender charge, F",
     ("twin", 12, 0): "issued at the valuation date: F Juv on IUL07",
     ("twin", 13, 0): "issued at the valuation date at age 50, monthly",
     ("twin", 15, 0): "issued at the valuation date: S point 4 paying $1,500 a year",
@@ -415,7 +415,6 @@ CORE_SPLICES = {
 CORE_FUTURES = {
     (4, 25): "policy years -2 to 0 before issue: the committed row's",
     (8, 13): "Pref over the 7-pay limit in its issue month",
-    (9, 13): "a target premium's guideline cap based in its issue month",
     (14, 13): "issued at 65 thirteen months on",
     (19, 13): "a withdrawal in the issue month, the face cut from the face at issue",
     (11, 6): "issued within a year without a surrender charge: shock year 0 before issue",
@@ -1043,6 +1042,18 @@ def _case_id(kind, s_point, month):
 def _case(case, core, case_id):
     """One parametrized case: run by default if it is in ``core``, else on the full grid."""
     return pytest.param(*case, id=case_id, marks=() if case in core else FULL_ONLY)
+
+
+def _held(case, s_point, core, case_id):
+    """A splice case, ``(s_point, case)``: run by default if ``case`` is in ``core``.
+
+    The splice's three comparisons parametrize ``s_point`` and ``case`` at class scope, so
+    that pytest runs every case of one S point together, whichever test it belongs to, and
+    ``_swept`` sweeps each S point once in a run rather than once for each test that
+    compares one of its rows (USLIB-SEC-PLAN.md K6).  ``case`` itself is unique to its
+    row, so it groups nothing.  The ids are the cases' own.
+    """
+    return pytest.param(s_point, case, id=case_id, marks=() if case in core else FULL_ONLY)
 
 
 def _selected(cases, core):
@@ -2217,20 +2228,42 @@ LADDER_MET = {
 }
 
 
-def _refused_in_force(root, refs, variants):
+def _first_latched(table, policy_id):
+    """The first month a derived row of S's ``policy_id`` opens with the MEC latch."""
+    rows = table[(table["row_kind"] == "derived")
+                 & (table["source_policy_id"] == policy_id)]
+    latched = rows.loc[rows["is_mec_init"] == 1, "duration_mth"]
+    return int(latched.min()) if len(latched) else None
+
+
+# What the every-state test must meet of the restated rows as a whole, under a set of its
+# own (EVERY_STATE): a ladder of as many slots as a segment term other than the twelve
+# months IUL_US_S ships, which proj_len() asks for; and variant 21's 7-pay test failing
+# first in policy year 7, the window's last, its rows carrying no latch to month 72 and the
+# latch from month 73, which Data's 7-pay rule decides by the year.
+FRAMES_MET = {
+    "a ladder of six slots, the segment term's": lambda table, ladder: (
+        ladder.groupby("point_id").size().max() == 6),
+    "the latch carried in from policy year 7 alone": lambda table, ladder: (
+        _first_latched(table, "IUL-900021") == 73),
+}
+
+
+def _refused_in_force(root, refs, variants, points=None):
     """What ``Data`` and ``proj_len()`` refuse of every state S reaches, restated in force.
 
-    S's points, with ``variants`` and ``refs``, each restated by the generator at each
-    month of :func:`_every_state_months`, one S point at a time, into one table of every
+    S's points, with ``variants`` and ``refs``, or ``points`` of them where given, each
+    restated by the generator at each month of :func:`_every_state_months`, one S point
+    at a time, into one table of every
     point's twin and a derived row at each state, and one segment ladder for them
     (:func:`_generated`).  ``IUL_US_S`` lapses no policy for insufficiency, so a policy is
     in force to restate in every month of its frame.  A model read with ``refs`` set first
     reads both, through ``Data``, and then asks every row for its frame, releasing each,
     collecting every 500.  Returns the number of states, each refusal, the line naming it,
-    ``Data``'s or each row's ``proj_len()``'s, and what of :data:`STATES_MET` and
-    :data:`LADDER_MET` the restated rows hold.
+    ``Data``'s or each row's ``proj_len()``'s, and what of :data:`STATES_MET`,
+    :data:`LADDER_MET` and :data:`FRAMES_MET` the restated rows hold.
     """
-    folder = _generated(root, refs, variants, restate=_every_state_months)
+    folder = _generated(root, refs, variants, restate=_every_state_months, points=points)
     table = pd.read_csv(folder.parent / TABLE)
     ladder = pd.read_csv(folder.parent / LADDER)
     derived = table[table["row_kind"] == "derived"]
@@ -2238,6 +2271,7 @@ def _refused_in_force(root, refs, variants):
            if any(holds(row) for row in derived.to_dict("records"))}
     met |= {what for what, holds in LADDER_MET.items()
             if any(holds(bal) for bal in ladder["seg_bal_pp_init"])}
+    met |= {what for what, holds in FRAMES_MET.items() if holds(derived, ladder)}
     model = _read(folder, "every", refs)
     try:
         try:
@@ -2270,11 +2304,11 @@ class TestTheSplice:
     """T2 and T3 on the splice's grid, and the tests that read its rows' records."""
 
     @pytest.mark.parametrize(
-        "kind, s_point, month",
-        [_case(case, CORE_SPLICES, _case_id(*case)) for case in SPLICES + IN_FORCE_TWINS])
+        "s_point, case",
+        [_held(case, case[1], CORE_SPLICES, _case_id(*case))
+         for case in SPLICES + IN_FORCE_TWINS], scope="class")
     def test_an_in_force_point_continues_its_s_projection(self, spliced, splice_records,
-                                                          splice_bounds, kind, s_point,
-                                                          month):
+                                                          splice_bounds, s_point, case):
         """Opened with S's state at month d, the point is S from d on, in every cell of S's.
 
         This is the test that says the opening state is complete: a state column the SEC
@@ -2311,18 +2345,19 @@ class TestTheSplice:
         sides of each ``min`` and ``max`` both bind kept (:class:`_BoundSides`), then
         recorded for the tests after this one and released (:func:`_settle`).
         """
+        kind, s_point, month = case
         found, _, _ = _compare_case(spliced, splice_records, splice_bounds,
                                     (kind, s_point, month))
         assert found == []
 
     @pytest.mark.parametrize(
-        "s_point, k",
-        [_case(case, CORE_FUTURES, _case_id("future", case[0], -case[1]))
-         for case in FUTURES])
+        "s_point, case",
+        [_held(case, case[0], CORE_FUTURES, _case_id("future", case[0], -case[1]))
+         for case in FUTURES], scope="class")
     def test_future_new_business_is_the_s_projection_k_months_on(self, spliced,
                                                                  splice_records,
                                                                  splice_bounds, s_point,
-                                                                 k):
+                                                                 case):
         """Issued k months after the valuation date, the point is S's projection k on.
 
         SEC rows ``k ..`` are S rows ``0 ..``, ending together at the end of the
@@ -2350,6 +2385,7 @@ class TestTheSplice:
         ``min`` and ``max`` its scan and comparison bind kept (:class:`_BoundSides`), and
         recorded and released once compared (:func:`_settle`).
         """
+        s_point, k = case
         found, frames, facts = _compare_case(spliced, splice_records, splice_bounds,
                                              ("future", s_point, -k))
         assert found == []
@@ -2369,12 +2405,13 @@ class TestTheSplice:
                                          for t in range(len(facts["premiums"]))]
 
     @pytest.mark.parametrize(
-        "kind, s_point, month",
-        [_case(case, CORE_SPLICES, _case_id(*case)) for case in VARIANT_TWINS])
+        "s_point, case",
+        [_held(case, case[1], CORE_SPLICES, _case_id(*case)) for case in VARIANT_TWINS],
+        scope="class")
     def test_a_variant_issued_at_the_valuation_date_is_its_s_point(self, spliced,
                                                                    splice_records,
-                                                                   splice_bounds, kind,
-                                                                   s_point, month):
+                                                                   splice_bounds, s_point,
+                                                                   case):
         """Issued at the valuation date, each variant is its S point in every cell of S's.
 
         T1 compares the twins of S's own new business with S cell by cell, in the
@@ -2391,6 +2428,7 @@ class TestTheSplice:
         far.  The row is scanned first, the sides of each ``min`` and ``max`` kept, and
         recorded and released once compared, as T2's rows are.
         """
+        kind, s_point, month = case
         found, _, _ = _compare_case(spliced, splice_records, splice_bounds,
                                     (kind, s_point, month))
         assert found == []
@@ -2736,6 +2774,9 @@ class TestTheSplice:
             bound = sorted(named & won)
             assert not bound, f"sides named idle or bound elsewhere that bind here: {bound}"
 
+    @pytest.mark.sec_full
+    @pytest.mark.skipif(not SEC_FULL, reason="the block test runs with USLIB_SEC_FULL=1 "
+                        "(USLIB-SEC-PLAN.md K6)")
     def test_the_points_sum_row_by_row_into_a_block(self, spliced):
         """Row ``t`` is the same month on every point, so a block is its frames summed (D3).
 
@@ -2744,7 +2785,8 @@ class TestTheSplice:
         are indexed 0..917 and equal the S frames of variants 15 and 11, the first added to
         itself moved 16 months earlier and the second moved six months later, with no
         tolerance beyond 1e-9 relative.  A model whose frames sat on the policy clock would
-        fail it.
+        fail it, and would fail T2's frame-by-frame comparison too, so it runs with
+        ``USLIB_SEC_FULL=1`` only (USLIB-SEC-PLAN.md K6, weighed at M13).
         """
         s, sec = spliced
         cases = (("twin", 15, 0), ("derived", 15, 16), ("future", 11, -6))
@@ -3053,15 +3095,25 @@ def test_a_splice_on_references_of_its_own_continues_s(tmp_path, name):
 
 EXHAUSTED = frozenset({"a fixed account below -0.01", "an account value below -0.01"})
 # Each set of inputs the every-state test runs on, as (References, variants, what it must
-# meet, the least number of states): the shipped References, which the committed table is
-# generated under, on S's points and the variants; the main splice's, where point 5's
-# fixed account and account value turn negative at 373 and 578 rather than 383 and 604;
-# and the second splice's, on S's five points, whose guaranteed basis exhausts points 2
-# and 3 too.
+# meet, the least number of states, the S points it restates, or None for all): the
+# shipped References, which the committed table is generated under, on S's points and the
+# variants; the main splice's, where point 5's fixed account and account value turn
+# negative at 373 and 578 rather than 383 and 604; the second splice's, on S's five
+# points, whose guaranteed basis exhausts points 2 and 3 too; and the two sets of the
+# splices of their own, on their own points (OWN_SPLICES), on which the states S reaches
+# differ in what Data and proj_len() decide by a Reference or a window: the segment term
+# at 6 months, on S's points 1 and 4, whose ladders hold six slots, and the premium
+# persistency of 1.12, on variant 21, whose 7-pay test fails first in policy year 7.
 EVERY_STATE = {
-    "shipped": ({}, VARIANTS, frozenset({*STATES_MET, *LADDER_MET}), 2000),
-    "splice": (SPLICED_REFS, VARIANTS, frozenset({*STATES_MET, *LADDER_MET}), 2000),
-    "idle": (IDLE_REFS, {}, EXHAUSTED, 500),
+    "shipped": ({}, VARIANTS, frozenset({*STATES_MET, *LADDER_MET}), 2000, None),
+    "splice": (SPLICED_REFS, VARIANTS, frozenset({*STATES_MET, *LADDER_MET}), 2000, None),
+    "idle": (IDLE_REFS, {}, EXHAUSTED, 500, None),
+    "seg_term_mth 6": (*OWN_SPLICES["seg_term_mth 6"][:2],
+                       frozenset({"a ladder of six slots, the segment term's"}), 100,
+                       OWN_SPLICES["seg_term_mth 6"][2]),
+    "7-pay year 7": (*OWN_SPLICES["7-pay year 7"][:2],
+                     frozenset({"the latch carried in from policy year 7 alone"}), 30,
+                     OWN_SPLICES["7-pay year 7"][2]),
 }
 
 
@@ -3077,10 +3129,13 @@ def test_every_state_s_reaches_is_accepted_in_force(tmp_path, inputs):
     states S reaches differ with the References, so the test runs under each set the
     module projects on (:data:`EVERY_STATE`; USLIB-SEC-PLAN.md §5.2, T5, as precised at
     M9): the shipped References, which the committed table is generated under, the main
-    splice's and the second splice's.  Under each, every S point, with the variants where
-    the set takes them, is restated in force by the generator, one S point at a time, at
-    the edges of its windows, or with ``USLIB_SEC_FULL=1`` at every month of its frame
-    (:func:`_every_state_months`), into one table and one segment ladder beside the twins:
+    splice's and the second splice's, and the References of the two splices of their own
+    whose states differ in what ``Data`` and ``proj_len()`` decide, a segment term of 6
+    months and a premium persistency of 1.12, on their own points.  Under each, every S
+    point, with the variants where the set takes them, is restated in force by the
+    generator, one S point at a time, at the edges of its windows, or with
+    ``USLIB_SEC_FULL=1`` at every month of its frame (:func:`_every_state_months`), into
+    one table and one segment ladder beside the twins:
     ``Data`` reads both, and no row's ``proj_len()`` refuses it
     (:func:`_refused_in_force`).  ``IUL_US_S`` lapses no policy for insufficiency, and
     carries an exhausted policy on, so this model accepts what it carries, and the test
@@ -3088,12 +3143,14 @@ def test_every_state_s_reaches_is_accepted_in_force(tmp_path, inputs):
     account and then its account value below 0, the accumulator below 0, a loan with its
     collateral, variant 18's face cut to nothing, the MEC latch, and segments closing on
     roundings about zero, which ``Data`` holds to ``-1e-8`` or more.  The second splice
-    meets the exhausted accounts on S's points alone.  The main splice's set runs with
+    meets the exhausted accounts on S's points alone; the splices of their own meet ladders
+    of six slots and a latch carried in from policy year 7 alone (:data:`FRAMES_MET`),
+    which none of the other sets reaches.  The main splice's set runs with
     ``USLIB_SEC_FULL=1`` only (K6): the shipped set must meet every state the main
     splice's must, so the default run meets each of them all the same.
     """
-    refs, variants, want, least = EVERY_STATE[inputs]
-    n, refused, met = _refused_in_force(tmp_path / "every", refs, variants)
+    refs, variants, want, least, points = EVERY_STATE[inputs]
+    n, refused, met = _refused_in_force(tmp_path / "every", refs, variants, points)
     assert n > least, n
     assert not refused, f"{len(refused)} refused, first: {refused[:5]}"
     assert want <= met, sorted(want - met)
@@ -3131,6 +3188,9 @@ OVERRIDE_ROWS = (("twin", 4, 0), ("derived", 4, 65), ("derived", 1, 60),
                  ("future", 4, -25))
 
 
+@pytest.mark.sec_full
+@pytest.mark.skipif(not SEC_FULL, reason="the index path's override runs with "
+                    "USLIB_SEC_FULL=1 (USLIB-SEC-PLAN.md K6)")
 def test_the_index_path_is_overridden_alike_in_both_models(tmp_path):
     """A stepped index path, given to both models, moves every credit alike (K7, D7).
 
@@ -3149,7 +3209,10 @@ def test_the_index_path_is_overridden_alike_in_both_models(tmp_path):
     the floor; and the index floor's side of its ``max`` and the multiplier's cap's side of
     its ``min`` win, the sides :data:`BOUND_ELSEWHERE` names this test for
     (:class:`_BoundSides`).  A start level read from the References would part the
-    restated rows from S here.
+    restated rows from S here.  It runs with ``USLIB_SEC_FULL=1`` only (USLIB-SEC-PLAN.md
+    K6, weighed at M13): of the faults swept at M6 and M13 it is the only catcher of
+    none, since the valuation-clock index test and the opening-column test also catch a
+    start level read from the References.
     """
     s = _read(_s_inputs(tmp_path / "s", _s_table().loc[[1, 4]]), "stepped_s",
               OVERRIDE_REFS)
@@ -3497,6 +3560,7 @@ def _ascending(folder, limits, refs=None):
 @pytest.mark.parametrize("case", [
     pytest.param("shipped", id="shipped"),
     pytest.param("expiry", id="expiry"),
+    pytest.param("deepest call at the longest cover", id="longest-net_cf"),
     pytest.param("longest cover", id="longest", marks=FULL_ONLY),
     pytest.param("ascending at the longest cover", id="longest-ascending",
                  marks=FULL_ONLY)])
@@ -3523,6 +3587,12 @@ def test_every_chain_runs_one_cell_a_month_from_a_cold_start(tmp_path, case):
       value was read at no month from 49 to 239, and the count of month 241 then runs the
       account value's chain cold from 240 back to 49, 192 months, the deepest read an
       ascending sweep makes, within :data:`EXPIRY_OVERHEAD` beyond it (:func:`_expiry_gap`).
+    * ``deepest call at the longest cover``: the row issued now at issue age 0, of the two
+      below, ``net_cf`` in its last month, 1,451 months above ``t_entry()``, the deepest
+      call a projection makes on the longest chain the contract allows, both rows' frames
+      asserted first, so that the stack's bound is measured by default, as the cases
+      below measure it with every chain head on the full grid (USLIB-SEC-PLAN.md §7.5,
+      *Record — M5*, *Carried into IUL (M6)*, depth at the longest cover).
     * ``longest cover``, with the full grid: at the contract's longest cover, issue age 0,
       issued now and 120 months on (:func:`_longest_cover`), each row's frame asserted
       first (:data:`LONGEST_FRAMES`), ``net_cf`` in the last month and each of
@@ -3555,7 +3625,9 @@ def test_every_chain_runs_one_cell_a_month_from_a_cold_start(tmp_path, case):
         finally:
             model.close()
         assert tuple(frames) == LONGEST_FRAMES, frames
-        if case == "longest cover":
+        if case == "deepest call at the longest cover":
+            found += _net_cf_cold(folder, labels[:1], {})
+        elif case == "longest cover":
             found += _net_cf_cold(folder, labels, {})
             found += _chains_cold(folder, labels, {})
         else:
@@ -3707,7 +3779,13 @@ def test_scaling_the_count_scales_every_flow_and_no_per_policy_value(tmp_path):
 # as a blank and any other text are (USLIB-SEC-PLAN.md §7.8, Record — M10, Flag
 # spellings); a TRUE beside the bad cell, which the column's text keeps as written, is
 # still a flag, so the message names the bad cell's point alone; and the spellings
-# accepted are read in a test of their own.
+# accepted are read in a test of their own.  Each rule over a window of policy months is
+# refused at the window's first month and its last (USLIB-SEC-PLAN.md §5.2, T5, precised
+# at M10): the state of a policy not yet in force at months 0 and -120, the horizon; the
+# face in force at months 1 and 911, the last of cover; and the 7-pay test at months 1
+# and 84.  The edges test reads the state at month 1 and the 7-pay test at month 85 and on
+# its limit, just outside; the face has no month outside its window that the state's rule
+# or proj_len() does not refuse first.
 # A {file} in a message is the table's filename: every case is read from a file of its own
 # (the malformed fixture).
 
@@ -3857,8 +3935,16 @@ MALFORMED = [
           ("lca_pp_init", 12, 10.0), ("sum_assured_init", 2, 250000.0),
           ("cum_prem_init", 4, 10000.0), ("cum_prem_net_init", 5, -5.0),
           ("is_mec_init", 12, 1))],
+    ("cum_prem_init before issue, issued at the horizon",
+     _both(_set("duration_mth", [12], -120), _set("cum_prem_init", [12], 10000.0)),
+     _NOT_IN_FORCE.format(column="cum_prem_init", point=12)),
     ("a face in force above the face at issue",
      _set("sum_assured_init", [7], 250000.01), _FACE_IN_FORCE.format(point=7)),
+    ("a face above the face at issue in the first month in force",
+     _in_force_at(1, 1, sum_assured_init=250000.01), _FACE_IN_FORCE.format(point=1)),
+    ("a face above the face at issue in the last month of cover",
+     _both(_set("duration_mth", [11], 911), _set("sum_assured_init", [11], 250000.01)),
+     _FACE_IN_FORCE.format(point=11)),
     ("a collateral without a loan", _set("lca_pp_init", [6], 100.0),
      _COLLATERAL.format(point=6)),
     ("a loan without its collateral", _set("lca_pp_init", [9], 0.0),
@@ -4001,6 +4087,9 @@ MALFORMED_LADDER = [
     ("a balance a dime past the account value's identity",
      lambda ladder: _ladder_at(14, "seg_bal_pp_init", ladder.at[12, "seg_bal_pp_init"]
                                + 0.1)(ladder), _IDENTITY.format(point=7)),
+    ("a balance half a cent past the identity's slack",
+     lambda ladder: _ladder_at(14, "seg_bal_pp_init", ladder.at[12, "seg_bal_pp_init"]
+                               + 0.085)(ladder), _IDENTITY.format(point=7)),
 ]
 
 
@@ -4538,10 +4627,11 @@ def _ladder_with(point, slot, inputs=None):
 # date, so that the age is checked first and its message names the age, not a policy
 # month below 0; the row of S point 1 at 888 moved to the month the projection ends,
 # policy month 912 at attained age 121, and a year past it; the row of S point 5 at 6
-# withdrawing a cent below its fee, half its fee, and its own $25.00 under a fee moved to
-# $30.00; and the ladder's count: a slot more than twelve on the row of S point 1 at 60,
-# its slot 1 missing, and its slot 1 missing with a slot 13 held, twelve rows on the wrong
-# slots, which Data's slot rule accepts, its balance in the fixed account, the maturing
+# withdrawing a cent below its fee, half its fee, a cent, just inside the window's other
+# end, and its own $25.00 under a fee moved to $30.00; and the ladder's count: a slot more
+# than twelve on the row of S point 1 at 60, its slot 1 missing, and its slot 1 missing
+# with a slot 13 held, twelve rows on the wrong slots, which Data's slot rule accepts, its
+# balance in the fixed account, the maturing
 # segment missing from the row of S point 4 at 65, its balance in the fixed account, and
 # the row of S point 5 at 6 holding five of its six months.  Then the order: the row at
 # 888 moved to the end of the projection withdrawing half its fee, refused as past the
@@ -4551,7 +4641,8 @@ def _ladder_with(point, slot, inputs=None):
 # table reads; each is read with the Reference moved past it, where the same point
 # projects (USLIB-SEC-PLAN.md §7.7, Record — M9, Rules on a Reference), but those whose
 # ladder no Reference would make whole.  The windows' other sides are accepted elsewhere:
-# the row restated at 911, the last covered month; a withdrawal at its fee; and a point
+# the row restated at 911, the last covered month; a withdrawal at its fee, and of 0 on
+# every committed row but those of S point 5; and a point
 # issued at attained age 120 (test_a_point_issued_at_attained_age_120_has_a_year_of_cover).
 NOT_ISSUED = [
     ("issued at attained age 121", lambda: (_set("age_at_entry", [12], 121)(_committed()),
@@ -4574,6 +4665,8 @@ NOT_ISSUED = [
     ("a withdrawal of half its fee", lambda: (_set("wd_pp", [8], 12.5)(_committed()),
                                               None), 8,
      _BELOW_FEE.format(point=8, wd=12.5, fee=25.0), {}, {"wd_fee": 12.5}, False),
+    ("a withdrawal of a cent", lambda: (_set("wd_pp", [8], 0.01)(_committed()), None), 8,
+     _BELOW_FEE.format(point=8, wd=0.01, fee=25.0), {}, {"wd_fee": 0.01}, False),
     ("a withdrawal at the fee, the fee moved past it",
      lambda: (_set("wd_pp", [8], 25.0)(_committed()), None), 8,
      _BELOW_FEE.format(point=8, wd=25.0, fee=30.0), {"wd_fee": 30.0}, {"wd_fee": 25.0},
@@ -4736,7 +4829,8 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
       its limit in the first month, and failing in the eighth policy year, outside the
       7-pay years, each with no latch;
     * a segment balance at ``-1e-8``, ``IUL_US_S``'s tolerance, and the account value's
-      identity off by seven cents, inside its slack of eight on twelve segments;
+      identity off by seven and a half cents, inside its slack of eight on twelve
+      segments, which half a cent past it refuses (:data:`MALFORMED_LADDER`);
     * a withdrawal at its fee;
     * and a policy issued 120 months after the valuation date, the shipped
       ``future_horizon_mth``, is the last one the table admits, with a frame of 1,032
@@ -4764,7 +4858,7 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
         _as_floats(INT_COLUMNS), _set("duration_mth", [future], -120.0))(committed)
     ladder = _committed_ladder()
     ladder = _ladder_at(2, "seg_bal_pp_init", -1e-8)(ladder)
-    ladder = _ladder_at(14, "seg_bal_pp_init", ladder.at[12, "seg_bal_pp_init"] + 0.07)(
+    ladder = _ladder_at(14, "seg_bal_pp_init", ladder.at[12, "seg_bal_pp_init"] + 0.075)(
         ladder)
     floats = _sec_inputs(tmp_path / "floats", edited, ladder=ladder, edits={
         file: _as_floats(columns) for file, columns in FLOAT_KEYS.items()})
@@ -4829,6 +4923,9 @@ def _respelled(table):
     return table.assign(has_surr_charge=words)
 
 
+@pytest.mark.sec_full
+@pytest.mark.skipif(not SEC_FULL, reason="the flag spellings run with USLIB_SEC_FULL=1 "
+                    "(USLIB-SEC-PLAN.md K6)")
 def test_a_flag_reads_the_same_in_every_spelling_data_accepts(tmp_path):
     """The flag decodes, and projects, as written in every spelling ``Data`` accepts.
 
@@ -4843,7 +4940,9 @@ def test_a_flag_reads_the_same_in_every_spelling_data_accepts(tmp_path):
     :data:`SPELLINGS`, each taken in turn (:func:`_respelled`), every one of the six in the
     file: ``Data`` reads the flag as bools, the same in both, every row decodes it the same,
     and the twins of S points 1 and 2, which read a True and a False, project the same
-    four reports, bit for bit.
+    four reports, bit for bit.  It runs with ``USLIB_SEC_FULL=1`` only (USLIB-SEC-PLAN.md
+    K6, weighed at M13): :data:`MALFORMED` refuses every other spelling by default, and a
+    flag read as text would part variant 11's twin, the core's one False, from S in T2.
     """
     committed = _committed()
     twins = {p: _label(committed, "twin", p, 0) for p in (1, 2, 3, 4)}
@@ -5087,7 +5186,7 @@ def test_each_check_decides_as_isclose_does_where_its_sides_are_small(tmp_path):
     residual is past its tolerance, where the sides are below 20.  The account value's
     components and the ladder's closure take the same floor, written alike; no shipped
     point brings both sides of the components' identity below 10 in one month, so neither
-    is moved here.
+    is moved here, but on a row of the test's own, in the test after this one.
     """
     floors, won = set(), set()
     for miss, passes in CHECK_MISSES.items():
@@ -5111,6 +5210,87 @@ def test_each_check_decides_as_isclose_does_where_its_sides_are_small(tmp_path):
         finally:
             for model in models:
                 model.close()
+    if sys.version_info >= (3, 11):
+        assert len(floors) == 2 and floors <= won, sorted(floors - won)
+
+
+# A row of the test's own: the committed row of S point 1 at 888, two years from the end
+# of its cover, its opening state and its ladder scaled to an account value of $5, read
+# with charges ceasing at attained age 100, so that nothing is charged in any of its 24
+# months and the account stays below $10.  Each miss is a twentieth of the checks'
+# absolute tolerance of 1e-8 to one side of it, so that a floor of 9 or of 11 in place of
+# 10 changes a verdict.
+SMALL_ACCOUNT = 5.0
+SMALL_REFS = {"charges_cease_age": 100}
+SMALL_MISSES = {9.5e-9: True, 1.05e-8: False}
+
+
+def test_the_components_and_the_closure_take_the_floor_of_10_on_a_small_account(tmp_path):
+    """The components' identity and the ladder's closure decide as ``isclose`` below 10.
+
+    Each divides its month's difference by the larger of its two sides and 10, as the
+    roll-forward and the margin identity do (the test before this one), so that it holds
+    exactly where ``IUL_US_S``'s ``math.isclose`` with ``rel_tol=1e-9`` and
+    ``abs_tol=1e-8`` holds; the floor of 10 decides only where both sides are below 10,
+    which no committed row and no splice row reaches (USLIB-SEC-PLAN.md §7.4, *Record —
+    M6*, *Carried into M13*, the isclose floors).  So a row is built for the test beside the
+    committed table, from the generator's row of S point 1 at 888, its account value, its
+    fixed account and its segments scaled to :data:`SMALL_ACCOUNT`, read under
+    :data:`SMALL_REFS`, past the cessation of charges, so that the account, $5.32 to $5.66,
+    and its one segment created in the frame, maturing at ``t = 12``, stay below 10.  On
+    models just read, the collateral at the end of each month, which only the components'
+    identity and ``result_seg`` read, and that segment's deductions to date in its last
+    month, which only its closure and its credit read, are each moved by each miss of
+    :data:`SMALL_MISSES`: both checks pass the miss of ``9.5e-9`` and fail the one of
+    ``1.05e-8``, each as ``isclose`` decides on the two sides this model computes, the floor
+    of 10 winning in each residual (:class:`_BoundSides`), and the roll-forward and the
+    margin identity, which read neither moved cell, hold.
+    """
+    committed = _committed()
+    late = _label(committed, "derived", 1, 888)
+    label = int(committed.index.max()) + 1
+    scale = SMALL_ACCOUNT / committed.at[late, "av_pp_init"]
+    money = ("av_pp_init", "fa_pp_init", "lca_pp_init")
+    row = committed.loc[[late]].assign(
+        **{c: committed.at[late, c] * scale for c in money}, row_kind="copy")
+    table = pd.concat([committed, row.set_axis([label])]).rename_axis("point_id")
+    ladder = _committed_ladder()
+    seg = ladder[ladder["point_id"] == late]
+    seg = seg.assign(point_id=label, **{c: seg[c] * scale for c in LADDER_MONEY})
+    folder = _sec_inputs(tmp_path, table, ladder=pd.concat([ladder, seg],
+                                                           ignore_index=True))
+    floors, won = set(), set()
+    for miss, passes in SMALL_MISSES.items():
+        model = _read(folder, "small", SMALL_REFS)
+        try:
+            _moved(model, "lca_pp", f"lambda t: lca_pp_unmoved(t) + {miss!r}")
+            _moved(model, "seg_ded_cum_pp",
+                   f"lambda t, m: seg_ded_cum_pp_unmoved(t, m) + ({miss!r} if "
+                   f"duration_mth(t) == m + seg_term_mth - 1 and seg_new_pp(m) != 0.0 "
+                   f"else 0.0)")
+            p = _point(model, label)
+            bounds = _BoundSides(model)
+            with bounds.watch() as these:
+                verdicts = (p.check_av_components(), p.check_seg_ladder())
+            won |= these
+            floors |= {side for side in bounds.sides if side[2] == 2 and side[0] in (
+                "check_av_components_resid", "check_seg_closure_resid")}
+            assert verdicts == (passes, passes), miss
+            n = p.proj_len()
+            sides = [(p.av_pp(t), p.fa_pp(t) + p.seg_bal_tot_pp(t) + p.lca_pp(t))
+                     for t in range(n)]
+            maturing = [t for t in range(1, n) if p.seg_new_pp(p.duration_mth(t) - 12)]
+            assert (n, maturing) == (24, [12]) and p.mth_deduction_pp(0) == 0.0
+            m = p.duration_mth(12) - 12
+            closed = (p.seg_bal_pp(11, m) + p.seg_ded_cum_pp(11, m)
+                      + p.seg_wd_cum_pp(11, m))
+            sides.append((p.seg_new_pp(m), closed))
+            assert max(abs(x) for pair in sides for x in pair) < 10.0, sides
+            assert all(math.isclose(a, b, rel_tol=1e-9, abs_tol=1e-8)
+                       for a, b in sides) is passes, miss
+            assert (p.check_av_roll_fwd(), p.check_margin()) == (True, True), miss
+        finally:
+            model.close()
     if sys.version_info >= (3, 11):
         assert len(floors) == 2 and floors <= won, sorted(floors - won)
 
@@ -5486,11 +5666,11 @@ APART_REFS = {"loan_credit_rate_ann_1": 0.0225, "loan_credit_rate_ann_2": 0.0275
 # at 82, a month before the moved step at year 8.
 APART_VARIANTS = {12: VARIANTS[12]}
 APART_ROWS = (*(("twin", p, 0) for p in NEW_BUSINESS), ("twin", 12, 0), ("derived", 12, 82))
+# The default run's: variant 12's two rows, whose collateral reads all three, the twins of
+# S's points with USLIB_SEC_FULL=1 (USLIB-SEC-PLAN.md K6).
+APART_CORE = (("twin", 12, 0), ("derived", 12, 82))
 
 
-@pytest.mark.sec_full
-@pytest.mark.skipif(not SEC_FULL, reason="the set-apart References run with "
-                    "USLIB_SEC_FULL=1 (USLIB-SEC-PLAN.md K6)")
 def test_each_reference_that_ships_equal_to_another_is_read_as_itself(tmp_path):
     """A rewritten cell reads each loan Reference as itself, not as one equal to it.
 
@@ -5504,10 +5684,14 @@ def test_each_reference_that_ships_equal_to_another_is_read_as_itself(tmp_path):
     credited at 2.25% in policy years 6 to 8 and at 2.75% after, apart from the loan's 3%.
     A credited rate, a step or a collateral reading the equal Reference for its own passes
     every comparison at the shipped values and the splice's, and fails here
-    (USLIB-SEC-PLAN.md §7.7, *Record — M9*, *References held to S's*).
+    (USLIB-SEC-PLAN.md §7.7, *Record — M9*, *References held to S's*).  By default the
+    test reads variant 12 alone, its twin and its row at 82 (:data:`APART_CORE`), whose
+    collateral reads all three; S's twins join with ``USLIB_SEC_FULL=1``.
     """
-    s = _read(temp_inputs(tmp_path / "s", model_path(TWIN),
-                          model_points=_s_table_with_variants(APART_VARIANTS),
+    rows = APART_ROWS if SEC_FULL else APART_CORE
+    table = _s_table_with_variants(APART_VARIANTS)
+    table = table.loc[sorted({p for _, p, _ in rows})]
+    s = _read(temp_inputs(tmp_path / "s", model_path(TWIN), model_points=table,
                           edits=SPLICED_EDITS), "apart_s", APART_REFS)
     sec = None
     try:
@@ -5518,7 +5702,7 @@ def test_each_reference_that_ships_equal_to_another_is_read_as_itself(tmp_path):
         assert all(getattr(sec.Projection, name) == value
                    for name, value in APART_REFS.items())
         found = {}
-        for case in APART_ROWS:
+        for case in rows:
             kind, s_point, month = case
             exempt, arg_map = ((VARIANT_EXEMPT, _issued_later) if kind == "twin"
                                else (SPLICE_EXEMPT,
