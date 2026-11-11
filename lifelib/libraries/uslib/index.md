@@ -61,7 +61,7 @@ the annual-step model and `basiclife/BasicTerm_S` and `savings/CashValue_SE` are
 ones. `S` carries a second sense in lifelib — scalar, one model point at a time, as against
 the vectorized `_M` models — and that is true of all twelve here.
 
-A product may also carry a second model, `<product>_US_SEC`, derived from its `_S` model.
+Every product also carries a second model, `<product>_US_SEC`, derived from its `_S` model.
 `E` is for running **in force**: `t` counts months from a valuation date shared by every
 model point, and a model point may be a policy issued at that date, one already in force at
 it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
