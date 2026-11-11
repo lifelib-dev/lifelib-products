@@ -3569,7 +3569,9 @@ def _run_sec(script, *args, check=True):
         return done
     assert done.returncode == 0, done.stderr.decode(errors="replace")
     assert done.stdout.isascii(), "run_sec.py printed a non-ASCII character"
-    return done.stdout.decode("ascii")
+    # Windows ends each printed line with "\r\n"; read them as "\n", as a frame's
+    # to_string() writes them.
+    return done.stdout.decode("ascii").replace("\r\n", "\n")
 
 
 _PAST_END = ("point_id {point}: duration_mth {d} is at or past the end of the projection, "

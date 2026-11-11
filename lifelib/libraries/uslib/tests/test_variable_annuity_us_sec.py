@@ -4303,7 +4303,9 @@ def _run_sec(script, *args, check=True):
         return done
     assert done.returncode == 0, done.stderr.decode(errors="replace")
     assert done.stdout.isascii(), "run_sec.py printed a non-ASCII character"
-    return done.stdout.decode("ascii")
+    # Windows ends each printed line with "\r\n"; read them as "\n", as a frame's
+    # to_string() writes them.
+    return done.stdout.decode("ascii").replace("\r\n", "\n")
 
 
 def test_run_sec_block_asks_every_point_for_its_frame_first(tmp_path):
