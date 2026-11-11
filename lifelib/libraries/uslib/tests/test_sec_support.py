@@ -1101,8 +1101,10 @@ def test_cython_missing_names_what_this_machine_lacks(monkeypatch):
         found["compiler"] = sec_support.cython_missing()
     assert "tools/build_sec_cy.py is absent" in found["tool"]
     assert "modelx-cython is not installed" in found["modelx_cython"]
-    assert found.get("compiler", "'no-such-compiler-cc'").endswith(
-        "'no-such-compiler-cc', which is not on PATH")
+    # Read only where it was taken: a machine without modelx-cython never reaches the
+    # compiler check, as on every leg of CI's test job.
+    if "compiler" in found:
+        assert found["compiler"].endswith("'no-such-compiler-cc', which is not on PATH")
 
 
 def test_require_cython_skips_and_the_cython_job_fails_instead(monkeypatch):
