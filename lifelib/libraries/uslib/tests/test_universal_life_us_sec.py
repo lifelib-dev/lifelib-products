@@ -66,9 +66,9 @@ the rest of the plan's tests (its §5.2) and the product's own facts:
   outside cover, each new opening-state column on the variants, the survivors the end of
   the projection carries, expense inflation and the declared rates on the valuation
   clock, a check whose residual is not a number, the margin identity once a loan exceeds
-  the cash value, acquisition on new business, the mortality cap and a NaN that reaches
-  it, the docstrings, the shared input tables, what the default grid reaches, the block,
-  an in-force extract and the runner.
+  the cash value, a first 7-pay failure in policy year 7, acquisition on new business,
+  the mortality cap and a NaN that reaches it, the docstrings, the shared input tables,
+  what the default grid reaches, the block, an in-force extract and the runner.
 * C2, the fingerprint: every committed point computes what the model computed when Phase 1
   ended, frozen at the end of this module before Phase 2 changed anything (§5.4).
 
@@ -2129,11 +2129,12 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
     in-force point moved on to month 13 with $25 of the year's allowance used; S point 1
     moved to month 84 with $50,000 of premiums and the latch on, and S's in-force point
     moved to month 85 with the same premiums and the latch off, since the month before it
-    is in policy year 8, where the 7-pay test no longer runs.  And two values ``UL_US_S``
-    can produce or the model can project as given: a face in force below the face at issue
-    on the point valued as its shortfall begins, projected from the value given, its
-    Option B death benefit that face plus the floored account value; and premiums less
-    withdrawals below 0, a tax measure rather than a balance.
+    is in policy year 8, where the 7-pay test no longer runs, so that it is no MEC there,
+    over the limit as it is.  And two values ``UL_US_S`` can produce or the model can
+    project as given: a face in force below the face at issue on the point valued as its
+    shortfall begins, projected from the value given, its Option B death benefit that face
+    plus the floored account value; and premiums less withdrawals below 0, a tax measure
+    rather than a balance.
     """
     committed = _committed()
     last = _label(committed, "derived", 1, 1008)
@@ -2183,6 +2184,7 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
         assert p.is_mec_init() is True and p.is_mec(0) is True
         p = _point(model, unlatched)
         assert p.is_mec_init() is False and p.policy_year(0) == 8
+        assert p.is_mec(0) is False
         assert p.cum_prem_init() == 50000.0 and type(p.cum_prem_init()) is float
         p = _point(model, shortfall)
         assert p.sum_assured_init() == 99000.0 and type(p.sum_assured_init()) is float
@@ -2961,6 +2963,102 @@ def test_the_margin_identity_holds_once_a_loan_exceeds_the_cash_value(tmp_path):
             assert abs(gap - floored) <= 1e-9 * max(abs(p.net_cf(t)), 1.0), t
         assert p.check_margin() and p.check_av_roll_fwd()
         assert not sp.check_margin() and sp.check_av_roll_fwd()
+    finally:
+        if sec is not None:
+            sec.close()
+        s.close()
+
+
+# ---------------------------------------------------------------------------
+# The 7-pay test's last year
+#
+# S's point 1 at $4,700 a year, under a premium persistency that rises 12% a year,
+# 1.12^(y - 1), where S's falls 2 points a year: its premiums to date stay inside the 7-pay
+# limit through policy year 6, 38,141.39 against 40,212.60, and through month 82, 46,645.28
+# against 46,914.70, and pass it in month 83, the last of policy year 7, at 47,418.36.
+# With a persistency that falls, as shipped, a level premium that ever fails the test fails
+# it in its first year, so neither the committed table nor the splice's variants reach the
+# window's last year.  It is read under the splice's References, with the persistency
+# table its own (MEC7_EDITS).
+MEC7 = (1, {"policy_id": "UL-900021", "premium_pp_ann": 4700.0})
+MEC7_MTH = 83
+
+
+def _rising_persistency(table):
+    """S's persistency table with each year's factor ``1.12^(y - 1)``, rising from 1."""
+    return table.assign(prem_persistency=[round(1.12 ** (y - 1), 6)
+                                          for y in table["policy_year"]],
+                        provenance="test copy")
+
+
+MEC7_EDITS = {**SPLICED_EDITS, "prem_persistency.csv": _rising_persistency}
+
+
+def test_a_first_7_pay_failure_in_policy_year_7_is_latched(tmp_path):
+    """The 7-pay test runs to the last month of policy year 7, and a failure there latches.
+
+    ``is_mec`` tests ``CumPrem(t) > 7-pay limit`` in the first seven policy years and
+    latches; no committed row or splice variant first fails it later than year 1, so a
+    window a year or a month short would pass every other test (§7.4, *Record — M6*,
+    *Carried into M13*: the 7-pay window, pinned in UL by a splice of its own).  On the
+    point of :data:`MEC7`, under :data:`MEC7_EDITS`, ``UL_US_S``'s test first fails in
+    month :data:`MEC7_MTH`, the last of policy year 7, and holds to the end.  Three rows of
+    the point, built from S by the generator, each continue S from their month on
+    (:func:`_compare`), the 7-pay test and the latch among the cells compared, to 1e-9
+    relative with no absolute floor: the twin issued at the valuation date, which latches
+    from month 83; the row restated at 83, which fails the test in the valuation month
+    with no latch carried in; and the row at 84, in policy year 8, where the test no
+    longer runs and the latch carried in holds alone.  A fourth, the row at 84 with its
+    premiums to date at the limit of year 7, $46,914.70, and no latch, which ``Data``
+    accepts, is no MEC though its premium of the month takes it past the limit: the test
+    is not read a month past its window.
+    """
+    base, changes = MEC7
+    s_table = pd.read_csv(model_path(TWIN).parent / "model_point_table.csv",
+                          index_col="point_id")
+    row = s_table.loc[[base]].assign(**changes)
+    s = mx.read_model(temp_inputs(tmp_path / "s", model_path(TWIN), model_points=row,
+                                  edits=MEC7_EDITS), name=_name("mec7_s"))
+    sec = None
+    try:
+        for ref, value in SPLICED_REFS.items():
+            setattr(s.Projection, ref, value)
+        sp = _point(s, base)
+        _sweep_s(sp)
+        failed = [t for t in range(sp.proj_len()) if sp.is_mec(t)]
+        assert failed == list(range(MEC7_MTH, sp.proj_len()))
+        assert sp.policy_year(MEC7_MTH) == 7 and sp.policy_year(MEC7_MTH + 1) == 8
+        assert sp.cum_prem_pp(MEC7_MTH) > sp.seven_pay_limit(MEC7_MTH)
+        assert sp.cum_prem_pp(MEC7_MTH - 1) <= sp.seven_pay_limit(MEC7_MTH - 1)
+        spec = dataclasses.replace(SPEC, derived=((base, MEC7_MTH), (base, 84)), future=())
+        table, _ = build_sec_table(spec, s)
+        late = table[table["source_mth"] == 84]
+        limit = 7 * float(late["seven_pay_prem"].iloc[0])
+        table = pd.concat([table, late.assign(
+            point_id=table["point_id"].max() + 1, policy_id=f"{changes['policy_id']}-L84",
+            cum_prem_init=limit, is_mec_init=0, row_kind="copy")], ignore_index=True)
+        sec = mx.read_model(_sec_inputs(tmp_path / "sec", table, MEC7_EDITS),
+                            name=_name("mec7"))
+        for ref, value in SPLICED_REFS.items():
+            setattr(sec.Projection, ref, value)
+        rows = ((("twin", base, 0), FUTURE_EXEMPT, _issued_later),
+                (("derived", base, MEC7_MTH), SPLICE_EXEMPT, None),
+                (("derived", base, 84), SPLICE_EXEMPT, None))
+        for case, exempt, arg_map in rows:
+            key = _row_key(sec, *case)
+            p = projection(sec, key)
+            assert _compare(sp, p, case[2], exempt, arg_map) == [], case
+            assert [t for t in range(p.proj_len()) if p.is_mec(t)] == list(
+                range(max(MEC7_MTH - case[2], 0), p.proj_len())), case
+            if case[0] == "derived":
+                assert p.is_mec_init() is (case[2] > MEC7_MTH), case
+                assert p.policy_year(0) == (7 if case[2] == MEC7_MTH else 8), case
+            del p
+            _release(sec, key)
+        p = _point(sec, int(table["point_id"].max()))
+        assert p.cum_prem_init() == limit and not p.is_mec_init()
+        assert p.policy_year(0) == 8 and p.cum_prem_pp(0) > p.seven_pay_limit(0)
+        assert not any(p.is_mec(t) for t in range(12))
     finally:
         if sec is not None:
             sec.close()

@@ -36,8 +36,9 @@ and the product's own facts:
 * D11's R1 and R2, and D3's clock: on the splice's grid no cell is called at a negative
   month, none evaluated on the books reads a month before them, and none reads beyond
   ``t + 1`` but the term blend's one read of the dividend at the anniversary that closes
-  its year; on the committed points no recursion runs backward over the frame; and the
-  policy clock is a closed form.
+  its year; on the committed points no recursion runs backward over the frame; the
+  policy clock is a closed form; and every chain of the model runs one cell a month from
+  a cold start, as far as the contract's longest cover.
 * T4, the count algebra: the count rolls forward through new business and decrements,
   ``result_pols`` is S's report with the new business beside it, multiplying
   ``policy_count`` by 2.5, with the switches that ship off switched on, multiplies every
@@ -1005,6 +1006,163 @@ def test_the_policy_clock_is_a_closed_form_and_no_recursion_runs_backward(sec_re
     assert record["duration_mth(500)"] == 500
     assert record["keys"] == [500]
     assert not record["deep"], f"under a recursion limit of {CALL_DEPTH}: {record['deep']}"
+
+
+# How deep a cold call may run beyond its chain, one cell a month from its month back to
+# t_entry() (D5): the cells above the chain and those below it, the first month's rates and
+# Data's first reads of its tables.  A cold net_cf in the last month runs 9 or 10 cells
+# beyond the count's chain, on 660 months and at the contract's longest cover alike, and
+# each chain called alone at most 6 beyond.  Term's 16, as for Term, MYGA, FIA and DIA.
+# Any chain of two cells a month runs a frame's length beyond.
+CHAIN_OVERHEAD = 16
+
+# The youngest issue age product-spec.md admits, level pay from 0 (USLIB-SEC-PLAN.md D5,
+# F7): the longest cover from issue, to the maturity age of 100, is 1,200 months.
+YOUNGEST = 0
+
+# Each chain of the model and the cell that heads it, called cold in the last month of the
+# frame: (cell, its timing).  They are called in this order on one fresh read, an order in
+# which no chain is reached before its own head is called: the premiums paid to date, the
+# accumulated dividends, the paid-up additions and the count.  On S's point 4, which
+# leaves its dividends to accumulate, every one runs the frame's length.
+CHAIN_HEADS = (("prem_cum", None), ("div_accum", None), ("pua_face", None),
+               ("pols_if_at", "BEF_NB"))
+
+
+def _cold_depth(proj, cell, args):
+    """How many cells deep ``cell(*args)`` runs on ``proj``, by modelx's stack trace."""
+    mx.start_stacktrace(maxlen=None)
+    try:
+        proj.cells[cell](*args)
+        trace = mx.get_stacktrace(summarize=False)
+    finally:
+        mx.stop_stacktrace()
+    level = deepest = 0
+    for event, *_ in trace:
+        level += 1 if event == "ENTER" else -1
+        deepest = max(deepest, level)
+    return deepest
+
+
+def _one_cell_a_month(p, label, cell, args, t):
+    """Whether a cold ``cell(*args)`` at month ``t`` on ``p`` runs one cell a month.
+
+    It must run at least as deep as the months from ``t`` back to ``t_entry()``, or it did
+    not run its chain cold, and at most :data:`CHAIN_OVERHEAD` cells deeper.  Returns the
+    finding, or nothing.
+    """
+    depth, chain = _cold_depth(p, cell, args), t - p.t_entry()
+    if chain <= depth <= chain + CHAIN_OVERHEAD:
+        return []
+    return [f"point {label}: {cell}{args} cold runs {depth} cells deep, where one cell a "
+            f"month back to t_entry() {p.t_entry()} is {chain} and {CHAIN_OVERHEAD} more "
+            f"are allowed"]
+
+
+def _younger(table):
+    """An age-keyed table with its first age's rows repeated down to :data:`YOUNGEST`."""
+    first = table[table["age"] == table["age"].min()]
+    rows = [first.assign(age=age, provenance="test copy")
+            for age in range(YOUNGEST, int(table["age"].min()))]
+    return pd.concat([*rows, table], ignore_index=True)
+
+
+def _as_issued_at_45(table):
+    """A table keyed by issue age, its issue-age-45 rows repeated at :data:`YOUNGEST`."""
+    rows = table[table["issue_age"] == 45].assign(issue_age=YOUNGEST,
+                                                  provenance="test copy")
+    return pd.concat([table, rows], ignore_index=True)
+
+
+def _cash_values_from_youngest(table):
+    """The cash value table with a level-pay male schedule at :data:`YOUNGEST`, rising
+    $10 per $1,000 a policy year to the face at year 100."""
+    years = range(1, 101)
+    rows = pd.DataFrame({"premium_period": "TO_100", "sex": "M", "issue_age": YOUNGEST,
+                         "policy_year": list(years),
+                         "cv_per_1000": [10.0 * y for y in years],
+                         "provenance": "test copy"})
+    return pd.concat([table, rows], ignore_index=True)
+
+
+def _longest_cover(tmp_path):
+    """A copy whose table holds S point 4 at issue age 0, issued now and 120 months on.
+
+    The frame from issue is ``12 * (100 - issue age)`` months, so the longest cover is at
+    the youngest issue age the product spec issues at, level pay from 0: 1,200 months, and
+    the longest frame is that issued 120 months on, the shipped ``future_horizon_mth``,
+    1,320 months, whose chains stop at ``t_entry()``.  S's tables price issue ages 45 and
+    65 alone, from attained age 18, so the copy's age-keyed tables repeat their first age
+    down to 0, its issue-age tables their issue-age-45 rows at 0, and its cash values run
+    up to the face; how deep a chain runs does not depend on the values.  S point 4
+    accumulates its dividends, so every chain of the model runs on it.
+    """
+    committed = _committed()
+    now = _label(committed, "twin", 4, 0)
+    rows = committed.loc[[now, now]].assign(issue_age=YOUNGEST).set_axis(
+        [now, committed.index.max() + 1]).rename_axis("point_id")
+    rows = _set("duration_mth", [rows.index[1]], -120)(rows)
+    edits = {"mort_table.csv": _younger, "nsp_table.csv": _younger,
+             "cv_table.csv": _cash_values_from_youngest,
+             "premium_rates.csv": _as_issued_at_45,
+             "np_guar_table.csv": _as_issued_at_45}
+    folder = temp_inputs(tmp_path, model_path(SEC), model_points=rows,
+                         model_point_file=TABLE, edits=edits)
+    return folder, list(rows.index)
+
+
+# modelx warns as its stack trace starts and stops, which is all the test does with it.
+@pytest.mark.filterwarnings("ignore:call stack trace:UserWarning")
+def test_every_chain_runs_one_cell_a_month_from_a_cold_start(tmp_path):
+    """Called cold, each chain runs one cell a month back to ``t_entry()``, no more (D5).
+
+    No number shows how deep a chain runs, and a compiled model runs it on the C stack, so
+    a chain of two cells a month, which gives the same numbers, needs twice the stack on
+    every platform (F7); ``WholeLife_US_S``'s cold ``net_cf`` runs 3,304 cells deep on a
+    660-month frame.  On a model just read, nothing is cached, so modelx's stack trace
+    counts how deep a call runs, against one cell a month and :data:`CHAIN_OVERHEAD` more
+    (:func:`_one_cell_a_month`), with modelx's recursion limit where the module leaves it:
+
+    * ``net_cf`` in the last month, on a read of its own: the deepest call a projection
+      makes, and what bounds the stack a compiled model needs;
+    * then, on a second read, each of :data:`CHAIN_HEADS` alone, in an order that leaves
+      each chain cold until its own head is called, which is checked: so a chain that a
+      ``net_cf`` call reaches from the side is measured too, where a ``net_cf`` call would
+      have found it cached.
+
+    On the twin of S's point 4, issued now, 660 months; and by default, as §7.5's
+    *Record — M5* and M14's carried rule ask, at the contract's longest cover, issue age 0,
+    issued now and 120 months on (:func:`_longest_cover`), each row's frame asserted first.
+    """
+    committed = _committed()
+    extremes, labels = _longest_cover(tmp_path)
+    reads = [(model_path(SEC), [_label(committed, "twin", 4, 0)], 660),
+             (extremes, labels, 1200)]
+    found = []
+    for folder, points, months in reads:
+        for label in points:
+            fresh = mx.read_model(folder, name=_name("cold"))
+            try:
+                p = _point(fresh, label)
+                assert p.proj_len() - p.t_entry() == months, (label, p.proj_len())
+                last = p.proj_len() - 1
+                found += _one_cell_a_month(p, label, "net_cf", (last,), last)
+            finally:
+                fresh.close()
+            fresh = mx.read_model(folder, name=_name("chains"))
+            try:
+                p = _point(fresh, label)
+                last = p.proj_len() - 1
+                for cell, timing in CHAIN_HEADS:
+                    if len(p.cells[cell].keys()):
+                        found.append(f"point {label}: {cell} was reached before it was "
+                                     f"called, so its chain was not cold")
+                        continue
+                    args = (last,) if timing is None else (last, timing)
+                    found += _one_cell_a_month(p, label, cell, args, last)
+            finally:
+                fresh.close()
+    assert not found, found
 
 
 # ---------------------------------------------------------------------------
