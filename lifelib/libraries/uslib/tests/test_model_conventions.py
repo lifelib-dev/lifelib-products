@@ -1037,6 +1037,20 @@ def twin_model(name, tmp_path_factory):
     m.close()
 
 
+# The cells T1 compares at an absolute floor, by SEC model, each with its reason.  Every
+# other cell is held to 1e-9 relative with no absolute floor (§5.2, T1, precised at M13):
+# twin_mismatches' default floor of 1e-9 passes any error in a count below 1e-9, and the
+# twins of UL, VUL, ULSG, FIA and VA hold counts in force down to 1e-13.
+#
+# DIA_US_SEC measures the commutation exchange's residual in the guarantee's last month,
+# where DIA_US_S measures it at the exercise month (DIA_US_SEC's docstring): on point 15
+# the one value, -2.9e-11, a rounding about zero, sits at month 359 in SEC and at month 252
+# in S, so each model's 0.0 meets the other's rounding.  It keeps the residual's own floor.
+TWIN_FLOORS = {
+    "DIA_US_SEC": {"check_commutation_value_resid": 1e-9},
+}
+
+
 @sec_family
 def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, read_log):
     """T1, the twin identity: on new business the SEC model is its S model (§5.2).
@@ -1065,6 +1079,10 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
     projection clock (UL's point 3), is not compared here. Its SEC frame starts at the
     valuation date, so it is a splice case, which the product module asserts (T2).
 
+    Every cell is compared to 1e-9 relative with no absolute floor, so that an error in a
+    count below 1e-9, which late in a long frame is most of what is in force, fails: but
+    for :data:`TWIN_FLOORS`, the cells a product names with its floor and its reason.
+
     At least one pair must be compared. Every S table has new-business points, so an empty
     comparison means the twins have gone missing, and a check that compares nothing is how
     coverage disappears without a failure.
@@ -1087,6 +1105,7 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
     spec = SEC_SPECS.get(name)
     exempt = TWIN_EXEMPT_DEFAULT | (spec.exempt if spec is not None else frozenset())
     arg_map = spec.twin_arg_map if spec is not None else None
+    floors = TWIN_FLOORS.get(name, {})
     _base_sweep(model)
     mark = len(read_log)
     try:
@@ -1106,8 +1125,12 @@ def test_new_business_twins_agree_with_s_cell_by_cell(name, model, twin_model, r
             s_proj = projection(twin_model, s_key)
             sweep(s_proj)
             sec_proj = projection(model, sec_key)
-            found = twin_mismatches(s_proj, sec_proj, exempt=exempt, arg_map=arg_map,
-                                    codes=codes(sec_proj))
+            found = twin_mismatches(s_proj, sec_proj, exempt=exempt | set(floors),
+                                    arg_map=arg_map, codes=codes(sec_proj), atol=0.0)
+            for cell, floor in floors.items():
+                others = set(s_proj.cells) - {cell}
+                found += twin_mismatches(s_proj, sec_proj, exempt=others, arg_map=arg_map,
+                                         codes=codes(sec_proj), atol=floor)
             mismatches += [f"point {point_id}: {m}" for m in found]
     finally:
         del read_log[mark:]
