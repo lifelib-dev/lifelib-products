@@ -3,17 +3,18 @@
 **Status:** Accepted, 2026-11-01; drafted 2026-10-31. Phase 0 (M0) is done (§4, *Record*),
 and so are Term and WholeLife, the first two of Phase 1 (M1 and M2, the *Records* of §7.1
 and §7.2). The other ten run in three streams (§5.3). The Payout and Deferred annuity
-streams are complete: SPIA, DIA and RILA are done (M11, M12 and M10, the *Records* of
-§7.9, §7.12 and §7.8), and so are MYGA, FIA and VA (M7, M8 and M9, the *Records* of §7.10,
-§7.11 and §7.7). The Life stream is complete too: UL, VUL, ULSG and IUL are done (M3, M4,
-M5 and M6, the *Records* of §7.3, §7.6, §7.5 and §7.4), so every product of Phase 1 has
-its in-force model, and M13, Phase 1's freeze, is the milestone of the phase still open
-(§9). Term's compile step, M14, brought forward to run beside the streams (D2), is done on
-Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record —
-M14*). The open decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03.
-Like USLIB-MERGE-PLAN.md, this document is both the specification and the record: each
-phase records what it actually did, including where the implementation departed from the
-plan.
+streams are complete: SPIA, DIA and RILA are done (M11, M12 and M10, the *Records* of §7.9,
+§7.12 and §7.8), and so are MYGA, FIA and VA (M7, M8 and M9, the *Records* of §7.10, §7.11
+and §7.7). The Life stream is complete too: UL, VUL, ULSG and IUL are done (M3, M4, M5 and
+M6, the *Records* of §7.3, §7.6, §7.5 and §7.4), so every product of Phase 1 has its
+in-force model; and M13, Phase 1's freeze, is done, 2026-11-11, every SEC model's
+fingerprint frozen and its gate, the CI matrix green inside its timeout, met by the Tests
+workflow's run 16 (§5, *Record — M13*). Term's compile step, M14, brought forward to run
+beside the streams (D2), is done, on Linux 2026-11-02 and on Windows 2026-11-11, where the
+`cython` job's first runs passed (§7.1, *Record — M14*). The open decisions of §8.2 are
+settled, the last of them, item 4, on 2026-11-03. Like USLIB-MERGE-PLAN.md, this document is
+both the specification and the record: each phase records what it actually did, including
+where the implementation departed from the plan.
 
 Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
 modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
@@ -245,19 +246,19 @@ a separate product directory with copied CSVs (two copies of every table drift a
 
 A product's Phase 1 (E) lands before its Phase 2 (C) starts. Phase 1 changes semantics and
 no representation; Phase 2 changes representation and **no number**. Phase 2 starts on the
-other eleven products once Phase 1 is complete and frozen for all twelve (M13). Within each
-phase Term goes first, as the template, and the others follow the streams of §5.3. Between
-the phases the `_SEC` models carry `stage: "E"` in the registry, and the C-only conventions
-switch on at `stage: "EC"`.
+other eleven products once Phase 1 is complete and frozen for all twelve (M13, done
+2026-11-11; §5, *Record — M13*). Within each phase Term goes first, as the template, and
+the others follow the streams of §5.3. Between the phases the `_SEC` models carry
+`stage: "E"` in the registry, and the C-only conventions switch on at `stage: "EC"`.
 
 Term's C step (M14) is brought forward (changed at M2): it runs beside Phase 1's streams,
-not after M13. Its first commit freezes Term's Phase 1 fingerprint, as M13 freezes the
+not after M13. Its first commit freezes Term's Phase 1 fingerprint, as M13 froze the
 others', and the compiled Term must reproduce it (C2). A finding of M14's that a Phase 1
 model must follow goes to the products in progress as it is made, and binds every product
 that lands after it. A product that landed before it takes it up in its own C step. M14 is
-done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1,
-*Record — M14*). What it found that the Phase 1 products follow is listed there, under
-*Carried into Phase 1*.
+done, on Linux 2026-11-02 and on Windows 2026-11-11, where the `cython` job's first runs
+passed (§7.1, *Record — M14*). What it found that the Phase 1 products follow is listed
+there, under *Carried into Phase 1*.
 
 *Why:* two reviewable diffs per product — "what running in force needs" and "how it is made
 C" — and Phase 2 is gated by the Phase 1 suite, unchanged in substance. Phase 1 nonetheless
@@ -1182,9 +1183,9 @@ new skips are the eight SEC conventions, each skipped for want of a model.
    the death benefit past the face but for `db_pp`'s inner floor. VUL's account value, as
    its corridor reads it, falls below 0 on its point 3 from `t = 594`, and there a factor
    of −0.5 from attained age 94 takes the death benefit past its face of 500,000 at
-   `t = 721`, to 508,699.42, every check passing: `VUL_US_SEC` accepts the factor, and M13
-   or its C step refuses it (§9). IUL's falls below 0 by design, with no floor in its
-   `db_pp`, so IUL refuses one too (§7.5, *Record — M5*; precised at M5).
+   `t = 721`, to 508,699.42, every check passing: `VUL_US_SEC` accepts the factor, and its
+   C step refuses it, M13 having left it there (§9). IUL's falls below 0 by design, with
+   no floor in its `db_pp`, so IUL refuses one too (§7.5, *Record — M5*; precised at M5).
 7. Inputs: assign each input to its clock (D7).
 8. Reporting: `result_cf()` with the S columns; `result_pols()`.
 9. Docstrings: rewrite the time-axis prose — every "t = 0 is the issue month" — add the
@@ -1346,7 +1347,17 @@ conventions suite.
   model read on a one-row copy of S's table and closed once its rows are built, so that
   the test holds one S projection, 0.35 GB, not the splice's; the run under the main
   splice's References is on the full grid, a departure from 'by default' for K6, since the
-  shipped run must meet its named states; M13 decides it with IUL's core (precised at M6).
+  shipped run must meet its named states, and M13 kept it there with IUL's core; since M13
+  it also runs by default under a segment term of 6 months and under the premium
+  persistency that first fails the 7-pay test in year 7, each on its own points (precised
+  at M6 and M13). `VA_US_SEC`'s test runs two of its five sets, the shipped References on
+  the variants and the splice's untaxed, which no other test reads, on the full grid
+  alone, a departure from 'by default' for K6, as IUL's main splice's is (precised at
+  M13). A bound against a constant, a probability from 0 to 1 or an amount of 0 or more,
+  is no window rule or tolerance, and need not be pinned an ulp past, in any product. A
+  set of inputs on which S's states do not differ in what `Data` and `proj_len()` decide
+  need not be run: it may be probed at every month instead, the every-state test's
+  docstring naming it and what its probe found (precised at M13).
 - **T6 — Regeneration.** The committed SEC table and its generated companions, every row
   and column, equal what `gen_sec_points.py` produces from the S model and its inputs as
   committed. So an edit to an S row that an SEC file copies or derives from — a reworded
@@ -1393,7 +1404,8 @@ life product builds. Three things do tie the products together, and the streams 
 
 Term's C step (M14) runs beside the streams (D2). One PR per product. §7 gives each
 product's size. Times taken while the streams share a machine are noisy, so each record
-says when it measured under load, and K6 is measured again on the merged branch at M13.
+says when it measured under load, and K6 is measured again on the merged branch at M13
+(K6, *M13*).
 
 ### 5.4 Exit criteria
 
@@ -1413,27 +1425,446 @@ says when it measured under load, and K6 is measured again on the merged branch 
   accepts only where they hold exactly, and refuses its first-term rule at month 1, its
   first, where its module has no case. T4's scaled check, shown at a count where a
   residual exceeds its unscaled tolerance, goes into WholeLife, whose count check scales
-  with the count and whose residual exceeds the unscaled 1e-10 on 18 of its 22 rows at a
-  millionfold count, which no test shows. A product that lands short of either takes it up
-  at M13 too (decided at M10's landing). VA, landed after RILA, tests its window rules at
-  both ends and pins its tolerances from both sides, but has no every-state test: its
-  probes restated every state `VA_US_S` reaches on its points and variants under four sets
-  of inputs, 18,502 a set, and `Data` and `proj_len()` accepted each, so it takes the test
-  up at M13 (§7.7, *Record — M9*), and with it a test of each rule it states on a
-  Reference with that Reference moved off its shipped value, which no VA test makes. M9's
-  precision of T5 is taken at M13 too: RILA's every-state test, which ran on the splice's
-  inputs alone, says so and runs under each other set of inputs on which the states
-  `RILA_US_S` reaches differ.
+  with the count and whose residual exceeds the unscaled 1e-10 on 19 of its 22 rows at a
+  millionfold count, which no test shows (precised at M13). A product that lands short of
+  either takes it up at M13 too (decided at M10's landing). VA, landed after RILA, tests
+  its window rules at both ends and pins its tolerances from both sides, but has no
+  every-state test: its probes restated every state `VA_US_S` reaches on its points and
+  variants under four sets of inputs, 18,502 a set, and `Data` and `proj_len()` accepted
+  each, so it takes the test up at M13 (§7.7, *Record — M9*), and with it a test of each
+  rule it states on a Reference with that Reference moved off its shipped value, which no
+  VA test makes. M9's precision of T5 is taken at M13 too: RILA's every-state test, which
+  ran on the splice's inputs alone, says so and runs under each other set of inputs on
+  which the states `RILA_US_S` reaches differ. M13 took each of these into its products
+  before their freezes (*Record — M13*, below).
 - `python tools/doccheck.py` reports zero.
 - The existing CI matrix is green inside its 90-minute timeout. The SEC suites roughly
-  double the projected volume, so §8's K6 measures that before the timeout is touched.
+  double the projected volume, so §8's K6 measures that before the timeout is touched. M13
+  measured the suite on the merged branch, and the Tests workflow's run 16 met M13's gate
+  once the SEC modules ran in a job of their own (K6, *M13*).
 - A compact fingerprint of each SEC model is frozen in its own test module before that
   product's Phase 2 changes anything, Term's at M14 and the others' at M13 (D2): for each
   point, each column of `result_cf()` and `result_pols()`, its sum, its largest absolute
   value and its values at the frame's first, last and three quartile months. It is a
   literal between marker lines written by `tools/gen_sec_fingerprint.py`, so a reviewer
   can read it, and it is committed alone. Phase 2 must reproduce it to 1e-12 relative,
-  floored at 1e-12 of the column's scale.
+  floored at 1e-12 of the column's scale. All twelve are frozen, Term's at M14 and the
+  other eleven at M13, each in a commit of its own (*Record — M13*, below).
+
+### Record — M13, done 2026-11-11
+
+M13 froze Phase 1. It took into the products built before them the precisions of §5.2 that
+§5.4 lists, each product's in a commit of its test module alone, before that product's
+freeze but Term's, whose fingerprint M14 had frozen; made the changes §9's row names
+across products, in CI's workflow, uslib's test configuration and uslib's `index.md`; took
+up the items IUL's landing carried into it (§7.4, *Record — M6*, *Carried into M13*); and
+froze the eleven fingerprints not yet frozen, one commit a product holding the C2 test,
+its comment and the generated block and nothing else, in the form of Term's at M14. It ran
+on the branch from 55142f7, M5's landing, to a0a90cd, in 32 commits beside IUL's two:
+eleven of precisions, one for each product but ULSG, which was built to them; eleven
+freezes; and ten more, the two CI changes, ULSG's trim, the two changes to `index.md`,
+VA's depletion fix, T1's floor, WholeLife's depth test with UL's 7-pay splice, and the two
+test fixes CI's runs found. Each group of products was checked by faults and measured
+under load before it landed. No committed number moved: each fingerprint was frozen from
+its model as landed, and Term's, frozen at M14, reproduced throughout and was not
+refrozen. Its gate, the CI matrix green inside its 90-minute timeout, was met by the Tests
+workflow's run 16, on a0a90cd (*The gate*, below).
+
+**What exists now.**
+- Every SEC test module ends with C2's section:
+  `test_the_phase_1_fingerprint_is_reproduced`; the comment that says the literal was
+  frozen from the model as Phase 1 left it and committed alone, is never edited by hand,
+  and is refrozen only through the tool's `--force`, in a commit of its own that says why;
+  and the block `tools/gen_sec_fingerprint.py` wrote. Term's is M14's; WholeLife's, UL's,
+  MYGA's, SPIA's, DIA's, VUL's, FIA's, RILA's, VA's and ULSG's were frozen on 2026-11-10
+  and IUL's on 2026-11-11, after it landed. The eleven freeze commits add 9,736 lines,
+  almost all literal.
+- Each product's test module holds §5.2's tests as §5.4 now states them. M13 added to
+  eleven of them, ULSG's having been built to them: T2 and T3 at no absolute floor and T4
+  at a factor of 2.5 in Term, WholeLife, MYGA and UL; FIA's committed future row compared
+  with its S point frame by frame; T5's window rules refused just inside each end and read
+  just outside, and each tolerance pinned from both sides, in the eight §5.4 names, in
+  RILA and in IUL; an every-state test in each of the eight and in VA, and RILA's and
+  IUL's under more sets of inputs; WholeLife's count check at a million policies; VA's
+  rules on a moved Reference; WholeLife's cold-depth test; UL's 7-pay failure in year 7;
+  and IUL's isclose floors. Each is given below. These changed test modules alone.
+- Shared files: `tests/conftest.py` registers a `docutils` marker beside `cython` and
+  `sec_full`, and its report hook, which fails a `cython` test's skip under
+  `USLIB_REQUIRE_CYTHON=1`, fails a `docutils` test's skip under
+  `USLIB_REQUIRE_DOCUTILS=1`; the five docstring parse tests, FIA's, ULSG's, RILA's, VA's
+  and IUL's, carry it. In `.github/workflows/tests.yml` the test job, every library in one
+  process on three systems and four Pythons, leaves out the twelve `test_*_us_sec.py`
+  modules, and a third job, `sec`, runs each alone: by default on windows-latest and
+  macos-latest and over its full grid on ubuntu-latest, at Python 3.13, the full-grid legs
+  installing docutils and setting `USLIB_REQUIRE_DOCUTILS=1`. The SEC conventions, the
+  registry and `sec_support`'s tests stay in the test job. `requirements.txt` is
+  unchanged, docutils being no requirement of the models, and lifelib's CI, which installs
+  none, still skips the parse tests. `conftest.py`'s docstring says where the full grids
+  and the parse tests run. `test_model_conventions.py` compares every twin at no absolute
+  floor (T1), `TWIN_FLOORS` keeping 1e-9 on DIA's `check_commutation_value_resid` alone.
+  uslib's `index.md` has a column for the `_SEC` models in its convention table, and its
+  SEC paragraph says every product carries one.
+- `VA_US_SEC`'s `Data` holds each `sa_pp_init_<i>` to 0 or more within 1e-8, not a cent,
+  and its `proj_len()` refuses, naming the point, a contract depleted at the valuation
+  date, its account at or below `av_depletion_threshold`, whose account is not 0 within
+  1e-8, the threshold being a `Projection` Reference that `Data` cannot read; its
+  docstrings and `model-sec.md` say so. It is the one model M13 changed, after VA's
+  freeze, and it refuses inputs only: no committed number moved, and VA's fingerprint
+  reproduces.
+
+**What M13 took of §5.4 and §9's row.** Item by item, met, taken in part or left, and why:
+- *M11's T2 and T3 with no absolute floor*, in Term, WholeLife, MYGA and UL: met. Each
+  compares frames and cells to 1e-9 relative at `atol=0.0`, the S model's roll-forward
+  residuals alone keeping the 1e-9 floor in a pass of their own, WholeLife's two and
+  MYGA's two; `Term_US_S` and `UL_US_S` have none, and no count-weighted cell needed a
+  floored month. In each a fault below the old floor passed the old comparison and fails
+  the new: on Term's tobacco variant, whose count falls to 1.1e-6 and its lapses to
+  9.2e-9, where the old floor passed an error of 11%, a 1e-3 error in the lapses below
+  1e-7; in MYGA and UL an expense below 1e-7, and in UL a premium tax on a committed row
+  whose count is 1.8e-10, each moved by 1e-3; and in WholeLife the unfunded blend's
+  leftover dividend, a rounding of 3e-16 to 3e-13 that the two models compute alike, below
+  which the splice holds only the residuals; the full grid caught it, and the default core
+  does too since S point 14 restated at 12 joined it. Without the residuals' floor two of
+  WholeLife's core rows and three of MYGA's fail, each on a residual an ulp off in
+  month 0. Where a committed row's comparison reuses the T2 and T3 helper it takes the
+  same precision, in Term's mid-ART row, WholeLife's and MYGA's committed rows, UL's twin,
+  committed frames and margin row and SPIA's committed rows, as VUL's, FIA's, DIA's,
+  RILA's, VA's and IUL's did already.
+- *M11's T4*, in the same four: met. Each multiplies the count by 2.5 on every committed
+  point with every assumption that ships at zero switched on at its T2 value: Term's
+  conversion rates; WholeLife's three switches that ship off, and its `competitor_rate`
+  and `int_rate_loan`, which ship nonzero but move nothing at their shipped values, each
+  read at the value T2 gives it (§5.2, T4; settled at M13); MYGA's four References and
+  variant 8's premium tax and floor charge, without which the premium tax is 0 on every
+  point; and UL's acquisition at $250 and variant 4's planned withdrawal of $60 a month,
+  without which withdrawals and their fees are 0. Every counted cell is held at every
+  cached key to 1e-12 relative, MYGA's `av_change` and UL's `av_change`, `net_cf` and two
+  margins to 1e-12 of their peaks, and the counted residuals to 1e-9; every other cell is
+  held bit for bit; and every flow is nonzero on some point but UL's maturities, which the
+  contract never has. New business read as whole policies passed the doubling in Term and
+  WholeLife and fails here, as do Term's conversion credit without its count and four
+  count faults each in MYGA and UL.
+- *FIA's committed future row, frame by frame*: met. Point 18, S point 2 issued 15 months
+  on, is compared alone with S's anchor 15 months on, frame by frame and in every cell S
+  caches, T3's exemptions and inflation's columns and cells left out, to 1e-9 relative at
+  no absolute floor but on the residuals, and it holds T3's pre-issue facts. No fault was
+  found that it alone catches: T3's core case on the same point and the block test catch
+  the one injected.
+- *M10's T5, each window rule at both ends and each tolerance from both sides*, in Term,
+  WholeLife, UL, VUL, MYGA, FIA, SPIA and DIA: met. Each rule of `Data` and `proj_len()`
+  over a window of contract months or ages is refused just inside each end and read just
+  outside wherever a state can be, and each money tolerance is refused just past it and
+  read just inside, on both signs where the rule takes a difference's size. Among the
+  cases added: Term's level period refused at nine years and projected with
+  `policy_term_min` lowered to 9, which a bound off by a year had passed, modelx and
+  compiled; WholeLife's anniversary tie, exact as D6 allows, refused a cent and an ulp
+  apart either way; MYGA's seven cents each refused at 1.05 cents and read at 0.95; UL's
+  face rules and MEC latch refused in month 1 and the latch a cent past the 7-pay limit;
+  VUL's pins read on a point issued at the valuation date at its `t = 0`, the gap §7.6's
+  *Record — M4* left; FIA's anniversary rules refused at month 12 half a cent apart and
+  its tolerances pinned over and under; SPIA's commutation check refused at month 1 and
+  its windows of a contract owing nothing at their first and last months; and DIA's two
+  bounds between frozen weights and lives read at equality and refused an ulp past. Term
+  and SPIA have no money tolerance, and VUL's money bounds are exact.
+- *M10's every-state test*, in the same eight: met. Each restates every state its S model
+  reaches, at the edges of its windows by default and at every month with
+  `USLIB_SEC_FULL=1`, and asserts that `Data` reads the table and `proj_len()` gives every
+  row a frame, but a state the product refuses by name, which it sets aside and shows
+  refused; its docstring names the sets of inputs it runs under. Term: S as shipped, the
+  splice's and the cap's point, 2,072 states (11,442 in full), none refused. WholeLife:
+  the same three sets, 3,710 (20,510), none refused, the test asserting which state
+  columns each set moves. MYGA: S as shipped, the splice's and the stepped base scenario,
+  2,357 (8,801); `MYGA_US_S` reaches no contract fully withdrawn, the state refused by
+  name. UL: S as shipped, the splice's, the lent point and the capped point, the account
+  values below 0 that S carries in permanent shortfall set aside. VUL: the splice's, the
+  shipped and `BOUND_REFS`, 240 states (15,266), an account below 0 set aside. FIA: the
+  splice's, the switched and the shipped References, 4,908 (27,568), each read exactly and
+  carried to the cent, a terminated contract set aside. SPIA: S as shipped and the
+  splice's, 89 and 151 (10,173 and 17,266), the states owing nothing set aside. DIA: the
+  same two, 129 and 297 (12,223 and 24,961), variant 18 from month 685, all its lives
+  dead, set aside, the splice's table built in the `spliced` fixture before T2 releases
+  its S points.
+- *M10's T4 in WholeLife, its count check at a million policies*: met. On all 22 committed
+  points at a count of 1e6 both checks close, and the count's residual exceeds the
+  unscaled 1e-10 on 19 of the 22, by one ulp of the count, 1.16e-10; §5.4 said 18 and now
+  says 19. Unscaled, the check fails this test alone.
+- *RILA's first-year and first-term tolerances from both sides, and its first-term rule at
+  month 1*: met. `MALFORMED` refuses the first-term rule at month 1 and each first-year
+  and first-term amount 0.011 past its cent: the remainder, the base on either side of the
+  premium and both accounts; the edges test reads each 0.009 off at months 1 and 11. The
+  base's two-cent cases had passed a tolerance loosened to two cents, since 100,000.02
+  less 100,000 is 0.020000000004 in floating point; only the new cases catch it, and only
+  the case below the premium a rule made one-sided.
+- *M9's T5 in RILA's every-state test*: met. The splice's test names its inputs, and a
+  second runs on S's shipped table, inputs and References, 855 states by default and 2,925
+  in full, none refused. A probe at every month read the states of the References the
+  module moves for one test alone, T4's switched assumptions, the cap test's A/E of 10, a
+  free rate of 11% and a maturity age of 91: each moves S's states in one respect only,
+  and each was accepted but the emptied contract the splice's test sets aside.
+- *VA's every-state test*: met, under five sets of inputs on which `VA_US_S`'s states
+  differ, S's own and the four its probes ran on at M9. By default it runs S's own, the
+  committed table's source, and the splice's and the switched pairs' sets, their tables
+  built in the pairs' fixture while their S points are projected; with `USLIB_SEC_FULL=1`,
+  all five, at every month, 6,445 and 18,476 states a set, where §7.7's 18,502 counts the
+  26 twins. `Data` and `proj_len()` accept each; VA refuses no state by name. The probe at
+  every month found M9's roundings about 0 again, and none on S's own inputs. A subaccount
+  floor at 0, depletion tested against 0 and the step-up window opened a month late each
+  fail it.
+- *VA's rules on a Reference, with the Reference moved*: met, with `omega_age` a fourth
+  such Reference, read through `maturity_mth()`. `MOVED` reads each rule with its
+  Reference moved off its shipped value: `omega_age` at 119 and 121, the depletion
+  threshold at 0.002, the VIX corridor's top at 3% and its foot at 0.4%, at and just past
+  the first quarter's rate, and foot and top meeting and crossed. A rule written on a
+  literal copy of its shipped value, or with a proviso copied, made strict or dropped,
+  fails it.
+- *How CI runs the docstring parse tests*: settled. They run on the `sec` job's full-grid
+  legs, where a skip fails (*What exists now*, above), so a missing docutils, or a parse
+  test that skips, fails that leg; the other legs skip them, as lifelib's own CI will.
+- *`index.md`'s SEC conventions*: met. The convention table has a column for the `_SEC`
+  models, not a footnote, as D3 and D9 say: the time index counts months from the
+  valuation date, every frame runs from `t = 0` and sums into a block, and the policy
+  clock is `duration_mth(t)`; the in-force count keeps its weight, with `BEF_NB` and the
+  new business beside it in `result_pols()`, SPIA's and DIA's counts named as the
+  exceptions; and every other ruling holds as in the `_S` models.
+- *The fingerprints*: met (*What exists now*, above). Term's M14 fingerprint reproduced
+  after each of Term's changes, and no fix moved a number of Term's, so it was not
+  refrozen.
+- *K6, the suite's time and its peak in one process*: measured locally on the merged
+  branch (*Measured for K6 and F7*, below; K6, *M13*). *The CI matrix green inside its
+  90-minute timeout*: met, in the Tests workflow's run 16, once the SEC modules had moved
+  to a job of their own (*The gate*, below).
+- *The weighing of the module costs and the `sec_full` split*: done for each module the
+  records left to it. ULSG's two core rows moved to the full grid (next item); IUL's core
+  and splice were rearranged under its own item (below); and two of VA's five every-state
+  input sets, which that test alone reads, run on the full grid (*Departures and
+  precisions*, below). VUL's and RILA's modules are left as they stand, the cuts their
+  records name not taken; whether the matrix needs them is the CI run's to show, under
+  K6's order of remedy, and the run that passed did not need them (*The gate*, below).
+- *ULSG's two core rows*: trimmed. The variant guaranteed to 99 restated at 272 and the
+  issue-age-40 variant restated at 12 left the default core and stay in the full grid; the
+  core is now 26 restated rows and 6 future points. The module ran 290 passed and 60
+  skipped in 296 s, against 292 and 58 in 308 to 310 s.
+- *`proj_len()` in `UL_US_SEC` and `VUL_US_SEC` refusing a future row issued at or past
+  `omega_age` + 1; `VUL_US_SEC`'s `Data` refusing a corridor factor below 0; and
+  `UL_US_SEC`'s `Data` refusing bad model point values by VUL's rule*: not taken, each
+  left to its product's C step, whose list now carries it (the *Carried into Phase 2* of
+  §7.3's *Record — M3* and §7.6's *Record — M4*). None would move a committed number.
+- *IUL's items*: below, item by item.
+
+**What M13 took of IUL's carried items** (§7.4, *Record — M6*, *Carried into M13*):
+- *K6*: IUL's module was weighed test by test against its fault sweeps. Six core splice
+  rows that no rule of the core-reach test and no recorded fault needs, point 1 at 60 and
+  240, point 5 at 578, point 9 at 48, point 11's twin and point 9 issued 13 months on,
+  moved to the full grid, which leaves a core of 34; so did the index override, the flag
+  spellings and the block test, none of them the only catcher of a recorded fault. The
+  splice's comparisons run grouped by S point, at class scope, so that each S point is
+  generated and swept once a run, not about 34 times for 19 points: they fell from 443 s
+  to 316 s. The set-apart References test runs by default again, on variant 12's twin and
+  its row at 82, in about 17 s; the short-table test stays in the default; and the deepest
+  cold call at the longest cover runs by default (*Depth*, below). The default run took
+  912 s under load, 352 passed and 86 skipped, at a peak of 4.26 GB, where it took 936 to
+  955 s at M6. The tests that alone catch a recorded fault take about 420 s together, so
+  moving tests behind `sec_full` cannot bring IUL's module near the three minutes K6
+  projects for each product.
+- *Two corrections to §7.4's record of M6*, made here, not in it. The set-apart References
+  test, moved behind `sec_full` at M6's first fix, was the only default catcher of two
+  recorded faults, the collateral's second rate and its step year read from References
+  that ship equal, which from that fix until M13 only the `sec_full` leg caught. And the
+  short-table test, named in *Carried into M13* among the candidates no recorded fault
+  depends on alone, is the only catcher of the corridor read past its last age.
+- *M10's T5 in IUL*, taken after its landing: met. The state before issue is refused at
+  −120, the window's first month; the face in force above the face at issue is refused at
+  months 1 and 911, no month outside that window being one the state rule or `proj_len()`
+  does not refuse first, and the rule widened to month 0 is an equivalent fault; the
+  identity's slack is read at 0.075 and refused at 0.085, where a slack moved by a cent
+  either way passed the old 0.07 and 0.10; and a withdrawal of a cent is refused. T2 and
+  T3 at no absolute floor from Python 3.12, and T4 at 2.5 with every zero-shipped
+  assumption on, were met as built at M6.
+- *D6's cent extract*: every committed SEC table, its opening money carried to the cent,
+  reads, and every check holds on every point, in the eleven other products; no SEC model
+  but IUL opens one amount from two columns. VUL and VA open the account value from its
+  parts, FIA carries the whole and one part as two chains that no check joins, RILA opens
+  month 0's return from `av_pp_init`, and the others open each amount from one column or
+  hold no money. Each amount moved to its rule's tolerance and accepted kept every check
+  but VA's: a subaccount a cent below 0, which `Data` accepted, is released at `t = 0`
+  with no flow on a contract that opens depleted, so `check_av_roll_fwd`, at 1e-6 a
+  contract, missed by the account times the count, 0.0053 on its row at 144, and failed on
+  five committed rows so moved. VA's floor is now 1e-8 and a depleted opening account must
+  be 0 within 1e-8 (*What exists now*, above); eight faults on the two rules each fail a
+  test. No other `Data` floor is wider than the check it feeds.
+- *Depth at the longest cover, by default*: the rule stands. Ten of the twelve depth tests
+  read the longest cover by default, in 0.8 to 17 s. IUL's meets it in part: by default it
+  runs a cold `net_cf` in the last month of the issue-age-0 row issued at the valuation
+  date, 1,469 levels deep, in 5 s, which a mortality reader recursing ten levels more at
+  juvenile ages fails, while its chain heads at the longest cover, and the ascending sweep
+  there, stay on the full grid. WholeLife, which had no cold-depth test, has one in Term's
+  and UL's form: `net_cf` cold in the last month, and each chain head alone, on S
+  point 4's twin and at the longest cover, issue age 0 over 1,200 months, issued now and
+  120 months on, within Term's `CHAIN_OVERHEAD` of 16, in about 3 s, the test's copy
+  repeating S's youngest rates down to age 0. MYGA, FIA, VA, RILA, SPIA and DIA measure
+  `net_cf` at the longest cover, FIA and VA `pols_if` too, not every chain head.
+- *Every-state tests name each set of References they run under*: met in all twelve. IUL's
+  also runs by default under a segment term of 6 months and the premium persistency that
+  first fails the 7-pay test in year 7, each on its own points, sets on which the states
+  differ in what `Data` and `proj_len()` decide; its main splice's set stays on the full
+  grid.
+- *The 7-pay window*: met in UL, by a splice of its own: S point 1 at $4,700 a year with a
+  premium persistency of `1.12 ** (y - 1)` first fails in month 83, the last of policy
+  year 7, at 47,418.36 against a limit of 46,914.70; the twin and the rows at 83 and 84
+  continue S at no absolute floor and latch from the right month, and a row at 84 on the
+  limit and unlatched is no MEC. The window narrowed or widened by a month or by a year
+  fails it.
+- *T1's floor*: taken. T1 compares every twin at no absolute floor, but DIA's
+  `check_commutation_value_resid`, which the two models measure in different months,
+  −2.91e-11 on point 15, and which keeps 1e-9 (`TWIN_FLOORS`); all twelve pass on Python
+  3.13 and 3.11. The twins of UL, VUL, ULSG, FIA and VA hold counts down to 2e-13, which
+  the old floor passed; DIA's floor tightened to 1e-11, or dropped, fails.
+- *The margin identity*: `UL_US_S`'s and `VUL_US_S`'s whole-loan `check_margin` holds on
+  every shipped point and every splice variant under both sets of References, no loan
+  exceeding the cash value while policies lapse; only the constructed lent points break
+  it, and their tests pin those. No change.
+- *The index engine's NaN*: an S-side note under §8.2 item 4 (§7.4, *Carried, outside the
+  SEC models*), and IUL's C step keeps `IUL_US_S`'s order of bounds, Phase 2 moving no
+  number (D2). No change now.
+- *Python 3.11*: CI's test job runs it for the S models and the SEC conventions, the `sec`
+  job running the SEC modules at 3.13 alone, and locally the eleven modules landed before
+  IUL pass on 3.11.18 by default, as do the SEC conventions. The folds that differ from
+  S's, VUL's `av_pp_init` loop and VA's subaccount loops, match S bit for bit with two
+  subaccounts on every Python, and no test needs a skip or a floor beyond IUL's own below
+  3.12.
+- *A withdrawal below its fee*: UL, VUL and ULSG charge the fee on top of the withdrawal,
+  and at $10 a month on every committed row UL and VUL show no negative flow and every
+  check holding, so no such state arises. ULSG fails `check_av_roll_fwd` and
+  `check_margin` on every row at $10, $25, $30 and $60 alike, in `ULSG_US_S` too: any
+  withdrawal or loan once the guarantee holds the account at 0 fails them, the fee not the
+  cause. It is an S-side item for §8.2 item 4, carried to ULSG's C step (§7.5, *Carried
+  into Phase 2*); no change now.
+- *The isclose floors*: IUL tests them on a row of its own, S point 1 at 888 scaled to a
+  $5 account past the end of charges: misses of 9.5e-9 pass and 1.05e-8 fail, as
+  `math.isclose` decides, and a floor of 9 or 11, or none, fails the test.
+- *The suite's one-process peak*: measured on the merged tree (*Measured for K6 and F7*,
+  below).
+- *Two loose ends*: uslib's `index.md` says every product carries a second model; and VA's
+  splice is not generated one S point at a time, its module's default peak measured at
+  3.67 GB, the option carried to VA's C step (§7.7, *Carried into Phase 2*).
+
+**Departures and precisions.**
+- *M13 waited for IUL.* It was held open until IUL landed and froze, rather than closed
+  for eleven with IUL's freeze and items left to its landing, so that Phase 1 is complete
+  and frozen for all twelve when Phase 2 starts (D2).
+- *Bounds against constants* (§5.2, T5, precised at M13). A probability from 0 to 1 or an
+  amount of 0 or more is no window rule or tolerance of T5's, and need not be pinned an
+  ulp past, in any product. DIA's two bounds between carried values, its frozen weights
+  against its lives, are read at equality and refused an ulp past.
+- *Sets of inputs probed, not run* (§5.2, T5, precised at M13). An extra set on which S's
+  states do not differ in what `Data` and `proj_len()` decide need not be run; such sets
+  were probed at every month instead and not added as runs of the test, which names it and
+  what its probe found in its docstring: RILA's References moved for one test alone, VUL's
+  cap and loan points and rising returns, and FIA's credit floor and guaranteed scale,
+  each probe refusing only the state set aside by name.
+- *VA's every-state sets by cost.* Two of VA's five sets, the shipped References on the
+  variants and the splice's untaxed, which no other test reads, run on the full grid only.
+  The test took 74 s by default and 764 s with `USLIB_SEC_FULL=1`, where all five by
+  default had added about 350 s: a departure from §5.2's 'by default' for K6, as IUL's
+  main splice set is (§5.2, T5, precised at M13). VA's module ran 666 s by default at its
+  commit, against 587 to 593 s, and 857 to 860 s under heavier load at the depletion fix.
+- *The freezes, product by product.* Each freeze commit holds the C2 section alone, as
+  Term's did at M14. Three later M13 commits touched products already frozen: Term's
+  precisions came after its M14 freeze; WholeLife's cold-depth test and UL's 7-pay splice,
+  tests alone, came after their freezes; and VA's depletion fix refuses inputs only. Each
+  product's fingerprint reproduces after them.
+- *K6's remedy, by module rather than by sweep* (K6, *M13*). The Tests workflow's run 14,
+  on 89e5431, the first on the branch, brought every leg of the test job to its 90-minute
+  timeout or within a minute of it: eleven were cut off at 90 minutes, and macos-latest
+  with Python 3.12 ended at 89 min 10 s, 9,306 passed and one failed. K6's rule moves the
+  splice sweeps behind an opt-in marker before the timeout is raised; M13 moved the twelve
+  SEC modules out of the test job whole, into a `sec` job that runs each alone, by default
+  on windows-latest and macos-latest and over its full grid on ubuntu-latest, at Python
+  3.13 alone. No marker was added and no timeout raised. The SEC modules no longer run on
+  Python 3.11, 3.12 or 3.14 in CI; the S models they compare with, and the SEC
+  conventions, still do.
+- *Two test faults CI found.* `test_sec_support.py`'s test of `cython_missing()` read a
+  fallback that could never match on a machine without modelx-cython, every leg of the
+  test job (run 14); and on Windows each module's runner test compared `run_sec.py`'s
+  output, its lines ending in a carriage return and line feed, with a frame's
+  `to_string()`, which ends them in a line feed (run 15). Each was fixed in the tests
+  alone; no fingerprint moved.
+
+**Measured for K6 and F7.** Every time below was taken under load, other workflows and the
+groups' own runs sharing the machine's four CPUs, each heavy run through a gate.
+- *The modules by default*, after M13's tests, each time measured under its own load: Term
+  143 s; WholeLife 159 to 171 s, and 188 s with the depth test, 183 s before it under
+  heavier load; MYGA 194 s; UL 167 s, and 204 to 212 s with the 7-pay splice, 191 to 203 s
+  before it; SPIA 114 to 122 s; DIA 193 to 198 s; VUL 379 to 399 s; FIA 319 to 323 s; RILA
+  324 s; VA 666 s, and 857 to 860 s under heavier load; ULSG 296 s; and IUL 912 s. Before
+  M13, each under its own load, they took 138 s, 124 s, 173 s, 150 s, 115 to 132 s, 188 to
+  193 s, 396 to 418 s, 293 to 399 s, 305 to 312 s, 587 to 593 s, 308 to 310 s and, IUL's
+  at its landing commit, 959 s. The new T4 costs most where it replaced the doubling: 25
+  to 44 s in WholeLife, MYGA and UL, against 11 to 16 s, reading two models with the
+  zero-shipped assumptions on.
+- *The full grids*: Term 140 s; WholeLife 282 s; MYGA 331 s; UL 259 s, and 334 s with the
+  7-pay splice; SPIA 228 s; DIA 399 s; VUL 613 s; FIA 543 s; RILA 457 s; and VA's
+  every-state test alone 764 s. The every-state tests cost most there: FIA's three take
+  119 s, DIA's 107 s, SPIA's 65 s and VUL's three 63 s.
+- *Peaks in one process*, by module: Term 3.52 GB; WholeLife 2.80 to 2.92 GB; MYGA
+  2.35 GB, 2.59 GB in full; UL 2.50 GB; SPIA 2.83 GB, 2.87 GB in full; DIA 2.63 GB; VUL
+  3.39 GB; FIA 3.26 GB; RILA 2.85 GB, 3.33 GB in full; VA 3.67 GB; IUL 4.26 GB; and the
+  conventions module, with T1 at no floor, 3.93 GB.
+- *The suite on 89e5431*, the tip as pushed, its default run, its full run, the `cython`
+  selection and doccheck sharing the machine: by default, with modelx-cython and docutils
+  installed and `USLIB_REQUIRE_CYTHON=1` and `USLIB_REQUIRE_DOCUTILS=1` set, 4,221 passed
+  and 774 skipped in 5,319 s (88 min 39 s); with `USLIB_SEC_FULL=1` and
+  `USLIB_REQUIRE_DOCUTILS=1`, 4,971 passed and 24 skipped, run as two processes side by
+  side, of 1,552 passed in 3,362 s (56 min 2 s) and 3,419 passed and 24 skipped in 5,471 s
+  (91 min 11 s); the process peaking at 4.31 GB by default and 4.42 GB with
+  `USLIB_SEC_FULL=1`. GitHub's runners for a public repository are macos-latest, an arm64
+  of 3 CPUs and 7 GB, the tightest, and ubuntu-latest and windows-latest, of 4 CPUs and
+  16 GB; CI runs one process for all six libraries, so its peak is at least the uslib
+  suite's.
+
+**Faults.** Each new test was checked by faults injected one at a time, each in its own
+copy of the library, the tests aimed at it run through the gate: 39 in Term and WholeLife,
+81 in MYGA and UL, 37 in VUL and FIA, 66 in SPIA and DIA, 25 in RILA and VA, 16 in IUL and
+three more on its K6 moves, and 16 on the items across products. Each was caught by a test
+aimed at it but those no state can tell apart: a window widened to a month that an earlier
+rule already refuses, in WholeLife, MYGA, UL, FIA and RILA; MYGA's named refusal dropped,
+a state `MYGA_US_S` never reaches, which `MALFORMED` still catches; and WholeLife's
+anniversary tie given half a cent of slack, below the cent cases' resolution, which a run
+after the cases an ulp apart were added shows failing all four of them.
+
+**Carried into Phase 2.** Each item goes to its product's *Carried into Phase 2* list,
+where it is written out:
+- UL's C step: `proj_len()` refusing a future row at or past `omega_age` + 1, and `Data`
+  refusing bad model point values by VUL's rule (§7.3, *Record — M3*).
+- VUL's: the same age rule, and `Data` refusing a corridor factor below 0 (§7.6, *Record —
+  M4*).
+- ULSG's: a withdrawal or loan on an account the guarantee holds at 0, an S-side item
+  (§7.5, *Record — M5*).
+- IUL's: S's order of bounds in the index engine kept (§7.4, *Record — M6*).
+- SPIA's: pandas' `DtypeWarning` on a large extract read by `Data` (§7.9, *Record — M11*).
+- VA's: its splice generated one S point at a time, as K6's option (§7.7, *Record — M9*).
+
+**Verified on 89e5431**, alongside the runs measured above: the `cython` selection, under
+`USLIB_REQUIRE_CYTHON=1`, gave 11 passed and none skipped in 152 s; doccheck reported 521
+pages and 0 warnings; `gen_sec_points.py --check` found every model's generated files
+current, all twelve; `gen_sec_fingerprint.py --check` reproduced all twelve;
+`python tools/md_lint.py lifelib/libraries/uslib` reported 0; and
+`gen_scaffolding.py --dry-run` would write no file in any of the six libraries.
+
+**The gate.** M13's gate, the whole CI matrix green inside its 90-minute timeout, was met
+by the Tests workflow's run 16, on a0a90cd, started by `workflow_dispatch`: its 50 jobs
+passed, the first starting at 16:59 UTC and the last ending at 18:16. The test job's
+twelve legs, every library but the SEC modules, each ran 6,611 passed and 64 skipped,
+their pytest steps taking 17.9 min (macos-latest, 3.13) to 41.7 min (windows-latest,
+3.12), against 14 to 33 minutes a leg on `main` before M0. The `sec` job's 24 default legs
+took 1.3 to 16.7 min, VA's on windows-latest the slowest and IUL's 13.3 min the slowest on
+macos-latest; its twelve full-grid legs on ubuntu-latest took 67 s (Term, 123 passed and 7
+skipped) to 1,935 s (IUL, 439 passed), VA's 1,640 s next, every docstring parse test
+passed and none skipped. The `cython` job ran in 1.4 min on Linux and 2.2 min on Windows,
+which meets M14's Windows gate (§7.1, *Record — M14*). Runs 14 and 15 came first: 14, on
+89e5431, was cut off at the timeout (*Departures and precisions*, above), and 15, on
+e606683, failed the runner test on five Windows legs before it was cancelled; the fixes
+are given there. M13 is closed.
 
 ---
 
@@ -1858,7 +2289,8 @@ compiled-only `IndexError` the docs state. It rejected four parts of findings, e
 its reason. A re-review of the fixes found 6 more, 1 of them major, and a second fix stage
 fixed all 6. C1–C5 and §6.2's release, stack, refusal and Reference tests pass on Linux,
 and C6 is recorded. The gate also needs Windows, where the `cython` job has not yet run,
-so M14 stays open (§6.3, §9).
+so M14 stays open (§6.3, §9). *At M13:* the job's first runs, the Tests workflow's runs 14
+to 16, passed on Windows, so M14 is done (§5, *Record — M13*, *The gate*).
 
 **What exists now.**
 - `Term_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 64
@@ -2204,8 +2636,9 @@ follows.
 
 **The Phase 2 template, carried into M15–M25.** Term's C step is the template, item by
 item:
-1. *Freeze.* Each product's fingerprint is frozen at M13 into an empty marker block by
-   `gen_sec_fingerprint.py`, and committed alone, as Term's was at M14.
+1. *Freeze.* Each product's fingerprint was frozen at M13 into an empty marker block by
+   `gen_sec_fingerprint.py`, and committed alone, as Term's was at M14 (§5, *Record —
+   M13*).
 2. *Registry.* The entry at `"stage": "EC"` and `"param": "idx"`, its `"reporting"` naming
    S's label accessors; `sample_sec.py` and `spec_sec.py` beside the model.
 3. *`Projection`.* Keyed by `idx`, with a Reference `idx = 0`; `point_id()` from
@@ -3060,8 +3493,8 @@ departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, no
   words, since one text value turns the column into text, where S's `bool()` reads
   `"False"` as true. Of its S columns `UL_US_SEC` checks only `duration_mth`, the two in
   its opening state, `av_pp_init` and `loan_bal_init`, and `sum_assured`, as the bound of
-  the face in force: its C step or M13 takes the rule, and ULSG and IUL copy VUL's
-  (precised at M4).
+  the face in force: its C step takes the rule, M13 having left it there, and ULSG and IUL
+  copy VUL's (precised at M4).
 - *Text.* A bool decode for each value of each text column a monthly cell branches on,
   each reading its column from `model_point()`, as SPIA's and MYGA's decodes do, while the
   cell that branches keeps S's raise, with a table-driven `UNDECODABLE` list: `db_option`,
@@ -3154,8 +3587,8 @@ departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, no
   `create()`-copy test and the compiled runner test's refusal leg; and `proj_len()`'s
   refusal of an issue age below 18 (R4; §6.1, steps 6 and 7).
 - *M11's points, not retrofitted at stage `E`* (§7.9, *Carried into every product still to
-  come*). UL takes the first two at M13 with Term, WholeLife and MYGA (§5.4), and its C
-  step the rest:
+  come*). UL took the first two at M13 with Term, WholeLife and MYGA (§5.4; §5, *Record —
+  M13*), and its C step takes the rest:
   - T4 doubles `policy_count`, a factor of 2, with the assumptions that ship at zero left
     there; acquisition is tested apart, at counts 3.7 times the table's;
   - T2 and T3 compare at `twin_mismatches`' default absolute floor of 1e-9, and the cap
@@ -3170,6 +3603,13 @@ departs from §7.9, as *Carried into Phase 2* lists below, they follow §7.9, no
     valuation month that a test asserts it reaches, not by line coverage. The same item's
     set-apart edit does not arise: the splice's copies add rows for keys S's tables lack
     and change none of S's.
+- *Left to this step at M13* (§5, *Record — M13*): `proj_len()` refusing a future row
+  issued at or past `omega_age` + 1, which `UL_US_SEC` accepts and projects as months with
+  no cover, checked first and stated on its Reference, in ULSG's form (§7.5, *Record —
+  M5*); and `Data` refusing a blank, text or infinite value, or one outside the quantity's
+  range, in each S column of the model point table a projection reads as a number, by
+  VUL's rule (*Model point values*, above). Neither moves a committed number: every
+  committed value passes, and the committed future row is issued at 35.
 
 **Carried, outside the SEC models.**
 - *The harness.* T6 compares a float cell to 1e-12, relative and absolute, so it pins
@@ -3735,9 +4175,10 @@ it took as ULSG did, M14's carried rules among them, but where below:
   below 0, since the shipped COI table holds one cell.
 - *Depth:* the export's limits, 2,964 at the longest cover, so `sample_sec.py` sets
   10,000, as Term's does; the depth test's cases at the longest cover run under
-  `USLIB_SEC_FULL=1` until M13 decides them; the compiled 1 MiB stack test at the longest
-  cover carries the `cython` marker alone, as Term's does, so that job runs it; C4 sizes
-  each row's limit from its chain and the expiry allowance.
+  `USLIB_SEC_FULL=1`, but the cold `net_cf` at the longest cover, which runs by default
+  since M13; the compiled 1 MiB stack test at the longest cover carries the `cython`
+  marker alone, as Term's does, so that job runs it; C4 sizes each row's limit from its
+  chain and the expiry allowance.
 - *A lapse rate past 1* through the expiry shock gives NaN compiled where modelx raises:
   C4 must not compare across it, and the residuals keep their `float()`.
 - *Readers:* the ladder's reader is exempt from C3 under R5, and its five accessors'
@@ -3747,6 +4188,9 @@ it took as ULSG did, M14's carried rules among them, but where below:
   with the splices at a segment term of 6 and 24 and at 7-pay year 7; rows issued later
   part from S in the last bits on the valuation-clock index path, so only the twins
   compare bit for bit.
+- *The index engine's NaN* (§5, *Record — M13*): the step keeps `IUL_US_S`'s order of
+  bounds, `max(index_floor, min(cap, index_par × r))`, Phase 2 moving no number (D2); the
+  NaN it loses is an S-side note (*Carried, outside the SEC models*, below).
 
 **Carried into M13.** Phase 1's last product hands the freeze these, each with IUL's
 evidence; M13 decides each and records it in its own record:
@@ -3809,7 +4253,8 @@ evidence; M13 decides each and records it in its own record:
   - `IUL_US_S`'s index engine writes its bounds first,
     `max(index_floor, min(cap, index_par × r))`, so a NaN in an index Reference is
     credited at the cap or the floor and passes every check: kept in SEC (R14), carried to
-    M13;
+    M13, which left it an S-side note here and S's order of bounds to IUL's C step (§5,
+    *Record — M13*);
   - a lapse rate past 1 is reachable through the guarantee's expiry shock, which
     `lapse_rate` returns before the cap: at 1.2 on a point paying $1,000 a year, `pols_if`
     turns complex and the account value's and the margin's checks raise in both models;
@@ -4164,7 +4609,8 @@ cf0e402, M4's landing, before M10 and M9 landed, and rebased at landing onto VA'
   731; and the grace counter refused at 2 and at 3 under the shipped 2 months, and, with
   `grace_months` moved to 3, refused at 3 and projecting at 2. `UL_US_SEC` and
   `VUL_US_SEC` lack the age rule, so a future row issued at or past `omega_age` + 1
-  projects months with no cover there, which M13 or their C steps refuse (§9).
+  projects months with no cover there, which their C steps refuse, M13 having left the
+  rule to them (§9).
 - *The funding-premium solve* (§7.5, *E* and *C*, precised at M5; R14, precised at M5).
   `ULSG_US_S`'s four cells of it, `solve_len`, `sg_pp_solve`, `guar_min_sg` and
   `no_lapse_premium`, are not in SEC, nor the References `solve_tol`,
@@ -4446,12 +4892,13 @@ cf0e402, M4's landing, before M10 and M9 landed, and rebased at landing onto VA'
   having checked 6,056 of S's states under two sets. *Past the frame, and a NaN*: met
   (*Guards* and *The checks*, above). *Docstring tables*: met, `_table_overruns`,
   `_map_faults` and the docutils parse test, which skips where docutils is absent, and so
-  in CI, which M13 settles. *Switches and bounds S ships idle*: met by a second pair of
-  models with a core of its own and its reach test, ULSG shipping no switch and no lapse
-  shock and charges ceasing in cover not arising (precised at M5). *Depth and status*:
-  met, the ascending sweep measured on both models, 16 against S's 14, the latch refused
-  rather than carried, exhaustion exact from the account value, and the grace counter,
-  which S infers as 0, a column.
+  in CI until M13 ran it on the `sec` job's full-grid leg, where a skip fails (§5, *Record
+  — M13*). *Switches and bounds S ships idle*: met by a second pair of models with a core
+  of its own and its reach test, ULSG shipping no switch and no lapse shock and charges
+  ceasing in cover not arising (precised at M5). *Depth and status*: met, the ascending
+  sweep measured on both models, 16 against S's 14, the latch refused rather than carried,
+  exhaustion exact from the account value, and the grace counter, which S infers as 0, a
+  column.
 - *§7.12's carried items* (*Record — M12*). It meets the first, `_continues_s` taking the
   exemption set and the `arg_map` as parameters, and the second, each NaN case asserting
   NaN from the month its Reference reaches and 0.0 or within 1e-9 before, through
@@ -4562,9 +5009,9 @@ taken alone.
   only kinds another core row holds, so that the core-reach test would not see one of them
   dropped alone, and two of them, the issue-age-40 variant restated at 12 and the variant
   guaranteed to 99 at 272, dropped together lose no line, predicate or side, which would
-  save about 5 s; the second fix kept every core row the earlier stages chose, and M13 may
-  trim those two (§9). The SEC conventions, 32 passed and 1 skipped, took 18.5 s at the
-  docs stage and 15.5 s inside the re-review's suite.
+  save about 5 s; the second fix kept every core row the earlier stages chose, and M13
+  trimmed those two (K6, *M13*). The SEC conventions, 32 passed and 1 skipped, took 18.5 s
+  at the docs stage and 15.5 s inside the re-review's suite.
 - *The suite.* On cf0e402 with ULSG added the uslib suite ran 3,125 passed and 518 skipped
   in 2,535.60 s (42 min 16 s) at the second fix, at a peak of 3.79 GB in one process,
   reached as ULSG's splice fixture is built on the session's heap, 3,654 MB on entry,
@@ -4846,10 +5293,16 @@ stage, and the review, the re-review and the fixes they led to, their faults amo
   computes, which run compiled. Compiled, a lapse rate past 1 gives NaN, and the account
   value's and the margin's checks return False where modelx raises, so that test asserts
   False there, and C4 must not compare across it (§7.1, *Record — M14*). The docstring
-  parse tests skip where docutils is absent, which M13 settles across products.
+  parse tests skip where docutils is absent, which M13 settled across products: CI's
+  full-grid legs install docutils and fail their skip (§5, *Record — M13*).
 - *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, with the
   `create()`-copy test and the compiled runner test's refusal leg, and `proj_len()`'s
   issue-age bound (R4; §6.1, steps 6 and 7).
+- *A withdrawal or loan on an account at 0* (§5, *Record — M13*): once the guarantee holds
+  the account at 0, any withdrawal or loan fails `check_av_roll_fwd` and `check_margin`,
+  in `ULSG_US_S` too, whatever its size, the fee not the cause: at $10, $25, $30 and $60 a
+  month every committed row fails. It is an S-side item for §8.2 item 4, which this step
+  decides, with what `Data` accepts there; M13 changed nothing.
 
 **Carried, outside the SEC models.**
 - Sixteen S-side items for §8.2 item 4, found in `ULSG_US_S`. That item's fix, to
@@ -5396,15 +5849,16 @@ machine's four CPUs, the second fix's at load averages of 1.5 to 3.2.
   (13.8 s and 13.0 s) and the bound test (11.5 s), about four minutes together. So a cut
   would come from them, as the fix stage found: from the runner's subprocesses, the second
   half of the returns test or the extract's loop over the points, not from T2 or T3, and
-  nothing was moved behind `sec_full`. M13, which measures the matrix, weighs it. The peak
-  is reached in committed-model tests that read two more models while the two swept module
-  fixtures are alive. The SEC conventions, 32 passed and 1 skipped, took 18.9 s and 21.4 s
-  at the docs stage and the review. On ed73164 with VUL added, the uslib suite ran 2,214
-  passed and 317 skipped in 1,677.0 s at the fix stage and 1,637.1 s (27 min 17 s) at the
-  re-review, and 2,216 passed in 1,651.3 s (27 min 31 s) at the second fix, peaking at
-  3.71 GB in one process. On the landing's tree, after d3a7be8, M12 and M8, and before its
-  review added two cases to VUL's module, the suite ran 2,798 passed and 459 skipped in
-  40 min 08 s (*Verified at landing*, below).
+  nothing was moved behind `sec_full`. M13, which measures the matrix, weighed it and left
+  the module as it stands (K6, *M13*). The peak is reached in committed-model tests that
+  read two more models while the two swept module fixtures are alive. The SEC conventions,
+  32 passed and 1 skipped, took 18.9 s and 21.4 s at the docs stage and the review. On
+  ed73164 with VUL added, the uslib suite ran 2,214 passed and 317 skipped in 1,677.0 s at
+  the fix stage and 1,637.1 s (27 min 17 s) at the re-review, and 2,216 passed in
+  1,651.3 s (27 min 31 s) at the second fix, peaking at 3.71 GB in one process. On the
+  landing's tree, after d3a7be8, M12 and M8, and before its review added two cases to
+  VUL's module, the suite ran 2,798 passed and 459 skipped in 40 min 08 s (*Verified at
+  landing*, below).
 - *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()` and
   20 or 21 more: 919 cells on point 1's 900-month frame, where `VUL_US_S`'s runs 5,411,
   944 on point 3's and 824 on point 4's. The 20 or 21 end in the first month's deduction,
@@ -5705,6 +6159,12 @@ stage's faults, and the last three from the design and the build:
 - *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, with the
   `create()`-copy test and the compiled runner test's refusal leg; and `proj_len()`'s
   refusal of an issue age outside 0 to 85 (R4; §6.1, steps 6 and 7).
+- *Left to this step at M13* (§5, *Record — M13*): `proj_len()` refusing a future row
+  issued at or past `omega_age` + 1, as UL's step does; and `Data` refusing a corridor
+  factor below 0, as ULSG's does, one that takes point 3's death benefit past its face
+  from `t = 721` (§5.1, step 6), which aligns the factor with the pin (*The corridor's two
+  inputs*, above). Neither moves a committed number: the shipped factors run from 1.0 to
+  2.5, and the committed future row is issued at 45.
 
 **Carried, outside the SEC models.**
 - Ten S-side items for §8.2 item 4, found in `VUL_US_S`, which nothing at M4 edited: the
@@ -5945,23 +6405,23 @@ past its end; the Bonus Period's restart age and the roll-up rate's issue-age sp
 met by no row; the core lacked two kinds of valuation month the full grid has; and no test
 held `VA_US_SEC`'s References to `VA_US_S`'s. The fix stage applied all but one and placed
 two others otherwise, each with evidence: running the docutils parse test in CI changes
-files shared across products, and is left to M13, as FIA's and RILA's modules leave it;
-the rules on the VIX prior and the step-up history need `Projection` References, which
-`Data` cannot read, so `proj_len()` holds them; and `is_wd_year`'s scan ahead, which Phase
-2's full sweep makes mid-year, is recorded for Phase 2, since an `is_wd_year` answering
-`False` off its anniversaries would fail T1 wherever `VA_US_S`'s surrender rate reads it.
-A re-review found the blockers fixed and made five more findings, one major: the depletion
-threshold, on which `depleted_open` and `proj_len()`'s new rules turn, was tested nowhere
-it differs from 0, so that both written against 0 passed every test. Four were minor: the
-new rules' other bounds and provisos, the subaccount columns read from the shipped fund
-table at import, the every-state claim, which held only on its probe's inputs, and a floor
-on the count-weighted payments that hid an error of several per cent. A second fix applied
-all five, holding the subaccount values to a cent where the finding proposed half a cent.
-Sixteen defects found in `VA_US_S` are carried below: two, the keys of the GAWA% grid and
-the GMDB election, are corrected in `VA_US_S` itself, in the landing's commit before the
-copy; three are in both models; and the other eleven are fixed or answered in `VA_US_SEC`
-only. M9 was built on da763e8, M8's landing, before M4 and M10 landed, and rebased at
-landing onto RILA's (*Landing*, below).
+files shared across products, and is left to M13, as FIA's and RILA's modules leave it
+(settled at M13); the rules on the VIX prior and the step-up history need `Projection`
+References, which `Data` cannot read, so `proj_len()` holds them; and `is_wd_year`'s scan
+ahead, which Phase 2's full sweep makes mid-year, is recorded for Phase 2, since an
+`is_wd_year` answering `False` off its anniversaries would fail T1 wherever `VA_US_S`'s
+surrender rate reads it. A re-review found the blockers fixed and made five more findings,
+one major: the depletion threshold, on which `depleted_open` and `proj_len()`'s new rules
+turn, was tested nowhere it differs from 0, so that both written against 0 passed every
+test. Four were minor: the new rules' other bounds and provisos, the subaccount columns
+read from the shipped fund table at import, the every-state claim, which held only on its
+probe's inputs, and a floor on the count-weighted payments that hid an error of several
+per cent. A second fix applied all five, holding the subaccount values to a cent where the
+finding proposed half a cent. Sixteen defects found in `VA_US_S` are carried below: two,
+the keys of the GAWA% grid and the GMDB election, are corrected in `VA_US_S` itself, in
+the landing's commit before the copy; three are in both models; and the other eleven are
+fixed or answered in `VA_US_SEC` only. M9 was built on da763e8, M8's landing, before M4
+and M10 landed, and rebased at landing onto RILA's (*Landing*, below).
 
 **What exists now.**
 - `VA_US_SEC` at stage `E`. Of `VA_US_S`'s 200 `Projection` cells, 74 are unchanged, 15
@@ -6330,8 +6790,8 @@ landing onto RILA's (*Landing*, below).
   state `VA_US_S` reaches, on its points and variants, at every month, 18,502 a set of
   inputs, under S's shipped References without the premium tax, the splice's with and
   without it and the switched References with it, and `Data` and `proj_len()` accepted
-  each; M13 takes the test in, and a test of each rule on a Reference with that Reference
-  moved off its shipped value, which VA's tests do not make (§5.4).
+  each; M13 took the test in, and a test of each rule on a Reference with that Reference
+  moved off its shipped value, which VA's tests did not make (§5.4; §5, *Record — M13*).
 - *The rules test* (§5.2, T2) holds every splice row of both grids to R1, R1a and R2: no
   call at a negative month, none from `t_entry()` on reading a month before it, none at
   `t` reading beyond `t + 1` but the withdrawal year's admitted read, directly or through
@@ -6414,12 +6874,12 @@ landing onto RILA's (*Landing*, below).
   past `proj_len()` and each check S's strict bound; *Docstring tables*,
   `_table_overruns`, `_rows_with_a_blank_column`, which S's five run-in rows fail, and the
   docutils parse test, which skips where docutils is absent, as FIA's and RILA's do, and
-  so in CI, which M13 settles; and *Depth and status*, the ascending sweep measured on
-  both models, 569 on point 8 against S's 1,123, the depleted status derived and the
-  withdrawal status carried, the state making only the first exact. It meets *Switches and
-  bounds S ships idle* with one departure: a second pair of models, read with the switched
-  References, with a core of its own and its reach assertion, but the GWB Adjustment at
-  200% in the main splice, where the switched GWB cap would hide it.
+  so in CI until M13 ran it on a full-grid leg; and *Depth and status*, the ascending
+  sweep measured on both models, 569 on point 8 against S's 1,123, the depleted status
+  derived and the withdrawal status carried, the state making only the first exact. It
+  meets *Switches and bounds S ships idle* with one departure: a second pair of models,
+  read with the switched References, with a core of its own and its reach assertion, but
+  the GWB Adjustment at 200% in the main splice, where the switched GWB cap would hide it.
 - *§7.9's carried items* (*Record — M11*). The payout chassis does not bind VA. Of the
   items every product takes, it meets T4 at 2.5 contracts with every assumption that ships
   at zero switched on, asserting every counted cell; T2 and T3 at no absolute floor but on
@@ -6517,7 +6977,7 @@ landing onto RILA's (*Landing*, below).
   branches comparison chains but `claim_from_av_pp` keeping S's
   `kind in ('DEATH', 'LAPSE', 'MATURITY')`, a tuple display, as MYGA's and FIA's landed
   claim cells do; VA's C step takes both. It does not meet *The every-state test*, which
-  M13 takes in (§5.4).
+  M13 took in (§5.4).
 
 **Measured for K6 and F7.** Every time below was taken with other workflows, or the
 stage's own fault runs and probes, sharing the machine's four CPUs, at load averages of
@@ -6553,9 +7013,10 @@ stage's own fault runs and probes, sharing the machine's four CPUs, at load aver
   half minutes, the static future rows behind `sec_full`, was not taken, since the core's
   reach test needs two of them for the second fund set and the second grid; a cut would
   come from the fixed costs, and nothing was moved behind `sec_full`. M13, which measures
-  the matrix, weighs it. The SEC conventions, 32 passed and 1 skipped, took 66.2 s alone
-  at the fix stage, 97.5 s and 66.2 s inside its two suites, 68.2 s inside the re-review's
-  and 72.2 s inside the second fix's.
+  the matrix, weighed it, moving two input sets of its every-state test to the full grid
+  (K6, *M13*). The SEC conventions, 32 passed and 1 skipped, took 66.2 s alone at the fix
+  stage, 97.5 s and 66.2 s inside its two suites, 68.2 s inside the re-review's and 72.2 s
+  inside the second fix's.
 - *The suite.* On da763e8 with VA added the uslib suite ran 2,847 passed and 505 skipped
   in 3,134.8 s (52 min 15 s) at the second fix, at a peak of 4.82 GB in one process; at
   the fix stage 2,827 passed and 499 skipped in 54 min 29 s and, on its final tree, 2,835
@@ -6567,9 +7028,10 @@ stage's own fault runs and probes, sharing the machine's four CPUs, at load aver
   together, as the S modules after FIA's take it from 3.25 GB to 3.72 GB. One process per
   SEC module would bound the suite at VA's module's peak, 3.85 GB by default, and 3.96 GB
   for its 89 full-only cases run alone, the whole module under `USLIB_SEC_FULL=1` not
-  measured, a choice for M13 to settle with CI (K6, *M9*). On the landing's tree, after M4
-  and M10, the suite ran 3,385 passed and 625 skipped in 53 min 34 s (*Verified at
-  landing*, below).
+  measured, a choice for M13 to settle with CI (K6, *M9*); the suite still runs in one
+  process locally, and in CI each SEC module runs in a process of its own since M13 (K6,
+  *M13*). On the landing's tree, after M4 and M10, the suite ran 3,385 passed and 625
+  skipped in 53 min 34 s (*Verified at landing*, below).
 - *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()` and
   10 to 15 more on the committed points: 734 levels on point 1's 720-month frame, where
   `VA_US_S`'s runs 1,447, and 708 on point 2's 694, against 1,395. A cold `pols_if` alone
@@ -6666,8 +7128,8 @@ among them:
   the corridor's foot with a first rate below it. VA's depletion rules written against 0
   passed every test until its re-review; and no VA test moves `av_depletion_threshold`,
   `vix_corridor_lo` or `vix_corridor_hi` off its shipped value, so a rule on a literal
-  copy of any of the three would pass every VA test too, until M13 takes that leg into VA
-  (§5.4).
+  copy of any of the three would pass every VA test too, until M13 took that leg into VA,
+  with `omega_age`, a fourth such Reference (§5.4).
 - *Bands that reach a zero.* Where a state column's zero is reachable through a grid's or
   a table's band, write each rule on it with that proviso: in `Data`, read from the band,
   where the table alone decides the rule, as VA's withdrawal status's and GAWA's rules
@@ -6763,9 +7225,9 @@ among them:
   that it was no fault.
 - *Memory.* Run the tests that read a model of their own before those that read the
   module's committed fixtures, which took VA's module's peak from 4.71 to 3.67 GB, and
-  measure the suite's peak in one process, which M13 bounds against the CI runners'
-  memory: at M9 it reached 4.82 GB, the long session's heap, not any one module's (K6,
-  *M9*).
+  measure the suite's peak in one process, which M13 measured against the CI runners'
+  memory (K6, *M13*): at M9 it reached 4.82 GB, the long session's heap, not any one
+  module's (K6, *M9*).
 
 **Carried into Phase 2.**
 - *Caches and bounds:* from issue age 35, the youngest the GLWB allows, to attained age
@@ -6820,12 +7282,15 @@ among them:
   `phi_glwb_vix` and `vix_sq` before a row's first quarter on the books, as T2's
   `_on_the_books` does; and `_BoundSides` wraps the builtins `min` and `max`, so the
   core-reach test's check of each side runs on the modelx model alone.
-- *`Data`'s share:* the subaccount floor reads a carried amount a cent below 0, which
-  compiled arrays read the same; `SecSpec.model_state` runs in the generator alone, and
-  the fingerprints read the generated table.
+- *`Data`'s share:* the subaccount floor reads a carried amount 1e-8 below 0, a cent until
+  M13, which compiled arrays read the same; `SecSpec.model_state` runs in the generator
+  alone, and the fingerprints read the generated table.
 - *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, its
   timings already passed through the model's References by `code(label)`, with the
   `create()`-copy test and the compiled runner test's refusal leg (R4; §6.1, step 7).
+- *Memory* (§5, *Record — M13*): the splice could be generated and swept one S point at a
+  time, as IUL's is; M13 did not, the module's default peak being 3.67 GB, and leaves it
+  to this step as K6's option should a runner need it.
 
 **Carried, outside the SEC models.**
 - Sixteen S-side items for §8.2 item 4, found in `VA_US_S`, which §8.2 item 4's fix, to
@@ -7051,16 +7516,16 @@ committed row, under comments that misstated the depths. The fix stage applied a
 and rejected a detail of a third with evidence: the provenance is S's, which the SEC table
 copies and RILA's build could not edit, so a commit of its own at landing rewords all four
 cells in `RILA_US_S`'s table (*Landing*, below); running the docutils parse test in CI
-changes files shared across products, and is left to M13, as FIA's module leaves it; and a
-cent and a half, the review's slack for the renewal identity, would refuse a valid extract
-at half-even ties, so the identity holds to two and a half cents. A re-review found every
-fix right and complete, and made two more findings, both minor, on the wording of a
-carried item and a test's docstring, which a second fix applied. Nine defects found in
-`RILA_US_S` are carried below: one, the provenance, is corrected in `RILA_US_S` itself, in
-the landing's commit before the copy; three, on a negative account value, are in both
-models; and the other five are fixed or refused in `RILA_US_SEC` only. M10 was built on
-e011a0c, M12's landing, before M8 and M4 landed, and rebased at landing onto VUL's
-(*Landing*, below).
+changes files shared across products, and is left to M13, as FIA's module leaves it
+(settled at M13); and a cent and a half, the review's slack for the renewal identity,
+would refuse a valid extract at half-even ties, so the identity holds to two and a half
+cents. A re-review found every fix right and complete, and made two more findings, both
+minor, on the wording of a carried item and a test's docstring, which a second fix
+applied. Nine defects found in `RILA_US_S` are carried below: one, the provenance, is
+corrected in `RILA_US_S` itself, in the landing's commit before the copy; three, on a
+negative account value, are in both models; and the other five are fixed or refused in
+`RILA_US_SEC` only. M10 was built on e011a0c, M12's landing, before M8 and M4 landed, and
+rebased at landing onto VUL's (*Landing*, below).
 
 **What exists now.**
 - `RILA_US_SEC` at stage `E`. Of `RILA_US_S`'s 156 `Projection` cells, 63 are unchanged,
@@ -7328,7 +7793,7 @@ e011a0c, M12's landing, before M8 and M4 landed, and rebased at landing onto VUL
   refused at a remainder of 100.00 and at a base two cents off the premium, and the
   first-term rule, refused at an account of 1.00, are accepted only where they hold
   exactly. These and the first-term rule's month 1 are short of T5 as precised, which M13
-  takes up (§5.4).
+  took up (§5.4).
 - *The rules test* (§5.2, T2) holds every splice row to R1, R1a and R2: no call at a
   negative month, none from `t_entry()` on reading a month before it, none at `t` reading
   beyond `t + 1`, read directly or through a precedent keyed by no month, followed to
@@ -7451,14 +7916,14 @@ e011a0c, M12's landing, before M8 and M4 landed, and rebased at landing onto VUL
   case's first its own and every column of every looped rule some case's first, with no
   `NOT_ISSUED` list, since RILA adds no issue-age bound at stage `E`; *The core by line
   coverage*, the core running every line the full grid runs and no set-apart edit moving a
-  core row's lines; *Boundaries met exactly*, the Edge term ending at its buffer and point
-  4's flat Step years, RILA having no banded table; *`Data`'s state rules against S*, the
-  every-state test; *Past the frame, and a NaN*; *Docstring tables*, `_table_overruns`,
-  `_map_faults` and the docutils parse test, which skips where docutils is absent, as
-  FIA's does, and so in CI, which M13 settles across products; and *Depth and status*, the
-  ascending sweep measured on both models, RILA having no status column. *Switches and
-  bounds S ships idle* it leaves, with reasons: `RILA_US_S` ships no switch, every
-  Reference being a number, and each bound S ships idle binds in the main splice,
+  core row's lines; *Boundaries met exactly*, the Edge term ending at its buffer and
+  point 4's flat Step years, RILA having no banded table; *`Data`'s state rules against
+  S*, the every-state test; *Past the frame, and a NaN*; *Docstring tables*,
+  `_table_overruns`, `_map_faults` and the docutils parse test, which skips where docutils
+  is absent, as FIA's does, and so in CI until M13 ran it on a full-grid leg; and *Depth
+  and status*, the ascending sweep measured on both models, RILA having no status column.
+  *Switches and bounds S ships idle* it leaves, with reasons: `RILA_US_S` ships no switch,
+  every Reference being a number, and each bound S ships idle binds in the main splice,
   `lapse_rate_max` through the shock of 27.5, the account rate's floor through a declared
   rate of 0.5%, the moneyness floor at 0.9 and the guaranteed minimum rates through the
   raised floors, while `db_rop_max_issue_age` and `maturity_min_years` bind on S point 12
@@ -7539,13 +8004,13 @@ machine's four CPUs, all but the landing's at load averages of 1.1 to 3.6.
   thinning the core of 360-month rows that reach no branch another core row lacks, was not
   taken, since the core runs exactly the `Projection` and `Data` lines the full grid runs;
   a cut would come from those rows or from the fixed costs, and nothing was moved behind
-  `sec_full`. M13, which measures the matrix, weighs it. The SEC conventions, 32 passed
-  and 1 skipped, took 35.78 s alone and 33.7 s in the suite. On e011a0c with RILA added,
-  the uslib suite ran 2,524 passed and 441 skipped in 2,041.19 s (34 min 01 s) at the fix
-  stage, 1,944.12 s (32 min 24 s) at the re-review and 2,003.85 s (33 min 24 s) at the
-  second fix, peaking at 3.72 GB in one process. On the landing's tree, after M8 and M4,
-  the suite ran 3,063 passed and 535 skipped in 52 min 31 s (*Verified at landing*,
-  below).
+  `sec_full`. M13, which measures the matrix, weighed it and left the module as it stands
+  (K6, *M13*). The SEC conventions, 32 passed and 1 skipped, took 35.78 s alone and 33.7 s
+  in the suite. On e011a0c with RILA added, the uslib suite ran 2,524 passed and 441
+  skipped in 2,041.19 s (34 min 01 s) at the fix stage, 1,944.12 s (32 min 24 s) at the
+  re-review and 2,003.85 s (33 min 24 s) at the second fix, peaking at 3.72 GB in one
+  process. On the landing's tree, after M8 and M4, the suite ran 3,063 passed and 535
+  skipped in 52 min 31 s (*Verified at landing*, below).
 - *Depth.* A cold `net_cf` of the last month runs one cell a month back to `t_entry()` and
   13 to 21 more on the committed points: 378 levels on point 1's 360-month frame, where
   `RILA_US_S`'s runs 1,095, 359 Investment Amounts with nine cells above them and ten
@@ -8329,6 +8794,11 @@ while building:
   reaches before `t_entry()`. The C step bases them at `max(duration_mth_init(), 0)` and
   `max(duration_mth_init(), 0) // 12 + 1`, the same values, so no number moves (R2,
   precised at M12).
+- *A large extract's read* (§5, *Record — M13*): under `USLIB_SEC_FULL=1`, `Data`'s
+  `read_csv` raises pandas' `DtypeWarning` on the every-state test's 17,292-row table,
+  inferring its columns' types chunk by chunk. The chunked and the whole read are equal,
+  so no number moves; the step, which reads `Data`'s columns as arrays, gives them their
+  types.
 
 **Carried, outside the SEC models.** Seven S-side items for §8.2 item 4, found in
 `SPIA_US_S`; the first two are fixed in neither model, the rest in `SPIA_US_SEC` only:
@@ -9304,8 +9774,8 @@ below).
   read the committed model and `FIA_US_S`, each swept once and held to the module's end,
   about 1.0 GB each at the tests stage, where §7.12's record has those rows built in the
   splice's fixture while S is swept and each S point released after its last T2 case. M13
-  takes up the future row's comparison, before FIA's fingerprint is frozen (§5.4), and
-  FIA's C step the rest, M14's runner items and `create()`-copy test among them.
+  took up the future row's comparison before FIA's fingerprint was frozen (§5.4), and
+  FIA's C step takes the rest, M14's runner items and `create()`-copy test among them.
 
 **Measured for K6 and F7.** Every time below was taken with other workflows sharing the
 machine, the second fix's at load averages of 2.1 to 3.2.
@@ -9633,14 +10103,14 @@ came from the design and its critique:
   `mgsv_rate_is_compliant` are reached by nothing. SEC adds none, and no uncached cell.
 - *Tests on the compiled model:* C4 runs `test_each_keyed_reader_is_s_lookup_at_every_key`
   compiled for the 54/55 and 59/60 payout boundaries, which no exercise from the anchor's
-  issue age, 62, reaches. `test_the_docstrings_parse_as_rst` needs docutils, which no CI
-  test leg installs. The NaN-residual test and the cap's NaN test replace
-  `mort_rate_base_at`'s formula, which needs modelx (K7); the rider charge's NaN case sets
-  a Reference, but on a second model read inside the cap's NaN test, so it runs compiled
-  only once it is a test of its own. FIA's C step sends the residual test's NaN through a
-  Reference instead, set before the model computes anything, as §7.12's *Record — M12*
-  carries, and the cap's either so, through `mort_ae_factor`, or kept in C1 (§5.1,
-  step 6).
+  issue age, 62, reaches. `test_the_docstrings_parse_as_rst` needs docutils, which FIA's
+  full-grid leg in CI installs since M13, where its skip fails (§5, *Record — M13*). The
+  NaN-residual test and the cap's NaN test replace `mort_rate_base_at`'s formula, which
+  needs modelx (K7); the rider charge's NaN case sets a Reference, but on a second model
+  read inside the cap's NaN test, so it runs compiled only once it is a test of its own.
+  FIA's C step sends the residual test's NaN through a Reference instead, set before the
+  model computes anything, as §7.12's *Record — M12* carries, and the cap's either so,
+  through `mort_ae_factor`, or kept in C1 (§5.1, step 6).
 
 **Carried, outside the SEC models.**
 - Fourteen S-side items for §8.2 item 4, found in `FIA_US_S`; the first two are fixed in
@@ -10415,13 +10885,13 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
   - *M1:* T2 takes about 11 s on Term's 23 splices, fixture included, and Term's whole
     module 32 to 37 s; the uslib suite grew by about a minute (§7.1, *Record*). WholeLife's
     sweep is about ten times Term's, so M2 is the next measurement.
-  - *M2:* WholeLife's module over its full splice grid, 105 T2 cases and 31 T3 cases,
-    runs in 4 min 57 s, so by default it runs a core of 32 and 8 cases, which a test
-    asserts reaches every branch, opening-state column, kind of valuation month and premium
-    mode the full grid reaches. The other 73 and 23, and the rules test's scan of their
-    rows, carry a `sec_full` marker and skip unless `USLIB_SEC_FULL=1`. The module then
-    runs in 2 min 46 s to 3 min 01 s, 111 passed and 97 skipped, at a peak of 2.7 GB in
-    one process, because each splice row is released once compared. The limit is not
+  - *M2:* WholeLife's module over its full splice grid, 105 T2 cases and 31 T3 cases, runs
+    in 4 min 57 s, so by default it runs a core of 32 and 8 cases, which a test asserts
+    reaches every branch, opening-state column, kind of valuation month and premium mode
+    the full grid reaches. The other 73 and 23, and the rules test's scan of their rows,
+    carry a `sec_full` marker and skip unless `USLIB_SEC_FULL=1`. The module then runs in
+    2 min 46 s to 3 min 01 s, 111 passed and 97 skipped, at a peak of 2.7 GB in one
+    process, because each splice row is released once compared. The limit is not
     threatened yet, so the split is not this risk's remedy. It bounds the module's time on
     every leg but one: `ubuntu-latest` with Python 3.13 sets `USLIB_SEC_FULL=1`, so every
     CI run runs the full grid, for about two minutes more on that leg. The uslib suite
@@ -10432,7 +10902,7 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     come added as much, every leg would run about half an hour longer and the full-grid
     leg about 20 minutes more again, which on local times would bring the slowest leg near
     the 90-minute limit. So each record compares its module's cost with WholeLife's, and
-    M13 measures the matrix.
+    M13 measures the matrix (*M13*, below).
   - *M14:* as landed, Term's module runs 99 modelx tests and 7 compile tests, and the
     `cython` selection 11 tests, Term's compile and the toolchain's among them. From the
     fix stage to the second, on Linux under load, the selection's 10 ran in 140 to 173 s,
@@ -10521,12 +10991,13 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     fixed: eleven fixtures and whole-model tests take about four minutes, so a cut would
     come from them, as the fix stage found, from the runner's subprocesses, the second
     half of the returns test or the extract's loop over the points, not from T2 or T3.
-    M13, which measures the matrix, weighs it. By default the module costs about 240 to
-    270 s more than WholeLife's. The uslib suite on ed73164 with VUL added ran 2,214 to
-    2,216 passed and 317 skipped in 27 min 17 s to 27 min 57 s, at a peak of 3.71 GB in
-    one process, and on the landing's tree, after d3a7be8, M12 and M8, and before its
-    review added two cases, 2,798 passed and 459 skipped in 40 min 08 s. All times were
-    taken with other workflows sharing the machine.
+    M13, which measures the matrix, weighed it and left the module as it stands (*M13*,
+    below). By default the module costs about 240 to 270 s more than WholeLife's. The
+    uslib suite on ed73164 with VUL added ran 2,214 to 2,216 passed and 317 skipped in
+    27 min 17 s to 27 min 57 s, at a peak of 3.71 GB in one process, and on the landing's
+    tree, after d3a7be8, M12 and M8, and before its review added two cases, 2,798 passed
+    and 459 skipped in 40 min 08 s. All times were taken with other workflows sharing the
+    machine.
   - *M10:* RILA's module runs by default a core of 37 T2 and 6 T3 cases, which a test
     asserts reaches each listed property and line coverage showed running every
     `Projection` and `Data` line the full grid runs, in 287 to 383 s, 4.8 to 6.4 minutes
@@ -10539,12 +11010,13 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     core rows take 53 s. The design's remedy past five minutes, thinning the core of
     360-month rows that reach no branch another core row lacks, was not taken, since the
     core runs exactly the lines the full grid runs, so a cut would come from those rows or
-    from the fixed costs. M13, which measures the matrix, weighs it. By default the module
-    costs about 105 to 215 s more than WholeLife's, and over the full grid about 145 to
-    245 s more. The uslib suite on e011a0c with RILA added ran 2,524 passed and 441
-    skipped in 32 min 24 s to 34 min 01 s, at a peak of 3.72 GB in one process, and on the
-    landing's tree, after M8 and M4, 3,063 passed and 535 skipped in 52 min 31 s. All
-    times were taken with other workflows sharing the machine.
+    from the fixed costs. M13, which measures the matrix, weighed it and left the module
+    as it stands (*M13*, below). By default the module costs about 105 to 215 s more than
+    WholeLife's, and over the full grid about 145 to 245 s more. The uslib suite on
+    e011a0c with RILA added ran 2,524 passed and 441 skipped in 32 min 24 s to
+    34 min 01 s, at a peak of 3.72 GB in one process, and on the landing's tree, after M8
+    and M4, 3,063 passed and 535 skipped in 52 min 31 s. All times were taken with other
+    workflows sharing the machine.
   - *M9:* VA's module runs by default a core of 26 T2, 8 T3 and 6 switched-Reference
     cases, which a test asserts reaches each listed condition and binds each side of every
     `min` and `max` in `Projection` but the ten it names idle and the two it names bound
@@ -10560,16 +11032,18 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     depth test, `VA_US_S`'s sweep and the extract took about 310 s together at the fix
     stage, and the set-apart References test 63 s more at the second, where each core row
     added at the fix stage took 1.3 s to 9 s, so a cut would come from those fixed costs.
-    M13, which measures the matrix, weighs it. By default the module costs about 415 to
-    600 s more than WholeLife's. The uslib suite on da763e8 with VA added ran 2,847 passed
-    and 505 skipped in 52 min 15 s, and on the landing's tree, after M4 and M10, 3,385
-    passed and 625 skipped in 53 min 34 s. Its peak, unmeasured there, was 4.82 GB in one
-    process at the second fix and 4.74 GB at the fix stage, the long session's heap: VA's
-    module leaves nothing of its own alive, and the S modules after it raise that heap, so
-    one process per SEC module would bound the suite at VA's module's peak, 3.85 GB by
-    default and 3.96 GB for its full-only cases alone, the whole module with
-    `USLIB_SEC_FULL=1` unmeasured, which M13 settles with CI. All times were taken with
-    other workflows, or the stage's own runs, sharing the machine.
+    M13, which measures the matrix, weighed it, moving two input sets of its every-state
+    test to the full grid (*M13*, below). By default the module costs about 415 to 600 s
+    more than WholeLife's. The uslib suite on da763e8 with VA added ran 2,847 passed and
+    505 skipped in 52 min 15 s, and on the landing's tree, after M4 and M10, 3,385 passed
+    and 625 skipped in 53 min 34 s. Its peak, unmeasured there, was 4.82 GB in one process
+    at the second fix and 4.74 GB at the fix stage, the long session's heap: VA's module
+    leaves nothing of its own alive, and the S modules after it raise that heap, so one
+    process per SEC module would bound the suite at VA's module's peak, 3.85 GB by default
+    and 3.96 GB for its full-only cases alone, the whole module with `USLIB_SEC_FULL=1`
+    unmeasured, which M13 settled with CI: it measured the suite's peak on the merged
+    tree, and CI now runs each SEC module in a process of its own (*M13*, below). All
+    times were taken with other workflows, or the stage's own runs, sharing the machine.
   - *M5:* ULSG's module runs by default a core of 28 T2 cases, six of them variants' twins
     issued at the valuation date, 6 T3 cases and 3 of the second fixture's, which a test
     asserts reaches each listed condition and binds each side of every `min` and `max` in
@@ -10583,12 +11057,12 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     scaling test, the second fixture, the depth test's two default cases, the NaN-residual
     test and the set-apart References test took about 100 s together at the second fix,
     where each variant's twin took 2.2 s to 3.1 s, so a cut would come from those fixed
-    costs. M13, which measures the matrix, weighs it, and may trim two core rows that,
-    dropped together, lose no line, predicate or side, about 5 s. By default the module
-    costs about 127 to 144 s more than WholeLife's. The uslib suite on cf0e402 with ULSG
-    added ran 3,125 passed and 518 skipped in 42 min 16 s, at a peak of 3.79 GB in one
-    process, reached as ULSG's splice fixture is built on the session's heap, and on the
-    landing's tree, after M10 and M9, 3,710 passed and 684 skipped in 62 min 44 s. All
+    costs. M13, which measures the matrix, weighed it and trimmed the two core rows that,
+    dropped together, lose no line, predicate or side (*M13*, below). By default the
+    module costs about 127 to 144 s more than WholeLife's. The uslib suite on cf0e402 with
+    ULSG added ran 3,125 passed and 518 skipped in 42 min 16 s, at a peak of 3.79 GB in
+    one process, reached as ULSG's splice fixture is built on the session's heap, and on
+    the landing's tree, after M10 and M9, 3,710 passed and 684 skipped in 62 min 44 s. All
     times were taken with other workflows, or the stage's own runs, sharing the machine,
     but one default run at the second fix, taken alone.
   - *M6:* IUL's module runs by default a core of 23 T2 cases, 11 variants' twins issued at
@@ -10607,15 +11081,41 @@ plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
     at a time, which took the peak from 5.0 GB to 4.2 to 4.3 GB; the second moved the
     every-state test under the main splice's References, the depth test's cold calls at
     the longest cover and the runner's test on the committed table, which took the default
-    from 1,050 to 1,092 s to 936 to 955 s. The remedy is M13's, in its weighing of the
-    module costs and the `sec_full` split (§5.4): IUL's core, and the matrix held inside
-    §5.4's 90-minute timeout under this risk's rule, the sweeps behind the opt-in marker
-    before the timeout is raised, where the landing's uslib suite took 94 min under load
-    (§7.4, *Record — M6*, *Carried into M13*). The uslib suite on 55142f7 with IUL added
-    ran 4,094 passed and 763 skipped in 1 h 26 min at the second fix, at a peak of 4.50 GB
-    in one process, and on the landing's tree, after M13's work so far, 4,214 passed and
-    766 skipped in 94 min 01 s, at a peak of 4.32 GB in one process. All times were taken
-    with other workflows, or the stage's own runs, sharing the machine.
+    from 1,050 to 1,092 s to 936 to 955 s. The remedy was M13's (*M13*, below), in its
+    weighing of the module costs and the `sec_full` split (§5.4): IUL's core, and the
+    matrix held inside §5.4's 90-minute timeout under this risk's rule, the sweeps behind
+    the opt-in marker before the timeout is raised, where the landing's uslib suite took
+    94 min under load (§7.4, *Record — M6*, *Carried into M13*). The uslib suite on
+    55142f7 with IUL added ran 4,094 passed and 763 skipped in 1 h 26 min at the second
+    fix, at a peak of 4.50 GB in one process, and on the landing's tree, after M13's work
+    so far, 4,214 passed and 766 skipped in 94 min 01 s, at a peak of 4.32 GB in one
+    process. All times were taken with other workflows, or the stage's own runs, sharing
+    the machine.
+  - *M13:* after M13's tests the twelve modules ran by default in 114 s (SPIA) to 912 s
+    (IUL) under load, VA's 666 to 860 s and VUL's 379 to 399 s next, at peaks of 2.35 to
+    4.26 GB in one process (§5, *Record — M13*, *Measured for K6 and F7*). The weighing
+    moved to the full grid what no recorded fault needs by default: ULSG's two redundant
+    core rows, IUL's six, and IUL's index override, flag spellings and block test. It also
+    ran two input sets of VA's every-state test that no other test reads on the full grid
+    alone, a departure from §5.2's 'by default', as IUL's main splice set is (§5.2, T5,
+    precised at M13). It grouped IUL's splice by S point, which took its comparisons from
+    443 s to 316 s, and put back in IUL's default its set-apart test, the only catcher of
+    two recorded faults, and its deepest cold call, for the depth rule. VUL's and RILA's
+    modules are left as they stand. IUL's module cannot come near the three minutes this
+    risk projects by moves alone: its sole catchers of recorded faults take about 420 s.
+    On 89e5431 the uslib suite ran 4,221 passed and 774 skipped in 5,319 s (88 min 39 s)
+    by default and 4,971 passed and 24 skipped, run as two processes side by side, of
+    1,552 passed in 3,362 s (56 min 2 s) and 3,419 passed and 24 skipped in 5,471 s
+    (91 min 11 s) with `USLIB_SEC_FULL=1`, peaking at 4.31 GB by default and 4.42 GB with
+    `USLIB_SEC_FULL=1` in one process, against 7 GB on macos-latest, the tightest runner.
+    In CI, with every library in one process as upstream runs it, the matrix did not fit:
+    the Tests workflow's first run on the branch brought every leg to the 90-minute
+    timeout or within a minute of it. So the test job now leaves the twelve SEC modules
+    out, and a `sec` job runs each alone at Python 3.13, by default on Windows and macOS
+    and over its full grid on Linux, with no marker added and no timeout raised. In run 16
+    the test job's legs took 18 to 42 minutes, the `sec` job's default legs at most 17 and
+    its full-grid legs at most 33, IUL's (§5, *Record — M13*, *The gate*). Local times
+    were taken with other workflows, or the stage's own runs, sharing the machine.
 - **K7 — Tests that need modelx.** S tests that override formulas, reassign References and
   `clear_all`, or match `raise` source text, have no compiled equivalent. They stay in C1,
   and C4 compares what the cells return and raise.
@@ -10724,7 +11224,7 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 |---|---|---|---|
 | M0 | Phase 0 — **done**, 2026-11-01 | Registry, conventions, scaffolding, `sec_support.py`, tools, CI job (§4) | every S model still green; Term's suite time measured (K6) |
 | M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, M8, FIA, and M4, VUL, are **done**, 2026-11-03 (§7.12, §7.11, §7.6), and M10, RILA, the Payout stream's last, is **done**, 2026-11-04 (§7.8), and M9, VA, the Deferred annuity stream's last, is **done**, 2026-11-05 (§7.7), and M5, ULSG, is **done**, 2026-11-10 (§7.5), and M6, IUL, the Life stream's last and Phase 1's, is **done**, 2026-11-11 (§7.4), so Phase 1 has all twelve | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
-| M13 | Phase 1 freeze | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1, VA's every-state test and its test of each rule on a Reference with that Reference moved off its shipped value, both of which it landed without, and M9's T5 precision taken into RILA's every-state test (§5.4); how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*; §7.7, *Record — M9*; §7.5, *Record — M5*); the suite's peak memory in one process, 4.82 GB at M9, bounded against the CI runners' memory (K6, *M9*); `proj_len()` in `UL_US_SEC` and `VUL_US_SEC` refusing a future row issued at or past `omega_age` + 1, which each accepts and projects as months with no cover, here or at their C steps; `VUL_US_SEC`'s `Data` refusing a corridor factor below 0, which it accepts and which takes its point 3's death benefit past the face, here or at its C step (§5.1, step 6, precised at M5); and ULSG's two core rows that, dropped together, lose no line, predicate or side, trimmed if M13 weighs the matrix so (§7.5, *Record — M5*); IUL's items: its module's default run, 936 to 955 s under load, weighed with the others' and the `sec_full` split, which decides IUL's core, and the matrix held inside §5.4's 90-minute timeout under K6's rule, the sweeps behind the opt-in marker before the timeout is raised, where the landing's uslib suite took 94 min under load, and each move behind `sec_full` checked against the fault sweeps (K6, *M6*); its cold depth calls at the longest cover restored to the default or the rule amended; its Phase 1 fingerprint frozen; D6's cent-extract test held in every product with an identity between amounts, a `Data` floor no wider than the check it feeds, a first 7-pay failure in year 7 pinned in UL, and T1's twins compared at no absolute floor where a count error below 1e-9 would pass; and the NaN that `IUL_US_S`'s index engine loses, its bounds written first, settled as an S-side note or at its C step (§7.4, *Record — M6*) | the whole matrix green under its timeout |
-| M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — done on Linux, 2026-11-02; its Windows gate awaits the `cython` job's first run (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M13 | Phase 1 freeze — **done**, 2026-11-11, its gate met by the Tests workflow's run 16 (§5, *Record — M13*) | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1, VA's every-state test and its test of each rule on a Reference with that Reference moved off its shipped value, both of which it landed without, and M9's T5 precision taken into RILA's every-state test (§5.4); how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*; §7.7, *Record — M9*; §7.5, *Record — M5*); the suite's peak memory in one process, 4.82 GB at M9, bounded against the CI runners' memory (K6, *M9*); `proj_len()` in `UL_US_SEC` and `VUL_US_SEC` refusing a future row issued at or past `omega_age` + 1, which each accepts and projects as months with no cover, left to their C steps; `VUL_US_SEC`'s `Data` refusing a corridor factor below 0, which it accepts and which takes its point 3's death benefit past the face, left to its C step (§5.1, step 6, precised at M5); and ULSG's two core rows that, dropped together, lose no line, predicate or side, trimmed (§7.5, *Record — M5*); IUL's items: its module's default run, 936 to 955 s under load, weighed with the others' and the `sec_full` split, which decides IUL's core, and the matrix held inside §5.4's 90-minute timeout under K6's rule, the sweeps behind the opt-in marker before the timeout is raised, where the landing's uslib suite took 94 min under load, and each move behind `sec_full` checked against the fault sweeps (K6, *M6*); its deepest cold call at the longest cover restored to the default; its Phase 1 fingerprint frozen; D6's cent-extract test held in every product with an identity between amounts, a `Data` floor no wider than the check it feeds, a first 7-pay failure in year 7 pinned in UL, and T1's twins compared at no absolute floor where a count error below 1e-9 would pass; and the NaN that `IUL_US_S`'s index engine loses, its bounds written first, settled as an S-side note, its order of bounds kept to its C step (§7.4, *Record — M6*) | the whole matrix green under its timeout |
+| M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — **done**, on Linux 2026-11-02 and on Windows 2026-11-11, at the `cython` job's first runs (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15–M25 | Phase 2 for the other eleven, after M13, one PR per product, in §5.3's order | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
