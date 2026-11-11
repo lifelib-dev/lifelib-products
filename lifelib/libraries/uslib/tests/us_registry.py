@@ -105,6 +105,8 @@ MODELS = {
     "UL_US_SEC": ("products/universal_life/UL_US_SEC",
                   {**MONTHLY, "twin": "UL_US_S", "stage": "E"}),
     "IUL_US_S": ("products/indexed_ul/IUL_US_S", MONTHLY),
+    "IUL_US_SEC": ("products/indexed_ul/IUL_US_SEC",
+                   {**MONTHLY, "twin": "IUL_US_S", "stage": "E"}),
     "VUL_US_S": ("products/variable_ul/VUL_US_S", MONTHLY),
     "VUL_US_SEC": ("products/variable_ul/VUL_US_SEC",
                    {**MONTHLY, "twin": "VUL_US_S", "stage": "E"}),
@@ -171,6 +173,10 @@ INPUT_FILES = {
         "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
         "lapse_table.csv", "model_point_table.csv", "mort_table.csv",
         "surr_charge_table.csv"},
+    "IUL_US_SEC": {
+        "class_factor_table.csv", "coi_rates.csv", "corridor_factors.csv",
+        "inforce_segments_sec.csv", "lapse_table.csv", "model_point_table_sec.csv",
+        "mort_table.csv", "surr_charge_table.csv"},
     "MYGA_US_S": {
         "model_point_table.csv", "mort_table.csv", "mva_factor_table.csv",
         "rate_scenario.csv", "surr_charge_age_cap.csv", "surr_charge_table.csv",

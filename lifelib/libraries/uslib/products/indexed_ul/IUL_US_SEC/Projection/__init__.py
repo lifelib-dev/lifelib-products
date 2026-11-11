@@ -3,14 +3,24 @@
 # It can be imported as a Python module, but functions defined herein
 # are model formulas and may not be executable as standard Python.
 
-"""The by-policy monthly projection of the :mod:`~.IUL_US_S` model.
+"""The by-policy monthly projection of the :mod:`~.IUL_US_SEC` model.
 
-The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
-projecting model point 1::
+The Space is parameterized by ``point_id``, so ``Projection[7]`` is an ItemSpace
+projecting model point 7, ``IUL_US_S``'s monthly-premium point restated 65 months on, in
+force at the valuation date with all twelve index segments live::
 
     >>> Projection[1].result_av()          # the account value roll-forward
-    >>> Projection[1].result_seg()         # the segment ladder
+    >>> Projection[7].result_seg()         # the segment ladder, carried in
     >>> Projection.point_id = 2            # or switch the default
+
+Switch the default, as any Reference, before the model computes anything.
+
+This is :mod:`~.IUL_US_S` taught to run in force at a valuation date, as lifelib's
+``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``. A formula of
+:mod:`~.IUL_US_S` is rewritten where it depends on the month its frame opens at, where it
+must answer for a month outside cover, where it reads the index path, or where it reads a
+table at a policy year or an attained age; every other is :mod:`~.IUL_US_S`'s own.
+``products/indexed_ul/model-sec.md`` lists the rewritten cells with the reason for each.
 
 .. rubric:: Input data
 
@@ -23,17 +33,19 @@ input can be edited or swapped without rewriting the model. This follows
 *inside* the model through modelx's IOSpec machinery.
 
 The consequence worth knowing: **the model is not portable on its own.** Copying the
-``IUL_US_S`` folder without its parent's CSVs produces a model that reads and then
+``IUL_US_SEC`` folder without its parent's CSVs produces a model that reads and then
 fails on first evaluation.
 
-The readers live in the unparameterized :mod:`~.IUL_US_S.Data` Space, reached here
+The readers live in the unparameterized :mod:`~.IUL_US_SEC.Data` Space, reached here
 through the ``data`` Reference, so each file is read once per model rather than once
-per model point:
+per model point. The six assumption tables are the files :mod:`~.IUL_US_S` reads, read
+in place; the model point table and the segment ladder are this model's own:
 
 ======================  ================================  ==========================
 Reference (on Data)     Cells                             File
 ======================  ================================  ==========================
-model_point_file        data.model_point_table()          model_point_table.csv
+model_point_file        data.model_point_table()          model_point_table_sec.csv
+inforce_segments_file   data.inforce_segments()           inforce_segments_sec.csv
 coi_rates_file          data.coi_rates()                  coi_rates.csv
 corridor_file           data.corridor_factors()           corridor_factors.csv
 mort_table_file         data.mort_table()                 mort_table.csv
@@ -44,28 +56,105 @@ surr_charge_file        data.surr_charge_table()          surr_charge_table.csv
 
 The index path is **not** a file. The base deterministic run generates
 :func:`index_level` from a level annual return, and a historical or simulated path is
-substituted by overriding that one cells.
+substituted by overriding that one cell, before the model computes anything.
 
-.. rubric:: Projection basis
+.. rubric:: Two clocks
 
-``t`` counts **policy months from the projection start, 0-based**: ``t = 0`` is the
-first projected month -- the issue month of a new-business model point -- and policy
-month ``t`` runs from monthiversary ``t`` to monthiversary ``t + 1``. The frame is
-``t = 0, 1, ..., proj_len() - 1``, so :func:`proj_len` is the **number** of projected
-months and ``len(result_cf()) == proj_len()``. For an in-force point the elapsed time
-is carried separately: :func:`duration_mth` ``(t) = duration_mth_init() + t`` is the
-notes' own month index counted from issue, and :func:`policy_year` ``(t)`` is the
-contractual 1-based label ``duration(t) + 1``. For a new-business point the notes'
-``t`` and this ``t`` coincide.
+``t`` counts months from the **valuation date**, 0-based, the clock
+``basiclife.BasicTerm_SE`` runs on: ``t = 0`` is the valuation month for every model
+point, however old the policy, month ``t`` runs from the monthiversary at time ``t`` to
+the next, and the frame is ``t = 0, 1, ..., proj_len() - 1``, where :func:`proj_len`
+counts the months from the valuation date to the end of the projection. Row ``t`` is the
+same month for every point, so the frames of a block line up and sum row by row.
 
-State cells are **closing balances**: :func:`av_pp` ``(t)``, :func:`fa_pp` ``(t)``,
-:func:`lca_pp` ``(t)``, :func:`loan_bal_pp` ``(t)``, :func:`seg_bal_pp` ``(t, m)``,
-:func:`sum_assured_at` ``(t)`` and the two cumulative-premium accumulators are the
-values at the **end** of month ``t`` (the notes' ``X_{t+1}``). The opening value of a
-month is the ``"BEF_PREM"`` timing (the notes' ``X_t``), which is the model point's
-opening value -- ``av_pp_init()``, ``loan_bal_init()``, ``sum_assured()``, ``0`` for the
-accumulators, ``pols_if_init()`` for :func:`pols_if` -- when ``t == 0`` and the previous
-month's closing balance otherwise. Nothing is indexed at ``t = -1``.
+``duration_mth(t)`` counts **policy months**, the notes' own month index from issue:
+``duration_mth(t) = duration_mth_init() + t``, where :func:`duration_mth_init` is read
+from the model point -- positive for a policy in force at the valuation date, in any month
+of its policy year, 0 for one issued at it, ``-k`` for one issued ``k`` months later, at
+most ten years later. Everything contractual reads it: the anniversary premium
+(``duration_mth(t) % 12 == 0``), the first policy years of the withdrawal and the loan,
+the maturity of a segment twelve policy months after its creation, the surrender charge's
+month, the no-lapse period and its expiry shock, the GPT and 7-pay years, the COI scale
+and the lapse table by policy year, the mortality rate and the corridor factor at the
+attained age, the policy-year steps of the per-unit charge and of the collateral's
+credited rate, the cessation of premiums and charges at ``charges_cease_age`` and the end
+of the projection at ``maturity_age``. The policy year is the 1-based contractual label
+``policy_year(t) = duration(t) + 1`` and the attained age (ANB) is
+``age(t) = age_at_entry() + duration(t)``, both derived and never indexed by. Point 7,
+``IUL_US_S``'s point 4 restated 65 months on, is in policy year 6 at attained age 50 at
+``t = 0``, and point 12, to be issued 25 months after the valuation date, is issued at
+``t = 25``.
+
+``IUL_US_S`` already counts its months from the start of its own projection rather than
+from issue, but ships no point in force, and its in-force entry loses what a policy's past
+has left it: it opens the fixed account at the account value less the loan, the loan
+collateral at the loan, the face at issue, both premium accumulators at 0, and no index
+segment before its first month. What the valuation clock adds is that ``t = 0`` is one
+instant for every point, that a point may be issued after it, and that a point in force
+brings in its whole state: the fixed account and the collateral apart from the loan, the
+face in force, the premiums paid to date and the no-lapse accumulator, whether it has
+failed the 7-pay test, and its live index segments.
+
+The economic inputs read the valuation clock. The index path,
+``index_level(t) = index_level_init x (1 + index_return_ann)^(t / 12)``, is one path for
+every point, whose level at the valuation date is ``index_level_init``; ``IUL_US_S``
+reads it at ``duration_mth(t)``, a path of each point's own from its issue. The cap in
+force (:func:`index_cap_at`) and the fixed-account rate (:func:`fixed_rate_ann`) are read
+at ``t``, and are level as shipped. Expense inflation is
+``inflation_factor(t) = (1 + inflation_rate)^(t // 12)``, ``IUL_US_S``'s step by policy
+year moved onto ``t``, so that the maintenance expense is in valuation-date dollars for
+every point alike; it is 0 as shipped. Acquisition is charged per policy issued, in the
+issue month, and is not inflated, as in ``basiclife.BasicTerm_SE``. The collateral's
+credited rate and the per-unit charge step on the policy year, as terms of the contract.
+
+A segment's credit is a ratio of two index levels, its level at maturity over its level at
+creation, so moving the path onto the valuation clock moves no credit. A segment created
+in the frame, at month ``t - 12``, reads ``index_level(t - 12)`` and the cap declared then,
+``index_cap_at(t - 12)``; a segment created before the valuation date carries its start
+level on the same path, the level ``IUL_US_S`` reads at its creation rebased so that the
+path's level at the valuation date is ``index_level_init``, and the cap declared at its
+creation (:func:`seg_index_start`, :func:`seg_index_cap`). What does move is the level
+itself: on a point in force ``d`` months, ``index_level(t)`` is ``IUL_US_S``'s level at its
+month ``t + d`` divided by ``(1 + index_return_ann)^(d / 12)``, and so is the
+``index_level`` column of :func:`result_seg`.
+
+On a point issued at ``t = 0`` the two clocks coincide and this model computes what
+:mod:`~.IUL_US_S` computes: every cell the two share agrees at every argument
+:mod:`~.IUL_US_S` evaluates in its sweep, but for four whose meaning changed:
+``pols_if_init``, now the count already in force at the valuation date, ``model_point``,
+a row of another table, ``result_pols``, which gains the month's new business, and
+``check_margin``, whose identity this model states with the debt a surrender recovers (see
+:func:`check_margin`). ``tests/test_model_conventions.py`` asserts it cell by cell.
+
+The **value** state variables are closing balances at the end of month ``t``, the notes'
+``X_{t+1}``: :func:`av_pp`, :func:`fa_pp`, :func:`lca_pp`, :func:`loan_bal_pp`,
+``seg_bal_pp(t, m)``, :func:`sum_assured_at`, and the two premium accumulators,
+:func:`cum_prem_pp` and :func:`cum_prem_net_pp`. The opening value of a month, the notes'
+``X_t``, is the ``"BEF_PREM"`` timing of :func:`av_pp_at`, :func:`fa_pp_at` and
+:func:`lca_pp_at`, or the previous month's value of the others, and at :func:`t_entry`,
+the first month on the books, the model point's opening state instead, so that nothing is
+ever asked for a month before the valuation date or before issue. For a point in force the
+opening state is its row and its segments, per policy, as the policy stands at the start
+of month 0, before any month-0 event: the account value and the loan, ``IUL_US_S``'s own
+columns (:func:`av_pp_init`, :func:`loan_bal_init`); the fixed account and the loan
+collateral (:func:`fa_pp_init`, :func:`lca_pp_init`); the face in force
+(:func:`sum_assured_init`); the premiums less withdrawals paid to date and the no-lapse
+accumulator, premiums less withdrawals and loans (:func:`cum_prem_init`,
+:func:`cum_prem_net_init`); the MEC latch (:func:`is_mec_init`); and each live segment's
+balance, deductions and draws to date, start level and cap, from the segment ladder (see
+*The segment ladder*, below). At a mid-year valuation the current year's anniversary
+premium and loan draw are already inside them. For a point issued at or after the
+valuation date every one of them is 0, and the issue values come from the formulas, as
+in ``IUL_US_S``.
+
+Every chain is one cell a month. Each opening timing forms the previous month's close
+itself, from its own value at ``t - 1`` and month ``t - 1``'s premium, credit, draws,
+deduction, sweep and interest, the same operations in the same order as the closing cell
+``IUL_US_S`` calls for, rather than calling for it: the account value's, where
+``IUL_US_S``'s chain ran through five cells a month, the fixed account's, through six,
+and the collateral's, through two. The loan, the face, the two premium accumulators, the
+MEC latch, each segment's balance and running totals, and the count call themselves at
+``t - 1``, one cell a month. A compiled model runs these chains on the C stack.
 
 Within each month the notes' monthiversary order is followed exactly:
 
@@ -76,7 +165,7 @@ Within each month the notes' monthiversary order is followed exactly:
    fixed account.
 2. **Segment maturity.** A segment created twelve months earlier matures: its index
    credit is computed (:func:`index_credit_pp`) and its whole value rolls into the
-   fixed account (:func:`seg_roll_pp`), from which the sweep at step 6 re-enters it
+   fixed account (:func:`seg_roll_pp`), from which the sweep at step 7 re-enters it
    into a new segment under the standing instruction **[std]**.
 3. **Withdrawals and new loans** are sourced fixed-account-first, then pro rata across
    live segments (:func:`draw_from_fa_pp`, :func:`draw_from_seg_pp`) -- the order one
@@ -106,212 +195,86 @@ death claims by ``pols_if(t) * mort_rate_mth(t)``; surrender payments by
 ``pols_if(t)`` again, because a withdrawal is taken at BOM on the owner's election and
 is not a decrement.
 
-.. rubric:: Naming
+.. rubric:: Counts
 
-Cells names follow :mod:`~.UL_US_S` -- the chassis these notes defer to -- and
-through it lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``: ``pols_*``
-for policy counts, ``av_*`` for account values, plural nouns for cash flows, ``*_rate``
-for rates, ``*_pp`` for per-policy amounts, ``timing`` and ``kind`` string arguments.
-Every concept shared with the chassis carries the chassis name. The names that are new
-are the ones the indexed crediting engine needs: the fixed (holding) account, the
-segment ladder, the crediting formula, and the no-lapse guarantee test.
+``pols_if(t)`` is the count that weights row ``t``: ``pols_if_at(t, "BEF_DECR")``, the
+count carried in from ``t - 1`` (``"BEF_NB"``) plus the month's new business,
+:func:`pols_new_biz`, before the month's decrements. A point in force at the valuation
+date opens with :func:`pols_if_init`, its ``policy_count``; one issued at or after the
+valuation date opens with none, and takes its ``policy_count`` as new business in its
+issue month. The recursion's base is :func:`t_entry`, and before issue
+(:func:`is_active`) every count, and so every cash flow, is zero, and so is every value
+state. ``IUL_US_S`` already names three timings, in a cell that returns ``pols_if(t)``
+for each and that nothing calls. ``"BEF_DECR"`` keeps that meaning, and so does
+``"BEF_MAT"``, the count before any maturity, since nothing matures: the name keeps its
+S model's meaning, as in the family's other models, and ``basiclife.BasicTerm_SE``'s
+start-of-month ``"BEF_MAT"`` is not adopted. ``"BEF_NB"`` is the one timing this model
+gives a new meaning, ``basiclife.BasicTerm_SE``'s, and it differs from ``IUL_US_S``'s
+only in the issue month, where it counts the issued policies as new business, not yet
+in. Inside the month the decrements are :mod:`~.IUL_US_S`'s, in its order: death, then
+surrender. No policy is terminated for insufficiency, as in ``IUL_US_S``.
 
-=========================  ==============================  ==========================
-Notes symbol               Cells                           Meaning
-=========================  ==============================  ==========================
-t                          (the ``t`` argument)            Policy month, 0-based, from the projection start
-(notes' t, from issue)     duration_mth(t)                 Completed policy months at BOM
-y                          policy_year(t)                  Policy year, 1-based, ``duration(t) + 1``
-(y - 1)                    duration(t)                     Completed policy years at BOM
-(issue age)                age_at_entry                    Issue age (ANB)
-Sex                        sex                             Sex, M or F
-Risk class                 rate_class                      Underwriting class, spec Table 1
-DB option                  db_option                       Death benefit option, A or B
-Tax test                   qual_test                       IRC 7702 test; only GPT modeled
-Premium mode               premium_mode                    ANNUAL **[std]** or MONTHLY
-x                          age(t)                          Attained age (ANB)
-(none)                     proj_len                        Number of projected months
-F                          sum_assured                     Initial face amount
-F_{t+1}                    sum_assured_at(t)               Face after reductions, end of month t
-F/1000                     units(t)                        Face in $1,000 units
-P_t                        premium_pp(t)                   Gross premium per policy
-(planned)                  premium_pp_ann                  Planned annual premium
-(persistency)              prem_persistency(t)             Paid/planned factor 0.98^(y-1)
-l_prem                     load_prem_rate()                Premium load rate
-NP_t                       prem_to_av_pp(t)                Net premium to the accounts
-W_t                        wd_pp(t)                        Partial withdrawal, gross of fee
-(the $25 fee)              wd_fee_pp(t)                    Withdrawal fee
-B_t                        loan_new_pp(t)                  New standard loan
-W_t + B_t                  draw_pp(t)                      The whole step-3 draw
-W^FA_t + B^FA_t            draw_from_fa_pp(t)              Step-3 draw sourced from FA
-W^seg_{k,t} + B^seg_{k,t}  draw_from_seg_pp(t)             Step-3 draw sourced from segments
-(segment k's share)        seg_wd_pp(t, m)                 Segment m's part of that draw
-(cumulative)               seg_wd_cum_pp(t, m)             Draws out of segment m to date
-FA_{t+1}                   fa_pp(t)                        Fixed (holding) account, end of month t
-FA_t                       fa_pp_at(t, "BEF_PREM")         Fixed account, start of month t
-(FA intra-month)           fa_pp_at(t, timing)             Fixed account by timing
-S_{k,t+1}                  seg_bal_pp(t, m)                Segment born at m, end of month t
-Sweep_t                    sweep_pp(t)                     Sweep into a new segment
-S_{k,m_k}                  seg_new_pp(m)                   Segment balance at creation
-(sum of segments)          seg_bal_tot_pp(t)               All live segment balances
-(active pool)              seg_bal_active_pp(t)            Segments available to a draw
-(pro-rata share)           seg_share(t, m)                 Segment m's share of that pool
-(segment count)            seg_count(t)                    Live segments, at most 12
-w_ix                       index_alloc_rate()              Indexed allocation share
-I(t)                       index_level(t)                  Index level at monthiversary t
-r_k                        index_change(i_0, i_1)          Point-to-point index change
-(index path)               index_return_ann                Level annual index return **[std]**
-c                          index_cap_at(t)                 Cap in force
-p                          index_par                       Participation rate
-f                          index_floor                     Floor
-cr_k                       index_credit_rate(r)            max(f, min(c, p x r))
-(credit base)              seg_credit_base(...)            Balance the credit applies to
-Credit_k                   index_credit(...)               Index credit, engine form
-(matured value)            seg_matured_value(...)          Value rolling into the next segment
-(the segment's r)          seg_return(t)                   Index change of the segment maturing at t
-(credit at t)              index_credit_pp(t)              Credit added at BOM of month t
-Roll^FA_t                  seg_roll_pp(t)                  Matured value rolled into FA
-LCA_{t+1}                  lca_pp(t)                       Loan collateral account, end of month t
-Existing loan balance      loan_bal_init                   L(0), the opening loan balance
-L_{t+1}                    loan_bal_pp(t)                  Loan plus interest, end of month t
-i_L^c                      loan_rate_ann                   Loan charged rate
-i_L^e                      loan_credit_rate_ann(t)         Collateral credited rate
-AV_{t+1}                   av_pp(t)                        Account value, end of month t
-AV_t                       av_pp_at(t, "BEF_PREM")         Account value, start of month t
-(after premium)            av_pp_at(t, "BEF_CREDIT")       Before the maturity credit
-(after credit)             av_pp_at(t, "BEF_WD")           Before the withdrawal
-AV'_t                      av_pp_at(t, "BEF_FEE")          After premium and withdrawal
-AV'_t - MD_t               av_pp_at(t, "BEF_INV")          After the monthly deduction
-(aggregate AV)             av_at(t, timing)                Account value in force
-(none)                     av_change(t)                    Change in account value
-i_fix                      fixed_rate_ann(t)               Fixed-account annual rate
-i_g                        guar_rate_ann                   Guaranteed annual rate
-(i_fix monthly)            inv_return_mth(t)               Monthly fixed-account rate
-(i_g monthly)              guar_rate_mth()                 Monthly guaranteed rate
-v_g                        naar_factor()                   1 + i_gm; DB is divided by it
-(interest credited)        inv_income_pp(t)                Interest on FA and LCA
-e_pol                      expense_pol_mth_at(t)           Monthly policy fee
-e_unit                     expense_unit_mth_at(t)          Per-unit charge per $1,000
-(none)                     rider_charge_pp(t)              Rider charges (0)
-(e_pol + e_unit + rc)      maint_fee_pp(t)                 Non-COI monthly charges
-coi_t                      coi_rate(t)                     Current monthly COI rate
-(guaranteed COI)           coi_rate_guar(t)                Guaranteed maximum COI rate
-COI_t                      coi_pp(t)                       Cost of insurance charge
-NAAR_t                     net_amt_at_risk(t)              Net amount at risk
-MD_t                       mth_deduction_pp(t)             Monthly deduction
-MD^FA_t                    mth_deduction_from_fa_pp(t)     Deduction sourced from FA
-MD^seg_{k,t}               mth_deduction_from_seg_pp(t)    Deduction sourced from segments
-(segment k's share)        seg_ded_pp(t, m)                Segment m's part of the deduction
-(cumulative)               seg_ded_cum_pp(t, m)            Deductions charged to segment m
-DB_t                       db_pp(t)                        Death benefit after corridor
-kappa_x                    corridor_factor(t)              IRC 7702(d) corridor factor
-SC_t                       surr_charge_pp(t)               Surrender charge scheduled
-(SC per $1,000)            surr_charge_rate(t)             Surrender charge rate
-(AV - SC)                  csv_pp(t)                       Cash value before loan
-CSV_t                      ncsv_pp(t)                      Cash surrender value, loan netted
-(SC retained)              surr_charge(t)                  Surrender charge collected
-CumP_{t+1}                 cum_prem_net_pp(t)              Premiums less withdrawals and loans, end of month t
-(GPT/7-pay base)           cum_prem_pp(t)                  Premiums less withdrawals, end of month t
-CumMNLP_{t+1}              cum_mnlp_pp(t)                  Cumulative no-lapse premium through month t
-(MNLP rate)                mnlp_rate()                     No-lapse premium per $1,000 p.a.
-(MNLP monthly)             mnlp_pp_mth()                   Monthly no-lapse premium
-(no-lapse period)          nlg_period_years()              Length of the no-lapse period
-(no-lapse test)            nlg_test_ok(t)                  CumP >= CumMNLP
-(NLG status)               nlg_in_effect(t)                In period and test passing
-(NLG expiry shock)         nlg_expiry_shock(t)             25% shock at expiry **[std]**
-(grace trigger)            is_shortfall(t)                 CSV cannot cover MD, NLG failed
-(GPT limit)                gpt_limit(t)                    max(GSP, GLP x years)
-(GPT test)                 gpt_ok(t)                       GPT compliance flag
-(7-pay limit)              seven_pay_limit(t)              7-pay cumulative limit
-(MEC flag)                 is_mec(t)                       7-pay failure flag
-q^d_t                      mort_rate_mth(t)                Monthly mortality rate
-(annual q)                 mort_rate(t)                    Annual mortality rate
-(base lapse)               lapse_rate_base(t)              Base annual lapse rate
-(SC-expiry spike)          lapse_rate_sc_mult(t)           Year-11 shock multiplier
-r_cred,t                   cred_rate_ann(t)                Trailing credited rate
-r_alt                      comp_rate_ann(t)                Competitor / market rate
-(dynamic multiplier)       lapse_rate_dyn_mult(t)          Dynamic lapse multiplier
-q^w_t                      lapse_rate_mth(t)               Monthly lapse rate
-(annual w)                 lapse_rate(t)                   Total annual lapse rate
-l_t                        pols_if(t)                      In force at start of month t
-(l_0)                      pols_if_init                    In force at outset
-(deaths)                   pols_death(t)                   Deaths in month t
-(lapses)                   pols_lapse(t)                   Lapses in month t
-(none)                     pols_maturity(t)                Maturities: always zero
-(premium income)           premiums(t)                     Premium income
-DB_t - L_t                 claims(t, "DEATH")              Death claims
-CSV_t                      claims(t, "LAPSE")              Surrender payments
-W_t - fee                  withdrawals(t)                  Withdrawal payments
-E_t                        expenses(t)                     Insurer's own expenses
-(premium tax)              premium_taxes(t)                Premium tax
-(net loan cash flows)      net_loan_cf(t)                  Loan advances and repayments
-CF_t                       net_cf(t)                       Net liability cash flow
-=========================  ==============================  ==========================
+.. rubric:: The end of the projection
 
-Seven names needed care.
-
-**A withdrawal is not a claim.** The notes write the withdrawal outflow as its own term
-of ``CF_t``, alongside the death and surrender legs, and the library follows that: the
-payment is :func:`withdrawals`, published in a ``withdrawals`` column, and
-``"WITHDRAWAL"`` is **not** a ``kind`` that :func:`claims` accepts -- it would otherwise
-sit in the ``kind is None`` total and be double-counted against the standalone cells.
-The per-policy amount is still :func:`claim_pp` ``(t, "WITHDRAWAL")``, because that is
-where the ``W_t - $25 fee`` rule lives and :func:`withdrawals` weights it by
-:func:`pols_if`: a withdrawal is taken at BOM by policies still in force, not by a
-decrement. Surrenders keep the ``"LAPSE"`` kind and are published as ``claims_lapse``,
-so the column name matches the kind that produces it.
-
-**The notes' ``t`` counts from issue; this model's ``t`` counts from the projection
-start.** Both are 0-based and they coincide for a new-business model point; for an
-in-force point the notes' index is :func:`duration_mth` ``(t) = duration_mth_init() + t``.
-Every ``mod 12`` test -- the anniversary premium, the segment maturity -- is therefore
-written against ``duration_mth(t)`` rather than ``t``, and the surrender charge run-off
-uses ``duration_mth(t) + 1`` because the notes' schedule counts the current month.
-
-**The notes' ``CSV_t`` is :func:`ncsv_pp`, not :func:`csv_pp`.** The notes define
-``CSV_t = AV_t - SC_t - L_t``, with the loan already netted. The chassis and
-``CashValue_SE`` split that into :func:`csv_pp` (``AV - SC``) and :func:`ncsv_pp`
-(``CSV - L``). The chassis names are kept, and the notes' symbol maps to the second.
-
-**The withdrawal fee is inside ``W_t``, not on top of it.** These notes say ``W_t`` is
-"gross of $25 fee" and that the "withdrawal outflow = W_t - $25 fee". The account is
-therefore debited ``W_t``, the policyholder receives ``W_t - 25`` and the insurer keeps
-the fee. The universal life chassis reads its own notes the other way -- there the fee
-is charged *on top* of the withdrawal -- so :func:`av_pp_at` deliberately differs from
-the chassis at ``"BEF_FEE"``.
-
-**The death claim nets ``L_t``, not ``L(t-1)``.** These notes write
-``death claim outflow = DB_t - L_t``; decrements are end-of-month events, after the
-loan has accrued, so :func:`claim_pp` uses :func:`loan_bal_pp` at ``t``. The chassis
-uses the opening balance because its own notes write ``L(t-1)``.
-
-**``maint_fee`` is income, ``expenses`` is outgo.** As on the chassis,
-:func:`maint_fee_pp` is the non-COI part of the monthly deduction -- a charge *against
-the account value* -- while :func:`expenses` is the insurer's own $75 a year plus $150
-at issue **[std]**. Confusing them double-counts.
-
-**The two cumulative premium accumulators are different.** :func:`cum_prem_net_pp` is
-the notes' ``CumP_t``, premiums less withdrawals **and loans**, which is what the
-no-lapse test compares against ``CumMNLP_t``. :func:`cum_prem_pp` is premiums less
-withdrawals only, which is the base of the guideline premium and 7-pay tests. Using one
-for the other quietly changes both answers.
+The frame ends at :func:`maturity_mth`, the policy month at attained age
+``maturity_age``, 121, the notes' [unverified] maturity inference (spec F5), and not at an
+event of the contract, which is described as continuing in force with no further charges
+at 121. Premiums, withdrawals and charges stop at ``charges_cease_age``, a Reference of
+its own, 121 too as shipped; set below ``maturity_age``, the projection runs on past the
+cessation, the account value earning its interest and the segments their credits with
+nothing deducted. The roll-forwards read the survivors of the last month:
+:func:`check_av_roll_fwd` and :func:`av_change` read the opening account value in force
+of month ``t + 1``, which in the last month is ``t = proj_len()``. So the two opening
+values they read there, the count (the ``"BEF_NB"`` timing of :func:`pols_if_at`, and
+through it :func:`pols_if`) and the account value (``av_pp_at(t, "BEF_PREM")``), are
+defined for ``0 <= duration_mth(t) <= maturity_mth()``: on the books, and in the month
+after the frame, where they are the survivors of the last month and the account value they
+carry. Each equals :mod:`~.IUL_US_S`'s value there exactly. Every other cell is zero or
+false there, as before issue: each account inside the month and its opening value, each
+segment, the loan, the face, every charge, premium, withdrawal, loan draw, credit,
+decrement rate, decrement, claim and flow, and the expenses, whose maintenance would
+otherwise fall on the carried count; only the two clocks, the inputs read on the valuation
+clock and the neutral 1.0 of the two lapse multipliers hold values there. And nothing
+reads past ``t = proj_len()``: :func:`av_change` and the residual cells of the checks,
+which read ``t + 1`` or are read beside cells that do, are zero outside cover before they
+read it.
 
 .. rubric:: The segment ladder
 
 A segment is created at every monthiversary from the sweep and matures twelve months
 later, so between step 2 and step 7 of any month eleven segments are live and after the
-sweep twelve are -- the "up to 12 segments" of [S4]. Segments are indexed
-by their creation month ``m``: :func:`seg_bal_pp` ``(t, m)`` is the balance at the end
-of month ``t`` of the segment born at ``m``, and is zero outside ``m <= t <= m + 11``.
+sweep twelve are -- the "up to 12 segments" of [S4]. Segments are indexed by their
+creation month ``m``, a **policy** month, ``duration_mth`` of the month of the sweep that
+created them: ``seg_bal_pp(t, m)`` is the balance at the end of month ``t`` of
+the segment born in policy month ``m``, and is zero outside
+``m <= duration_mth(t) <= m + 11``. A parameter that holds a policy month is named ``m``,
+never ``t``, so that what moves with the valuation clock is ``t`` alone.
+
+A point in force at the valuation date carries its live segments in a companion of the
+model point table, ``inforce_segments_sec.csv``, one row a segment, keyed by ``point_id``
+and ``slot``: the months since the segment's creation at the valuation date, 1 to 12, so
+that the segment in slot ``k`` is the one born in policy month ``duration_mth_init() - k``
+and the segment in slot 12 matures at ``t = 0``. Every month of the last
+``min(12, duration_mth_init())`` holds a row, a month that swept nothing included, at
+zero, since the credited rate of a month reads the start level and the cap of the segment
+maturing then whether or not it holds a balance (:func:`cred_rate_ann`). Each row gives
+the segment's balance entering month 0 (:func:`seg_bal_pp_init`), the deductions and the
+draws -- withdrawals and loan transfers -- charged to it since its creation
+(:func:`seg_ded_cum_pp_init`, :func:`seg_wd_cum_pp_init`), which with the balance are its
+credit base, the index level at its creation on the valuation-clock path
+(:func:`seg_index_start_init`) and the cap declared then (:func:`seg_index_cap_init`). Its
+creation balance takes no column: nothing may enter or leave a segment but a deduction, a
+withdrawal or a loan transfer, so it is the three summed, which is the closure
+:func:`check_seg_ladder` asserts (:func:`seg_new_pp`).
 
 Two properties of this arrangement are worth stating because the notes list both as
 pitfalls.
 
-Each segment carries **its own index start level** ``I(m)``, so twelve segments a year
-mature at twelve different point-to-point returns. Collapsing them into one annual
-segment mis-times credits and distorts mid-segment surrender values [S3];
-:func:`check_seg_ladder` and model point 3 (indexed allocation 0%) exist so the
-difference is visible rather than assumed.
+Each segment carries **its own index start level**, so twelve segments a year mature at
+twelve different point-to-point returns. Collapsing them into one annual segment
+mis-times credits and distorts mid-segment surrender values [S3]; :func:`check_seg_ladder`
+and model point 3 (indexed allocation 0%) exist so the difference is visible rather than
+assumed.
 
 Deductions and withdrawals are sourced from the fixed account first and then **pro rata
 across live segments** on their remaining balances **[std]**. Because a pro-rata draw
@@ -320,12 +283,359 @@ step-3 draw and the step-6 deduction. The two claims on the pool are **ordered, 
 parallel**: the step-6 deduction is capped against what the step-3 draw leaves behind,
 so their sum can never exceed the pool, no segment balance can go negative, and no
 segment can pay a negative index credit at maturity. Capping both against the same
-pre-draw pool is the easy mistake, and :func:`check_seg_ladder` now asserts against it.
-The credit base under the baseline convention
-is exactly the remaining balance -- amounts that left the segment mid-term earn no index
-credit [S3]. The alternative convention the notes price, one carrier's
-adjusted-beginning-value with half-weighted deductions [S3], is the ``"ADJ_BEGIN"``
-argument of :func:`seg_credit_base`, and both are asserted against the worked example.
+pre-draw pool is the easy mistake, and :func:`check_seg_ladder` asserts against it.
+The credit base under the baseline convention is exactly the remaining balance --
+amounts that left the segment mid-term earn no index credit [S3]. The alternative
+convention the notes price, one carrier's adjusted-beginning-value with half-weighted
+deductions [S3], is the ``"ADJ_BEGIN"`` argument of :func:`seg_credit_base`.
+
+A segment can close a month on a rounding about zero, a balance of the order of 1e-16 of
+either sign, where a draw or a deduction took exactly what it held. :func:`seg_share` and
+:func:`seg_count` read such a balance by ``IUL_US_S``'s own tests of zero, and the pool
+:func:`seg_bal_active_pp` and the total :func:`seg_bal_tot_pp` sum the segments in an
+explicit loop that compensates as Python's ``sum()`` of floats does from Python 3.12, so
+that each is ``IUL_US_S``'s sum bit for bit there. Python 3.11's ``sum()`` is a plain
+fold, which can leave such a pool on the other side of zero, so the states ``IUL_US_S``
+closes on a rounding about zero depend on the interpreter it runs on.
+
+.. rubric:: Naming
+
+Cells names follow :mod:`~.UL_US_S` -- the chassis these notes defer to -- and
+through it lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``: ``pols_*``
+for policy counts, ``av_*`` for account values, plural nouns for cash flows, ``*_rate``
+for rates, ``*_pp`` for per-policy amounts, ``timing`` and ``kind`` string arguments.
+Every concept shared with the chassis carries the chassis name. The names that are new
+in ``IUL_US_S`` are the ones the indexed crediting engine needs: the fixed (holding)
+account, the segment ladder, the crediting formula, and the no-lapse guarantee test.
+
+What running in force adds is named as ``basiclife.BasicTerm_SE`` names it:
+``duration_mth`` read from the model point, ``policy_count``, ``pols_new_biz``,
+``pols_if_at`` with its ``"BEF_NB"`` timing, ``is_active`` and ``result_pols``.
+``t_entry``, the first month on the books, is the SEC models' own, and ``maturity_mth`` is
+named for ``maturity_age``, where the projection ends. A column of the opening state is
+the cell it opens with ``_init`` added: ``av_pp_init`` and ``loan_bal_init`` are
+``IUL_US_S``'s own, and ``fa_pp_init``, ``lca_pp_init``, ``sum_assured_init``,
+``cum_prem_init``, ``cum_prem_net_init`` and ``is_mec_init`` open :func:`fa_pp_at`,
+:func:`lca_pp_at`, :func:`sum_assured_at`, :func:`cum_prem_pp`, :func:`cum_prem_net_pp`
+and :func:`is_mec` as they open theirs. A column of the segment ladder is the segment
+cell it opens with ``_init`` added, keyed by the slot: ``seg_bal_pp_init(k)``,
+``seg_ded_cum_pp_init(k)`` and ``seg_wd_cum_pp_init(k)``; the start level and the cap,
+which no cell of ``IUL_US_S`` holds per segment, are ``seg_index_start_init(k)`` and
+``seg_index_cap_init(k)``, and the monthly cells that read them, for the segment maturing
+in month ``t``, :func:`seg_index_start` and :func:`seg_index_cap`. A table read at an
+attained age has one reader keyed by the age, ``<cell>_at(a)``, and a table read at a
+policy year one keyed by the year, ``<cell>_py(y)``; the monthly cell keeps
+``IUL_US_S``'s name and calls its reader inside cover. The surrender-charge schedule,
+keyed by its ID, has one reader for each of its two columns, :func:`surr_charge_rate_max`
+and :func:`surr_charge_runoff_years`. A check's residual in month ``t`` is
+``<check>_resid(t)``. Each text column a monthly cell branches on is read through bool
+decodes, one for each value, named for the value: :func:`is_db_option_a`,
+:func:`is_db_option_b`, :func:`is_gpt`, :func:`is_level_premium`,
+:func:`is_single_premium`, :func:`is_target_premium`, :func:`is_annual_premium` and
+:func:`is_monthly_premium`. Each reads its column from :func:`model_point`, and so does
+each per-point join, so no projection cell compares text or calls a label accessor:
+``IUL_US_S``'s label accessors, ``sex``, ``rate_class``, ``db_option``, ``qual_test``,
+``premium_type``, ``premium_mode`` and ``surr_charge_id``, are kept as they are, for
+reporting.
+
+=========================  ==============================  ==========================
+Notes symbol               Cells                           Meaning
+=========================  ==============================  ==========================
+t                          (the ``t`` argument)            Months from the valuation
+                                                           date, 0-based
+(months at valuation)      duration_mth_init               Completed policy months at the
+                                                           valuation date; -k if issued k
+                                                           months later
+(notes' t, from issue)     duration_mth(t)                 Completed policy months at
+                                                           month t
+y                          policy_year(t)                  Policy year, 1-based,
+                                                           ``duration(t) + 1``
+(y - 1)                    duration(t)                     Completed policy years at BOM
+(issue age)                age_at_entry                    Issue age (ANB)
+Sex                        sex                             Sex, M or F
+Risk class                 rate_class                      Underwriting class, spec
+                                                           Table 1
+DB option                  db_option                       Death benefit option, A or B
+(Option A)                 is_db_option_a                  Whether db_option is A
+(Option B)                 is_db_option_b                  Whether db_option is B
+Tax test                   qual_test                       IRC 7702 test; only GPT
+                                                           modeled
+(GPT elected)              is_gpt                          Whether qual_test is GPT
+Premium mode               premium_mode                    ANNUAL **[std]** or MONTHLY
+(annual mode)              is_annual_premium               Whether premium_mode is ANNUAL
+(monthly mode)             is_monthly_premium              Whether it is MONTHLY
+x                          age(t)                          Attained age (ANB)
+(none)                     proj_len                        Months from the valuation date
+                                                           to the end of the projection
+(projection end)           maturity_mth                    Policy month the projection
+                                                           ends at, attained age 121
+(none)                     t_entry                         First month on the books
+(none)                     is_active(t)                    Whether month t is in cover
+(none)                     policy_count                    Policies the model point
+                                                           stands for
+F                          sum_assured                     Initial face amount
+F_0                        sum_assured_init                Face in force entering month 0
+F_{t+1}                    sum_assured_at(t)               Face after reductions, end of
+                                                           month t
+F/1000                     units(t)                        Face in $1,000 units
+P_t                        premium_pp(t)                   Gross premium per policy
+(planned)                  premium_pp_ann                  Planned annual premium
+(premium pattern)          premium_type                    LEVEL, SINGLE or TARGET
+(LEVEL pattern)            is_level_premium                Whether premium_type is LEVEL
+(SINGLE pattern)           is_single_premium               Whether it is SINGLE
+(TARGET pattern)           is_target_premium               Whether it is TARGET
+(persistency)              prem_persistency(t)             Paid/planned factor 0.98^(y-1)
+l_prem                     load_prem_rate()                Premium load rate
+NP_t                       prem_to_av_pp(t)                Net premium to the accounts
+W_t                        wd_pp(t)                        Partial withdrawal, gross of
+                                                           fee
+(planned W)                wd_pp_mth                       The wd_pp column, a month's W
+(the $25 fee)              wd_fee_pp(t)                    Withdrawal fee
+B_t                        loan_new_pp(t)                  New standard loan
+(planned B)                loan_new_pp_ann                 The loan_new_pp_ann column
+W_t + B_t                  draw_pp(t)                      The whole step-3 draw
+W^FA_t + B^FA_t            draw_from_fa_pp(t)              Step-3 draw sourced from FA
+W^seg_{k,t} + B^seg_{k,t}  draw_from_seg_pp(t)             Step-3 draw sourced from
+                                                           segments
+(segment k's share)        seg_wd_pp(t, m)                 Segment m's part of that draw
+(cumulative)               seg_wd_cum_pp(t, m)             Draws out of segment m to date
+FA_{t+1}                   fa_pp(t)                        Fixed (holding) account, end
+                                                           of month t
+FA_t                       fa_pp_at(t, "BEF_PREM")         Fixed account, start of
+                                                           month t
+(FA intra-month)           fa_pp_at(t, timing)             Fixed account by timing
+FA_0                       fa_pp_init                      Fixed account entering month 0
+S_{k,t+1}                  seg_bal_pp(t, m)                Segment born at m, end of
+                                                           month t
+Sweep_t                    sweep_pp(t)                     Sweep into a new segment
+S_{k,m_k}                  seg_new_pp(m)                   Segment balance at creation
+(sum of segments)          seg_bal_tot_pp(t)               All live segment balances
+(active pool)              seg_bal_active_pp(t)            Segments available to a draw
+(pro-rata share)           seg_share(t, m)                 Segment m's share of that pool
+(segment count)            seg_count(t)                    Live segments, at most 12
+k                          (the ``k`` argument)            Ladder slot, months since
+                                                           creation at the valuation date
+S_{k,0}                    seg_bal_pp_init(k)              Slot k's balance entering
+                                                           month 0
+(deductions to date)       seg_ded_cum_pp_init(k)          Deductions charged to slot k
+(draws to date)            seg_wd_cum_pp_init(k)           Draws out of slot k
+I(m_k)                     seg_index_start_init(k)         Slot k's level at creation
+c_k                        seg_index_cap_init(k)           Cap declared at slot k's
+                                                           creation
+(start level at t)         seg_index_start(t)              Level at creation of the
+                                                           segment maturing at t
+(cap at t)                 seg_index_cap(t)                Cap of the segment maturing
+                                                           at t
+w_ix                       index_alloc_rate()              Indexed allocation share
+I(t)                       index_level(t)                  Index level at monthiversary t
+r_k                        index_change(i_0, i_1)          Point-to-point index change
+(index path)               index_return_ann                Level annual index return
+                                                           **[std]**
+c                          index_cap_at(t)                 Cap in force
+p                          index_par                       Participation rate
+f                          index_floor                     Floor
+cr_k                       index_credit_rate(r)            max(f, min(c, p x r))
+(credit base)              seg_credit_base(...)            Balance the credit applies to
+Credit_k                   index_credit(...)               Index credit, engine form
+(matured value)            seg_matured_value(...)          Value rolling into the next
+                                                           segment
+(the segment's r)          seg_return(t)                   Index change of the segment
+                                                           maturing at t
+(credit at t)              index_credit_pp(t)              Credit added at BOM of month t
+Roll^FA_t                  seg_roll_pp(t)                  Matured value rolled into FA
+LCA_{t+1}                  lca_pp(t)                       Loan collateral account, end
+                                                           of month t
+LCA_0                      lca_pp_init                     Collateral entering month 0
+Existing loan balance      loan_bal_init                   L(0), the loan entering
+                                                           month 0
+L_{t+1}                    loan_bal_pp(t)                  Loan plus interest, end of
+                                                           month t
+i_L^c                      loan_rate_ann                   Loan charged rate
+i_L^e                      loan_credit_rate_ann(t)         Collateral credited rate
+AV_{t+1}                   av_pp(t)                        Account value, end of month t
+AV_t                       av_pp_at(t, "BEF_PREM")         Account value, start of
+                                                           month t
+AV_0                       av_pp_init                      Account value entering month 0
+(after premium)            av_pp_at(t, "BEF_CREDIT")       Before the maturity credit
+(after credit)             av_pp_at(t, "BEF_WD")           Before the withdrawal
+AV'_t                      av_pp_at(t, "BEF_FEE")          After premium and withdrawal
+AV'_t - MD_t               av_pp_at(t, "BEF_INV")          After the monthly deduction
+(aggregate AV)             av_at(t, timing)                Account value in force
+(change in AV)             av_change(t)                    Change in account value
+i_fix                      fixed_rate_ann(t)               Fixed-account annual rate
+i_g                        guar_rate_ann                   Guaranteed annual rate
+(i_fix monthly)            inv_return_mth(t)               Monthly fixed-account rate
+(i_g monthly)              guar_rate_mth()                 Monthly guaranteed rate
+v_g                        naar_factor()                   1 + i_gm; DB is divided by it
+(interest credited)        inv_income_pp(t)                Interest on FA and LCA
+e_pol                      expense_pol_mth_at(t)           Monthly policy fee
+e_unit                     expense_unit_mth_at(t)          Per-unit charge per $1,000
+(rider charges)            rider_charge_pp(t)              Rider charges (0)
+(e_pol + e_unit + rc)      maint_fee_pp(t)                 Non-COI monthly charges
+coi_t                      coi_rate(t)                     Current monthly COI rate
+(guaranteed COI)           coi_rate_guar(t)                Guaranteed maximum COI rate
+(guaranteed COI scale)     coi_rate_scale()                The cell's guaranteed scale
+(scale's last year)        coi_rate_last_year              The scale's last policy year
+(COI by policy year)       coi_rate_guar_py(y)             The scale's rate in year y
+COI_t                      coi_pp(t)                       Cost of insurance charge
+NAAR_t                     net_amt_at_risk(t)              Net amount at risk
+MD_t                       mth_deduction_pp(t)             Monthly deduction
+MD^FA_t                    mth_deduction_from_fa_pp(t)     Deduction sourced from FA
+MD^seg_{k,t}               mth_deduction_from_seg_pp(t)    Deduction sourced from
+                                                           segments
+(segment k's deduction)    seg_ded_pp(t, m)                Segment m's part of the
+                                                           deduction
+(cumulative deductions)    seg_ded_cum_pp(t, m)            Deductions charged to
+                                                           segment m
+DB_t                       db_pp(t)                        Death benefit after corridor
+kappa_x                    corridor_factor(t)              IRC 7702(d) corridor factor
+(kappa by age)             corridor_factor_at(a)           The same, keyed by age
+SC_t                       surr_charge_pp(t)               Surrender charge scheduled
+(SC per $1,000)            surr_charge_rate(t)             Surrender charge rate
+(initial SC per $1,000)    surr_charge_rate_max            The schedule's charge before
+                                                           any run-off
+(run-off period)           surr_charge_runoff_years        The schedule's run-off, years
+(AV - SC)                  csv_pp(t)                       Cash value before loan
+CSV_t                      ncsv_pp(t)                      Cash surrender value, loan
+                                                           netted
+(SC retained)              surr_charge(t)                  Surrender charge collected
+CumP_{t+1}                 cum_prem_net_pp(t)              Premiums less withdrawals and
+                                                           loans, end of month t
+CumP_0                     cum_prem_net_init               The same, entering month 0
+(GPT/7-pay base)           cum_prem_pp(t)                  Premiums less withdrawals,
+                                                           end of month t
+(GPT/7-pay base at entry)  cum_prem_init                   The same, entering month 0
+CumMNLP_{t+1}              cum_mnlp_pp(t)                  Cumulative no-lapse premium
+                                                           through month t
+(MNLP rate)                mnlp_rate()                     No-lapse premium per $1,000
+                                                           p.a.
+(MNLP monthly)             mnlp_pp_mth()                   Monthly no-lapse premium
+(no-lapse period)          nlg_period_years()              Length of the no-lapse period
+(no-lapse test)            nlg_test_ok(t)                  CumP >= CumMNLP
+(NLG status)               nlg_in_effect(t)                In period and test passing
+(NLG expiry shock)         nlg_expiry_shock(t)             25% shock at expiry **[std]**
+(grace trigger)            is_shortfall(t)                 CSV cannot cover MD, NLG
+                                                           failed
+(GPT limit)                gpt_limit(t)                    max(GSP, GLP x years)
+(GPT test)                 gpt_ok(t)                       GPT compliance flag
+(7-pay limit)              seven_pay_limit(t)              7-pay cumulative limit
+(MEC flag)                 is_mec(t)                       7-pay failure, latched
+(MEC at entry)             is_mec_init                     The latch entering month 0
+q^d_t                      mort_rate_mth(t)                Monthly mortality rate
+(annual q)                 mort_rate(t)                    Annual mortality rate, capped
+(base q by age)            mort_rate_base_at(a)            The base table's rate
+(class factor)             class_factor()                  Underwriting-class multiplier
+(base lapse)               lapse_rate_base(t)              Base annual lapse rate
+(base lapse by year)       lapse_rate_base_py(y)           The same, keyed by policy year
+(SC-expiry year)           lapse_shock_year()              Policy year of the spike
+(SC-expiry spike)          lapse_rate_sc_mult(t)           Year-11 shock multiplier
+r_cred,t                   cred_rate_ann(t)                Trailing credited rate
+r_alt                      comp_rate_ann(t)                Competitor / market rate
+(dynamic multiplier)       lapse_rate_dyn_mult(t)          Dynamic lapse multiplier
+q^w_t                      lapse_rate_mth(t)               Monthly lapse rate
+(annual w)                 lapse_rate(t)                   Total annual lapse rate
+l_t                        pols_if(t)                      In force at BOM of month t
+(l at valuation)           pols_if_init                    In force at the valuation date
+(carried in)               pols_if_at(t, "BEF_NB")         Carried in from month t - 1
+(after new business)       pols_if_at(t, "BEF_DECR")       After new business: l_t
+(before maturity)          pols_if_at(t, "BEF_MAT")        Before maturity: l_t
+(new business)             pols_new_biz(t)                 Policies issued in month t
+(deaths)                   pols_death(t)                   Deaths in month t
+(lapses)                   pols_lapse(t)                   Lapses in month t
+(maturities)               pols_maturity(t)                Maturities: always zero
+(premium income)           premiums(t)                     Premium income
+DB_t - L_t                 claims(t, "DEATH")              Death claims
+CSV_t                      claims(t, "LAPSE")              Surrender payments
+W_t - fee                  withdrawals(t)                  Withdrawal payments
+(inflation)                inflation_factor(t)             Expense inflation factor
+E_t                        expenses(t)                     Insurer's own expenses
+(premium tax)              premium_taxes(t)                Premium tax
+(net loan cash flows)      net_loan_cf(t)                  Loan advances and repayments
+CF_t                       net_cf(t)                       Net liability cash flow
+(AV components residual)   check_av_components_resid(t)    AV less its three parts
+(AV roll residual)         check_av_roll_fwd_resid(t)      AV roll-forward residual
+(margin residual)          check_margin_resid(t)           Margin identity residual
+(segments over the term)   check_seg_count_resid(t)        Live segments beyond 12
+(the month's credit)       check_seg_credit_resid(t)       The credit, 0 or more
+(least segment)            check_seg_bal_resid(t)          The least live balance
+(segment closure)          check_seg_closure_resid(t)      The maturing segment's closure
+(none)                     result_pols()                   Counts and decrement rates
+=========================  ==============================  ==========================
+
+Ten names needed care.
+
+**A withdrawal is not a claim.** The notes write the withdrawal outflow as its own term
+of ``CF_t``, alongside the death and surrender legs, and the library follows that: the
+payment is :func:`withdrawals`, published in a ``withdrawals`` column, and
+``"WITHDRAWAL"`` is **not** a ``kind`` that :func:`claims` accepts -- it would otherwise
+sit in the ``kind is None`` total and be double-counted against the standalone cells.
+The per-policy amount is still ``claim_pp(t, "WITHDRAWAL")``, because that is
+where the ``W_t - $25 fee`` rule lives and :func:`withdrawals` weights it by
+:func:`pols_if`: a withdrawal is taken at BOM by policies still in force, not by a
+decrement. Surrenders keep the ``"LAPSE"`` kind and are published as ``claims_lapse``,
+so the column name matches the kind that produces it.
+
+**The notes' month counts from issue; this model's counts from the valuation date.** The
+notes' ``t`` and this model's are both 0-based and they coincide for a point issued at the
+valuation date; for any other the notes' index is :func:`duration_mth`
+``(t) = duration_mth_init() + t``.
+Every ``mod 12`` test -- the anniversary premium, the anniversary loan -- is therefore
+written against ``duration_mth(t)`` rather than ``t``, a segment's creation is a policy
+month, and the surrender charge run-off uses ``duration_mth(t) + 1`` because the notes'
+schedule counts the current month.
+
+**A segment's slot is not its creation month.** ``seg_bal_pp(t, m)`` and the
+segment cells beside it are keyed by ``m``, the policy month the segment was born in, as
+in ``IUL_US_S``; the ladder's ``slot`` is the months since that birth at the valuation
+date, ``k = duration_mth_init() - m``, which is what an extract of a policy's live
+segments knows, and what one row of ``inforce_segments_sec.csv`` is keyed by. The two
+meet only at ``t = 0``.
+
+**The notes' cash surrender value is the net one.** Their ``CSV_t`` is :func:`ncsv_pp`,
+not :func:`csv_pp`: the notes define ``CSV_t = AV_t - SC_t - L_t``, with the loan already
+netted. The chassis and
+``CashValue_SE`` split that into :func:`csv_pp` (``AV - SC``) and :func:`ncsv_pp`
+(``CSV - L``). The chassis names are kept, and the notes' symbol maps to the second.
+
+**The withdrawal fee is inside the withdrawal, not on top of it.** These notes say
+``W_t`` is "gross of $25 fee" and that the "withdrawal outflow = W_t - $25 fee". The
+account is therefore debited ``W_t``, the policyholder receives ``W_t - 25`` and the
+insurer keeps the fee. The universal life chassis reads its own notes the other way --
+there the fee is charged *on top* of the withdrawal -- so :func:`av_pp_at` deliberately
+differs from the chassis at ``"BEF_FEE"``. A planned withdrawal above 0 and below the fee
+would debit the account less than the fee it is charged, which :func:`proj_len` refuses.
+
+**The death claim nets the loan at the end of the month.** These notes write
+``death claim outflow = DB_t - L_t``; decrements are end-of-month events, after the
+loan has accrued, so :func:`claim_pp` uses :func:`loan_bal_pp` at ``t``. The chassis
+uses the opening balance because its own notes write ``L(t-1)``.
+
+**The maintenance fee is income, the expenses outgo.** As on the chassis,
+:func:`maint_fee_pp` is the non-COI part of the monthly deduction -- a charge *against
+the account value* -- while :func:`expenses` is the insurer's own $75 a year plus $150
+at issue **[std]**. Confusing them double-counts.
+
+**The two cumulative premium accumulators are different.** :func:`cum_prem_net_pp` is
+the notes' ``CumP_t``, premiums less withdrawals **and loans**, which is what the
+no-lapse test compares against ``CumMNLP_t``. :func:`cum_prem_pp` is premiums less
+withdrawals only, which is the base of the guideline premium and 7-pay tests. Using one
+for the other quietly changes both answers, and so does opening either at 0 on a point in
+force: each opens from a column of its own, :func:`cum_prem_init` and
+:func:`cum_prem_net_init`.
+
+**The MEC flag latches here, and does not in the S model.** ``IUL_US_S``'s flag is the
+in-year 7-pay test alone, which stops applying in policy year 8 and so switches the flag
+off exactly when the failure becomes permanent. This model latches it, as ``UL_US_S``
+does, from :func:`is_mec_init` on a point in force: under IRC 7702A a contract that fails
+the test is a modified endowment contract for good [R5].
+
+**The fixed account and the collateral are not the account value less the loan.**
+``IUL_US_S`` opens an in-force point with everything in the fixed account and the
+collateral equal to the loan. Both part from those after the first loan: the collateral
+is credited at :func:`loan_credit_rate_ann` while the loan accrues at ``loan_rate_ann``,
+and the segments hold the rest of the account value. So each opens from its own column,
+:func:`fa_pp_init` and :func:`lca_pp_init`, and the segments from the ladder; ``Data``
+holds the account value to the sum of the three parts.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -342,7 +652,7 @@ _spaces = []
 # Cells
 
 def model_point():
-    """The selected model point as a Series."""
+    """The selected model point as a Series, a row of *model_point_table_sec.csv*."""
     return data.model_point_table().loc[point_id]                    # noqa: F821
 
 
@@ -362,7 +672,13 @@ def rate_class():
 
 
 def sum_assured():
-    """F: the initial face amount of the selected model point."""
+    """F: the initial face amount of the selected model point, the face at issue.
+
+    The surrender charge is quoted per $1,000 of this, the *initial* face, not of
+    :func:`sum_assured_at` [S3], and it is the face a point not yet in force is issued
+    with.  The face in force at the valuation date is :func:`sum_assured_init`, and the
+    face in force in month t is :func:`sum_assured_at`.
+    """
     return float(model_point()["sum_assured"])
 
 
@@ -373,6 +689,27 @@ def db_option():
     baseline by the product spec (F3).
     """
     return model_point()["db_option"]
+
+
+def is_db_option_a():
+    """Whether the death benefit is Option A, the level face.
+
+    ``db_option`` is ``"A"``: a decode of the model point's ``db_option`` column, read
+    once a point from :func:`model_point`, so that no monthly cell branches on text;
+    :func:`db_pp` and :func:`face_reduction_pp` read this instead.  The label accessor
+    :func:`db_option` is kept as it is, for reporting, and no projection cell calls it.
+    """
+    return bool(model_point()["db_option"] == "A")
+
+
+def is_db_option_b():
+    """Whether the death benefit is Option B, the face plus the account value.
+
+    ``db_option`` is ``"B"``: a decode of the model point's column, read by
+    :func:`db_pp`, which raises on a point that is neither A nor B, as ``IUL_US_S``'s
+    does.
+    """
+    return bool(model_point()["db_option"] == "B")
 
 
 def qual_test():
@@ -386,9 +723,48 @@ def qual_test():
     return model_point()["qual_test"]
 
 
+def is_gpt():
+    """Whether the point elected the Guideline Premium Test: ``qual_test`` is ``"GPT"``.
+
+    A decode of the model point's ``qual_test`` column, read by :func:`corridor_factor`,
+    which raises on any other test, as ``IUL_US_S``'s does: CVAT is documented as a
+    variation, out of the baseline.
+    """
+    return bool(model_point()["qual_test"] == "GPT")
+
+
 def premium_type():
     """The premium pattern: ``"LEVEL"``, ``"SINGLE"`` or ``"TARGET"`` **[std]**."""
     return model_point()["premium_type"]
+
+
+def is_level_premium():
+    """Whether the premium pattern is LEVEL: ``premium_type`` is ``"LEVEL"``.
+
+    One of the three decodes of the model point's ``premium_type`` column that
+    :func:`premium_pp` branches on, each read once a point from :func:`model_point`, so
+    that no monthly cell compares text; :func:`premium_pp` raises on a point that is none
+    of the three, as ``IUL_US_S``'s does.  The label accessor :func:`premium_type` is kept
+    as it is, for reporting, and no projection cell calls it.
+    """
+    return bool(model_point()["premium_type"] == "LEVEL")
+
+
+def is_single_premium():
+    """Whether the premium pattern is SINGLE: ``premium_type`` is ``"SINGLE"``.
+
+    A decode of the model point's ``premium_type`` column, read by :func:`premium_pp`.
+    """
+    return bool(model_point()["premium_type"] == "SINGLE")
+
+
+def is_target_premium():
+    """Whether the premium pattern is TARGET: ``premium_type`` is ``"TARGET"``.
+
+    A decode of the model point's ``premium_type`` column, read by :func:`premium_pp`,
+    whose TARGET premium is capped inside the guideline premium limit.
+    """
+    return bool(model_point()["premium_type"] == "TARGET")
 
 
 def premium_mode():
@@ -401,8 +777,28 @@ def premium_mode():
     return model_point()["premium_mode"]
 
 
+def is_annual_premium():
+    """Whether premiums are paid annually: ``premium_mode`` is ``"ANNUAL"``.
+
+    One of the two decodes of the model point's ``premium_mode`` column that
+    :func:`premium_pp` branches on, read once a point from :func:`model_point`, so that no
+    monthly cell compares text; :func:`premium_pp` raises on a point that is neither, as
+    ``IUL_US_S``'s does.  The label accessor :func:`premium_mode` is kept as it is, for
+    reporting, and no projection cell calls it.
+    """
+    return bool(model_point()["premium_mode"] == "ANNUAL")
+
+
+def is_monthly_premium():
+    """Whether premiums are paid monthly: ``premium_mode`` is ``"MONTHLY"``.
+
+    A decode of the model point's ``premium_mode`` column, read by :func:`premium_pp`.
+    """
+    return bool(model_point()["premium_mode"] == "MONTHLY")
+
+
 def premium_pp_ann():
-    """The planned annual premium per policy; a billing target only, premiums are flexible."""
+    """The planned annual premium per policy; a billing target only, premiums flexible."""
     return float(model_point()["premium_pp_ann"])
 
 
@@ -417,32 +813,283 @@ def index_alloc_rate():
 
 
 def av_pp_init():
-    """AV(0): the account value per policy at the outset, 0 at issue.
+    """AV(0): the account value per policy entering month 0, the valuation month.
 
-    For an in-force model point the whole opening balance is placed in the fixed
-    account net of any loan collateral **[std]**: the notes give no opening segment
-    ladder, so a projection from an in-force cell starts with no live segments and
-    rebuilds the ladder over its first twelve months.
+    The ``av_pp_init`` column, ``IUL_US_S``'s own: the balance at the close of policy
+    month ``duration_mth_init() - 1``, before any month-0 event, which is what
+    ``IUL_US_S`` carries into the month as ``av_pp_at(d, "BEF_PREM")`` at
+    ``d = duration_mth_init()``.  It opens the account value chain at :func:`t_entry` on a
+    point issued at or after the valuation date, 0 there.  A point in force opens the chain
+    from its parts instead, which ``Data`` holds this column to, so that an extract whose
+    amounts are carried to the cent opens one account (see :func:`av_pp_at`).  Zero for a
+    point not yet in force, which is issued with no account value.
+
+    The account value is the fixed account, the live segments and the loan collateral,
+    and each of the three opens from a value of its own -- :func:`fa_pp_init`, the
+    segment ladder and :func:`lca_pp_init` -- where ``IUL_US_S`` places the whole opening
+    balance less the loan in the fixed account and starts with no live segment.  ``Data``
+    holds this column to their sum, to the cent.  It may be negative: ``IUL_US_S`` lapses
+    no policy for insufficiency, and charges an exhausted policy on, so its point 5's
+    account value closes below zero from policy month 604, and a point restated after
+    that month carries that balance (see the model docstring).
     """
     return float(model_point()["av_pp_init"])
 
 
 def loan_bal_init():
-    """L(0): the policy loan balance per policy at the outset, 0 at issue."""
+    """L(0): the policy loan balance per policy entering month 0.
+
+    The ``loan_bal_init`` column, ``IUL_US_S``'s own: the debt at the close of policy
+    month ``duration_mth_init() - 1``, interest accrued to then included, before any
+    month-0 event; the opening balance of :func:`loan_bal_pp` at :func:`t_entry`, and the
+    loan month 0's shortfall test nets.  Zero for a point not yet in force.
+    ``IUL_US_S`` also opens its loan collateral account from it, taking the collateral
+    equal to the debt; here the collateral opens from a column of its own,
+    :func:`lca_pp_init`, since the two part once interest accrues.
+    """
     return float(model_point()["loan_bal_init"])
 
 
+def fa_pp_init():
+    """FA(0): the fixed (holding) account per policy entering month 0.
+
+    The ``fa_pp_init`` column: the fixed account at the close of policy month
+    ``duration_mth_init() - 1``, before any month-0 event, which is what ``IUL_US_S``
+    carries into the month as ``fa_pp_at(d, "BEF_PREM")``.  It is the opening balance of
+    :func:`fa_pp_at` at :func:`t_entry`.  ``IUL_US_S`` opens its in-force points with the
+    account value less the loan here, everything outside the collateral in the fixed
+    account and no live segment, which re-opening a policy restates wrongly: the segments
+    hold most of an account value whose allocation is indexed, and the collateral is not
+    the loan once interest accrues.
+
+    It may be negative.  ``IUL_US_S`` lapses no policy for insufficiency, and its fixed
+    account carries every deduction and draw the segments cannot cover, so an exhausted
+    policy's fixed account runs below zero: its point 5's closes below zero from policy
+    month 383.  ``Data`` holds it, with the collateral and the segments, to
+    :func:`av_pp_init`.  Zero for a point not yet in force.
+    """
+    return float(model_point()["fa_pp_init"])
+
+
+def lca_pp_init():
+    """LCA(0): the loan collateral account per policy entering month 0.
+
+    The ``lca_pp_init`` column: the collateral at the close of policy month
+    ``duration_mth_init() - 1``, before any month-0 event, which is what ``IUL_US_S``
+    carries into the month as ``lca_pp_at(d, "BEF_PREM")``.  It is the opening balance
+    of :func:`lca_pp_at` at :func:`t_entry`, and part of the account value, as the debt
+    is not.  A standard loan moves value out of the fixed account and the segments into
+    the collateral, so the two coincide on the loan's first day, and ``IUL_US_S`` takes
+    them equal at the start of its frame **[std]**; after that the collateral grows at the
+    rate credited, :func:`loan_credit_rate_mth`, and the debt at the rate charged,
+    :func:`loan_rate_mth`, so they part.  ``Data`` refuses a collateral without a loan, or
+    a loan without one.  Zero for a point not yet in force.
+    """
+    return float(model_point()["lca_pp_init"])
+
+
+def sum_assured_init():
+    """F(0): the face amount in force per policy entering month 0.
+
+    The ``sum_assured_init`` column: the face in force at the close of policy month
+    ``duration_mth_init() - 1``, after every Option A withdrawal cut to date, which is
+    the face ``IUL_US_S`` carries into the month as ``sum_assured_at(d - 1)``.  It is the
+    base of :func:`sum_assured_at` at :func:`t_entry`, so month 0's own withdrawal cut,
+    death benefit, net amount at risk and per-unit charge are measured from it.  The face
+    at issue, :func:`sum_assured`, stays the surrender charge's base, and ``Data`` refuses
+    a value above it, since face increases are not modelled.  It may be 0: withdrawals
+    under Option A can cut the face to nothing while the policy stays in force, as
+    ``IUL_US_S`` carries it.  Zero for a point not yet in force, which is issued at
+    :func:`sum_assured`.  ``IUL_US_S`` opens its in-force points at the face at issue.
+    """
+    return float(model_point()["sum_assured_init"])
+
+
+def cum_prem_init():
+    """CumPrem(0): the premiums less withdrawals per policy before the valuation date.
+
+    The ``cum_prem_init`` column: every gross premium :func:`premium_pp` collected from
+    issue through policy month ``duration_mth_init() - 1``, less every withdrawal
+    :func:`wd_pp` paid, which is what ``IUL_US_S`` carries into the month as
+    ``cum_prem_pp(d - 1)``.  :func:`cum_prem_pp` opens from it at :func:`t_entry`, so the
+    GPT test, the 7-pay test and the TARGET premium cap of month 0 all count the premiums
+    paid before the valuation date.  ``IUL_US_S`` opens its accumulator at 0 on any point,
+    the notes giving no opening accumulator **[std]**, so its flags are meaningful only
+    for points projected from issue.
+
+    It may be negative.  The statutory "less a portion of withdrawals" is taken as the
+    whole withdrawal **[std]**, so this is a tax measure, not a balance, and withdrawals
+    can exceed the premiums paid.  Zero for a point not yet in force.
+    """
+    return float(model_point()["cum_prem_init"])
+
+
+def cum_prem_net_init():
+    """CumP(0): premiums less withdrawals and loans per policy before the valuation date.
+
+    The ``cum_prem_net_init`` column, the no-lapse guarantee's accumulator: every gross
+    premium collected from issue through policy month ``duration_mth_init() - 1``, less
+    every withdrawal and every new loan, which is what ``IUL_US_S`` carries into the month
+    as ``cum_prem_net_pp(d - 1)``.  :func:`cum_prem_net_pp` opens from it at
+    :func:`t_entry`, so the no-lapse test of month 0 compares every premium since issue
+    with the cumulative minimum no-lapse premium since issue, which :func:`cum_mnlp_pp`
+    counts on the policy clock.  Opened at 0, as ``IUL_US_S`` opens it, a policy in force
+    would fail that test at once and lose its guarantee.
+
+    It may be negative, as loans can exceed the premiums paid net of withdrawals; ``Data``
+    holds it to at most :func:`cum_prem_init`, to a cent and a half, since loans only
+    lower it.
+    Zero for a point not yet in force.
+    """
+    return float(model_point()["cum_prem_net_init"])
+
+
+def is_mec_init():
+    """The MEC latch entering month 0: whether the 7-pay test failed before it.
+
+    The ``is_mec_init`` column, an int code: 1 for a policy that failed the 7-pay test in
+    some month before the valuation date, and so is a modified endowment contract for
+    good, 0 otherwise.  :func:`is_mec` latches on it at :func:`t_entry`, so a policy that
+    failed in its first seven years stays a MEC after them, where the in-year test no
+    longer applies.  ``IUL_US_S``'s flag does not latch, so the generator reads whether
+    its in-year test failed in any month before ``duration_mth_init()``.  ``Data``
+    refuses a 0 where ``cum_prem_init`` already exceeds the 7-pay limit of the month
+    before the valuation date, inside the first seven policy years.  Read as a bool, so
+    1.0 reads as True.  Zero for a point not yet in force.
+    """
+    return bool(model_point()["is_mec_init"])
+
+
+def seg_bal_pp_init(k):
+    """S_k(0): the balance per policy entering month 0 of the segment in ladder slot k.
+
+    The ``seg_bal_pp_init`` column of ``inforce_segments_sec.csv`` at this point and slot
+    ``k``, the months since the segment's creation at the valuation date: the balance at
+    the close of policy month ``duration_mth_init() - 1`` of the segment born in policy
+    month ``duration_mth_init() - k``, which is what ``IUL_US_S`` carries into the month as
+    ``seg_bal_pp(d - 1, d - k)``.  :func:`seg_bal_pp` opens each live segment from it at
+    :func:`t_entry`, :func:`seg_bal_active_pp` sums slots 1 to 11 into month 0's pool,
+    and slot 12, the segment maturing at ``t = 0``, is what month 0's maturity rolls into
+    the fixed account (:func:`seg_roll_pp`).  ``Data`` holds it to ``-1e-8`` or more,
+    the tolerance :func:`check_seg_ladder` holds a live balance to, and :func:`proj_len`
+    refuses a point whose ladder does not hold exactly slots 1 to
+    ``min(12, duration_mth_init())``.  Read only on a point in force, at
+    ``1 <= k <= 12``.  Like the other four readers of the ladder, it asks
+    :func:`proj_len` first, so that a ladder missing a slot is refused by name before
+    any value of it is read.
+    """
+    proj_len()
+    tbl = data.inforce_segments()                                   # noqa: F821
+    return float(tbl.loc[(point_id, k), "seg_bal_pp_init"])         # noqa: F821
+
+
+def seg_ded_cum_pp_init(k):
+    """The deductions per policy charged to the segment in ladder slot k before month 0.
+
+    The ``seg_ded_cum_pp_init`` column of ``inforce_segments_sec.csv``: every monthly
+    deduction the segment born in policy month ``duration_mth_init() - k`` has borne since
+    its creation, through the close of policy month ``duration_mth_init() - 1``, which is
+    ``IUL_US_S``'s ``seg_ded_cum_pp(d - 1, d - k)``.  With the balance and the draws it is
+    the segment's credit base: :func:`seg_ded_cum_pp` opens from it at :func:`t_entry`,
+    and in slot 12 :func:`index_credit_pp` reads it at ``t = 0``, where the credit base
+    convention ``"ADJ_BEGIN"`` half-weights it.  Read only on a point in force, at
+    ``1 <= k <= 12``, after :func:`proj_len`.
+    """
+    proj_len()
+    tbl = data.inforce_segments()                                   # noqa: F821
+    return float(tbl.loc[(point_id, k), "seg_ded_cum_pp_init"])     # noqa: F821
+
+
+def seg_wd_cum_pp_init(k):
+    """The draws per policy out of the segment in ladder slot k before month 0.
+
+    The ``seg_wd_cum_pp_init`` column of ``inforce_segments_sec.csv``: every withdrawal
+    and loan transfer the segment born in policy month ``duration_mth_init() - k`` has
+    paid since its creation, through the close of policy month
+    ``duration_mth_init() - 1``, which is ``IUL_US_S``'s ``seg_wd_cum_pp(d - 1, d - k)``.
+    :func:`seg_wd_cum_pp` opens from it at :func:`t_entry`, and in slot 12
+    :func:`index_credit_pp` reads it at ``t = 0``.  Read only on a point in force, at
+    ``1 <= k <= 12``, after :func:`proj_len`.
+    """
+    proj_len()
+    tbl = data.inforce_segments()                                   # noqa: F821
+    return float(tbl.loc[(point_id, k), "seg_wd_cum_pp_init"])      # noqa: F821
+
+
+def seg_index_start_init(k):
+    """I(m_k): the index level at the creation of the segment in ladder slot k.
+
+    The ``seg_index_start_init`` column of ``inforce_segments_sec.csv``: the index level
+    the segment born in policy month ``duration_mth_init() - k`` started from, on this
+    model's path, the valuation clock's, whose level at the valuation date is
+    ``index_level_init``: ``IUL_US_S``'s level at the segment's creation month times
+    ``index_level_init`` over its level at month ``duration_mth_init()``.  So the segment's
+    return at maturity, a ratio of two levels, is ``IUL_US_S``'s.  Read for the segment
+    maturing in month ``t < 12`` by :func:`seg_index_start`, and only on a point in force,
+    at ``1 <= k <= 12``, after :func:`proj_len`; ``Data`` holds it above 0, since the
+    return divides by it.
+    """
+    proj_len()
+    tbl = data.inforce_segments()                                   # noqa: F821
+    return float(tbl.loc[(point_id, k), "seg_index_start_init"])    # noqa: F821
+
+
+def seg_index_cap_init(k):
+    """c_k: the cap declared at the creation of the segment in ladder slot k.
+
+    The ``seg_index_cap_init`` column of ``inforce_segments_sec.csv``: the cap in force
+    when the segment born in policy month ``duration_mth_init() - k`` was created, which
+    its credit at maturity is capped at, the cap being re-declared at every segment start
+    [S3][S4].  ``IUL_US_S`` holds the cap level, so every segment carries
+    :func:`index_cap_at`'s value; the column lets a cap re-declared at the valuation date
+    apply to new segments only.  Read for the segment maturing in month ``t < 12`` by
+    :func:`seg_index_cap`, and only on a point in force, at ``1 <= k <= 12``, after
+    :func:`proj_len`; ``Data`` holds it to 0 or more.
+    """
+    proj_len()
+    tbl = data.inforce_segments()                                   # noqa: F821
+    return float(tbl.loc[(point_id, k), "seg_index_cap_init"])      # noqa: F821
+
+
+def policy_count():
+    """The number of policies the model point stands for, its ``policy_count`` column.
+
+    A point in force at the valuation date counts the policies in force then, before any
+    month-0 event; any other point counts the policies it issues.  Either way the count
+    enters the projection once: as :func:`pols_if_init` for the first, as
+    :func:`pols_new_biz` in the issue month for the second.  Every per-policy value --
+    the accounts, the segments, the loan, the face, the opening state -- is the same
+    whatever the count, and every cash flow is a per-policy amount weighted by it.
+    """
+    return float(model_point()["policy_count"])
+
+
 def pols_if_init():
-    """l(0): the in-force probability at the outset, 1 for a single-policy point."""
-    return float(model_point()["pols_if_init"])
+    """Policies in force at the valuation date, before any month-0 event.
+
+    ``policy_count()`` for a point already in force at ``t = 0``
+    (``duration_mth_init() > 0``), and 0 for one issued at or after it, whose policies
+    enter through :func:`pols_new_biz` in the issue month instead, as in
+    ``basiclife.BasicTerm_SE``.  So on a point issued at ``t = 0`` this is 0, and
+    ``pols_if(0)`` is the issued count.  ``IUL_US_S``'s cell of the name is the notes'
+    ``l(0)``, the count at the start of its frame, which on new business is the issued
+    count.
+    """
+    return policy_count() if duration_mth_init() > 0 else 0.0
 
 
 def duration_mth_init():
-    """Completed policy months already elapsed when the projection starts.
+    """Completed policy months at the valuation date, the ``duration_mth`` column.
 
-    0 for a new-business model point, so that ``t = 0`` is the issue month; positive
-    for an in-force cell.  This is the notes' issue-date / duration offset attribute.
-    It is an elapsed count and is already 0-based.
+    The policy's age in months at ``t = 0``: 60 for point 6 and 888 for point 11,
+    ``IUL_US_S``'s point 1 on its fifth anniversary and two years before the end of its
+    projection, 0 for a policy issued at the valuation date, and -25 for point 12, to be
+    issued 25 months after it, which ``Data`` admits up to ``future_horizon_mth`` months
+    ahead.  This is the notes' issue-date / duration offset attribute, an elapsed count
+    and therefore already 0-based, and ``IUL_US_S``'s cell and column of the same name,
+    which count from the first month of its own frame; here that month is the valuation
+    date for every point, and the count may be negative.  It is the one fact the policy
+    clock takes from the model point.
     """
     return int(model_point()["duration_mth"])
 
@@ -457,6 +1104,51 @@ def surr_charge_id():
     return model_point()["surr_charge_id"]
 
 
+def surr_charge_rate_max():
+    """The schedule's charge per $1,000 of initial face, before any of it runs off.
+
+    The ``sc_per_1000_init`` column of this point's row of *surr_charge_table.csv*,
+    $25.00 on the shipped ``IUL10`` schedule; :func:`surr_charge_rate` runs it off from
+    here.  It and :func:`surr_charge_runoff_years` are the table's two readers, each a
+    per-point join on the model point's ``surr_charge_id``, read from :func:`model_point`,
+    so that no monthly cell reads the table.  Read only where :func:`has_surr_charge` is
+    true.  Each asks ``data.surr_charge_count()`` first, which checks the table's
+    schedules and values, so that a projection meets the check before it reads a value: a
+    blank charge would come out of :func:`surr_charge_rate`'s ``max`` as no charge at all.
+    A schedule the table has no row for is refused, naming the point, where
+    ``IUL_US_S`` raises pandas' ``KeyError``.
+    """
+    data.surr_charge_count()                                         # noqa: F821
+    tbl = data.surr_charge_table()                                   # noqa: F821
+    key = model_point()["surr_charge_id"]
+    if key not in tbl.index:
+        raise ValueError(
+            f"point_id {point_id}: {data.surr_charge_file} has no row for "  # noqa: F821
+            f"surr_charge_id {key!r}")
+    return float(tbl.loc[key, "sc_per_1000_init"])
+
+
+def surr_charge_runoff_years():
+    """The number of policy years over which the schedule's charge runs off, linearly.
+
+    The ``runoff_years`` column of this point's row of *surr_charge_table.csv*, 10 on the
+    shipped ``IUL10`` schedule, read as a float, as ``IUL_US_S`` reads it; ``Data`` holds
+    it to a whole number of years, 1 or more, so that the division in
+    :func:`surr_charge_rate` never meets 0 and :func:`lapse_shock_year`'s ``int()`` of it
+    changes nothing.  Read only where :func:`has_surr_charge` is true, once
+    ``data.surr_charge_count()`` has checked the table, and refused by name where the
+    table has no row for the schedule, as :func:`surr_charge_rate_max` is.
+    """
+    data.surr_charge_count()                                         # noqa: F821
+    tbl = data.surr_charge_table()                                   # noqa: F821
+    key = model_point()["surr_charge_id"]
+    if key not in tbl.index:
+        raise ValueError(
+            f"point_id {point_id}: {data.surr_charge_file} has no row for "  # noqa: F821
+            f"surr_charge_id {key!r}")
+    return float(tbl.loc[key, "runoff_years"])
+
+
 def wd_first_year():
     """The first policy year in which a withdrawal may be taken.
 
@@ -466,6 +1158,18 @@ def wd_first_year():
     return int(model_point()["wd_first_year"])
 
 
+def wd_pp_mth():
+    """The planned partial withdrawal per policy, in each month withdrawals are allowed.
+
+    The model point's ``wd_pp`` column, a monthly amount, gross of the $25 fee and **0 in
+    the baseline** [std]; model point 5 takes $200 a month.  Read once a point here, so
+    that :func:`wd_pp`, a monthly cell on the accounts' chains, reads no model point
+    column in its own formula.  ``Data`` holds it to 0 or more, and
+    :func:`proj_len` refuses one above 0 and below the fee.
+    """
+    return float(model_point()["wd_pp"])
+
+
 def loan_first_year():
     """The first policy year in which the distribution-scenario loan is drawn.
 
@@ -473,6 +1177,18 @@ def loan_first_year():
     age, e.g. 65 **[std]**; 21 for issue age 45 is that age expressed as a policy year.
     """
     return int(model_point()["loan_first_year"])
+
+
+def loan_new_pp_ann():
+    """The planned standard loan per policy, drawn at each anniversary loans are taken.
+
+    The model point's ``loan_new_pp_ann`` column, **0 in the baseline** -- the notes set
+    loan utilization to none -- and $6,000 a year on model point 5.  Read once a point
+    here, so that :func:`loan_new_pp`, a monthly cell on the accounts' and the loan's
+    chains, reads no model point column in its own formula.  ``Data`` holds it to 0 or
+    more.
+    """
+    return float(model_point()["loan_new_pp_ann"])
 
 
 def mnlp_rate():
@@ -507,55 +1223,151 @@ def seven_pay_prem():
 
 
 def duration_mth(t):
-    """The notes' own month index: completed policy months at the beginning of month t.
+    """Completed policy months at the beginning of month t, the **policy** clock.
 
-    ``duration_mth_init() + t``, so it is 0 in the issue month of a new-business
-    model point and equals ``t`` throughout for one.  Anniversary events test
-    ``duration_mth(t) % 12 == 0``.
+    ``duration_mth_init() + t``: ``t`` counts months from the valuation date and
+    ``duration_mth(t)`` months from issue, and the two move together.  A closed form,
+    where ``basiclife.BasicTerm_SE`` adds one a month by recursion: the same numbers,
+    without a call chain as long as the frame.  It is the notes' own month index, 0 in the
+    issue month -- ``t = 0`` for a point issued at the valuation date -- and negative
+    before issue.  Anniversary events test ``duration_mth(t) % 12 == 0``, and a segment's
+    creation month, the ``m`` of :func:`seg_bal_pp`, is a value of it.
     """
     return duration_mth_init() + t
 
 
 def duration(t):
-    """Completed policy years at the beginning of policy month t, ``duration_mth(t) // 12``.
+    """Completed policy years at the beginning of month t, ``duration_mth(t) // 12``.
 
-    0 throughout the first policy year, as in lifelib.
+    0 throughout the first policy year, as in lifelib, and negative before issue.
     """
     return duration_mth(t) // 12
 
 
 def policy_year(t):
-    """y: the policy year containing policy month t, the 1-based contractual label.
+    """y: the policy year containing month t, the 1-based contractual label.
 
     ``duration(t) + 1``.  Derived, never indexed by: it is what the policy-year-keyed
     schedules -- the COI scale, the lapse table, ``wd_first_year``, ``loan_first_year``,
-    the no-lapse period -- are looked up with.
+    the no-lapse period -- are looked up with.  It is 0 or less before issue, where no
+    table is read by it: each reader is called inside cover only (:func:`is_active`).
     """
     return duration(t) + 1
 
 
 def age(t):
-    """The attained age (ANB) in policy month t: ``age_at_entry() + duration(t)``.
+    """The attained age (ANB) in month t: ``age_at_entry() + duration(t)``.
 
     Attained age increments on the policy anniversary, not on the birthday, which is
     the ANB convention the whole model is built on **[std]** (spec Table 1, F1).  It is
-    the issue age throughout ``t = 0 ... 11`` of a new-business point.
+    the issue age throughout the first policy year, and below it before issue, where no
+    table is read at it.
     """
     return age_at_entry() + duration(t)
 
 
-def proj_len():
-    """The number of projected policy months: the frame is ``range(proj_len())``.
+def maturity_mth():
+    """The policy month at which the projection ends, the first at attained age 121.
 
-    ``12 * (maturity_age - age_at_entry()) - duration_mth_init()``: the projection runs
-    to attained age 121 **[std]**, the notes' [unverified] maturity inference (spec
-    F5), so the last projected month ``t = proj_len() - 1`` is the last month of
-    attained age 120 and the run ends as the insured attains 121.  The contract itself
-    is described as continuing in force with no further charges at 121, so the horizon
-    truncates the run rather than terminating the policy; :func:`pols_maturity` is
-    identically zero.
+    ``12 * (maturity_age - age_at_entry())``: 912 at issue age 45.  The projection runs to
+    attained age 121 **[std]**, the notes' [unverified] maturity inference (spec F5), so
+    the last month of the frame, ``maturity_mth() - 1``, is the last at attained age 120.
+    It is ``IUL_US_S``'s frame from issue, counted on the policy clock; :func:`proj_len`
+    counts from the valuation date instead.  The contract is described as continuing in
+    force at 121 with no further charges, so the horizon truncates the run rather than
+    terminating the policy: where lives survive the last month, the count and the account
+    value they carry into this month are kept (see :func:`pols_if_at`).  Premiums and
+    charges cease at ``charges_cease_age``, a Reference of its own, 121 too as shipped,
+    which may be set inside the frame.
     """
-    return 12 * (maturity_age - age_at_entry()) - duration_mth_init()  # noqa: F821
+    return 12 * (maturity_age - age_at_entry())                      # noqa: F821
+
+
+def proj_len():
+    """The number of months from the valuation date to the end of the projection.
+
+    ``maturity_mth() - duration_mth_init()``: 912 for a policy issued at age 45 at the
+    valuation date, 852 for point 6, in force 60 months, and 937 for point 12, issued 25
+    months after the valuation date.  The frame is ``t = 0, 1, ..., proj_len() - 1``;
+    ``proj_len()`` is its exclusive end, the row count of every result table, and
+    ``proj_len() - 1`` is the frame's last month, the last at attained age 120.  The
+    contract is described as continuing in force at 121 with no further charges, so the
+    horizon truncates the run rather than terminating the policy; :func:`pols_maturity`
+    is identically zero, and the count and the account value the survivors carry into
+    ``t = proj_len()`` are kept (see :func:`maturity_mth`).
+
+    Four kinds of point raise here, naming the point, rather than projecting, each checked
+    in this order: one to be issued at or past attained age 121, which would never be in
+    cover, ``maturity_mth() <= 0``, so that a point issued past it is refused by this rule
+    whenever it is to be issued; one at or past the end of the projection at the
+    valuation date; one whose planned withdrawal is above 0 and below the withdrawal fee,
+    ``wd_fee``, which the fee would exceed -- the account would be debited the withdrawal,
+    less than the fee the insurer books, and the policyholder paid nothing, so that
+    ``IUL_US_S``'s own account value roll-forward and margin identity fail on such a
+    point; and one in force whose segment ladder in ``inforce_segments_sec.csv`` does not
+    hold exactly one row for each of its last ``min(seg_term_mth, duration_mth_init())``
+    months, slots 1 to that, a segment a month however little it was swept.  An in-force
+    extract should carry none of them.  These are rules of the product, read from this
+    Space's References, where ``Data`` checks the tables.
+    """
+    if maturity_mth() <= 0:
+        raise ValueError(
+            f"point_id {point_id}: age_at_entry {age_at_entry()} "       # noqa: F821
+            f"is at or past maturity_age, {maturity_age}: "              # noqa: F821
+            f"a policy issued there would never be in cover")
+    n = maturity_mth() - duration_mth_init()
+    if n <= 0:
+        raise ValueError(
+            f"point_id {point_id}: duration_mth {duration_mth_init()} "  # noqa: F821
+            f"is at or past the end of the projection, policy month "
+            f"{maturity_mth()}, attained age {maturity_age}")            # noqa: F821
+    if 0 < wd_pp_mth() < wd_fee:                                     # noqa: F821
+        raise ValueError(
+            f"point_id {point_id}: wd_pp {wd_pp_mth()} is above 0 and "  # noqa: F821
+            f"below wd_fee, {wd_fee}: a withdrawal pays its fee out of "  # noqa: F821
+            f"itself, so it must be at least the fee")
+    want = min(seg_term_mth, max(duration_mth_init(), 0))            # noqa: F821
+    held = int(data.inforce_segment_count()[point_id])               # noqa: F821
+    last = int(data.inforce_segment_last()[point_id])                # noqa: F821
+    if held != want or last != want:
+        raise ValueError(
+            f"point_id {point_id}: {data.inforce_segments_file} "     # noqa: F821
+            f"holds {held} segments, its last in slot {last}, where a policy in force "
+            f"{max(duration_mth_init(), 0)} months holds one a month for its last "
+            f"{want}, slots 1 to {want}")
+    return n
+
+
+def t_entry():
+    """The first month the policy is on the books: ``max(0, -duration_mth_init())``.
+
+    0 for a point in force at the valuation date or issued at it, ``k`` for one issued
+    ``k`` months later.  It is the base of every recursion: the count, the account value,
+    the fixed account, the collateral, the loan, each live segment and its running totals,
+    the face, the two premium accumulators and the MEC latch all open there, from the
+    model point's opening state and its segment ladder on a point in force and from the
+    issue values on any other.  No cell reads a month before it: a segment created
+    before the valuation date is read from the ladder, never from a month before
+    ``t = 0``.
+    """
+    return max(0, -duration_mth_init())
+
+
+def is_active(t):
+    """Whether month t is inside cover: issued, and inside the projection.
+
+    ``0 <= duration_mth(t) < maturity_mth()``, false before issue and from
+    ``t = proj_len()`` on.  Outside cover every count, balance, segment, charge, premium,
+    withdrawal, loan draw, credit, decrement rate, decrement, claim and flow is zero and
+    every flag false, :func:`seg_count` the int 0, and no table is read at a policy year
+    or an attained age the policy does not have; the clocks and the inputs read on the
+    valuation clock and the level policy fee, :func:`expense_pol_mth_at`, keep their
+    values, and the two lapse multipliers their neutral 1.0.
+    The two exceptions are the opening values of the month after the frame, the count and
+    the account value carried into ``t = proj_len()``, which the roll-forwards read (see
+    :func:`pols_if_at` and :func:`av_pp_at`).
+    """
+    return 0 <= duration_mth(t) < maturity_mth()
 
 
 def is_guaranteed_basis():
@@ -591,7 +1403,10 @@ def fixed_rate_ann(t):
     """i_fix: the fixed (holding) account annual effective rate.
 
     4.50% current [S2], 1.00% guaranteed [S2].  A non-guaranteed element; the base
-    deterministic run holds the snapshot level, as the notes prescribe.
+    deterministic run holds the snapshot level, as the notes prescribe.  An economic
+    input, read at month ``t`` on the **valuation** clock, the same month for every point,
+    as a re-declared rate would apply; level as shipped, so it holds its value outside
+    cover.
     """
     if is_guaranteed_basis():
         return guar_rate_ann                                         # noqa: F821
@@ -624,7 +1439,10 @@ def naar_factor():
 
 
 def loan_rate_mth():
-    """The monthly charged loan rate, ``(1 + i_L^c)^(1/12) - 1`` at 3.00% **[std]** (F18)."""
+    """The monthly charged loan rate, ``(1 + i_L^c)^(1/12) - 1``, at 3.00% **[std]** (F18).
+
+    A Reference of the run, level in every month.
+    """
     return (1 + loan_rate_ann) ** (1 / 12) - 1                       # noqa: F821
 
 
@@ -632,8 +1450,13 @@ def loan_credit_rate_ann(t):
     """i_L^e: the rate credited on loan collateral, 2.00% years 1-10, 3.00% after **[std]**.
 
     The standardization keeps the universal carrier pattern of a ~1% net loan spread
-    early grading to a 0% "wash" from year 11 [S3][S5][S7] (F18).
+    early grading to a 0% "wash" from year 11 [S3][S5][S7] (F18).  A term of the
+    contract, so it steps on the **policy** year.  Zero outside cover, before the policy
+    year is compared: before issue the valuation clock reaches policy years the policy
+    does not have.
     """
+    if not is_active(t):
+        return 0.0
     if policy_year(t) <= loan_credit_step_year:                      # noqa: F821
         return loan_credit_rate_ann_1                                # noqa: F821
     return loan_credit_rate_ann_2                                    # noqa: F821
@@ -652,6 +1475,12 @@ def index_cap_at(t):
     base run holds it level; a cap re-declaration module driven by an option budget is
     described in the notes but not implemented, because the notes supply neither an
     option pricing model nor a net investment earnings rate path.
+
+    Read at month ``t`` on the **valuation** clock, the cap declared then: a segment
+    created in month ``t`` is capped at ``index_cap_at(t)`` at its maturity, twelve months
+    on (:func:`seg_index_cap`), and a segment created before the valuation date at the cap
+    its ladder row carries, :func:`seg_index_cap_init`.  Level as shipped, so it holds its
+    value outside cover.
     """
     if is_guaranteed_basis():
         return index_cap_guar                                        # noqa: F821
@@ -661,21 +1490,29 @@ def index_cap_at(t):
 def index_level(t):
     """I(t): the S&P 500 price-return index level at monthiversary t [S2][S3].
 
-    The base deterministic run grows the index at a level ``index_return_ann`` a year:
-    ``index_level_init * (1 + index_return_ann)^(duration_mth(t) / 12)``, so every
-    segment matures at the same point-to-point return.  6.40% is the carrier-published
-    1988-2023 lookback for the 10%-cap account [S2].
+    The base deterministic run grows the index at a level ``index_return_ann`` a year
+    along the **valuation** clock: ``index_level_init * (1 + index_return_ann)^(t / 12)``,
+    so ``index_level_init`` is the level at the valuation date, one path for every point,
+    and every segment matures at the same point-to-point return.  6.40% is the
+    carrier-published 1988-2023 lookback for the 10%-cap account [S2].  ``IUL_US_S`` reads
+    the path at ``duration_mth(t)``, a path of each point's own from its issue, which is
+    the same path on a point issued at the valuation date.  Moving the path moves no
+    credit, a ratio of two levels on one path: a segment created before the valuation date
+    carries its start level on this path in its ladder row (:func:`seg_index_start`).
 
-    **This cells is the single point of substitution.**  Override it with a historical
-    or simulated path and the whole segment ladder follows: the notes' stochastic
-    module (real-world lognormal, mu = 6.0%, sigma = 16% **[std]**) is a driver around
-    the model, not a formula inside it.  Remember what the notes say about the level
-    rate: AG 49-A bounds what may be *illustrated*, not what will be *credited*
-    [R1][R6], and because the cap truncates the right tail while the floor only offsets
-    the left, a deterministic run at the illustrated rate overstates credits against a
-    stochastic mean at matched expected index growth.
+    **This cell is the single point of substitution.**  Override it with a historical or
+    simulated path, keyed by the months from the valuation date, and every segment created
+    in the frame follows; the ladder's start levels are inputs, which do not follow an
+    override, so an extract's ``seg_index_start_init`` must be on the overriding path:
+    the notes' stochastic module (real-world lognormal, mu = 6.0%, sigma = 16% **[std]**)
+    is a driver around the model, not a formula inside it.  Remember what the notes say
+    about the level rate: AG 49-A bounds what may be *illustrated*, not what will be
+    *credited* [R1][R6], and because the cap truncates the right tail while the floor only
+    offsets the left, a deterministic run at the illustrated rate overstates credits
+    against a stochastic mean at matched expected index growth.  A function of the clock
+    alone, so it holds its value outside cover.
     """
-    return index_level_init * (1 + index_return_ann) ** (duration_mth(t) / 12)  # noqa: F821
+    return index_level_init * (1 + index_return_ann) ** (t / 12)    # noqa: F821
 
 
 def index_change(index_start, index_end):
@@ -692,10 +1529,12 @@ def index_change(index_start, index_end):
 def index_credit_rate(index_return, cap=None):
     """cr_k = max(f, min(c, p x r)): the credited rate for one segment [S2][S3][R1].
 
-    Floor 0%, participation 100%, cap per :func:`index_cap_at` [S2].  ``cap`` defaults
-    to the cap in force, which the base run holds level, so the default is read at
-    ``t = 0``; pass ``index_cap_guar`` for the guaranteed-basis credit -- the notes
-    price both on the worked example, at 10.00% and 2.00%.
+    Floor 0%, participation 100%, cap per :func:`index_cap_at` [S2].  The projection
+    passes each segment's own cap, the one declared at its creation
+    (:func:`seg_index_cap`), so no projection call reaches the default: ``cap`` defaults to
+    the cap in force at ``t = 0``, ``IUL_US_S``'s engine, kept unchanged for its worked
+    example -- pass ``index_cap_guar`` for the guaranteed-basis credit; the notes price both
+    on the worked example, at 10.00% and 2.00%.
 
     This is where the two-sided truncation lives: the cap binds on the way up, the
     floor on the way down, and the historical frequency of a 0% credit for a single
@@ -762,46 +1601,64 @@ def prem_persistency(t):
     a table, compounding at 98% a year.  Premium persistency is *the* behavior
     dimension unique to flexible-premium products; the 2015-2021 LIMRA/SOA UL study is
     the recommended public calibration base [REG-R21] and the level here is a
-    placeholder.
+    placeholder.  A rule of the contract's years, so it steps on the **policy** year:
+    a policy in force pays the persistency of its own year, not of the valuation date's.
 
     The funding-stop state the notes pair with this factor -- probability 1% a year,
     after which the policy runs charge-only -- is a **second account value path** the
-    notes do not say how to blend with the first, and is not implemented.
+    notes do not say how to blend with the first, and is not implemented.  Zero outside
+    cover, before the policy year is read.
     """
+    if not is_active(t):
+        return 0.0
     return prem_persistency_rate ** (policy_year(t) - 1)             # noqa: F821
 
 
 def premium_pp(t):
-    """P_t: the gross premium per policy received at BOM of policy month t.
+    """P_t: the gross premium per policy received at BOM of month t.
 
     Annual mode **[std]**: the whole planned premium falls at BOM of the first month
     of each policy year, ``duration_mth(t) % 12 == 0``, and every other month is zero.
+    Monthly mode: a twelfth of the planned annual premium falls at BOM of every month,
+    ``premium_pp_ann / 12`` times :func:`prem_persistency`, as on points 4, 7 and 12.
 
-    ``LEVEL``  planned annual premium times :func:`prem_persistency`.
-    ``SINGLE`` one premium in the issue month, capped at the guideline single premium.
-    ``TARGET`` as ``LEVEL`` but capped so cumulative premium stays inside the guideline
-    premium limit **[std]**; the cap looks at the accumulator's opening value --
-    ``cum_prem_pp(t - 1)``, or 0 when ``t == 0`` -- so there is no circularity.
+    ``LEVEL``
+        The planned premium times :func:`prem_persistency`, in either mode.
 
-    Zero from attained age 121, when charges cease and premiums are no longer accepted
-    (spec F5) -- inert in practice, because the projection horizon is that age.
+    ``SINGLE``
+        One premium in the issue month, capped at the guideline single premium.
+
+    ``TARGET``
+        As ``LEVEL`` but capped so cumulative premium stays inside the guideline
+        premium limit **[std]**; the cap looks at the accumulator's opening value --
+        ``cum_prem_pp(t - 1)``, or, in the first month on the books, :func:`t_entry`,
+        :func:`cum_prem_init`, the premiums less withdrawals paid before the valuation
+        date, 0 at issue -- so there is no circularity, and a TARGET point in force near
+        its limit collects only what the limit still has room for.
+
+    Zero from attained age ``charges_cease_age``, 121 as shipped, when charges cease and
+    premiums are no longer accepted (spec F5), and zero outside cover.  The pattern and
+    the mode are read through their decodes, :func:`is_single_premium`,
+    :func:`is_level_premium`, :func:`is_target_premium`, :func:`is_annual_premium` and
+    :func:`is_monthly_premium`, not as text; a value none of them knows raises, as
+    ``IUL_US_S``'s does.
     """
-    if age(t) >= charges_cease_age:                                  # noqa: F821
+    if not is_active(t) or age(t) >= charges_cease_age:              # noqa: F821
         return 0.0
-    if premium_type() == "SINGLE":
+    if is_single_premium():
         return min(premium_pp_ann(), gsp()) if duration_mth(t) == 0 else 0.0
-    if premium_mode() == "ANNUAL":
+    if is_annual_premium():
         if duration_mth(t) % 12 != 0:
             return 0.0
         gross = premium_pp_ann() * prem_persistency(t)
-    elif premium_mode() == "MONTHLY":
+    elif is_monthly_premium():
         gross = premium_pp_ann() / 12 * prem_persistency(t)
     else:
         raise ValueError("invalid premium mode")
-    if premium_type() == "LEVEL":
+    if is_level_premium():
         return gross
-    elif premium_type() == "TARGET":
-        paid = 0.0 if t == 0 else cum_prem_pp(t - 1)
+    elif is_target_premium():
+        paid = cum_prem_pp(t - 1) if t > t_entry() else cum_prem_init()
         return min(gross, max(0.0, gpt_limit(t) - paid))
     else:
         raise ValueError("invalid premium type")
@@ -823,28 +1680,31 @@ def prem_to_av(t):
 
 
 def premiums(t):
-    """Premium income at BOM of policy month t, weighted by the in force at BOM."""
+    """Premium income at BOM of month t, weighted by the in force at BOM."""
     return premium_pp(t) * pols_if(t)
 
 
 def wd_pp(t):
     """W_t: the partial withdrawal per policy at BOM of month t, **gross of the fee**.
 
-    A constant monthly amount from :func:`wd_first_year`, taken from the model point's
-    ``wd_pp`` column and **0 in the baseline** [std]: the notes give no withdrawal
-    utilization pattern, so the mechanics are implemented and the behaviour is left to
-    the data.  Model point 5 switches it on.
+    A constant monthly amount from :func:`wd_first_year`, :func:`wd_pp_mth`, the model
+    point's ``wd_pp`` column, and **0 in the baseline** **[std]**: the notes give no
+    withdrawal utilization pattern, so the mechanics are implemented and the behaviour is
+    left to the data.  Model point 5 switches it on.
 
     The account is debited ``W_t``; the policyholder receives ``W_t - 25`` and the
     insurer keeps the $25 fee [S3].  This differs from the universal life chassis,
     where the fee is charged on top of the withdrawal -- these notes write the
-    withdrawal outflow as ``W_t - $25 fee``, so the fee is inside ``W_t`` here.
+    withdrawal outflow as ``W_t - $25 fee``, so the fee is inside ``W_t`` here.  Zero from
+    attained age ``charges_cease_age``, and zero outside cover, before the policy year
+    is compared: before issue the valuation clock reaches policy years the policy does not
+    have.
     """
-    if policy_year(t) < wd_first_year():
+    if not is_active(t) or policy_year(t) < wd_first_year():
         return 0.0
     if age(t) >= charges_cease_age:                                  # noqa: F821
         return 0.0
-    return float(model_point()["wd_pp"])
+    return wd_pp_mth()
 
 
 def wd_fee_pp(t):
@@ -858,22 +1718,23 @@ def wd_fee_pp(t):
 
 
 def loan_new_pp(t):
-    """B_t: a new standard loan taken at BOM of policy month t **[std]**.
+    """B_t: a new standard loan taken at BOM of month t **[std]**.
 
-    The notes' distribution-scenario module borrows a level amount annually from a
-    start age **[std]**; here that is ``loan_new_pp_ann`` from the first month of policy
-    year :func:`loan_first_year`.  **Zero in the baseline** -- the notes set loan
-    utilization to none -- and switched on by model point 5.
+    The notes' distribution-scenario module borrows a level amount annually from a start
+    age **[std]**; here that is :func:`loan_new_pp_ann`, the model point's
+    ``loan_new_pp_ann``, at each policy anniversary from the first month of policy year
+    :func:`loan_first_year`.  **Zero in the baseline** -- the notes set loan utilization
+    to none -- and switched on by model point 5.
 
     Participating (indexed) loans are a documented variation, not modeled: the baseline
     uses standard loans only **[std]** (F18), which decouples loan modeling from index
-    scenarios.
+    scenarios.  Zero outside cover, before the policy year is compared.
     """
-    if policy_year(t) < loan_first_year():
+    if not is_active(t) or policy_year(t) < loan_first_year():
         return 0.0
     if duration_mth(t) % 12 != 0:
         return 0.0
-    return float(model_point()["loan_new_pp_ann"])
+    return loan_new_pp_ann()
 
 
 def face_reduction_pp(t):
@@ -881,23 +1742,44 @@ def face_reduction_pp(t):
 
     Standard universal life practice, stated in the product spec but not explicit in
     the retrieved brochures.  Under Option B the withdrawal reduces the account value
-    only and this is zero.
+    only and this is zero.  Never more than the face entering the month, which is the
+    previous month's :func:`sum_assured_at`, or, in the first month on the books,
+    :func:`t_entry`, the face in force at the valuation date, :func:`sum_assured_init`, on
+    a point in force, and the face at issue, :func:`sum_assured`, on any other.  The
+    option is read through its decode, :func:`is_db_option_a`.  Zero outside cover.
     """
-    if db_option() != "A" or wd_pp(t) <= 0:
+    if not is_active(t):
         return 0.0
-    opening = sum_assured() if t == 0 else sum_assured_at(t - 1)
+    if not is_db_option_a() or wd_pp(t) <= 0:
+        return 0.0
+    if t > t_entry():
+        opening = sum_assured_at(t - 1)
+    elif duration_mth_init() > 0:
+        opening = sum_assured_init()
+    else:
+        opening = sum_assured()
     return min(wd_pp(t), opening)
 
 
 def sum_assured_at(t):
-    """F(t+1): the face amount at the end of month t, after any withdrawal-driven reductions.
+    """F(t+1): the face amount at the end of month t, after any withdrawal-driven cuts.
 
-    A closing balance: the opening face of month ``t`` is ``sum_assured()`` when
-    ``t == 0`` and ``sum_assured_at(t - 1)`` otherwise, less this month's Option A
-    reduction.  Face increases, elective decreases and option changes are not modeled,
-    so the withdrawal reduction is the only movement.
+    A closing balance: the opening face of month ``t`` is the previous month's, and in the
+    first month on the books, :func:`t_entry`, the face in force at the valuation date,
+    :func:`sum_assured_init`, on a point in force, and the face at issue,
+    :func:`sum_assured`, on any other, less this month's Option A reduction.  Face
+    increases, elective decreases and option changes are not modeled, so the withdrawal
+    reduction is the only movement; it never takes more than the opening face, so the
+    face reaches 0 at the least and stays there.  Zero outside cover.
     """
-    opening = sum_assured() if t == 0 else sum_assured_at(t - 1)
+    if not is_active(t):
+        return 0.0
+    if t > t_entry():
+        opening = sum_assured_at(t - 1)
+    elif duration_mth_init() > 0:
+        opening = sum_assured_init()
+    else:
+        opening = sum_assured()
     return max(0.0, opening - face_reduction_pp(t))
 
 
@@ -914,19 +1796,34 @@ def units(t):
 def corridor_factor(t):
     """kappa_x: the IRC 7702(d) corridor factor at the attained age [R4].
 
-    250% at ages 0-40 grading to 100% at 90-95.  Ages beyond the table take its last
-    row.  Only the Guideline Premium Test is modeled (spec F4), so any other
-    ``qual_test`` raises rather than being treated as GPT.
+    250% at ages 0-40 grading to 100% at 90-95, read at the attained age of month t by
+    :func:`corridor_factor_at`.  Only the Guideline Premium Test is modeled (spec F4), so
+    any other ``qual_test`` raises rather than being treated as GPT, in whatever month,
+    since it is a fault of the point; the test is read through its decode, :func:`is_gpt`.
 
     High funding drives the corridor rather than the face amount, which raises the
     death benefit, the net amount at risk and hence the cost of insurance: the notes
     list omitting this among the pitfalls, because it overstates late-duration account
-    values and understates charges.
+    values and understates charges.  Zero outside cover, before the table is read.
     """
-    if qual_test() != "GPT":
+    if not is_gpt():
         raise ValueError("invalid qual_test")
+    return corridor_factor_at(age(t)) if is_active(t) else 0.0
+
+
+def corridor_factor_at(a):
+    """kappa at attained age a, from *corridor_factors.csv*: the table's one reader.
+
+    Ages outside the table take its nearest row: the first and last ages
+    ``data.corridor_age_first()`` and ``data.corridor_age_last()`` give, which they read
+    from the table's key column once the keys and the factors are checked, before any
+    factor is read.  The last is asked for first, since it runs the checks and the first
+    is counted back from it.  Keyed by the attained age, so the table is read once an age
+    rather than once a month; :func:`corridor_factor` calls it inside cover only.
+    """
+    last = data.corridor_age_last()                                  # noqa: F821
+    a = min(max(a, data.corridor_age_first()), last)                 # noqa: F821
     tbl = data.corridor_factors()                                    # noqa: F821
-    a = min(max(age(t), int(tbl.index.min())), int(tbl.index.max()))
     return float(tbl.loc[a, "corridor_factor"])
 
 
@@ -943,12 +1840,19 @@ def db_pp(t):
 
     During a segment the death benefit reflects the segment balance **without**
     unrealized index credit [S3]: with a 0% floor design segments simply carry no
-    interim interest, so nothing extra is needed here.
+    interim interest, so nothing extra is needed here.  ``IUL_US_S``'s formula, with no
+    floor on the account value: an exhausted account's ``AV'_t`` below zero leaves the
+    corridor's amount at 0 or below, and the face wins, which ``Data`` keeps so by
+    refusing a corridor factor below 0.  The option is read through its decodes,
+    :func:`is_db_option_a` and :func:`is_db_option_b`, not as text.  Zero outside cover,
+    before the corridor table is read.
     """
+    if not is_active(t):
+        return 0.0
     av = av_pp_at(t, "BEF_FEE")
-    if db_option() == "A":
+    if is_db_option_a():
         opt = sum_assured_at(t)
-    elif db_option() == "B":
+    elif is_db_option_b():
         opt = sum_assured_at(t) + av
     else:
         raise ValueError("invalid db_option")
@@ -971,12 +1875,15 @@ def coi_rate_scale():
     """The guaranteed maximum monthly COI scale for this model point's cell.
 
     A Series indexed by policy year, per $1,000 of net amount at risk, sliced once
-    from *coi_rates.csv* for this ``sex`` / ``rate_class`` / ``age_at_entry``.  The
-    shipped table covers the notes' anchor cell M / NT / 45 only; a model point on any
-    other cell needs the table extended first.
+    from *coi_rates.csv* for this ``sex`` / ``rate_class`` / ``age_at_entry``, each read
+    from :func:`model_point`.  The shipped table covers the notes' anchor cell M / NT / 45
+    only; a model point on any other cell needs the table extended first.  Its one
+    reader, :func:`coi_rate_guar_py`, asks :func:`coi_rate_last_year` first, which checks
+    the table and refuses a cell it has no rates for.
     """
+    mp = model_point()
     return data.coi_rates().loc[                                     # noqa: F821
-        (sex(), rate_class(), age_at_entry())]["coi_rate_guar"]
+        (mp["sex"], mp["rate_class"], age_at_entry())]["coi_rate_guar"]
 
 
 def coi_rate_guar(t):
@@ -985,12 +1892,45 @@ def coi_rate_guar(t):
     The notes set the guaranteed basis at 2017 CSO ANB smoker-distinct ultimate
     **[std]**/[REG-R17].  That table is licensed and is not reproduced here: the
     shipped scale is illustrative **[std]**, of realistic magnitude and shape, and is
-    swapped by replacing *coi_rates.csv*.  Policy years beyond the table take its last
-    row.
+    swapped by replacing *coi_rates.csv*.  Read at the policy year of month t by
+    :func:`coi_rate_guar_py`, where policy years beyond the table take its last row; zero
+    outside cover, before the scale is read.
     """
+    return coi_rate_guar_py(policy_year(t)) if is_active(t) else 0.0
+
+
+def coi_rate_guar_py(y):
+    """The guaranteed maximum monthly COI rate in policy year y, from the point's scale.
+
+    Policy years beyond the scale take its last row, :func:`coi_rate_last_year`, which is
+    asked for before the scale is sliced, so that a projection meets the check of the
+    table's keys, and the refusal of a cell the table lacks, first.  The scale's one
+    reader, keyed by the contractual policy year; :func:`coi_rate_guar` calls it inside
+    cover only.
+    """
+    last = coi_rate_last_year()
     scale = coi_rate_scale()
-    y = min(policy_year(t), int(scale.index.max()))
-    return float(scale[y])
+    return float(scale[min(y, last)])
+
+
+def coi_rate_last_year():
+    """The last policy year of this point's guaranteed COI scale: its extent.
+
+    ``data.coi_rate_last_years()`` at this point's cell, its ``sex``, ``rate_class`` and
+    ``age_at_entry``, read from :func:`model_point`: a per-point join, made once a point,
+    on the extents ``Data`` reads from the table's key columns once it has checked the
+    keys and the rates.  76 on the shipped anchor cell, whose scale runs to attained age
+    120.  A cell the table has no rates for is refused, naming the point and the cell,
+    where ``IUL_US_S`` raises pandas' ``KeyError``.
+    """
+    mp = model_point()
+    cell = (mp["sex"], mp["rate_class"], age_at_entry())
+    last = data.coi_rate_last_years()                                # noqa: F821
+    if cell not in last.index:
+        raise ValueError(
+            f"point_id {point_id}: {data.coi_rates_file} has no rates "  # noqa: F821
+            f"for sex {cell[0]!r}, rate_class {cell[1]!r}, age_at_entry {cell[2]}")
+    return int(last.loc[cell])
 
 
 def coi_rate(t):
@@ -1011,8 +1951,12 @@ def coi_rate(t):
 
 
 def coi_pp(t):
-    """COI_t = coi_t x NAAR_t / 1000: the cost of insurance charge per policy."""
-    if age(t) >= charges_cease_age:                                  # noqa: F821
+    """COI_t = coi_t x NAAR_t / 1000: the cost of insurance charge per policy.
+
+    Zero from attained age ``charges_cease_age``, when charges cease, and zero outside
+    cover, before the scale is read.
+    """
+    if not is_active(t) or age(t) >= charges_cease_age:              # noqa: F821
         return 0.0
     return coi_rate(t) / 1000 * net_amt_at_risk(t)
 
@@ -1033,7 +1977,12 @@ def rider_charge_pp(t):
 
 
 def expense_pol_mth_at(t):
-    """e_pol: the monthly policy fee, $10 current [S3][S5] / $15 guaranteed **[std]** (F13)."""
+    """e_pol: the monthly policy fee, $10 current [S3][S5] / $15 guaranteed **[std]**.
+
+    The notes' F13.  Level in every month, an input that holds its value outside cover,
+    as the fixed-account rate and the cap do; :func:`maint_fee_pp`, its one reader, is
+    zero there.
+    """
     if is_guaranteed_basis():
         return expense_pol_mth_guar                                  # noqa: F821
     return expense_pol_mth                                           # noqa: F821
@@ -1045,8 +1994,12 @@ def expense_unit_mth_at(t):
     $0.30 in policy years 1-10 and nothing thereafter on the current basis; $0.40 in
     **all** years on the guaranteed basis.  The structure -- charged for the first ten
     years currently, guaranteed for all years -- is sourced [S3][S5]; the dollar scales
-    live in policy data pages and are not public, so the levels are **[std]**.
+    live in policy data pages and are not public, so the levels are **[std]**.  A term
+    of the contract, so it steps on the **policy** year.  Zero outside cover, before the
+    policy year is compared.
     """
+    if not is_active(t):
+        return 0.0
     if is_guaranteed_basis():
         return expense_unit_mth_guar                                 # noqa: F821
     if policy_year(t) <= expense_unit_step_year:                     # noqa: F821
@@ -1060,9 +2013,11 @@ def maint_fee_pp(t):
     ``e_pol + e_unit x F/1000 + rider charges``.  The name follows
     ``CashValue_SE.maint_fee``: this is a *charge* against the account value and
     therefore insurer income.  It is not :func:`expenses`, which is the insurer's own
-    outgo.
+    outgo.  Zero from attained age ``charges_cease_age``, when charges cease, and zero
+    outside cover.  The policy fee, :func:`expense_pol_mth_at`, is level, an input that
+    holds its value in every month; the guard here keeps it off the months outside cover.
     """
-    if age(t) >= charges_cease_age:                                  # noqa: F821
+    if not is_active(t) or age(t) >= charges_cease_age:              # noqa: F821
         return 0.0
     return (expense_pol_mth_at(t) + expense_unit_mth_at(t) * units(t)
             + rider_charge_pp(t))
@@ -1101,13 +2056,13 @@ def draw_pp(t):
 
 
 def draw_from_seg_pp(t):
-    """The part of the step-3 draw sourced pro rata from live segments (see :func:`draw_pp`).
+    """The part of the step-3 draw sourced pro rata from live segments.
 
     Only what the fixed account cannot cover, and never more than the live segments
-    hold.  Being step 3 it has the **first** claim on the pool; the step-6 deduction
-    is capped against what is left after it (:func:`mth_deduction_from_seg_pp`).
-    Amounts leaving a segment mid-term earn no index credit [S3], which under the
-    baseline credit base happens automatically.
+    hold (see :func:`draw_pp`).  Being step 3 it has the **first** claim on the pool; the
+    step-6 deduction is capped against what is left after it
+    (:func:`mth_deduction_from_seg_pp`).  Amounts leaving a segment mid-term earn no
+    index credit [S3], which under the baseline credit base happens automatically.
     """
     short = draw_pp(t) - max(0.0, fa_pp_at(t, "BEF_WD"))
     if short <= 0:
@@ -1116,9 +2071,9 @@ def draw_from_seg_pp(t):
 
 
 def draw_from_fa_pp(t):
-    """The part of the step-3 draw sourced from the fixed account, taken first (see :func:`draw_pp`).
+    """The part of the step-3 draw sourced from the fixed account, taken first.
 
-    Defined as the residual so that the two sources always sum to :func:`draw_pp`
+    Defined as the residual of :func:`draw_pp` so that the two sources always sum to it
     exactly; if neither the fixed account nor the segments can cover it, the fixed
     account carries the excess and goes negative rather than the draw being silently
     truncated.
@@ -1166,27 +2121,71 @@ def mth_deduction_from_fa_pp(t):
 def seg_bal_active_pp(t):
     """The live segment balances available to a draw at BOM of month t.
 
-    The segments born at ``t - 11 ... t - 1``, valued at the end of month ``t - 1``.
-    The segment born at ``t - 12`` is **not** in the pool: it matured at step 2 of this
-    month and its value is already in the fixed account.  The segment born at ``t``
-    does not exist yet -- it is created by the sweep at step 7.  No segment can be born
-    before ``t = 0``, so the pool is empty in the first month.
+    The segments born in policy months ``duration_mth(t) - 11`` to
+    ``duration_mth(t) - 1``, valued at the end of month ``t - 1``.  The segment born at
+    ``duration_mth(t) - 12`` is **not** in the pool: it matured at step 2 of this month and
+    its value is already in the fixed account.  The segment born this month does not
+    exist yet -- it is created by the sweep at step 7.  No segment is born before issue, so
+    the pool is empty in the issue month.  In the first month on the books,
+    :func:`t_entry`, a segment born before the valuation date is valued from the segment
+    ladder, :func:`seg_bal_pp_init`, its balance entering month 0.
+
+    The balances are summed in an explicit loop that compensates as Python's ``sum()`` of
+    floats does from Python 3.12, Neumaier's improvement of Kahan's summation, the
+    compensation added at the end where it is a finite number other than zero: so the pool
+    is ``IUL_US_S``'s ``sum()`` bit for bit there, a segment closing on a rounding about
+    zero included, which :func:`seg_share` reads by its test of zero.  Python 3.11's
+    ``sum()`` is a plain fold, which can put such a pool on the other side of zero.  Zero
+    outside cover.
     """
-    lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
-    return sum(seg_bal_pp(t - 1, m) for m in range(lo, t))
+    if not is_active(t):
+        return 0.0
+    d = duration_mth(t)
+    s = 0.0
+    c = 0.0
+    for m in range(max(0, d - seg_term_mth + 1), d):                 # noqa: F821
+        if t > t_entry():
+            x = seg_bal_pp(t - 1, m)
+        else:
+            x = seg_bal_pp_init(duration_mth_init() - m)
+        u = s + x
+        if abs(s) >= abs(x):
+            c = c + ((s - u) + x)
+        else:
+            c = c + ((x - u) + s)
+        s = u
+    if c != 0.0 and c - c == 0.0:
+        s = s + c
+    return s
 
 
 def seg_share(t, m):
     """Segment m's pro-rata share of a draw at BOM of month t.
 
-    Its opening balance over the live pool.  Because a pro-rata draw leaves the
-    proportions unchanged, the same shares serve the step-3 draw and the step-6
-    deduction even though they are taken at different points in the month.
+    Its opening balance over the live pool, :func:`seg_bal_active_pp`, and 0 where the pool
+    is not above zero, ``IUL_US_S``'s own test, which a pool closing on a rounding about
+    zero meets either way.  Because a pro-rata draw leaves the proportions unchanged, the
+    same shares serve the step-3 draw and the step-6 deduction even though they are taken
+    at different points in the month.  The opening balance is the segment's at the end of
+    month ``t - 1``, or, in the first month on the books, :func:`t_entry`, the ladder's
+    :func:`seg_bal_pp_init`, read only for a segment the ladder holds, ``1`` to
+    ``min(seg_term_mth, duration_mth_init())`` months old; any other ``m``, the segment
+    born in the month itself or one older than the ladder, has a share of 0, as
+    ``IUL_US_S``'s read of a balance outside its segment's life gives.  ``m`` is the
+    policy month the segment was born in.
     """
     pool = seg_bal_active_pp(t)
     if pool <= 0:
         return 0.0
-    return seg_bal_pp(t - 1, m) / pool
+    if t > t_entry():
+        prev = seg_bal_pp(t - 1, m)
+    else:
+        k = duration_mth_init() - m
+        if 1 <= k <= min(seg_term_mth, duration_mth_init()):          # noqa: F821
+            prev = seg_bal_pp_init(k)
+        else:
+            prev = 0.0
+    return prev / pool
 
 
 def seg_wd_pp(t, m):
@@ -1206,104 +2205,232 @@ def sweep_pp(t):
     varies -- one carrier sweeps on the 15th [S1], another on the first day of a
     policy month [S3] -- and the baseline standardizes on the monthiversary so segment
     dates align with monthly processing.  A third carrier's charge-holdback in the
-    fixed strategy [S5] is a documented variation and is not modeled.
+    fixed strategy [S5] is a documented variation and is not modeled.  Nothing is swept
+    from a fixed account below zero.  Zero outside cover.
     """
+    if not is_active(t):
+        return 0.0
     return index_alloc_rate() * max(0.0, fa_pp_at(t, "BEF_SWEEP"))
 
 
 def seg_new_pp(m):
-    """S_{k,m_k}: the balance of the segment created at month m, from the sweep."""
-    return sweep_pp(m)
+    """S_{k,m_k}: the balance of the segment born in policy month m, at its creation.
+
+    ``m`` is a **policy** month, ``duration_mth`` of the month of the sweep that created
+    the segment.  Born in the frame, at or after the valuation date, the segment is that
+    month's sweep, :func:`sweep_pp` at month ``m - duration_mth_init()``, as in
+    ``IUL_US_S``.  Born before the valuation date, it is in ladder slot
+    ``k = duration_mth_init() - m``, and its creation balance is what the ladder gives it
+    since, its balance entering month 0 plus the deductions and the draws charged to it:
+    nothing may enter or leave a segment but a deduction, a withdrawal or a loan transfer,
+    which is the closure :func:`check_seg_ladder` asserts.  Zero for a month before issue
+    and for a segment matured before the valuation date, which nothing reads.
+    """
+    d0 = duration_mth_init()
+    if m < 0:
+        return 0.0
+    if m >= d0:
+        return sweep_pp(m - d0)
+    k = d0 - m
+    if k > seg_term_mth:                                             # noqa: F821
+        return 0.0
+    return seg_bal_pp_init(k) + seg_ded_cum_pp_init(k) + seg_wd_cum_pp_init(k)
 
 
 def seg_bal_pp(t, m):
-    """S_{k,t+1}: the balance at the end of month t of the segment created at month m.
+    """S_{k,t+1}: the balance at the end of month t of the segment born in policy month m.
 
     ``S_{k,t+1} = S_{k,t} - MD^seg - W^seg - B^seg``, with **no interim interest**: the
     0% floor design credits nothing during the segment term [S2], in contrast with
     one carrier's in-segment 0.75% [S3], which is a different guarantee and must not
     be mixed with a 0% annual floor.  A closing balance: the value at the end of
-    month ``t`` is the notes' ``S_{k,t+1}``.
+    month ``t`` is the notes' ``S_{k,t+1}``.  ``m`` is a **policy** month, so the segment
+    is live where ``m <= duration_mth(t) <= m + 11``.
 
-    Zero outside ``m <= t <= m + 11`` and for any ``m < 0`` (no segment exists before
-    the projection starts).  A segment created at ``m`` is live through the end of
-    month ``m + 11`` and matures at step 2 of month ``m + 12``, before that month's
-    deduction -- so it bears eleven in-segment deductions.  The worked example
-    stipulates twelve; see the README.
+    Zero outside that span, for any ``m < 0`` (no segment exists before issue) and outside
+    cover.  A segment created at ``m`` is live through the end of policy month ``m + 11``
+    and matures at step 2 of policy month ``m + 12``, before that month's deduction -- so
+    it bears eleven in-segment deductions.  The worked example stipulates twelve; see
+    ``products/indexed_ul/model.md``.  In the first month on the books, :func:`t_entry`, a
+    segment born before the valuation date opens from the ladder,
+    :func:`seg_bal_pp_init`, its balance entering month 0.
     """
-    if m < 0 or t < m or t > m + seg_term_mth - 1:                   # noqa: F821
+    if not is_active(t):
         return 0.0
-    if t == m:
+    d = duration_mth(t)
+    if m < 0 or d < m or d > m + seg_term_mth - 1:                   # noqa: F821
+        return 0.0
+    if d == m:
         return seg_new_pp(m)
-    return seg_bal_pp(t - 1, m) - seg_wd_pp(t, m) - seg_ded_pp(t, m)
+    if t > t_entry():
+        prev = seg_bal_pp(t - 1, m)
+    else:
+        prev = seg_bal_pp_init(duration_mth_init() - m)
+    return prev - seg_wd_pp(t, m) - seg_ded_pp(t, m)
 
 
 def seg_ded_cum_pp(t, m):
-    """Deductions charged to segment m from its creation through the end of month t.
+    """Deductions charged to the segment born in policy month m, through the end of month t.
 
     Zero in the creation month itself (the segment is created after that month's
-    deduction) and outside the segment's life.
+    deduction), outside the segment's life and outside cover.  In the first month on the
+    books, :func:`t_entry`, a segment born before the valuation date opens from the
+    ladder, :func:`seg_ded_cum_pp_init`, the deductions charged to it before month 0.
     """
-    if m < 0 or t <= m or t > m + seg_term_mth - 1:                  # noqa: F821
+    if not is_active(t):
         return 0.0
-    return seg_ded_cum_pp(t - 1, m) + seg_ded_pp(t, m)
+    d = duration_mth(t)
+    if m < 0 or d <= m or d > m + seg_term_mth - 1:                  # noqa: F821
+        return 0.0
+    if t > t_entry():
+        prev = seg_ded_cum_pp(t - 1, m)
+    else:
+        prev = seg_ded_cum_pp_init(duration_mth_init() - m)
+    return prev + seg_ded_pp(t, m)
 
 
 def seg_wd_cum_pp(t, m):
-    """Withdrawals and loan transfers out of segment m through the end of month t.
+    """Withdrawals and loan transfers out of the segment born in policy month m, to month t.
 
-    Zero in the creation month itself and outside the segment's life.
+    Through the end of month t.  Zero in the creation month itself, outside the segment's
+    life and outside cover.  In the first month on the books, :func:`t_entry`, a segment
+    born before the valuation date opens from the ladder, :func:`seg_wd_cum_pp_init`, the
+    draws out of it before month 0.
     """
-    if m < 0 or t <= m or t > m + seg_term_mth - 1:                  # noqa: F821
+    if not is_active(t):
         return 0.0
-    return seg_wd_cum_pp(t - 1, m) + seg_wd_pp(t, m)
+    d = duration_mth(t)
+    if m < 0 or d <= m or d > m + seg_term_mth - 1:                  # noqa: F821
+        return 0.0
+    if t > t_entry():
+        prev = seg_wd_cum_pp(t - 1, m)
+    else:
+        prev = seg_wd_cum_pp_init(duration_mth_init() - m)
+    return prev + seg_wd_pp(t, m)
 
 
 def seg_bal_tot_pp(t):
     """The sum of every live segment balance at the end of month t.
 
-    The segments born at ``max(0, t - 11) ... t``.
+    The segments born in policy months ``max(0, duration_mth(t) - 11)`` to
+    ``duration_mth(t)``, summed in the compensated loop :func:`seg_bal_active_pp` sums in,
+    so that the total is ``IUL_US_S``'s ``sum()`` bit for bit from Python 3.12.  Zero
+    outside cover.
     """
-    lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
-    return sum(seg_bal_pp(t, m) for m in range(lo, t + 1))
+    if not is_active(t):
+        return 0.0
+    d = duration_mth(t)
+    s = 0.0
+    c = 0.0
+    for m in range(max(0, d - seg_term_mth + 1), d + 1):             # noqa: F821
+        x = seg_bal_pp(t, m)
+        u = s + x
+        if abs(s) >= abs(x):
+            c = c + ((s - u) + x)
+        else:
+            c = c + ((x - u) + s)
+        s = u
+    if c != 0.0 and c - c == 0.0:
+        s = s + c
+    return s
 
 
 def seg_count(t):
     """The number of segments with a positive balance at the end of month t.
 
     At most ``seg_term_mth`` (12), the contractual maximum [S4]; zero throughout
-    for a model point with ``index_alloc_rate() == 0``.
+    for a model point with ``index_alloc_rate() == 0``.  A segment counts where its
+    balance is above zero, ``IUL_US_S``'s own test, which a balance closing on a rounding
+    about zero meets by its sign.  An int, counted in a loop, and the int 0 outside cover.
     """
-    lo = max(0, t - seg_term_mth + 1)                                # noqa: F821
-    return sum(1 for m in range(lo, t + 1) if seg_bal_pp(t, m) > 0)
+    if not is_active(t):
+        return 0
+    d = duration_mth(t)
+    n = 0
+    for m in range(max(0, d - seg_term_mth + 1), d + 1):             # noqa: F821
+        if seg_bal_pp(t, m) > 0:
+            n = n + 1
+    return n
+
+
+def seg_index_start(t):
+    """I(m): the index level at the creation of the segment maturing in month t.
+
+    The segment maturing in month ``t`` was born twelve months earlier.  Born in the frame,
+    at month ``t - 12``, it started from ``index_level(t - 12)``; born before the valuation
+    date, in ladder slot ``12 - t``, from the start level its ladder row carries,
+    :func:`seg_index_start_init`, on the same path.  ``IUL_US_S`` reads
+    ``index_level(t - 12)``, a month of its own frame, since no segment it projects was
+    born before its first month.  Zero where nothing matures, in a policy's first twelve
+    policy months, and outside cover.
+    """
+    if not is_active(t) or duration_mth(t) < seg_term_mth:          # noqa: F821
+        return 0.0
+    if t - seg_term_mth >= t_entry():                                # noqa: F821
+        return index_level(t - seg_term_mth)                         # noqa: F821
+    return seg_index_start_init(seg_term_mth - t)                    # noqa: F821
+
+
+def seg_index_cap(t):
+    """c_m: the cap of the segment maturing in month t, the one declared at its creation.
+
+    Born in the frame, at month ``t - 12``, the segment is capped at the cap in force then,
+    ``index_cap_at(t - 12)``; born before the valuation date, in ladder slot ``12 - t``, at
+    the cap its ladder row carries, :func:`seg_index_cap_init`.  The cap is re-declared at
+    every segment start [S3][S4], and a segment keeps the one declared at its own.
+    ``IUL_US_S`` holds the cap level and its engine reads ``index_cap_at(0)``, the cap in
+    force at its own ``t = 0``, for every segment, so the two agree on every point it
+    projects.  Zero where nothing matures and outside cover.
+    """
+    if not is_active(t) or duration_mth(t) < seg_term_mth:          # noqa: F821
+        return 0.0
+    if t - seg_term_mth >= t_entry():                                # noqa: F821
+        return index_cap_at(t - seg_term_mth)                        # noqa: F821
+    return seg_index_cap_init(seg_term_mth - t)                      # noqa: F821
 
 
 def seg_return(t):
-    """r_k for the segment maturing at month t: its own point-to-point index change.
+    """r_k for the segment maturing in month t: its own point-to-point index change.
 
-    ``index_change(I(t - 12), I(t))``.  Each segment carries its own index start level,
-    which is the whole point of a monthly ladder: collapsing twelve segments into one
-    annual segment mis-times credits and distorts mid-segment surrender values [S3].
-    Defined for ``t >= 12`` only -- no segment matures before then -- and every caller
-    guards it.
+    ``index_change(I(m), I(t))``, the level now over the segment's start level,
+    :func:`seg_index_start`.  Each segment carries its own index start level, which is
+    the whole point of a monthly ladder: collapsing twelve segments into one annual
+    segment mis-times credits and distorts mid-segment surrender values [S3].  Zero where
+    nothing matures, in a policy's first twelve policy months, and outside cover, where
+    ``IUL_US_S`` leaves it to every caller to guard.
     """
-    return index_change(index_level(t - seg_term_mth), index_level(t))  # noqa: F821
+    if not is_active(t) or duration_mth(t) < seg_term_mth:          # noqa: F821
+        return 0.0
+    return index_change(seg_index_start(t), index_level(t))
 
 
 def index_credit_pp(t):
     """The index credit added to the account value at BOM of month t.
 
-    The segment created at ``t - 12`` matures now: its credit is
-    :func:`index_credit` of its opening balance net of withdrawals and loan transfers,
-    the deductions charged to it, and its own point-to-point return.  Zero in the first
-    twelve months ``t = 0 ... 11``, and in every month for a model point that never
-    creates a segment.
+    The segment born in policy month ``m = duration_mth(t) - 12`` matures now: its credit
+    is :func:`index_credit` of its creation balance net of withdrawals and loan transfers,
+    the deductions charged to it, its own point-to-point return, the credit base
+    convention ``seg_credit_base_conv`` and the cap declared at its creation,
+    :func:`seg_index_cap`, each passed to the engine explicitly.  In the first month on the
+    books, :func:`t_entry`, a segment born before the valuation date is ladder slot 12,
+    whose draws and deductions are its ladder row's.  Zero in a policy's first twelve
+    policy months, in every month for a model point that never creates a segment, and
+    outside cover.
     """
-    m = t - seg_term_mth                                             # noqa: F821
+    if not is_active(t):
+        return 0.0
+    m = duration_mth(t) - seg_term_mth                               # noqa: F821
     if m < 0:
         return 0.0
-    init = seg_new_pp(m) - seg_wd_cum_pp(t - 1, m)
-    return index_credit(init, seg_ded_cum_pp(t - 1, m), seg_return(t))
+    if t > t_entry():
+        wd = seg_wd_cum_pp(t - 1, m)
+        ded = seg_ded_cum_pp(t - 1, m)
+    else:
+        wd = seg_wd_cum_pp_init(seg_term_mth)                        # noqa: F821
+        ded = seg_ded_cum_pp_init(seg_term_mth)                      # noqa: F821
+    init = seg_new_pp(m) - wd
+    return index_credit(init, ded, seg_return(t), seg_credit_base_conv,  # noqa: F821
+                        seg_index_cap(t))
 
 
 def index_credits(t):
@@ -1317,12 +2444,21 @@ def seg_roll_pp(t):
     Remaining balance plus index credit.  Under the standing allocation instruction it
     is swept straight back into a new segment at step 7 **[std]** (spec F11); routing
     it through the fixed account is what makes it available to pay this month's
-    deduction first, which is the notes' own sourcing rule.  Zero in ``t = 0 ... 11``.
+    deduction first, which is the notes' own sourcing rule.  The remaining balance is
+    the segment's at the end of month ``t - 1``, or, in the first month on the books,
+    :func:`t_entry`, ladder slot 12's.  Zero in a policy's first twelve policy months and
+    outside cover.
     """
-    m = t - seg_term_mth                                             # noqa: F821
+    if not is_active(t):
+        return 0.0
+    m = duration_mth(t) - seg_term_mth                               # noqa: F821
     if m < 0:
         return 0.0
-    return seg_bal_pp(t - 1, m) + index_credit_pp(t)
+    if t > t_entry():
+        prev = seg_bal_pp(t - 1, m)
+    else:
+        prev = seg_bal_pp_init(seg_term_mth)                         # noqa: F821
+    return prev + index_credit_pp(t)
 
 
 def fa_pp_at(t, timing):
@@ -1334,10 +2470,13 @@ def fa_pp_at(t, timing):
 
     ``"BEF_PREM"``
         The opening balance, the notes' ``FA_t``: the closing balance of the previous
-        month, or, when ``t == 0``, the model point's opening account value less its
-        loan collateral -- the notes give no opening segment ladder, so an in-force
-        cell starts with everything in the holding account **[std]** (``FA(0) = 0``
-        at issue).
+        month, formed here from month ``t - 1``'s own opening balance and events, the
+        same operations in the same order as :func:`fa_pp`, so that the chain back to the
+        first month on the books is one cell a month.  In that month, :func:`t_entry`, it
+        is :func:`fa_pp_init`, the fixed account the point carries into the valuation
+        month, 0 at issue (``FA(0) = 0``).  ``IUL_US_S`` opens an in-force point at the
+        account value less the loan here, everything outside the collateral in the
+        fixed account.  Zero outside cover.
 
     ``"BEF_CREDIT"``
         After the net premium, before the maturing segment rolls in.
@@ -1356,11 +2495,21 @@ def fa_pp_at(t, timing):
         After the sweep, before interest.  Interest is credited on this balance;
         reversing the two overstates the account value by about one month's interest on
         the deduction, every month.
+
+    The balance may run below zero: no policy is terminated for insufficiency, and the
+    fixed account carries whatever the segments cannot (:func:`draw_from_fa_pp`).
     """
     if timing == "BEF_PREM":
-        if t == 0:
-            return av_pp_init() - loan_bal_init()
-        return fa_pp(t - 1)
+        if not is_active(t):
+            return 0.0
+        if t == t_entry():
+            return fa_pp_init()
+        bef = fa_pp_at(t - 1, "BEF_PREM") + prem_to_av_pp(t - 1)
+        bef = bef + seg_roll_pp(t - 1)
+        bef = bef - draw_from_fa_pp(t - 1)
+        bef = bef - mth_deduction_from_fa_pp(t - 1)
+        bef = bef - sweep_pp(t - 1)
+        return bef * (1 + inv_return_mth(t - 1))
     elif timing == "BEF_CREDIT":
         return fa_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
     elif timing == "BEF_WD":
@@ -1376,11 +2525,12 @@ def fa_pp_at(t, timing):
 
 
 def fa_pp(t):
-    """FA_{t+1}: the fixed (holding) account balance at the end of policy month t.
+    """FA_{t+1}: the fixed (holding) account balance at the end of month t.
 
     A closing balance: the post-sweep balance plus one month's interest at the
-    fixed-account rate.  The opening balance of the month, including the ``t == 0``
-    seed, is ``fa_pp_at(t, "BEF_PREM")``.
+    fixed-account rate.  The opening balance of the month, :func:`fa_pp_init` in the
+    first month on the books, is ``fa_pp_at(t, "BEF_PREM")``, which forms this cell's
+    value at ``t - 1`` itself rather than calling for it.  Zero outside cover.
     """
     return fa_pp_at(t, "BEF_INV") * (1 + inv_return_mth(t))
 
@@ -1389,15 +2539,22 @@ def lca_pp_at(t, timing):
     """LCA: the loan collateral account at an intra-month point of month t.
 
     ``"BEF_PREM"`` is the opening balance, the notes' ``LCA_t``: the closing balance of
-    the previous month, or the model point's opening loan when ``t == 0`` (``LCA(0)``
-    is set equal to ``loan_bal_init()`` **[std]**, 0 at issue).  ``"BEF_INV"`` adds the
-    collateral for any new loan taken at step 3, which is the balance one month's
-    interest is credited on.
+    the previous month, formed here from month ``t - 1``'s own opening balance and new
+    loan, the same operations in the same order as :func:`lca_pp`, so that the chain is
+    one cell a month; in the first month on the books, :func:`t_entry`, it is
+    :func:`lca_pp_init`, the collateral the point carries into the valuation month, 0 at
+    issue.  ``IUL_US_S`` sets ``LCA(0)`` equal to ``loan_bal_init()`` **[std]**, which the
+    collateral parts from once interest accrues.  ``"BEF_INV"`` adds the collateral for
+    any new loan taken at step 3, which is the balance one month's interest is credited
+    on.  Zero outside cover.
     """
     if timing == "BEF_PREM":
-        if t == 0:
-            return loan_bal_init()
-        return lca_pp(t - 1)
+        if not is_active(t):
+            return 0.0
+        if t == t_entry():
+            return lca_pp_init()
+        return ((lca_pp_at(t - 1, "BEF_PREM") + loan_new_pp(t - 1))
+                * (1 + loan_credit_rate_mth(t - 1)))
     elif timing == "BEF_INV":
         return lca_pp_at(t, "BEF_PREM") + loan_new_pp(t)
     else:
@@ -1405,33 +2562,36 @@ def lca_pp_at(t, timing):
 
 
 def lca_pp(t):
-    """LCA_{t+1}: the loan collateral account at the end of policy month t.
+    """LCA_{t+1}: the loan collateral account at the end of month t.
 
     Standard loans move loaned value out of the fixed account and the segments into a
     collateral account credited at :func:`loan_credit_rate_ann` while the loan itself
     accrues at the charged rate; the collateral remains part of the account value, so a
     loan advance does not reduce ``AV`` -- it reduces the cash surrender value through
-    ``- L_t``.  A closing balance; the opening value, including the ``t == 0`` seed, is
-    ``lca_pp_at(t, "BEF_PREM")``.
+    ``- L_t``.  A closing balance; the opening value, :func:`lca_pp_init` in the first
+    month on the books, is ``lca_pp_at(t, "BEF_PREM")``.  Zero outside cover.
     """
     return lca_pp_at(t, "BEF_INV") * (1 + loan_credit_rate_mth(t))
 
 
 def loan_bal_pp(t):
-    """L_{t+1}: the policy loan balance at the end of policy month t.
+    """L_{t+1}: the policy loan balance at the end of month t.
 
     ``L_{t+1} = (L_t + B_t) (1 + i_L^c)^(1/12)``, the notes' own recursion: new loans
     from step 3 are added to principal and the whole balance accrues at the charged
-    rate.  The opening balance ``L_t`` is ``loan_bal_init()`` when ``t == 0`` (``L(0)``,
-    0 at issue) and ``loan_bal_pp(t - 1)`` otherwise.  Repayments are not modeled --
-    the notes give no repayment pattern.
+    rate.  The opening balance ``L_t`` is the previous month's, and in the first month on
+    the books, :func:`t_entry`, :func:`loan_bal_init`, the loan the point carries into
+    the valuation month, 0 at issue.  Repayments are not modeled -- the notes give no
+    repayment pattern.  Zero outside cover.
     """
-    opening = loan_bal_init() if t == 0 else loan_bal_pp(t - 1)
+    if not is_active(t):
+        return 0.0
+    opening = loan_bal_init() if t == t_entry() else loan_bal_pp(t - 1)
     return (opening + loan_new_pp(t)) * (1 + loan_rate_mth())
 
 
 def inv_income_pp(t):
-    """Interest credited to the account value per policy at EOM of policy month t.
+    """Interest credited to the account value per policy at EOM of month t.
 
     The post-sweep fixed-account balance at the fixed-account monthly rate plus the
     loan collateral account at the collateral credited rate.  **Segments contribute
@@ -1454,18 +2614,28 @@ def inv_income(t):
 
 
 def av_pp_at(t, timing):
-    """AV: the account value per policy at an intra-month point of policy month t.
+    """AV: the account value per policy at an intra-month point of month t.
 
     The account value is the fixed account plus every live segment plus the loan
     collateral account; ``timing`` names the point just before each BOM event:
 
     ``"BEF_PREM"``
         Before the premium: the opening balance, the notes' ``AV_t`` -- the closing
-        balance of the previous month, or ``av_pp_init()`` when ``t == 0`` (``AV(0)``,
-        0 at issue).
+        balance of the previous month, formed here from month ``t - 1``'s own opening
+        balance and events, the same operations in the same order as :func:`av_pp`, so
+        that the chain is one cell a month.  In the first month on the books,
+        :func:`t_entry`, a point in force opens from its parts, :func:`fa_pp_init` plus
+        :func:`lca_pp_init` plus the ladder's balances, :func:`seg_bal_pp_init`, slot by
+        slot, summed in the compensated loop :func:`seg_bal_active_pp` sums in, so that
+        an extract carried to the cent opens one account, its parts' sum, which
+        :func:`check_av_components` then holds; any other point opens from
+        :func:`av_pp_init`, 0 at issue.  It is also defined in the month after the frame,
+        ``t = proj_len()``, where it is the account value the survivors of the last month
+        carry, which :func:`check_av_roll_fwd` reads.  Zero before issue.
 
     ``"BEF_CREDIT"``
-        After the net premium, before the maturing segment's index credit.
+        After the net premium, before the maturing segment's index credit.  Zero outside
+        cover, and so is every later timing.
 
     ``"BEF_WD"``
         After the index credit, before the withdrawal.  The roll of the matured segment
@@ -1485,10 +2655,30 @@ def av_pp_at(t, timing):
     parts.
     """
     if timing == "BEF_PREM":
-        if t == 0:
-            return av_pp_init()
-        return av_pp(t - 1)
+        if not 0 <= duration_mth(t) <= maturity_mth():
+            return 0.0
+        if t == t_entry():
+            if duration_mth_init() <= 0:
+                return av_pp_init()
+            s = fa_pp_init()
+            c = 0.0
+            for k in range(min(seg_term_mth, duration_mth_init()) + 1):  # noqa: F821
+                x = lca_pp_init() if k == 0 else seg_bal_pp_init(k)
+                u = s + x
+                if abs(s) >= abs(x):
+                    c = c + ((s - u) + x)
+                else:
+                    c = c + ((x - u) + s)
+                s = u
+            if c != 0.0 and c - c == 0.0:
+                s = s + c
+            return s
+        av = (av_pp_at(t - 1, "BEF_PREM") + prem_to_av_pp(t - 1)
+              + index_credit_pp(t - 1) - wd_pp(t - 1) - mth_deduction_pp(t - 1))
+        return av + inv_income_pp(t - 1)
     elif timing == "BEF_CREDIT":
+        if not is_active(t):
+            return 0.0
         return av_pp_at(t, "BEF_PREM") + prem_to_av_pp(t)
     elif timing == "BEF_WD":
         return av_pp_at(t, "BEF_CREDIT") + index_credit_pp(t)
@@ -1501,24 +2691,26 @@ def av_pp_at(t, timing):
 
 
 def av_pp(t):
-    """AV_{t+1}: the account value per policy at the end of policy month t.
+    """AV_{t+1}: the account value per policy at the end of month t.
 
     A closing balance: the post-deduction balance plus one month's interest.  The
-    opening balance, including the ``AV(0) = av_pp_init()`` seed at ``t == 0``, is
-    ``av_pp_at(t, "BEF_PREM")``.  Interest is credited on the *post-deduction*
-    balance, as on the universal life chassis; the index credit is not part of it --
-    that arrives at BOM when a segment matures.
+    opening balance, :func:`av_pp_init` in the first month on the books, is
+    ``av_pp_at(t, "BEF_PREM")``, which forms this cell's value at ``t - 1`` itself.
+    Interest is credited on the *post-deduction* balance, as on the universal life
+    chassis; the index credit is not part of it -- that arrives at BOM when a segment
+    matures.  Zero outside cover.
     """
     return av_pp_at(t, "BEF_INV") + inv_income_pp(t)
 
 
 def av_at(t, timing):
-    """Account value in force at an intra-month point of policy month t.
+    """Account value in force at an intra-month point of month t.
 
     :func:`av_pp_at` times the number of policies in force, which is constant through
     the month because decrements are end-of-month events.  ``timing`` takes the same
     values as :func:`av_pp_at`, plus ``"EOM"`` for the closing balance before
-    decrements.
+    decrements.  At ``t = proj_len()``, ``av_at(t, "BEF_PREM")`` is the account value the
+    survivors of the last month carry, which :func:`check_av_roll_fwd` reads.
     """
     if timing == "EOM":
         return av_pp(t) * pols_if(t)
@@ -1526,34 +2718,42 @@ def av_at(t, timing):
 
 
 def av_change(t):
-    """Change in the account value in force over policy month t.
+    """Change in the account value in force over month t.
 
     ``av_at(t + 1, "BEF_PREM") - av_at(t, "BEF_PREM")``, following ``CashValue_SE``.
+    Zero outside cover, before ``t + 1`` is read, so that nothing reads a month past
+    ``t = proj_len()``; there the change would otherwise be minus the account value the
+    survivors of the last month carry.
     """
+    if not is_active(t):
+        return 0.0
     return av_at(t + 1, "BEF_PREM") - av_at(t, "BEF_PREM")
 
 
 def surr_charge_rate(t):
-    """SC per $1,000 of initial face in policy month t **[std]** scale (F17).
+    """SC per $1,000 of initial face in month t **[std]** scale (F17).
 
     ``max(0, sc_init - (sc_init / runoff_years) x m / 12)`` where ``m`` is the notes'
     own month index ``duration_mth(t) + 1`` -- the current month counts.  With the
     shipped schedule of $25.00 per $1,000 running off over 10 years this is $24.79 in
     the issue month, declining linearly to zero in the last month of policy year 10.
     The ten-year period is sourced [S1][S5][S7]; the dollar scale is not public and is
-    a placeholder of realistic magnitude.
+    a placeholder of realistic magnitude.  The schedule's two values are read once a
+    point by :func:`surr_charge_rate_max` and :func:`surr_charge_runoff_years`, which ask
+    ``Data`` to check the table first; the floor keeps ``IUL_US_S``'s order,
+    ``max(0.0, ...)``, the bound first.  Zero outside cover, and where the point carries
+    no schedule.
     """
-    if not has_surr_charge():
+    if not is_active(t) or not has_surr_charge():
         return 0.0
-    row = data.surr_charge_table().loc[surr_charge_id()]             # noqa: F821
-    init = float(row["sc_per_1000_init"])
-    yrs = float(row["runoff_years"])
+    init = surr_charge_rate_max()
+    yrs = surr_charge_runoff_years()
     m = duration_mth(t) + 1
     return max(0.0, init - (init / yrs) * (m / 12))
 
 
 def surr_charge_pp(t):
-    """SC_t: the surrender charge scheduled per policy in policy month t.
+    """SC_t: the surrender charge scheduled per policy in month t.
 
     Quoted on the **initial** face amount, because face decreases do not reduce the
     surrender charge [S3].  This is the schedule, not the amount collected: see
@@ -1596,25 +2796,34 @@ def surr_charge(t):
 def cum_prem_pp(t):
     """Cumulative premiums less withdrawals: the base of the GPT and 7-pay tests.
 
-    The value at the end of month ``t``.  The accumulator opens at 0 in ``t = 0`` even
-    for an in-force model point, because the notes give no opening accumulator
-    **[std]**, so the compliance flags are only meaningful for points projected from
-    issue.  The statutory "less a portion of withdrawals" is taken as the whole
-    withdrawal **[std]**.
+    The value at the end of month ``t``, including month ``t``'s own premium and
+    withdrawal.  It opens in the first month on the books, :func:`t_entry`, from
+    :func:`cum_prem_init`, the premiums less withdrawals paid before the valuation date on
+    a point in force and 0 at issue, so the GPT and 7-pay flags of a point in force count
+    every premium since issue.  ``IUL_US_S`` opens it at 0 on any point, the notes giving
+    no opening accumulator **[std]**.  The statutory "less a portion of withdrawals" is
+    taken as the whole withdrawal **[std]**.  Zero outside cover.
     """
-    opening = 0.0 if t == 0 else cum_prem_pp(t - 1)
+    if not is_active(t):
+        return 0.0
+    opening = cum_prem_pp(t - 1) if t > t_entry() else cum_prem_init()
     return opening + premium_pp(t) - wd_pp(t)
 
 
 def cum_prem_net_pp(t):
-    """CumP_{t+1}: cumulative premiums less withdrawals **and loans**, for the no-lapse test.
+    """CumP_{t+1}: cumulative premiums less withdrawals **and loans**, the no-lapse base.
 
     The notes define the no-lapse accumulator this way and the guideline premium
     accumulator differently; :func:`cum_prem_pp` is the other one.  Using one for the
-    other quietly changes both answers.  The value at the end of month ``t``, opening
-    at 0 in ``t = 0``.
+    other quietly changes both answers.  The value at the end of month ``t``, opening in
+    the first month on the books, :func:`t_entry`, from :func:`cum_prem_net_init`, the
+    accumulator the point carries into the valuation month, 0 at issue.  ``IUL_US_S``
+    opens it at 0 on any point, which on a point in force would fail the no-lapse test
+    against a minimum premium counted from issue.  Zero outside cover.
     """
-    opening = 0.0 if t == 0 else cum_prem_net_pp(t - 1)
+    if not is_active(t):
+        return 0.0
+    opening = cum_prem_net_pp(t - 1) if t > t_entry() else cum_prem_net_init()
     return opening + premium_pp(t) - wd_pp(t) - loan_new_pp(t)
 
 
@@ -1644,12 +2853,24 @@ def mnlp_pp_mth():
 
 
 def cum_mnlp_pp(t):
-    """CumMNLP_{t+1}: the cumulative minimum no-lapse premium through policy month t."""
+    """CumMNLP_{t+1}: the cumulative minimum no-lapse premium through month t.
+
+    ``mnlp_pp_mth() x (duration_mth(t) + 1)``: a closed form on the **policy** clock,
+    every month from issue counted, so a point in force needs no opening value for it.
+    Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
     return mnlp_pp_mth() * (duration_mth(t) + 1)
 
 
 def nlg_test_ok(t):
-    """The cumulative-premium no-lapse test: ``CumP_t >= CumMNLP_t`` [S3][S4]."""
+    """The cumulative-premium no-lapse test: ``CumP_t >= CumMNLP_t`` [S3][S4].
+
+    False outside cover.
+    """
+    if not is_active(t):
+        return False
     return cum_prem_net_pp(t) >= cum_mnlp_pp(t)
 
 
@@ -1658,18 +2879,24 @@ def nlg_in_effect(t):
 
     While it is, the policy cannot lapse for insufficiency even with no cash surrender
     value [S3][S4], which is why :func:`lapse_rate` suppresses voluntary lapse in that
-    state as well **[std]**.
+    state as well **[std]**.  The period counts policy years, from issue.  False outside
+    cover, before the policy year is compared.
     """
+    if not is_active(t):
+        return False
     return policy_year(t) <= nlg_period_years() and nlg_test_ok(t)
 
 
 def nlg_expiry_shock(t):
-    """Whether the 25% no-lapse-expiry shock lapse applies in policy month t **[std]**.
+    """Whether the 25% no-lapse-expiry shock lapse applies in month t **[std]**.
 
     The notes apply a 25% shock lapse to *underfunded* policies on no-lapse expiry;
     "underfunded" is taken as a non-positive cash surrender value **[std]**, and the
-    shock is confined to the first policy year after the no-lapse period ends.
+    shock is confined to the first policy year after the no-lapse period ends.  False
+    outside cover, before the policy year is compared.
     """
+    if not is_active(t):
+        return False
     return policy_year(t) == nlg_period_years() + 1 and ncsv_pp(t) <= 0
 
 
@@ -1677,20 +2904,28 @@ def is_shortfall(t):
     """The grace trigger: the cash surrender value cannot cover the monthly deduction.
 
     ``AV'_t - SC_t - L_t < MD_t`` -- with ``L_t`` the loan balance at the *start* of
-    the month, ``loan_bal_init()`` when ``t == 0`` and ``loan_bal_pp(t - 1)``
-    otherwise -- **and** the no-lapse test fails [S3][S4].  A diagnostic.  The grace
-    and lapse-for-insufficiency cascade (61 days, modeled as lapse at ``t + 2`` months
-    if unfunded **[std]**) is **not implemented**: the notes leave the in-grace account
-    value treatment and the cash flow of a cure payment undetermined, so no policy is
-    terminated for insufficiency here.
+    the month, the previous month's :func:`loan_bal_pp`, or, in the first month on the
+    books, :func:`t_entry`, :func:`loan_bal_init` -- **and** the no-lapse test fails
+    [S3][S4].  A diagnostic.  The grace and lapse-for-insufficiency cascade (61 days,
+    modeled as lapse at ``t + 2`` months if unfunded **[std]**) is **not implemented**:
+    the notes leave the in-grace account value treatment and the cash flow of a cure
+    payment undetermined, so no policy is terminated for insufficiency here.  False
+    outside cover.
     """
-    loan_opening = loan_bal_init() if t == 0 else loan_bal_pp(t - 1)
+    if not is_active(t):
+        return False
+    loan_opening = loan_bal_init() if t == t_entry() else loan_bal_pp(t - 1)
     csv = av_pp_at(t, "BEF_FEE") - surr_charge_pp(t) - loan_opening
     return csv < mth_deduction_pp(t) and not nlg_in_effect(t)
 
 
 def gpt_limit(t):
-    """The guideline premium limit, ``max(GSP, GLP x policy years elapsed)`` [R4]."""
+    """The guideline premium limit, ``max(GSP, GLP x policy years elapsed)`` [R4].
+
+    Zero outside cover, where the policy year is not the policy's.
+    """
+    if not is_active(t):
+        return 0.0
     return max(gsp(), glp() * policy_year(t))
 
 
@@ -1698,49 +2933,111 @@ def gpt_ok(t):
     """Whether cumulative premium is still inside the guideline premium limit.
 
     A compliance side-calculation with no cash flow of its own: a refused premium
-    simply never enters the model.
+    simply never enters the model.  False outside cover.
     """
+    if not is_active(t):
+        return False
     return cum_prem_pp(t) <= gpt_limit(t)
 
 
 def seven_pay_limit(t):
-    """The 7-pay limit, ``seven_pay_prem x min(7, policy years elapsed)`` [R5]."""
+    """The 7-pay limit, ``seven_pay_prem x min(7, policy years elapsed)`` [R5].
+
+    Zero outside cover, where the policy year is not the policy's.
+    """
+    if not is_active(t):
+        return 0.0
     return seven_pay_prem() * min(7, policy_year(t))
 
 
 def is_mec(t):
-    """Whether the 7-pay test has failed by policy month t [R5].
+    """Whether the 7-pay test has failed by month t -- once true, true for good [R5].
+
+    ``CumPrem(t) > 7-pay limit`` in any of the first seven policy years, **latched**:
+    the flag stays set for the rest of the projection.  ``IUL_US_S``'s flag is the
+    in-year test alone, which stops applying in policy year 8 and so would switch itself
+    off exactly when the failure becomes permanent; under IRC 7702A a contract that fails
+    the test is a modified endowment contract for good, so this model latches it, as
+    ``UL_US_S`` does.
+
+    The in-year test comes first in every month, the first on the books included, so a
+    policy that fails it in the valuation month is a MEC from then on.  Only then does
+    the latch look back: to month ``t - 1``, or, in the first month on the books,
+    :func:`t_entry`, to :func:`is_mec_init`, so a policy that failed the test before the
+    valuation date stays a MEC, even in a year where the in-year test no longer applies.
+    False outside cover.
 
     A flag, not a cash flow: MEC status changes policyholder taxation, not insurer
     liability cash flows.
     """
-    return policy_year(t) <= 7 and cum_prem_pp(t) > seven_pay_limit(t)
+    if not is_active(t):
+        return False
+    if policy_year(t) <= 7 and cum_prem_pp(t) > seven_pay_limit(t):
+        return True
+    return is_mec(t - 1) if t > t_entry() else is_mec_init()
 
 
 def class_factor():
-    """The underwriting-class multiplier on the base mortality table **[std]**."""
-    return float(data.class_factor_table().loc[rate_class(), "factor"])  # noqa: F821
+    """The underwriting-class multiplier on the base mortality table **[std]**.
+
+    The ``factor`` of this point's ``rate_class``, read from :func:`model_point`, in
+    *class_factor_table.csv*: a per-point join, made once a point.  It asks
+    ``data.class_count()`` first, which checks the table's classes and factors, so that a
+    projection meets the check before it reads a factor: a blank factor would otherwise
+    reach :func:`mort_rate` as a missing value, which its cap keeps missing.  A class the
+    table has no row for is refused, naming the point, where ``IUL_US_S`` raises pandas'
+    ``KeyError``.
+    """
+    data.class_count()                                               # noqa: F821
+    tbl = data.class_factor_table()                                  # noqa: F821
+    key = model_point()["rate_class"]
+    if key not in tbl.index:
+        raise ValueError(
+            f"point_id {point_id}: {data.class_factor_file} has no row for "  # noqa: F821
+            f"rate_class {key!r}")
+    return float(tbl.loc[key, "factor"])
 
 
 def mort_rate(t):
-    """The annual best-estimate mortality rate in policy month t.
+    """The annual best-estimate mortality rate in month t.
 
     Base table times :func:`class_factor` times the A/E factor, 100% in the base run
     **[std]** with no mortality improvement.  The notes recommend 2015 VBT
     sex/smoker-distinct ANB validated against ILEC 2012-2019 [REG-R18][REG-R19]; those
     tables are licensed, so the shipped table is a small illustrative one **[std]**.
-    Ages beyond the table take its last row, where the rate is 1.0.
+    Ages beyond the table take its last row, where the rate is 1.0; the base rate is read
+    at the attained age of month t by :func:`mort_rate_base_at`.
 
-    The product is capped at 1, written ``min(q, 1.0)``: a class factor above 1 carries
-    the oldest ages' rates past 1, where the monthly rate ``1 - (1 - q)^(1/12)`` has no
-    real value, and with the bound second a missing input, a NaN, stays NaN, where
-    ``min(1.0, q)`` would read it as 1.  On every shipped point the product reaches 1.0, at
-    attained age 119, and never passes it, so the cap changes no shipped number.
+    The product is capped at 1, written ``min(q, 1.0)``, as ``IUL_US_S``'s is: a class
+    factor above 1 carries the oldest ages' rates past 1, where the monthly rate
+    ``1 - (1 - q)^(1/12)`` has no real value, and with the bound second a missing input, a
+    NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.  On every shipped point the
+    product reaches 1.0, at attained age 119, and never passes it, so the cap changes no
+    shipped number.  ``Data`` refuses a blank rate or class factor as it reads the tables
+    (``data.mort_age_last()``, ``data.class_count()``), before any rate is read.  Zero
+    outside cover, before the table is read.
     """
-    tbl = data.mort_table()                                          # noqa: F821
-    a = min(max(age(t), int(tbl.index.min())), int(tbl.index.max()))
-    q = float(tbl.loc[a, "mort_rate"]) * class_factor() * mort_ae_factor  # noqa: F821
+    if not is_active(t):
+        return 0.0
+    q = mort_rate_base_at(age(t)) * class_factor() * mort_ae_factor  # noqa: F821
     return min(q, 1.0)
+
+
+def mort_rate_base_at(a):
+    """The base table's annual mortality rate at attained age a: the table's one reader.
+
+    From *mort_table.csv*, before the class factor and the A/E factor.  Ages outside the
+    table take its nearest row, which above it is the rate of 1.0 at age 120: the first
+    and last ages ``data.mort_age_first()`` and ``data.mort_age_last()`` give, which they
+    read from the table's key column once the keys and the rates are checked, before any
+    rate is read, the last first, as :func:`corridor_factor_at` asks.  Keyed by the
+    attained age, so the table is read once an age rather than once a month;
+    :func:`mort_rate` calls it inside cover only.
+    """
+    last = data.mort_age_last()                                      # noqa: F821
+    a = min(max(a, data.mort_age_first()), last)                     # noqa: F821
+    tbl = data.mort_table()                                          # noqa: F821
+    return float(tbl.loc[a, "mort_rate"])
 
 
 def mort_rate_mth(t):
@@ -1751,28 +3048,43 @@ def mort_rate_mth(t):
 def lapse_rate_base(t):
     """The base annual lapse rate by policy year **[std]**.
 
-    6% in policy years 1-10, 4% thereafter, read from *lapse_table.csv*; policy years
-    beyond the table take its last row.  The levels are placeholders to be calibrated
-    to the LIMRA/SOA persistency studies [REG-R20][REG-R21], whose detailed tables are
-    behind a paid package.
+    6% in policy years 1-10, 4% thereafter, read from *lapse_table.csv* at the policy
+    year of month t by :func:`lapse_rate_base_py`, where policy years beyond the table
+    take its last row.  The levels are placeholders to be calibrated to the LIMRA/SOA
+    persistency studies [REG-R20][REG-R21], whose detailed tables are behind a paid
+    package.  Zero outside cover, before the table is read.
     """
+    return lapse_rate_base_py(policy_year(t)) if is_active(t) else 0.0
+
+
+def lapse_rate_base_py(y):
+    """The base annual lapse rate in policy year y, from *lapse_table.csv*: its one reader.
+
+    Policy years beyond the table take its last row, the last year
+    ``data.lapse_last_year()`` gives, which it reads from the table's key column once it
+    has checked the keys and the rates, before any rate is read.  Keyed by the
+    contractual policy year, so the table is read once a policy year rather than once a
+    month; :func:`lapse_rate_base` calls it inside cover only.
+    """
+    last = data.lapse_last_year()                                    # noqa: F821
     tbl = data.lapse_table()                                         # noqa: F821
-    y = min(policy_year(t), int(tbl.index.max()))
-    return float(tbl.loc[y, "lapse_rate_ann"])
+    return float(tbl.loc[min(y, last), "lapse_rate_ann"])
 
 
 def lapse_shock_year():
     """The policy year of the surrender-charge-expiry lapse spike.
 
     The first policy year with no surrender charge -- the run-off length plus one,
-    which is 11 for the shipped ten-year schedule -- derived from
-    *surr_charge_table.csv* rather than hard-coded, so a different schedule moves the
-    spike with it.  Zero when the model point carries no surrender charge, which no
-    policy year can equal.
+    which is 11 for the shipped ten-year schedule -- derived from the schedule's
+    :func:`surr_charge_runoff_years` rather than hard-coded, so a different schedule moves
+    the spike with it.  Zero when the model point carries no surrender charge, which no
+    policy year in cover can equal.  The valuation clock reaches policy year 0 in the
+    twelve months before issue, which is why :func:`lapse_rate_sc_mult` asks
+    :func:`is_active` first.
     """
     if not has_surr_charge():
         return 0
-    return int(data.surr_charge_table().loc[surr_charge_id(), "runoff_years"]) + 1  # noqa: F821
+    return int(surr_charge_runoff_years()) + 1
 
 
 def lapse_rate_sc_mult(t):
@@ -1780,8 +3092,13 @@ def lapse_rate_sc_mult(t):
 
     The ten-year surrender charge period [S1][S5][S7] creates a cliff in surrender
     economics; the size of the spike is a shape assumption, and UL lapse and surrender
-    experience by duration is available in [REG-R21] for calibration.
+    experience by duration is available in [REG-R21] for calibration.  1.0 outside
+    cover, before the policy year is compared: in the twelve months before issue the
+    valuation clock reaches policy year 0, the shock year :func:`lapse_shock_year` gives a
+    point with no surrender charge.
     """
+    if not is_active(t):
+        return 1.0
     return lapse_shock_mult if policy_year(t) == lapse_shock_year() else 1.0  # noqa: F821
 
 
@@ -1789,23 +3106,32 @@ def cred_rate_ann(t):
     """r_cred,t: the policy's trailing credited rate, driving dynamic lapse **[std]**.
 
     The credited rate of the segment that matured this month once the ladder is
-    running (``t >= 12``), and the fixed-account rate before that or when nothing is
-    allocated to the indexed account.  The notes say only "the policy's trailing
-    credited rate"; this is the reading the model uses.
+    running, from policy month 12 on, at the cap declared at its creation
+    (:func:`seg_index_cap`); and the fixed-account rate before that or when nothing is
+    allocated to the indexed account.  The notes say only "the policy's trailing credited
+    rate"; this is the reading the model uses.  The ladder runs from the policy's own
+    twelfth month, so the test is on the **policy** clock, ``duration_mth(t)``, where
+    ``IUL_US_S``'s compares ``t`` itself, its frame's month, which is the same month only
+    on a point issued at its frame's start.  A segment holding nothing still has a start
+    level and a cap, so this reads them in every month the ladder runs.  Zero outside
+    cover.
     """
-    if index_alloc_rate() <= 0 or t < seg_term_mth:                  # noqa: F821
+    if not is_active(t):
+        return 0.0
+    if index_alloc_rate() <= 0 or duration_mth(t) < seg_term_mth:   # noqa: F821
         return fixed_rate_ann(t)
-    return index_credit_rate(seg_return(t))
+    return index_credit_rate(seg_return(t), seg_index_cap(t))
 
 
 def comp_rate_ann(t):
     """r_alt: the competitor / market alternative rate **[std]**.
 
     The base deterministic run sets it equal to the trailing credited rate, so
-    :func:`lapse_rate_dyn_mult` is exactly 1.  Override this cells to switch dynamic
-    lapse on.  The rationale the notes give is real: caps are non-guaranteed elements
-    and uncompetitive re-declarations -- caps on one product fell from 13.75% to 12.00%
-    between two print dates [S3][S4] -- plausibly drive excess lapse.
+    :func:`lapse_rate_dyn_mult` is exactly 1.  Override this cell, before the model
+    computes anything, to switch dynamic lapse on; that is a formula override, which only
+    modelx can make.  The rationale the notes give is real: caps are non-guaranteed
+    elements and uncompetitive re-declarations -- caps on one product fell from 13.75% to
+    12.00% between two print dates [S3][S4] -- plausibly drive excess lapse.
     """
     return cred_rate_ann(t)
 
@@ -1815,8 +3141,11 @@ def lapse_rate_dyn_mult(t):
 
     ``min(2.0, max(0.5, 1 + 3.0 x (r_alt - r_cred,t)))``: a competitive credited rate
     halves lapse at the floor and an uncompetitive one doubles it at the cap.  Equal to
-    1 throughout the base run.
+    1 throughout the base run.  The bounds keep ``IUL_US_S``'s order, written first.  1.0
+    outside cover, the neutral multiplier.
     """
+    if not is_active(t):
+        return 1.0
     raw = 1 + lapse_dyn_slope * (comp_rate_ann(t) - cred_rate_ann(t))  # noqa: F821
     return min(lapse_dyn_cap, max(lapse_dyn_floor, raw))             # noqa: F821
 
@@ -1834,8 +3163,13 @@ def lapse_rate(t):
       takes a 25% shock lapse.
 
     ``lapse_rate_cap`` is 1.0: these notes give no cap, unlike the universal life
-    chassis, so the Reference is present for symmetry and inert.
+    chassis, so the Reference is present for symmetry and inert at its shipped value.
+    The shock lapse is returned before the cap, as ``IUL_US_S`` returns it, so an
+    ``nlg_shock_lapse`` past 1 is a rate past 1, whose monthly rate has no real value.
+    Zero outside cover.
     """
+    if not is_active(t):
+        return 0.0
     if nlg_in_effect(t) and ncsv_pp(t) <= 0:
         return 0.0
     if nlg_expiry_shock(t):
@@ -1850,40 +3184,99 @@ def lapse_rate_mth(t):
 
 
 def pols_if(t):
-    """l_t: the number of policies in force at the beginning of policy month t.
+    """l_t: the number of policies in force at the beginning of month t, row t's weight.
 
-    Decrements are end-of-month events, so the number in force is constant through the
-    month and every BOM cash flow is weighted by it.  ``pols_if(0) = pols_if_init()``;
-    thereafter the previous month's count less its deaths and lapses.
+    ``pols_if_at(t, "BEF_DECR")``, the notes' ``l_t``: the count carried in from month
+    t - 1 plus month t's new business, before month t's decrements.  Decrements are
+    end-of-month events, so the number in force is constant through the month and every
+    BOM cash flow is weighted by it.  On a point issued at ``t = 0`` it is exactly
+    ``IUL_US_S``'s ``pols_if``.  A point in force at the valuation date opens with
+    :func:`pols_if_init`, and one issued at or after it with its issued count in the
+    issue month.  Zero before issue.  At ``t = proj_len()``, the month after the frame,
+    it is the survivors of the last month, which the roll-forwards read.
+
+    It is ``basiclife.BasicTerm_SE``'s ``BEF_DECR`` count, not its ``pols_if``, which is
+    the count before maturity.
     """
-    if t == 0:
-        return pols_if_init()
-    return pols_if(t - 1) - pols_death(t - 1) - pols_lapse(t - 1)
+    return pols_if_at(t, "BEF_DECR")
 
 
 def pols_if_at(t, timing):
-    """Number of policies in force at time t, by ``timing``.
+    """Number of policies in force at a point of month t, by ``timing``.
 
-    All three ``CashValue_SE`` timings coincide for this product and equal
-    :func:`pols_if`: there is no new business inside a projection, and the contract has
-    no maturity that terminates coverage.
+    The three timings ``IUL_US_S``'s cell names:
+
+    ``"BEF_NB"``
+        The count carried in from month t - 1, before month t's new business: month
+        t - 1's ``"BEF_DECR"`` count less its deaths and lapses, death applied before
+        lapse, in ``IUL_US_S``'s order.  In the first month on the books,
+        :func:`t_entry`, it is :func:`pols_if_init`, the count in force at the valuation
+        date (0 for a point issued at or after it), and the recursion reads no earlier
+        month.  It is also defined in the month after the frame, ``t = proj_len()``,
+        where it is the survivors of the last month: the projection ends at an age
+        horizon, not at an event of the contract, so they are kept rather than matured.
+        Zero before issue.
+    ``"BEF_DECR"``
+        ``l_t``: ``"BEF_NB"`` plus :func:`pols_new_biz`, before any decrement; the same
+        number as :func:`pols_if`, and the weight on that month's cash flows.
+    ``"BEF_MAT"``
+        Before any maturity: ``IUL_US_S``'s meaning, the ``"BEF_DECR"`` count, which its
+        cell gives for this timing.  The contract has no maturity in the frame, so
+        nothing matures and no event of the month separates the two.
+        ``basiclife.BasicTerm_SE``'s ``"BEF_MAT"``, the count at the start of the month
+        before its new business, is not adopted: the name keeps its S model's meaning.
+
+    ``"BEF_NB"`` forms month t - 1's ``"BEF_DECR"`` count itself -- its own value at
+    ``t - 1`` plus that month's :func:`pols_new_biz` -- and takes its deaths and lapses
+    from the month's rates, as :func:`pols_death` and :func:`pols_lapse` do, rather than
+    calling for any of them.  So the chain of calls back to :func:`t_entry` is one cell a
+    month, as ``IUL_US_S``'s :func:`pols_if` chain was: a compiled model runs that chain
+    on the C stack.  ``IUL_US_S``'s cell returns :func:`pols_if` for every
+    timing, which in the issue month counts the issued policies under all three; here
+    ``"BEF_NB"`` alone counts them as new business, not yet in.  Any other timing raises.
     """
-    if timing in ("BEF_MAT", "BEF_NB", "BEF_DECR"):
-        return pols_if(t)
+    if timing == "BEF_NB":
+        if not 0 <= duration_mth(t) <= maturity_mth():
+            return 0.0
+        if t == t_entry():
+            return pols_if_init()
+        prev = pols_if_at(t - 1, "BEF_NB") + pols_new_biz(t - 1)
+        q = mort_rate_mth(t - 1)
+        return prev - prev * q - prev * (1 - q) * lapse_rate_mth(t - 1)
+    elif timing == "BEF_DECR":
+        return pols_if_at(t, "BEF_NB") + pols_new_biz(t)
+    elif timing == "BEF_MAT":
+        return pols_if_at(t, "BEF_DECR")
     else:
         raise ValueError("invalid timing")
 
 
+def pols_new_biz(t):
+    """Number of policies issued in month t: ``policy_count()`` in the issue month.
+
+    The issue month is the one with ``duration_mth(t) == 0``: ``t = 0`` for a point
+    issued at the valuation date, ``t = k`` for one issued ``k`` months later.  A point
+    already in force at the valuation date has none.
+    """
+    return policy_count() if duration_mth(t) == 0 else 0.0
+
+
 def pols_death(t):
-    """Number of deaths at the end of policy month t, ``pols_if(t) x q^d_t``."""
-    return pols_if(t) * mort_rate_mth(t)
+    """Number of deaths at the end of month t, ``pols_if(t) x q^d_t``.
+
+    Zero outside cover, before any rate is read.
+    """
+    return pols_if(t) * mort_rate_mth(t) if is_active(t) else 0.0
 
 
 def pols_lapse(t):
-    """Number of lapses at the end of policy month t.
+    """Number of lapses at the end of month t.
 
-    ``pols_if(t) x (1 - q^d_t) x q^w_t``: death is applied before lapse **[std]**.
+    ``pols_if(t) x (1 - q^d_t) x q^w_t``: death is applied before lapse **[std]**.  Zero
+    outside cover, before any rate is read.
     """
+    if not is_active(t):
+        return 0.0
     return pols_if(t) * (1 - mort_rate_mth(t)) * lapse_rate_mth(t)
 
 
@@ -1892,9 +3285,10 @@ def pols_maturity(t):
 
     At attained age 121 the policy is described as continuing in force with no further
     charges [unverified] (spec F5), so the projection horizon truncates the run rather
-    than terminating the contract.  The cells is kept so the in-force roll-forward
+    than terminating the contract.  The cell is kept so the in-force roll-forward
     identity has the same shape as in the term and annuity models of this library,
-    where it is not zero.
+    where it is not zero.  The survivors of the frame's last month do not mature either:
+    they are carried into ``t = proj_len()`` (:func:`pols_if_at`).
     """
     return 0.0
 
@@ -1953,14 +3347,14 @@ def claims_over_av(t):
 
 
 def claims(t, kind=None):
-    """Claim outgo in policy month t, optionally by ``kind``.
+    """Claim outgo in month t, optionally by ``kind``.
 
     ``kind`` is ``"DEATH"`` or ``"LAPSE"``, or ``None`` for the total.  Death claims are
     weighted by :func:`pols_death` and surrenders by :func:`pols_lapse`, both
     end-of-month events.
 
     ``"WITHDRAWAL"`` is deliberately **not** accepted: a partial withdrawal is a payment
-    on the owner's election rather than a claim, so it is the standalone cells
+    on the owner's election rather than a claim, so it is the standalone cell
     :func:`withdrawals` and its own ``result_cf()`` column.  Keeping it out of the
     ``kind is None`` total is what stops it being counted twice.
     """
@@ -1975,14 +3369,14 @@ def claims(t, kind=None):
 
 
 def withdrawals(t):
-    """Partial withdrawal payments in policy month t: ``(W_t - $25 fee) x l_t``.
+    """Partial withdrawal payments in month t: ``(W_t - $25 fee) x l_t``.
 
     Weighted by :func:`pols_if`, because a withdrawal is taken at BOM by policies still
     in force -- it is not a decrement.  The per-policy amount is
-    :func:`claim_pp` ``(t, "WITHDRAWAL")``, so the fee-inside-``W_t`` rule is stated
+    ``claim_pp(t, "WITHDRAWAL")``, so the fee-inside-``W_t`` rule is stated
     once; the fee itself stays with the insurer as :func:`wd_fees`.
 
-    A withdrawal is not a claim, and this cells is why :func:`claims` does not take a
+    A withdrawal is not a claim, and this cell is why :func:`claims` does not take a
     ``"WITHDRAWAL"`` kind.
     """
     return claim_pp(t, "WITHDRAWAL") * pols_if(t)
@@ -1999,7 +3393,7 @@ def wd_fees(t):
 
 
 def net_loan_cf(t):
-    """Net loan cash flow in policy month t: advances out, repayments in.
+    """Net loan cash flow in month t: advances out, repayments in.
 
     A loan advance is cash the insurer pays out while the account value is unchanged --
     the collateral moves inside it -- so it is a liability cash flow of its own.
@@ -2009,26 +3403,41 @@ def net_loan_cf(t):
 
 
 def inflation_factor(t):
-    """The expense inflation factor, ``(1 + inflation_rate)^(y - 1)``.
+    """The expense inflation factor, ``(1 + inflation_rate)^(t // 12)``.
 
     ``inflation_rate`` is **0** in the base run: these notes give per-policy
     maintenance and per-issue expenses as flat placeholders with no inflation
-    assumption, unlike the universal life chassis.  The cells is kept so the chassis'
+    assumption, unlike the universal life chassis.  The cell is kept so the chassis'
     shape survives and an inflation assumption can be switched on with one Reference.
+    Switched on, it steps by year on the **valuation** clock: the years are counted from
+    the valuation date, ``t // 12``, so the expense is in valuation-date dollars whatever
+    the policy's age, and every point of a block steps alike, on the valuation date's
+    anniversaries.  ``IUL_US_S`` steps on the policy year,
+    ``(1 + inflation_rate)^(y - 1)``; on a point issued at ``t = 0`` the two are the same.
+    A function of the clock alone, so it holds its value outside cover.  Acquisition is
+    not inflated (see :func:`expenses`).
     """
-    return (1 + inflation_rate) ** (policy_year(t) - 1)              # noqa: F821
+    return (1 + inflation_rate) ** (t // 12)                         # noqa: F821
 
 
 def expenses(t):
-    """E_t: the insurer's own expenses in policy month t **[std]**.
+    """E_t: the insurer's own expenses in month t **[std]**.
 
     ``$75`` a policy a year spread monthly, plus ``$150`` at issue.  Placeholders: the
     notes have no public source for insurer expenses and say to calibrate to company
-    studies.
+    studies.  ``IUL_US_S``'s formula in its order, on the policies in force at the start
+    of the month: in the issue month those are the policies issued, :func:`pols_new_biz`,
+    since a point issued at or after the valuation date opens with none, so acquisition is
+    charged per policy issued, as in ``basiclife.BasicTerm_SE``, and a point in force
+    never bears it.  On a point issued at ``t = 0`` this is ``IUL_US_S``'s charge bit for
+    bit.
 
     Not to be confused with :func:`maint_fee`, which is the charge *against the account
-    value* -- income, not outgo.
+    value* -- income, not outgo.  Zero outside cover, where the count carried into
+    ``t = proj_len()`` would otherwise bear a maintenance expense.
     """
+    if not is_active(t):
+        return 0.0
     acq = expense_acq if duration_mth(t) == 0 else 0.0               # noqa: F821
     return (acq + expense_maint / 12 * inflation_factor(t)) * pols_if(t)  # noqa: F821
 
@@ -2059,7 +3468,7 @@ def margin_mortality(t):
 
 
 def net_cf(t):
-    """CF_t: the net liability cash flow in policy month t, **undiscounted**.
+    """CF_t: the net liability cash flow in month t, **undiscounted**.
 
     ``premiums - claims - withdrawals - expenses - premium taxes + net loan cash
     flows``, which is the notes' own sign convention (inflow positive) and the
@@ -2069,7 +3478,7 @@ def net_cf(t):
     withdrawal fee -- are internal transfers within the account value, not cash flows;
     they emerge in profit as the margins.  Index credits and fixed-account interest are
     credits to the policyholder, not insurer cash flows, so they do not appear either --
-    see :func:`check_margin` for how it all reconciles.
+    see :func:`check_margin` for how it all reconciles.  Zero outside cover.
     """
     return (premiums(t) - claims(t) - withdrawals(t) - expenses(t)
             - premium_taxes(t) + net_loan_cf(t))
@@ -2078,25 +3487,46 @@ def net_cf(t):
 def check_av_components():
     """Check that the account value is still the sum of its three parts.
 
-    Returns ``True`` when, for every projected month,
-    ``av_pp(t) == fa_pp(t) + seg_bal_tot_pp(t) + lca_pp(t)``.  :func:`av_pp` is built
-    from the notes' aggregate recursion while the fixed account, the segment ladder and
-    the loan collateral account are each built from their own; this is the test that
-    the two constructions have not drifted, and it is the strongest single check on the
-    segment bookkeeping.
+    Returns ``True`` when, for every month of the frame,
+    ``av_pp(t) == fa_pp(t) + seg_bal_tot_pp(t) + lca_pp(t)`` to within ``1e-9``, relative
+    to the larger side and 10, which is what ``IUL_US_S``'s ``math.isclose`` tests with
+    its tolerances, ``rel_tol=1e-9`` and ``abs_tol=1e-8``.  :func:`av_pp` is built from the
+    notes' aggregate recursion while the fixed account, the segment ladder and the loan
+    collateral account are each built from their own; this is the test that the two
+    constructions have not drifted, and it is the strongest single check on the segment
+    bookkeeping.  On a point in force the three parts open from their own columns and the
+    account value from their sum, so an extract carried to the cent holds it too, and
+    ``Data`` holds the ``av_pp_init`` column to the same sum.  Each month's residual is
+    :func:`check_av_components_resid`, so a failure can be found by month; a residual that
+    is not a number fails, and one that is not real raises, as ``IUL_US_S``'s check does.
     """
-    res = []
     for t in range(proj_len()):
-        parts = fa_pp(t) + seg_bal_tot_pp(t) + lca_pp(t)
-        res.append(math.isclose(av_pp(t), parts,                     # noqa: F821
-                                rel_tol=1e-9, abs_tol=1e-8))
-    return all(res)
+        if not abs(check_av_components_resid(t)) <= 1e-9:
+            return False
+    return True
+
+
+def check_av_components_resid(t):
+    """The account value components' relative residual in month t; zero everywhere.
+
+    ``av_pp(t)`` less the sum of the fixed account, the live segments and the loan
+    collateral at the end of month t, over the larger of the two in magnitude and 10: one
+    number a month, whose magnitude is within ``1e-9`` exactly where ``math.isclose``
+    with ``rel_tol=1e-9`` and ``abs_tol=1e-8`` holds, ``IUL_US_S``'s test.  Returned as a
+    ``float``, so that a value that is not real raises here, as ``IUL_US_S``'s
+    ``math.isclose`` raises on it.  Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    parts = fa_pp(t) + seg_bal_tot_pp(t) + lca_pp(t)
+    av = av_pp(t)
+    return float((av - parts) / max(abs(av), abs(parts), 10.0))
 
 
 def check_av_roll_fwd():
     """Check the account value roll-forward.
 
-    Returns ``True`` when, for every projected month, the opening account value in
+    Returns ``True`` when, for every month of the frame, the opening account value in
     force of month ``t + 1`` equals::
 
         av_at(t, "BEF_PREM")
@@ -2109,102 +3539,214 @@ def check_av_roll_fwd():
             - claims_from_av(t, "DEATH")
             - claims_from_av(t, "LAPSE")
 
-    This pins the notes' processing order: the index credit arrives at BOM when a
-    segment matures, interest is credited on the *post-deduction* balance, decrements
-    come after both, and the withdrawal fee leaves the account value alongside the
-    withdrawal itself.
+    to within ``1e-9``, relative to the larger of the two and 10, as for
+    :func:`check_av_components`.  This pins the notes' processing order: the index credit
+    arrives at BOM when a segment matures, interest is credited on the *post-deduction*
+    balance, decrements come after both, and the withdrawal fee leaves the account value
+    alongside the withdrawal itself.  Each month's residual is
+    :func:`check_av_roll_fwd_resid`; a residual that is not a number fails, and one that is
+    not real raises, as ``IUL_US_S``'s check does.  In the last month the opening value
+    of ``t + 1`` is the account value the survivors carry into ``t = proj_len()``.
     """
-    res = []
     for t in range(proj_len()):
-        av = (av_at(t, "BEF_PREM")
-              + prem_to_av(t)
-              + index_credits(t)
-              - withdrawals(t)
-              - wd_fees(t)
-              - mth_deduction(t)
-              + inv_income(t)
-              - claims_from_av(t, "DEATH")
-              - claims_from_av(t, "LAPSE"))
-        res.append(math.isclose(av_at(t + 1, "BEF_PREM"), av,        # noqa: F821
-                                rel_tol=1e-9, abs_tol=1e-8))
-    return all(res)
+        if not abs(check_av_roll_fwd_resid(t)) <= 1e-9:
+            return False
+    return True
+
+
+def check_av_roll_fwd_resid(t):
+    """The account value roll-forward's relative residual in month t; zero everywhere.
+
+    The opening account value in force of month ``t + 1`` less the roll-forward of month
+    t that :func:`check_av_roll_fwd` sets out, over the larger of the two in magnitude and
+    10, and a ``float``, as :func:`check_av_components_resid` is: a monthly rate built from
+    an annual one past 1, ``1 - (1 - q)^(1/12)``, is complex, and so is every count after
+    it, and a complex residual's magnitude would pass.  Zero outside cover, before ``t + 1``
+    is read, so that nothing reads a month past ``t = proj_len()``.
+    """
+    if not is_active(t):
+        return 0.0
+    av = (av_at(t, "BEF_PREM")
+          + prem_to_av(t)
+          + index_credits(t)
+          - withdrawals(t)
+          - wd_fees(t)
+          - mth_deduction(t)
+          + inv_income(t)
+          - claims_from_av(t, "DEATH")
+          - claims_from_av(t, "LAPSE"))
+    nxt = av_at(t + 1, "BEF_PREM")
+    return float((nxt - av) / max(abs(nxt), abs(av), 10.0))
 
 
 def check_seg_ladder():
     """Check the segment ladder bookkeeping.
 
-    Returns ``True`` when, for every projected month, all four of the following hold:
+    Returns ``True`` when, for every month of the frame, all four of the following hold:
 
-    * at most ``seg_term_mth`` segments are live;
+    * at most ``seg_term_mth`` segments are live (:func:`check_seg_count_resid`);
     * every segment that matured accounted for its creation balance exactly,
-      ``seg_new_pp(m) == seg_bal_pp(m + 11, m) + deductions + withdrawals`` -- nothing
+      ``seg_new_pp(m) == seg_bal_pp(t - 1, m) + deductions + withdrawals`` -- nothing
       may appear in or vanish from a segment except a deduction, a withdrawal or a loan
-      transfer, because segments earn no interim interest;
-    * **every live segment balance is non-negative**;
-    * **every index credit is non-negative**.
+      transfer, because segments earn no interim interest
+      (:func:`check_seg_closure_resid`);
+    * **every live segment balance is non-negative**, to within ``1e-8``
+      (:func:`check_seg_bal_resid`);
+    * **every index credit is non-negative**, to within ``1e-8``
+      (:func:`check_seg_credit_resid`).
 
     The last two are the 0% floor of ``cr_k = max(f, min(c, p x r))`` [S2][R1] stated as
     an invariant.  The accounting identity above closes even on a negative balance, and
     :func:`seg_count` counts only positive ones, so without these two an over-sourced
     draw could take a segment below zero and pay a negative credit on it at maturity
-    without any check firing -- see :func:`mth_deduction_from_seg_pp`.
+    without any check firing -- see :func:`mth_deduction_from_seg_pp`.  ``IUL_US_S``'s
+    tests and tolerances, each month's read from a residual cell; a residual that is not
+    a number fails each test.  A segment born before the valuation date that matures in
+    month 0 closes on its creation balance by construction, since that balance is its
+    ladder row summed (:func:`seg_new_pp`).
     """
-    res = []
     for t in range(proj_len()):
-        res.append(seg_count(t) <= seg_term_mth)                     # noqa: F821
-        res.append(index_credit_pp(t) >= -1e-8)
-        lo = max(0, t - seg_term_mth + 1)                            # noqa: F821
-        for k in range(lo, t + 1):
-            res.append(seg_bal_pp(t, k) >= -1e-8)
-        m = t - seg_term_mth                                         # noqa: F821
-        if m >= 0:
-            closed = (seg_bal_pp(t - 1, m) + seg_ded_cum_pp(t - 1, m)
-                      + seg_wd_cum_pp(t - 1, m))
-            res.append(math.isclose(seg_new_pp(m), closed,           # noqa: F821
-                                    rel_tol=1e-9, abs_tol=1e-8))
-    return all(res)
+        if not check_seg_count_resid(t) <= 0:
+            return False
+        if not check_seg_credit_resid(t) >= -1e-8:
+            return False
+        if not check_seg_bal_resid(t) >= -1e-8:
+            return False
+        if not abs(check_seg_closure_resid(t)) <= 1e-9:
+            return False
+    return True
+
+
+def check_seg_count_resid(t):
+    """The live segments beyond ``seg_term_mth`` at the end of month t: zero or below.
+
+    ``seg_count(t) - seg_term_mth`` as a ``float``, which :func:`check_seg_ladder` holds to
+    0 or below, ``IUL_US_S``'s ``seg_count(t) <= seg_term_mth``.  Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    return float(seg_count(t) - seg_term_mth)                        # noqa: F821
+
+
+def check_seg_credit_resid(t):
+    """The index credit of month t per policy, held by the ladder check to -1e-8 or more.
+
+    :func:`index_credit_pp`, which :func:`check_seg_ladder` holds to ``-1e-8`` or more,
+    ``IUL_US_S``'s tolerance.  Zero outside cover, where no segment matures.
+    """
+    return index_credit_pp(t)
+
+
+def check_seg_bal_resid(t):
+    """The least live segment balance at the end of month t, or 0 where none is below.
+
+    The smallest of 0 and the balances of the segments born in policy months
+    ``max(0, duration_mth(t) - 11)`` to ``duration_mth(t)``, which
+    :func:`check_seg_ladder` holds to ``-1e-8`` or more, ``IUL_US_S``'s test of each
+    balance.  A balance that is not a number, once met, is kept, so that the residual is
+    not a number and the check fails, as ``IUL_US_S``'s does.  Zero outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    d = duration_mth(t)
+    low = 0.0
+    for m in range(max(0, d - seg_term_mth + 1), d + 1):             # noqa: F821
+        b = seg_bal_pp(t, m)
+        if low == low and not b >= low:
+            low = b
+    return low
+
+
+def check_seg_closure_resid(t):
+    """The closure's relative residual for the segment maturing in month t; zero.
+
+    The creation balance of the segment born in policy month ``duration_mth(t) - 12``,
+    :func:`seg_new_pp`, less its balance at the end of month ``t - 1`` plus the deductions
+    and the draws charged to it, over the larger of the two in magnitude and 10, a
+    ``float``, as :func:`check_av_components_resid` is: ``math.isclose`` with
+    ``IUL_US_S``'s tolerances.  In the first month on the books, :func:`t_entry`, a
+    segment born before the valuation date is ladder slot 12, read from its row.  Zero
+    where nothing matures and outside cover.
+    """
+    if not is_active(t):
+        return 0.0
+    m = duration_mth(t) - seg_term_mth                               # noqa: F821
+    if m < 0:
+        return 0.0
+    if t > t_entry():
+        closed = (seg_bal_pp(t - 1, m) + seg_ded_cum_pp(t - 1, m)
+                  + seg_wd_cum_pp(t - 1, m))
+    else:
+        k = seg_term_mth                                             # noqa: F821
+        closed = (seg_bal_pp_init(k) + seg_ded_cum_pp_init(k) + seg_wd_cum_pp_init(k))
+    new = seg_new_pp(m)
+    return float((new - closed) / max(abs(new), abs(closed), 10.0))
 
 
 def check_margin():
     """Check the net cash flow against the expense and mortality margins.
 
-    Returns ``True`` when, for every projected month::
+    Returns ``True`` when, for every month of the frame::
 
         net_cf(t) == margin_expense(t) + margin_mortality(t)
                      + av_change(t) - inv_income(t) - index_credits(t)
-                     + loan_bal_pp(t) * pols_lapse(t)
+                     + min(loan_bal_pp(t), csv_pp(t)) * pols_lapse(t)
                      + net_loan_cf(t)
 
-    The terms after the two margins are what separates a *gross liability cash flow*
-    model from ``CashValue_SE``, whose ``net_cf`` already nets the change in account
-    value and the investment income.  ``index_credits`` joins ``inv_income`` because
-    the indexed account's whole return arrives at maturity rather than monthly; the
-    loan terms are the debt extinguished against the account value when a policy with a
-    loan surrenders, and the advance itself.  The identity holds while neither the
-    :func:`csv_pp` nor the :func:`ncsv_pp` floor binds against a policy loan.
+    to within ``1e-9``, relative to the larger side and 10, as for
+    :func:`check_av_components`; each month's residual is :func:`check_margin_resid`, and
+    a residual that is not a number fails.  The terms after the two margins are what
+    separates a *gross liability cash flow* model from ``CashValue_SE``, whose ``net_cf``
+    already nets the change in account value and the investment income.
+    ``index_credits`` joins ``inv_income`` because the indexed account's whole return
+    arrives at maturity rather than monthly; the loan terms are the debt a surrender
+    recovers out of the cash value, which is the whole loan while the cash value covers it
+    and the cash value once the loan exceeds it, where :func:`ncsv_pp` pays nothing, and
+    the advance itself.  ``IUL_US_S``'s identity takes the whole loan in every month, which
+    holds while neither the :func:`csv_pp` nor the :func:`ncsv_pp` floor binds against a
+    policy loan, so its check fails on its point 5, whose loan overruns the cash value
+    from policy month 383, on a projection that is right; this model states the identity
+    as ``UL_US_SEC``, ``VUL_US_SEC`` and ``ULSG_US_SEC`` do, and on every point whose loan
+    stays within its cash value the two agree.
     """
-    res = []
     for t in range(proj_len()):
-        rhs = (margin_expense(t) + margin_mortality(t)
-               + av_change(t) - inv_income(t) - index_credits(t)
-               + loan_bal_pp(t) * pols_lapse(t)
-               + net_loan_cf(t))
-        res.append(math.isclose(net_cf(t), rhs,                      # noqa: F821
-                                rel_tol=1e-9, abs_tol=1e-8))
-    return all(res)
+        if not abs(check_margin_resid(t)) <= 1e-9:
+            return False
+    return True
+
+
+def check_margin_resid(t):
+    """The margin identity's relative residual in month t; zero everywhere.
+
+    ``net_cf(t)`` less the two margins, the change in account value, the interest and the
+    index credits, the loan a surrender recovers and the net loan cash flow, that
+    :func:`check_margin` sets out, over the larger of the two sides in magnitude and 10, a
+    ``float``, as :func:`check_av_components_resid` is.  Zero outside cover, before
+    :func:`av_change` would read ``t + 1``.
+    """
+    if not is_active(t):
+        return 0.0
+    rhs = (margin_expense(t) + margin_mortality(t)
+           + av_change(t) - inv_income(t) - index_credits(t)
+           + min(loan_bal_pp(t), csv_pp(t)) * pols_lapse(t)
+           + net_loan_cf(t))
+    lhs = net_cf(t)
+    return float((lhs - rhs) / max(abs(lhs), abs(rhs), 10.0))
 
 
 def result_cf():
-    """Result table of cashflows, a DataFrame indexed by policy month ``t``.
+    """Result table of cashflows, a DataFrame indexed by month ``t``.
 
-    One row per projected month, ``t = 0 ... proj_len() - 1``, so the frame has
-    ``proj_len()`` rows.
-    ``pols_if`` is the number in force at the **start** of month ``t`` and is the weight
-    on that same row's cash flows.  The cash flow columns are income-positive and sum to
-    ``net_cf``: ``premiums - claims_death - claims_lapse - withdrawals - expenses
-    - premium_taxes + net_loan_cf``.  The surrender column is ``claims_lapse``, matching
-    the ``"LAPSE"`` kind that produces it, and withdrawals are their own column because
-    they are not claims.
+    One row per month ``t = 0 .. proj_len() - 1`` from the valuation date, the same month
+    for every model point, so the frames of a block line up and sum row by row, and a
+    point issued after the valuation date has zeros until its issue month;
+    ``len(result_cf()) == proj_len()``.  The columns are ``IUL_US_S``'s.  ``pols_if`` is
+    the number in force at the **start** of month ``t`` and is the weight on that same
+    row's cash flows.  The cash flow columns are income-positive and sum to ``net_cf``:
+    ``premiums - claims_death - claims_lapse - withdrawals - expenses - premium_taxes
+    + net_loan_cf``.  The surrender column is ``claims_lapse``, matching the ``"LAPSE"``
+    kind that produces it, and withdrawals are their own column because they are not
+    claims.
     """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
@@ -2224,20 +3766,29 @@ def result_cf():
 
 
 def result_pols():
-    """Result table of policy decrements, a DataFrame indexed by policy month ``t``.
+    """Result table of policy counts and decrement rates, a DataFrame indexed by ``t``.
 
-    One row per projected month, ``t = 0 ... proj_len() - 1``.
+    One row per month ``t = 0 .. proj_len() - 1``, as in :func:`result_cf`.  First the
+    counts :func:`result_cf` weights its rows by, and how they move, as
+    ``basiclife.BasicTerm_SE``'s ``result_pols`` sets them out: ``pols_if``, the count of
+    month t; ``pols_new_biz``, the part of it issued in month t; then month t's deaths
+    and lapses, in ``IUL_US_S``'s order, and its maturities, which are always zero.  Row
+    by row, ``pols_if`` at ``t + 1`` is ``pols_if`` less the two outflows of month t,
+    plus the new business of month ``t + 1``.  Then ``IUL_US_S``'s two monthly decrement
+    rates, which are 0 outside cover, where the model reads no rate.
     """
     ts = list(range(proj_len()))
+    rows = []
+    for t in ts:
+        active = is_active(t)
+        rows.append((pols_if(t), pols_new_biz(t), pols_death(t), pols_lapse(t),
+                     pols_maturity(t),
+                     mort_rate_mth(t) if active else 0.0,
+                     lapse_rate_mth(t) if active else 0.0))
     return pd.DataFrame(                                             # noqa: F821
-        {
-            "pols_if": [pols_if(t) for t in ts],
-            "pols_death": [pols_death(t) for t in ts],
-            "pols_lapse": [pols_lapse(t) for t in ts],
-            "pols_maturity": [pols_maturity(t) for t in ts],
-            "mort_rate_mth": [mort_rate_mth(t) for t in ts],
-            "lapse_rate_mth": [lapse_rate_mth(t) for t in ts],
-        },
+        rows,
+        columns=["pols_if", "pols_new_biz", "pols_death", "pols_lapse",
+                 "pols_maturity", "mort_rate_mth", "lapse_rate_mth"],
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
 
@@ -2249,9 +3800,9 @@ def result_av():
     premium, the index credit of any maturing segment, the account value before the
     deduction, the death benefit, the net amount at risk, the cost of insurance, the
     monthly deduction, the post-deduction balance, the interest credited, the closing
-    account value, and then the surrender and loan values.  One row per projected
-    month, ``t = 0 ... proj_len() - 1``; ``av_pp_bef_prem`` on row ``t`` is the
-    opening balance and ``av_pp`` the closing one.
+    account value, and then the surrender and loan values.  One row per month
+    ``t = 0 .. proj_len() - 1`` from the valuation date, as in :func:`result_cf`;
+    ``av_pp_bef_prem`` on row ``t`` is the opening balance and ``av_pp`` the closing one.
     """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
@@ -2280,8 +3831,12 @@ def result_seg():
 
     The index level, the fixed (holding) account, the sweep that creates this month's
     segment, the total and count of live segments, the credit paid by the segment
-    maturing this month and the return that produced it (0 in ``t = 0 ... 11``, when
-    nothing can mature yet).  One row per projected month, ``t = 0 ... proj_len() - 1``.
+    maturing this month and the return that produced it (0 in a policy's first twelve
+    policy months, when nothing can mature yet).  One row per month
+    ``t = 0 .. proj_len() - 1`` from the valuation date, as in :func:`result_cf`.  The
+    index level is the path on the valuation clock, :func:`index_level`, which on a point
+    in force differs from ``IUL_US_S``'s by a constant factor; every other column is a
+    ratio of levels or an amount, and moves with the segments, not with the path.
     """
     ts = list(range(proj_len()))
     return pd.DataFrame(                                             # noqa: F821
@@ -2292,8 +3847,7 @@ def result_seg():
             "seg_bal_tot_pp": [seg_bal_tot_pp(t) for t in ts],
             "seg_count": [seg_count(t) for t in ts],
             "index_credit_pp": [index_credit_pp(t) for t in ts],
-            "seg_return": [seg_return(t) if t >= seg_term_mth else 0.0  # noqa: F821
-                           for t in ts],
+            "seg_return": [seg_return(t) for t in ts],
             "lca_pp": [lca_pp(t) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
@@ -2386,5 +3940,3 @@ inflation_rate = 0.0
 premium_tax_rate = 0.02
 
 pd = ("Module", "pandas")
-
-math = ("Module", "math")

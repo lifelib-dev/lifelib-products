@@ -1813,6 +1813,103 @@ _ULSG_STATE = {
 }
 
 
+def _iul_entering(name, opening):
+    """What ``IUL_US_S`` carries into month ``d`` in cells ``name``.
+
+    The close of month ``d - 1``, or, where month ``d`` opens S's frame, the opening value
+    S's own formulas read there.  ``IUL_US_S`` opens every point's frame at its own month
+    0, so that is ``d = 0``, the month a twin is read at.
+    """
+    def extract(s, d):
+        return getattr(s, name)(d - 1) if d > 0 else opening(s)
+    return extract
+
+
+def _iul_mec_latch(s, d):
+    """The MEC latch ``IUL_US_S``'s point ``s`` carries into month ``d``, as an int code.
+
+    ``IUL_US_S``'s ``is_mec`` is the 7-pay test of the month alone and does not latch, so
+    the latch ``IUL_US_SEC`` opens with is whether that test failed in any month from 0 to
+    ``d - 1``: 1 if so, 0 otherwise, and 0 where ``d`` opens S's frame.  The months are read
+    in ascending order, each test reading the premiums paid to date, which S's own sweep
+    does not reach, a month at a time.
+    """
+    for u in range(d):
+        if s.is_mec(u):
+            return 1
+    return 0
+
+
+# IUL_US_SEC's opening state (D6): what IUL_US_S carries into month d, each read as S's own
+# formulas read it.  The account value, the fixed account and the loan collateral entering
+# month d are S's own opening timings, and the loan the close of month d - 1, or S's own
+# column where d opens S's frame.  The face in force is the close of month d - 1, after its
+# withdrawal cut, and where d opens S's frame S's face at issue on a point in force and 0
+# on new business, which has no opening state.  The premiums less withdrawals to date and
+# the no-lapse accumulator, S's cum_prem_pp(d - 1) and cum_prem_net_pp(d - 1), restart at 0
+# where S's frame opens, as S assumes, and so does the MEC latch (_iul_mec_latch).  The
+# live index segments are a companion, built by _iul_ladder.
+_IUL_STATE = {
+    "av_pp_init": lambda s, d: s.av_pp_at(d, "BEF_PREM"),
+    "loan_bal_init": _iul_entering("loan_bal_pp", lambda s: s.loan_bal_init()),
+    "fa_pp_init": lambda s, d: s.fa_pp_at(d, "BEF_PREM"),
+    "lca_pp_init": lambda s, d: s.lca_pp_at(d, "BEF_PREM"),
+    "sum_assured_init": _iul_entering(
+        "sum_assured_at", lambda s: s.sum_assured() if s.duration_mth_init() > 0 else 0.0),
+    "cum_prem_init": _iul_entering("cum_prem_pp", lambda s: 0.0),
+    "cum_prem_net_init": _iul_entering("cum_prem_net_pp", lambda s: 0.0),
+    "is_mec_init": _iul_mec_latch,
+}
+
+_IUL_LADDER = ("point_id", "slot", "seg_bal_pp_init", "seg_ded_cum_pp_init",
+               "seg_wd_cum_pp_init", "seg_index_start_init", "seg_index_cap_init")
+
+
+def _iul_ladder(s_model, table):
+    """``inforce_segments_sec.csv``: each derived row's live segments entering month ``d``.
+
+    For each row of the table in force, restated at S month ``d`` or the twin of a point S
+    opens in force (``d = 0``), in the table's order, one row for each of its last
+    ``min(seg_term_mth, duration_mth)`` policy months, ``duration_mth`` the row's own, a
+    month that swept nothing included: ``slot`` ``k``, the months since the segment's
+    creation at the valuation date, is the segment ``IUL_US_S`` created at its month
+    ``m = d - k``.  Where ``k <= d``, S created it in its own frame, and the row holds its
+    balance, the deductions and the draws charged to it to date, each at the close of month
+    ``d - 1`` (S's ``seg_bal_pp``, ``seg_ded_cum_pp`` and ``seg_wd_cum_pp`` at
+    ``(d - 1, m)``); where ``k > d``, the segment predates S's frame, which S assumes held
+    none, and the row is empty.  Either way it holds the cap S declares at ``m``, its
+    ``index_cap_at(m)``, and S's index level at ``m`` rebased onto ``IUL_US_SEC``'s path,
+    whose level at the valuation date is ``index_level_init``: ``index_level(m)`` times
+    ``index_level_init`` over ``index_level(d)``, so that a segment's return, a ratio of
+    two levels, is S's.  On S's points as shipped, all new business, ``duration_mth`` is
+    ``d``, so every slot is S's own.  The future rows hold none, and so do the twins of S's
+    new-business points.  ``point_id`` is the only key to a point.
+
+    It reads only the S cells it needs, and releases nothing: the caller owns the S model,
+    and one T6 passes in may be one it still compares against, whose caches a release
+    would empty.
+    """
+    point_of = {pol: pid
+                for pid, pol in s_model.Data.model_point_table()["policy_id"].items()}
+    rows = []
+    for row in table.to_dict("records"):
+        s = s_model.Projection[point_of[row["source_policy_id"]]]
+        if row["row_kind"] not in ("derived", "twin"):
+            continue
+        d = int(row["source_mth"]) if row["row_kind"] == "derived" else 0
+        base = s.index_level_init / s.index_level(d)
+        for k in range(1, min(s.seg_term_mth, int(row["duration_mth"])) + 1):
+            m = d - k
+            held = (s.seg_bal_pp(d - 1, m), s.seg_ded_cum_pp(d - 1, m),
+                    s.seg_wd_cum_pp(d - 1, m)) if k <= d else (0.0, 0.0, 0.0)
+            rows.append({"point_id": row["point_id"], "slot": k,
+                         "seg_bal_pp_init": held[0], "seg_ded_cum_pp_init": held[1],
+                         "seg_wd_cum_pp_init": held[2],
+                         "seg_index_start_init": s.index_level(m) * base,
+                         "seg_index_cap_init": s.index_cap_at(m)})
+    return pd.DataFrame(rows, columns=list(_IUL_LADDER))
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -2652,6 +2749,102 @@ SEC_SPECS: dict[str, SecSpec] = {
         twin_state={"grace_mth_init": _ULSG_STATE["grace_mth_init"]},
         exempt=frozenset({"result_pols", "solve_len", "sg_pp_solve", "guar_min_sg",
                           "no_lapse_premium"}),
+    ),
+    # IUL's state is S's two columns and six more (_IUL_STATE above): the account value and
+    # the loan, under S's names; the fixed account and the loan collateral apart from the
+    # loan, which S's in-force entry merges (it opens the fixed account at the account value
+    # less the loan and the collateral at the loan); the face in force; the two running
+    # totals S opens at 0, the premiums less withdrawals and the no-lapse guarantee's
+    # accumulator, premiums less withdrawals and loans; and the MEC latch, which S does not
+    # keep, so its extractor reads whether S's 7-pay test failed in any month before d.  The
+    # live index segments, which S cannot open at all, go in a long companion,
+    # inforce_segments_sec.csv, keyed (point_id, slot), slot the months since a segment's
+    # creation at the valuation date (§7.4): one row a month for each derived row's last
+    # min(12, d) months, built from S's own ladder by _iul_ladder, each start level rebased
+    # onto SEC's index path.  pols_if_init becomes policy_count (the default), and
+    # duration_mth is S's own column: IUL_US_S runs on the projection clock and ships no
+    # point in force, so every twin is new business at source_mth 0, and the six new
+    # columns take what S itself assumes there, 0; S's two columns stay as its table has
+    # them.  The derived rows are S point 1 on its fifth anniversary, 60, an annual premium
+    # falling at t = 0 and the segment born at its fourth anniversary maturing there; S
+    # point 4 mid-year at 65, paying monthly, all twelve segments live, its surrender
+    # charge and its no-lapse guarantee in force; S point 5 at 6, mid-way through its first
+    # year, its ladder six months deep with one segment swept, whose guarantee fails for
+    # good at policy month 49, in frame; S point 5 at 384, its fixed account below 0
+    # entering the month and its loan above its cash value, and at 605, its account value
+    # below 0 too, the exhausted states S carries by design and Data accepts; and S point 1
+    # at 888, two years before the end of its projection, which reaches the COI scale's and
+    # the mortality table's last rows.  The future row is S point
+    # 4 issued 25 months after the valuation date, more than a year on, so that the months
+    # before issue read policy years -2 to 0, where a missing guard would show.  T2's
+    # splice grid is built from this spec in a temporary table, not committed.
+    #
+    # IUL_US_S ships no point in force, so IN_FORCE_TWINS is empty, but the generator
+    # restates one: _iul_ladder sizes a row's ladder by its own duration_mth, the slots S
+    # held from its own month 0 read from S and the older ones empty, as S assumes.  A T2
+    # case on such a point needs two things beside the generator: an arg_map moving S's
+    # segment month m, a projection month, to the policy month m + duration_mth_init on
+    # the six (t, m) segment cells and on seg_new_pp, with the arg_map's cut-off of
+    # segments matured before the valuation date moved likewise; and exemptions, with
+    # their reasons, for cred_rate_ann and comp_rate_ann, whose first-segment test runs on
+    # the policy clock here and on S's projection clock there, and for result_seg's
+    # seg_return before S's first maturity, which S guards by its own month.
+    #
+    # T1 holds on IUL at any count: S charges acquisition on the policies in force in the
+    # issue month, the policies issued, as SEC does.  It skips two S cells besides the
+    # default three:
+    #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
+    #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
+    #     cell T1 compares at every month, and test_indexed_ul_us_sec.py compares the
+    #     report itself with S's, on every column both hold.
+    #   check_margin: SEC states the margin identity with the debt a surrender recovers,
+    #     min(loan_bal_pp(t), csv_pp(t)), as UL_US_SEC, VUL_US_SEC and ULSG_US_SEC do,
+    #     where S adds back the whole loan, which holds only while the cash value covers
+    #     it.  S's check is False on its point 5, whose loan overruns its cash value from
+    #     policy month 383, and SEC's True; on points 1 to 4 both are True.
+    # S's net_cf calls claims(t) with its kind=None default, so S's sweep caches claims
+    # under (t, None); and S's projection calls its engine cells with their None defaults,
+    # index_credit_rate(r, None), seg_credit_base(b, d, None) and index_credit(b, d, r,
+    # None, None), where SEC passes each segment's cap and the convention explicitly.
+    # Phase 2 replaces the defaults with a total cell and inlined engine forms (R12, R14),
+    # and its T1 then needs an arg_map for those keys, and R15's from S's (t, m) keys to
+    # (t, slot), the slot duration_mth(t) - m.  The label accessors (sex, rate_class,
+    # db_option, qual_test, premium_type, premium_mode, surr_charge_id) are called by no
+    # projection cell, so Phase 2 declares them reporting.  The engine cells index_change,
+    # index_credit_rate, seg_credit_base, index_credit and seg_matured_value take floats
+    # and are kept at stage E (R14), the first four on the projection path and the last
+    # for S's worked-example test, which alone calls it; the ladder's companion is read by
+    # a Data reader of its own, inforce_segments, as no S reader fits.  SEC adds no
+    # float-parameter cell and no uncached cell.
+    #
+    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 0
+    # to 85 (product-spec), and S projects any age its tables serve: the shipped COI scale
+    # serves the anchor cell, M / NT / 45, alone.  At stage E Data refuses an issue age only
+    # below 0 or not whole, and proj_len() one at or past maturity_age; Phase 2's sizes rest
+    # on the contract's youngest issue age, 0:
+    #   t: 0 to 1,572, 1,573 values: 12 x (maturity_age 121 - youngest issue age 0) =
+    #     1,452 months of cover, plus future_horizon_mth 120, and t = proj_len(), which the
+    #     count and the account value's opening timing are carried into and av_change and
+    #     check_av_roll_fwd_resid read from the last month.
+    #   policy years y (lapse_rate_base_py, coi_rate_guar_py): 1 to 121, the year of the
+    #     last covered month at the youngest issue age; the lapse table's last year, 11 as
+    #     shipped, and the COI scale's, 76, clamp them.
+    #   attained ages a (mort_rate_base_at, corridor_factor_at): 0 to 120, read only in
+    #     cover; each reader clamps the age to its table's first and last ages, the
+    #     mortality table's first, 18, binding below it.
+    #   slots k (the five seg_*_init readers): 1 to seg_term_mth, 12; the six (t, m)
+    #     segment cells by policy month m, 0 to 1,451, until R15 re-keys them by slot,
+    #     0 to 11 live.
+    "IUL_US_SEC": SecSpec(
+        twin="IUL_US_S",
+        duration_of=lambda row: int(row["duration_mth"]),
+        derived=((1, 60), (4, 65), (5, 6), (5, 384), (5, 605), (1, 888)),
+        future=((4, 25),),
+        state=_IUL_STATE,
+        twin_state={c: f for c, f in _IUL_STATE.items()
+                    if c not in ("av_pp_init", "loan_bal_init")},
+        exempt=frozenset({"result_pols", "check_margin"}),
+        companions={"inforce_segments_sec.csv": _iul_ladder},
     ),
 }
 

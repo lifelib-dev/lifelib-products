@@ -73,8 +73,8 @@ guaranteed UL's are, the `_SEC` twin of that point continues the `_S` projection
 month it is valued at, its expenses apart, which inflate from the valuation date. Each
 `model-sec.md` says what running in force changes.
 `Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`,
-`DIA_US_SEC`, `FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC` and `ULSG_US_SEC` are
-the first eleven.
+`DIA_US_SEC`, `FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC`, `ULSG_US_SEC` and
+`IUL_US_SEC` are all twelve: every product has its in-force model.
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
@@ -99,7 +99,7 @@ derives the policy year from its policy clock (`duration(t) = duration_mth(t) //
 | [Level premium term](products/term_life/index.md) | `Term_US_S`, `Term_US_SEC` | monthly | Guaranteed level premiums for 10/20/30 years, then jump-to-ART renewal at unchanged face to attained age 95; convertible until min(end of level period, age 70); no cash value. Contractually annual throughout, so the premium schedule, the ART renewals and the shock lapse sit on the anniversary |
 | [Whole life](products/whole_life/index.md) | `WholeLife_US_S`, `WholeLife_US_SEC` | monthly | Participating level-premium WL on a 2017 CSO / 4% nonforfeiture basis, three-factor contribution dividends, paid-up-additions default; plus a non-par final-expense variant. The dividend and the cash value schedule stay annual; the cash value interpolates between anniversaries |
 | [Universal life](products/universal_life/index.md) | `UL_US_S`, `UL_US_SEC` | monthly | Flexible-premium current-assumption UL: monthly deductions, declared crediting over a guaranteed minimum, GPT corridor, DB options A/B — the **base chassis** for the three below |
-| [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
+| [Indexed UL](products/indexed_ul/index.md) | `IUL_US_S`, `IUL_US_SEC` | monthly | UL chassis + S&P 500 annual point-to-point index account with cap, 100% participation, 0% floor — the AG 49-A benchmark design |
 | [Variable UL](products/variable_ul/index.md) | `VUL_US_S`, `VUL_US_SEC` | monthly | UL chassis + unitized separate-account subaccounts and a fixed option; SEC-registered, so charges are anchored on prospectus fee tables |
 | [Guaranteed UL](products/guaranteed_ul/index.md) | `ULSG_US_S`, `ULSG_US_SEC` | monthly | UL chassis + shadow-account secondary guarantee (AG 38 §8E Design #1), funded by a solved level no-lapse premium; lapse-supported economics |
 
@@ -259,7 +259,7 @@ python -m pytest tests -q
 * - `products/<product>/<Model>/`
   - The modelx model itself. Formulas only — no embedded data.
 * - `products/<product>/*.csv`
-  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, with any `*_sec.csv` companion beside or in place of a table, such as DIA's premium schedule, or the FIA's rate scenarios, RILA's market scenarios or the variable annuity's return and rate scenarios re-based to each model point, each generated from the `_S` model and its inputs and checked against them by the tests.
+  - The model's inputs, external to the model folder so they can be edited or swapped in place. An `_SEC` model reads the same tables and its own `model_point_table_sec.csv`, with any `*_sec.csv` companion beside or in place of a table, such as DIA's premium schedule or indexed UL's segment ladder, or the FIA's rate scenarios, RILA's market scenarios or the variable annuity's return and rate scenarios re-based to each model point, each generated from the `_S` model and its inputs and checked against them by the tests.
 * - `products/<product>/run.py`
   - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block, and `--cython` runs the compiled model.
 * - `products/<product>/sample_sec.py`, `spec_sec.py`
