@@ -3256,7 +3256,7 @@ _DURATION = "{{file}}: duration_mth must be a whole number of months; " + _POINT
 _WHOLE = "{{file}}: {column} must be a whole number, 0 or more; " + _POINT
 _FLAG = "{{file}}: {column} must be True or False, or 1 or 0; " + _POINT
 _NUMBER = "{{file}}: {column} must be a number, zero or more; " + _POINT
-_FUND_VALUE = ("{{file}}: {column} must be a number, zero or more to within a cent; "
+_FUND_VALUE = ("{{file}}: {column} must be a number, zero or more to within 1e-8; "
                + _POINT)
 _TAX = "{{file}}: premium_tax_rate must be a number from 0 to below 1; " + _POINT
 _RATE = "{{file}}: {column} must be a number from 0 to 1; " + _POINT
@@ -3437,8 +3437,14 @@ MALFORMED = [
        _says(_NO_FUND, list(range(1, 24)), column=f"sa_pp_init_{i}", i=i)) for i in (1, 2)],
     ("a negative fund value", _set("sa_pp_init_1", [2], -1.0),
      _says(_FUND_VALUE, [2], column="sa_pp_init_1")),
-    ("a fund value just past a cent below 0", _set("sa_pp_init_1", [18], -0.0101),
+    ("a fund value just past 1e-8 below 0", _set("sa_pp_init_1", [18], -2e-8),
      _says(_FUND_VALUE, [18], column="sa_pp_init_1")),
+    # The floor of a cent this rule held before M13, on the contract depleted at a year's
+    # start, valued at 144 and counting 0.53 contracts: Data read it, the contract opened
+    # depleted with its account released in month 0, and check_av_roll_fwd missed by
+    # 0.0053 (USLIB-SEC-PLAN.md §7.4, Record — M6, Carried into M13).
+    ("a depleted contract's fund a cent below 0", _set("sa_pp_init_1", [13], -0.01),
+     _says(_FUND_VALUE, [13], column="sa_pp_init_1")),
     ("a fund value written as text", _set("sa_pp_init_2", [2], "x"),
      _says(_FUND_VALUE, [2], column="sa_pp_init_2")),
     *[(f"sa_pp_init_{i} on new business", _set(f"sa_pp_init_{i}", [1], 5.0),
@@ -4156,10 +4162,19 @@ def test_the_future_horizon_is_a_reference_that_bounds_future_business(tmp_path)
 # av_depletion_threshold, 0.005, three months into the year, is refused, where 0.0051 is
 # read (the edges test); and the never-withdrawing roll-up depleted at 560 with an account
 # value of 0.6 cents, just above the threshold, so not depleted, its GAWA% locked with no
-# withdrawal, is refused, where half a cent and less enters month 0 depleted (the edges
-# test).  Every table is the committed one relabeled 100 + point_id and written in reverse
-# order (_relabeled), so that the label a refusal names is no position.
+# withdrawal, is refused.  A contract that opens depleted holds an account of 0 within
+# 1e-8: the one depleted at 144 is refused with half a cent, at the threshold, and with
+# 2e-8, where 1e-8 and -1e-8 enter month 0 depleted (the edges test).  Every table is
+# the committed one relabeled 100 + point_id and written in reverse order (_relabeled), so
+# that the label a refusal names is no position.
 _VIX_EARLY = {"rb_pp_prev_anniv_init": 100000.0}
+# A contract that opens depleted has its account released in month 0 with no flow, so
+# proj_len() holds that account to 0 within 1e-8, where check_av_roll_fwd, at 1e-6 a
+# contract, would miss by more: on the contract depleted at 144, counting 0.53 contracts,
+# an account of half a cent missed by 0.0026 (§7.4, Record — M6, Carried into M13).
+_HELD = ("point_id {{label}}: av_pp_init must be 0, to within 1e-8, on a policy depleted "
+         "at the valuation date, its account value at or below av_depletion_threshold "
+         "{threshold}: depletion releases the account in month 0 with no flow; it is {av}")
 _CORRIDOR = ("point_id {{label}}: phi_glwb_init must be at most vix_corridor_hi, 0.025, "
              "and at least vix_corridor_lo, 0.006, where phi_glwb_curr is, from the third "
              "contract quarter, duration_mth 6 or more: the clip holds every rate after "
@@ -4230,6 +4245,10 @@ NOT_ISSUED = [
      _CORRIDOR.format(phi=0.0)),
     ("a VIX prior above the corridor", ("derived", 6, 41), {"phi_glwb_init": 0.03},
      _CORRIDOR.format(phi=0.03)),
+    ("a depleted contract's account at the threshold", ("derived", 3, 144),
+     {"sa_pp_init_1": 0.005}, _HELD.format(threshold=0.005, av=0.005)),
+    ("a depleted contract's account just past 1e-8", ("derived", 3, 144),
+     {"sa_pp_init_1": 2e-8}, _HELD.format(threshold=0.005, av=2e-8)),
 ]
 
 
@@ -4324,10 +4343,11 @@ def test_run_sec_block_asks_every_point_for_its_frame_first(tmp_path):
 #     death benefit valued at 720 twelve, each refused at the shipped 120 (NOT_ISSUED);
 #   the depletion threshold lowered to 0.002: on the never-withdrawing roll-up depleted at
 #     560, an account value of 0.0021, just above it, is not depleted, so its GAWA% locked
-#     with no withdrawal is refused, and 0.002 is depleted and read; with no GAWA% locked,
-#     0.002 is refused as depleted, and 0.0021 read; and on the highest quarterly step-up
-#     at 40 a history of 0.002 is refused and one of 0.0021 read.  At the shipped 0.005
-#     each of the six reads the other way;
+#     with no withdrawal is refused, and 0.002 is depleted and refused as an account the
+#     depletion would release, naming 0.002; with no GAWA% locked, 0 is refused as
+#     depleted, and 0.0021 read; and on the highest quarterly step-up at 40 a history of
+#     0.002 is refused and one of 0.0021 read.  At the shipped 0.005, 0.0021 and 0.002
+#     are each depleted, and each refused as an account to release;
 #   the corridor's top raised to 3%: the VIX fee at 41 with a prior of 3% is read, which
 #     at the shipped 2.5% is refused (NOT_ISSUED), and one of 3.01% is refused;
 #   its foot lowered to 0.4%: a prior of 0.4% is read, which at the shipped 0.6% is
@@ -4371,8 +4391,8 @@ MOVED = [
         102: (_BASIC, {"duration_mth": 720, **_NO_STEPUP}, 12)}),
     ("the depletion threshold lowered to 0.002", {"av_depletion_threshold": 0.002}, {
         101: (_NEVER, {"sa_pp_init_1": 0.0021}, _UNLOCKED),
-        102: (_NEVER, {"sa_pp_init_1": 0.002}, 160),
-        103: (_NEVER, {"sa_pp_init_1": 0.002, **_NO_GAWA}, _BARE_DEPLETED),
+        102: (_NEVER, {"sa_pp_init_1": 0.002}, _HELD.format(threshold=0.002, av=0.002)),
+        103: (_NEVER, {"sa_pp_init_1": 0.0, **_NO_GAWA}, _BARE_DEPLETED),
         104: (_NEVER, {"sa_pp_init_1": 0.0021, **_NO_GAWA}, 160),
         105: (_HQ, {"stepup_base_pp_ytd_init": 0.002}, _NO_HISTORY),
         106: (_HQ, {"stepup_base_pp_ytd_init": 0.0021}, 680)}),
@@ -4482,11 +4502,11 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
     * the VIX prior at the second quarter's last month, 5, at ``phi_glwb_curr``, and in the
       fourteenth quarter at each end of the corridor, 0.6% and 2.5%; and the highest
       quarterly history three months into the year just above ``av_depletion_threshold``;
-    * the contract depleted without a withdrawal with an account value carried in of
-      exactly ``av_depletion_threshold``, half a cent, and of part of it, each of which
-      enters month 0 depleted, as the account value S leaves where a depletion closes on a
-      rounding above 0 does, which an account value of 0.6 cents is not
-      (:data:`NOT_ISSUED`);
+    * the contract depleted without a withdrawal with an account value carried in of 1e-8
+      and of -1e-8, the most either way ``proj_len()`` and ``Data`` hold a depleted
+      account to, each of which enters month 0 depleted, as the account value S leaves
+      where a depletion closes on a rounding about 0 does, which an account value of 2e-8
+      and of half a cent is refused as (:data:`NOT_ISSUED`);
     * and ``decline``'s rates removed: the rate scenario is joined only for a point the VIX
       fee or the CMT-linked roll-up reads it for, which no point on ``decline`` is.
 
@@ -4529,8 +4549,8 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
         114: (vix, {"phi_glwb_init": 0.006}),
         115: (vix, {"phi_glwb_init": 0.025}),
         116: (hq, {"duration_mth": 39, "stepup_base_pp_ytd_init": 0.0051}),
-        117: (never, {"sa_pp_init_1": 0.005}),
-        118: (never, {"sa_pp_init_1": 0.003}),
+        117: (never, {"sa_pp_init_1": 1e-8}),
+        118: (never, {"sa_pp_init_1": -1e-8}),
         119: (depleted, {"gawa_pct_init": 0.0, "gawa_pp_init": 0.0, "age_at_entry": 59,
                          "duration_mth": 13, "glwb_option": "zero_mid"}),
         120: (depleted, {"gawa_pp_init": 0.0, "glwb_option": "zero_mid"}),
@@ -4560,7 +4580,7 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
         assert "decline" not in set(model.Data.rate_scenario_steps().index.get_level_values(
             "scenario_id"))
         assert [(_point(model, label).av_pp_init(), _point(model, label).depleted_open(0))
-                for label in (117, 118)] == [(0.005, True), (0.003, True)]
+                for label in (117, 118)] == [(1e-8, True), (-1e-8, True)]
         assert _point(model, 119).gawa_pct_at_age(60) == 0.0
         p = _point(model, 120)
         assert p.gawa_pp_init() == 0.0 < p.gawa_pct_init() and p.gwb_pp_init() > 0.0
@@ -4590,8 +4610,8 @@ def test_the_edges_of_the_in_force_interface_are_accepted(tmp_path):
 # 40; a return and a CMT just above -1 and a VIX-squared average of 0, in a scenario read
 # by the VIX point; the locked GAWA% at 1 and the GMDB's proportional factor of the year at
 # 0, on the anchor at 131; a premium, a withdrawal intensity and a premium tax of 0, on
-# the anchor issued at the valuation date; and a subaccount value a cent below 0, on
-# the contract depleted without a withdrawal at 560.  Each copy: (label, row, its
+# the anchor issued at the valuation date; and a subaccount value 1e-8 below 0, the floor,
+# on the contract depleted without a withdrawal at 560.  Each copy: (label, row, its
 # columns).
 BOUND = -0.999999
 AT_BOUNDS = {
@@ -4601,7 +4621,7 @@ AT_BOUNDS = {
     204: (("twin", 6, 0), {"scenario_id": "edge"}),
     205: (("derived", 1, 131), {"gawa_pct_init": 1.0, "gmdb_factor_acc_ytd_init": 0.0}),
     206: (("twin", 1, 0), {"premium": 0.0, "wd_intensity": 0.0, "premium_tax_rate": 0.0}),
-    208: (("derived", 8, 560), {"sa_pp_init_1": -0.01}),
+    208: (("derived", 8, 560), {"sa_pp_init_1": -1e-8}),
 }
 
 
@@ -4640,9 +4660,9 @@ def test_a_value_at_the_bound_of_its_range_is_read(tmp_path):
     leaves no contract in force after the second year, a GAWA% of 100% locked at the
     first withdrawal, a month's return and a CMT of -99.9999% and a VIX average of 0, a
     locked GAWA% of 100% and a year's proportional factor of 0 carried in, a premium, a
-    withdrawal intensity and a premium tax of 0, and a subaccount value a cent below 0,
-    read as the rounding about 0 a depletion closes on, the contract depleted.  And on
-    a model whose first quarter's VIX fee, ``phi_glwb_curr``, is 100%, a contract in its
+    withdrawal intensity and a premium tax of 0, and a subaccount value 1e-8 below 0, the
+    floor, read as the rounding about 0 a depletion closes on, the contract depleted.  And
+    on a model whose first quarter's VIX fee, ``phi_glwb_curr``, is 100%, a contract in its
     second quarter carrying that rate as its prior, ``phi_glwb_init`` 1, which ``Data``
     admits and ``proj_len()`` requires there.  The bounds a range excludes are refused,
     each by its rule (:data:`MALFORMED`, :data:`TABLE_FAULTS`).
@@ -4676,7 +4696,7 @@ def test_a_value_at_the_bound_of_its_range_is_read(tmp_path):
         p = _point(model, 206)
         assert (p.premium_pp(0), p.wd_intensity(), p.premium_taxes(0)) == (0.0, 0.0, 0.0)
         p = _point(model, 208)
-        assert (p.sa_pp_init(1), p.av_pp_init(), p.depleted_open(0)) == (-0.01, -0.01,
+        assert (p.sa_pp_init(1), p.av_pp_init(), p.depleted_open(0)) == (-1e-8, -1e-8,
                                                                          True)
     finally:
         model.close()

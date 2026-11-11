@@ -1317,6 +1317,11 @@ def proj_len():
     rule needing a Reference of this Space, which ``Data`` cannot read, each refusal naming
     the point, in this order:
 
+    * depleted, its account value carried in, :func:`av_pp_init`, at or below
+      ``av_depletion_threshold``, that account value is 0 to within 1e-8: a contract that
+      opens depleted has its account released in month 0 with no flow, so
+      :func:`check_av_roll_fwd`, at ``check_tol_av`` a contract, would miss by any more;
+      ``VA_US_S``'s depletions close on roundings of the order of 1e-14;
     * not depleted, its account value carried in, :func:`av_pp_init`, above
       ``av_depletion_threshold``, a contract that has not withdrawn has no GAWA% locked:
       the percentage locks at the first withdrawal or at depletion, and before either the
@@ -1352,6 +1357,12 @@ def proj_len():
         return n
     threshold = av_depletion_threshold                               # noqa: F821
     depleted = av_pp_init() <= threshold
+    if depleted and not abs(av_pp_init()) <= 1e-8:
+        raise ValueError(
+            f"point_id {point_id}: av_pp_init must be 0, to within 1e-8, on a "  # noqa
+            f"policy depleted at the valuation date, its account value at or below "
+            f"av_depletion_threshold {threshold}: depletion releases the account in month "
+            f"0 with no flow; it is {av_pp_init()}")
     if not has_wd_init() and not depleted and gawa_pct_init() > 0.0:
         raise ValueError(
             f"point_id {point_id}: gawa_pct_init must be 0 on a policy "      # noqa: F821

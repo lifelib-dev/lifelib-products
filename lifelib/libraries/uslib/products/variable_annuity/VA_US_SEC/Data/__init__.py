@@ -244,7 +244,7 @@ def model_point_table():
       withdrawals;
     * last, each point's keys into the tables it is joined with: its ``fund_set`` is a set
       of :func:`fund_sets`, and each subaccount the set holds has its ``sa_pp_init_<i>``
-      column, a finite number, zero or more to within a cent, and 0 on a contract not yet
+      column, a finite number, zero or more to within 1e-8, and 0 on a contract not yet
       in force; its ``scenario_id`` is a scenario of :func:`return_scenario_steps` that
       sets a return for each of those subaccounts by the first month the point is on the
       books, ``t = 0`` or its issue month if later, and, on a point the ``vix`` fee or the
@@ -264,29 +264,35 @@ def model_point_table():
     Amounts of money are compared to a cent, so that an extract may carry each to the cent,
     as an administration system holds it: each amount so carried is within half a cent of
     its exact value. Two columns that hold one amount at instants that coincide, on a
-    year's start, are compared exactly. A subaccount value is held to 0 or more to within a
-    cent, as a rule holding one carried amount to 0 is: ``VA_US_S`` runs an account down by
-    scaling each subaccount by one less the share of the account a charge or a withdrawal
-    takes, so a depletion can close on a rounding of either sign about 0, of the order of
-    1e-14, the one amount of the opening state its arithmetic leaves below 0, the bases
-    being held at 0 or more by its floors.
+    year's start, are compared exactly. A subaccount value is held to 0 or more to within
+    1e-8, not a cent: ``VA_US_S`` runs an account down by scaling each subaccount by one
+    less the share of the account a charge or a withdrawal takes, so a depletion can close
+    on a rounding of either sign about 0, of the order of 1e-14, the one amount of the
+    opening state its arithmetic leaves below 0, the bases being held at 0 or more by its
+    floors; an extract carries such a rounding to the cent as 0.00. A contract whose account
+    value is at or below the depletion threshold opens depleted, its account released in
+    month 0 with no flow, so ``Projection.check_av_roll_fwd``, at 1e-6 a contract, would
+    miss by the account a cent below 0 left there (§7.4, *Record — M6*, *Carried into
+    M13*); ``Projection.proj_len`` holds such an account to 0 within 1e-8, since the
+    threshold is a ``Projection`` Reference.
 
     Accepted, because a contract can be in each state: an account value of 0 in force,
     where the GLWB pays on and the projection reads the contract as depleted from month 0,
-    or the rounding about 0 that a depletion closed on, above 0 or below it, which the
-    same test reads as depleted; a locked percentage above 0 with no withdrawal taken,
-    where the account value ran out first, which the projection checks; free allowance
-    used and a dollar-for-dollar reduction above the allowance the month allows at the
-    valuation date, since the allowance is recomputed every month from the earnings and
-    the Remaining Premium; and a ``duration_mth``, an age or ``bonus_end_init`` written as
-    a float, and a flag written as 1 or 0, read as the value each holds.
+    or the rounding about 0 that a depletion closed on, above 0 or below it, within 1e-8,
+    which the same test reads as depleted; a locked percentage above 0 with no withdrawal
+    taken, where the account value ran out first, which the projection checks; free
+    allowance used and a dollar-for-dollar reduction above the allowance the month allows
+    at the valuation date, since the allowance is recomputed every month from the earnings
+    and the Remaining Premium; and a ``duration_mth``, an age or ``bonus_end_init``
+    written as a float, and a flag written as 1 or 0, read as the value each holds.
 
     Left to the projection, because each needs a ``Projection`` Reference, which ``Data``
     cannot read, and refused by ``Projection.proj_len``, naming the point: whether a point
     is still in cover, against ``omega_age``; whether it is depleted at the valuation date,
     which the projection derives from its opening account value and
-    ``av_depletion_threshold``, and the GAWA% that goes with each: 0 on a contract that has
-    neither withdrawn nor depleted, and above 0 on one depleted without a withdrawal unless
+    ``av_depletion_threshold``, and then an account value of 0 within 1e-8, and the GAWA%
+    that goes with each: 0 on a contract that has neither withdrawn nor depleted, and above
+    0 on one depleted without a withdrawal unless
     its grid gave 0% at an age it reached (:func:`gawa_pct_zero_by_point`); on the
     ``highest_quarterly_CV`` basis, a step-up history above the threshold on a contract not
     depleted and three months or more into its contract year, since every quarter end of
@@ -484,10 +490,10 @@ def model_point_table():
                                  f"needs: its fund set holds subaccount {i}")
             continue
         v = pd.to_numeric(table[column], errors="coerce")           # noqa: F821
-        bad = table.index[users & ~((v >= -cent) & (v < float("inf")))].tolist()
+        bad = table.index[users & ~((v >= -1e-8) & (v < float("inf")))].tolist()
         if bad:
             raise ValueError(f"{name}: {column} must be a number, zero or more to within "
-                             f"a cent; it is not at point_id {bad}")
+                             f"1e-8; it is not at point_id {bad}")
         bad = table.index[(months <= 0) & users & (v != 0)].tolist()
         if bad:
             raise ValueError(f"{name}: {column} must be 0 on a policy not yet in force, "
@@ -668,7 +674,7 @@ def fund_values_init():
     value per contract of subaccount ``i`` entering month 0, before any month-0 event.
     ``Projection.sa_pp_init``, its one reader, reads a point's value there.
     :func:`model_point_table` has already required the column of every subaccount a point's
-    set holds, a finite number, zero or more to within a cent, and 0 on a contract not yet
+    set holds, a finite number, zero or more to within 1e-8, and 0 on a contract not yet
     in force; a blank cell of a subaccount the point's set lacks, which no projection reads,
     is 0.0 here.
     """

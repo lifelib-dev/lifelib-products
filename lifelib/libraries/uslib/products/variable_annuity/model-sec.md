@@ -383,7 +383,7 @@ fails it:
   where the year has withdrawals;
 - last, each point's keys into the tables it is joined with: its `fund_set` is a set of
   `fund_table.csv`, and each subaccount the set holds has its `sa_pp_init_<i>` column, a
-  finite number, zero or more to within a cent, and 0 on a contract not yet in force; its
+  finite number, zero or more to within 1e-8, and 0 on a contract not yet in force; its
   `scenario_id` is a scenario of `return_scenario_sec.csv` that sets a return for each of
   those subaccounts by the first month the point is on the books, `t = 0` or its issue month
   if later, and, on a point the `vix` fee or the `cmt_linked` roll-up reads it for, one of
@@ -407,16 +407,18 @@ by the rule that fixes it. Amounts of money are compared to a cent, so that an e
 carry each to the cent, as an administration system holds it: each amount so carried is
 within half a cent of its exact value. Two columns that hold one amount at instants that
 coincide, at a year's start, are compared exactly. A subaccount value is held to 0 or more
-to within a cent, as a rule holding one carried amount to 0 is: `VA_US_S` runs an account
-down by scaling each subaccount by one less the share of the account a charge or a
-withdrawal takes, so a depletion can close on a rounding of either sign about 0, of the
-order of 1e-14, the one amount of the opening state its arithmetic leaves below 0, the bases
-being held at 0 or more by its floors. On `VA_US_S`'s shipped points and inputs every
-depletion closes on exactly 0. Under the splice's References with no premium tax its
-never-withdrawing roll-up closes at policy month 524 on 5.7e-15, and its never-withdrawing
-return of premium at 659 on −2.3e-14; and under the shipped References, untaxed too, that
-return of premium issued at 55 or 56 closes at 752 on −1.1e-13. The generated rows carry
-`VA_US_S`'s own values, unrounded, such a rounding among them.
+to within 1e-8, not a cent, since a contract that opens depleted has its account released in
+month 0 with no flow, and `check_av_roll_fwd`, at 1e-6 a contract, would miss by a cent
+below 0 left there: `VA_US_S` runs an account down by scaling each subaccount by one less
+the share of the account a charge or a withdrawal takes, so a depletion can close on a
+rounding of either sign about 0, of the order of 1e-14, the one amount of the opening state
+its arithmetic leaves below 0, the bases being held at 0 or more by its floors. On
+`VA_US_S`'s shipped points and inputs every depletion closes on exactly 0. Under the
+splice's References with no premium tax its never-withdrawing roll-up closes at policy month
+524 on 5.7e-15, and its never-withdrawing return of premium at 659 on −2.3e-14; and under
+the shipped References, untaxed too, that return of premium issued at 55 or 56 closes at 752
+on −1.1e-13. The generated rows carry `VA_US_S`'s own values, unrounded, such a rounding
+among them.
 
 Accepted, because a contract can be in each state: an account value of 0 in force, where
 the GLWB pays on and the projection reads the contract as depleted from month 0, or the
@@ -443,6 +445,9 @@ refuses, in this order, an opening state that a rule turning on depletion or on 
 Reference forbids. A contract in force is depleted exactly where its opening account value
 is at or below `av_depletion_threshold`, which the projection derives. So:
 
+- a contract depleted at the valuation date carries an account value of 0, to within 1e-8:
+  depletion releases the account in month 0 with no flow, so `check_av_roll_fwd` would miss
+  by any more, and `VA_US_S`'s depletions close on roundings of the order of 1e-14;
 - a contract that has neither withdrawn nor depleted has no GAWA% locked, the percentage
   locking at the first withdrawal or at depletion, and so no GAWA;
 - one depleted without a withdrawal has a GAWA% above 0, the grid's at the age its account
@@ -835,7 +840,8 @@ contract in force enters month 0 depleted exactly where its opening account valu
 of its subaccount values, is at or below the threshold, and new business never does, the
 rounding of either sign about 0 that a depletion can close on among them (above): the test
 is the threshold's, never 0's, and the rules of `proj_len()` that turn on depletion read the
-same test. `depleted_open(t)` is that test at `t_entry()` and `depleted_flag(t − 1)` after
+same test, the first of them holding the account of a contract that opens depleted to 0
+within 1e-8. `depleted_open(t)` is that test at `t_entry()` and `depleted_flag(t − 1)` after
 it, and every cell that `VA_US_S` writes with `depleted_flag(t − 1)` reads it, `VA_US_S`
 reading below `t = 0` in its first month. Points 13 and 18 open depleted. Point 13, valued
 at a contract year's start, is paid at `t = 0`, from the GAWA and the GWB its row carries,
