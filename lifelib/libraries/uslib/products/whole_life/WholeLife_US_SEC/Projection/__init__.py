@@ -449,7 +449,8 @@ NONE           4      :func:`dividend_option_code`: none of the four, final expe
 =============  =====  ===============================================================
 
 A code a cell takes indexes that cell's cache, a C array of five timings a month for
-``pols_if_at`` and three kinds for ``claim_pp``, so codes are numbered densely from 0.
+``pols_if_at``, and as wide for ``claim_pp``'s three kinds, since every 2-D cache of the
+model has one width (``spec_sec.py``), so codes are numbered densely from 0.
 Timings are numbered in the order of their instants within the month, ``BEF_NB`` before
 ``BEF_DECR``, as in every SEC model, and kinds in the order the month settles them; the
 premium periods follow ``product-spec.md``'s list, and the dividend options the notes'.

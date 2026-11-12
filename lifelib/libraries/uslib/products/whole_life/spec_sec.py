@@ -21,7 +21,14 @@
 # to 12 * (maturity_age - issue_age_min) + the horizon + 2.
 # timing, beside t in pols_if_at: BEF_NB 0 to AFT_DECR 4, the codes, and no more, so a
 # code past them raises IndexError: (1,322, 5).
-# kind, beside t in claim_pp: DEATH 0, LAPSE 1 and MATURITY 2: (1,322, 3).
+# kind, beside t in claim_pp: DEATH 0, LAPSE 1 and MATURITY 2, sized 5 all the same:
+# (1,322, 5).  Every 2-D cache of a model has one inner width, timing's here, because
+# Cython's generated unpickle code converts the 2-D caches of a space with one function,
+# written for one width: given (1,322, 3) beside (1,322, 5), it passed the narrower array
+# where the wider was expected, which gcc 14 refuses (-Wincompatible-pointer-types, made
+# an error on every gcc and clang by tools/build_sec_cy.py), and would write past its end.
+# So a kind 3 or 4 is inside the cache, where claim_pp refuses it as modelx does,
+# ValueError("invalid kind"), and a kind from 5 raises IndexError, compiled alone.
 # y, shared by three cells keyed by one integer: cv_pp_anniv's policy year, 0 ..
 # maturity_age - issue_age_min, since cv_pp reads duration(t) and duration(t) + 1, the
 # last 100 at issue age 0; and the attained age nsp and mort_rate_guar_at read,
@@ -32,4 +39,4 @@
 # higher maturity_age, or a lower issue_age_min, needs y raised to
 # max(maturity_age - issue_age_min, maturity_age) + 2.
 {"spaces": {"Projection": {"cells_param_size": {
-    "t": 1322, ("t", "timing"): (1322, 5), ("t", "kind"): (1322, 3), "y": 102}}}}
+    "t": 1322, ("t", "timing"): (1322, 5), ("t", "kind"): (1322, 5), "y": 102}}}}

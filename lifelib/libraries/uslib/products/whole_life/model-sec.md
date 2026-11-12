@@ -602,8 +602,7 @@ array the spec sizes from the contract:
 | Compiled to | Cells |
 |---|---|
 | a C array of 1,322 by `t`, of `double`, `long long` or `bint` | the 66 cells of `t` alone: every count, rate, factor, premium, value, dividend, claim and cash flow; the policy clock, its years, the attained ages and the anniversary month; the flags `is_active`, `is_anniv` and `prem_due`; and the checks' monthly residuals |
-| a C array of 1,322 by 5 | `pols_if_at(t, timing)` |
-| a C array of 1,322 by 3 | `claim_pp(t, kind)` |
+| a C array of 1,322 by 5 | `pols_if_at(t, timing)`, and `claim_pp(t, kind)`, whose three kinds leave two columns unused (*The sample and the spec*, below) |
 | a C array of 102 by `y` | `cv_pp_anniv(y)`, by policy year, and `nsp(y)` and `mort_rate_guar_at(y)`, by attained age |
 | one `long long`, `double` or `bint` | the 36 cells without a parameter: the point's numbers, codes, schedules and flags, its opening state, the ends of its frame, its premium rate, modal factor and net level premium, and the two checks |
 | a Python object | the eleven reporting cells but the checks |
@@ -643,7 +642,7 @@ tests' full sweep evaluates every monthly cell at; plus one because the index st
 |---|---|---|
 | `t` | 1,322 | 1,321. The longest frame is a policy issued at the youngest issue age, 0, covered to 100 for 100 policy years, and issued 120 months after the valuation date, the furthest ahead `Data.future_horizon_mth` admits as shipped: 12 × 100 + 120 = 1,320 months, `t = 0 … 1,319`, and the month after, 1,320. The count roll-forward's residual there reads the count carried into the month after that, 1,321. No headroom |
 | `t`, `timing` | 1,322 by 5 | `t` as above, by the five timings, so a code past `AFT_DECR` raises |
-| `t`, `kind` | 1,322 by 3 | `t` as above, by the three kinds |
+| `t`, `kind` | 1,322 by 5 | `t` as above, by the three kinds and two columns more, so that both 2-D caches have timing's width. Cython's generated unpickle code converts a space's 2-D caches with one function, written for one width, and given 1,322 by 3 beside 1,322 by 5 it passed the narrower where the wider was expected, which gcc 14 refuses and which would write past its end. A kind of 3 or 4 is then inside the cache, where `claim_pp` refuses it as modelx does, and one from 5 raises |
 | `y` | 102 | 100, shared by three cells: the policy year `cv_pp_anniv` reads, up to 100 at issue age 0, and the attained age `nsp` and `mort_rate_guar_at` read, up to `maturity_age`, 100. Each is read inside cover alone, so none in the month after the frame |
 
 `proj_len()` refuses a point issued below 0, `issue_age_min`, in modelx as compiled, and
@@ -673,13 +672,15 @@ C99's complex numbers, gcc among them, computes each as a complex power, which c
 from Python's float power in its last bits. With both directives and the flag every
 compiled value agrees with modelx's bit for bit, and the compile tests hold each, by the
 module's first line, by the compiler's command lines and, on x86-64, by the comparison
-itself.
+itself. On the same platforms the tool adds `-Werror=incompatible-pointer-types`, so that
+gcc before 14, which only warns of a pointer of the wrong type, fails the build as gcc 14
+does: the error two cache widths gave (*The sample and the spec*, above).
 
 ### What a compiled run needs
 
-**Memory, and the release.** A compiled `Projection` ItemSpace is a C struct of 1,162,960
+**Memory, and the release.** A compiled `Projection` ItemSpace is a C struct of 1,194,688
 bytes, about 1.2 MB, the type's basic size, which holds every cell's cache: 66 arrays of
-1,322 months and two of 1,322 by 5 and by 3 make most of it. Deleting it,
+1,322 months and two of 1,322 by 5 make most of it. Deleting it,
 `del model.Projection[idx]`, frees nothing by itself: an ItemSpace sits in reference
 cycles, and only Python's cyclic collector frees it. That is why `run_sec.py --block`
 collects after each release, in its frame pass and in its projections (*Run it*, above),
@@ -754,9 +755,10 @@ The compiled model refuses what modelx refuses, with the same message. modelx ra
 
 An argument outside a cache raises `IndexError` in the compiled model alone, as above:
 `net_cf(1322)`, which modelx answers with 0, the month being outside cover;
-`pols_if_at(0, 5)` and `claim_pp(0, 3)`, which modelx refuses as `invalid timing` and
-`invalid kind`; and `cv_pp_anniv(-1)`, which modelx answers with 0. An `idx` past the last
-row is refused in both, with an `IndexError` at the first read of a vector, and
+`pols_if_at(0, 5)` and `claim_pp(0, 5)`, which modelx refuses as `invalid timing` and
+`invalid kind`; and `cv_pp_anniv(-1)`, which modelx answers with 0. A kind of 3 or 4 is
+inside `claim_pp`'s cache, and both engines refuse it as `invalid kind`. An `idx` past
+the last row is refused in both, with an `IndexError` at the first read of a vector, and
 `Projection[-1]` reads every vector at its last element in both, so it is the table's
 last point, under that point's own `point_id()`.
 

@@ -25,8 +25,8 @@ child process, which raises the recursion limit, as modelx does and the export d
 session.  Its ``result_cf()`` must equal modelx's on both points to 1e-12 relative, the
 tolerance of Phase 2's C4 where it is not exact.  With gcc on Linux it is exact.  The tool
 tells gcc and clang to fuse no multiply and add into a single rounding, whatever ``-march``
-the interpreter's flags give, and the test reads the compiler's command lines in the
-build's log for it.
+the interpreter's flags give, and to fail on a pointer of the wrong type, as gcc 14 does,
+and the test reads the compiler's command lines in the build's log for both.
 
 **When it skips.**  Without modelx-cython, which ``requirements.txt`` leaves out because it
 needs a C compiler; without a C compiler, on a POSIX system; and without
@@ -168,7 +168,9 @@ def test_compiled_term_reproduces_modelx(build_sec_cy, tmp_path):
 
     # Off Windows every command that compiles a C file ends its flags with the tool's
     # NO_CONTRACT, so that no -march before it makes gcc or clang fuse a multiply and an
-    # add, and the compiled model rounds where modelx rounds.  MSVC reads no CFLAGS.
+    # add, and the compiled model rounds where modelx rounds; and carries its
+    # NO_INCOMPATIBLE_POINTERS, so that a pointer of the wrong type fails the build under
+    # any gcc, as gcc 14 fails it.  MSVC reads no CFLAGS.
     if os.name != "nt":
         log = out / "build" / build_sec_cy.LOG
         lines = log.read_text(encoding="utf-8", errors="replace").splitlines()
@@ -176,6 +178,7 @@ def test_compiled_term_reproduces_modelx(build_sec_cy, tmp_path):
         assert compiles, f"no command compiling a C file in {log}"
         for line in compiles:
             assert re.findall(r"-ffp-contract=(\w+)", line)[-1:] == ["off"], line
+            assert build_sec_cy.NO_INCOMPATIBLE_POINTERS in line.split(), line
 
     # The spec reached the C: each Projection cell compiled with a C integer t keeps its
     # values in a C array of the spec's size.  The sample alone would have sized them to

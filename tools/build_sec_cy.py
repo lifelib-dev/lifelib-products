@@ -76,6 +76,17 @@ the interpreter's flags and the caller's give, and gcc and clang obey the last s
 MSVC reads no ``CFLAGS``, and for x64 it emits no fused multiply-add without
 ``/arch:AVX2``, which setuptools does not pass.
 
+**Why an incompatible pointer fails the compile.**  gcc 14 and later refuse to pass a
+pointer to one type where the function takes another, ``-Wincompatible-pointer-types``,
+where gcc 13 only warns.  Cython's generated unpickle code converts the 2-D caches of a
+space with one function, written for one inner width, so two widths in one model pass the
+narrower array where the wider is expected: the compiled ``WholeLife_US_SEC``, with caches
+of 1,322 by 5 and by 3, built and passed here under gcc 13.3 and failed CI's gcc (M15),
+and unpickling it would have written past the narrower array.  So on every platform but
+Windows the tool appends :data:`NO_INCOMPATIBLE_POINTERS`,
+``-Werror=incompatible-pointer-types``, too, and a local build fails where CI's would.
+The cure is in the spec: every 2-D cache of a model shares one inner width.
+
 **Why each step runs in a child process.**  Neither leaves its caller as it found it.
 mx2cy traces under ``sys.setprofile``, configures the root logger, and imports the export
 by name, and ``sys.modules`` keeps it: a second build in the same process would trace the
@@ -157,6 +168,10 @@ DIRECTIVE = "# cython: infer_types=True, cpow=True"
 # fuse no multiply and add, whatever -march the flags before it give (the docstring says
 # why).
 NO_CONTRACT = "-ffp-contract=off"
+
+# Appended after it, so that a build fails on a pointer of the wrong type where gcc 13
+# would only warn and gcc 14 refuses (the docstring says why).
+NO_INCOMPATIBLE_POINTERS = "-Werror=incompatible-pointer-types"
 
 # One line, so that it passes through any platform's command line unchanged.  The model is
 # closed by the child's exit, whether or not the export succeeded.
@@ -258,11 +273,12 @@ def _quote(log, lines=40):
 
 def _compile_env():
     """What the compile step adds to the environment: ``CFLAGS`` ending in
-    :data:`NO_CONTRACT`, after any the caller gives, or nothing on Windows, where MSVC
-    reads no ``CFLAGS``."""
+    :data:`NO_CONTRACT` and :data:`NO_INCOMPATIBLE_POINTERS`, after any the caller gives,
+    or nothing on Windows, where MSVC reads no ``CFLAGS``."""
     if os.name == "nt":
         return {}
-    return {"CFLAGS": f"{os.environ.get('CFLAGS', '')} {NO_CONTRACT}".strip()}
+    given = os.environ.get("CFLAGS", "")
+    return {"CFLAGS": f"{given} {NO_CONTRACT} {NO_INCOMPATIBLE_POINTERS}".strip()}
 
 
 def _run(step, cmd, cwd, log, env=None):

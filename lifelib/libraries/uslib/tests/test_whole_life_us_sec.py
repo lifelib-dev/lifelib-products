@@ -5300,13 +5300,18 @@ PAST_INT64 = ("a duration past int64", "durations of 2**53 months at two points"
 # sizes, which no projection the contract allows reaches, as (cell, arguments, what modelx
 # does).  modelx answers a month and a policy year outside cover with a zero, as the cells
 # say, and refuses a code past the timings and the kinds; compiled, each is past a cache,
-# and raises IndexError rather than read or write beyond it.
+# and raises IndexError rather than read or write beyond it.  claim_pp's cache is five
+# kinds wide, timing's width (spec_sec.py), so its first key past the cache is 5.
 COMPILED_ONLY = [
     ("net_cf", (1322,), ("ok", 0.0)),
     ("cv_pp_anniv", (-1,), ("ok", 0.0)),
     ("pols_if_at", (0, 5), ("raised", "ValueError: invalid timing")),
-    ("claim_pp", (0, 3), ("raised", "ValueError: invalid kind")),
+    ("claim_pp", (0, 5), ("raised", "ValueError: invalid kind")),
 ]
+
+# The kinds past MATURITY that claim_pp's cache still holds, since it is as wide as
+# timing's (spec_sec.py): there the cell itself refuses the code, compiled as in modelx.
+KINDS_IN_CACHE = [(0, 3), (0, 4)]
 
 
 @pytest.mark.cython
@@ -5332,9 +5337,12 @@ def test_the_compiled_model_refuses_what_modelx_refuses(sec_build, tmp_path):
     key can be taken from the table, so it is read through that vector, compiled as in
     modelx.  The issue age's, of ``2**53`` or more, are :data:`UNDECODABLE`'s, above.
 
+    And a kind past ``MATURITY`` inside ``claim_pp``'s cache (:data:`KINDS_IN_CACHE`),
+    which the cell refuses, ``invalid kind``, compiled as in modelx.
+
     And the refusals that are the compiled model's alone (:data:`COMPILED_ONLY`): a month
     past the ``t`` cache, a policy year below the ``y`` cache, and a timing and a kind past
-    their codes, each raising ``IndexError`` compiled, beside what modelx does.
+    their caches, each raising ``IndexError`` compiled, beside what modelx does.
 
     The cases share one directory, which each case's inputs overwrite in turn, and one
     copy of the compiled package: each child reads its inputs afresh, as the compiled
@@ -5364,6 +5372,8 @@ def test_the_compiled_model_refuses_what_modelx_refuses(sec_build, tmp_path):
            [(point, "result_cf", ())])
           for case, edit, edits, _, _, point in UNDECODABLE + NOT_FINITE
           if point is not None),
+        ("a kind past MATURITY, inside claim_pp's cache", committed, None, {},
+         [(1, "claim_pp", args) for args in KINDS_IN_CACHE]),
     ]
     dest = tmp_path / "refused"
     folder = compiled_case(build, dest)
