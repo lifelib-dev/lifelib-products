@@ -12,13 +12,13 @@ fingerprint frozen and its gate, the CI matrix green inside its timeout, met by 
 workflow's run 16 (§5, *Record — M13*). Term's compile step, M14, brought forward to run
 beside the streams (D2), is done, on Linux 2026-11-02 and on Windows 2026-11-11, where the
 `cython` job's first runs passed (§7.1, *Record — M14*). WholeLife's compile step, M15,
-the first Phase 2 after M13, is done on Linux 2026-11-12. In CI, the `cython` job of run
-17 passed on Windows and failed on Linux, where gcc refused the build over two cache
-widths; with the widths made one, the gate awaits the job's next run, on both legs
-(§7.2, *Record — M15*). The
-open decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03. Like
-USLIB-MERGE-PLAN.md, this document is both the specification and the record: each phase
-records what it actually did, including where the implementation departed from the plan.
+the first Phase 2 after M13, is done, on Linux and on Windows 2026-11-12. In CI, the
+`cython` job of run 17 passed on Windows and failed on Linux, where gcc refused the build
+over two cache widths; with the widths made one, run 18 passed on both legs (§7.2,
+*Record — M15*). The open decisions of §8.2 are settled, the last of them, item 4, on
+2026-11-03. Like USLIB-MERGE-PLAN.md, this document is both the specification and the
+record: each phase records what it actually did, including where the implementation
+departed from the plan.
 
 Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
 modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
@@ -262,9 +262,9 @@ model must follow goes to the products in progress as it is made, and binds ever
 that lands after it. A product that landed before it takes it up in its own C step. M14 is
 done, on Linux 2026-11-02 and on Windows 2026-11-11, where the `cython` job's first runs
 passed (§7.1, *Record — M14*). What it found that the Phase 1 products follow is listed
-there, under *Carried into Phase 1*. WholeLife's C step, M15, the first after M13, is done
-on Linux 2026-11-12; the `cython` job of run 17 passed on Windows and failed on Linux,
-and its gate awaits the job's next run, on the fix (§7.2, *Record — M15*).
+there, under *Carried into Phase 1*. WholeLife's C step, M15, the first after M13, is done,
+on Linux and on Windows 2026-11-12: the `cython` job of run 17 passed on Windows and failed
+on Linux, and run 18, on the fix, passed on both (§7.2, *Record — M15*).
 
 *Why:* two reviewable diffs per product — "what running in force needs" and "how it is made
 C" — and Phase 2 is gated by the Phase 1 suite, unchanged in substance. Phase 1 nonetheless
@@ -3110,7 +3110,7 @@ changes:
   and `dyn_lapse_factor`'s return;
 - "this cells", in `oyt_face` and in `pols_if`.
 
-#### Record — M15, done on Linux 2026-11-12
+#### Record — M15, done 2026-11-12
 
 M15 is WholeLife's compile step, the first Phase 2 of the eleven that M13 froze, by Term's
 template (§7.1, *Record — M14*, *The Phase 2 template*). It landed in two commits on the
@@ -3130,9 +3130,13 @@ does. Its second minor, two lines over 92 characters, was fixed; its third, the 
 int64 range holes in `Term_US_SEC`, is carried (below). C1–C5 and §6.2's release, stack,
 refusal and Reference tests pass on Linux here, and C6 is recorded. The `cython` job's
 first run on these commits, run 17, passed on Windows and failed on Linux, at the build of
-every WholeLife compile test (*CI run 17*, below). The fix gives both 2-D caches one
-width and changes the compiled struct, so the gate in CI, on Linux and on Windows, awaits
-the job's next run, and M15 stays open until it reports (§6.3, §9).
+every WholeLife compile test (*CI run 17*, below). The fix, 9c7ca2e, gives both 2-D
+caches one width and changes the compiled struct. Run 18, on it, passed the `cython` job
+on both legs, 21 tests each, Linux at full size in 8.1 minutes and Windows in 8.0, and
+every other job of the workflow; one `sec` leg on macOS that GitHub cancelled before any
+runner took it passed on its re-run. So M15's gate is met (§6.3, §9). On MSVC the cold
+`net_cf` at the longest cover ran on a thread of 512 KiB and not of 384, 1,211 levels, so
+about 325 to 433 bytes a level (gcc here about 243), and it ran on the main thread.
 
 **CI run 17.** The Linux leg's gcc, newer than the 13.3 here, refused the generated C as
 an error, `-Wincompatible-pointer-types`, which gcc 14 makes an error by default and gcc
@@ -3398,9 +3402,6 @@ test.
   no `2**53` check on `duration_mth`, and its `age_at_entry` casts an issue age of 1e30 to
   the least int64. Term is untouched at M15; the two range refusals go to it in a later
   change, with their refusal and compiled cases.
-- *CI*: run 17 found the cache widths on the Linux leg; its Windows leg passed. The gate
-  awaits the `cython` job's next run, on the fix, on both legs, and MSVC's bytes a level,
-  which the stack test reports in its warning, are recorded from it.
 - *The module's default run*, about 3.5 minutes under load, is weighed with the others'
   under K6; nothing has moved behind `sec_full`.
 
@@ -11555,6 +11556,6 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M1–M12 | Phase 1, one PR per product: M1, Term, and M2, WholeLife, **done**, 2026-11-01 (§7.1, §7.2); the other ten in §5.3's three streams, Life (M3–M6), Deferred annuity (M7–M9) and Payout (M11, M12, M10), of which M3, UL, M7, MYGA, and M11, SPIA, are **done**, 2026-11-02 (§7.3, §7.10, §7.9), and M12, DIA, M8, FIA, and M4, VUL, are **done**, 2026-11-03 (§7.12, §7.11, §7.6), and M10, RILA, the Payout stream's last, is **done**, 2026-11-04 (§7.8), and M9, VA, the Deferred annuity stream's last, is **done**, 2026-11-05 (§7.7), and M5, ULSG, is **done**, 2026-11-10 (§7.5), and M6, IUL, the Life stream's last and Phase 1's, is **done**, 2026-11-11 (§7.4), so Phase 1 has all twelve | §5.1 recipe, T2–T6, `model-sec.md`, `run_sec.py` | T1–T6 and conventions green; doccheck zero; each product rebased onto the branch and the suite rerun before it lands |
 | M13 | Phase 1 freeze — **done**, 2026-11-11, its gate met by the Tests workflow's run 16 (§5, *Record — M13*) | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1, VA's every-state test and its test of each rule on a Reference with that Reference moved off its shipped value, both of which it landed without, and M9's T5 precision taken into RILA's every-state test (§5.4); how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*; §7.7, *Record — M9*; §7.5, *Record — M5*); the suite's peak memory in one process, 4.82 GB at M9, bounded against the CI runners' memory (K6, *M9*); `proj_len()` in `UL_US_SEC` and `VUL_US_SEC` refusing a future row issued at or past `omega_age` + 1, which each accepts and projects as months with no cover, left to their C steps; `VUL_US_SEC`'s `Data` refusing a corridor factor below 0, which it accepts and which takes its point 3's death benefit past the face, left to its C step (§5.1, step 6, precised at M5); and ULSG's two core rows that, dropped together, lose no line, predicate or side, trimmed (§7.5, *Record — M5*); IUL's items: its module's default run, 936 to 955 s under load, weighed with the others' and the `sec_full` split, which decides IUL's core, and the matrix held inside §5.4's 90-minute timeout under K6's rule, the sweeps behind the opt-in marker before the timeout is raised, where the landing's uslib suite took 94 min under load, and each move behind `sec_full` checked against the fault sweeps (K6, *M6*); its deepest cold call at the longest cover restored to the default; its Phase 1 fingerprint frozen; D6's cent-extract test held in every product with an identity between amounts, a `Data` floor no wider than the check it feeds, a first 7-pay failure in year 7 pinned in UL, and T1's twins compared at no absolute floor where a count error below 1e-9 would pass; and the NaN that `IUL_US_S`'s index engine loses, its bounds written first, settled as an S-side note, its order of bounds kept to its C step (§7.4, *Record — M6*) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — **done**, on Linux 2026-11-02 and on Windows 2026-11-11, at the `cython` job's first runs (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
-| M15 | Phase 2 for WholeLife, the first after M13 — **done on Linux**, 2026-11-12; in CI the `cython` job of run 17 passed on Windows and failed on Linux, and its gate awaits the job's next run, on the fix (§7.2, *Record — M15*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; the `cython` job's Linux leg runs the compiled grids at full size | C1–C5 green on Linux and Windows; C6 recorded |
+| M15 | Phase 2 for WholeLife, the first after M13 — **done**, 2026-11-12; in CI the `cython` job of run 17 passed on Windows and failed on Linux, and run 18, on the fix, passed on both (§7.2, *Record — M15*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; the `cython` job's Linux leg runs the compiled grids at full size | C1–C5 green on Linux and Windows; C6 recorded |
 | M16–M25 | Phase 2 for the other ten, after M13, one PR per product, in §5.3's order; the `cython` job sharded by product, decided at M16 (§7.2, *Record — M15*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
