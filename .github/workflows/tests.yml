@@ -102,6 +102,9 @@ jobs:
       # compiler, which keeps the job above and lifelib's own bare `pytest` green; in this
       # job, which installs both, a skip would be a green run that compiled nothing.
       USLIB_REQUIRE_CYTHON: '1'
+      # The compiled grids at full size on Linux, as the `sec` job runs the modelx grids;
+      # Windows keeps the core, where MSVC and the 1 MB stack are what it tests.
+      USLIB_SEC_FULL: ${{ matrix.os == 'ubuntu-latest' && '1' || '' }}
 
     steps:
     - name: Checkout code

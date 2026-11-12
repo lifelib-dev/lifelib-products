@@ -18,7 +18,8 @@ The ``sec_full`` marker is registered here for the same reason.  It marks the ca
 SEC model's full splice grid beyond the core that runs by default, which skip, with the
 reason shown, unless ``USLIB_SEC_FULL=1`` is set (USLIB-SEC-PLAN.md K6), and
 ``pytest -m sec_full`` selects them.  CI's ``sec`` job sets it on its Linux legs, one
-module to a leg, so they run in every CI run.
+module to a leg, so they run in every CI run, and the ``cython`` job on its Linux leg,
+where the compiled grids run at full size.
 
 The ``docutils`` marker is registered here for the same reason.  It marks the tests that
 read a model's docstrings through docutils as the docs build does, which skip where
