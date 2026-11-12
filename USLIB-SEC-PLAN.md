@@ -938,8 +938,19 @@ a failure under `USLIB_REQUIRE_CYTHON=1`, an empty parameter set included, which
 *M15:* the `cython` selection took 373 s under load with WholeLife's compiled section. The
 job's Linux leg sets `USLIB_SEC_FULL=1`, so that the compiled grids run there at full size,
 as the `sec` job's Linux legs run the modelx grids, about 90 s more for WholeLife; Windows
-keeps the core. Twelve products at WholeLife's cost do not fit the job's 60 minutes, so the
-job is sharded by product, as the `sec` job is, decided at M16 (§7.2, *Record — M15*).
+keeps the core. Twelve products at WholeLife's cost do not fit the job's 60 minutes, so at
+M16 the job is sharded by product, as the `sec` job is: one leg per shard and OS, the shard
+named by `USLIB_CYTHON_SHARD`. The shards are `toolchain`, which holds
+`test_cython_toolchain.py` and any compile test tied to no stage-`"EC"` model, and, for each
+SEC model at stage `"EC"`, its product directory, which holds its product module's compile
+tests and its cases of `test_compiled_conventions.py`, run in one session so that it
+compiles once. `sec_support.cython_shards` reads the shards from the registry, and
+`conftest.py` deselects the compile tests outside a leg's shard. A name that is no shard is
+a usage error, and so, under `USLIB_REQUIRE_CYTHON=1`, is a shard that selects none.
+`test_compiled_conventions.py`, which runs in the `test` job, holds the workflow's
+`shard` list to exactly the registry's, so a model that reaches stage `"EC"` cannot be left
+out of CI: its C step adds its shard. Locally under load, the full-size legs took 34 s
+(toolchain), 104 s (Term) and 356 s (WholeLife).
 
 ---
 
@@ -3397,7 +3408,10 @@ test.
 - *Sharding the `cython` job by product*, as the `sec` job is, decided at M16 before its
   compiled tests land: WholeLife's share is about 4.3 minutes a run on Linux under load,
   its compile about 80 s, with 90 s more for the full grid, and twelve products at that
-  cost do not fit the job's 60 minutes, more slowly under MSVC (D13).
+  cost do not fit the job's 60 minutes, more slowly under MSVC (D13). *Done at M16:* one
+  leg per shard and OS, `toolchain` and one per stage-`"EC"` model's product directory,
+  chosen by `USLIB_CYTHON_SHARD` and held to the registry by
+  `test_compiled_conventions.py` (D13); each later C step adds its product's shard.
 - *`Term_US_SEC`'s int64 range holes*, found by the re-review: its `model_point_table` has
   no `2**53` check on `duration_mth`, and its `age_at_entry` casts an issue age of 1e30 to
   the least int64. Term is untouched at M15; the two range refusals go to it in a later

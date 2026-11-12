@@ -10,7 +10,8 @@
 # The second job, `cython`, is this repository's own rather than a rehearsal of upstream's.
 # It runs the compile tests, which need modelx-cython and a C compiler. lifelib's CI will
 # not install modelx-cython, and there, as in the `test` job here, those tests skip
-# (USLIB-SEC-PLAN.md D13).
+# (USLIB-SEC-PLAN.md D13). One shard of them to a leg: the toolchain, or one compiled
+# model.
 #
 # The third job, `sec`, runs uslib's twelve `_US_SEC` test modules, which the `test` job
 # leaves out: in every leg of it they took the leg to its 90-minute timeout (Tests run 14,
@@ -85,16 +86,24 @@ jobs:
     # MSVC, and a main thread with a 1 MB C stack (the plan's F7). One Python each: the job
     # above already runs every interpreter, and a compile failure belongs to the compiler
     # and the generated C rather than to an interpreter's minor version.
-    name: Compile with Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    name: Compile ${{ matrix.shard }} on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
-    # Phase 0 compiles one model, in about 30 seconds on Linux. Phase 2 adds a build per
-    # product, and a larger model took a minute (UL_US_S, the plan's F2), more under MSVC.
-    # An hour is room for all twelve on Windows, and still fails a hung build long before
-    # the six-hour default.
+    # Run 18, with two models compiled, took 8 minutes a leg, WholeLife's share 4 to 5 of
+    # them, so twelve would not fit an hour in one leg. A leg now runs one shard: the
+    # largest, WholeLife's at full size, took 6 minutes locally under load, more slowly
+    # under MSVC. An hour still fails a hung build long before the six-hour default.
     timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
+        # One shard to a leg, as the `sec` job runs one module to a leg (USLIB-SEC-PLAN.md
+        # D13, decided at M16): `toolchain`, test_cython_toolchain.py and any compile test
+        # tied to no one model, and for each SEC model at stage "EC" its product directory,
+        # its module's compile tests with its cases of test_compiled_conventions.py, in one
+        # session, so that it compiles once. A product's C step adds its shard here, and
+        # test_compiled_conventions.py, in the `test` job, fails until the list is exactly
+        # the registry's.
+        shard: [toolchain, term_life, whole_life]
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.13']
     env:
@@ -105,6 +114,10 @@ jobs:
       # The compiled grids at full size on Linux, as the `sec` job runs the modelx grids;
       # Windows keeps the core, where MSVC and the 1 MB stack are what it tests.
       USLIB_SEC_FULL: ${{ matrix.os == 'ubuntu-latest' && '1' || '' }}
+      # The shard this leg runs, by which conftest.py deselects every compile test outside
+      # it. Under USLIB_REQUIRE_CYTHON a shard that selects none is an error, and a name
+      # that is no shard is one anywhere.
+      USLIB_CYTHON_SHARD: ${{ matrix.shard }}
 
     steps:
     - name: Checkout code
@@ -131,8 +144,9 @@ jobs:
       # selects them: test_cython_toolchain.py, which compiles Term_US_S, and from its
       # Phase 2 on each SEC model's own, Term_US_SEC's first (M14), with the stage-EC
       # conventions of test_compiled_conventions.py, which compile the model once a
-      # session and hold the compiled model to modelx. A run that selects nothing exits 5
-      # and fails, which is wanted for the same reason a skip is.
+      # session and hold the compiled model to modelx; of those, conftest.py keeps the
+      # leg's shard. A run that selects nothing fails, which is wanted for the same reason
+      # a skip is.
       run: pytest -q -m cython --durations=10 lifelib/libraries/uslib/tests
 
   sec:

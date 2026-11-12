@@ -35,7 +35,8 @@ Compiling, for Phase 2's compile tests
     :func:`cython_missing` finds the toolchain missing; :class:`SecBuilds` compiles each
     SEC model once a session, into a temporary directory; :func:`compiled_case` puts a
     build beside a copy of its inputs; and :func:`run_compiled` runs calls on it in a
-    child process, on a stack of a given size.
+    child process, on a stack of a given size.  :func:`cython_shards` and
+    :func:`cython_shard` split the compile tests among the ``cython`` job's legs.
 C3, C4 and C5, and the release
     :func:`reporting_cells` is R17's allowlist, the cells that may stay Python, and
     :func:`data_readers` the ``Data`` cells that read a file, which stay Python too.
@@ -3487,6 +3488,56 @@ def require_cython():
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     return module
+
+
+# The cython CI job's shards (D13, decided at M16)
+#
+# The job runs one shard to a leg, chosen by USLIB_CYTHON_SHARD, so that no leg compiles
+# every model: "toolchain", test_cython_toolchain.py and any compile test tied to no one
+# SEC model, and one shard for each SEC model at stage "EC", its product module's compile
+# tests with its cases of test_compiled_conventions.py, in one session, so that it compiles
+# once.  conftest.py deselects the compile tests outside the shard.
+
+CYTHON_SHARD = "USLIB_CYTHON_SHARD"
+TOOLCHAIN_SHARD = "toolchain"
+
+
+def cython_shards():
+    """The ``cython`` job's shards, ``{shard: model}``: ``"toolchain"``, to ``None``, first.
+
+    Then, in the registry's order, the product directory of each SEC model at stage
+    ``"EC"``, to the model: ``"term_life"`` to ``"Term_US_SEC"``.  The directory names the
+    product's test module, ``test_term_life_us_sec.py``, as it does in the ``sec`` job's
+    matrix.  Read from the registry, so a model gains its shard in the commit that moves it
+    to stage ``"EC"``, and ``test_compiled_conventions.py`` holds the workflow's matrix to
+    these.
+    """
+    from us_registry import is_sec, meta
+    shards = {TOOLCHAIN_SHARD: None}
+    for name in MODELS:
+        if is_sec(name) and meta(name).get("stage") == "EC":
+            shards[model_path(name).parent.name] = name
+    return shards
+
+
+def cython_shard(item, shards):
+    """The shard among ``shards`` (:func:`cython_shards`) that runs the test ``item``.
+
+    A test parametrized over a stage-``"EC"`` model is that model's, as each case of
+    ``test_compiled_conventions.py`` is; else a test in a shard's product module,
+    ``test_<shard>_us_sec.py``, is that shard's; and every other is ``"toolchain"``'s.  So
+    no compile test falls outside every shard: one tied to no model, or to a model not yet
+    at stage ``"EC"``, runs in the toolchain's.
+    """
+    by_model = {model: shard for shard, model in shards.items() if model is not None}
+    params = getattr(item, "callspec", None)
+    for value in (params.params.values() if params is not None else ()):
+        if isinstance(value, str) and value in by_model:
+            return by_model[value]
+    found = re.fullmatch(r"test_(\w+)_us_sec\.py", item.path.name)
+    if found and found.group(1) in by_model.values():
+        return found.group(1)
+    return TOOLCHAIN_SHARD
 
 
 @dataclasses.dataclass(frozen=True)

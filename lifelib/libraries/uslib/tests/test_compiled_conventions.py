@@ -35,10 +35,16 @@ processes only.  Without modelx-cython or a C compiler they skip, and the ``cyth
 which sets ``USLIB_REQUIRE_CYTHON=1``, fails a skip (D13).  Each product module adds what
 is its own: C4 on its splice grid and at its contract's extremes, its compiled refusals,
 its deepest cold call on a 1 MiB stack, and its runner compiled.
+
+The ``cython`` CI job runs these with the product module's in the model's own leg, one
+shard to a leg (``sec_support.cython_shards``), and
+:func:`test_the_cython_job_runs_every_shard`, which needs no compiler, holds the job's
+matrix to the registry, so that no model at stage ``"EC"`` is left out of it.
 """
 import ast
 import builtins
 import itertools
+import re
 import textwrap
 
 import modelx as mx
@@ -46,9 +52,9 @@ import pandas as pd
 import pytest
 
 from sec_support import (
-    C_CALLS, SEC_SPECS, c_faults, compiled_case, compiled_mismatches, release_faults,
-    reporting_cells, spec_faults, static_faults, typing_faults)
-from us_registry import MODELS, is_sec, meta, model_path, point_keys, projection
+    C_CALLS, SEC_SPECS, c_faults, compiled_case, compiled_mismatches, cython_shards,
+    release_faults, reporting_cells, spec_faults, static_faults, typing_faults)
+from us_registry import LIB, MODELS, is_sec, meta, model_path, point_keys, projection
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
 EC_MODELS = sorted(n for n in SEC_MODELS if meta(n).get("stage") == "EC")
@@ -299,3 +305,78 @@ def test_a_block_run_releases_each_compiled_point(name, sec_build, tmp_path):
     runner = model_path(name).parent / "run_sec.py"
     found = release_faults(case, build.package.name, runner, points=len(block))
     assert not found, f"{name}: " + "\n  ".join(found)
+
+
+# The workflow that runs the cython job, in the repository that holds this library.
+WORKFLOW = LIB.parents[2] / ".github" / "workflows" / "tests.yml"
+
+
+def _job(text, job):
+    """The lines of ``job`` in the workflow ``text``, or ``None`` where it has no such job.
+
+    Read as text, since the suite's requirements hold no YAML parser: a job is a key
+    indented two spaces under ``jobs:``, and runs to the next key indented two spaces or
+    fewer.
+    """
+    lines = text.splitlines()
+    for i, line in enumerate(lines):
+        if line.rstrip() == f"  {job}:":
+            end = next((j for j in range(i + 1, len(lines))
+                        if re.match(r"\s{0,2}[^\s#]", lines[j])), len(lines))
+            return lines[i + 1:end]
+    return None
+
+
+def _matrix_list(job, key):
+    """The flow sequence ``key: [a, b, ...]`` in ``job``'s lines, which may wrap, or
+    ``None``."""
+    for i, line in enumerate(job):
+        found = re.match(rf"\s+{key}:\s*\[(.*)", line)
+        if found:
+            text = found.group(1)
+            for more in job[i + 1:]:
+                if "]" in text:
+                    break
+                text += more
+            items = text.split("]")[0].split(",")
+            return [item.strip().strip("'\"") for item in items if item.strip()]
+    return None
+
+
+def test_the_cython_job_runs_every_shard():
+    """The ``cython`` CI job's matrix lists exactly the shards the registry makes (D13).
+
+    The job runs one shard of the compile tests to a leg, named by ``USLIB_CYTHON_SHARD``,
+    so that no leg compiles every model: ``toolchain``, and for each SEC model at stage
+    ``"EC"`` its product directory (``sec_support.cython_shards``), whose module,
+    ``test_<shard>_us_sec.py``, holds the model's own compile tests.  A model moved to
+    stage ``"EC"`` without its shard in the matrix would have its compile tests run in no
+    leg, and every leg green, so its C step adds the shard, and this fails until it does;
+    a shard left in the matrix after its model leaves stage ``"EC"`` would fail its leg
+    with nothing selected, and this says so first.  Every leg must pass the shard to
+    pytest.  It runs in the ``test`` job, which needs no compiler, and skips where the
+    workflow or ``tools/build_sec_cy.py`` is absent, as from a ``lifelib.create()`` copy
+    or from lifelib, whose CI runs no ``cython`` job.
+    """
+    tool = LIB.parents[2] / "tools" / "build_sec_cy.py"
+    if not (WORKFLOW.is_file() and tool.is_file()):
+        pytest.skip("the cython job's workflow and tools/build_sec_cy.py are this "
+                    "repository's, and one is absent")
+    job = _job(WORKFLOW.read_text(encoding="utf-8"), "cython")
+    assert job is not None, f"{WORKFLOW.name} has no cython job"
+    listed = _matrix_list(job, "shard")
+    assert listed is not None, "the cython job's matrix has no shard: [...] list"
+    want = list(cython_shards())
+    twice = sorted({shard for shard in listed if listed.count(shard) > 1})
+    missing = [shard for shard in want if shard not in listed]
+    extra = [shard for shard in listed if shard not in want]
+    assert not (twice or missing or extra), (
+        f"the cython job's matrix lists the shards {listed}, and the registry makes "
+        f"{want}: add {missing}, remove {extra}, list once {twice}; a model's shard is "
+        f"added in the commit that moves it to stage 'EC'")
+    for shard in want[1:]:
+        module = LIB / "tests" / f"test_{shard}_us_sec.py"
+        assert module.is_file(), f"shard {shard}: its module {module.name} is absent"
+    passed = r"\s+USLIB_CYTHON_SHARD:\s*\$\{\{\s*matrix\.shard\s*\}\}\s*"
+    assert any(re.fullmatch(passed, line) for line in job), (
+        "the cython job does not set USLIB_CYTHON_SHARD to its matrix's shard")

@@ -13,6 +13,12 @@ compile tests by (USLIB-SEC-PLAN.md D13), and registering it keeps them free of 
 unknown-mark warning.  The tests themselves skip when modelx-cython or a C compiler is
 absent, so a bare ``pytest`` stays green on a machine that has neither.  The ``cython`` CI
 job, which installs both, sets ``USLIB_REQUIRE_CYTHON=1``, and there such a skip fails.
+That job runs one shard of the compile tests to a leg, named by ``USLIB_CYTHON_SHARD``:
+``toolchain``, or the product directory of an SEC model at stage ``"EC"``, whose shard
+holds its product module's compile tests and its cases of ``test_compiled_conventions.py``,
+so that the model compiles once a leg (D13).  :func:`pytest_collection_modifyitems`
+deselects the compile tests outside the shard, by ``sec_support.cython_shard``, and fails a
+shard that selects none under ``USLIB_REQUIRE_CYTHON=1``.  Unset, it deselects nothing.
 
 The ``sec_full`` marker is registered here for the same reason.  It marks the cases of an
 SEC model's full splice grid beyond the core that runs by default, which skip, with the
@@ -75,6 +81,43 @@ def sec_build(tmp_path_factory):
     """
     from sec_support import SecBuilds
     return SecBuilds(tmp_path_factory)
+
+
+@pytest.hookimpl(trylast=True)
+def pytest_collection_modifyitems(config, items):
+    """Under ``USLIB_CYTHON_SHARD``, deselect this suite's ``cython`` tests outside that
+    shard.
+
+    The shards are ``sec_support.cython_shards``, read from the registry, and a test's is
+    ``sec_support.cython_shard``; a name that is no shard is a usage error, which lists
+    them.  Run last, after ``-m`` has deselected, so that what is left is what the session
+    runs: under ``USLIB_REQUIRE_CYTHON=1``, a shard left with no compile test is an error
+    too, as a run that selects no test is (D13), and not a green leg that compiled nothing.
+    Tests without the marker are left to ``-m``, and other suites' tests are not touched.
+    """
+    import os
+    import pathlib
+    shard = os.environ.get("USLIB_CYTHON_SHARD", "")
+    if not shard:
+        return
+    from sec_support import cython_shard, cython_shards
+    shards = cython_shards()
+    if shard not in shards:
+        raise pytest.UsageError(f"USLIB_CYTHON_SHARD={shard!r} is no shard; the shards are "
+                                f"{', '.join(shards)}")
+    here = pathlib.Path(__file__).resolve().parent
+    kept, dropped = [], []
+    for item in items:
+        ours = (item.get_closest_marker("cython") is not None
+                and item.path.resolve().parent == here)
+        (dropped if ours and cython_shard(item, shards) != shard else kept).append(item)
+    if dropped:
+        config.hook.pytest_deselected(items=dropped)
+        items[:] = kept
+    if (os.environ.get("USLIB_REQUIRE_CYTHON") == "1"
+            and not any(item.get_closest_marker("cython") is not None for item in kept)):
+        raise pytest.UsageError(f"USLIB_REQUIRE_CYTHON=1, and USLIB_CYTHON_SHARD={shard!r} "
+                                f"selects no compile test")
 
 
 # Each marker whose skip a CI job forbids, with the variable that forbids it.
