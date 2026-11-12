@@ -1313,6 +1313,11 @@ def test_the_generated_c_is_read_for_python_work_and_the_directives(tmp_path):
         "Projection.k builds a Python list, dict or set (__Pyx_PyDict_NewPresized) "
         "(R10, R12)",
         "Projection.e keeps Python objects in its C locals: n, rate"]
+    # The registry's "python_calls" admits a builtin in its cell alone: round in g, which
+    # leaves h's sum a fault; and round admitted in h admits nothing there.
+    admitted = c_faults(build, reporting={"result_cf"}, python_calls={"g": ("round",)})
+    assert admitted == found[1:], admitted
+    assert c_faults(build, reporting={"result_cf"}, python_calls={"h": ("round",)}) == found
     for first, missing in (("# cython: infer_types=True", "cpow=True"),
                            ("# cython: infer_types=True, cpow=False", "cpow=True"),
                            ("import x", "infer_types=True, cpow=True")):
@@ -1419,6 +1424,30 @@ def test_the_static_check_finds_what_a_compiled_cell_cannot_run():
     assert len(found) == len(expected), found
     assert not [f for f in found if f.startswith(("Projection.fine", "Projection.label",
                                                   "Data.picked"))]
+    # The registry's "python_calls" admits a builtin in its cell alone: round in rounds,
+    # which leaves generator's sum a fault; and round admitted elsewhere admits nothing.
+    model = mx.new_model(_name("static"))
+    try:
+        data = model.new_space("Data")
+        data.np, data.pd = np, pd
+        for name, formula in STATIC_DATA.items():
+            data.new_cells(name, formula=formula)
+        proj = model.new_space("Projection")
+        proj.data, proj.pd, proj.mode = data, pd, "A"
+        for name, formula in STATIC_PROJECTION.items():
+            proj.new_cells(name, formula=formula)
+        for name in STATIC_UNCACHED:
+            proj.cells[name].is_cached = False
+        admitted = static_faults(model, reporting={"label", "missing"},
+                                 python_calls={"rounds": ("round",)})
+        elsewhere = static_faults(model, reporting={"label", "missing"},
+                                  python_calls={"generator": ("round",)})
+    finally:
+        model.close()
+    rounds = "Projection.rounds, line 1: calls round(), a call into Python"
+    assert [f for f in found if not f.startswith(rounds)] == admitted, admitted
+    assert any(f.startswith("Projection.generator, line 1: calls sum()") for f in admitted)
+    assert elsewhere == found, elsewhere
 
 
 def test_the_compiled_comparison_keeps_kinds_and_floors_at_the_magnitude():

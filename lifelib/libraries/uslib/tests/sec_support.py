@@ -156,11 +156,12 @@ specific as these three.  That includes an S cell the SEC model drops or renames
 
 
 def codes(proj):
-    """The codes an SEC ``Projection`` names, ``{name: int}``: timings, kinds and phases.
+    """The codes an SEC ``Projection`` names, ``{name: int}``: timings, kinds, categories.
 
     At stage ``"EC"`` an SEC model spells what its S twin spells as text as an int
     Reference named as the text it replaces (USLIB-SEC-PLAN.md R9, R10): a timing,
-    ``pols_if_at(t, BEF_DECR)``, and a phase, ``LEVEL``.  Those are its References whose
+    ``pols_if_at(t, BEF_DECR)``, and a phase, ``LEVEL``, or a categorical column decoded,
+    ``WholeLife_US_SEC``'s premium period, ``TO_100``.  Those are its References whose
     names are all capitals and whose values are ints, bools excepted, and they are what
     this returns.  Passed to :func:`twin_mismatches` as ``codes``, they turn S's strings
     into SEC's ints, in the arguments S cached and in the values S returned.  At stage
@@ -1958,6 +1959,11 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and test_whole_life_us_sec.py compares the
     #     report itself with S's, on every column both hold.
+    #   claims: S's claims(t, kind=None) is split at stage EC into claims_death,
+    #     claims_lapse and claims_maturity, the result_cf columns, and a total claims(t)
+    #     (R12).  S's keys, (t, kind) and (t, None), have no SEC cell of that signature,
+    #     and every value reaches T1 through the three columns of result_cf and through
+    #     liability_cf; test_whole_life_us_sec.py compares the total with S's, bit for bit.
     "WholeLife_US_SEC": SecSpec(
         twin="WholeLife_US_S",
         column_map={"duration_inforce": None, "puaf_inforce": "pua_face_init",
@@ -1969,7 +1975,7 @@ SEC_SPECS: dict[str, SecSpec] = {
         twin_state={c: f for c, f in _WL_STATE.items()
                     if c not in ("pua_face_init", "loan_bal_init")},
         exempt=frozenset({"puaf_inforce", "loan_inforce", "proj_start",
-                          "duration_inforce", "result_pols"}),
+                          "duration_inforce", "result_pols", "claims"}),
     ),
     # SPIA's state is each life's survival, the commutation fraction and the CMT's change
     # since the annuity date (_SPIA_STATE).  S has no in-force point, so every twin is new
@@ -3913,14 +3919,16 @@ def _directives(line):
     return {k.strip(): v.strip() for k, v in (p for p in pairs if len(p) == 2)}
 
 
-def c_faults(build, *, reporting):
+def c_faults(build, *, reporting, python_calls=None):
     """C3 on the generated C: the Python a compiled formula still runs.
 
     A cell typed ``double`` can compute in Python all the same, and its declaration does
     not show it.  So the C of every ``Projection`` formula outside ``reporting`` must
     declare no ``PyObject`` local, which turns every operation on it into a call into the
     interpreter; call no Python builtin, such as ``round`` or ``sum``, but the exceptions a
-    refusal raises; and build no list, dict or set.  Under Cython's default inference an
+    refusal raises and those ``python_calls``, the registry's ``"python_calls"``
+    (:mod:`us_registry`), admits in that cell, ``{cell: (builtin, ...)}``; and build no
+    list, dict or set.  Under Cython's default inference an
     integer local used in arithmetic, and any loop counter, is a Python object, and a
     power of two doubles is complex, so every translated space module must begin with the
     directives of :data:`REQUIRED_DIRECTIVES`, which ``tools/build_sec_cy.py`` writes.
@@ -3928,7 +3936,7 @@ def c_faults(build, *, reporting):
     body is not read here; mx2cy types no such cell, and :func:`typing_faults` and
     :func:`static_faults` refuse it.  Returns a line per fault.
     """
-    lines = []
+    lines, python_calls = [], python_calls or {}
     for module in sorted(build.package.rglob("_mx_classes.py")):
         first = module.read_text(encoding="utf-8").split("\n", 1)[0]
         given = _directives(first) or {}
@@ -3950,7 +3958,8 @@ def c_faults(build, *, reporting):
             lines.append(f"Projection.{name} keeps Python objects in its C locals: "
                          f"{', '.join(objects)}")
         builtins = sorted({b for b in _C_BUILTIN.findall(body)
-                           if not b.endswith(("Error", "Exception", "Warning"))})
+                           if not b.endswith(("Error", "Exception", "Warning"))}
+                          - set(python_calls.get(name, ())))
         if builtins:
             lines.append(f"Projection.{name} calls the Python builtin "
                          f"{', '.join(builtins)} (R12, R16)")
@@ -4292,7 +4301,7 @@ def _vector_text(value):
     return f"a {type(value).__module__.split('.')[0]} {type(value).__name__}"
 
 
-def static_faults(model, *, reporting):
+def static_faults(model, *, reporting, python_calls=None):
     """C5: what a formula of ``model`` holds that a compiled cell cannot run in C.
 
     Read from the formulas, so it needs no compiler and runs in the default suite.  Every
@@ -4313,12 +4322,16 @@ def static_faults(model, *, reporting):
     cell outside the allowlist, in any space, may share its name with a function or a
     method that a call with keywords calls anywhere in the model, the reporting cells
     included, because mx2cy keeps every cell of such a name a Python method (R12).  The
-    registry's ``reporting`` must name ``Projection`` cells.  Returns a line per fault,
-    ``"Projection.mort_rate_base, line 9: reads .loc"``, the line counted in the formula.
+    registry's ``reporting`` must name ``Projection`` cells.  ``python_calls``, the
+    registry's ``"python_calls"``, ``{cell: (builtin, ...)}``, admits each builtin it names
+    in that cell's formula alone, R16's ``round`` of a projected amount.  Returns a line
+    per fault, ``"Projection.mort_rate_base, line 9: reads .loc"``, the line counted in the
+    formula.
     """
     import ast
     import types
     proj, data = model.Projection, model.Data
+    python_calls = python_calls or {}
     lines = [f"the registry's reporting names {name}, which is not a Projection cell"
              for name in sorted(set(reporting) - set(proj.cells))]
     values = {}
@@ -4386,7 +4399,8 @@ def static_faults(model, *, reporting):
                 if isinstance(func, ast.Name) and func.id == "len":
                     lines.append(f"{where}: calls len()")
                 elif isinstance(func, ast.Name):
-                    if func.id not in proj.cells and func.id not in C_CALLS:
+                    if (func.id not in proj.cells and func.id not in C_CALLS
+                            and func.id not in python_calls.get(name, ())):
                         lines.append(f"{where}: calls {func.id}(), a call into Python: a "
                                      f"compiled formula calls cells, Data vectors and "
                                      f"{', '.join(sorted(C_CALLS))} alone")

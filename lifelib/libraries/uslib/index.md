@@ -65,7 +65,7 @@ Every product also carries a second model, `<product>_US_SEC`, derived from its 
 `E` is for running **in force**: `t` counts months from a valuation date shared by every
 model point, and a model point may be a policy issued at that date, one already in force at
 it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
-`basiclife/BasicTerm_SC` does; `Term_US_SEC` is the first to compile, and its
+`basiclife/BasicTerm_SC` does; `Term_US_SEC` and `WholeLife_US_SEC` compile, and each
 `model-sec.md` says how. On the `_S` model's new-business points, issued at the
 valuation date, an `_SEC` model reproduces its `_S` model cell by cell. Where the worked
 example's point is already in force, as whole life's, the FIA's, the variable annuity's and

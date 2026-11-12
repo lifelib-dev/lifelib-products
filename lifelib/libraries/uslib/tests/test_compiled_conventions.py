@@ -26,7 +26,9 @@ moves it there, Term_US_SEC first (M14):
 
 The allowlist of cells that stay Python is R17's, :func:`sec_support.reporting_cells`:
 ``model_point``, the ``result_*`` reports, the ``check_*`` checks, and the label accessors
-the registry entry names under ``"reporting"``.  C3, C4 and the release are marked
+the registry entry names under ``"reporting"``.  A builtin a compiled cell still calls,
+R16's ``round`` of a projected amount, is admitted in that cell alone, by the registry
+entry's ``"python_calls"``, which C3 and C5 read.  C3, C4 and the release are marked
 ``cython``.  They compile each model once a session, into a temporary directory
 (``conftest.sec_build``), never into the tree (D12), and run the compiled package in child
 processes only.  Without modelx-cython or a C compiler they skip, and the ``cython`` CI job,
@@ -34,14 +36,17 @@ which sets ``USLIB_REQUIRE_CYTHON=1``, fails a skip (D13).  Each product module 
 is its own: C4 on its splice grid and at its contract's extremes, its compiled refusals,
 its deepest cold call on a 1 MiB stack, and its runner compiled.
 """
+import ast
+import builtins
 import itertools
+import textwrap
 
 import modelx as mx
 import pandas as pd
 import pytest
 
 from sec_support import (
-    SEC_SPECS, c_faults, compiled_case, compiled_mismatches, release_faults,
+    C_CALLS, SEC_SPECS, c_faults, compiled_case, compiled_mismatches, release_faults,
     reporting_cells, spec_faults, static_faults, typing_faults)
 from us_registry import MODELS, is_sec, meta, model_path, point_keys, projection
 
@@ -106,13 +111,16 @@ def test_no_projection_formula_holds_python_machinery(name, model):
     ``Data`` cell reads (R5, R13).  And no cell may share its name with what a call with
     keywords calls anywhere in the model, pandas' and numpy's methods included, because
     mx2cy keeps every cell of such a name a Python method (R12).  The typing guard sees
-    most of these only once compiled; this sees them in every suite.
+    most of these only once compiled; this sees them in every suite.  A builtin the
+    registry's ``"python_calls"`` admits in a cell, R16's ``round``, is no fault there
+    (:func:`test_python_calls_are_declared_by_cell`).
 
     The registry's ``"reporting"`` widens the allowlist, so each cell it names must be
     what R17 admits, a label accessor: a ``Projection`` cell returning the model point's
     column of its own name, exactly as the table holds it, on every committed point.
     """
-    found = static_faults(model, reporting=reporting_cells(name, model.Projection))
+    found = static_faults(model, reporting=reporting_cells(name, model.Projection),
+                          python_calls=meta(name).get("python_calls", {}))
     labels = [cell for cell in meta(name).get("reporting", ())
               if cell in model.Projection.cells]
     for key, point_id in zip(point_keys(model), model.Data.model_point_table().index):
@@ -126,6 +134,75 @@ def test_no_projection_formula_holds_python_machinery(name, model):
                              f"where the label accessor returns the point's {cell!r} "
                              f"column, {want!r} (R17)")
     assert not found, f"{name}: {len(found)} faults, first:\n  " + "\n  ".join(found[:20])
+
+
+@pytest.mark.parametrize("sec_name", SEC_MODELS)
+def test_python_calls_are_declared_by_cell(sec_name):
+    """``"python_calls"`` admits a Python builtin in a named cell, and each is taken.
+
+    R16 keeps one Python call in a projection formula, ``round`` of a projected amount,
+    which cannot be precomputed, and the registry's ``"python_calls"`` admits it by cell
+    (us_registry), so that C3 and C5 pass that call in that cell and fault it in every
+    other.  So the key is a stage-``"EC"`` one, as ``"reporting"`` is, a dict of
+    ``Projection`` cell names, none of them reporting, since a reporting cell may call
+    Python already, each to a non-empty tuple of Python builtins, none of which C3 and C5
+    admit everywhere already.  And each admitted name is called in its cell's formula, so
+    that no admission outlives the call it was made for, as every size in a spec must be
+    taken.
+
+    The other way round, which holds for a model without the key too: at stage ``"EC"``,
+    no other compiled formula calls a builtin outside ``C_CALLS``, outside its ``raise``
+    statements, so that no admission is missing, and a model without the key needs none.
+    Before stage ``"EC"`` nothing compiles, so a model there declares no admission.
+    """
+    entry = meta(sec_name)
+    declared = entry.get("python_calls", {})
+    if "python_calls" in entry:
+        assert entry.get("stage") == "EC", (
+            f"{sec_name} declares python_calls at stage {entry.get('stage')!r}; they widen "
+            f"the compiled model's checks, and the key belongs to stage 'EC'")
+        assert isinstance(declared, dict) and declared, (
+            f"{sec_name}: python_calls is {declared!r}, not a dict of cells to builtins")
+    if entry.get("stage") != "EC":
+        assert declared == {}, declared
+        return
+    model = mx.read_model(model_path(sec_name), name=f"{sec_name}_calls_{next(_names)}")
+    try:
+        proj = model.Projection
+        reporting = reporting_cells(sec_name, proj)
+        found = []
+        for cell in sorted(set(proj.cells) - set(reporting) - set(declared)):
+            tree = ast.parse(textwrap.dedent(proj.cells[cell].formula.source))
+            raised = {id(node) for statement in ast.walk(tree)
+                      if isinstance(statement, ast.Raise) for node in ast.walk(statement)}
+            for node in ast.walk(tree):
+                if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                        and id(node) not in raised and hasattr(builtins, node.func.id)
+                        and node.func.id not in C_CALLS
+                        and node.func.id not in proj.cells):
+                    found.append(f"{cell} calls {node.func.id}(), which no admission names")
+        for cell, names in declared.items():
+            if cell not in proj.cells:
+                found.append(f"{cell} is not a Projection cell")
+                continue
+            if cell in reporting:
+                found.append(f"{cell} is a reporting cell, which may call Python already")
+            if not (isinstance(names, tuple) and names
+                    and all(isinstance(n, str) for n in names)):
+                found.append(f"{cell}: {names!r} is not a non-empty tuple of names")
+                continue
+            tree = ast.parse(textwrap.dedent(proj.cells[cell].formula.source))
+            called = {node.func.id for node in ast.walk(tree)
+                      if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
+            for n in names:
+                if not hasattr(builtins, n) or n in C_CALLS:
+                    found.append(f"{cell}: {n} is not a Python builtin outside C_CALLS")
+                elif n not in called:
+                    found.append(f"{cell}: its formula calls no {n}(), so the admission "
+                                 f"is stale")
+    finally:
+        model.close()
+    assert not found, f"{sec_name}: python_calls: " + "; ".join(found)
 
 
 @pytest.mark.cython
@@ -143,7 +220,8 @@ def test_every_projection_cell_compiles_to_a_c_type(name, model, sec_build):
     projection formula keeps a Python object among its locals, calls a Python builtin
     other than an exception it raises, or builds a list, dict or set, and every translated
     space module begins with ``infer_types=True`` and ``cpow=True``, without which an
-    integer local is a Python object and a power drifts from modelx's.
+    integer local is a Python object and a power drifts from modelx's.  A builtin the
+    registry's ``"python_calls"`` admits in a cell is no fault in that cell's C.
     """
     build = sec_build(name)
     twin = mx.read_model(model_path(meta(name)["twin"]), name=f"{name}_ec_twin_"
@@ -155,7 +233,8 @@ def test_every_projection_cell_compiles_to_a_c_type(name, model, sec_build):
     reporting = reporting_cells(name, model.Projection)
     found = (typing_faults(build, model, reporting=reporting, new_data=new_data)
              + spec_faults(build, model_path(name).parent / "spec_sec.py")
-             + c_faults(build, reporting=reporting))
+             + c_faults(build, reporting=reporting,
+                        python_calls=meta(name).get("python_calls", {})))
     assert not found, f"{name}: {len(found)} faults, first:\n  " + "\n  ".join(found[:20])
 
 

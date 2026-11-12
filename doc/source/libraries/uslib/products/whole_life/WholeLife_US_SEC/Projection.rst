@@ -8,11 +8,17 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: product
 
 .. autofunction:: is_par
 
+.. autofunction:: is_graded
+
 .. autofunction:: premium_period
+
+.. autofunction:: premium_period_code
 
 .. autofunction:: age_at_entry
 
@@ -23,6 +29,8 @@ Cells Descriptions
 .. autofunction:: sum_assured
 
 .. autofunction:: dividend_option
+
+.. autofunction:: dividend_option_code
 
 .. autofunction:: premium_mode
 
@@ -49,6 +57,10 @@ Cells Descriptions
 .. autofunction:: loan_utilization
 
 .. autofunction:: term_blend_target
+
+.. autofunction:: annual_premium
+
+.. autofunction:: pua_rider_premium
 
 .. autofunction:: is_blended
 
@@ -102,17 +114,23 @@ Cells Descriptions
 
 .. autofunction:: cv_pp_anniv
 
+.. autofunction:: cv_schedule
+
 .. autofunction:: cv_pp
 
 .. autofunction:: net_amt_at_risk
 
 .. autofunction:: nsp
 
+.. autofunction:: nsp_schedule
+
 .. autofunction:: nsp_mth
 
 .. autofunction:: np_guar
 
 .. autofunction:: mort_rate_guar_at
+
+.. autofunction:: mort_schedule
 
 .. autofunction:: mort_rate_guar
 
@@ -193,6 +211,12 @@ Cells Descriptions
 .. autofunction:: expenses
 
 .. autofunction:: claims
+
+.. autofunction:: claims_death
+
+.. autofunction:: claims_lapse
+
+.. autofunction:: claims_maturity
 
 .. autofunction:: div_cash_paid
 

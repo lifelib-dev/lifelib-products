@@ -24,13 +24,16 @@ explains what running in force changes.
 :mod:`~.WholeLife_US_SEC.Data`
     Reads the five assumption CSVs it shares with :mod:`~.WholeLife_US_S` and its own
     model point table, and holds their filename References. It takes no parameters, so
-    each file is read **once per model**.
+    each file is read **once per model**. It hands the projection what the files hold as
+    numpy vectors and arrays of numbers, one element per model point, per key or per
+    schedule.
 
 :mod:`~.WholeLife_US_SEC.Projection`
-    The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.WholeLife_US_SEC.Data`
-    Space.
+    The by-policy projection, parameterized by ``idx``, the position of a model point in
+    the ``Data`` vectors, as ``basiclife.BasicTerm_SC`` is: ``Projection[0]`` is an
+    ItemSpace projecting the table's first row, model point 1, and its ``point_id()`` is
+    that label. It reaches the inputs through its ``data`` Reference, which resolves to
+    the single :mod:`~.WholeLife_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -40,6 +43,20 @@ once, however many policies are projected.
 Input data is **external**: CSVs in the model folder's parent directory, read at run
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
+
+**Compiled.** The model compiles under modelx-cython into C-typed code, as
+``basiclife/BasicTerm_SC`` does, from the two inputs beside it: ``sample_sec.py``, the run
+that types each cell, and ``spec_sec.py``, the length of each cell's cache.
+``Projection``'s cells read every model point attribute a projection cell uses as a C
+number from a ``Data`` vector at ``idx``, and every table as an array indexed by integers;
+a timing, a kind, a premium period or a dividend option is an int code; and every cell but
+the reports, ``model_point`` and six label accessors returns a C ``bint``,
+``long long`` or ``double``, cached as a single value or in a C array sized from the
+contract. The dividend alone keeps a Python call, ``round``. modelx reads and runs the
+same formulas, and computes the same numbers. ``products/whole_life/model-sec.md`` says
+how to compile and run it, and what the compiled model does not do as modelx does: it
+clears no cache when a Reference is set, so every Reference is set on a model just
+imported.
 
 **Projection basis.** Monthly steps on two clocks. ``t`` counts months from the
 valuation date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the
@@ -90,20 +107,20 @@ entering the **policy year** instead, twelve months back, or the opening state's
 anniversary values where that month is before the valuation date.
 
 ``pols_if(t)`` follows the same clock: the number in force at the **start** of month t,
-after the month's new business — ``pols_if_at(t, "BEF_DECR")``, the notes' ``l_t`` —
+after the month's new business — ``pols_if_at(t, BEF_DECR)``, the notes' ``l_t`` —
 because that is the weight every cash flow on the same ``result_cf()`` row is computed
 over, and because it is what ``pols_if`` means in every other model in this library. A
 point in force at the valuation date opens with its ``policy_count``, and one issued at
 or after it takes its ``policy_count`` as ``pols_new_biz`` in its issue month;
 ``result_pols()`` sets the counts out. The notes' end-of-period ``l_{t+1}`` is
-``pols_if_at(t, "AFT_DECR")``, the count carried into the next month before that month's
+``pols_if_at(t, AFT_DECR)``, the count carried into the next month before that month's
 new business.
 
 Within a month the order is the notes': premium, PUA rider premium, premium tax
 and expenses at the **beginning**; then, at the **end**, deaths, the dividend credit
 and loan interest capitalization where the month is an anniversary, surrenders, and —
 in the final month only — maturity. Deaths are therefore valued on the paid-up
-additions entering the month (``claim_pp(t, "DEATH")``) while surrenders are valued on
+additions entering the month (``claim_pp(t, DEATH)``) while surrenders are valued on
 the closing ones, including any dividend just credited.
 
 The net flow is published under **both** signs, because these notes print ``NetCF_t``
@@ -187,8 +204,8 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/whole_life/WholeLife_US_SEC")
-    >>> model.Projection[19].result_cf()
-    >>> model.Projection[19].result_pols()
+    >>> model.Projection[18].result_cf()     # the nineteenth row: model point 19
+    >>> model.Projection[18].result_pols()
 """
 
 from modelx.serialize.jsonvalues import *
