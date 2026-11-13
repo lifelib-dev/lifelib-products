@@ -19,15 +19,16 @@ UL's compile step, M16, is done, 2026-11-13: Tests run 19 passed every job, the 
 job's eight legs among them, one shard and OS each (§7.3, *Record — M16*). VUL's compile
 step, M17, is done, 2026-11-13: Tests run 20 passed all 58 jobs, the `cython` job's
 `variable_ul` legs on Linux and Windows among them (§7.6, *Record — M17*). ULSG's compile
-step, M18, has landed, 2026-11-13, after M17 and before M20 and M19, and awaits CI (§7.5,
-*Record — M18*). MYGA's compile step, M20, has landed, 2026-11-13, after M18 and before M19,
-whose build starts now, and awaits CI (§7.10, *Record — M20*). SPIA's compile step, M23,
-built and tested on Windows in a separate local session, has landed, 2026-11-14, after M20
-and out of §9's order, and awaits CI (§7.9, *Record — M23*); DIA's, M24, follows it there,
-and RILA's, M25, may start now that M20 has landed.
-The open decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03. Like
-USLIB-MERGE-PLAN.md, this document is both the specification and the record: each phase
-records what it actually did, including where the implementation departed from the plan.
+step, M18, is done, 2026-11-13: Tests run 21 passed all 60 jobs, the `cython` job's
+`guaranteed_ul` legs on Linux and Windows among them (§7.5, *Record — M18*). MYGA's compile
+step, M20, has landed, 2026-11-13, after M18 and before M19, whose build starts now, and
+awaits CI (§7.10, *Record — M20*). SPIA's compile step, M23, built and tested on Windows in
+a separate local session, has landed, 2026-11-14, after M20 and out of §9's order, and
+awaits CI (§7.9, *Record — M23*); DIA's, M24, follows it there, and RILA's, M25, may start
+now that M20 has landed. The open decisions of §8.2 are settled, the last of them, item 4,
+on 2026-11-03. Like USLIB-MERGE-PLAN.md, this document is both the specification and the
+record: each phase records what it actually did, including where the implementation departed
+from the plan.
 
 Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
 modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
@@ -6091,7 +6092,7 @@ persistency, guarantee, lapse rate, face and 5-year; the acronyms GUL, COI, ROP 
 and the source keys S1, S7, REG-R20 and REG-R21. These runs came before the landing wrote
 this plan's M5 text, which no test, generator or doccheck reads.
 
-#### Record — M18, landed 2026-11-13
+#### Record — M18, done 2026-11-13
 
 M18 is ULSG's compile step, 614d779, on UL's chassis, by Term's template (§7.1, *Record —
 M14*, *The Phase 2 template*), §7.2's *For M16 and later*, §7.3's *For M17 and later* and
@@ -6116,8 +6117,12 @@ without a schedule (*Departures*), `run_sec.py`'s docstring claiming "bit for bi
 suite and the full grid under `USLIB_SEC_FULL=1` with every module were not run locally: CI
 runs both.
 
-**CI: pending** until the Tests workflow is green on 614d779: C1–C5 on Linux and Windows
-(§6.3, §9), the `cython` job's `guaranteed_ul` legs among them.
+**CI: green.** Tests run 21, dispatched on 614d779, passed all 60 jobs: the `cython`
+job's twelve legs, `guaranteed_ul` on Linux and on Windows among them, so MSVC built ULSG
+and ran its stack bracket on the 1 MiB main thread; the `sec` job's 36; and the `test`
+job's 12. Two macOS `sec` legs of other products never got a runner on the first attempt
+and passed when re-run. C1–C5 hold on Linux and Windows (§6.3, §9), and the run is the
+full-suite and full-grid check this step did not make locally.
 
 **What exists now.**
 - `ULSG_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 165
@@ -13042,7 +13047,7 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M15 | Phase 2 for WholeLife, the first after M13 — **done**, 2026-11-12; in CI the `cython` job of run 17 passed on Windows and failed on Linux, and run 18, on the fix, passed on both (§7.2, *Record — M15*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; the `cython` job's Linux leg runs the compiled grids at full size | C1–C5 green on Linux and Windows; C6 recorded |
 | M16 | Phase 2 for UL, the second after M13 — **done**, 2026-11-13; Tests run 19 passed every job, the `cython` job's eight legs among them (§7.3, *Record — M16*) | The `cython` job sharded by product first, one leg per shard and OS (f77b290, D13); §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer in place of the three lenses, from here | C1–C5 green on Linux and Windows; C6 recorded |
 | M17 | Phase 2 for VUL, the third after M13 — **done**, 2026-11-13; Tests run 20 passed all 58 jobs (§7.6, *Record — M17*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `variable_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M18 | Phase 2 for ULSG, the fourth after M13 — landed 2026-11-13, CI pending (§7.5, *Record — M18*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `guaranteed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
+| M18 | Phase 2 for ULSG, the fourth after M13 — **done**, 2026-11-13; Tests run 21 passed all 60 jobs (§7.5, *Record — M18*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `guaranteed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M20 | Phase 2 for MYGA, the fifth after M13 — landed 2026-11-13, after M18 and before M19, CI pending (§7.10, *Record — M20*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` key; the `fixed_deferred_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M23 | Phase 2 for SPIA, the sixth after M13 and the first payout annuity — landed 2026-11-14, after M20 and before M19, out of this table's order, built and tested on Windows in a separate local session, CI pending (§7.9, *Record — M23*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"reporting_columns"` key; the `immediate_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M19, M21, M22, M24, M25 | Phase 2 for the other five, one PR per product: M19 IUL, M21 FIA, M22 VA, M24 DIA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M19, whose build starts now, lands after M20, rebased onto it; M24 runs in the local session that built M23; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
