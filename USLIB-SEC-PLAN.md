@@ -26,7 +26,8 @@ step, M20, is done, 2026-11-13: Tests run 22 passed all 62 jobs, the `cython` jo
 SPIA's compile step, M23, built and tested on Windows in a separate local session after
 M20 and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, the
 `cython` job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record —
-M23*); DIA's, M24, follows it there, and RILA's, M25, may start now that M20 has landed.
+M23*). DIA's compile step, M24, built and tested there after M23, has landed, 2026-11-14,
+and awaits CI (§7.12, *Record — M24*); RILA's, M25, may start now that M20 has landed.
 The open decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03. Like
 USLIB-MERGE-PLAN.md, this document is both the specification and the record: each phase
 records what it actually did, including where the implementation departed from the plan.
@@ -676,7 +677,9 @@ every library's model pages move with uslib's. Nothing links to them by path; `c
 and DIA's its `"survival_pols_if"`, each confined to its one model by the registry test.
 At stage `"EC"`, `"reporting"` names the label accessors R17 lets stay Python, and
 `"reporting_columns"`, beside it, what a label returns where that is not its own column
-(R17, M23).
+(R17, M23). `"engine"` names S's cells kept for a reader and T1 that no compiled cell
+calls: those of float parameters (M20) and those of no parameter returning a list, a dict
+or a DataFrame (R14, M24).
 `test_model_conventions.py` is generalized rather than forked:
 
 - the suffix is `_S`, or `_SEC` for a model registered with a `"twin"`, at either stage:
@@ -919,8 +922,11 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   `index_credit_rate` at a 10.00% and a 2.00% cap, SEC either keeps S's cell for them,
   called by no projection cell and admitted by name to C3 and C5 through a registry key
   the first product to need it adds (the key `"engine"`, added at M20, read by
-  `sec_support.reporting_cells`; an engine cell may call another), or drops it, T1 exempting
-  it with its reason and the tests calling the inlined form: `MYGA_US_SEC` and `FIA_US_SEC`
+  `sec_support.reporting_cells`; an engine cell may call another; and, precised at M24, a
+  cell of S's taking no parameter that returns a list, a dict or a DataFrame, which no C
+  type holds, as `DIA_US_SEC`'s `qlac_flags`, `premium_schedule` and `premium_by_mth`,
+  which `sec_support.engine_faults` calls on the first point to see what it returns), or
+  drops it, T1 exempting it with its reason and the tests calling the inlined form: `MYGA_US_SEC` and `FIA_US_SEC`
   keep S's `mgsv_rate_statutory` and `mgsv_rate_is_compliant`, which nothing reaches, and
   `FIA_US_SEC` its `credit_rate_on` and `payout_rate`, for S's tests. A side calculation
   that no projection cell reads and that replays the books from the frame's first month, as
@@ -946,7 +952,10 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   digits, placed outside the counts at which `round` leaves a non-zero amount, below -400
   (M15); the product that needs it admits the cell by name in C3 and C5 at its own Phase 2,
   as RILA may admit its Black–Scholes math. WholeLife admits it through the registry's
-  `"python_calls"` (M15).
+  `"python_calls"` (M15). `DIA_US_SEC` keeps `purchase_rate`'s `round(pr, dp)`, its rate
+  built from `Projection` References, admitted through `"python_calls"`, and rounds
+  `rop_factor`'s deferral on the integers in an int cell, `rop_deferral_yrs(k)`, its
+  argument a cache key (M24).
 - **R17** Reporting cells may stay Python: `model_point()`, every `result_*` and `check_*`
   (not the per-`t` `*_resid` cells a check reads, which compile), and the label accessors
   a product declares in its registry entry's `"reporting"`, each returning its point's
@@ -2034,7 +2043,9 @@ All marked `cython` unless noted.
   same holds for every `Data` array another `Data` cell reads. No cell outside the
   allowlist shares its name with what a keyword call calls anywhere in the model. Every
   cell the registry declares reporting returns its point's column, of its own name or as
-  `"reporting_columns"` names it, and every such entry is needed (R17, precised at M23).
+  `"reporting_columns"` names it, and every such entry is needed (R17, precised at M23);
+  and every cell the registry names under `"engine"` is called by no compiled formula
+  (R14, precised at M24).
 - **Release, stack, refusals and References** (`cython`). `run_sec.py --block`, compiled,
   leaves no ItemSpace but the base alive after any collection it makes once frozen,
   collects at least once per point, and leaves none alive at the end
@@ -12113,15 +12124,17 @@ valuation clock these part.
 
 *C:*
 - To arrays: the premium schedule — filtered and sorted per call, then an `iterrows`-built
-  dict and `dict.get` — becomes a dense `[idx, month]` array; the ROP factor a 3-D
-  `[age, sex, years]` array; the payout factor, keyed by a string tuple, a per-point value
-  from `Data`.
+  dict and `dict.get` — becomes a dense `[idx, month]` table summed in S's order, with a
+  row count by month and a last month by point; the ROP and payout factor tables row
+  vectors scanned by an int-keyed reader, since S reads the ROP key at every cached policy
+  month and neither key is bounded by the contract (precised at M24).
 - Ten strings, plus `qlac_flags()`, which returns a list of strings.
 - `annuity_factor` mixes int and float parameters, so it is R14: inlined into the cached
   cells that call it, or its rate replaced by a code for the basis the rate comes from, so
   that it is int-keyed.
 - S's tests assert the dict and DataFrame returns of `premium_by_mth()` and
-  `premium_schedule()`, so those readers stay in `Data` beside the arrays.
+  `premium_schedule()`, so those cells, and `qlac_flags()`'s list, stay in `Projection`
+  as `"engine"` cells, called by no compiled cell (R14, precised at M24).
 - Never reached by any report or check: `guarantee_yrs`, `qlac_room`, `qlac_flags`,
   `accel_cost`, `payout_factor_calc`, `phase`, `market_type`, `is_qlac`,
   `other_qlac_premium`; in `DIA_US_SEC` also `accel_payment_factor`, whose exercise-month
@@ -12543,7 +12556,7 @@ design:
   Phase 2's codes when they come.
 - *Label accessors* that R17 and C5 do not admit as worded: `payout_form()`, derived from
   `income_form`, `payment_timing()`, which returns `timing`, and `sex(life)`; DIA's C step
-  extends R17 and C5 for those three, or leaves them out of `"reporting"`.
+  extends R17 and C5 for those three through `"reporting_columns"` (precised at M24).
 - *Containers to remove:* `premium_by_mth`'s dict and `premium_pm`'s lookup in it, which
   become a dense `[idx, month]` array; `guarantee_mths_pricing`'s sum over the dict; the
   lists of `horizon_mths` and `qlac_flags`; and `phase`'s strings (R10).
@@ -12556,7 +12569,14 @@ design:
   the joint annuitant's age, the income start month, 13 to 360, and the certain period, 10
   to 30 years on PC. Phase 2 refuses each in `proj_len()` beside the cover check, or sizes
   the caches from the product's limits. The export's limits above size `sample_sec.py` and
-  `run_sec.py --cython`.
+  `run_sec.py --cython`. *At M24:* `t` 0..1,562, `k` 0..1,446, `y` 1..122 and `x` 0..120.
+  `DIA_US_S` projects every form at issue age 0, so the caches are sized from
+  `issue_age_min` 0, asked of each covered life; `stop_mth()` refuses an income start
+  month, at issue or in force, past `12 * (omega_age - issue_age_min)`, 1,440, and a
+  period certain ending past it, which `DIA_US_S` projects, and a value of `2**53` or more
+  is refused by the accessor of a point that reads it: recorded departures. An
+  installment refund rounds its period up to a whole instalment, so the stop rule ends by
+  1,441.
 - *Tests on the compiled model:* the NaN-residual test and the cap test's NaN case set a
   Reference before the model computes anything, so they run compiled unchanged (K7).
 
@@ -12639,6 +12659,208 @@ lines of §8.2 item 4; none of them changed code or a test. On the tree as commi
 doccheck again built 497 pages with 0 warnings, md_lint reported 0 on uslib and on this
 plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
 `gen_scaffolding.py --dry-run` 0 files in each of the six libraries.
+
+#### Record — M24, landed 2026-11-14
+
+M24 is DIA's compile step, ca5610b, built on SPIA's payout chassis and by Term's template
+(§7.1, *Record — M14*), §7.2's *For M16 and later*, §7.3's *For M17 and later*, §7.6's
+*For M18 and later* and §7.9's *For M24 and later*. It ran, as M23 did, in a separate
+session on a local Windows machine, out of §9's order. Its Phase 1 fingerprint had been
+frozen at M13, and the `cython` job gains its shard, `deferred_income_annuity`. A design
+was prototyped and critiqued first: 1 blocker, 3 major and 10 minor findings. The blocker:
+the three cells S's tests read as containers, `qlac_flags`, `premium_schedule` and
+`premium_by_mth`, fit no registry key, and the design's answer, a new key
+`"containers"`, was ruled out as a second admission hook; the existing `"engine"` key is
+widened instead (*Departures*). The majors: no test held the sign of zero of S's two-kind
+claims total; the copy of `annuity_factor`'s body inlined into `guarantee_mths_pricing`
+overwrote its loop bound and returned from the wrong cell, on a joint 119/0 point S
+projects; and the design refused points `DIA_US_S` projects beyond a negative age, which
+the ruling was reworded to allow only where the caches cannot hold them. The build, tests
+written against it and checked by 33 injected faults, and the docs with C6 followed. One
+merged reviewer found 0 blockers, 2 major and 9 minor, all applied by a fix stage: compiled
+`accel_cost()` raised `IndexError` on an accepted point accelerating past policy month
+1,446, where modelx returned 0.0; and the numbering test passed a payout or ROP schedule
+read by the mortality table's numbering, both factor tables holding both sexes. The
+re-review found 0 blockers and 0 majors and three minors, applied in a final round. The full
+suite and the full grid were not run locally: CI runs both.
+
+**CI: pending** until the Tests workflow is green on ca5610b: C1–C5 on Linux and Windows
+(§6.3, §9), the `cython` job's `deferred_income_annuity` legs among them, with gcc's stack
+bracket (*Measured*, below).
+
+**What exists now.**
+- `DIA_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 154
+  cells, keyed by `idx`: Phase 1's 149 and five new, `point_id`, `mort_schedule`,
+  `improvement_schedule`, `annuity_factor_at(k, basis)` and `rop_deferral_yrs(k)`. 138
+  compile to C types, 88 to `double`, 30 to `long long` and 20 to `bint`. The 16 that stay
+  Python are `model_point`, the three reports, the nine labels, eight `str` and `sex`
+  typed `object`, and the three container cells kept as `"engine"` cells; `sex` and the
+  float engine cells `annuity_factor` and `pricing_disc_factor` keep dict caches, admitted
+  by `"engine"` and `"reporting"`. Every parameter is `long long`.
+- Twelve codes, among them the kinds `DEATH`, `REFUND` and `ALL`, S's total, and three
+  bases for `annuity_factor_at`. The contract the caches hold is `issue_age_min` 0, asked
+  of each covered life at the top of `stop_mth()`, `omega_age` 120 and `Data`'s
+  `future_horizon_mth` 120. The caches are 1,563 by `t`, 1,447 by policy month, 123 by
+  policy year and 121 by attained age, every 2-D cache 3 wide.
+- `Data` has 93 cells: the readers; int counts, `premium_width` among them, which the arrays
+  ask bare; the premium schedule as `premium_array[point, month]` with `premium_rows`,
+  capped by a new `Data` Reference, `premium_last_mth` 1,439, held by a static test; the
+  ROP and payout tables as row vectors an int-keyed reader scans; mortality and improvement
+  `[schedule, age]` by sex; and int64 and float64 vectors by point, `_ok` flags among them.
+- A compiled `Projection` ItemSpace is 1,729,808 bytes.
+- Beside the model: `sample_sec.py`, `spec_sec.py`, `run_sec.py` (SPIA's runner with DIA's
+  lines) and `model-sec.md`'s *The compiled model*. The API pages are regenerated.
+- Shared files, changed in place: `us_registry.py` (the entry at `EC`, with the nine
+  reporting labels and `"reporting_columns"` for three: `payment_timing` returns `timing`,
+  `sex` `sex` or `joint_sex` by its argument, and `payout_form` `income_form` through
+  `{"LO_ROP": "LO"}`); `sec_support.py` (`engine_faults`, which the engine convention now
+  calls, `_dia_twin_args` and `reporting_cells`' docstring); `test_compiled_conventions.py`
+  (the engine check through `engine_faults`); `test_sec_support.py` (three harness tests);
+  `tools/bench_sec_cy.py`, which repeats a point-keyed companion with the table, with its
+  harness test; uslib's `index.md`; and `tests.yml`, the shard alone.
+
+**The gate, on Windows.** On the local machine of §7.9's *Record — M23*, with one other
+heavy run beside each unless called alone.
+- C1: the module's Phase 1 tests changed in call syntax only. After the final round the
+  module gave 314 passed and 90 skipped (`sec_full`), its compiled tests included; the
+  compiled conventions 81 passed.
+- C2: `gen_sec_fingerprint.py DIA_US_SEC --check` reproduces, the frozen block byte for
+  byte M13's; `gen_sec_points.py --check` finds the files current. The review compared
+  this model with d324b98's on 237 new points at the contract's longest frames, 8.39
+  million values: identical to the last bit.
+- C3: the 138 and the 16 above, one inner width. In the generated C the one Python call
+  off a raise path, outside the reporting and engine cells, is `purchase_rate`'s `round`,
+  admitted through `"python_calls"`.
+- C4 exact on the committed points, with `also=`; on the splice grid in chunks; at the
+  contract's extremes, an acceleration at 1,447 and at `2**53 - 1` among them; at the caps,
+  with a NaN through a Reference; and at A/E −0.5, where the claims total's negative zeros
+  are compared by `float.hex`. The review swept its 237 points ascending, descending and
+  cold-last, bit for bit but for the major it found.
+- C5, the release, the compiled refusals in one case directory, the compiled-only
+  `IndexError`s, the stale Reference and the compiled runner with its refusal leg pass.
+  The shard as CI runs it gave 14 passed and none skipped. doccheck built 521 pages with 0
+  warnings, md_lint reported 0, and `gen_scaffolding.py --dry-run` 0 files in each of the
+  six libraries.
+- *Depth (F7).* modelx's cold `net_cf` runs 726 to 731 deep on the 720-month twins, three
+  more than at stage `E` (the premium row read at the chain's foot), and 1,451 at the
+  longest cover, a cash refund or a joint life at 0/0, now or 120 months on. The export
+  needs a recursion limit of 2,924; `sample_sec.py` sets 12,000. Compiled with MSVC 14.37,
+  every longest-cover row runs on 384 KiB and the main thread and dies on 320: 224 bytes a
+  level and about 36 KiB fixed, about 354 KiB, 2.9 times under 1 MiB. At SPIA's ratio from
+  CI, gcc taking 440 to 540 bytes a level where MSVC took 234, the chain would need about
+  610 to 770 KiB, 1.3 to 1.7 times under 1 MiB: an estimate until the Linux leg records it.
+
+**Departures and precisions.**
+- *`"engine"` widened* (R14, D10). Besides S's float-parameter cells (M20), an engine cell
+  may be a cell of S's taking no parameter that returns a list, a dict or a DataFrame,
+  which no C type holds, kept for S's tests and T1 and called by no compiled cell:
+  `qlac_flags`, `premium_schedule` and `premium_by_mth`. `sec_support.engine_faults` calls
+  such a cell on the first point to see what it returns, with a harness test that an
+  engine cell a compiled cell calls still fails. No new key was added.
+- *Contract checks in `stop_mth()`*, not `proj_len()`, so that every cell reading the
+  frame refuses a point outside the caches in both engines with one message.
+- *`issue_age_min` 0* for every life on every form, `DIA_US_S` projecting each at 0 (D2,
+  as at M23). `stop_mth()` refuses a negative issue age, an income start month past 1,440
+  at issue or after adjustment, and a period certain ending past 1,440: recorded
+  departures where `DIA_US_S` projects them, the caches not holding them. A value of
+  `2**53` or more is refused by the accessor of the point that reads it. An installment
+  refund rounds its period up to a whole instalment, so a stop rule ends by 1,441, which
+  sizes `t` and `k`.
+- *An acceleration past the age stop.* `Data` bounds the exercise month from below alone,
+  and `DIA_US_S` projects a point accelerating at any month. Past the age stop, at
+  `mort_ae_factor` 1 or more, `accel_cost()` reads the pricing survival a month after the
+  stop, 0 on a finite curve, so the cost is S's to the last bit, compiled as in modelx.
+  Below an A/E of 1 S's survival past the limiting age is positive: the cell reads on as
+  S does, and an exercise from policy month 1,442 raises `IndexError` compiled alone, a
+  limit under a Reference moved off its shipped value, as Term's are (§7.1, *Record —
+  M14*), documented and held by a compiled refusal case.
+- *The claims total keeps S's form.* S writes `claims(t, None)` as a `+` of the two kinds,
+  so `claims(t, ALL)` is that `+`, not SPIA's `0.0 +` total; T1 maps S's `None` to `ALL`
+  through `twin_arg_map`, and a test holds the sign of zero by `float.hex`.
+- *`claims_ann`* is a plain left-to-right sum, as since M12, where S's is Python's
+  compensated `sum`: it differs in 154 of the twins' policy years at the shipped
+  assumptions, by at most two ulps (3.7e-16 relative), 283 at A/E −0.5. No number moved
+  from Phase 1; a test holds the plain sum, the bound and the count.
+- *Rounding* (R16). `purchase_rate` keeps `round(pr, dp)`, its rate built from `Projection`
+  References, admitted through `"python_calls"` and held at exact binary ties.
+  `rop_factor`'s `int(round(deferral_yrs(k)))` becomes `rop_deferral_yrs(k)`, an int cell
+  rounding half to even on the integers, equal to S's `round` on every value the contract
+  reaches.
+- *Tables.* The premium schedule, a per-call filter and an `iterrows`-built dict, is a
+  dense `[point, month]` table summed in S's sort order by Neumaier's loop, as CPython
+  3.12's `sum` is; the ROP and payout tables, small and keyed by numbers no contract
+  bounds, are row vectors scanned by an int-keyed reader; `annuity_factor`'s uses at fixed
+  argument sets are `annuity_factor_at(k, basis)`, with an inline copy, its own locals,
+  where an argument changes inside a loop.
+- *A zero premium on the table basis* whose ROP key the table lacks is refused by
+  `guarantee_mths_pricing()` alone; the cash flows project, as `DIA_US_S`'s do.
+- *A missing table key* raises `ValueError` naming the file and the key (M23's form).
+
+**Measured.** On the local machine, single runs with one other heavy run beside them unless
+called alone.
+- *Compile.* About 54 s alone.
+- *The module.* Without the compile tests 279 s alone, over the full grid 505 s alone; with
+  them 792 to 817 s. The compiled conventions over every `EC` model 502 s.
+- *The shard*, as CI runs it: 480 to 536 s, the build included; the compiled refusals 258 s
+  of it.
+- *Speed (C6).* `tools/bench_sec_cy.py deferred_income_annuity`, the fastest of six, on
+  2026-11-14. Compiled, 6,006 points: 0.860 ms a point on `net_cf` and 1.29 ms on
+  `result_cf`. The export: 8.49 and 8.81 ms. modelx: 199 and 207 ms. So the compiled model
+  runs 9.9 times the export on `net_cf` and 6.8 on `result_cf`, and 231 and 160 times
+  modelx; under load the review measured 8.7 and 6.1 times. The model as Phase 1 left it
+  ran 1.9 times its export compiled. Recorded in `model-sec.md`'s *Speed*.
+
+**Faults.** Each alone in a copy. The tests stage injected 33, each failing some test after
+three were sharpened: the Neumaier data reordered so that both branches run, a sort by
+amount within the month where a stable sort matched S's, and a policy-year −1 fault moved
+to a swept cell. The review injected 6, 4 caught; the survivors, a payout schedule numbered
+by the mortality table's keys and a purchase rate rounded half up by arithmetic, now fail
+the numbering test, read twice so that every pair of tables numbers apart, and a ties test.
+The fix stage's own, an acceleration guard ignoring the A/E, fails the past-stop test.
+
+**Windows.** Run here on MSVC 14.37, as M23 was; CI's `windows-latest` needed one step more
+on SPIA (448 KiB against 384), and may on DIA. Running three heavy test runs at once on
+this machine made Windows fail to start child processes (`0xC0000142`), a machine fault,
+not a test's; two at once ran clean.
+
+**Cost.** About 3.4 million subagent tokens over eight stages: design 0.57M, critique
+0.32M, build 0.66M, tests 0.53M, docs 0.45M, review 0.37M, fix 0.31M with its final round,
+and re-review 0.17M.
+
+**For M25 and later.** What DIA settles for RILA, besides §7.9's *For M24 and later*:
+1. *A total S writes as a `+` of kinds stays that `+`*, its sign of zero held by
+   `float.hex` in modelx and compiled; a total S writes with `sum` is Neumaier's loop or a
+   split.
+2. *A schedule Python's `sum` adds* is Neumaier's loop in S's key order, the first add
+   `0.0 + x`. A companion keyed by point and month is a `[point, month]` table, its width
+   capped by a `Data` Reference a spec test holds; `bench_sec_cy.py` repeats it.
+3. *A small sparse table keyed by numbers no contract bounds* is row vectors scanned by an
+   int-keyed reader, its count cell the bound.
+4. *A float engine called at fixed argument sets* is one int-keyed cell with a basis code,
+   plus an inline copy, its own locals and no `return` from the outer cell, where an
+   argument changes inside a loop.
+5. *Contract checks at the top of `stop_mth()`*, or the cell every frame reader asks, so
+   that both engines refuse with one message.
+6. *Parameterless S cells returning containers* are `"engine"` cells.
+7. *Numbering tests read twice* where the keys are few, as sexes are, so that every pair of
+   tables numbers apart in one reading, and assert every per-point schedule.
+8. *An option month only a reader reads* needs a bound or a guard before its first cache
+   read, taken from S's own arithmetic so that it is exact wherever S is; state where a
+   moved Reference still reaches past the cache.
+9. *Rounding kept as `round`* gets a ties test on exact binary halves.
+10. *A precision kept from Phase 1* is counted over every twin at the shipped assumptions
+    before it is worded, and the count held by a test.
+11. *Measure the stack bracket at the build*, estimate gcc from the last CI ratio, about
+    twice MSVC's bytes a level, and check the 1 MiB margin before CI runs.
+
+**Carried into M25 or later.**
+- *CI's `cython` job on ca5610b*: gcc's stack bracket for DIA, estimated 1.3 to 1.7 times
+  under 1 MiB, and `windows-latest`'s MSVC.
+- *The full grid* under `USLIB_SEC_FULL=1` and the full suite, which CI runs.
+- *The compiled-only limit* below an A/E of 1 (above), documented, not refused.
+- *M23's two harness items*, the C5 check of a negative literal index and the runner test
+  of `--block`'s compensated sum, stand.
+- *The module's default run*, about 4.7 minutes without its compile tests, under K6.
 
 ---
 
@@ -13060,5 +13282,6 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M18 | Phase 2 for ULSG, the fourth after M13 — **done**, 2026-11-13; Tests run 21 passed all 60 jobs (§7.5, *Record — M18*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `guaranteed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M20 | Phase 2 for MYGA, the fifth after M13 — **done**, 2026-11-13; Tests run 22 passed all 62 jobs (§7.10, *Record — M20*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` key; the `fixed_deferred_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M23 | Phase 2 for SPIA, the sixth after M13 and the first payout annuity — **done**, 2026-11-14, after M20 and before M19, out of this table's order, built and tested on Windows in a separate local session; Tests run 23 passed all 64 jobs (§7.9, *Record — M23*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"reporting_columns"` key; the `immediate_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M19, M21, M22, M24, M25 | Phase 2 for the other five, one PR per product: M19 IUL, M21 FIA, M22 VA, M24 DIA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M19, whose build starts now, lands after M20, rebased onto it; M24 runs in the local session that built M23; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M24 | Phase 2 for DIA, the seventh after M13, on SPIA's payout chassis — landed 2026-11-14, after M23, out of this table's order, built and tested on Windows in the local session that built M23, CI pending (§7.12, *Record — M24*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` widened to parameterless container cells; `bench_sec_cy.py` repeating point-keyed companions; the `deferred_income_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
+| M19, M21, M22, M25 | Phase 2 for the other four, one PR per product: M19 IUL, M21 FIA, M22 VA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M19, whose build starts now, lands after M20, rebased onto it; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
