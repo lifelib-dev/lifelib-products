@@ -1206,9 +1206,9 @@ def _ul_claims_total(name, args):
 
     S's ``claims(t, None)``, the total its ``net_cf`` caches, is SEC's ``claims(t)``.  S's
     ``(t, kind)`` keys, which its ``result_cf`` caches, have no SEC cell of that signature:
-    they are SEC's two cells ``claims_death(t)`` and ``claims_lapse(t)``, which T1 reaches
-    through ``result_cf``'s columns, so they are skipped.  Every other cell's arguments
-    pass as they are.
+    they are SEC's split cells, ``claims_death(t)`` and ``claims_lapse(t)``, and in
+    ``ULSG_US_SEC`` ``claims_refund(t)``, which T1 reaches through ``result_cf``'s columns,
+    so they are skipped.  Every other cell's arguments pass as they are.
     """
     if name != "claims":
         return args
@@ -2779,12 +2779,20 @@ SEC_SPECS: dict[str, SecSpec] = {
     # T2's splice grid is built from this spec in a temporary table, not committed.
     #
     # T1 holds on ULSG at any count: S charges acquisition on the policies in force in the
-    # issue month, the policies issued, as SEC does.  It skips five S cells besides the
+    # issue month, the policies issued, as SEC does.  It skips seven S cells besides the
     # default three:
     #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and test_guaranteed_ul_us_sec.py compares the
     #     report itself with S's, on every column both hold.
+    #   coi_rate_scale: S's guaranteed COI scale for the point's cell, a Series, which no
+    #     compiled cell returns (R10).  SEC numbers the scale instead, coi_schedule, and
+    #     every value of it reaches T1 through coi_rate_guar and coi_rate_guar_at, which T1
+    #     compares at every month and attained age S read.
+    #   status: S's labels "IN FORCE" and "IN FORCE - GUARANTEE" name no Reference, so
+    #     codes() cannot map S's text onto SEC's codes, IN_FORCE and IN_FORCE_GUARANTEE.
+    #     result_av's status column, which T1 compares, holds S's labels at stage EC as at
+    #     E, and test_guaranteed_ul_us_sec.py holds the cell to S's labels by its code.
     #   solve_len, sg_pp_solve, guar_min_sg and no_lapse_premium: S's funding-premium
     #     solve, a side calculation that no projection cell of S reads and S's sweep reaches
     #     none of, so T1 has no key of theirs to lose.  SEC reads the premium from its model
@@ -2800,14 +2808,18 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     ULSG_US_S an S row that carries the row's state, which solves from that row's
     #     own start.
     # S's net_cf calls claims(t) with its kind=None default, so S's sweep caches claims
-    # under (t, None).  Phase 2 replaces that default with a total cell (R12), and its T1
-    # then needs an arg_map from those keys to it.  The label accessors (sex, rate_class,
-    # premium_type, premium_mode, surr_charge_id) are called by no projection cell, so
-    # Phase 2 declares them reporting.  The pins, has_prem_persistency_override and
-    # coi_rate_dp, each call pd.isna once a point, and become a value array and a 0/1 flag
-    # array (R8).  coi_rate and sg_coi_rate round a rate per t with round(r, dp), which
-    # Phase 2 precomputes in Data (R16), and is_rop_anniv tests membership of
-    # rop_table.csv's index, which becomes a zero-padded array.  No cell takes a float
+    # under (t, None), and its result_cf under (t, "DEATH"), (t, "LAPSE") and
+    # (t, "REFUND").  At stage EC claims is split into claims_death, claims_lapse and
+    # claims_refund, the result_cf columns, and a total claims(t), Python's compensated
+    # sum written out, since all three pay in one month on a return-of-premium anniversary
+    # (R12), so the spec's twin_arg_map, _ul_claims_total, maps S's total onto SEC's and
+    # skips the kind keys, whose values reach T1 through result_cf.  The label accessors
+    # (sex, rate_class, premium_type, premium_mode, surr_charge_id) are called by no
+    # projection cell, and are declared reporting.  The pins became a value array, NaN
+    # where blank, and a 0/1 flag array, and the precision an int array, -1 where blank
+    # (R8).  coi_rate and sg_coi_rate round a rate built from a Projection Reference with
+    # round(r, dp), which Data cannot precompute, so the call stays, admitted by cell
+    # (R16), and is_rop_anniv tests a zero-padded flag array.  No cell takes a float
     # parameter, and SEC adds no uncached cell.
     #
     # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 18
@@ -2872,7 +2884,8 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_ULSG_STATE,
         twin_state={"grace_mth_init": _ULSG_STATE["grace_mth_init"]},
         exempt=frozenset({"result_pols", "solve_len", "sg_pp_solve", "guar_min_sg",
-                          "no_lapse_premium"}),
+                          "no_lapse_premium", "coi_rate_scale", "status"}),
+        twin_arg_map=_ul_claims_total,
     ),
     # IUL's state is S's two columns and six more (_IUL_STATE above): the account value and
     # the loan, under S's names; the fixed account and the loan collateral apart from the

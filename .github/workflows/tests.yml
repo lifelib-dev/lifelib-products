@@ -103,7 +103,8 @@ jobs:
         # session, so that it compiles once. A product's C step adds its shard here, and
         # test_compiled_conventions.py, in the `test` job, fails until the list is exactly
         # the registry's.
-        shard: [toolchain, term_life, whole_life, universal_life, variable_ul]
+        shard: [toolchain, term_life, whole_life, universal_life, variable_ul,
+                guaranteed_ul]
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.13']
     env:

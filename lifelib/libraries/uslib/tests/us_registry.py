@@ -99,7 +99,8 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # one product at a time,
 # each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
-# WholeLife_US_SEC the second, UL_US_SEC the third, and VUL_US_SEC the fourth.
+# WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth and ULSG_US_SEC
+# the fifth.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -128,7 +129,11 @@ MODELS = {
                                   "scenario_id", "sex", "surr_charge_id")}),
     "ULSG_US_S": ("products/guaranteed_ul/ULSG_US_S", MONTHLY),
     "ULSG_US_SEC": ("products/guaranteed_ul/ULSG_US_SEC",
-                    {**MONTHLY, "twin": "ULSG_US_S", "stage": "E"}),
+                    {**MONTHLY, "twin": "ULSG_US_S", "stage": "EC", "param": "idx",
+                     "reporting": ("premium_mode", "premium_type", "rate_class", "sex",
+                                   "surr_charge_id"),
+                     "python_calls": {"coi_rate": ("round",),
+                                      "sg_coi_rate": ("round",)}}),
     # Annuity — deferred
     "MYGA_US_S": ("products/fixed_deferred_annuity/MYGA_US_S", MONTHLY),
     "MYGA_US_SEC": ("products/fixed_deferred_annuity/MYGA_US_SEC",
