@@ -18,9 +18,10 @@ engines differ in speed by two orders of magnitude, so each gets a block of its 
 by default about 6,000 points compiled, 600 exported and 120 in modelx, and every time is
 reported per point beside the total.  A block is a directory holding the product's CSVs,
 the repeated table, the model folder and both packages, which read the CSVs of the
-directory that holds them (the plan's F6).  A product whose SEC companion files are keyed
-by ``point_id`` would need them repeated too, and the script refuses one rather than
-time a block whose points read the wrong rows.
+directory that holds them (the plan's F6).  A product's SEC companion files keyed by
+``point_id``, ``DIA_US_SEC``'s premium schedule and ``IUL_US_SEC``'s in-force ladder, are
+repeated with it, copy by copy, each row under the label its point takes in that copy, so
+that every point of the block reads its own rows (M24).
 
 **What is timed.**  Each run is a fresh child process, so that no engine inherits another's
 caches or memory.  The child imports its engine and reads the model, untimed.  Then:
@@ -237,17 +238,46 @@ def block_text(header, rows, copies):
     return out.getvalue()
 
 
-def check_companions(product_dir, table_file):
-    """Refuse a product whose SEC companion files are keyed by ``point_id``."""
+def companions(product_dir, table_file):
+    """The product's SEC companion files keyed by ``point_id``, which a block repeats with
+    the model point table."""
+    found = []
     for path in sorted(product_dir.glob("*_sec.csv")):
         if path.name == table_file:
             continue
         with open(path, newline="", encoding="utf-8") as f:
             header = next(csv.reader(f), [])
         if "point_id" in header:
-            raise NotImplementedError(
-                f"{path.name} is keyed by point_id, and a block would need it repeated "
-                f"with the model point table; this script repeats the table alone")
+            found.append(path)
+    return found
+
+
+def companion_text(path, header, rows, copies):
+    """The companion at ``path`` repeated ``copies`` times as :func:`block_text` repeats
+    the table, ``header`` and ``rows``: in each copy, each of its rows in its own order,
+    under the label :func:`block_text` gives its point in that copy, the point's position
+    in the table, from 1, plus the rows of the copies before; every other cell's text as it
+    is.  A label is matched by value, so that ``3.0`` is point 3, and one the table lacks
+    is refused, naming it, rather than timed.
+    """
+    col = header.index("point_id")
+    position = {}
+    for i, row in enumerate(rows):
+        position[float(row[col])] = i
+    with open(path, newline="", encoding="utf-8") as f:
+        table = list(csv.reader(f))
+    own = table[0].index("point_id")
+    missing = sorted({row[own] for row in table[1:] if float(row[own]) not in position})
+    if missing:
+        raise ValueError(f"{path.name}: point_id {missing} is no point of the table")
+    out = io.StringIO()
+    writer = csv.writer(out, lineterminator="\n")
+    writer.writerow(table[0])
+    for copy in range(copies):
+        for row in table[1:]:
+            label = copy * len(rows) + position[float(row[own])] + 1
+            writer.writerow([str(label) if j == own else v for j, v in enumerate(row)])
+    return out.getvalue()
 
 
 def make_block(dest, product_dir, model_dir, build_out, name, table_file, header, rows,
@@ -257,6 +287,9 @@ def make_block(dest, product_dir, model_dir, build_out, name, table_file, header
     for path in sorted(product_dir.glob("*.csv")):
         shutil.copy2(path, dest / path.name)
     (dest / table_file).write_text(block_text(header, rows, copies), encoding="utf-8")
+    for path in companions(product_dir, table_file):
+        (dest / path.name).write_text(companion_text(path, header, rows, copies),
+                                      encoding="utf-8")
     skip = shutil.ignore_patterns("__pycache__", "*.c", "*.html")
     shutil.copytree(model_dir, dest / name, ignore=skip)
     for package in (f"{name}_nomx", f"{name}_nomx_cy"):
@@ -456,9 +489,10 @@ def main(argv):
                   file=sys.stderr)
     table_file, data_cells = describe_model(model_dir)
     try:
-        check_companions(product, table_file)
         header, rows = read_table(product / table_file)
-    except (NotImplementedError, ValueError) as err:
+        for path in companions(product, table_file):
+            companion_text(path, header, rows, 1)
+    except ValueError as err:
         print(err, file=sys.stderr)
         return 2
     copies = {e: getattr(args, f"{e}_copies") or math.ceil(TARGET_POINTS[e] / len(rows))

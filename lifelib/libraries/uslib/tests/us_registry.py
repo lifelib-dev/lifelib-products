@@ -43,7 +43,10 @@ stage ``"EC"``, names S's cells of float parameters that an SEC model keeps for 
 for the twin identity, which no compiled cell calls and which compile with C signatures
 and dict caches, their bodies Python, admitted to the typing guard and the static check
 as the reporting cells are (R14); one may call another, and none returns a column, as a
-label accessor does.  ``MYGA_US_SEC``'s statutory nonforfeiture rate is the first.  Read
+label accessor does.  ``MYGA_US_SEC``'s statutory nonforfeiture rate is the first.  It
+names too S's cells of no parameter that return a list, a dict or a DataFrame, which no C
+type holds, kept for a reader and for the twin identity and called by no compiled cell,
+as ``DIA_US_SEC``'s ``qlac_flags`` and premium schedule are (M24).  Read
 them through :func:`meta`, which hands out a copy: ``MONTHLY`` is one dict, shared by every
 entry that registers it.
 
@@ -54,7 +57,7 @@ three shapes: a column, for a label that takes no argument, as ``SPIA_US_SEC``'s
 takes one argument, as its ``sex(life)`` returns ``primary_sex`` or ``joint_sex``; or a
 pair of a column and a dict of value to label, for a label that returns the column's
 value through the dict, a value the dict lacks as it is, as ``DIA_US_SEC``'s
-``payout_form`` will.  A label it does not name returns its own column.
+``payout_form`` does.  A label it does not name returns its own column.
 
 **Why :func:`point_keys` exists.**  An ``idx``-parameterized ``Projection`` is indexed by
 position, not by table label.  The tables number their points from 1, so a test that
@@ -179,8 +182,17 @@ MODELS = {
                                            "sex": {1: "primary_sex", 2: "joint_sex"}}}),
     "DIA_US_S": ("products/deferred_income_annuity/DIA_US_S", MONTHLY),
     "DIA_US_SEC": ("products/deferred_income_annuity/DIA_US_SEC",
-                   {**MONTHLY, "twin": "DIA_US_S", "stage": "E",
-                    "survival_pols_if": True}),
+                   {**MONTHLY, "twin": "DIA_US_S", "stage": "EC", "param": "idx",
+                    "survival_pols_if": True,
+                    "reporting": ("db_form", "factor_basis", "income_form", "market_type",
+                                  "mort_basis", "payment_timing", "payout_form",
+                                  "reduction_trigger", "sex"),
+                    "reporting_columns": {"payment_timing": "timing",
+                                          "sex": {1: "sex", 2: "joint_sex"},
+                                          "payout_form": ("income_form", {"LO_ROP": "LO"})},
+                    "engine": ("annuity_factor", "premium_by_mth", "premium_schedule",
+                               "pricing_disc_factor", "qlac_flags"),
+                    "python_calls": {"purchase_rate": ("round",)}}),
 }
 
 

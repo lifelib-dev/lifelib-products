@@ -8,6 +8,8 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
@@ -126,6 +128,10 @@ Cells Descriptions
 
 .. autofunction:: improvement_rate_at
 
+.. autofunction:: mort_schedule
+
+.. autofunction:: improvement_schedule
+
 .. autofunction:: mort_rate_base
 
 .. autofunction:: improvement_rate
@@ -166,6 +172,8 @@ Cells Descriptions
 
 .. autofunction:: annuity_factor
 
+.. autofunction:: annuity_factor_at
+
 .. autofunction:: guarantee_mths_pricing_init
 
 .. autofunction:: guarantee_mths_pricing
@@ -177,6 +185,8 @@ Cells Descriptions
 .. autofunction:: rop_factor_calc
 
 .. autofunction:: rop_factor
+
+.. autofunction:: rop_deferral_yrs
 
 .. autofunction:: annuity_factor_def
 

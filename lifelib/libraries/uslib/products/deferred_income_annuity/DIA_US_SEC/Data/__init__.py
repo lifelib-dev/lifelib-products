@@ -7,8 +7,9 @@
 
 The six input CSVs are read here, **once per model**, and referenced from
 :mod:`~.DIA_US_SEC.Projection` as ``data``. :mod:`~.DIA_US_SEC.Projection` is
-parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its
-own cells cache; if the readers lived there, every model point would re-read every file.
+parameterized by ``idx``, the position of a model point in the table, so each
+``Projection[i]`` is a separate ItemSpace with its own cells cache; if the readers lived
+there, every model point would re-read every file.
 Holding them in an unparameterized Space reads each file once no matter how many
 contracts are projected.
 
@@ -65,8 +66,10 @@ at the valuation date is a rule of the product rather than of the table, and
 premiums during the deferral period" [S2][S3][S4][R13], each buying its own paid-up income
 slice at the purchase rate then in force. A fixed set of premium columns on the model
 point table would cap that number, so the schedule is a long table keyed by ``point_id``
-with one row per slice, and :func:`~.DIA_US_SEC.Projection.premium_by_mth` collapses it
-to a month-to-amount mapping once per contract. This model's schedule holds the premiums
+with one row per slice, and :func:`premium_array` collapses it to a table of each point's
+premium by policy month, read by :func:`~.DIA_US_SEC.Projection.premium_pm`, as
+``DIA_US_S``'s ``premium_by_mth`` collapses it to a month-to-amount mapping once per
+contract. This model's schedule holds the premiums
 **still due** at the valuation date: those paid before it are in the contract's opening
 state, as the premiums paid and the income they bought. :func:`premium_schedule_table`
 refuses a row that names no point of the table, a month or an amount no premium can have,
@@ -106,6 +109,218 @@ reproduces the notes' worked-example survival anchors. To swap in a licensed bas
 replace ``mort_table.csv`` with a same-schema file, or point ``mort_table_file`` at a
 different name before the model computes anything. No formula changes. Replacing a file
 changes :mod:`~.DIA_US_S` too, which reads the same one.
+
+**The vectors.** The readers return what the files hold, and no
+:mod:`~.DIA_US_SEC.Projection` cell but ``model_point`` and the cells kept for a reader,
+the premium schedule's two among them, reads them. The others read the arrays below
+instead, one element at a time, a model point's attribute being the element at its
+position, ``data.issue_age()[idx]``. That is what lets the model compile to C, as
+``basiclife.BasicTerm_SC`` does: each array is a numpy vector or table of int64 or
+float64, which compiles to a typed memoryview, never one of bools, objects or text, and
+each check of a table is an int. Each model point column a projection reads is one vector
+of the column's own name, read element by element as ``DIA_US_SEC`` read the point's value
+at stage ``E``, ``float()`` of an amount or a rate, ``int()`` of an age, a month or a year;
+and where a point's value can be one its projection cannot use, a 0/1 vector beside it,
+``<column>_ok``, says whether it is usable. The text the projection branches on is decoded
+into 0/1 flags, each with a ``has_*`` flag that says the value is one ``DIA_US_S`` names.
+The mortality table and the improvement scale, keyed by age and sex, are tabled by
+schedule, one per sex, and age, padded from age 0, each point carrying the schedule of
+each life's sex. The two factor tables are row vectors, in the file's order, each key a
+number, read by a scan over the table's rows. And the premium schedule is a table by point
+and policy month:
+
+===============================  =======  =====================  ======================
+Cells                            dtype    Shape                  From
+===============================  =======  =====================  ======================
+point_id()                       int64    [point]                the table's index
+policy_count()                   float64  [point]                ``policy_count``
+duration_mth()                   int64    [point]                ``duration_mth``
+duration_mth_ok()                int64    [point]                ``duration_mth``, its
+                                                                 flag
+issue_age()                      int64    [point]                ``issue_age``
+issue_age_ok()                   int64    [point]                ``issue_age``, its
+                                                                 flag
+joint_age()                      int64    [point]                ``joint_age``, 0 where
+                                                                 blank
+joint_age_ok()                   int64    [point]                ``joint_age``, its
+                                                                 flag
+is_joint()                       int64    [point]                ``joint``, 1 on True
+survivor_pct()                   float64  [point]                ``survivor_pct``
+certain_period()                 int64    [point]                ``certain_period``
+certain_period_ok()              int64    [point]                ``certain_period``,
+                                                                 its flag
+income_start_mth()               int64    [point]                ``income_start_mth``
+income_start_mth_ok()            int64    [point]                ``income_start_mth``,
+                                                                 its flag
+frequency()                      int64    [point]                ``frequency``
+frequency_ok()                   int64    [point]                ``frequency``, its
+                                                                 flag
+cola_rate()                      float64  [point]                ``cola_rate``
+issue_year()                     int64    [point]                ``issue_year``
+issue_year_ok()                  int64    [point]                ``issue_year``, its
+                                                                 flag
+purchase_rate_dp()               int64    [point]                ``purchase_rate_dp``,
+                                                                 -1 where blank
+purchase_rate_dp_ok()            int64    [point]                ``purchase_rate_dp``,
+                                                                 its flag
+adjust_mth()                     int64    [point]                ``adjust_mth``, -1
+                                                                 where blank
+adjust_mth_ok()                  int64    [point]                ``adjust_mth``, its
+                                                                 flag
+adjust_start_mth()               int64    [point]                ``adjust_start_mth``,
+                                                                 -1 where blank
+adjust_start_mth_ok()            int64    [point]                ``adjust_start_mth``,
+                                                                 its flag
+accel_mth()                      int64    [point]                ``accel_mth``, -1
+                                                                 where blank
+accel_mth_ok()                   int64    [point]                ``accel_mth``, its
+                                                                 flag
+commute_mth()                    int64    [point]                ``commute_mth``, -1
+                                                                 where blank
+commute_mth_ok()                 int64    [point]                ``commute_mth``, its
+                                                                 flag
+commute_frac()                   float64  [point]                ``commute_frac``, 0.0
+                                                                 where blank
+other_qlac_premium()             float64  [point]                ``other_qlac_premium``
+lives_if_init_1()                float64  [point]                ``lives_if_init_1``
+lives_if_init_2()                float64  [point]                ``lives_if_init_2``
+cum_premium_pp_init()            float64  [point]                the column
+annual_income_init()             float64  [point]                the column
+guarantee_mths_pricing_init()    float64  [point]                the column, NaN where
+                                                                 blank
+surv_to_payout_init()            float64  [point]                the column, NaN where
+                                                                 blank
+commute_weight_init()            float64  [point]                the column, NaN where
+                                                                 blank
+ref_rate_shift_init()            float64  [point]                the column
+has_market_type()                int64    [point]                ``market_type``, 1 on
+                                                                 one of four
+is_qlac()                        int64    [point]                the same, 1 on QLAC
+has_income_form()                int64    [point]                ``income_form``, 1 on
+                                                                 one of five
+is_life_only()                   int64    [point]                the same, 1 on LO or
+                                                                 LO_ROP
+is_cash_refund()                 int64    [point]                the same, 1 on CR
+is_installment_refund()          int64    [point]                the same, 1 on IR
+is_period_certain()              int64    [point]                the same, 1 on PC
+has_db_form()                    int64    [point]                ``db_form``, 1 on ROP
+                                                                 or NONE
+is_rop()                         int64    [point]                the same, 1 on ROP
+has_timing()                     int64    [point]                ``timing``, 1 on
+                                                                 arrears or advance
+is_arrears()                     int64    [point]                the same, 1 on arrears
+has_reduction_trigger()          int64    [point]                ``reduction_trigger``,
+                                                                 1 on either or primary
+is_trigger_either()              int64    [point]                the same, 1 on either
+has_mort_basis()                 int64    [point]                ``mort_basis``, 1 on
+                                                                 anchor or generational
+is_generational()                int64    [point]                the same, 1 on
+                                                                 generational
+has_factor_basis()               int64    [point]                ``factor_basis``, 1 on
+                                                                 table or formula
+is_formula_basis()               int64    [point]                the same, 1 on formula
+mort_sexes()                     int      scalar                 *mort_table.csv*,
+                                                                 checked
+mort_table_array()               float64  [schedule, age]        *mort_table.csv*
+mort_age_first()                 int64    [schedule]             *mort_table.csv*
+mort_age_last()                  int64    [schedule]             *mort_table.csv*
+mort_schedule_1()                int64    [point]                ``sex``, joined; 0
+                                                                 where not
+mort_schedule_2()                int64    [point]                ``joint_sex``, joined;
+                                                                 0 where not
+improvement_sexes()              int      scalar                 the improvement scale,
+                                                                 checked
+improvement_array()              float64  [schedule, age]        the improvement scale
+improvement_age_first()          int64    [schedule]             the improvement scale
+improvement_age_last()           int64    [schedule]             the improvement scale
+improvement_schedule_1()         int64    [point]                ``sex``, joined; 0
+                                                                 where not
+improvement_schedule_2()         int64    [point]                ``joint_sex``, joined;
+                                                                 0 where not
+payout_income_start_age()        int64    [row]                  the payout table
+payout_sex()                     int64    [row]                  the same, its sex
+                                                                 numbered
+payout_form_code()               int64    [row]                  the same, LO 1, CR 2,
+                                                                 IR 3, PC 4
+payout_factor_value()            float64  [row]                  the same, its factor
+payout_schedule()                int64    [point]                ``sex``, in the
+                                                                 table's numbering; 0
+                                                                 where not
+rop_issue_age()                  int64    [row]                  *rop_factor_table.csv*
+rop_sex()                        int64    [row]                  the same, its sex
+                                                                 numbered
+rop_deferral_years()             int64    [row]                  the same
+rop_factor_value()               float64  [row]                  the same, its factor
+rop_schedule()                   int64    [point]                ``sex``, in the
+                                                                 table's numbering; 0
+                                                                 where not
+premium_width()                  int      scalar                 the premium schedule
+premium_array()                  float64  [point, policy month]  the same, summed by
+                                                                 month
+premium_rows()                   int64    [point, policy month]  the same, its rows by
+                                                                 month
+premium_last()                   int64    [point]                the same, the last
+                                                                 month with a row; -1
+                                                                 where none
+===============================  =======  =====================  ======================
+
+Each age table is numbered by its own sexes, in sorted order, from schedule 1, so the two
+tables need not hold the same sexes: :func:`mort_sexes` and :func:`improvement_sexes`, each
+asking the table's count cell first, give the count. Schedule 0 is a row of padding whose
+first age is 1 and whose last is 0, so that no age lies between them: a life whose sex a
+table lacks, a blank among them, has schedule 0 there, and ``Projection``'s reader of the
+table refuses it, naming the point, the age and the life, at the first age it reads, where
+``DIA_US_S``'s ``.loc`` raised ``KeyError``. The two factor tables number their sexes the
+same way, each by its own, and ``Projection.payout_factor`` and ``Projection.rop_factor``
+scan the table's rows for the point's key, the first match its only one, since the count
+cell refuses a key on two rows; a sex the table lacks, schedule 0, matches no row, and a
+key no row holds is refused there, naming the point and the key. Neither table is held as
+an array by its keys: ``DIA_US_S`` reads the ROP factor at every premium month, at an
+attained age and a deferral no contract bounds, so an array sized by the keys would be
+sized by the file's largest, and both tables are a handful of rows.
+
+**The premium schedule** is :func:`premium_array`, each point's premiums by policy month,
+``0.0`` in a month with none, read by ``Projection.premium_pm``. A point's rows are summed
+month by month as ``DIA_US_S``'s ``premium_by_mth`` sums them: its rows sorted by
+``premium_mth`` as ``DIA_US_S`` sorts them, each amount added in that order to the month's
+total from 0.0, so that a month with two rows holds ``DIA_US_S``'s float to the last bit.
+:func:`premium_rows` counts each month's rows, so that ``Projection`` visits a month with
+a premium of 0.0, as ``DIA_US_S``'s dict holds it, and :func:`premium_last` is a point's
+last month with a row. The table is :func:`premium_width` months wide, the schedule's
+latest month and one, but no wider than ``premium_last_mth`` and one, 1,440: a premium
+after policy month 1,439 belongs to a point whose income starts later than the caches
+hold, which ``Projection.stop_mth``, asked by ``Projection.proj_len``, refuses before any
+premium is read, so no premium a projection reads is left out. That bound keeps a month
+far out, ``1e10`` say, from asking for a table of 80 GB a point before the point is
+refused. The arrays hold 16 bytes a point and month, about 25 KB on the committed table,
+about 1 KB a point, and up to 23 KB a point where income starts late.
+
+**What a point's projection cannot use is refused where it reads it,** by the point's own
+``Projection`` cell, naming the point, never here: no point is refused for another's
+value, nor for a column its projection never reads, beyond what :func:`model_point_table`
+refused at stage ``E``, as it still does. Where a vector cannot hold a value, the vector
+holds 0 there and its ``_ok`` flag 0, and the ``Projection`` accessor that reads the
+element raises: on a blank or text value ``int()`` refuses, a single-life point's blank
+``joint_age``, which no projection reads, among them; and on an int of ``2**53`` or more in
+size, which an int64 cannot be trusted to hold, since a float past int64 casts to the least
+int64 without a word. ``DIA_US_S`` projects such a value as exact, so that is a recorded
+refusal. The text the decodes branch on is compared exactly, case and whitespace included,
+as ``DIA_US_S`` compares it, and a value ``DIA_US_S`` does not name sets no ``has_*`` flag,
+so the decode that reads it raises ``DIA_US_S``'s message there, as at stage ``E``. And
+:func:`point_id` refuses a label that is not a whole number below ``2**53``, naming every
+label at fault, when a label is first read.
+
+**An array is read by element, never whole,** in this Space as in
+:mod:`~.DIA_US_SEC.Projection`. The compiler types an array cell as a memoryview only once
+it has seen that every use of it, in either Space, is an element read: one ``len()``,
+slice, loop over it or numpy call on it anywhere, and the cell compiles as a Python object.
+So an array derived here reads the table's column, and a width comes from a table or a
+check's int, never from another cell's array; each table's check is one int cell that its
+arrays, its extents and its schedules read first. The column keywords of
+:func:`premium_schedule_table`'s ``DataFrame.assign`` are passed as ``**{...}``, since a
+keyword named as a cell of this Space, ``point_id``, would be rewritten by the export. And
+:func:`model_point_table` reads the file whole, ``low_memory=False``, so that pandas types
+each column once, not chunk by chunk, which on a large extract warned and changed nothing.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -237,13 +452,20 @@ def model_point_table():
     The table is returned with the columns those checks read by value, the policy months
     and the contract's whole numbers and rates, as the numbers they were checked as (int64
     where a whole-number column has no blank, float64 otherwise, blank as NaN), which the
-    ``Projection`` accessors read with ``int()`` and ``float()``, and ``joint`` as the flags
-    it was checked as. Whether the contract still owes a payment at the valuation date needs
-    the certain period, which an installment refund derives in ``Projection``, so
+    vectors below read with ``int()`` and ``float()``, and ``joint`` as the flags it was
+    checked as. Whether the contract still owes a payment at the valuation date needs the
+    certain period, which an installment refund derives in ``Projection``, so
     ``Projection.proj_len`` checks it.
+
+    The file is read whole, ``low_memory=False``, so that pandas types each column once,
+    not chunk by chunk, which on a large extract warned and changed nothing.  Every check
+    here is stage ``E``'s, and refuses the whole table, values a projection never reads
+    among them: no check of that kind is added at stage ``EC``, where a value a point's
+    projection cannot use is refused by that point's projection alone.
     """
     name = model_point_file                                          # noqa: F821
-    table = pd.read_csv(input_dir() / name, index_col="point_id")    # noqa: F821
+    table = pd.read_csv(input_dir() / name, index_col="point_id",    # noqa: F821
+                        low_memory=False)
     state = ("lives_if_init_1", "lives_if_init_2", "cum_premium_pp_init",
              "annual_income_init", "guarantee_mths_pricing_init", "surv_to_payout_init",
              "commute_weight_init", "ref_rate_shift_init")
@@ -516,11 +738,12 @@ def premium_schedule_table():
     fails raises ``ValueError``, naming the column, the label or every point at fault:
 
     * the ``point_id``, ``premium_mth`` and ``premium_amt`` columns are present;
-    * each ``point_id`` is a whole number, a model point's label, and labels a point of
-      the model point table;
+    * each ``point_id`` is a whole number, a model point's label, below ``2**53`` in
+      size, and labels a point of the model point table;
     * each ``premium_mth`` is a whole number of months, 0 or more, a policy month, read by
-      value, so that ``60.0`` is 60; ``DIA_US_S`` takes ``int()`` of the raw month, so
-      ``60.5`` is 60 there and text raises Python's own message;
+      value, so that ``60.0`` is 60, and below ``2**53``, which an int64 holds exactly;
+      ``DIA_US_S`` takes ``int()`` of the raw month, so ``60.5`` is 60 there and text
+      raises Python's own message;
     * each ``premium_amt`` is a number, zero or more;
     * no premium falls before the valuation date on a point in force, ``premium_mth``
       below ``duration_mth``: those paid are in the opening state;
@@ -533,7 +756,9 @@ def premium_schedule_table():
       with no premium row silently, with no premium and no income.
 
     Returns the table with ``point_id`` and ``premium_mth`` as int64 and ``premium_amt``
-    as float64, the numbers checked, every other column as read.
+    as float64, the numbers checked, every other column as read.  The three columns are
+    passed to ``DataFrame.assign`` as ``**{...}``, since ``point_id`` is a cell of this
+    Space, which the export would rewrite as a keyword.
     """
     name = premium_schedule_file                                     # noqa: F821
     points = model_point_table()
@@ -546,6 +771,10 @@ def premium_schedule_table():
     if bad:
         raise ValueError(f"{name}: point_id must be a whole number, a model point's "
                          f"label; {bad} is not")
+    bad = tbl["point_id"][~(pid.abs() < 2.0 ** 53)].tolist()
+    if bad:
+        raise ValueError(f"{name}: point_id must be below 2**53 in size, which an int64 "
+                         f"holds exactly; {bad} is not")
     pid = pid.astype("int64")
     known = pid.isin(points.index)
     bad = sorted(set(pid[~known].tolist()))
@@ -557,6 +786,10 @@ def premium_schedule_table():
     if bad:
         raise ValueError(f"{name}: premium_mth must be a whole number of months, 0 or "
                          f"more, a policy month; it is not at point_id {bad}")
+    bad = sorted(set(pid[~(month < 2.0 ** 53)].tolist()))
+    if bad:
+        raise ValueError(f"{name}: premium_mth must be below 2**53 months, which an int64 "
+                         f"holds exactly; it is not at point_id {bad}")
     amount = pd.to_numeric(tbl["premium_amt"], errors="coerce")      # noqa: F821
     bad = sorted(set(pid[~((amount >= 0) & (amount < float("inf")))].tolist()))
     if bad:
@@ -582,8 +815,8 @@ def premium_schedule_table():
     if bad:
         raise ValueError(f"{name}: point_id {bad} buys no income: annual_income_init is 0 "
                          f"and no premium is due")
-    return tbl.assign(point_id=pid, premium_mth=month.astype("int64"),
-                      premium_amt=amount.astype("float64"))
+    return tbl.assign(**{"point_id": pid, "premium_mth": month.astype("int64"),
+                         "premium_amt": amount.astype("float64")})
 
 
 def mort_table():
@@ -637,7 +870,8 @@ def mort_table_count():
     survival probability, and a blank would survive the cap as a NaN, text fail far from
     here. A rate above 1 is accepted, and capped. ``Projection.mort_rate_base_at``, the
     table's one reader, asks for the count before it reads a rate, so a projection meets
-    the checks first.
+    the checks first.  So is an age of ``2**53`` or more in size, which an int64 cannot be
+    trusted to hold, or below 0, since :func:`mort_table_array` holds the table from age 0.
     """
     name = mort_table_file                                           # noqa: F821
     rows = mort_table().reset_index()
@@ -646,6 +880,14 @@ def mort_table_count():
     bad = lines[(~(ages % 1 == 0)).to_numpy()].tolist()
     if bad:
         raise ValueError(f"{name}: age must be a whole number; it is not on line {bad}")
+    bad = lines[(~(ages.abs() < 2.0 ** 53)).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{name}: age must be below 2**53 in size, which an int64 holds "
+                         f"exactly; it is not on line {bad}")
+    bad = lines[(ages < 0).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{name}: age must be 0 or more, the table being held from age 0; "
+                         f"it is not on line {bad}")
     bad = lines[(~rows["sex"].isin(["M", "F"])).to_numpy()].tolist()
     if bad:
         raise ValueError(f"{name}: sex must be M or F; it is not on line {bad}")
@@ -689,7 +931,8 @@ def improvement_scale_count():
     negative rate is a deterioration, which the generational basis projects as
     ``DIA_US_S`` does, the improved rate rising year on year, and it is accepted.
     ``Projection.improvement_rate_at``, the scale's one reader, asks for the count before
-    it reads a rate, so a projection meets the checks first.
+    it reads a rate, so a projection meets the checks first.  An age of ``2**53`` or more in
+    size, or below 0, is refused as :func:`mort_table_count` refuses it.
     """
     name = improvement_scale_file                                    # noqa: F821
     rows = improvement_scale().reset_index()
@@ -698,6 +941,14 @@ def improvement_scale_count():
     bad = lines[(~(ages % 1 == 0)).to_numpy()].tolist()
     if bad:
         raise ValueError(f"{name}: age must be a whole number; it is not on line {bad}")
+    bad = lines[(~(ages.abs() < 2.0 ** 53)).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{name}: age must be below 2**53 in size, which an int64 holds "
+                         f"exactly; it is not on line {bad}")
+    bad = lines[(ages < 0).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{name}: age must be 0 or more, the table being held from age 0; "
+                         f"it is not on line {bad}")
     bad = lines[(~rows["sex"].isin(["M", "F"])).to_numpy()].tolist()
     if bad:
         raise ValueError(f"{name}: sex must be M or F; it is not on line {bad}")
@@ -744,6 +995,8 @@ def payout_factor_count():
     ``Projection.annuity_factor_def``, where ``DIA_US_S``'s guard turns a factor of zero
     into a purchase rate of 0, a premium that buys nothing. ``Projection.payout_factor``
     asks for the count before it reads a factor, so a projection meets the checks first.
+    An ``income_start_age`` of ``2**53`` or more in size, which an int64 cannot be trusted
+    to hold, is refused too.
     """
     name = payout_factor_file                                        # noqa: F821
     rows = payout_factor_table().reset_index()
@@ -753,6 +1006,10 @@ def payout_factor_count():
     if bad:
         raise ValueError(f"{name}: income_start_age must be a whole number; it is not on "
                          f"line {bad}")
+    bad = lines[(~(ages.abs() < 2.0 ** 53)).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{name}: income_start_age must be below 2**53 in size, which an "
+                         f"int64 holds exactly; it is not on line {bad}")
     for column, held, what in (("sex", ["M", "F"], "M or F"),
                                ("payout_form", ["LO", "CR", "IR", "PC"],
                                 "LO, CR, IR or PC")):
@@ -791,7 +1048,8 @@ def rop_factor_count():
     each with its lines. And so is a ``rop_factor`` that is blank, text, infinite or below
     zero, naming its lines; zero is a return of premium that costs nothing.
     ``Projection.rop_factor`` asks for the count before it reads a factor, so a projection
-    meets the checks first.
+    meets the checks first.  A key of ``2**53`` or more in size, which an int64 cannot be
+    trusted to hold, is refused too.
     """
     name = rop_factor_file                                           # noqa: F821
     rows = rop_factor_table().reset_index()
@@ -803,6 +1061,10 @@ def rop_factor_count():
         if bad:
             raise ValueError(f"{name}: {column} must be a whole number; it is not on line "
                              f"{bad}")
+        bad = lines[(~(whole[column].abs() < 2.0 ** 53)).to_numpy()].tolist()
+        if bad:
+            raise ValueError(f"{name}: {column} must be below 2**53 in size, which an "
+                             f"int64 holds exactly; it is not on line {bad}")
     bad = lines[(~rows["sex"].isin(["M", "F"])).to_numpy()].tolist()
     if bad:
         raise ValueError(f"{name}: sex must be M or F; it is not on line {bad}")
@@ -828,6 +1090,960 @@ def rop_factor_count():
     return int(len(rows))
 
 
+def point_id():
+    """The model points' labels, int64 by position: the table's ``point_id`` index.
+
+    The label ``Projection.point_id`` reports for a position, and the one every refusal
+    names.  Read by value, so that a label written ``3.0`` is 3, and refused when a label
+    is first read, naming every label at fault, where one is not a whole number, text and
+    a blank among them, or is ``2**53`` or more in size: the labels are the table's keys,
+    as in the family's other compiled models.  A projection that names no point reads no
+    label, and runs.
+    """
+    table = model_point_table()
+    labels = pd.to_numeric(pd.Series(table.index), errors="coerce")  # noqa: F821
+    bad = table.index[~(labels % 1 == 0).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: point_id must be a whole "  # noqa: F821
+                         f"number; {bad} is not")
+    bad = table.index[~(labels.abs() < 2.0 ** 53).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: point_id must be below 2**53 "  # noqa: F821
+                         f"in size; {bad} is not")
+    return labels.to_numpy(dtype="int64")
+
+
+def policy_count():
+    """The ``policy_count`` column, float64 by point, as :func:`model_point_table` checked
+    it."""
+    return pd.to_numeric(model_point_table()["policy_count"]).to_numpy(  # noqa: F821
+        dtype="float64")
+
+
+def duration_mth():
+    """The ``duration_mth`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`duration_mth_ok` is 0.
+
+    :func:`model_point_table` has refused a value that is not a whole number, read by
+    value, so that ``12.0`` is 12.
+    """
+    values = model_point_table()["duration_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def duration_mth_ok():
+    """1 where ``int()`` reads the point's ``duration_mth`` below ``2**53`` in size.
+
+    0 on a value ``int()`` refuses, a blank or text, and on a number the int64 vector
+    cannot be trusted to hold; a number read as one, ``12.0``, is 12.
+    """
+    values = model_point_table()["duration_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def issue_age():
+    """The ``issue_age`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`issue_age_ok` is 0."""
+    values = model_point_table()["issue_age"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def issue_age_ok():
+    """1 where ``int()`` reads the point's ``issue_age`` below ``2**53`` in size, as
+    :func:`duration_mth_ok`."""
+    values = model_point_table()["issue_age"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def joint_age():
+    """The ``joint_age`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`joint_age_ok` is 0, a single-life point's blank among them."""
+    values = model_point_table()["joint_age"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def joint_age_ok():
+    """1 where ``int()`` reads the point's ``joint_age`` below ``2**53`` in size.
+
+    As :func:`duration_mth_ok`.  A single-life point's blank is 0 here, and no projection
+    of such a point reads it.
+    """
+    values = model_point_table()["joint_age"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def is_joint():
+    """The ``joint`` column, int64 by point: 1 where :func:`model_point_table` checked it
+    True."""
+    values = model_point_table()["joint"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        out[i] = 1 if bool(values[i]) else 0
+    return out
+
+
+def survivor_pct():
+    """The ``survivor_pct`` column, float64 by point, as :func:`model_point_table` checked
+    it, a probability."""
+    return pd.to_numeric(model_point_table()["survivor_pct"]).to_numpy(  # noqa: F821
+        dtype="float64")
+
+
+def certain_period():
+    """The ``certain_period`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`certain_period_ok` is 0."""
+    values = model_point_table()["certain_period"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def certain_period_ok():
+    """1 where ``int()`` reads the point's ``certain_period`` below ``2**53`` in size, as
+    :func:`duration_mth_ok`.  Only a period certain reads it."""
+    values = model_point_table()["certain_period"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def income_start_mth():
+    """The ``income_start_mth`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`income_start_mth_ok` is 0."""
+    values = model_point_table()["income_start_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def income_start_mth_ok():
+    """1 where ``int()`` reads the point's ``income_start_mth`` below ``2**53`` in size, as
+    :func:`duration_mth_ok`."""
+    values = model_point_table()["income_start_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def frequency():
+    """The ``frequency`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`frequency_ok` is 0.
+
+    Any whole number is held; ``Projection.payment_freq`` refuses one that is not 12, 4,
+    2 or 1, with ``DIA_US_S``'s message.
+    """
+    values = model_point_table()["frequency"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def frequency_ok():
+    """1 where ``int()`` reads the point's ``frequency`` below ``2**53`` in size, as
+    :func:`duration_mth_ok`."""
+    values = model_point_table()["frequency"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def cola_rate():
+    """The ``cola_rate`` column, float64 by point, as :func:`model_point_table` checked it,
+    a number zero or more."""
+    return pd.to_numeric(model_point_table()["cola_rate"]).to_numpy(  # noqa: F821
+        dtype="float64")
+
+
+def issue_year():
+    """The ``issue_year`` column, int64 by point: ``int()`` of each value, 0 where
+    :func:`issue_year_ok` is 0."""
+    values = model_point_table()["issue_year"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = v
+    return out
+
+
+def issue_year_ok():
+    """1 where ``int()`` reads the point's ``issue_year`` below ``2**53`` in size, as
+    :func:`duration_mth_ok`.  Only the generational basis and the calendar year read it."""
+    values = model_point_table()["issue_year"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        try:
+            v = int(values[i])
+        except (TypeError, ValueError, OverflowError):
+            continue
+        if abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def purchase_rate_dp():
+    """The ``purchase_rate_dp`` column, int64 by point: -1 where blank, for full precision,
+    as ``Projection.purchase_rate_dp`` reads it at stage ``E``, ``int()`` of the value
+    elsewhere, and 0 where :func:`purchase_rate_dp_ok` is 0."""
+    values = model_point_table()["purchase_rate_dp"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v:
+            out[i] = -1
+        elif abs(v) < 2 ** 53:
+            out[i] = int(v)
+    return out
+
+
+def purchase_rate_dp_ok():
+    """1 where :func:`purchase_rate_dp` holds the point's value: blank, or below ``2**53``
+    in size."""
+    values = model_point_table()["purchase_rate_dp"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v or abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def adjust_mth():
+    """The ``adjust_mth`` column, int64 by point: -1 where blank, for never, ``int()`` of
+    the value elsewhere, and 0 where :func:`adjust_mth_ok` is 0."""
+    values = model_point_table()["adjust_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v:
+            out[i] = -1
+        elif abs(v) < 2 ** 53:
+            out[i] = int(v)
+    return out
+
+
+def adjust_mth_ok():
+    """1 where :func:`adjust_mth` holds the point's month: blank, or below ``2**53`` in
+    size."""
+    values = model_point_table()["adjust_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v or abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def adjust_start_mth():
+    """The ``adjust_start_mth`` column, int64 by point: -1 where blank, as
+    :func:`adjust_mth`."""
+    values = model_point_table()["adjust_start_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v:
+            out[i] = -1
+        elif abs(v) < 2 ** 53:
+            out[i] = int(v)
+    return out
+
+
+def adjust_start_mth_ok():
+    """1 where :func:`adjust_start_mth` holds the point's month: blank, or below ``2**53``
+    in size."""
+    values = model_point_table()["adjust_start_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v or abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def accel_mth():
+    """The ``accel_mth`` column, int64 by point: -1 where blank, as :func:`adjust_mth`."""
+    values = model_point_table()["accel_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v:
+            out[i] = -1
+        elif abs(v) < 2 ** 53:
+            out[i] = int(v)
+    return out
+
+
+def accel_mth_ok():
+    """1 where :func:`accel_mth` holds the point's month: blank, or below ``2**53`` in
+    size."""
+    values = model_point_table()["accel_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v or abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def commute_mth():
+    """The ``commute_mth`` column, int64 by point: -1 where blank, as :func:`adjust_mth`."""
+    values = model_point_table()["commute_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v:
+            out[i] = -1
+        elif abs(v) < 2 ** 53:
+            out[i] = int(v)
+    return out
+
+
+def commute_mth_ok():
+    """1 where :func:`commute_mth` holds the point's month: blank, or below ``2**53`` in
+    size."""
+    values = model_point_table()["commute_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if not v == v or abs(v) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def commute_frac():
+    """The ``commute_frac`` column, float64 by point: 0.0 where blank, for none, as
+    ``Projection.commute_frac`` reads it at stage ``E``."""
+    values = model_point_table()["commute_frac"].tolist()
+    out = np.zeros(len(values))                                      # noqa: F821
+    for i in range(len(values)):
+        v = values[i]
+        if v == v:
+            out[i] = float(v)
+    return out
+
+
+def other_qlac_premium():
+    """The ``other_qlac_premium`` column, float64 by point, as :func:`model_point_table`
+    checked it."""
+    return pd.to_numeric(model_point_table()["other_qlac_premium"]).to_numpy(  # noqa
+        dtype="float64")
+
+
+def lives_if_init_1():
+    """The ``lives_if_init_1`` column, float64 by point: checked by
+    :func:`model_point_table`."""
+    return pd.to_numeric(model_point_table()["lives_if_init_1"]).to_numpy(  # noqa: F821
+        dtype="float64")
+
+
+def lives_if_init_2():
+    """The ``lives_if_init_2`` column, float64 by point: checked by
+    :func:`model_point_table`."""
+    return pd.to_numeric(model_point_table()["lives_if_init_2"]).to_numpy(  # noqa: F821
+        dtype="float64")
+
+
+def cum_premium_pp_init():
+    """The ``cum_premium_pp_init`` column, float64 by point: checked by
+    :func:`model_point_table`."""
+    return pd.to_numeric(model_point_table()["cum_premium_pp_init"]).to_numpy(  # noqa
+        dtype="float64")
+
+
+def annual_income_init():
+    """The ``annual_income_init`` column, float64 by point: checked by
+    :func:`model_point_table`."""
+    return pd.to_numeric(model_point_table()["annual_income_init"]).to_numpy(  # noqa
+        dtype="float64")
+
+
+def guarantee_mths_pricing_init():
+    """The ``guarantee_mths_pricing_init`` column, float64 by point, NaN where blank: given
+    exactly on a refund form in force, as :func:`model_point_table` checks, and read only
+    there."""
+    column = model_point_table()["guarantee_mths_pricing_init"]
+    return pd.to_numeric(column).to_numpy(dtype="float64")           # noqa: F821
+
+
+def surv_to_payout_init():
+    """The ``surv_to_payout_init`` column, float64 by point, NaN where blank: given exactly
+    on a contract past its income start month, and read only there."""
+    return pd.to_numeric(model_point_table()["surv_to_payout_init"]).to_numpy(  # noqa
+        dtype="float64")
+
+
+def commute_weight_init():
+    """The ``commute_weight_init`` column, float64 by point, NaN where blank: given exactly
+    where the commutation month precedes the valuation month, and read only there."""
+    return pd.to_numeric(model_point_table()["commute_weight_init"]).to_numpy(  # noqa
+        dtype="float64")
+
+
+def ref_rate_shift_init():
+    """The ``ref_rate_shift_init`` column, float64 by point: checked by
+    :func:`model_point_table`."""
+    return pd.to_numeric(model_point_table()["ref_rate_shift_init"]).to_numpy(  # noqa
+        dtype="float64")
+
+
+def has_market_type():
+    """1 where the point's ``market_type`` is one of ``DIA_US_S``'s four, compared
+    exactly."""
+    return model_point_table()["market_type"].isin(
+        ["NQ", "TradIRA", "RothIRA", "QLAC"]).to_numpy(dtype="int64")
+
+
+def is_qlac():
+    """1 where the point's ``market_type`` is ``QLAC``."""
+    return (model_point_table()["market_type"] == "QLAC").to_numpy(dtype="int64")
+
+
+def has_income_form():
+    """1 where the point's ``income_form`` is one of ``DIA_US_S``'s five, compared
+    exactly."""
+    return model_point_table()["income_form"].isin(
+        ["LO", "LO_ROP", "CR", "IR", "PC"]).to_numpy(dtype="int64")
+
+
+def is_life_only():
+    """1 where the point's ``income_form`` is ``LO`` or ``LO_ROP``, life only in payout."""
+    f = model_point_table()["income_form"]
+    return ((f == "LO") | (f == "LO_ROP")).to_numpy(dtype="int64")
+
+
+def is_cash_refund():
+    """1 where the point's ``income_form`` is ``CR``."""
+    return (model_point_table()["income_form"] == "CR").to_numpy(dtype="int64")
+
+
+def is_installment_refund():
+    """1 where the point's ``income_form`` is ``IR``."""
+    return (model_point_table()["income_form"] == "IR").to_numpy(dtype="int64")
+
+
+def is_period_certain():
+    """1 where the point's ``income_form`` is ``PC``."""
+    return (model_point_table()["income_form"] == "PC").to_numpy(dtype="int64")
+
+
+def has_db_form():
+    """1 where the point's ``db_form`` is ``ROP`` or ``NONE``."""
+    return model_point_table()["db_form"].isin(["ROP", "NONE"]).to_numpy(dtype="int64")
+
+
+def is_rop():
+    """1 where the point's ``db_form`` is ``ROP``."""
+    return (model_point_table()["db_form"] == "ROP").to_numpy(dtype="int64")
+
+
+def has_timing():
+    """1 where the point's ``timing`` is ``arrears`` or ``advance``."""
+    return model_point_table()["timing"].isin(["arrears", "advance"]).to_numpy(
+        dtype="int64")
+
+
+def is_arrears():
+    """1 where the point's ``timing`` is ``arrears``."""
+    return (model_point_table()["timing"] == "arrears").to_numpy(dtype="int64")
+
+
+def has_reduction_trigger():
+    """1 where the point's ``reduction_trigger`` is ``either`` or ``primary``."""
+    return model_point_table()["reduction_trigger"].isin(
+        ["either", "primary"]).to_numpy(dtype="int64")
+
+
+def is_trigger_either():
+    """1 where the point's ``reduction_trigger`` is ``either``."""
+    return (model_point_table()["reduction_trigger"] == "either").to_numpy(dtype="int64")
+
+
+def has_mort_basis():
+    """1 where the point's ``mort_basis`` is ``anchor`` or ``generational``."""
+    return model_point_table()["mort_basis"].isin(
+        ["anchor", "generational"]).to_numpy(dtype="int64")
+
+
+def is_generational():
+    """1 where the point's ``mort_basis`` is ``generational``."""
+    return (model_point_table()["mort_basis"] == "generational").to_numpy(dtype="int64")
+
+
+def has_factor_basis():
+    """1 where the point's ``factor_basis`` is ``table`` or ``formula``."""
+    return model_point_table()["factor_basis"].isin(["table", "formula"]).to_numpy(
+        dtype="int64")
+
+
+def is_formula_basis():
+    """1 where the point's ``factor_basis`` is ``formula``."""
+    return (model_point_table()["factor_basis"] == "formula").to_numpy(dtype="int64")
+
+
+def mort_sexes():
+    """*mort_table.csv*'s sexes, an int: the number of schedules, the table checked first.
+
+    :func:`mort_table_count` checks the table as stage ``E`` did, and refuses an age of
+    ``2**53`` or more in size or below 0, naming its lines; this asks it first, so that
+    every array, extent and schedule of the table, each of which asks this, meets the
+    checks.  Each sex is a schedule, numbered in sorted order from 1.
+    """
+    mort_table_count()
+    return int(mort_table().reset_index()["sex"].nunique())
+
+
+def mort_table_array():
+    """*mort_table.csv*'s rates, float64 by schedule and attained age, ``[s, x]``.
+
+    Schedule ``s`` is the ``s``-th of the table's sexes in sorted order, from 1; row 0, and
+    every age below a sex's first, is NaN padding, which ``Projection.mort_rate_base_at``
+    never reads, since it checks the age against :func:`mort_age_first` and
+    :func:`mort_age_last` first.
+    """
+    n = mort_sexes()
+    rows = mort_table().reset_index()
+    rows = rows.assign(age=pd.to_numeric(rows["age"]).astype("int64"))  # noqa: F821
+    out = np.full((n + 1, int(rows["age"].max()) + 1), np.nan)       # noqa: F821
+    s = 0
+    for _, part in rows.groupby("sex", sort=True):
+        s += 1
+        out[s, part["age"].to_numpy()] = pd.to_numeric(              # noqa: F821
+            part["mort_rate"]).to_numpy(dtype="float64")
+    return out
+
+
+def mort_age_first():
+    """Each mortality schedule's first age, int64 by schedule: 1 on schedule 0."""
+    out = np.ones(mort_sexes() + 1, dtype="int64")                  # noqa: F821
+    rows = mort_table().reset_index()
+    rows = rows.assign(age=pd.to_numeric(rows["age"]).astype("int64"))  # noqa: F821
+    s = 0
+    for _, part in rows.groupby("sex", sort=True):
+        s += 1
+        out[s] = int(part["age"].min())
+    return out
+
+
+def mort_age_last():
+    """Each mortality schedule's last age, int64 by schedule: 0 on schedule 0, so that no
+    age lies between its extents."""
+    out = np.zeros(mort_sexes() + 1, dtype="int64")                 # noqa: F821
+    rows = mort_table().reset_index()
+    rows = rows.assign(age=pd.to_numeric(rows["age"]).astype("int64"))  # noqa: F821
+    s = 0
+    for _, part in rows.groupby("sex", sort=True):
+        s += 1
+        out[s] = int(part["age"].max())
+    return out
+
+
+def mort_schedule_1():
+    """The mortality schedule of each point's ``sex``, int64 by point.
+
+    The sex's number in :func:`mort_table_array`, matched as ``DIA_US_S``'s ``.loc``
+    matches it, and 0 where the table lacks it, which ``Projection.mort_rate_base_at``
+    refuses where it first reads schedule 0.
+    """
+    mort_sexes()
+    keys = sorted(mort_table().reset_index()["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = model_point_table()["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def mort_schedule_2():
+    """The mortality schedule of each point's ``joint_sex``, int64 by point, as
+    :func:`mort_schedule_1`: 0 on a single-life point's blank, which nothing reads."""
+    mort_sexes()
+    keys = sorted(mort_table().reset_index()["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = model_point_table()["joint_sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def improvement_sexes():
+    """*improvement_scale.csv*'s sexes, an int: the number of schedules, the scale checked
+    first by :func:`improvement_scale_count`, and numbered by its own sexes, as
+    :func:`mort_sexes` numbers the mortality table's: the two need not hold the same
+    ones."""
+    improvement_scale_count()
+    return int(improvement_scale().reset_index()["sex"].nunique())
+
+
+def improvement_array():
+    """*improvement_scale.csv*'s rates, float64 by schedule and attained age, ``[s, x]``,
+    padded as :func:`mort_table_array` is."""
+    n = improvement_sexes()
+    rows = improvement_scale().reset_index()
+    rows = rows.assign(age=pd.to_numeric(rows["age"]).astype("int64"))  # noqa: F821
+    out = np.full((n + 1, int(rows["age"].max()) + 1), np.nan)       # noqa: F821
+    s = 0
+    for _, part in rows.groupby("sex", sort=True):
+        s += 1
+        out[s, part["age"].to_numpy()] = pd.to_numeric(              # noqa: F821
+            part["improvement_rate"]).to_numpy(dtype="float64")
+    return out
+
+
+def improvement_age_first():
+    """Each improvement schedule's first age, int64 by schedule: 1 on schedule 0."""
+    out = np.ones(improvement_sexes() + 1, dtype="int64")           # noqa: F821
+    rows = improvement_scale().reset_index()
+    rows = rows.assign(age=pd.to_numeric(rows["age"]).astype("int64"))  # noqa: F821
+    s = 0
+    for _, part in rows.groupby("sex", sort=True):
+        s += 1
+        out[s] = int(part["age"].min())
+    return out
+
+
+def improvement_age_last():
+    """Each improvement schedule's last age, int64 by schedule: 0 on schedule 0."""
+    out = np.zeros(improvement_sexes() + 1, dtype="int64")          # noqa: F821
+    rows = improvement_scale().reset_index()
+    rows = rows.assign(age=pd.to_numeric(rows["age"]).astype("int64"))  # noqa: F821
+    s = 0
+    for _, part in rows.groupby("sex", sort=True):
+        s += 1
+        out[s] = int(part["age"].max())
+    return out
+
+
+def improvement_schedule_1():
+    """The improvement schedule of each point's ``sex``, int64 by point, numbered by the
+    scale's own sexes, as :func:`mort_schedule_1` by the table's."""
+    improvement_sexes()
+    keys = sorted(improvement_scale().reset_index()["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = model_point_table()["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def improvement_schedule_2():
+    """The improvement schedule of each point's ``joint_sex``, int64 by point, as
+    :func:`improvement_schedule_1`."""
+    improvement_sexes()
+    keys = sorted(improvement_scale().reset_index()["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = model_point_table()["joint_sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def payout_income_start_age():
+    """*payout_factor_table.csv*'s ``income_start_age``, int64 by row, in the file's order.
+
+    Read by value, as :func:`payout_factor_count`, asked first, checked it, so that an age
+    written ``80.0`` is 80.  ``Projection.payout_factor`` scans the rows for its key.
+    """
+    payout_factor_count()
+    rows = payout_factor_table().reset_index()
+    return pd.to_numeric(rows["income_start_age"]).to_numpy(dtype="int64")  # noqa: F821
+
+
+def payout_sex():
+    """*payout_factor_table.csv*'s ``sex``, int64 by row, numbered by the table's own sexes
+    in sorted order from 1, as :func:`payout_schedule` numbers a point's."""
+    payout_factor_count()
+    rows = payout_factor_table().reset_index()
+    keys = sorted(rows["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = rows["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number[sexes[i]]
+    return out
+
+
+def payout_form_code():
+    """*payout_factor_table.csv*'s ``payout_form``, int64 by row: LO 1, CR 2, IR 3 and PC
+    4, the forms :func:`payout_factor_count` admits, which ``Projection.payout_factor``
+    numbers from the decodes."""
+    payout_factor_count()
+    rows = payout_factor_table().reset_index()
+    number = {"LO": 1, "CR": 2, "IR": 3, "PC": 4}
+    forms = rows["payout_form"].tolist()
+    out = np.zeros(len(forms), dtype="int64")                        # noqa: F821
+    for i in range(len(forms)):
+        out[i] = number[forms[i]]
+    return out
+
+
+def payout_factor_value():
+    """*payout_factor_table.csv*'s ``payout_factor``, float64 by row, as
+    :func:`payout_factor_count` checked it."""
+    payout_factor_count()
+    rows = payout_factor_table().reset_index()
+    return pd.to_numeric(rows["payout_factor"]).to_numpy(dtype="float64")  # noqa: F821
+
+
+def payout_schedule():
+    """Each point's ``sex`` in *payout_factor_table.csv*'s numbering, int64 by point.
+
+    As :func:`payout_sex` numbers the table's rows, and 0 where the table lacks the sex,
+    which matches no row, so ``Projection.payout_factor`` refuses it on the table basis.
+    """
+    payout_factor_count()
+    keys = sorted(payout_factor_table().reset_index()["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = model_point_table()["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def rop_issue_age():
+    """*rop_factor_table.csv*'s ``issue_age``, int64 by row, in the file's order, read by
+    value as :func:`rop_factor_count`, asked first, checked it."""
+    rop_factor_count()
+    rows = rop_factor_table().reset_index()
+    return pd.to_numeric(rows["issue_age"]).to_numpy(dtype="int64")  # noqa: F821
+
+
+def rop_sex():
+    """*rop_factor_table.csv*'s ``sex``, int64 by row, numbered by the table's own sexes in
+    sorted order from 1, as :func:`rop_schedule` numbers a point's."""
+    rop_factor_count()
+    rows = rop_factor_table().reset_index()
+    keys = sorted(rows["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = rows["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number[sexes[i]]
+    return out
+
+
+def rop_deferral_years():
+    """*rop_factor_table.csv*'s ``deferral_years``, int64 by row, read by value as
+    :func:`rop_factor_count` checked it."""
+    rop_factor_count()
+    rows = rop_factor_table().reset_index()
+    return pd.to_numeric(rows["deferral_years"]).to_numpy(dtype="int64")  # noqa: F821
+
+
+def rop_factor_value():
+    """*rop_factor_table.csv*'s ``rop_factor``, float64 by row, as :func:`rop_factor_count`
+    checked it."""
+    rop_factor_count()
+    rows = rop_factor_table().reset_index()
+    return pd.to_numeric(rows["rop_factor"]).to_numpy(dtype="float64")  # noqa: F821
+
+
+def rop_schedule():
+    """Each point's ``sex`` in *rop_factor_table.csv*'s numbering, int64 by point, 0 where
+    the table lacks it, as :func:`payout_schedule`."""
+    rop_factor_count()
+    keys = sorted(rop_factor_table().reset_index()["sex"].unique())
+    number = {}
+    for i in range(len(keys)):
+        number[keys[i]] = i + 1
+    sexes = model_point_table()["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def premium_width():
+    """The width of the premium tables, an int: the schedule's latest policy month and one,
+    no more than ``premium_last_mth`` and one, and 1 on a schedule with no row.
+
+    :func:`premium_schedule_table`, asked first, checks the schedule.  ``premium_last_mth``,
+    1,439, is the last policy month a premium of a point the compiled model's caches hold
+    can fall in, ``12 * (Projection.omega_age - Projection.issue_age_min) - 1``, which this
+    Space cannot read from ``Projection``: a test holds the two together.
+    """
+    tbl = premium_schedule_table()
+    if len(tbl) == 0:
+        return 1
+    return min(int(tbl["premium_mth"].max()), premium_last_mth) + 1  # noqa: F821
+
+
+def premium_array():
+    """Each point's premiums still due, float64 by point and policy month, ``[i, k]``.
+
+    The rows of each point of :func:`premium_schedule_table` sorted by ``premium_mth`` as
+    ``DIA_US_S``'s ``premium_schedule`` sorts them, and each amount added in that order to
+    its month's total from 0.0, as ``DIA_US_S``'s ``premium_by_mth`` adds it, so that a
+    month with two rows holds ``DIA_US_S``'s float to the last bit.  0.0 in a month with no
+    row, and on a point with none.  A row after :func:`premium_width`'s last month is not
+    held: its point's income starts later than ``Projection.proj_len`` admits.
+    """
+    width = premium_width()
+    table = model_point_table()
+    labels = pd.to_numeric(pd.Series(table.index), errors="coerce").tolist()  # noqa: F821
+    position = {}
+    for i in range(len(labels)):
+        position[labels[i]] = i
+    out = np.zeros((len(labels), width))                             # noqa: F821
+    for label, part in premium_schedule_table().groupby("point_id", sort=False):
+        i = position[label]
+        part = part.sort_values("premium_mth")
+        months = part["premium_mth"].tolist()
+        amounts = part["premium_amt"].tolist()
+        for j in range(len(months)):
+            if months[j] < width:
+                out[i, months[j]] = out[i, months[j]] + float(amounts[j])
+    return out
+
+
+def premium_rows():
+    """The number of rows of each point's schedule in each policy month, int64 by point and
+    policy month, ``[i, k]``, as :func:`premium_array` holds them.
+
+    ``DIA_US_S``'s ``premium_by_mth`` holds a key for every month with a row, a premium of
+    0.0 among them, and its pricing guarantee visits each, so ``Projection`` visits a month
+    with a row, not a month with a positive premium.
+    """
+    width = premium_width()
+    table = model_point_table()
+    labels = pd.to_numeric(pd.Series(table.index), errors="coerce").tolist()  # noqa: F821
+    position = {}
+    for i in range(len(labels)):
+        position[labels[i]] = i
+    out = np.zeros((len(labels), width), dtype="int64")              # noqa: F821
+    for label, part in premium_schedule_table().groupby("point_id", sort=False):
+        i = position[label]
+        months = part["premium_mth"].tolist()
+        for j in range(len(months)):
+            if months[j] < width:
+                out[i, months[j]] = out[i, months[j]] + 1
+    return out
+
+
+def premium_last():
+    """Each point's last policy month with a row of the schedule, int64 by point: -1 on a
+    point with none, and no later than :func:`premium_width`'s last month."""
+    width = premium_width()
+    table = model_point_table()
+    labels = pd.to_numeric(pd.Series(table.index), errors="coerce").tolist()  # noqa: F821
+    position = {}
+    for i in range(len(labels)):
+        position[labels[i]] = i
+    out = np.full(len(labels), -1, dtype="int64")                   # noqa: F821
+    for label, part in premium_schedule_table().groupby("point_id", sort=False):
+        i = position[label]
+        months = part["premium_mth"].tolist()
+        for j in range(len(months)):
+            if out[i] < months[j] < width:
+                out[i] = months[j]
+    return out
+
+
 # ---------------------------------------------------------------------------
 # References
 
@@ -844,5 +2060,9 @@ payout_factor_file = "payout_factor_table.csv"
 rop_factor_file = "rop_factor_table.csv"
 
 future_horizon_mth = 120
+
+premium_last_mth = 1439
+
+np = ("Module", "numpy")
 
 pd = ("Module", "pandas")

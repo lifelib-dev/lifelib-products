@@ -1366,6 +1366,22 @@ def _dia_premium_schedule(s_model, table):
     return pd.concat(parts, ignore_index=True)[list(s_sched.columns)]
 
 
+def _dia_twin_args(name, args):
+    """``DIA_US_S``'s ``claims`` and ``claims_ann`` keys as ``DIA_US_SEC`` takes them at
+    stage "EC" (R9, R12).
+
+    S's ``claims(t, kind=None)`` and ``claims_ann(y, kind=None)`` are cached under
+    ``(t, None)`` and ``(y, None)`` where S asks for the total, which is SEC's code
+    ``ALL``: so ``None`` is mapped to ``"ALL"``, which :func:`codes` then turns into the
+    int, as it turns S's kinds.  Every other key, and every other cell's arguments, pass as
+    they are, SEC's own codes among them, where a comparison of two SEC models passes it
+    SEC's keys.
+    """
+    if name in ("claims", "claims_ann") and len(args) == 2 and args[1] is None:
+        return (args[0], "ALL")
+    return args
+
+
 def _fia_entering(name, opening):
     """What ``FIA_US_S`` carries into month ``d`` in cells ``name``.
 
@@ -2355,41 +2371,36 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and the product module compares the report
     #     itself with S's, column by column.
-    # S caches claims(t, kind=None) and claims_ann(y, kind=None) under (t, None) and
-    # (y, None); at stage EC, where that default becomes a named total (R12), T1 needs an
-    # arg_map for those keys.  S's label accessors stay S's, called by reporting and T1
-    # alone.  R17 and C5 admit one that takes no argument and returns its point's column of
-    # its own name: market_type(), income_form(), db_form(), mort_basis(),
-    # factor_basis() and reduction_trigger() do, but payout_form() derives its value from
-    # income_form, payment_timing() returns "timing" and sex(life) takes a life and returns
-    # "sex" or "joint_sex", so DIA's C step extends R17 and C5 for those three, or leaves
-    # them out of "reporting".  S's float-parameter cells, annuity_factor and
-    # pricing_disc_factor, are R14 engine functions, kept for S's tests and T1, which call
-    # them; Phase 2 inlines them.  S rounds a computed rate in purchase_rate (round(pr, dp))
-    # and a deferral in rop_factor (int(round(deferral_yrs(k)))), which Phase 2 precomputes
-    # in Data (R16).  premium_by_mth's dict, premium_schedule's DataFrame, qlac_flags' list,
-    # horizon_mths' list and guarantee_mths_pricing's sum over the dict are Phase 2's to
-    # remove, and so is premium_pm's dict lookup, a method call in a per-month cell new in
-    # SEC, which becomes the dense [idx, month] read.
+    # At stage EC (M24), S's claims(t, None) and claims_ann(y, None) keys, the kind=None
+    # totals, are SEC's code ALL, which keeps S's sum of the two kinds' cells: the spec's
+    # twin_arg_map, _dia_twin_args, maps None to "ALL", and codes maps it and the rest, the
+    # timings, the kinds and the phases.  S's label accessors stay S's, called by reporting
+    # and T1 alone: market_type(), income_form(), db_form(), mort_basis(), factor_basis()
+    # and reduction_trigger() return the column of their own name, and the registry's
+    # "reporting_columns" names what the other three return, payment_timing() the "timing"
+    # column, sex(life) "sex" or "joint_sex" by life, and payout_form() the "income_form"
+    # column with LO_ROP read as LO.  S's float-parameter cells, annuity_factor and
+    # pricing_disc_factor, and its cells returning a DataFrame, a dict and a list,
+    # premium_schedule, premium_by_mth and qlac_flags, are kept for S's tests and T1 and
+    # called by no compiled cell, the registry's "engine" (R14): annuity_factor_at and
+    # guarantee_mths_pricing hold the kernel's body, the premiums are read from Data's
+    # premium table, and the discount is written inline.  purchase_rate keeps its
+    # round(pr, dp), admitted by the registry's "python_calls", and rop_factor's
+    # int(round(deferral_yrs(k))) is rop_deferral_yrs(k), on the integers (R16).
     #
-    # Phase 2 sizes its caches from the contract, each from these inputs:
-    #   t 0..1,296: the youngest issue age, 22 (product-spec), the limiting age omega_age,
-    #     120, and future_horizon_mth, 120: the longest frame is 12 * (120 - 22) + 120
-    #     months, and lives_if reads the closing time point t = proj_len().  A guarantee
-    #     ends inside that frame at every issue age the product allows, the income starting
-    #     by attained age 85 and the certain period at most 30 years;
-    #   k 0..1,180, the policy months and time points: the youngest issue age and
-    #     omega_age, 1,176, plus the five instalments an acceleration in the last month
-    #     pulls forward, which annuity_pp_sched_pm, certain_floor_pm and lives_if_pm read;
-    #   y 1..99, the policy years of mort_rate_py and mort_rate_mth_py: k's bound,
-    #     1,180 // 12 + 1;
-    #   x 22..119, the attained ages, per life: the youngest issue age and omega_age - 1.
-    # Four inputs those sizes rest on are bounded by the product and refused by no cell at
-    # stage E, as S projects each: the issue age, 22 or more (the shipped tables start at
-    # 20, and S projects any age they hold); the joint annuitant's age, likewise; the
-    # income start month, 13 to 360 (S projects any month a premium precedes); and the
-    # certain period, 10 to 30 years on the PC form.  Phase 2 refuses each in proj_len()
-    # beside the cover check, or sizes from the product's limits.
+    # Phase 2 sizes its caches from the contract (spec_sec.py holds each derivation):
+    #   t 0..1,562: issue_age_min, 0, the youngest issue age of every form and life, since
+    #     S projects every form from 0, the limiting age omega_age, 120, and
+    #     future_horizon_mth, 120: a stop rule at policy month 1,441 at most, 120 months
+    #     on, and lives_if reads the closing time point t = proj_len();
+    #   k 0..1,446, the policy months and time points, to the stop rule's month and the
+    #     five instalments an acceleration in the last month pulls forward;
+    #   y 1..122, the policy years: k's last month // 12 + 1;
+    #   x 0..120, the attained ages, per life: issue_age_min and omega_age.
+    # stop_mth() refuses an issue age of any life below issue_age_min, 0, an income start
+    # month, at issue or in force, past 12 * (omega_age - issue_age_min), 1,440, and a
+    # certain period ending past it, each naming the point (M24); the product-spec's 22, 13
+    # to 360 and 10 to 30 bound nothing.
     "DIA_US_SEC": SecSpec(
         twin="DIA_US_S",
         derived=((14, 59), (1, 241), (7, 300), (15, 253), (13, 121), (8, 672), (5, 270),
@@ -2399,6 +2410,7 @@ SEC_SPECS: dict[str, SecSpec] = {
         twin_state={c: f for c, f in _DIA_STATE.items() if c != "policy_count"},
         exempt=frozenset({"result_pols"}),
         companions={"premium_schedule_sec.csv": _dia_premium_schedule},
+        twin_arg_map=_dia_twin_args,
     ),
     # FIA's state is twelve columns and the row's scenario (_FIA_STATE above).  S's own
     # columns are renamed in place under D6 -- av_initial, bb_initial, rb_initial,
@@ -3956,7 +3968,8 @@ def reporting_cells(name, space):
     ``*_resid`` cells a check reads, and the label accessors the registry entry names
     under ``"reporting"`` (:mod:`us_registry`): cells that hand a reader a table row, text,
     a DataFrame or a verdict.  And the engine cells it names under ``"engine"``: S's cells
-    of float parameters, kept for a reader and for T1, which no compiled cell calls (R14).
+    of float parameters, or of no parameter returning a list, a dict or a DataFrame (M24),
+    kept for a reader and for T1, which no compiled cell calls (R14).
     They are the typing guard's allowlist (:func:`typing_faults`), and no other cell may
     call one (:func:`static_faults`), so every cell a projection runs compiles to C; an
     engine cell may call another.  ``space`` is the model's ``Projection``.
@@ -3967,6 +3980,44 @@ def reporting_cells(name, space):
         cell for cell in space.cells
         if cell == "model_point" or cell.startswith("result_") or cell in declared
         or (cell.startswith("check_") and not cell.endswith("_resid")))
+
+
+def engine_faults(space, declared, sized, reporting=()):
+    """Where the cells an entry's ``"engine"`` names are not what R14 admits, a line each.
+
+    Each must be a cell of ``space``, the model's ``Projection``, and none a reporting
+    cell, ``reporting`` being the entry's ``"reporting"``.  Each must take a parameter
+    that no ``spec_sec.py`` size names, ``sized`` holding the names it sizes, since a cell
+    keyed by sized ints compiles to C and needs no admission; or take none and return
+    what no C type holds, a list, a dict or a DataFrame, found by calling it on the
+    space's first point, as ``DIA_US_SEC``'s ``qlac_flags`` and premium schedule do (M24).
+    And no other formula of ``space`` may call one, an engine cell excepted, so that every
+    cell a projection runs is C.
+    """
+    import ast
+    import textwrap
+    point = space[0] if space.parameters else space
+    found = []
+    for cell in declared:
+        if cell not in space.cells:
+            found.append(f"{cell} is not a Projection cell")
+        elif cell in reporting:
+            found.append(f"{cell} is a reporting cell too")
+        elif not set(space.cells[cell].parameters) - sized:
+            if not space.cells[cell].parameters and isinstance(
+                    point.cells[cell](), (list, dict, pd.DataFrame)):
+                continue
+            found.append(f"{cell} takes only parameters spec_sec.py sizes, "
+                         f"{space.cells[cell].parameters}, so it compiles to C")
+    for name, cells in space.cells.items():
+        if name in declared:
+            continue
+        tree = ast.parse(textwrap.dedent(cells.formula.source))
+        for node in ast.walk(tree):
+            if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                    and node.func.id in declared):
+                found.append(f"{name} calls the engine cell {node.func.id}")
+    return found
 
 
 def reporting_columns_faults(entry):

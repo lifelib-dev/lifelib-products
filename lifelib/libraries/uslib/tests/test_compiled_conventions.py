@@ -56,6 +56,7 @@ from sec_support import (
     C_CALLS, SEC_SPECS, c_faults, compiled_case, compiled_mismatches, cython_shards,
     release_faults, reporting_cells, spec_faults, static_faults, typing_faults)
 from sec_support import label_faults, reporting_columns_faults
+from sec_support import engine_faults
 from us_registry import LIB, MODELS, is_sec, meta, model_path
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
@@ -231,7 +232,9 @@ def test_engine_cells_are_declared_by_name(sec_name):
     ``"reporting"`` is, a non-empty tuple of ``Projection`` cell names, none of them in
     ``"reporting"``, whose check that each returns a column would not hold; each takes a
     parameter that no ``spec_sec.py`` size names, since a cell keyed by sized ints compiles
-    to C and needs no admission; and no ``Projection`` formula calls one but another
+    to C and needs no admission, or takes none and returns a list, a dict or a DataFrame,
+    which no C type holds, as ``DIA_US_SEC``'s ``qlac_flags`` and premium schedule do
+    (M24); and no ``Projection`` formula calls one but another
     engine cell, as ``mgsv_rate_is_compliant`` calls ``mgsv_rate_statutory``, so that every
     cell a projection runs is C.  Before stage ``"EC"`` nothing compiles, so a model there
     declares none.
@@ -253,24 +256,8 @@ def test_engine_cells_are_declared_by_name(sec_name):
         sized.update(key if isinstance(key, tuple) else (key,))
     model = mx.read_model(model_path(sec_name), name=f"{sec_name}_engine_{next(_names)}")
     try:
-        proj = model.Projection
-        found = []
-        for cell in declared:
-            if cell not in proj.cells:
-                found.append(f"{cell} is not a Projection cell")
-            elif cell in entry.get("reporting", ()):
-                found.append(f"{cell} is a reporting cell too")
-            elif not set(proj.cells[cell].parameters) - sized:
-                found.append(f"{cell} takes only parameters spec_sec.py sizes, "
-                             f"{proj.cells[cell].parameters}, so it compiles to C")
-        for name, cells in proj.cells.items():
-            if name in declared:
-                continue
-            tree = ast.parse(textwrap.dedent(cells.formula.source))
-            for node in ast.walk(tree):
-                if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
-                        and node.func.id in declared):
-                    found.append(f"{name} calls the engine cell {node.func.id}")
+        found = engine_faults(model.Projection, declared, sized,
+                              entry.get("reporting", ()))
     finally:
         model.close()
     assert not found, f"{sec_name}: engine: " + "; ".join(found)

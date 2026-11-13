@@ -1506,6 +1506,81 @@ def test_the_registry_admits_engine_cells_by_name(monkeypatch):
             "mva_ref_term_years"} <= cells, cells
 
 
+# Engine cells of each kind R14 admits, and of the kinds it does not (M24).
+ENGINE_KINDS = {
+    "statutory": "lambda rate: 0.0015 * rate",
+    "flags": "lambda: [] if monthly(0) == 0.0 else ['breach']",
+    "schedule": "lambda: {0: 100000.0, 60: 50000.0}",
+    "frame": "lambda: data.table()",
+    "level": "lambda: 0.5",
+    "keyed": "lambda t: 0.01 * t",
+    "monthly": "lambda t: 0.01 * t",
+    "calls_engine": "lambda t: len(flags()) * t",
+}
+
+
+def test_the_benchmark_repeats_a_companion_keyed_by_point(tmp_path):
+    """``tools/bench_sec_cy.py`` repeats a companion keyed by ``point_id`` with the table
+    (C6, M24): each copy's rows under the label :func:`block_text` gives their point in
+    that copy, matched by value and mapped by the point's position, not its label, on a
+    table labelled 7 and 3 whose companion lists them the other way round, and with two
+    rows for one point; and a companion naming no point of the table is refused.  It
+    skips where the tool is absent, as from a ``lifelib.create()`` copy."""
+    import importlib.util
+    tool = model_path("DIA_US_SEC").parents[5] / "tools" / "bench_sec_cy.py"
+    if not tool.is_file():
+        pytest.skip("tools/bench_sec_cy.py is the source repository's, and it is absent")
+    spec = importlib.util.spec_from_file_location("bench_sec_cy_harness", tool)
+    bench = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(bench)
+    header, rows = ["point_id", "issue_age"], [["7", "60"], ["3", "65"]]
+    (tmp_path / "model_point_table_sec.csv").write_text(
+        "point_id,issue_age\n7,60\n3,65\n", encoding="utf-8")
+    path = tmp_path / "premium_schedule_sec.csv"
+    path.write_text("point_id,premium_mth,premium_amt\n3.0,0,10\n7,0,20\n3,12,30\n",
+                    encoding="utf-8")
+    assert bench.block_text(header, rows, 2) == ("point_id,issue_age\n1,60\n2,65\n"
+                                                 "3,60\n4,65\n")
+    assert bench.companions(tmp_path, "model_point_table_sec.csv") == [path]
+    assert bench.companion_text(path, header, rows, 2) == (
+        "point_id,premium_mth,premium_amt\n2,0,10\n1,0,20\n2,12,30\n4,0,10\n3,0,20\n"
+        "4,12,30\n")
+    path.write_text("point_id,premium_mth,premium_amt\n5,0,10\n", encoding="utf-8")
+    with pytest.raises(ValueError, match=r"point_id \['5'\] is no point of the table"):
+        bench.companion_text(path, header, rows, 1)
+
+
+def test_an_engine_cell_takes_a_float_or_returns_a_container():
+    """:func:`engine_faults`, the convention's check of ``"engine"`` (R14, precised at
+    M24): a cell taking a parameter no spec size names is admitted, and so is one taking
+    none that returns a list, a dict or a DataFrame, called on the space's first point,
+    and may call a compiled cell; one taking none that returns a scalar, and one taking
+    only sized parameters, compile to C and are faults; and a compiled cell calling an
+    engine cell is a fault, whatever the engine cell returns."""
+    from sec_support import engine_faults
+    model = mx.new_model(_name("engine_kinds"))
+    try:
+        data = model.new_space("Data")
+        data.new_cells("table", formula="lambda: pd.DataFrame({'premium_mth': [0, 60]})")
+        data.pd = pd
+        proj = model.new_space("Projection", formula="lambda idx: None")
+        proj.data = data
+        for name, formula in ENGINE_KINDS.items():
+            proj.new_cells(name, formula=formula)
+        found = engine_faults(proj, ("statutory", "flags", "schedule", "frame", "level",
+                                     "keyed"), {"t"}, ())
+        clean = engine_faults(proj, ("statutory", "flags", "schedule", "frame"), {"t"},
+                              ("frame",))
+    finally:
+        model.close()
+    assert found == [
+        "level takes only parameters spec_sec.py sizes, (), so it compiles to C",
+        "keyed takes only parameters spec_sec.py sizes, ('t',), so it compiles to C",
+        "calls_engine calls the engine cell flags"], found
+    assert clean == ["frame is a reporting cell too",
+                     "calls_engine calls the engine cell flags"], clean
+
+
 def test_the_compiled_comparison_keeps_kinds_and_floors_at_the_magnitude():
     """C4's comparison: a bool, an int and a real keep their kind, a real compares to
     1e-12 floored at the cell's magnitude, frames and Series by column and value, arrays
@@ -1640,6 +1715,23 @@ def test_spia_maps_s_claims_keys_onto_its_one_kind_and_passes_its_own():
     assert _spia_twin_args("claims", (5,)) == (5,)
     assert _spia_twin_args("claim_pp", (5, "REFUND")) == (5, "REFUND")
     assert _spia_twin_args("pols_if_at", (5, "BEF_DECR")) == (5, "BEF_DECR")
+
+
+def test_dia_maps_s_totals_onto_all_and_passes_its_kinds_and_its_own():
+    """``_dia_twin_args`` maps ``DIA_US_S``'s totals onto SEC's ``ALL`` and passes the rest.
+
+    S's ``claims(t, None)`` and ``claims_ann(y, None)``, the totals, are ``(t, "ALL")`` and
+    ``(y, "ALL")``, which ``codes`` then turns into SEC's int; S's kinds, SEC's own int
+    codes, as a comparison of SEC with SEC passes them, and every other cell's key, a
+    ``None`` among them, pass as they are.
+    """
+    from sec_support import _dia_twin_args
+    assert _dia_twin_args("claims", (5, None)) == (5, "ALL")
+    assert _dia_twin_args("claims_ann", (3, None)) == (3, "ALL")
+    assert _dia_twin_args("claims", (5, "REFUND")) == (5, "REFUND")
+    assert _dia_twin_args("claims_ann", (3, 2)) == (3, 2)
+    assert _dia_twin_args("claim_pp", (5, None)) == (5, None)
+    assert _dia_twin_args("pols_if_at", (5, "BEF_DECR")) == (5, "BEF_DECR")
 
 
 # A table of two points for the label check, a blank among its labels.

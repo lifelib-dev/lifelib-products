@@ -36,9 +36,10 @@ base of the guarantee — **cumulative** premiums ``CP(T)``, not a single premiu
     parameters, so each file is read **once per model**.
 
 :mod:`~.DIA_US_SEC.Projection`
-    The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.DIA_US_SEC.Data` Space.
+    The by-contract projection, parameterized by ``idx``, a model point's position in the
+    table: ``Projection[0]`` is an ItemSpace projecting the table's first row, model point
+    1. It reaches the input tables through its ``data`` Reference, which resolves to the
+    single :mod:`~.DIA_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -173,8 +174,8 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/deferred_income_annuity/DIA_US_SEC")
-    >>> model.Projection[19].result_cf()
-    >>> model.Projection[19].result_pols()
+    >>> model.Projection[18].result_cf()       # model point 19, at position 18
+    >>> model.Projection[18].result_pols()
 """
 
 from modelx.serialize.jsonvalues import *
