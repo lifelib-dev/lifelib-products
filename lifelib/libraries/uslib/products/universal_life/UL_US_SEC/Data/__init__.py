@@ -7,10 +7,10 @@
 
 The eight input CSVs are read here, **once per model**, and referenced from
 :mod:`~.UL_US_SEC.Projection` as ``data``. :mod:`~.UL_US_SEC.Projection` is
-parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with
-its own cells cache; if the readers lived there, every model point would re-read every
-file. Holding them in an unparameterized Space reads each file once no matter how many
-policies are projected.
+parameterized by ``idx``, the position of a model point in the table, so each
+``Projection[i]`` is a separate ItemSpace with its own cells cache; if the readers lived
+there, every model point would re-read every file. Holding them in an unparameterized
+Space reads each file once no matter how many policies are projected.
 
 Inputs are **external files**: plain CSVs in the model folder's parent directory,
 ``products/universal_life/``, rather than data stored inside the model. The model
@@ -57,9 +57,20 @@ missing column or every point that fails it. It also refuses a policy to be issu
 than ``future_horizon_mth`` months after the valuation date, 120 months as shipped:
 future new business is written over a stated horizon, so that no frame runs longer than
 the projection from issue plus that horizon. Set to 0, the Reference refuses future new
-business altogether. Whether a point is still inside the projection at the valuation
-date is a rule of the product rather than of the table, and ``Projection.proj_len``
-checks it.
+business altogether. A longer horizon projects in modelx, but the compiled model's
+caches are sized for the shipped 120 months (``spec_sec.py``): it needs ``t`` there raised
+to 12 x (omega_age - issue_age_min + 1) + the horizon + 2 and a rebuild, or a frame
+longer than 1,356 months raises ``IndexError`` compiled, naming nothing, at the first
+month past the caches. Whether a point is still inside the projection at the valuation
+date, and whether the contract issues it, are rules of the product rather than of the
+table, and ``Projection.proj_len`` checks them, against two Projection References the
+caches are sized from as they are from the horizon: ``omega_age`` and
+``issue_age_min``.
+
+The table is checked, too, wherever a projection reads a column as a number: each value
+of the contract, the face, the premiums, the withdrawal, the load and the tax limits'
+inputs, must be a number in the range the quantity can take, the surrender-charge flag
+True or False, and the issue age a finite number (:func:`model_point_table`).
 
 **So are the seven assumption tables.**  Each table read at a policy year or an attained
 age has one reader in ``Projection``, keyed by the year or the age, and that reader takes
@@ -67,15 +78,18 @@ the table's extent -- the last policy year, or the first and last ages, beyond w
 reads the nearest row -- from a cell here that reads the key column by value, once, and
 checks the table: :func:`prem_persistency_last_year`, :func:`lapse_last_year`,
 :func:`corridor_age_first` and :func:`corridor_age_last`, :func:`mort_age_first` and
-:func:`mort_age_last`, and, for each issue-age cell of the COI scale,
-:func:`coi_rate_last_years`.  A key that is blank, text or not a whole number is
-refused, naming the file, the column and the lines it is on.  So are keys that do not run
-one row a year or an age, without a gap or a repeat, policy years from 1, the message
-naming each key that repeats, with its lines, and each that is missing.  And so is a rate
-that is blank, text or infinite, naming the column and its lines.  :func:`class_count`
-and :func:`surr_charge_count` check the class factors and the surrender-charge schedules
-the same way, for the per-point joins that read them.  Each reader asks for its extent,
-or the count, before it reads a value, so a projection meets the checks first.
+:func:`mort_age_last`, and, for the COI scale, whose issue-age cells are numbered as
+schedules, :func:`coi_schedules`, which every COI vector asks first.  A key that is
+blank, text or not a whole number is refused, naming the file, the column and the lines
+it is on, and so is a negative age, since an age table is held from age 0.  So are keys
+that do not run one row a year or an age, without a gap or a repeat, policy years from
+1, the message naming each key that repeats, with its lines, and each that is missing.
+And so is a rate that is blank, text or infinite, naming the column and its lines.
+:func:`class_count` and :func:`surr_charge_count` check the class factors and the
+surrender-charge schedules the same way, for the joins that read them,
+:func:`class_factor`, :func:`surr_charge_rate_max` and :func:`surr_charge_runoff_years`.
+Each reader and each join asks for its extent, or the count, before it reads a value, so
+a projection meets the checks first.
 
 ``UL_US_S``'s readers take the extent from the key column as pandas reads it, where a blank
 key is a missing value the extent skips: the table is cut short, and every later year reads
@@ -91,9 +105,120 @@ amount at risk; the current scale is the guaranteed scale times
 ``mort_table.csv`` is a small illustrative best-estimate table **[std]**, not a
 published one -- the notes forbid hard-coding the licensed 2015 VBT and 2017 CSO
 families. To swap in a licensed basis, replace the file with a same-schema one, or
-point ``mort_table_file`` at a different name before the model computes anything. No
-formula changes. Replacing the file changes :mod:`~.UL_US_S` too, which reads the same
-one.
+point ``mort_table_file`` at a different name before the model computes anything: a
+compiled model clears no cache, so there the name is set on a package just imported,
+before anything is read. No formula changes. Replacing the file changes
+:mod:`~.UL_US_S` too, which reads the same one.
+
+**The vectors.** The readers return what the files hold, and no
+:mod:`~.UL_US_SEC.Projection` cell but ``model_point``, a reporting cell, reads them. The
+others read the arrays below instead, one element at a time, a model point's attribute
+being the element at its position, ``data.sum_assured()[idx]``. That is what lets the
+model compile to C, as ``basiclife.BasicTerm_SC`` does: each array is a numpy vector or
+table of int64 or float64, which compiles to a typed memoryview, never one of bools,
+objects or text, and each count of schedules is an int.
+
+Text the projection needs is decoded here, into the number it selects: each value of the
+death benefit option, the qualification test and the premium pattern a monthly cell
+branches on into a 0/1 flag, and the surrender-charge flag into another. Each table keyed
+by more than a number becomes an integer-indexed array or a join. The COI scales, keyed
+by sex, class and issue age, are numbered, each point carrying the number of its own, and
+tabled by schedule and policy year. The persistency and lapse tables are held by policy
+year, and the corridor and mortality tables by attained age, each padded from 0, so that
+the year or the age is the index. The class factor and the surrender-charge schedule,
+each one number a point, are joined to the points:
+
+==============================  =======  ===============  ==============================
+Cells                           dtype    Shape            From
+==============================  =======  ===============  ==============================
+point_id()                      int64    [point]          the table's index
+age_at_entry()                  int64    [point]          ``age_at_entry``
+duration_mth()                  int64    [point]          ``duration_mth``
+sum_assured()                   float64  [point]          ``sum_assured``
+policy_count()                  float64  [point]          ``policy_count``
+premium_pp_ann()                float64  [point]          ``premium_pp_ann``
+wd_pp()                         float64  [point]          ``wd_pp``
+load_prem_rate()                float64  [point]          ``load_prem_rate``
+gsp()                           float64  [point]          ``gsp``
+glp()                           float64  [point]          ``glp``
+seven_pay_prem()                float64  [point]          ``seven_pay_prem``
+av_pp_init()                    float64  [point]          ``av_pp_init``
+loan_bal_init()                 float64  [point]          ``loan_bal_init``
+sum_assured_init()              float64  [point]          ``sum_assured_init``
+wd_used_year_init()             float64  [point]          ``wd_used_year_init``
+cum_prem_init()                 float64  [point]          ``cum_prem_init``
+is_mec_init()                   int64    [point]          ``is_mec_init``
+has_surr_charge()               int64    [point]          ``has_surr_charge``, 1 on True
+is_db_option_a()                int64    [point]          ``db_option``, 1 on A
+is_db_option_b()                int64    [point]          ``db_option``, 1 on B
+is_gpt()                        int64    [point]          ``qual_test``, 1 on GPT
+is_level_premium()              int64    [point]          ``premium_type``, 1 on LEVEL
+is_single_premium()             int64    [point]          ``premium_type``, 1 on SINGLE
+is_target_premium()             int64    [point]          ``premium_type``, 1 on TARGET
+class_factor()                  float64  [point]          *class_factor_table.csv*,
+                                                          joined
+surr_charge_rate_max()          float64  [point]          *surr_charge_table.csv*,
+                                                          joined
+surr_charge_runoff_years()      float64  [point]          *surr_charge_table.csv*,
+                                                          joined
+coi_schedules()                 int      scalar           *coi_rates.csv*, checked
+coi_schedule()                  int64    [point]          sex, class and issue age,
+                                                          joined; 0 where not
+coi_rate_last_years()           int64    [point]          *coi_rates.csv*, by schedule
+coi_rate_array()                float64  [schedule, y]    *coi_rates.csv*
+prem_persistency_array()        float64  [y]              *prem_persistency.csv*
+lapse_rate_array()              float64  [y]              *lapse_table.csv*
+corridor_factor_array()         float64  [age]            *corridor_factors.csv*
+mort_table_array()              float64  [age]            *mort_table.csv*
+==============================  =======  ===============  ==============================
+
+The table checks are the ints they were: :func:`prem_persistency_last_year`,
+:func:`lapse_last_year`, the four age extents, :func:`class_count` and
+:func:`surr_charge_count`.
+
+**An array is read by element, never whole,** in this Space as in
+:mod:`~.UL_US_SEC.Projection`. The compiler types an array cell as a memoryview only once
+it has seen that every use of it, in either Space, is an element read: one ``len()``,
+slice, loop over it or numpy call on it anywhere, and the cell compiles as a Python
+object. So an array derived here from another reads the table's column, or the other
+cell element by element, and a width comes from a table, never from another cell's array.
+Each table's check is one cell that every array, extent and schedule number of the table
+reads first, :func:`coi_schedules` for the COI scale, so that a projection, which reads
+an extent or a schedule number first, meets the same refusal as a reader of the array.
+The column keywords of a ``DataFrame.assign`` are passed as ``**{...}``, since a keyword
+named as a cell of this Space, ``age_at_entry``, would be rewritten by the export.
+
+**What cannot be decoded or joined is refused** when the array is first read, naming
+every point at fault: a ``point_id`` that is not a whole number; a ``rate_class`` the
+class factors lack, and on a point that ``has_surr_charge`` a ``surr_charge_id`` the
+schedules lack, a run-off of 0 years, which the charge's run-off divides by, or a run-off
+of ``2**53`` years or more in size (below). ``UL_US_S`` fails every projection of a point
+whose class or charged schedule the tables lack, or whose run-off is 0, since it reads its
+class factor in every month on the books, and its schedule in every month of a point with
+a charge. It projects a run-off of ``2**53`` years or more, which is refused for the
+compiled ``int()`` of it (below). A point without a charge is never refused for its
+schedule, whatever its id, as ``UL_US_S`` never reads it. A point whose COI cell the
+scale lacks is another matter: it reads its scale only while charges run, and a point
+valued or issued at or past ``charges_cease_age`` never does, so ``UL_US_S`` projects it.
+It is given schedule 0, and ``Projection.coi_rate_last_year`` refuses it, naming it, where
+a rate is read. A value of ``db_option``, ``qual_test`` or ``premium_type`` none of the
+flags names is no flag, and the cell that branches on them raises ``UL_US_S``'s message,
+as in ``UL_US_S``. A read beyond a table's extent is refused where ``UL_US_S``'s lookup
+raised ``KeyError``, by the one :mod:`~.UL_US_SEC.Projection` cell that reads the table,
+naming the point: a policy year below 1 in ``prem_persistency_py``, ``lapse_rate_base_py``
+and ``coi_rate_guar_py``. An age outside its table reads the nearest row, as in
+``UL_US_S``, so no padding is read.
+
+**An int64 holds what it is read from.** A float past int64 casts to the least int64
+without a word, so a number read into an int64 vector is first refused unless it is
+below ``2**53`` in size, where the int64 holds ``UL_US_S``'s reading of it: the issue age
+and ``duration_mth`` (:func:`model_point_table`) and the ``point_id`` (:func:`point_id`).
+A charged point's run-off is held to the same bound, though no cast is silent there: its
+``int()``, in ``Projection.lapse_shock_year``, compiles to a Python int converted to a C
+``long long``, exact below ``2**63`` and raising ``OverflowError`` past it, where
+``UL_US_S`` projects a charge that never runs off. modelx and the compiled model refuse
+alike, before any cast. A fractional issue age is not refused: it truncates toward
+zero, as ``UL_US_S``'s ``int`` truncates it.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -144,15 +269,33 @@ def model_point_table():
     The checks run over the whole table at once, and the first that fails raises
     ``ValueError``, naming the missing column or every point it fails on:
 
-    * the eight in-force columns are present;
+    * the eight in-force columns are present, and so is every other column a projection
+      reads: ``age_at_entry``, ``sex``, ``rate_class``, ``sum_assured``, ``db_option``,
+      ``qual_test``, ``premium_type``, ``premium_pp_ann``, ``load_prem_rate``, ``wd_pp``,
+      ``has_surr_charge``, ``surr_charge_id``, ``gsp``, ``glp`` and ``seven_pay_prem``;
     * no ``point_id`` appears twice;
     * ``policy_count`` is a number, zero or more;
     * ``duration_mth`` is a whole number of months: positive for a policy in force, 0
-      for one issued at the valuation date, negative for one issued later;
+      for one issued at the valuation date, negative for one issued later; and below
+      ``2**53`` months in size, where its int64 vector holds it (the Space docstring);
     * no policy is issued more than ``future_horizon_mth`` months after the valuation
       date, so ``duration_mth`` is ``-future_horizon_mth`` or more.  At 0 the model takes
       no future new business, and the message says so; a negative horizon is itself
       refused;
+    * ``age_at_entry`` is a finite number, below ``2**53`` in size, where its int64
+      vector holds it.  A fraction is not refused: it truncates toward zero, as
+      ``UL_US_S``'s ``int`` truncates it, and an age the contract does not issue is
+      ``Projection.proj_len``'s to refuse;
+    * the values of the contract, each of which a projection reads as a number, through a
+      floor, a ``max`` or a ``min`` included, are each a number in the range the
+      quantity can take: ``sum_assured``, the face at issue, a number above 0, which
+      every policy holds; the planned premium ``premium_pp_ann``, the planned withdrawal
+      ``wd_pp`` and the tax limits' inputs ``gsp``, ``glp`` and ``seven_pay_prem``, each a
+      number, zero or more; and ``load_prem_rate``, a number from 0 to 1.  A blank, a text
+      or an infinity is no such number;
+    * ``has_surr_charge`` is True or False, as pandas reads those words in any case.  Any
+      other value, a 1, a 0 or a blank among them, would make the column numbers or
+      text, and ``UL_US_S``'s ``bool()`` reads the text ``"False"`` as true;
     * the account value, the loan, the face and the year's usage are each a number, zero
       or more.  A balance is never negative in force.  ``UL_US_S`` lets a point's account
       value fall below zero once it is in permanent shortfall, because it does not
@@ -185,7 +328,10 @@ def model_point_table():
     table = pd.read_csv(input_dir() / name, index_col="point_id")    # noqa: F821
     state = ("av_pp_init", "loan_bal_init", "sum_assured_init", "wd_used_year_init",
              "cum_prem_init", "is_mec_init")
-    for column in ("policy_count", "duration_mth", *state):
+    read = ("age_at_entry", "sex", "rate_class", "sum_assured", "db_option", "qual_test",
+            "premium_type", "premium_pp_ann", "load_prem_rate", "wd_pp", "has_surr_charge",
+            "surr_charge_id", "gsp", "glp", "seven_pay_prem")
+    for column in ("policy_count", "duration_mth", *state, *read):
         if column not in table.columns:
             raise ValueError(f"{name} has no {column} column")
     repeated = table.index[table.index.duplicated()].unique().tolist()
@@ -201,6 +347,10 @@ def model_point_table():
     if bad:
         raise ValueError(f"{name}: duration_mth must be a whole number of months; it "
                          f"is not at point_id {bad}")
+    bad = table.index[~(months.abs() < 2.0 ** 53)].tolist()
+    if bad:
+        raise ValueError(f"{name}: duration_mth must be below 2**53 months in size; it "
+                         f"is not at point_id {bad}")
     horizon = future_horizon_mth                                     # noqa: F821
     if horizon < 0:
         raise ValueError(f"future_horizon_mth must be 0 months or more, not {horizon}")
@@ -212,6 +362,36 @@ def model_point_table():
         raise ValueError(f"{name}: duration_mth must be -{horizon} or more, a policy "
                          f"issued at most {horizon} months after the valuation date; it "
                          f"is not at point_id {bad}")
+    ages = pd.to_numeric(table["age_at_entry"], errors="coerce")     # noqa: F821
+    bad = table.index[~(ages.abs() < float("inf"))].tolist()
+    if bad:
+        raise ValueError(f"{name}: age_at_entry must be a finite number; it is not at "
+                         f"point_id {bad}")
+    bad = table.index[~(ages.abs() < 2.0 ** 53)].tolist()
+    if bad:
+        raise ValueError(f"{name}: age_at_entry must be below 2**53 in size; it is not "
+                         f"at point_id {bad}")
+    face = pd.to_numeric(table["sum_assured"], errors="coerce")      # noqa: F821
+    bad = table.index[~((face > 0) & (face < float("inf")))].tolist()
+    if bad:
+        raise ValueError(f"{name}: sum_assured must be a number above 0, the face at "
+                         f"issue, which every policy holds; it is not at point_id {bad}")
+    for column in ("premium_pp_ann", "wd_pp", "gsp", "glp", "seven_pay_prem"):
+        v = pd.to_numeric(table[column], errors="coerce")            # noqa: F821
+        bad = table.index[~((v >= 0) & (v < float("inf")))].tolist()
+        if bad:
+            raise ValueError(f"{name}: {column} must be a number, zero or more; it is "
+                             f"not at point_id {bad}")
+    v = pd.to_numeric(table["load_prem_rate"], errors="coerce")      # noqa: F821
+    bad = table.index[~((v >= 0) & (v <= 1))].tolist()
+    if bad:
+        raise ValueError(f"{name}: load_prem_rate must be a number from 0 to 1; it is "
+                         f"not at point_id {bad}")
+    flags = table["has_surr_charge"].astype(str).str.lower()
+    bad = table.index[~flags.isin(["true", "false"])].tolist()
+    if bad:
+        raise ValueError(f"{name}: has_surr_charge must be True or False; it is not at "
+                         f"point_id {bad}")
     values = {}
     for column in state:
         values[column] = pd.to_numeric(table[column], errors="coerce")  # noqa: F821
@@ -247,7 +427,6 @@ def model_point_table():
         raise ValueError(f"{name}: sum_assured_init must be above 0 on a policy in force, "
                          f"duration_mth above 0, which holds a face; it is not at "
                          f"point_id {bad}")
-    face = pd.to_numeric(table["sum_assured"], errors="coerce")      # noqa: F821
     bad = table.index[(months > 0) & ~(values["sum_assured_init"] <= face)].tolist()
     if bad:
         raise ValueError(f"{name}: sum_assured_init must be at most sum_assured, the "
@@ -410,9 +589,12 @@ def corridor_age_last():
 
     The ``age`` column is read by value, once, so an age written ``40.0`` is 40.  A key
     that is blank, text or not a whole number is refused, naming the file, the column and
-    the lines it is on.  So are ages that do not run one row an age, without a gap or a
-    repeat: the message names each age that repeats, with its lines, and each age missing
-    between the first and the last.  And so is a ``corridor_factor`` that is blank, text
+    the lines it is on, and so is a negative age, naming its lines:
+    :func:`corridor_factor_array` holds the table from age 0, so that the age is the
+    index, and ``UL_US_S``, which reads the nearest row, projects such a table.  So are
+    ages that do not run one row an age, without a gap or a repeat: the message names
+    each age that repeats, with its lines, and each age missing between the first and the
+    last.  And so is a ``corridor_factor`` that is blank, text
     or infinite, naming its lines.  ``Projection.corridor_factor_at``, the table's one
     reader, takes both of its extents, this and :func:`corridor_age_first`, before it
     reads a factor.
@@ -424,6 +606,9 @@ def corridor_age_last():
     if bad:
         raise ValueError(f"{name}: age must be a whole number; it is not on line {bad}")
     ages = ages.astype("int64")
+    bad = (ages.index[ages < 0] + 2).tolist()
+    if bad:
+        raise ValueError(f"{name}: age must be 0 or more; it is not on line {bad}")
     faults = []
     for key in sorted(set(ages[ages.duplicated()])):
         faults.append(f"age {key} is on line {(ages.index[ages == key] + 2).tolist()}")
@@ -458,11 +643,13 @@ def corridor_age_first():
 def mort_age_last():
     """The last attained age *mort_table.csv* gives a rate for, the table checked.
 
-    Read and checked as :func:`corridor_age_last` reads and checks its own table, the rate
-    checked being ``mort_rate``.  ``Projection.mort_rate_base_at``, the table's one
-    reader, takes both of its extents, this and :func:`mort_age_first`, before it reads a
-    rate.  A blank rate is a missing value to ``UL_US_S``, whose mortality is then not a
-    number, and to ``Projection.mort_rate``, whose cap, ``min(q, 1.0)``, keeps it missing.
+    Read and checked as :func:`corridor_age_last` reads and checks its own table, a
+    negative age refused as there, since :func:`mort_table_array` holds the table from
+    age 0, the rate checked being ``mort_rate``.  ``Projection.mort_rate_base_at``, the
+    table's one reader, takes both of its extents, this and :func:`mort_age_first`,
+    before it reads a rate.  A blank rate is a missing value to ``UL_US_S``, whose
+    mortality is then not a number, and to ``Projection.mort_rate``, whose cap,
+    ``min(q, 1.0)``, keeps it missing.
     """
     name = mort_table_file                                           # noqa: F821
     table = mort_table()
@@ -471,6 +658,9 @@ def mort_age_last():
     if bad:
         raise ValueError(f"{name}: age must be a whole number; it is not on line {bad}")
     ages = ages.astype("int64")
+    bad = (ages.index[ages < 0] + 2).tolist()
+    if bad:
+        raise ValueError(f"{name}: age must be 0 or more; it is not on line {bad}")
     faults = []
     for key in sorted(set(ages[ages.duplicated()])):
         faults.append(f"age {key} is on line {(ages.index[ages == key] + 2).tolist()}")
@@ -501,19 +691,22 @@ def mort_age_first():
     return mort_age_last() - len(mort_table()) + 1
 
 
-def coi_rate_last_years():
-    """The last policy year of each issue-age cell of *coi_rates.csv*, the table checked.
+def coi_schedules():
+    """The number of issue-age cells *coi_rates.csv* gives a scale for, the table checked.
 
-    A Series of ints, indexed by ``sex``, ``rate_class`` and ``age_at_entry``: one entry a
-    cell, the rows the scale of a point on that cell is sliced from.  The two text keys
-    may not be blank, and the two numeric keys, ``age_at_entry`` and ``policy_year``, are
-    read by value, once: a key that is blank, text or not a whole number is refused,
-    naming the file, the column and the lines it is on.  So is a cell whose policy years
-    do not run from 1, one row a year, without a gap or a repeat: the message names the
-    cell, each year that repeats or falls below 1, with its lines, and each year missing
-    from 1 to the last.  And so is a ``coi_rate_guar`` that is blank, text or infinite,
-    naming its lines.  ``Projection.coi_rate_last_year`` takes a point's extent from here
-    before ``Projection.coi_rate_guar_py`` reads its scale.
+    One schedule a cell, each ``sex``, ``rate_class`` and ``age_at_entry`` the table
+    holds: :func:`coi_rate_array` holds each schedule in a row, numbered from 1 in the
+    order of those keys, and :func:`coi_schedule` gives each point its number.  The table's
+    one check, which each of them, and :func:`coi_rate_last_years`, asks first.  The two
+    text keys may not be blank, and the two numeric keys, ``age_at_entry`` and
+    ``policy_year``, are read by value, once: a key that is blank, text or not a whole
+    number is refused, naming the file, the column and the lines it is on.  So is a cell
+    whose policy years do not run from 1, one row a year, without a gap or a repeat: the
+    message names the cell, each year that repeats or falls below 1, with its lines, and
+    each year missing from 1 to the last.  And so is a ``coi_rate_guar`` that is blank,
+    text or infinite, naming its lines.  ``Projection.coi_rate_last_year`` takes a
+    point's extent from :func:`coi_rate_last_years` before ``Projection.coi_rate_guar_py``
+    reads its scale, so a projection meets the checks first.
     """
     name = coi_rates_file                                            # noqa: F821
     rates = coi_rates().reset_index()
@@ -527,9 +720,9 @@ def coi_rate_last_years():
         if bad:
             raise ValueError(f"{name}: {column} must be a whole number; it is not on line "
                              f"{bad}")
-    rates = rates.assign(
-        age_at_entry=pd.to_numeric(rates["age_at_entry"]).astype("int64"),  # noqa: F821
-        policy_year=pd.to_numeric(rates["policy_year"]).astype("int64"))    # noqa: F821
+    rates = rates.assign(**{
+        "age_at_entry": pd.to_numeric(rates["age_at_entry"]).astype("int64"),  # noqa: F821
+        "policy_year": pd.to_numeric(rates["policy_year"]).astype("int64")})   # noqa: F821
     years = rates.groupby(["sex", "rate_class", "age_at_entry"])["policy_year"]
     last = years.max()
     count = years.count()
@@ -556,7 +749,7 @@ def coi_rate_last_years():
     if bad:
         raise ValueError(f"{name}: coi_rate_guar must be a number; it is not on line "
                          f"{bad}")
-    return last
+    return int(len(last))
 
 
 def class_count():
@@ -626,6 +819,514 @@ def surr_charge_count():
     return len(table)
 
 
+def coi_schedule():
+    """The number of each model point's guaranteed COI scale, in table order: int64
+    [point].
+
+    The point's row of :func:`coi_rate_array`: the schedules of *coi_rates.csv*, one for
+    each ``sex``, ``rate_class`` and ``age_at_entry`` it holds, numbered from 1 in the
+    order of those keys, as :func:`coi_rate_array` numbers its rows, whatever the order of
+    the file's lines.  The point's key is its ``sex``, its ``rate_class`` and
+    ``int`` of its ``age_at_entry``, as ``UL_US_S`` slices the scale.  A point whose key
+    the table lacks gets schedule 0, a row of padding, and is not refused here:
+    ``UL_US_S`` projects such a point while it reads no COI rate, as one valued, or
+    issued, at or past ``charges_cease_age`` never does, and
+    ``Projection.coi_rate_last_year`` refuses it, naming it, when one is read.  Asks
+    :func:`coi_schedules` first, which checks the table.
+    """
+    coi_schedules()
+    rates = coi_rates().reset_index()
+    rates = rates.assign(**{
+        "age_at_entry": pd.to_numeric(rates["age_at_entry"]).astype("int64")})  # noqa: F821
+    number = {}
+    for key, _ in rates.groupby(["sex", "rate_class", "age_at_entry"]):
+        number[key] = len(number) + 1
+    table = model_point_table()
+    sexes, classes = table["sex"].tolist(), table["rate_class"].tolist()
+    ages = pd.to_numeric(table["age_at_entry"]).tolist()             # noqa: F821
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get((sexes[i], classes[i], int(ages[i])), 0)
+    return out
+
+
+def coi_rate_last_years():
+    """The last policy year of each model point's guaranteed COI scale: int64 [point].
+
+    The last ``policy_year`` *coi_rates.csv* holds for the point's schedule, numbered as
+    :func:`coi_schedule` numbers it, read by value once :func:`coi_schedules` has checked
+    the table: 87 on the shipped anchor cell.  0 for a point the table has no scale for,
+    schedule 0, which ``Projection.coi_rate_last_year`` refuses where it is read.
+    """
+    coi_schedules()
+    rates = coi_rates().reset_index()
+    rates = rates.assign(**{
+        "age_at_entry": pd.to_numeric(rates["age_at_entry"]).astype("int64"),  # noqa: F821
+        "policy_year": pd.to_numeric(rates["policy_year"]).astype("int64")})   # noqa: F821
+    last = {}
+    for key, rows in rates.groupby(["sex", "rate_class", "age_at_entry"]):
+        last[key] = int(rows["policy_year"].max())
+    table = model_point_table()
+    sexes, classes = table["sex"].tolist(), table["rate_class"].tolist()
+    ages = pd.to_numeric(table["age_at_entry"]).tolist()             # noqa: F821
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = last.get((sexes[i], classes[i], int(ages[i])), 0)
+    return out
+
+
+def coi_rate_array():
+    """The guaranteed maximum monthly COI rates by schedule and policy year: float64
+    [schedule, y].
+
+    Row ``s`` is schedule ``s`` of *coi_rates.csv*, numbered from 1 in the order of its
+    keys, ``sex``, ``rate_class`` and ``age_at_entry``, as :func:`coi_schedule` numbers
+    it, and column ``y`` is policy year ``y``, so that the year is the index: one more
+    column than the table's last policy year, one more row than its schedules.  Per
+    $1,000 of net amount at risk.  NaN in row 0, schedule 0, which no point the table
+    holds is given, in column 0, before any policy year, and past each schedule's last
+    year, all padding, which ``Projection.coi_rate_guar_py`` never reads: it refuses a
+    year below 1 and a point of schedule 0, and reads a later year at the schedule's
+    last.  Asks :func:`coi_schedules` first, which checks the table.
+    """
+    n = coi_schedules()
+    rates = coi_rates().reset_index()
+    rates = rates.assign(**{
+        "age_at_entry": pd.to_numeric(rates["age_at_entry"]).astype("int64"),  # noqa: F821
+        "policy_year": pd.to_numeric(rates["policy_year"]).astype("int64")})   # noqa: F821
+    out = np.full((n + 1, int(rates["policy_year"].max()) + 1), np.nan)  # noqa: F821
+    s = 0
+    for _, rows in rates.groupby(["sex", "rate_class", "age_at_entry"]):
+        s += 1
+        years = rows["policy_year"].to_numpy(dtype="int64")
+        out[s, years] = pd.to_numeric(                               # noqa: F821
+            rows["coi_rate_guar"]).to_numpy(dtype="float64")
+    return out
+
+
+def prem_persistency_array():
+    """The premium persistency factors by policy year: float64 [y].
+
+    Element ``y`` is the ``prem_persistency`` of policy year ``y`` in
+    *prem_persistency.csv*, so that the year is the index, to the last year
+    :func:`prem_persistency_last_year` gives once it has checked the table.  NaN at 0,
+    before the first year, which ``Projection.prem_persistency_py`` never reads.
+    """
+    last = prem_persistency_last_year()
+    table = prem_persistency_table()
+    years = pd.to_numeric(pd.Series(table.index)).to_numpy(dtype="int64")  # noqa: F821
+    out = np.full(last + 1, np.nan)                                  # noqa: F821
+    out[years] = pd.to_numeric(                                      # noqa: F821
+        table["prem_persistency"]).to_numpy(dtype="float64")
+    return out
+
+
+def lapse_rate_array():
+    """The base annual lapse rates by policy year: float64 [y].
+
+    Element ``y`` is the ``lapse_rate_ann`` of policy year ``y`` in *lapse_table.csv*,
+    held as :func:`prem_persistency_array` holds its own table, to the last year
+    :func:`lapse_last_year` gives.  NaN at 0, which ``Projection.lapse_rate_base_py``
+    never reads.
+    """
+    last = lapse_last_year()
+    table = lapse_table()
+    years = pd.to_numeric(pd.Series(table.index)).to_numpy(dtype="int64")  # noqa: F821
+    out = np.full(last + 1, np.nan)                                  # noqa: F821
+    out[years] = pd.to_numeric(                                      # noqa: F821
+        table["lapse_rate_ann"]).to_numpy(dtype="float64")
+    return out
+
+
+def corridor_factor_array():
+    """The GPT corridor factors by attained age: float64 [age].
+
+    Element ``a`` is the ``corridor_factor`` of age ``a`` in *corridor_factors.csv*, so
+    that the age is the index, to the last age :func:`corridor_age_last` gives once it
+    has checked the table, which refuses a negative age.  NaN from 0 to below the first
+    age, which ``Projection.corridor_factor_at`` never reads: it reads an age outside the
+    table at the nearest row, as ``UL_US_S`` does.
+    """
+    last = corridor_age_last()
+    table = corridor_factors()
+    ages = pd.to_numeric(pd.Series(table.index)).to_numpy(dtype="int64")  # noqa: F821
+    out = np.full(last + 1, np.nan)                                  # noqa: F821
+    out[ages] = pd.to_numeric(                                       # noqa: F821
+        table["corridor_factor"]).to_numpy(dtype="float64")
+    return out
+
+
+def mort_table_array():
+    """The best-estimate annual mortality rates by attained age: float64 [age].
+
+    Element ``a`` is the ``mort_rate`` of age ``a`` in *mort_table.csv*, held as
+    :func:`corridor_factor_array` holds its own table, to the last age
+    :func:`mort_age_last` gives.  NaN from 0 to below the first age, which
+    ``Projection.mort_rate_base_at`` never reads.
+    """
+    last = mort_age_last()
+    table = mort_table()
+    ages = pd.to_numeric(pd.Series(table.index)).to_numpy(dtype="int64")  # noqa: F821
+    out = np.full(last + 1, np.nan)                                  # noqa: F821
+    out[ages] = pd.to_numeric(table["mort_rate"]).to_numpy(dtype="float64")  # noqa: F821
+    return out
+
+
+def point_id():
+    """The ``point_id`` of every model point, in table order: int64 [point].
+
+    ``Projection`` is indexed by position, ``idx``, so this is how a projection names its
+    point: ``Projection.point_id()`` is the element at ``idx``, and every refusal quotes
+    it.  A label that is not a whole number is refused, naming every such label, and so
+    is one of ``2**53`` or more in size, which numpy would read as the least int64 once
+    past int64.  pandas reads a column of whole labels as int64 exactly, so the bound
+    refuses some labels the vector could hold, none of them a label a table needs.
+    """
+    table = model_point_table()
+    labels = pd.to_numeric(pd.Series(table.index), errors="coerce")  # noqa: F821
+    bad = table.index[~(labels % 1 == 0).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: point_id must be a whole number; "
+                         f"{bad} is not")                            # noqa: F821
+    bad = table.index[~(labels.abs() < 2.0 ** 53).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: point_id must be below 2**53 in size; "
+                         f"{bad} is not")                            # noqa: F821
+    return labels.to_numpy(dtype="int64")
+
+
+def age_at_entry():
+    """The issue age (ANB) of every model point: int64 [point].
+
+    The ``age_at_entry`` column, which :func:`model_point_table` holds to a finite number
+    below ``2**53`` in size, read as ``UL_US_S`` reads it, ``int`` of the number: a
+    fraction truncates toward zero, so 35.5 projects as 35.
+    """
+    ages = pd.to_numeric(model_point_table()["age_at_entry"])        # noqa: F821
+    return ages.to_numpy(dtype="int64")
+
+
+def duration_mth():
+    """The completed policy months at the valuation date of every model point: int64
+    [point].
+
+    The ``duration_mth`` column, which :func:`model_point_table` holds to a whole number
+    of months below ``2**53`` in size.
+    """
+    months = pd.to_numeric(model_point_table()["duration_mth"])      # noqa: F821
+    return months.to_numpy(dtype="int64")
+
+
+def sum_assured():
+    """The face at issue of every model point: float64 [point].
+
+    The ``sum_assured`` column, which :func:`model_point_table` holds to a number above 0.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["sum_assured"]).to_numpy(dtype="float64")
+
+
+def policy_count():
+    """The policies each model point stands for: float64 [point].
+
+    The ``policy_count`` column, which :func:`model_point_table` holds to a number, zero
+    or more.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["policy_count"]).to_numpy(dtype="float64")
+
+
+def premium_pp_ann():
+    """The planned annual premium per policy of every model point: float64 [point].
+
+    The ``premium_pp_ann`` column, which :func:`model_point_table` holds to a number, zero
+    or more.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["premium_pp_ann"]).to_numpy(dtype="float64")
+
+
+def wd_pp():
+    """The planned monthly withdrawal per policy of every model point: float64 [point].
+
+    The ``wd_pp`` column, which :func:`model_point_table` holds to a number, zero or
+    more.  ``Projection.wd_pp_mth`` reads it, since ``Projection.wd_pp`` is the month's
+    withdrawal.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["wd_pp"]).to_numpy(dtype="float64")
+
+
+def load_prem_rate():
+    """The current premium load rate of every model point: float64 [point].
+
+    The ``load_prem_rate`` column, which :func:`model_point_table` holds to a number from
+    0 to 1.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["load_prem_rate"]).to_numpy(dtype="float64")
+
+
+def gsp():
+    """The guideline single premium of every model point: float64 [point].
+
+    The ``gsp`` column, which :func:`model_point_table` holds to a number, zero or more.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["gsp"]).to_numpy(dtype="float64")
+
+
+def glp():
+    """The guideline level premium of every model point: float64 [point].
+
+    The ``glp`` column, which :func:`model_point_table` holds to a number, zero or more.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["glp"]).to_numpy(dtype="float64")
+
+
+def seven_pay_prem():
+    """The 7-pay premium of every model point: float64 [point].
+
+    The ``seven_pay_prem`` column, which :func:`model_point_table` holds to a number,
+    zero or more.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["seven_pay_prem"]).to_numpy(dtype="float64")
+
+
+def av_pp_init():
+    """The account value per policy entering month 0: float64 [point].
+
+    The ``av_pp_init`` column of the opening state, checked by :func:`model_point_table`.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["av_pp_init"]).to_numpy(dtype="float64")
+
+
+def loan_bal_init():
+    """The loan per policy entering month 0: float64 [point].
+
+    The ``loan_bal_init`` column of the opening state, checked by
+    :func:`model_point_table`.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["loan_bal_init"]).to_numpy(dtype="float64")
+
+
+def sum_assured_init():
+    """The face in force entering month 0: float64 [point].
+
+    The ``sum_assured_init`` column of the opening state, checked by
+    :func:`model_point_table`.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["sum_assured_init"]).to_numpy(dtype="float64")
+
+
+def wd_used_year_init():
+    """The free withdrawal allowance used in the policy year under way: float64 [point].
+
+    The ``wd_used_year_init`` column of the opening state, checked by
+    :func:`model_point_table`.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["wd_used_year_init"]).to_numpy(dtype="float64")
+
+
+def cum_prem_init():
+    """The premiums less withdrawals per policy before the valuation date: float64
+    [point].
+
+    The ``cum_prem_init`` column of the opening state, checked by
+    :func:`model_point_table`.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["cum_prem_init"]).to_numpy(dtype="float64")
+
+
+def is_mec_init():
+    """The MEC latch entering month 0: int64 [point].
+
+    The ``is_mec_init`` column of the opening state, which :func:`model_point_table`
+    holds to 0 or 1, so a 1.0 reads as 1.
+    """
+    return pd.to_numeric(                                            # noqa: F821
+        model_point_table()["is_mec_init"]).to_numpy(dtype="int64")
+
+
+def has_surr_charge():
+    """Whether a surrender charge schedule applies to each model point: int64 [point].
+
+    1 where the ``has_surr_charge`` column reads True, in any case, and 0 where it reads
+    False: :func:`model_point_table` refuses any other value.
+    """
+    flags = model_point_table()["has_surr_charge"].astype(str).str.lower()
+    return (flags == "true").to_numpy(dtype="int64")
+
+
+def is_db_option_a():
+    """Whether each model point's death benefit is Option A: int64 [point].
+
+    1 where ``db_option`` is ``"A"``, compared element by element as ``UL_US_S``
+    compares it, and 0 elsewhere.  A value neither A nor B is not refused here: it is no
+    flag, and ``Projection.db_pp`` raises ``UL_US_S``'s message on it.
+    """
+    return (model_point_table()["db_option"] == "A").to_numpy(dtype="int64")
+
+
+def is_db_option_b():
+    """Whether each model point's death benefit is Option B: int64 [point].
+
+    1 where ``db_option`` is ``"B"``, as :func:`is_db_option_a` decodes A.
+    """
+    return (model_point_table()["db_option"] == "B").to_numpy(dtype="int64")
+
+
+def is_gpt():
+    """Whether each model point elected the Guideline Premium Test: int64 [point].
+
+    1 where ``qual_test`` is ``"GPT"``, and 0 elsewhere, where
+    ``Projection.corridor_factor`` raises ``UL_US_S``'s message.
+    """
+    return (model_point_table()["qual_test"] == "GPT").to_numpy(dtype="int64")
+
+
+def is_level_premium():
+    """Whether each model point's premium pattern is LEVEL: int64 [point].
+
+    1 where ``premium_type`` is ``"LEVEL"``, and 0 elsewhere.  A pattern none of the
+    three is no flag, and ``Projection.premium_pp`` raises ``UL_US_S``'s message on it.
+    """
+    return (model_point_table()["premium_type"] == "LEVEL").to_numpy(dtype="int64")
+
+
+def is_single_premium():
+    """Whether each model point's premium pattern is SINGLE: int64 [point].
+
+    1 where ``premium_type`` is ``"SINGLE"``, as :func:`is_level_premium` decodes LEVEL.
+    """
+    return (model_point_table()["premium_type"] == "SINGLE").to_numpy(dtype="int64")
+
+
+def is_target_premium():
+    """Whether each model point's premium pattern is TARGET: int64 [point].
+
+    1 where ``premium_type`` is ``"TARGET"``, as :func:`is_level_premium` decodes LEVEL.
+    """
+    return (model_point_table()["premium_type"] == "TARGET").to_numpy(dtype="int64")
+
+
+def class_factor():
+    """The underwriting-class factor of each model point: float64 [point].
+
+    The ``factor`` *class_factor_table.csv* gives the point's ``rate_class``, once
+    :func:`class_count` has checked the table.  A point reads its class factor in every
+    month on the books, so ``UL_US_S`` fails every projection of a point whose class the
+    table lacks: such a point is refused here, at the first read, naming every such
+    point.
+    """
+    class_count()
+    table = model_point_table()
+    factors = pd.to_numeric(class_factor_table()["factor"])          # noqa: F821
+    bad = table.index[~table["rate_class"].isin(factors.index)].tolist()
+    if bad:
+        raise ValueError(f"{class_factor_file} has no factor for the rate_class of "
+                         f"point_id {bad}")                          # noqa: F821
+    return table["rate_class"].map(factors).to_numpy(dtype="float64")
+
+
+def surr_charge_rate_max():
+    """The surrender charge per $1,000 of initial face of each model point, before any of
+    it runs off: float64 [point].
+
+    The ``sc_per_1000_init`` of the point's ``surr_charge_id`` in
+    *surr_charge_table.csv*, once :func:`surr_charge_count` has checked the table, on a
+    point that ``has_surr_charge``, and 0.0 on one that does not, whose schedule
+    ``UL_US_S`` never reads.  The join refuses, naming every such point with a charge,
+    and only on a point with one, since ``UL_US_S`` reads the schedule in every month of
+    such a point's cover: an id the table lacks, where ``UL_US_S``'s ``.loc`` raised
+    ``KeyError``; a ``runoff_years`` of 0, which ``Projection.surr_charge_rate`` divides
+    by; and one of ``2**53`` years or more in size, the bound of every number read as an
+    int, past which the compiled ``int()`` in ``Projection.lapse_shock_year`` would in
+    time raise ``OverflowError``.  The same checks run in
+    :func:`surr_charge_runoff_years`, the join's other vector, so that whichever a
+    projection reads first refuses the point.
+    """
+    surr_charge_count()
+    table = model_point_table()
+    schedules = surr_charge_table()
+    charges = pd.to_numeric(schedules["sc_per_1000_init"])           # noqa: F821
+    years = pd.to_numeric(schedules["runoff_years"])                 # noqa: F821
+    flags = (table["has_surr_charge"].astype(str).str.lower() == "true").tolist()
+    ids = table["surr_charge_id"].tolist()
+    out = np.zeros(len(ids), dtype="float64")                        # noqa: F821
+    missing, zero, huge = [], [], []
+    for i in range(len(ids)):
+        if not flags[i]:
+            continue
+        if ids[i] not in charges.index:
+            missing.append(table.index[i])
+        elif years[ids[i]] == 0:
+            zero.append(table.index[i])
+        elif not abs(years[ids[i]]) < 2.0 ** 53:
+            huge.append(table.index[i])
+        else:
+            out[i] = float(charges[ids[i]])
+    if missing:
+        raise ValueError(f"{surr_charge_file} has no schedule for the surr_charge_id of "
+                         f"point_id {missing}, each of which has_surr_charge")  # noqa: F821
+    if zero:
+        raise ValueError(f"{surr_charge_file}: runoff_years must not be 0 on the "
+                         f"schedule of point_id {zero}, each of which has_surr_charge, "
+                         f"since the charge runs off over it")       # noqa: F821
+    if huge:
+        raise ValueError(f"{surr_charge_file}: runoff_years must be below 2**53 years in "
+                         f"size on the schedule of point_id {huge}, each of which "
+                         f"has_surr_charge")                         # noqa: F821
+    return out
+
+
+def surr_charge_runoff_years():
+    """The run-off, in policy years, of each model point's surrender charge: float64
+    [point].
+
+    The ``runoff_years`` of the point's ``surr_charge_id`` in *surr_charge_table.csv*, on
+    a point that ``has_surr_charge``, and 0.0 on one that does not, joined and checked
+    as :func:`surr_charge_rate_max` joins and checks the charge, with its refusals.
+    """
+    surr_charge_count()
+    table = model_point_table()
+    years = pd.to_numeric(surr_charge_table()["runoff_years"])       # noqa: F821
+    flags = (table["has_surr_charge"].astype(str).str.lower() == "true").tolist()
+    ids = table["surr_charge_id"].tolist()
+    out = np.zeros(len(ids), dtype="float64")                        # noqa: F821
+    missing, zero, huge = [], [], []
+    for i in range(len(ids)):
+        if not flags[i]:
+            continue
+        if ids[i] not in years.index:
+            missing.append(table.index[i])
+        elif years[ids[i]] == 0:
+            zero.append(table.index[i])
+        elif not abs(years[ids[i]]) < 2.0 ** 53:
+            huge.append(table.index[i])
+        else:
+            out[i] = float(years[ids[i]])
+    if missing:
+        raise ValueError(f"{surr_charge_file} has no schedule for the surr_charge_id of "
+                         f"point_id {missing}, each of which has_surr_charge")  # noqa: F821
+    if zero:
+        raise ValueError(f"{surr_charge_file}: runoff_years must not be 0 on the "
+                         f"schedule of point_id {zero}, each of which has_surr_charge, "
+                         f"since the charge runs off over it")       # noqa: F821
+    if huge:
+        raise ValueError(f"{surr_charge_file}: runoff_years must be below 2**53 years in "
+                         f"size on the schedule of point_id {huge}, each of which "
+                         f"has_surr_charge")                         # noqa: F821
+    return out
+
+
 # ---------------------------------------------------------------------------
 # References
 
@@ -648,3 +1349,5 @@ surr_charge_file = "surr_charge_table.csv"
 future_horizon_mth = 120
 
 pd = ("Module", "pandas")
+
+np = ("Module", "numpy")

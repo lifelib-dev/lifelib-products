@@ -25,13 +25,16 @@ counterpart of ``products/universal_life/technical-notes.md``, and
     point table, and holds their filename References. It checks the model point table as
     it reads it, the keys and the rates of every table read at a policy year or an
     attained age, the class factors and the surrender-charge schedules. It takes no
-    parameters, so each file is read **once per model**.
+    parameters, so each file is read **once per model**. It hands the projection what the
+    files hold as numpy vectors and arrays of numbers, one element per model point, per
+    key or per schedule.
 
 :mod:`~.UL_US_SEC.Projection`
-    The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.UL_US_SEC.Data`
-    Space.
+    The by-policy projection, parameterized by ``idx``, the position of a model point in
+    the ``Data`` vectors, as ``basiclife.BasicTerm_SC`` is: ``Projection[0]`` is an
+    ItemSpace projecting the table's first row, model point 1, and its ``point_id()`` is
+    that label. It reaches the inputs through its ``data`` Reference, which resolves to
+    the single :mod:`~.UL_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -41,6 +44,18 @@ once, however many policies are projected.
 Input data is **external**: CSVs in the model folder's parent directory, read at run
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
+
+**Compiled.** The model compiles under modelx-cython into C-typed code, as
+``basiclife/BasicTerm_SC`` does, from the two inputs beside it: ``sample_sec.py``, the run
+that types each cell, and ``spec_sec.py``, the length of each cell's cache.
+``Projection``'s cells read every model point attribute a projection cell uses as a C
+number from a ``Data`` vector at ``idx``, and every table as an array indexed by integers;
+a timing or a kind is an int code; and every cell but the reports, ``model_point`` and six
+label accessors returns a C ``bint``, ``long long`` or ``double``, cached as a single
+value or in a C array sized from the contract. modelx reads and runs the same formulas,
+and computes the same numbers. ``products/universal_life/model-sec.md`` says how to
+compile and run it, and what the compiled model does not do as modelx does: it clears no
+cache when a Reference is set, so every Reference is set on a model just imported.
 
 **Projection basis.** Monthly steps on two clocks. ``t`` counts months from the
 valuation date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the
@@ -76,7 +91,8 @@ income-positive -- premiums less claims, withdrawals, expenses and premium taxes
 and ``result_cf()`` publishes the flows in the columns ``premiums``, ``claims_death``,
 ``claims_lapse``, ``withdrawals``, ``expenses`` and ``premium_taxes``. A partial
 withdrawal is a payment on the owner's election, not a claim, so it is
-``withdrawals(t)`` and not a ``kind`` of ``claims(t, kind)``.
+``withdrawals(t)`` and not a claim of either kind, ``claims_death(t)`` or
+``claims_lapse(t)``, nor of their total, ``claims(t)``.
 
 Reversing the deduction/interest order overstates the account value by about one
 month's interest on the deduction every month, which compounds over the eighty-plus
@@ -166,7 +182,8 @@ test asserts every model point in the table actually projects.
 
 **Verification.** On the two twins issued at the valuation date every cell this model
 shares with :mod:`~.UL_US_S` agrees with it at every argument the S model evaluates in
-its sweep, ``pols_if_init``, ``model_point`` and ``result_pols`` excepted, so the goldens
+its sweep, ``pols_if_init``, ``model_point``, ``result_pols`` and ``coi_rate_scale``
+excepted, S's ``claims(t, None)`` compared as :func:`~.Projection.claims`, so the goldens
 ``tests/test_universal_life_us.py`` asserts on them hold here too, with no number
 restated: every cell of all three rows of the technical notes' worked example on point 1,
 to the cent, and the notes' issue-month trace at full precision.
@@ -180,8 +197,8 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/universal_life/UL_US_SEC")
-    >>> model.Projection[6].result_cf()
-    >>> model.Projection[6].result_av()
+    >>> model.Projection[5].result_cf()     # model point 6, the table's sixth row
+    >>> model.Projection[5].result_av()
 """
 
 from modelx.serialize.jsonvalues import *

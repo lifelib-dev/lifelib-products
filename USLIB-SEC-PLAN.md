@@ -15,7 +15,8 @@ beside the streams (D2), is done, on Linux 2026-11-02 and on Windows 2026-11-11,
 the first Phase 2 after M13, is done, on Linux and on Windows 2026-11-12. In CI, the
 `cython` job of run 17 passed on Windows and failed on Linux, where gcc refused the build
 over two cache widths; with the widths made one, run 18 passed on both legs (§7.2,
-*Record — M15*). The open decisions of §8.2 are settled, the last of them, item 4, on
+*Record — M15*). UL's compile step, M16, has landed, 2026-11-13, and awaits CI (§7.3,
+*Record — M16*). The open decisions of §8.2 are settled, the last of them, item 4, on
 2026-11-03. Like USLIB-MERGE-PLAN.md, this document is both the specification and the
 record: each phase records what it actually did, including where the implementation
 departed from the plan.
@@ -819,8 +820,11 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   projection, which reads an extent first, meets the same refusal (Term's
   `premium_schedules`; precised at M14). Each array, and each point's index into it, is
   built from keys `Data` has checked, and a point whose key its table lacks is refused, by
-  point, rather than read as padding (precised at M7). MYGA's mortality, padded from age
-  0, holds padding below the table's first age, where `Data` refuses a point's attained
+  point, rather than read as padding (precised at M7). A key whose table every projection
+  of the point reads is refused at the first read, by point; one that a point the contract
+  projects may never read, as UL's COI scale past charges cessation, is schedule 0,
+  refused where read (precised at M16). MYGA's mortality, padded from age 0, holds
+  padding below the table's first age, where `Data` refuses a point's attained
   age in its first month on the books, and ends at the table's last age, 120 as shipped,
   which a point can pass before maturity on a shorter table: the maturity age is a
   `Projection` Reference that `Data` cannot read, so Phase 2 checks that bound in
@@ -834,9 +838,12 @@ R1–R3 and R1a bind from Phase 1 on; R4–R17 are Phase 2's work.
   `BEF_DECR = 1`, `claims(t, DEATH)`. The names stay those of the strings, so call sites
   read the same minus the quotes. A code that indexes a cache is dense from 0: timings by
   instant, `BEF_NB = 0` and `BEF_DECR = 1` in every product, then the product's own in
-  processing order; phases and kinds in their natural order. Every other constant
-  Reference is named in lower case, since `sec_support.codes` reads an all-capital int
-  Reference as a code, and T1 maps S's strings onto the codes through it (precised at M14).
+  processing order; a product with two families of timing, as UL's count and account
+  value, numbers them as one, the count's first, so that a code of one family is refused
+  by the other's cells (precised at M16); phases and kinds in their natural order. Every
+  other constant Reference is named in lower case, since `sec_support.codes` reads an
+  all-capital int Reference as a code, and T1 maps S's strings onto the codes through it
+  (precised at M14).
 - **R10** No projection cell returns a str, tuple, list, dict, Series or `None`. Status
   strings such as a phase become int codes, and the labels appear only in reporting cells.
 - **R11** Scalars entering `Projection` are converted once, in accessor cells (`int(...)`,
@@ -3371,22 +3378,29 @@ test.
    column by item in `Data`.
 5. *A float read into an int64 vector* is refused, before the cast, if `2**53` or more in
    size, or the cast decides the value; a fraction is not refused where S takes `int` of
-   it (D2, R6).
+   it (D2, R6). VUL's rule for model point values, taken at UL's C step, yields to this
+   for an int field: UL's age truncates (M16).
 6. *A cache shared by a policy year and an attained age* is sized from the larger of the
    two derivations, `max(maturity_age - issue_age_min, maturity_age) + 2` here, and a
    residual reading `t + 1` at `t = proj_len()` makes `t` the longest frame plus two.
-7. *C4 on a grid in chunks* of 20 rows, the union asserted: 2.63 GB at WholeLife's full
-   grid against 9.3 GiB whole, each chunk one modelx read and one child more.
+7. *C4 on a grid in chunks* sized so that a chunk peaks near the module's own peak, the
+   union asserted: 20 rows of WholeLife's, 2.63 GB at its full grid against 9.3 GiB
+   whole, and 10 of UL's, whose shard peaks at 2.58 GB (M16); each chunk is one modelx
+   read and one child more.
 8. *The compiled refusals in one case directory*, the package copied once and the inputs
    rewritten a case; a refusal table names the point that meets each case.
 9. *The stack test brackets the need* at seven sizes, with bounded waits; a 1 MiB pass
    alone does not show a chain is one cell a month, which the modelx depth test does.
 10. *A rule matching S on a value no shipped input reaches* is tested by setting modelx
     input values, and a stated constant no build can tell, as the sample's recursion
-    limit, is held by a static test to its documented derivation.
+    limit, is held by a static test to its documented derivation. UL holds
+    `spec_sec.py`'s sizes by such a test to the comment's derivations from
+    `issue_age_min`, `omega_age` and `future_horizon_mth` (M16).
 11. Schedule 0 with extents (1, 0) for a key a table lacks; a per-point join and a flag
     for a table one design reads; a catch-all code where S accepts unknown text, a
     refusal where S raised; headroom in a key cache, which lets its reader refuse by name.
+    Each decode of text is held to S's exact comparison by a case and a whitespace
+    variant of each value it names (M16).
 12. Keep a point issued after the valuation date in every committed table: a guard that
     protects only the compiled cache is caught by C4 there alone. An int returned into a
     `double` cache is seen only by C4 on a point taking that branch, so the grid takes
@@ -3512,6 +3526,10 @@ and nothing calls it.
 - `model_point()` sits behind 23 accessor cells, each read once a point. Six of the
   columns are text: three decoded into bools at stage `E`, and `sex`, `rate_class` and
   `surr_charge_id`, the per-point joins' keys.
+- The six label accessors compile to `object`: `Data` accepts a blank or numeric
+  `surr_charge_id` on a point without a charge, which S projects, and any label blank on a
+  table whose projection refuses it. So `sample_sec.py` traces them on a blank copy read
+  by a second export instance, and a C4 case holds them to modelx (M16).
 - The keyed readers `prem_persistency_py`, `coi_rate_guar_py`, `lapse_rate_base_py`,
   `corridor_factor_at` and `mort_rate_base_at` are the arrays' one reader each, and
   already take their extents from `Data` cells that check each table's keys and values.
@@ -3525,6 +3543,13 @@ and nothing calls it.
 - Timing and kind cells: `av_pp_at`, `av_at` (+`EOM`), `pols_if_at`, `claim_pp`,
   `claims_from_av`, and `claims(t, kind=None)`, which S's `net_cf` caches under
   `(t, None)`, so T1 needs an `arg_map` for it at stage `EC` (R12).
+- `cure_premium_pp` divides by `1 - load_prem_rate()`, which no report reaches, so a load
+  of 1 projects in S. Phase 2 guards that divisor and raises S's own `ZeroDivisionError:
+  float division by zero` in both engines, where Cython's text would differ. A run-off of
+  0 on a point with a surrender charge fails every projection in S. `Data`'s schedule join
+  refuses it, naming the points, together with a run-off of `2**53` years or more in size,
+  held to the `2**53` bound of every number read as an int; the compiled `int()` in
+  `lapse_shock_year` is exact below `2**63` and raises `OverflowError` past it (M16).
 - No report or check reaches, on the committed points, `gsp`, `glp`, `seven_pay_prem`,
   `wd_used_year`, `wd_free_pp`, `is_shortfall`, `cure_premium_pp`, `cum_prem_pp`,
   `gpt_limit`, `gpt_ok`, `seven_pay_limit` or `is_mec`, as in S, nor four new cells:
@@ -3534,12 +3559,16 @@ and nothing calls it.
 - `t` runs from 0 to 1,356 at the contractual maximum, issue age 18 with 1,236 months of
   cover, issued 120 months on, and the month after the frame, so `spec_sec.py` sizes `t`
   at 1,358. Policy years run 1 to 103 and attained ages 18 to 120, each read only in
-  cover. Phase 2's `proj_len()` refuses an issue age below 18, the youngest
-  `product-spec.md` admits; at stage `E` UL's `SecSpec` comment in `sec_support.py` lists
-  the bound, and nothing refuses it.
+  cover. Phase 2's `proj_len()` refuses an issue age below 18, `issue_age_min`, the
+  youngest `product-spec.md` admits, and one above `omega_age`; `spec_sec.py` sizes `t`
+  1,358, `y` 105 and `a` 122 (M16).
 - Depth (F7): a cold `net_cf` runs one cell a month back to `t_entry()` and 16 more, 1,251
-  cells at the longest cover, and needs 2,529 Python frames in the modelx export. At gcc's
-  255 bytes a level, 1,251 levels are about 311 KiB.
+  cells at the longest cover, and needs a recursion limit of 2,529 in the modelx export;
+  compiled as Phase 1 left it, it ran on a thread of 384 KiB and not of 320. At stage `EC`
+  it runs the chain and 17 more, 1,252 cells, a chain head alone at most 9 more, the COI
+  extent's vector asking the table's check one level below; the export needs a recursion
+  limit of 2,530 for it, and the ascending reports 130 with the export's import and 60
+  after it; gcc runs it on a thread of 352 KiB and not of 320 (measured at M16).
 - Two product tests override formulas, the declared-rates test and the NaN-residual test,
   so they stay on modelx (C1); the splice sets References only, and its variants are S's
   columns.
@@ -4011,6 +4040,250 @@ under `USLIB_REQUIRE_CYTHON=1`, in 117.15 s. doccheck built 493 pages with 0 war
 `gen_citation_links.py --dry-run` nothing on its 298 source tags. A case-insensitive
 search of `model_point_table_sec.csv` for the names, forms and hosts that
 `universal_life/sources.md` cites found none.
+
+#### Record — M16, landed 2026-11-13
+
+M16 is UL's compile step, the second Phase 2 after M13, by Term's template (§7.1,
+*Record — M14*, *The Phase 2 template*) and §7.2's *For M16 and later*. First, f77b290
+sharded the `cython` job by product, as D13 had decided for M16: one leg per shard and OS,
+`toolchain` and one per stage-`"EC"` model's product directory, so that each model compiles
+once a leg. UL's C step adds its shard, `universal_life`, to `tests.yml`'s list, which
+`test_compiled_conventions.py` holds to the registry. Its Phase 1 fingerprint had been
+frozen at M13, so no freeze commit came first. A design was prototyped and critiqued
+first: 0 blocker, 5 major and 11 minor findings, each taken by the build, the tests or the
+docs, the ninth corrected by measurement (*Departures*, below). The build, tests written
+against it and checked by injecting faults, and the docs with C6 followed. Then, at the
+user's decision for M16 to M25, to save cost, one merged reviewer took the place of the
+three lenses, reading the numbers, the plan's rules, and the tests with the docs at once.
+It found 0 blockers, 3 major and 5 minor, all applied by a fix stage. The three majors: the
+compiled label accessors raised `TypeError` on a blank or numeric surrender-charge id, which
+S and modelx accept on a point without a charge; no test held the six text decodes to S's
+case-sensitive comparison, a fault that survived; and no test held `spec_sec.py`'s
+headroom on the attained-age cache, a second survivor. A re-review of the fixes found none
+above minor; its four wording notes were applied, and its fifth, a missing label case, is
+carried (below). The container restarted twice during the fix stage. The second restart
+killed the full suite and the full `cython` selection, which were not rerun here: the fix
+stage changed no shared file, and CI's dispatch is the check. The product module, the
+compiled conventions and UL's shard pass on Linux after the last edit, and C6 is recorded.
+
+**CI: pending.** M16's gate, C1–C5 green on Linux and Windows (§6.3, §9), is recorded
+here when the user's dispatch of the Tests workflow on these changes is green.
+
+**What exists now.**
+- `UL_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 136
+  cells, keyed by `idx`, with a Reference `idx = 0`: Phase 1's 133 less `coi_rate_scale`,
+  and four new, `point_id`, `coi_schedule`, `claims_death` and `claims_lapse`, with
+  `claims(t)` their total. 126 compile to C types, 99 to `double`, 14 to `bint` and 13 to
+  `long long`, the two `check_*` cells among the `bint`s. The 10 that stay Python are
+  `model_point`, the three reports `result_cf`, `result_pols` and `result_av`, and the six
+  label accessors `sex`, `rate_class`, `db_option`, `qual_test`, `premium_type` and
+  `surr_charge_id`, which the registry's `"reporting"` names, typed `object`
+  (*Departures*). No cache is a dict, no cell is uncached, and every parameter is
+  `long long`. The caches are 77 of 1,358 by `t`, five of 1,358 by 8, three of 105 by
+  policy year and two of 122 by attained age, and 39 scalars.
+- Eleven codes in two numberings: the timings of both families as one, the count's
+  `BEF_NB` 0, `BEF_DECR` 1 and `BEF_MAT` 2, then the account value's `BEF_PREM` 3 to `EOM`
+  7, and the three kinds `DEATH` 0 to `MATURITY` 2. A code of one family is refused by the
+  other's cells in both engines, inside the cache. The contract the caches hold is
+  `issue_age_min` 18, which `proj_len()` now refuses below, `omega_age` 120, which it
+  refuses above, and `Data`'s `future_horizon_mth` 120.
+- `Data` keeps its 18 cells and adds 34, 52 in all: nine readers, nine int counts and
+  extents, 13 int64 and 20 float64 vectors by point, and `coi_rate_array`,
+  `[schedule, policy_year]`. Each table's check is among them.
+- A compiled `Projection` ItemSpace is 1,892,736 bytes, WholeLife's 1.6 times; the one
+  numbering's width of 8 on five 2-D caches is about 652 KB of it.
+- Beside the model: `sample_sec.py` and `spec_sec.py`; `run_sec.py`, WholeLife's runner
+  with UL's lines, `--cython`, `--build DIR` and the block's compensated sum; and in
+  `model-sec.md` *The compiled model*, in Term's seven subsections, with the rest of the
+  page brought to stage `EC`. The API pages of `Data` and `Projection` are regenerated.
+- Shared files, added to in place: `us_registry.py` (the entry at `EC`, with `idx` and the
+  six reporting accessors); `sec_support.py` (`_ul_claims_total`, and UL's `SecSpec`
+  exempting S's `coi_rate_scale` and the first to set `twin_arg_map`); uslib's `index.md`;
+  and `tests.yml`, the shard alone. `conftest.py`, the conventions, `tools/`, every CSV and
+  every S model are unchanged.
+
+**The gate, on Linux.** On the shared 4-CPU machine under load.
+- C1: the module's Phase 1 tests changed in call syntax only: timings and kinds through
+  the codes, the split claims in `_carry` and `BY_ARGUMENT`, and `_twin` composing the
+  spec's arg map before its own. After the last edit, with modelx-cython installed and
+  `USLIB_REQUIRE_CYTHON=1`, the module gave 277 passed and 41 skipped (`sec_full`), 634 s,
+  and `test_compiled_conventions.py` 37 passed, 302 s. The full uslib suite last ran at the
+  tests stage, 4,452 passed, 776 skipped and 3 failed in 5,973 s, peak 4.42 GB: the three
+  were formula overrides that modelx reads back by source line, broken by an edit to the
+  module during the run, and passed on rerun. The `cython` selection there gave 31 passed
+  and none skipped, 789 s, peak 2.61 GB. Neither ran after the fix stage (above).
+- C2: `gen_sec_fingerprint.py UL_US_SEC --check` reproduces, and the block between the
+  markers is byte for byte M13's. `gen_sec_points.py --check` finds the files current. The
+  review compared this model with f77b290's on every value both cache: identical, but for
+  the one value change in *Departures*.
+- C3: the 126 and the 10 above, no dict cache, one inner width. In the generated C the one
+  Python call off a raise path, outside the reporting cells, is `lapse_shock_year`'s `int`
+  of the run-off (*Departures*).
+- C4 exact on the committed points; on the splice grid in chunks of 10 rows; at nine
+  contract extremes, frames of 1,356 and 1,236 months at issue age 18 issued now and 120
+  months on, a one-row frame, issue age 120, a load of 1, StdTob at 85 where the cap binds
+  and an uncharged point on a run-off of 0, read from a COI file written in reverse key
+  order with unread schedules between; where the cap binds, and with a NaN through a
+  Reference; and on labels that are not text. The review went further: 32 more points in
+  eight cases under the default and the splice References, swept ascending, descending,
+  cold-last and shuffled, 28.1 million compiled calls, no mismatch but the labels'.
+- C5: the release, the compiled refusals in one case directory (194 cases and 384 refusals
+  at the tests stage, each by a projection call and by its `Data` cell, messages whole,
+  and 12 decode cases since), the compiled-only `IndexError`s, the stale Reference and the
+  compiled runner with its refusal leg pass. doccheck built 521 pages with 0 warnings,
+  md_lint reported 0, and `gen_scaffolding.py --dry-run` 0 files in each of the six
+  libraries.
+- *Depth (F7).* modelx's cold `net_cf` in the last month runs the chain plus 17: 1,048
+  deep on twin 1, 928 on twin 3 and 1,252 at the longest cover, issue age 18 issued now or
+  120 months on; a chain head alone adds at most 9, under `CHAIN_OVERHEAD` 20. In the
+  export the longest cold call needs a recursion limit of 2,530, and the ascending reports
+  130 with the package's import and 60 after it; `sample_sec.py` sets 11,000, which a test
+  holds to its derivation. Compiled with gcc 13.3, the call runs on a thread of 352 KiB and
+  dies on one of 320 (336 at the docs stage), 275 to 288 bytes a level, and runs on the
+  1 MiB thread and on the main thread; the review ran 16 chain heads cold on three frames
+  of 1,356 months with the same bracket.
+
+**Departures and precisions.**
+- *The label accessors compile to `object`*, where Term's and WholeLife's are `str`. UL is
+  the first model whose `Data` accepts and projects a point with a label that is not text:
+  a blank or numeric `surr_charge_id` on a point without a charge, which S never reads. Any
+  label can also be blank on a table whose projection is then refused. So `sample_sec.py`
+  writes the first point with every label blank to a temporary directory, reads it by a
+  second instance of the export through an absolute `model_point_file`, and calls the six
+  there; a C4 case holds them to modelx. They are reporting cells, so the cost is nil.
+- *A load of 1 projects*, as in S: only `cure_premium_pp`, which no report reaches, divides
+  by `1 - load_prem_rate()`, and Phase 2 guards that divisor to raise S's own
+  `ZeroDivisionError: float division by zero` in both engines, where Cython's text differs.
+- *The run-off.* A run-off of 0 on a charged point fails every projection in S; `Data`'s
+  join refuses it, naming the points, and with it one of `2**53` years or more, which S
+  projects. The compiled `int()` in `lapse_shock_year` is exact below `2**63` and raises
+  `OverflowError` past it.
+- *The two items left to this step at M13* (§7.3, *Record — M3*) are taken: `proj_len()`
+  refuses a point issued above `omega_age`, and `Data` takes VUL's rule for model point
+  values, with one exception: a fractional issue age truncates toward zero as S's `int`
+  does (§7.2, item 5). The int64 casts of issue age, `duration_mth` and `point_id` are
+  refused only at `2**53` or more in size. The flag accepts `True` or `False` in any case
+  alone.
+- *R7's shape.* The COI scale is `[schedule, policy_year]` with a schedule number by point,
+  0 where the table lacks the key and refused where read, but its last year is held by
+  point, `coi_rate_last_years`, the same number, and there is no first-key vector, since
+  the table's check requires policy year 1.
+- *A value change from stage `E`* that no projection reads: on a point without a charge,
+  `surr_charge_rate_max()` and `surr_charge_runoff_years()` read 0.0, where at stage `E`
+  they read the point's schedule, 5.0 on `UL0`, and a blank id raised `KeyError`.
+- *The claims total* is `0.0 + death + lapse`. T1 reaches it through `twin_arg_map`, which
+  maps S's `(t, None)` onto it and skips the kind keys, to T1's tolerance; the module holds
+  it to S's bit for bit, and at two negative zeros. This departs from §7.2's item 2, where
+  WholeLife's T1 exempts S's total (R12).
+- *Refusals S lacks*, beside those above: a negative age in the corridor or mortality
+  table, as Term's tables refuse one, both padded from age 0 (R7); and a class or a charged
+  schedule missing from its table refuses the table, Term's precedent, where Phase 1
+  failed that point alone.
+- *A `long long` Reference set to a float truncates* compiled without a word, 120.7 to 120,
+  where modelx computes with it or fails, and an int on a `double` Reference reads as a
+  float. This is documented as a limit, not refused, as Term and WholeLife have it
+  (critique's ninth finding, which expected a failure). Each shipped Reference is of its C
+  type.
+- *The two residuals* return `float(...)` of their ratio (§7.6), and C4's grid runs in
+  chunks of 10 rows, for UL's frames of up to 1,356 months (§7.2, item 7).
+
+**Measured, under load.** On the shared 4-CPU machine, two runs where a spread is given.
+- *Compile.* About 95 s, two builds, and 98 s at the docs stage.
+- *The module*, as the `sec` job runs it, by default 258.9 s (spread 1.3 s; 254 passed
+  and 41 skipped, peak 3.12 GB), about 20 s over M3's; over the full grid 366.3 s (spread
+  15.8 s, peak 3.16 GB).
+- *The shard*, as CI runs it: at the tests stage 331.2 s by default (spread 8.9 s) and
+  404.1 s on the full grid (spread 8.2 s), peak 2.58 GB, before the label test and the 12
+  decode cases; at the fix stage 361 s, of which C3 with the compile 107 s, the refusals
+  103 s, the core grid 65 s and 17 s of setup, the extremes 16 s, C4 on the committed
+  points 14 s, the labels and the cap 10 s each, the runner 9 s, the stack 4 s and the
+  release 1 s.
+- *Speed (C6).* `tools/bench_sec_cy.py universal_life`, two runs of three repeats, the
+  fastest shown, on 2026-11-12 (Xeon 2.10 GHz, 1-minute load 1.1 to 2.6; Python 3.13.18,
+  gcc 13.3.0, modelx 0.33.0, modelx-cython 0.1.0, Cython 3.3.0, numpy 2.5.3, pandas
+  3.0.5). Compiled, 6,003 points: 1.21 ms a point on `net_cf` and 1.86 ms on `result_cf`,
+  87 MB, flat with the release. The export, 603 points: 14.5 and 14.7 ms. modelx, 126
+  points: 545 and 573 ms. So the compiled model runs 12.0 times the export on `net_cf`
+  and 7.9 on `result_cf`, and 451 and 308 times modelx, where the model as Phase 1 left it
+  ran 2.2 to 2.3 times the export compiled. Without the collection, 504 compiled points
+  peak at 929 MB. The review reproduced it at a load of 3.0 to 4.1: 1.20 ms, 12.4 and 448
+  times. Recorded in `model-sec.md`'s *Speed*.
+
+**Faults.** Each alone in a copy, or several in one build where each fails a different
+test.
+- *Tests stage*: 25, 4 of them in three compiled builds, each failing some test. One, the
+  MEC latch based at `t == 0`, survived the first run, whose rules test scanned the report
+  cells alone; the scan now sweeps the cells no report reaches first, and it fails. A kind
+  cache of width 3 fails the build. Each of the 67 refusals of `Data` and `Projection`,
+  dropped in turn, fails a test, after two cases were added for the two age tables'
+  negative ages, which had none.
+- *Review*: 6, 4 caught; the two survivors are its second and third majors (above).
+- *Fix stage*: each failing: the decodes with `.str.upper()` and `.str.strip()`, the
+  spec's `a` at 121, and the sample without its second instance, 6 label mismatches. The
+  re-review injected the three again, each failing. No known survivor remains.
+
+**Windows.** The risks stand as at M15, one inner width, the stack bracket and the UCRT's
+`pow`, here on six powers, and the package name is shorter than WholeLife's. The sample's
+temporary file is closed before the second instance reads it, so its directory's cleanup
+meets no open handle; should it fail, the build fails and C3 with it.
+
+**Cost.** About 3.2 million subagent tokens over nine stages: design 0.64M, critique
+0.34M, build 0.42M, tests 0.51M, docs 0.42M, review 0.36M, fix 0.26M and re-review 0.14M,
+and 0.15M for the sharding; M15, with three reviewers, took about 4 million.
+
+**For M17 and later.** What UL settles for the products after it, VUL, ULSG and IUL first,
+which copy its chassis:
+1. *Labels that may not be text compile as `object`.* A label column `Data` accepts and S
+   never reads on some points, as an id joined only on charged points, can be blank or
+   numeric, so the sample traces the label accessors on a blank copy, by a second
+   instance of the export reading a temporary file by its absolute path. A row C4 sees
+   refused goes on a short frame: modelx's full sweep of a point raising in every cell
+   took 1,070 s on a 1,032-month frame and 10 s on a 12-month one.
+2. *Each text decode is held to S's exact comparison*, by a case variant and a whitespace
+   variant of every value it names (`UNDECODABLE`).
+3. *Each `spec_sec.py` size is held by a static test* to its comment's derivation from
+   the model's References and `Data.future_horizon_mth`.
+4. *The COI scale by schedule*: `coi_schedules()` the check, `coi_schedule()` by point, 0
+   where the table lacks the key, `coi_rate_array[schedule, y]`, all three numbered in
+   sorted key order, which a test holds on a file written out of key order, the extremes'
+   C4 run from such a copy. For a new product prefer a last-year vector by schedule, read
+   at `coi_schedule()`, to UL's by point.
+5. *An `int()` of a float in a compiled formula is Python arithmetic*, exact to `2**63` and
+   raising past it: hold its input to `2**53` in `Data`, and record it under *No Python
+   call kept*.
+6. *One numbering for two families of timing*, the count's first, so that a code of one
+   family is refused by the other's cells inside the cache in both engines (R9).
+7. *The surrender-charge joins*: two float vectors by point, 0.0 on a point without a
+   charge; a charged point is refused for a missing id, a run-off of 0 or one of `2**53`
+   or more. Put each join refusal on a table where only some points are charged, so that
+   the message names exactly those, and hold the others projecting as before.
+8. *A division whose divisor S's own inputs can make zero*, in a cell no report reaches,
+   is guarded to raise S's own error text, and held compiled by a refusal case and by C4
+   at that bound.
+9. *A local assigned from `int(...)` of a `Data` element* is a Python object in a formula
+   that also builds a message: compare the element, return `int(...)` of it, or take it
+   from a cell.
+10. *Age tables padded from 0 refuse a negative age* in the table's check.
+11. *The rules test scans its row* after sweeping the cells no report reaches on it, not
+    the reports alone.
+12. *Run the drop-each-rule sweep once a C step*: it found two rules without a case here.
+13. *`long long` References are not refused* when set to a float; the page documents the
+    truncation, as Term and WholeLife do. A product whose users set its int References
+    documents it or type-checks them.
+14. *T1 reaches a split total by `twin_arg_map`*, composed in the module's `_twin` before
+    its own maps, where S's total is called with `None`: it compares the total, where an
+    exemption does not.
+
+**Carried into M17 or later.**
+- *`sec_support.C_CALLS`' docstring* says `int` is C, which is false for `int` of a
+  double, and C3 does not see the temporary. It is a cross-product harness note, not
+  M16's to change; UL's `model-sec.md` names the one such call.
+- *The label test* gives no non-text `sex` or `rate_class`. A blank one belongs on the
+  "blank" case's refused row, so that a sample blanking only some labels fails.
+- *`Term_US_SEC`'s int64 range holes* stand (§7.2, *Carried into M16 or later*), and with
+  them `point_id`'s `2**53` bound, which UL takes, for Term and WholeLife.
+- *The module's default run*, about 4.3 minutes under load, is weighed with the others'
+  under K6; nothing has moved behind `sec_full`.
 
 ### 7.4 Indexed UL — `IUL_US_SEC` (E: L, C: L)
 
@@ -11571,5 +11844,6 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M13 | Phase 1 freeze — **done**, 2026-11-11, its gate met by the Tests workflow's run 16 (§5, *Record — M13*) | Fingerprints for every SEC point, Term's frozen at M14; `index.md`'s SEC conventions; M11's T2, T3 and T4 precisions taken into Term, WholeLife, MYGA and UL, and FIA's committed future row compared with its S point frame by frame, before the fingerprints are frozen (§5.4); M10's T5 precision taken into the eight products landed before RILA and its T4 precision into WholeLife, RILA's first-year and first-term tolerances pinned from both sides and its first-term rule refused at month 1, VA's every-state test and its test of each rule on a Reference with that Reference moved off its shipped value, both of which it landed without, and M9's T5 precision taken into RILA's every-state test (§5.4); how CI runs the docstring parse tests, which skip where docutils is absent, settled across products (§7.8, *Record — M10*; §7.7, *Record — M9*; §7.5, *Record — M5*); the suite's peak memory in one process, 4.82 GB at M9, bounded against the CI runners' memory (K6, *M9*); `proj_len()` in `UL_US_SEC` and `VUL_US_SEC` refusing a future row issued at or past `omega_age` + 1, which each accepts and projects as months with no cover, left to their C steps; `VUL_US_SEC`'s `Data` refusing a corridor factor below 0, which it accepts and which takes its point 3's death benefit past the face, left to its C step (§5.1, step 6, precised at M5); and ULSG's two core rows that, dropped together, lose no line, predicate or side, trimmed (§7.5, *Record — M5*); IUL's items: its module's default run, 936 to 955 s under load, weighed with the others' and the `sec_full` split, which decides IUL's core, and the matrix held inside §5.4's 90-minute timeout under K6's rule, the sweeps behind the opt-in marker before the timeout is raised, where the landing's uslib suite took 94 min under load, and each move behind `sec_full` checked against the fault sweeps (K6, *M6*); its deepest cold call at the longest cover restored to the default; its Phase 1 fingerprint frozen; D6's cent-extract test held in every product with an identity between amounts, a `Data` floor no wider than the check it feeds, a first 7-pay failure in year 7 pinned in UL, and T1's twins compared at no absolute floor where a count error below 1e-9 would pass; and the NaN that `IUL_US_S`'s index engine loses, its bounds written first, settled as an S-side note, its order of bounds kept to its C step (§7.4, *Record — M6*) | the whole matrix green under its timeout |
 | M14 | Phase 2 for Term, brought forward to run beside Phase 1's streams (D2) — **done**, on Linux 2026-11-02 and on Windows 2026-11-11, at the `cython` job's first runs (§7.1, *Record — M14*) | Term's Phase 1 fingerprint frozen first; §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M15 | Phase 2 for WholeLife, the first after M13 — **done**, 2026-11-12; in CI the `cython` job of run 17 passed on Windows and failed on Linux, and run 18, on the fix, passed on both (§7.2, *Record — M15*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; the `cython` job's Linux leg runs the compiled grids at full size | C1–C5 green on Linux and Windows; C6 recorded |
-| M16–M25 | Phase 2 for the other ten, after M13, one PR per product, in §5.3's order; the `cython` job sharded by product, decided at M16 (§7.2, *Record — M15*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M16 | Phase 2 for UL, the second after M13 — **landed** 2026-11-13, CI pending (§7.3, *Record — M16*) | The `cython` job sharded by product first, one leg per shard and OS (f77b290, D13); §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer in place of the three lenses, from here | C1–C5 green on Linux and Windows; C6 recorded |
+| M17–M25 | Phase 2 for the other nine, one PR per product, in this order: M17 VUL, M18 ULSG, M19 IUL, M20 MYGA, M21 FIA, M22 VA, M23 SPIA, M24 DIA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |

@@ -1201,6 +1201,20 @@ _UL_STATE = {
 }
 
 
+def _ul_claims_total(name, args):
+    """``UL_US_S``'s ``claims`` keys as ``UL_US_SEC`` takes them at stage ``"EC"`` (R12).
+
+    S's ``claims(t, None)``, the total its ``net_cf`` caches, is SEC's ``claims(t)``.  S's
+    ``(t, kind)`` keys, which its ``result_cf`` caches, have no SEC cell of that signature:
+    they are SEC's two cells ``claims_death(t)`` and ``claims_lapse(t)``, which T1 reaches
+    through ``result_cf``'s columns, so they are skipped.  Every other cell's arguments
+    pass as they are.
+    """
+    if name != "claims":
+        return args
+    return (args[0],) if args[1] is None else None
+
+
 def _dia_lives(life):
     """``DIA_US_S``'s survival of ``life`` to time ``d``, the start of month ``d``."""
     return lambda s, d: s.lives_if(d, life)
@@ -2144,19 +2158,27 @@ SEC_SPECS: dict[str, SecSpec] = {
     # table, not committed.
     #
     # T1 holds on UL at any count: S charges acquisition on the policies in force in the
-    # issue month, the policies issued, as SEC does.  It skips one S cell besides the
+    # issue month, the policies issued, as SEC does.  It skips two S cells besides the
     # default three:
     #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and test_universal_life_us_sec.py compares the
     #     report itself with S's, on every column both hold.
+    #   coi_rate_scale: S's guaranteed COI scale for the point's cell, a Series, which no
+    #     compiled cell returns (R10).  SEC numbers the scale instead, coi_schedule, and
+    #     every value of it reaches T1 through coi_rate_guar and coi_rate_guar_py, which T1
+    #     compares at every month and policy year S read.
     # S's net_cf calls claims(t) with its kind=None default, so S's sweep caches claims
-    # under (t, None).  Phase 2 replaces that default with a total cell (R12), and its T1
-    # then needs an arg_map from those keys to it.
+    # under (t, None), and its result_cf under (t, "DEATH") and (t, "LAPSE").  At stage EC
+    # claims is split into claims_death and claims_lapse, the result_cf columns, and a total
+    # claims(t) (R12), so the spec's twin_arg_map, _ul_claims_total, maps S's total onto
+    # SEC's and skips the kind keys, whose values reach T1 through result_cf.  So T1
+    # compares the total, where WholeLife's spec exempts it; to T1's tolerance, and
+    # test_universal_life_us_sec.py holds it to S's bit for bit.
     #
     # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 18
     # to 85 (product-spec), and S projects any age its tables serve, so Phase 2 refuses an
-    # issue age below 18 in proj_len():
+    # issue age below 18, issue_age_min, in proj_len():
     #   t: 0 to 1,356, the longest frame and the month after it, which the roll-forwards
     #     read: 12 x (omega_age 120 - youngest issue age 18 + 1) = 1,236 months of cover,
     #     plus future_horizon_mth 120.
@@ -2173,7 +2195,8 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_UL_STATE,
         twin_state={c: f for c, f in _UL_STATE.items()
                     if c not in ("av_pp_init", "loan_bal_init")},
-        exempt=frozenset({"result_pols"}),
+        exempt=frozenset({"result_pols", "coi_rate_scale"}),
+        twin_arg_map=_ul_claims_total,
     ),
     # DIA's state is eight columns (_DIA_STATE): each life's survival; the premiums paid and
     # the income bought; on a refund form in force, the guarantee period the pricing kernel

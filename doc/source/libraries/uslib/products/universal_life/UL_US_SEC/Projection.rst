@@ -8,6 +8,8 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
@@ -134,7 +136,7 @@ Cells Descriptions
 
 .. autofunction:: net_amt_at_risk
 
-.. autofunction:: coi_rate_scale
+.. autofunction:: coi_schedule
 
 .. autofunction:: coi_rate_guar
 
@@ -241,6 +243,10 @@ Cells Descriptions
 .. autofunction:: claims_over_av
 
 .. autofunction:: claims
+
+.. autofunction:: claims_death
+
+.. autofunction:: claims_lapse
 
 .. autofunction:: withdrawals
 
