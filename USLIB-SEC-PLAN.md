@@ -26,8 +26,8 @@ step, M20, is done, 2026-11-13: Tests run 22 passed all 62 jobs, the `cython` jo
 SPIA's compile step, M23, built and tested on Windows in a separate local session after
 M20 and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, the
 `cython` job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record —
-M23*); DIA's, M24, follows it there, and RILA's, M25, may start now that M20 has landed. The open
-decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03. Like
+M23*); DIA's, M24, follows it there, and RILA's, M25, may start now that M20 has landed.
+The open decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03. Like
 USLIB-MERGE-PLAN.md, this document is both the specification and the record: each phase
 records what it actually did, including where the implementation departed from the plan.
 
