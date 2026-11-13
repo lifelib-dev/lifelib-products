@@ -1215,6 +1215,23 @@ def _ul_claims_total(name, args):
     return (args[0],) if args[1] is None else None
 
 
+def _myga_codes(name, args):
+    """``MYGA_US_S``'s keys as ``MYGA_US_SEC`` takes them at stage ``"EC"`` (R9, R12).
+
+    S's ``claims(t, None)`` and ``claims_over_av(t, None)``, the ``kind=None`` totals,
+    are SEC's ``(t, "ALL")``, and S's ``scenario_rate(t, name)`` columns their names
+    upper-cased, ``"MARKET_RATE"`` and ``"MVA_REF_YIELD"``; :func:`codes` then turns each
+    string into SEC's int code, as it turns S's timings and kinds.  Every other cell's
+    arguments pass as they are, and so do SEC's own codes, where a comparison of two SEC
+    models passes it SEC's keys.
+    """
+    if name in ("claims", "claims_over_av") and args[1] is None:
+        return (args[0], "ALL")
+    if name == "scenario_rate" and isinstance(args[1], str):
+        return (args[0], args[1].upper())
+    return args
+
+
 def _dia_lives(life):
     """``DIA_US_S``'s survival of ``life`` to time ``d``, the start of month ``d``."""
     return lambda s, d: s.lives_if(d, life)
@@ -2160,53 +2177,43 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and test_fixed_deferred_annuity_us_sec.py
     #     compares the report itself with S's, on every column both hold.
-    # At stage EC, T1 also needs a mapping for S's claims(t, None) and
-    # claims_over_av(t, None) keys, the kind=None totals that R9 and R12 replace.
+    # At stage EC (M20), S's claims(t, None) and claims_over_av(t, None) keys, the
+    # kind=None totals, are SEC's code ALL, and S's scenario_rate columns, "market_rate"
+    # and "mva_ref_yield", are SEC's codes named as them upper-cased: the spec's
+    # twin_arg_map, _myga_codes, maps both, and codes maps the rest.  T1 skips three more
+    # S cells at stage EC:
+    #   mva_pp_on, mva_factor_geometric: S's float-parameter cells, which SEC writes inline
+    #     in the int-keyed cells that call them (R14): mva_pp and wd_mva_pp, and mva_rate.
+    #     Their every value on the projection path reaches T1 through those cells, which it
+    #     compares at every month.
+    #   surr_charge_id: S returns its schedule's key in lower case, "initial", "renewal" or
+    #     "none", and SEC its code, INITIAL, RENEWAL or NONE, which codes, matching case,
+    #     cannot map; the rate it selects, surr_charge_rate, is compared at every month,
+    #     and the module holds the code to S's text.
+    # The three engine cells, mgsv_rate_statutory, mgsv_rate_is_compliant and
+    # mva_ref_term_years, are S's formulas, kept for T1 and a reader and admitted by the
+    # registry's "engine" (R14).
     #
-    # No projection cell calls a label accessor or compares a model point column's text:
-    # the five categorical columns S branches on are decoded once a point into bools, the
-    # is_* cells (renewal_architecture into is_rollover and is_annual_redeclare,
-    # free_wd_rule, mva_family, mva_cap_rule and mgsv_wd_convention likewise, one bool for
-    # each value S tests), each read where S asks its question, so a value S does not know
-    # is answered as S answers it.  R6 moves the decodes into Data.  The text a projection
-    # cell still compares in a branch is S's own: the timing and kind strings, which Phase
-    # 1 keeps and R9 numbers, and surr_charge_rate's test of the schedule surr_charge_id(t)
-    # names for "none", part of the surrender-charge join R7 re-keys.  Four joins on text
-    # keys are S's and wait for R7, each through the one cell that reads its table:
-    # mort_rate on the model point's sex, scenario_rate on its scenario_id,
-    # wd_scheduled_pp on its wd_schedule_id, and surr_charge_rate on the schedule
-    # surr_charge_id(t) names, a string-valued cell of S's.  The age cap and the duration
-    # factors are read through cells keyed by the age and the whole year
-    # (surr_charge_age_cap_at, mva_factor_at).  Every table is read through Data's checked
-    # copy of it, its keys read by value (mort_rates, surr_charge_scales,
-    # surr_charge_age_caps, rate_scenario_steps, wd_schedules, mva_factors), the extents
-    # through Data's int cells.  And Data checks each join's key before a projection joins
-    # on it: model_point_table refuses a point whose scenario the table lacks or which sets
-    # no level by the point's first month on the books, whose withdrawal programme the
-    # table lacks, or whose sex and attained age in that month the mortality table gives
-    # no rate at; surr_charge_scales refuses a table without the initial and the renewal
-    # schedules.  Left open, as in S: an attained age past the mortality table's last
-    # before maturity raises mort_rate's KeyError, since maturity_age is a Projection
-    # Reference that Data cannot read (the shipped table runs to 120).  R7's pre-joined
-    # arrays must refuse such a point rather than pad, and keep the scenario's months
-    # before its first level unreadable.
+    # No projection cell calls a label accessor or compares text: the five categorical
+    # columns S branches on are decoded in Data into the 0/1 vectors the is_* cells read,
+    # one flag for each value S tests, each read where S asks its question, so a value S
+    # does not know is answered as S answers it (R6).  The four joins on text keys are
+    # numbered in Data (R7): mort_rate_at on the point's sex, by mort_schedule;
+    # scenario_rate on its scenario_id, by scenario_number; wd_scheduled_pp on its
+    # wd_schedule_id, by wd_schedule_number; and surr_charge_rate on the schedule code
+    # surr_charge_id returns, the row of Data's surr_charge_array.  The age cap and the
+    # mortality are read through cells keyed by attained age (surr_charge_age_cap_at,
+    # mort_rate_at), and the duration factors at the whole years mva_term_years gives,
+    # in mva_duration_factor.  proj_len refuses an attained age past the mortality
+    # table's last before maturity, against Data's mort_age_lasts, since maturity_age is a
+    # Projection Reference that Data cannot read.
     #
-    # For Phase 2's caches, each size with every input it depends on.  The contract issues
-    # at ages 0 to 85 (product-spec) and matures at maturity_age 100; nothing refuses an
-    # issue age outside that range, as S does not.
-    #   t: 0 .. 1,320, the 1,200 months of cover at the youngest issue age, 0, plus
-    #     future_horizon_mth, 120, and the month after for the t + 1 reads;
-    #   y (free_wd_base, free_wd_allow): contract years 1 .. 100, from the youngest issue
-    #     age and maturity_age;
-    #   a (surr_charge_age_cap_at): attained ages 0 .. 99, the same two;
-    #   k (mva_factor_at): whole years remaining 0 .. mva_factor_last_year, 10 as shipped,
-    #     by column 0 or 1, whatever the guarantee period: mva_duration_factor reads no
-    #     year past the table's last;
-    #   the guarantee period n sizes no cache: gp_index and the window are arithmetic.
-    # The float-parameter cells are S's, unchanged, for Phase 2 to inline or re-key:
-    # mva_pp_on(t, base), called by mva_pp and wd_mva_pp; mva_factor_geometric, called by
-    # mva_rate; and mgsv_rate_statutory, mgsv_rate_is_compliant and mva_ref_term_years,
-    # which no projection cell calls.  SEC adds none.
+    # The caches, each size with every input it depends on (spec_sec.py): t 1,322, from
+    # issue_age_min 0, maturity_age 100 and future_horizon_mth 120, and the t + 1 reads in
+    # the month after the frame; y 102 for free_wd_base and free_wd_allow, contract years
+    # 1 .. 100; a 101 for surr_charge_age_cap_at and mort_rate_at, attained ages 0 .. 99;
+    # and one inner width, 8, for the timing, kind and name codes.  proj_len refuses an
+    # issue age below issue_age_min or above issue_age_max, 85, the product's ages.
     "MYGA_US_SEC": SecSpec(
         twin="MYGA_US_S",
         column_map={"tax_basis_initial": "tax_basis_pp_init"},
@@ -2214,7 +2221,9 @@ SEC_SPECS: dict[str, SecSpec] = {
         future=((1, 15),),
         state=_MYGA_STATE,
         twin_state={c: f for c, f in _MYGA_STATE.items() if c != "tax_basis_pp_init"},
-        exempt=frozenset({"av_pp_init", "mgsv_pp_init", "result_pols"}),
+        exempt=frozenset({"av_pp_init", "mgsv_pp_init", "result_pols", "mva_pp_on",
+                          "mva_factor_geometric", "surr_charge_id"}),
+        twin_arg_map=_myga_codes,
     ),
     # UL's state is the account value and the loan, S's own columns under their own names,
     # and four more (_UL_STATE above).  pols_if_init becomes policy_count (the default),
@@ -3915,12 +3924,14 @@ def reporting_cells(name, space):
     ``model_point``, every ``result_*`` report, every ``check_*`` check but the per-``t``
     ``*_resid`` cells a check reads, and the label accessors the registry entry names
     under ``"reporting"`` (:mod:`us_registry`): cells that hand a reader a table row, text,
-    a DataFrame or a verdict.  They are the typing guard's allowlist
-    (:func:`typing_faults`), and no other cell may call one (:func:`static_faults`), so
-    every cell a projection runs compiles to C.  ``space`` is the model's ``Projection``.
+    a DataFrame or a verdict.  And the engine cells it names under ``"engine"``: S's cells
+    of float parameters, kept for a reader and for T1, which no compiled cell calls (R14).
+    They are the typing guard's allowlist (:func:`typing_faults`), and no other cell may
+    call one (:func:`static_faults`), so every cell a projection runs compiles to C; an
+    engine cell may call another.  ``space`` is the model's ``Projection``.
     """
     from us_registry import meta
-    declared = set(meta(name).get("reporting", ()))
+    declared = set(meta(name).get("reporting", ())) | set(meta(name).get("engine", ()))
     return frozenset(
         cell for cell in space.cells
         if cell == "model_point" or cell.startswith("result_") or cell in declared

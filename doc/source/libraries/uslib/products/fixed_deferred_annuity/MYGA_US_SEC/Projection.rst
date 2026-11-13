@@ -8,6 +8,8 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: policy_id
 
 .. autofunction:: age_at_entry
@@ -97,6 +99,12 @@ Cells Descriptions
 .. autofunction:: scenario_id
 
 .. autofunction:: wd_schedule_id
+
+.. autofunction:: scenario_number
+
+.. autofunction:: wd_schedule_number
+
+.. autofunction:: mort_schedule
 
 .. autofunction:: policy_term
 
@@ -188,21 +196,17 @@ Cells Descriptions
 
 .. autofunction:: mva_term
 
+.. autofunction:: mva_term_years
+
 .. autofunction:: mva_in_force
 
 .. autofunction:: mva_ref_yield_locked
 
 .. autofunction:: mva_ref_term_years
 
-.. autofunction:: mva_factor_geometric
-
 .. autofunction:: mva_duration_factor
 
-.. autofunction:: mva_factor_at
-
 .. autofunction:: mva_rate
-
-.. autofunction:: mva_pp_on
 
 .. autofunction:: surr_charge_pp
 
@@ -233,6 +237,8 @@ Cells Descriptions
 .. autofunction:: tax_basis_pp
 
 .. autofunction:: mort_rate
+
+.. autofunction:: mort_rate_at
 
 .. autofunction:: mort_rate_mth
 

@@ -26,10 +26,11 @@ moves it there, Term_US_SEC first (M14):
 
 The allowlist of cells that stay Python is R17's, :func:`sec_support.reporting_cells`:
 ``model_point``, the ``result_*`` reports, the ``check_*`` checks, and the label accessors
-the registry entry names under ``"reporting"``.  A builtin a compiled cell still calls,
-R16's ``round`` of a projected amount, is admitted in that cell alone, by the registry
-entry's ``"python_calls"``, which C3 and C5 read.  C3, C4 and the release are marked
-``cython``.  They compile each model once a session, into a temporary directory
+the registry entry names under ``"reporting"``, and S's cells of float parameters it
+names under ``"engine"``, which no compiled cell calls (R14).  A builtin a compiled cell
+still calls, R16's ``round`` of a projected amount, is admitted in that cell alone, by the
+registry entry's ``"python_calls"``, which C3 and C5 read.  C3, C4 and the release are
+marked ``cython``.  They compile each model once a session, into a temporary directory
 (``conftest.sec_build``), never into the tree (D12), and run the compiled package in child
 processes only.  Without modelx-cython or a C compiler they skip, and the ``cython`` CI job,
 which sets ``USLIB_REQUIRE_CYTHON=1``, fails a skip (D13).  Each product module adds what
@@ -209,6 +210,62 @@ def test_python_calls_are_declared_by_cell(sec_name):
     finally:
         model.close()
     assert not found, f"{sec_name}: python_calls: " + "; ".join(found)
+
+
+@pytest.mark.parametrize("sec_name", SEC_MODELS)
+def test_engine_cells_are_declared_by_name(sec_name):
+    """``"engine"`` admits S's cells of float parameters by name, none called by C (R14).
+
+    R14 lets an SEC model keep a cell of S's that takes a float, for a reader and for T1,
+    where no projection cell calls it: compiled, it keeps a Python dict for a cache, so the
+    registry names it under ``"engine"``, and :func:`sec_support.reporting_cells` admits it
+    to C3 and C5 as a reporting cell.  So the key is a stage-``"EC"`` one, as
+    ``"reporting"`` is, a non-empty tuple of ``Projection`` cell names, none of them in
+    ``"reporting"``, whose check that each returns a column would not hold; each takes a
+    parameter that no ``spec_sec.py`` size names, since a cell keyed by sized ints compiles
+    to C and needs no admission; and no ``Projection`` formula calls one but another
+    engine cell, as ``mgsv_rate_is_compliant`` calls ``mgsv_rate_statutory``, so that every
+    cell a projection runs is C.  Before stage ``"EC"`` nothing compiles, so a model there
+    declares none.
+    """
+    entry = meta(sec_name)
+    if "engine" not in entry:
+        return
+    assert entry.get("stage") == "EC", (
+        f"{sec_name} declares engine cells at stage {entry.get('stage')!r}; they widen the "
+        f"compiled model's allowlist, and the key belongs to stage 'EC'")
+    declared = entry["engine"]
+    assert isinstance(declared, tuple) and declared and all(
+        isinstance(c, str) for c in declared), (
+        f"{sec_name}: engine is {declared!r}, not a non-empty tuple of cell names")
+    spec = ast.literal_eval(
+        (model_path(sec_name).parent / "spec_sec.py").read_text(encoding="utf-8"))
+    sized = set()
+    for key in spec["spaces"]["Projection"]["cells_param_size"]:
+        sized.update(key if isinstance(key, tuple) else (key,))
+    model = mx.read_model(model_path(sec_name), name=f"{sec_name}_engine_{next(_names)}")
+    try:
+        proj = model.Projection
+        found = []
+        for cell in declared:
+            if cell not in proj.cells:
+                found.append(f"{cell} is not a Projection cell")
+            elif cell in entry.get("reporting", ()):
+                found.append(f"{cell} is a reporting cell too")
+            elif not set(proj.cells[cell].parameters) - sized:
+                found.append(f"{cell} takes only parameters spec_sec.py sizes, "
+                             f"{proj.cells[cell].parameters}, so it compiles to C")
+        for name, cells in proj.cells.items():
+            if name in declared:
+                continue
+            tree = ast.parse(textwrap.dedent(cells.formula.source))
+            for node in ast.walk(tree):
+                if (isinstance(node, ast.Call) and isinstance(node.func, ast.Name)
+                        and node.func.id in declared):
+                    found.append(f"{name} calls the engine cell {node.func.id}")
+    finally:
+        model.close()
+    assert not found, f"{sec_name}: engine: " + "; ".join(found)
 
 
 @pytest.mark.cython

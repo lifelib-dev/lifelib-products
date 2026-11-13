@@ -17,10 +17,10 @@ That last entry is a property of the library, not an omission: every ``technical
 specifies *gross liability cash flows* and leaves discounting and reserves to a separate
 layer that consumes them.
 
-**The SEC keys.**  USLIB-SEC-PLAN.md puts a ``_SEC`` model beside each ``_S`` one, and seven
-metadata keys describe it: three from the plan's D10, two from its D5, one from its R17
-and one from its R16.  ``"twin"`` names the S model an SEC model is derived from; its
-presence is what makes
+**The SEC keys.**  USLIB-SEC-PLAN.md puts a ``_SEC`` model beside each ``_S`` one, and eight
+metadata keys describe it: three from the plan's D10, two from its D5, one from its R17,
+one from its R16 and one from its R14.  ``"twin"`` names the S model an SEC model is
+derived from; its presence is what makes
 an entry SEC (:func:`is_sec`).  ``"stage"`` is ``"E"`` while an SEC model runs in force at
 ``t = 0`` but does not yet compile, and ``"EC"`` once it does; the name does not change
 with it.  ``"param"`` names the ``Projection`` parameter: ``"point_id"``, the default, or
@@ -38,9 +38,14 @@ cell calls and which stay Python when the model compiles, beside ``model_point``
 a ``Projection`` cell to the Python builtins its formula may still call, R16's ``round`` of
 a projected amount, which the typing guard's check of the generated C and the static check
 of the formulas then admit in that cell alone, and nowhere else; ``WholeLife_US_SEC``'s
-dividend is the first.  It names builtins only, by their bare names.  Read them through
-:func:`meta`, which hands out a copy: ``MONTHLY`` is one dict, shared by every entry that
-registers it.
+dividend is the first.  It names builtins only, by their bare names.  ``"engine"``, at
+stage ``"EC"``, names S's cells of float parameters that an SEC model keeps for a reader and
+for the twin identity, which no compiled cell calls and which compile with C signatures
+and dict caches, their bodies Python, admitted to the typing guard and the static check
+as the reporting cells are (R14); one may call another, and none returns a column, as a
+label accessor does.  ``MYGA_US_SEC``'s statutory nonforfeiture rate is the first.  Read
+them through :func:`meta`, which hands out a copy: ``MONTHLY`` is one dict, shared by every
+entry that registers it.
 
 **Why :func:`point_keys` exists.**  An ``idx``-parameterized ``Projection`` is indexed by
 position, not by table label.  The tables number their points from 1, so a test that
@@ -94,13 +99,14 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 #                     {**MONTHLY, "twin": "Term_US_S", "stage": "E"}),
 #
 # with "param": "idx" and the "reporting" label accessors added at stage "EC", and there
-# "python_calls" where a cell keeps a Python builtin, "closing_pols_if": True on
+# "python_calls" where a cell keeps a Python builtin, "engine" where it keeps S's cells
+# of float parameters, "closing_pols_if": True on
 # SPIA_US_SEC alone, and "survival_pols_if": True on DIA_US_SEC alone.  Phase 1 adds them
 # one product at a time,
 # each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
-# WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth and ULSG_US_SEC
-# the fifth.
+# WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth, ULSG_US_SEC the
+# fifth and MYGA_US_SEC the sixth.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -137,7 +143,12 @@ MODELS = {
     # Annuity — deferred
     "MYGA_US_S": ("products/fixed_deferred_annuity/MYGA_US_S", MONTHLY),
     "MYGA_US_SEC": ("products/fixed_deferred_annuity/MYGA_US_SEC",
-                    {**MONTHLY, "twin": "MYGA_US_S", "stage": "E"}),
+                    {**MONTHLY, "twin": "MYGA_US_S", "stage": "EC", "param": "idx",
+                     "reporting": ("free_wd_rule", "mgsv_wd_convention", "mva_cap_rule",
+                                   "mva_family", "policy_id", "renewal_architecture",
+                                   "scenario_id", "sex", "tax_status", "wd_schedule_id"),
+                     "engine": ("mgsv_rate_is_compliant", "mgsv_rate_statutory",
+                                "mva_ref_term_years")}),
     "FIA_US_S": ("products/fixed_indexed_annuity/FIA_US_S", MONTHLY),
     "FIA_US_SEC": ("products/fixed_indexed_annuity/FIA_US_SEC",
                    {**MONTHLY, "twin": "FIA_US_S", "stage": "E"}),

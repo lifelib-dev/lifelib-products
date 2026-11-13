@@ -16,7 +16,8 @@ month of its contract year, one issued at it, or one to be issued in the ten yea
 it, as in lifelib's ``basiclife/BasicTerm_SE``, which extends ``basiclife/BasicTerm_S``
 the same way. Its formulas are the executable counterpart of
 ``products/fixed_deferred_annuity/technical-notes.md``, and
-``products/fixed_deferred_annuity/model-sec.md`` explains what running in force changes.
+``products/fixed_deferred_annuity/model-sec.md`` explains what running in force changes
+and how the model compiles.
 
 This is the **deferred annuity base chassis** of the library. The fixed-indexed annuity,
 variable annuity and registered index-linked annuity notes reference the surrender
@@ -27,12 +28,16 @@ benefit composition order and the Model #805 floor construction specified here.
 :mod:`~.MYGA_US_SEC.Data`
     Reads the six assumption CSVs it shares with :mod:`~.MYGA_US_S` and its own model
     point table, and holds their filename References. It takes no parameters, so each
-    file is read **once per model**.
+    file is read **once per model**, and it holds the model point table and the tables as
+    numbers, one element per model point, per scenario, per programme, per schedule or
+    per age.
 
 :mod:`~.MYGA_US_SEC.Projection`
-    The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.MYGA_US_SEC.Data` Space.
+    The by-contract projection, parameterized by ``idx``, the position of a model point
+    in the ``Data`` vectors, as ``basiclife.BasicTerm_SC`` is: ``Projection[0]`` is an
+    ItemSpace projecting the table's first row, model point 1, and its ``point_id()`` is
+    that label. It reaches the inputs through its ``data`` Reference, which resolves to
+    the single :mod:`~.MYGA_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -42,6 +47,21 @@ however many contracts are projected.
 Input data is **external**: CSVs in the model folder's parent directory, read at run
 time rather than stored inside the model. The model folder itself holds no data, so the
 model and its inputs must travel together.
+
+**Compiled.** The model compiles under modelx-cython into C-typed code, as
+``basiclife/BasicTerm_SC`` does, from the two inputs beside it: ``sample_sec.py``, the run
+that types each cell, and ``spec_sec.py``, the length of each cell's cache.
+``Projection``'s cells read every model point attribute a projection cell uses as a C
+number from a ``Data`` vector at ``idx``, and every table, the rate scenario and the
+withdrawal programmes among them, as an array indexed by integers; a timing, a kind, a
+scenario column and a surrender schedule are int codes; and every cell but the reports,
+``model_point``, the ten label accessors and the three cells kept as ``MYGA_US_S`` wrote
+them, which no projection cell calls, returns a C ``bint``, ``long long`` or ``double``,
+cached as a single value or in a C array sized from the contract. modelx reads and runs
+the same formulas, and computes the same numbers.
+``products/fixed_deferred_annuity/model-sec.md`` says how to compile and run it, and what
+the compiled model does not do as modelx does: it clears no cache when a Reference is set,
+so every Reference is set on a model just imported.
 
 **Projection basis.** Monthly steps on two clocks. ``t`` counts months from the valuation
 date, 0-based, as ``basiclife/BasicTerm_SE`` counts them: ``t = 0`` is the valuation
@@ -66,7 +86,7 @@ The month's processing order follows the technical notes exactly. At the beginni
 the month (BOM): roll the free-withdrawal counters; apply the guarantee-period boundary
 (the 30-day window, the rate redeclaration and, under ``rollover``, a fresh surrender
 charge and MVA schedule); take the elective withdrawal, giving ``av_pp_at(t,
-"BEF_INV")``; take annuitization elections — valued on that same pre-crediting account
+BEF_INV)``; take annuitization elections — valued on that same pre-crediting account
 value, because the notes place the election at BOM while naming the post-crediting
 ``SV(t)`` for the transfer, and the two cannot both hold on a monthly grid **[std]**;
 update the IRC 72 tax basis. At the end of the month (EOM): credit interest, giving
@@ -90,13 +110,13 @@ the month the contract is valued at. ``result_cf()`` has exactly ``proj_len()`` 
 ``t = 0 .. proj_len() - 1``, and row ``t`` is the same month on every point.
 
 ``pols_if(t)`` is the count in force at the **start** of month ``t``, after the month's
-new business — ``pols_if_at(t, "BEF_DECR")``, the library-wide convention, as in
+new business — ``pols_if_at(t, BEF_DECR)``, the library-wide convention, as in
 :mod:`.Term_US_S` — and it is the weight applied to that same month's cash flows, so the
 ``pols_if`` column of ``result_cf()`` reconciles with the row it sits on. A point in force
 at the valuation date opens with its ``policy_count``, and one issued at or after it takes
 its ``policy_count`` as ``pols_new_biz`` in its issue month; ``result_pols()`` sets the
 counts out. The technical notes' end-of-month ``l(t)`` is unchanged and is read as
-``pols_if_at(t, "AFT_DECR")``. Likewise ``lapse_rate(t)`` is the **annual** total
+``pols_if_at(t, AFT_DECR)``. Likewise ``lapse_rate(t)`` is the **annual** total
 surrender rate and ``lapse_rate_mth(t)`` the monthly one, pairing as ``mort_rate`` /
 ``mort_rate_mth`` do.
 
@@ -174,10 +194,13 @@ the table projects.
 
 **Verification.** On the seven twins issued at the valuation date every cell this model
 shares with :mod:`~.MYGA_US_S` agrees with it at every argument the S model evaluates in
-its sweep, ``pols_if_init``, ``model_point``, ``av_pp_init``, ``mgsv_pp_init`` and
-``result_pols`` excepted, so every golden ``tests/test_fixed_deferred_annuity_us.py``
-asserts on a cell that sweep reaches — the worked example's table, both surrender traces
-line by line and the roll-forwards — holds here too, with no number restated;
+its sweep, ``pols_if_init``, ``model_point``, ``av_pp_init``, ``mgsv_pp_init``,
+``result_pols``, and the three S cells it writes otherwise, ``mva_pp_on``,
+``mva_factor_geometric`` and ``surr_charge_id``, excepted, S's ``claims(t, None)`` and
+``claims_over_av(t, None)`` compared as ``(t, ALL)``, so every golden
+``tests/test_fixed_deferred_annuity_us.py`` asserts on a cell that sweep reaches — the
+worked example's table, both surrender traces line by line and the roll-forwards — holds
+here too, with no number restated;
 ``tests/test_model_conventions.py`` asserts it.
 ``tests/test_fixed_deferred_annuity_us_sec.py`` splices: an S point restated in force at
 month ``d``, opened with S's own state there, continues the S projection from ``d`` on,
@@ -189,7 +212,7 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/fixed_deferred_annuity/MYGA_US_SEC")
-    >>> model.Projection[8].result_cf()
+    >>> model.Projection[7].result_cf()     # model point 8, the table's eighth row
 """
 
 from modelx.serialize.jsonvalues import *

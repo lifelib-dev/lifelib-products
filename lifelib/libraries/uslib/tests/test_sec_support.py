@@ -1450,6 +1450,62 @@ def test_the_static_check_finds_what_a_compiled_cell_cannot_run():
     assert elsewhere == found, elsewhere
 
 
+ENGINE_PROJECTION = {
+    "model_point": "lambda: data.table()",
+    "result_cf": "lambda: 0",
+    "check_roll": "lambda: check_roll_resid(0) == 0.0",
+    "check_roll_resid": "lambda t: 0.0",
+    "statutory": "lambda rate: max(0.0015, math.floor(rate / 0.0005 + 0.5) * 0.0005)",
+    "compliant": "lambda rate: 0.028 >= statutory(rate)",
+    "monthly": "lambda t: 0.01 * t",
+    "calls_engine": "lambda t: statutory(0.02) * t",
+}
+
+
+def test_the_registry_admits_engine_cells_by_name(monkeypatch):
+    """``"engine"``: :func:`reporting_cells` admits the cells it names, so that C3 and C5
+    pass a float-parameter cell of S's, ``math`` and all, and fault a compiled cell that
+    calls one; one engine cell may call another.  Without the key, the same cells are
+    faults.  And ``MYGA_US_SEC``, the first model to declare it, has its three admitted."""
+    import us_registry
+    from sec_support import reporting_cells, static_faults
+    model = mx.new_model(_name("engine"))
+    try:
+        data = model.new_space("Data")
+        data.new_cells("table", formula="lambda: 0")
+        proj = model.new_space("Projection")
+        proj.data, proj.math = data, math
+        for name, formula in ENGINE_PROJECTION.items():
+            proj.new_cells(name, formula=formula)
+        base = {"twin": "Toy_US_S", "stage": "EC", "param": "idx"}
+        monkeypatch.setitem(us_registry.MODELS, "Toy_US_SEC",
+                            ("products/toy/Toy_US_SEC", base))
+        plain = reporting_cells("Toy_US_SEC", proj)
+        monkeypatch.setitem(us_registry.MODELS, "Toy_US_SEC",
+                            ("products/toy/Toy_US_SEC",
+                             {**base, "engine": ("compliant", "statutory")}))
+        admitted = reporting_cells("Toy_US_SEC", proj)
+        before = static_faults(model, reporting=plain)
+        after = static_faults(model, reporting=admitted)
+    finally:
+        model.close()
+    assert plain == {"model_point", "result_cf", "check_roll"}, plain
+    assert admitted == plain | {"compliant", "statutory"}, admitted
+    assert any(f.startswith("Projection.statutory, line 1: refers to the module math")
+               for f in before), before
+    assert not [f for f in after if f.startswith(("Projection.statutory",
+                                                  "Projection.compliant"))], after
+    assert after == ["Projection.calls_engine, line 1: refers to the reporting cell "
+                     "statutory"], after
+    sec = mx.read_model(model_path("MYGA_US_SEC"), name=_name("myga_engine"))
+    try:
+        cells = reporting_cells("MYGA_US_SEC", sec.Projection)
+    finally:
+        sec.close()
+    assert {"mgsv_rate_statutory", "mgsv_rate_is_compliant",
+            "mva_ref_term_years"} <= cells, cells
+
+
 def test_the_compiled_comparison_keeps_kinds_and_floors_at_the_magnitude():
     """C4's comparison: a bool, an int and a real keep their kind, a real compares to
     1e-12 floored at the cell's magnitude, frames and Series by column and value, arrays
