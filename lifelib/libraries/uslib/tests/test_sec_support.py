@@ -1624,3 +1624,118 @@ def test_the_full_sweep_reaches_every_cell_and_every_month_and_keeps_the_raises(
         (t, 1) for t in range(4)]
     assert sorted(args for name, args in cached if name == "strict") == [(0,), (1,), (3,)]
     assert cached[("rate", (3,))] == 0.03 and cached[("proj_len", ())] == 3
+
+
+def test_spia_maps_s_claims_keys_onto_its_one_kind_and_passes_its_own():
+    """``_spia_twin_args`` maps ``SPIA_US_S``'s two ``claims`` keys onto SEC's
+    ``claims(t)``.
+
+    S's ``(t, None)``, the total, and ``(t, "REFUND")``, the kind the total asks for, are
+    both SEC's ``(t,)``, the one kind's formula; SEC's own ``(t,)``, as a comparison of SEC
+    with SEC passes it, is unchanged, and so is every other cell's key.
+    """
+    from sec_support import _spia_twin_args
+    assert _spia_twin_args("claims", (5, None)) == (5,)
+    assert _spia_twin_args("claims", (5, "REFUND")) == (5,)
+    assert _spia_twin_args("claims", (5,)) == (5,)
+    assert _spia_twin_args("claim_pp", (5, "REFUND")) == (5, "REFUND")
+    assert _spia_twin_args("pols_if_at", (5, "BEF_DECR")) == (5, "BEF_DECR")
+
+
+# A table of two points for the label check, a blank among its labels.
+LABEL_TABLE = pd.DataFrame(
+    {"form": ["life_only", "cash_refund"], "timing": ["arrears", "advance"],
+     "primary_sex": ["M", "F"], "joint_sex": ["F", float("nan")],
+     "income_form": ["LO_ROP", "JS"], "sex": ["M", "F"]},
+    index=pd.Index([7, 9], name="point_id"))
+
+
+def _label_model(labels):
+    """A model indexed by ``idx`` over :data:`LABEL_TABLE`, its label cells ``labels``."""
+    model = mx.new_model(_name("labels"))
+    data = model.new_space("Data")
+    data.table = LABEL_TABLE
+    data.new_cells("model_point_table", formula="lambda: table")
+    proj = model.new_space("Projection", formula=lambda idx: None)
+    proj.data = data
+    proj.new_cells("model_point", formula="lambda: data.model_point_table().iloc[idx]")
+    for name, formula in labels.items():
+        proj.new_cells(name, formula=formula)
+    return model
+
+
+def test_the_label_check_holds_each_shape_of_reporting_columns():
+    """``label_faults`` checks a label against the column ``"reporting_columns"`` names.
+
+    In each of the three shapes: a column, for ``payment_timing``, which returns
+    ``timing``; a dict of argument to column, for ``sex(life)``, whose second life is
+    blank on one point, NaN against NaN; and a pair of a column and a dict of value to
+    label, for ``payout_form``, which reads ``income_form`` with ``LO_ROP`` as ``LO``.  Each
+    passes as written and fails, a line a point, where the label returns another column;
+    a label taking an argument called without a dict entry is a line, not a
+    ``TypeError``; text where the column is blank is a fault; and an entry the label
+    does not need, its own column being what it returns, is stale.
+    """
+    from sec_support import label_faults
+    good = {
+        "form": 'lambda: model_point()["form"]',
+        "payment_timing": 'lambda: model_point()["timing"]',
+        "sex": 'lambda life: model_point()["primary_sex" if life == 1 else "joint_sex"]',
+        "payout_form": ('lambda: {"LO_ROP": "LO"}.get(model_point()["income_form"], '
+                        'model_point()["income_form"])')}
+    entry = {"stage": "EC", "reporting": tuple(good),
+             "reporting_columns": {"payment_timing": "timing",
+                                   "sex": {1: "primary_sex", 2: "joint_sex"},
+                                   "payout_form": ("income_form", {"LO_ROP": "LO"})}}
+    model = _label_model(good)
+    try:
+        assert label_faults(model, "SPIA_US_SEC", entry) == []
+    finally:
+        model.close()
+    wrong = {**good,
+             "payment_timing": 'lambda: model_point()["form"]',
+             "sex": 'lambda life: model_point()["primary_sex"] if life == 1 else "F"',
+             "payout_form": 'lambda: model_point()["income_form"]'}
+    model = _label_model(wrong)
+    try:
+        found = label_faults(model, "SPIA_US_SEC", entry)
+        bare = label_faults(model, "SPIA_US_SEC",
+                            {**entry, "reporting_columns": {"payment_timing": "timing"}})
+        stale = label_faults(model, "SPIA_US_SEC",
+                             {**entry, "reporting": ("form",),
+                              "reporting_columns": {"form": "form"}})
+    finally:
+        model.close()
+    assert sorted(f.split(" returns ")[0] + " " + f.split(" at point ")[1].split(",")[0]
+                  for f in found if " returns " in f) == [
+        "Projection.payment_timing() 7", "Projection.payment_timing() 9",
+        "Projection.payout_form() 7", "Projection.sex(2) 9"], found
+    assert len(found) == 4, found
+    assert any(f.startswith("Projection.sex() raised TypeError") for f in bare), bare
+    assert stale == ["reporting_columns['form'] is stale: form() returns its own 'form' "
+                     "column on every point, its default without the entry"], stale
+
+
+@pytest.mark.parametrize("columns, fault", [
+    ({"payment_timing": "timing"}, None),
+    ({"sex": {1: "primary_sex", 2: "joint_sex"}}, None),
+    ({"payout_form": ("income_form", {"LO_ROP": "LO"})}, None),
+    ({"timing": "timing"}, "which reporting does not"),
+    ({"sex": {}}, "not a non-empty dict of argument to column"),
+    ({"payout_form": ("income_form", {})}, "neither a column"),
+    ({"payout_form": ["income_form"]}, "neither a column"),
+    ({}, "not a non-empty dict of labels"),
+])
+def test_reporting_columns_takes_three_shapes_of_a_declared_label(columns, fault):
+    """``reporting_columns_faults`` admits a column, a dict of argument to column and a
+    pair of a column and a dict, each for a label ``"reporting"`` names, at stage EC."""
+    from sec_support import reporting_columns_faults
+    entry = {"stage": "EC", "reporting": ("payment_timing", "sex", "payout_form"),
+             "reporting_columns": columns}
+    found = reporting_columns_faults(entry)
+    if fault is None:
+        assert found == []
+    else:
+        assert len(found) == 1 and fault in found[0], found
+    assert "belongs to stage 'EC'" in reporting_columns_faults(
+        {"stage": "E", "reporting_columns": {"payment_timing": "timing"}})[0]

@@ -8,6 +8,8 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: premium_pp
 
 .. autofunction:: premium_tax_rate
@@ -119,6 +121,10 @@ Cells Descriptions
 .. autofunction:: mort_rate_base_at
 
 .. autofunction:: improvement_rate_at
+
+.. autofunction:: mort_schedule
+
+.. autofunction:: improvement_schedule
 
 .. autofunction:: mort_rate_base
 

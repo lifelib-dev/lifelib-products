@@ -47,6 +47,15 @@ label accessor does.  ``MYGA_US_SEC``'s statutory nonforfeiture rate is the firs
 them through :func:`meta`, which hands out a copy: ``MONTHLY`` is one dict, shared by every
 entry that registers it.
 
+``"reporting_columns"``, at stage ``"EC"`` beside ``"reporting"``, says what a label
+accessor returns where that is not its point's column of the label's own name, in one of
+three shapes: a column, for a label that takes no argument, as ``SPIA_US_SEC``'s
+``payment_timing`` returns ``timing``; a dict of argument to column, for a label that
+takes one argument, as its ``sex(life)`` returns ``primary_sex`` or ``joint_sex``; or a
+pair of a column and a dict of value to label, for a label that returns the column's
+value through the dict, a value the dict lacks as it is, as ``DIA_US_SEC``'s
+``payout_form`` will.  A label it does not name returns its own column.
+
 **Why :func:`point_keys` exists.**  An ``idx``-parameterized ``Projection`` is indexed by
 position, not by table label.  The tables number their points from 1, so a test that
 indexes such a model by label is off by one — ``Projection[1]`` is the second point, and the
@@ -162,8 +171,12 @@ MODELS = {
     # Annuity — payout
     "SPIA_US_S": ("products/immediate_annuity/SPIA_US_S", MONTHLY),
     "SPIA_US_SEC": ("products/immediate_annuity/SPIA_US_SEC",
-                    {**MONTHLY, "twin": "SPIA_US_S", "stage": "E",
-                     "closing_pols_if": True}),
+                    {**MONTHLY, "twin": "SPIA_US_S", "stage": "EC", "param": "idx",
+                     "closing_pols_if": True,
+                     "reporting": ("form", "mort_basis", "payment_timing",
+                                   "reduction_trigger", "sex"),
+                     "reporting_columns": {"payment_timing": "timing",
+                                           "sex": {1: "primary_sex", 2: "joint_sex"}}}),
     "DIA_US_S": ("products/deferred_income_annuity/DIA_US_S", MONTHLY),
     "DIA_US_SEC": ("products/deferred_income_annuity/DIA_US_SEC",
                    {**MONTHLY, "twin": "DIA_US_S", "stage": "E",

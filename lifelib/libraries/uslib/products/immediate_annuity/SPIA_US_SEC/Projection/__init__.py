@@ -5,23 +5,47 @@
 
 """The by-contract projection of the :mod:`~.SPIA_US_SEC` model.
 
-The Space is parameterized by ``point_id``, so ``Projection[16]`` is an ItemSpace
-projecting model point 16, the worked-example anchor cell in payment 14 months at the
-valuation date, its joint annuitant already dead::
+The Space is parameterized by ``idx``, the position of a model point in the table and in
+every :mod:`~.SPIA_US_SEC.Data` vector, as ``basiclife.BasicTerm_SC`` is: ``Projection[15]``
+is an ItemSpace projecting the table's sixteenth row, model point 16, the worked-example
+anchor cell in payment 14 months at the valuation date, its joint annuitant already dead,
+and :func:`point_id` is its label::
 
-    >>> Projection[16].result_cf()         # one row per month from the valuation date
-    >>> Projection[16].result_pols()       # the counts and survival behind it
-    >>> Projection.point_id = 8            # or switch the default
+    >>> Projection[15].result_cf()         # one row per month from the valuation date
+    >>> Projection[15].result_pols()       # the counts and survival behind it
+    >>> Projection[15].point_id()          # 16, the row's point_id
+    >>> Projection.idx = 7                 # or switch the default, before it computes
 
-Switch the default, or set any Reference, before the model computes anything.
+Switch the default, or set any Reference, before the model computes anything. Compiled, no
+cache is ever cleared: set ``idx``, like every Reference, on a model just imported, before
+anything is computed, or project through ``Projection[i]``. modelx recomputes what a
+Reference reaches when it is set; a compiled ItemSpace takes the References when it is
+made and keeps every value it has computed until it is deleted, and the base
+``Projection`` and ``Data`` keep theirs for good. And it holds each Reference as a C
+variable of its shipped value's type: a float set on an int Reference truncates toward
+zero, an int set on a float Reference reads as a float, and text cannot be set on
+``commute_disc_convention``, an int code, at all, where modelx takes it and
+:func:`is_disc_compound` refuses it (``products/immediate_annuity/model-sec.md``).
+
+Any ``idx`` makes an ItemSpace, and none is refused here. ``Projection[-1]`` reads every
+vector at its last element, as numpy and a compiled memoryview both do, so it is the
+table's last point, under that point's own :func:`point_id`; an ``idx`` past the last
+row raises ``IndexError`` at its first read of a vector, which modelx reports inside its
+``FormulaError``.
 
 This is :mod:`~.SPIA_US_S` taught to run in force at a valuation date, as lifelib's
-``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``. A formula of
+``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``, and then made to compile, as
+``basiclife.BasicTerm_SC`` is made from ``basiclife.BasicTerm_S``. A formula of
 :mod:`~.SPIA_US_S` is rewritten where it depends on where the projection starts, where it
 must answer for a month outside the frame, where it passed a policy month as ``t``, or
 where it branched on text; every other is :mod:`~.SPIA_US_S`'s own.
 ``products/immediate_annuity/model-sec.md`` lists the rewritten cells with the reason for
-each.
+each. Making it compile changed how each cell reads its inputs and spells its codes, and
+no number: every model point attribute a projection cell uses is read as a number from a
+``Data`` vector, each text column it branches on as ``Data``'s decoded flags, the two age
+tables as arrays by sex and age, every timing and kind and the commutation discount
+convention as an int code (*Codes*, below), and :mod:`~.SPIA_US_S`'s
+``claims(t, kind=None)``, whose one kind is its total, is :func:`claims` of ``t`` alone.
 
 .. rubric:: Input data
 
@@ -117,10 +141,10 @@ The count on the books is the number of contracts the point stands for,
 life's survival, :func:`lives_if`, never the count: the two lives are independent, so their
 two probabilities are the whole survival state, and every cash flow is the count times a
 per-contract amount weighted by survival, as :mod:`~.SPIA_US_S` weights every flow by its
-constant ``pols_if_init``. So ``pols_if_at(t, "BEF_NB")`` is :func:`pols_if_init`, the count
+constant ``pols_if_init``. So ``pols_if_at(t, BEF_NB)`` is :func:`pols_if_init`, the count
 already in payment, at :func:`t_entry`, the first month on the books, the whole count after
-it, and 0 outside the frame; and ``pols_if_at(t, "BEF_DECR")`` adds :func:`pols_new_biz`,
-the annuities commencing in month ``t``. The ``"BEF_DECR"`` count weights every cash flow
+it, and 0 outside the frame; and ``pols_if_at(t, BEF_DECR)`` adds :func:`pols_new_biz`,
+the annuities commencing in month ``t``. The ``BEF_DECR`` count weights every cash flow
 of row ``t``. A contract in payment at the valuation date opens with its ``policy_count``;
 one commencing at or after it opens with none, and takes its ``policy_count`` as new
 business in the month of its annuity date, ``duration_mth(t) = 0``. New business brings no
@@ -128,7 +152,7 @@ premium and no acquisition cost: the single premium is a pricing input, as in
 :mod:`~.SPIA_US_S`.
 
 :func:`pols_if` keeps :mod:`~.SPIA_US_S`'s definition, the notes' obligation measure
-``IF(t)``, on that count: ``pols_if_at(t, "BEF_DECR") * max(C(t), l_alive(t+1))``, the
+``IF(t)``, on that count: ``pols_if_at(t, BEF_DECR) * max(C(t), l_alive(t+1))``, the
 contracts with a payment obligation still open at the end of month ``t``, which carries
 the maintenance expense. It is a closing measure, not the count before decrements: on the
 anchor cell's twin, point 8, ``pols_if(0)`` is 0.99999986 against a count of 1.0, as in
@@ -174,20 +198,23 @@ of an old cash refund does not recurse as deep as the contract is old.
 Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue — ``pols_*`` for contract counts, plural nouns
 for cash flows, ``*_rate`` for rates, ``*_pp`` for per-policy amounts,
-``claims(t, kind)`` with an uppercase ``kind`` string, ``result_cf()`` for the cash flow
+``claim_pp(t, kind)`` with an uppercase ``kind`` code, ``result_cf()`` for the cash flow
 table. What running in force adds is named as ``basiclife.BasicTerm_SE`` names it:
 ``duration_mth`` read from the model point, ``policy_count``, ``pols_new_biz``,
-``pols_if_at`` with its ``"BEF_NB"`` and ``"BEF_DECR"`` timings, ``is_active`` and
-``result_pols``. ``duration_mth_init``, the policy months completed at the valuation date,
-takes ``UL_US_S``'s name, and each opening-state column is ``<cell>_init``, the cell it
-opens with ``_init`` added, read per life by ``lives_if_init(life)``. ``t_entry`` and
+``pols_if_at`` with its ``BEF_NB`` and ``BEF_DECR`` timings, ``is_active`` and
+``result_pols``; and what compiling adds as ``basiclife.BasicTerm_SC`` names it,
+``point_id``, the label of the point at ``idx``. ``duration_mth_init``, the policy months
+completed at the valuation date, takes ``UL_US_S``'s name, and each opening-state column
+is ``<cell>_init``, the cell it opens with ``_init`` added, read per life by
+``lives_if_init(life)``. ``t_entry`` and
 ``stop_mth`` are the SEC family's own. A cell keyed by policy month carries ``_pm``,
 beside the ``_py`` that ``Term_US_SEC`` gives a policy-year key, and a table reader keyed
-by attained age carries ``_at``. The ``is_*`` decodes turn the model point's text columns
-into the flags the projection branches on, each reading and validating its column as
-:mod:`~.SPIA_US_S`'s label accessor does, so that no other projection cell compares text
-and none calls a label accessor (``form``, ``sex``, ...), which is left to reporting. The
-technical notes use compact actuarial symbols instead. The mapping is:
+by attained age carries ``_at``, beside the ``_schedule`` that gives it the table's row
+for a life's sex. The ``is_*`` decodes turn the model point's text columns into the flags
+the projection branches on, each reading ``Data``'s decoded flag and refusing a value
+:mod:`~.SPIA_US_S`'s label accessor refuses, with its message, so that no projection cell
+compares text and none calls a label accessor (``form``, ``sex``, ...), which is left to
+reporting. The technical notes use compact actuarial symbols instead. The mapping is:
 
 ========================  =================================  ===============================
 Notes symbol              Cells                              Meaning
@@ -245,6 +272,10 @@ joint                     is_joint()                         Contract covers two
 x1, x2                    age_at_entry(life)                 Issue ages (ANB), life = 1 or 2
 (none)                    age(t, life)                       Attained age (ANB)
 (none)                    sex(life)                          Sex of each covered life
+(none)                    mort_schedule(life)                Each life's row of the
+                                                             mortality table
+(none)                    improvement_schedule(life)         Each life's row of the
+                                                             improvement scale
 l_i(t)                    lives_if(t, life)                  Survival probability to time t
 l_i(t_entry)              lives_if_init(life)                Survival at the valuation
                                                              date, or at the annuity date
@@ -261,6 +292,7 @@ G(k)                      cum_annuity_pp(k)                  Instalments schedul
 IF(t)                     pols_if(t)                         Obligation open at end of
                                                              month t
 (none)                    policy_count()                     Contracts the point stands for
+(none)                    point_id()                         The point's label in the table
 (none)                    pols_if_init()                     Contracts in payment at the
                                                              valuation date
 (none)                    pols_if_at(t, timing)              Contracts on the books at time
@@ -290,7 +322,7 @@ omega                     omega_age                          Limiting age, 120
                                                              to the stop rule
 (inst after commutation)  annuity_pp_paid(t)                 inst(t)*(1 - theta_cum*C)
 E[ANN(t)]                 annuity_payments(t)                Expected annuity outgo
-E[CR(t)]                  claims(t, "REFUND")                Cash-refund lump sum
+E[CR(t)]                  claims(t)                          Cash-refund lump sum
 (per contract)            claim_pp(t, kind)                  Refund amount per contract
 E[COMM(t)]                commutations(t)                    Commutation paid to the owner
 E[EXP(t)]                 expenses(t)                        Maintenance expense
@@ -454,11 +486,59 @@ the same switch, ``timing``:
 Deaths are decremented at end of month, so a survivor reduction takes effect **from the
 instalment due at the end of the month of death** — which is why the worked example's
 trigger split bites at policy month 13, the month of the death, and not at 14.
+
+.. rubric:: Codes
+
+What :mod:`~.SPIA_US_S` spells as text, a timing, a kind or the commutation discount
+convention, is here an int Reference named as the text it replaces, so that every cell
+takes and returns C numbers. A call site reads as it did, less the quotes:
+``pols_if_at(t, BEF_DECR)``, ``claim_pp(t, REFUND)``.
+
+=============  =====  ===============================================================
+Reference      Value  Meaning
+=============  =====  ===============================================================
+BEF_NB         0      :func:`pols_if_at`: the count carried in from month t - 1
+BEF_DECR       1      :func:`pols_if_at`: that count plus month t's new business
+REFUND         0      :func:`claim_pp`: the cash refund, the one kind
+COMPOUND       0      ``commute_disc_convention``: compound discounting, the default
+SIMPLE         1      ``commute_disc_convention``: simple discounting, per [S7]
+=============  =====  ===============================================================
+
+The timings are numbered by instant, ``BEF_NB`` 0 and ``BEF_DECR`` 1, as in every SEC
+model, and a code a cell takes indexes that cell's cache, a C array three codes wide for
+each of the two cells that take one, since every 2-D cache of the model has the width
+of the lives' (``spec_sec.py``), so codes are numbered densely from 0. ``COMPOUND`` and
+``SIMPLE`` are the values ``commute_disc_convention`` holds, ``COMPOUND`` as shipped,
+where :mod:`~.SPIA_US_S` holds ``"compound"`` or ``"simple"``; :func:`is_disc_compound`
+refuses any other. They are References, not cells, so the symbol map does not list them.
+Every other Reference is named in lower case, ``issue_age_min`` and ``omega_age``
+among them, the contract's bounds that :func:`proj_len` checks and that the compiled
+model's caches are sized from, with ``Data.future_horizon_mth``.
+
+.. rubric:: Reporting cells
+
+:func:`model_point`, the label accessors :func:`form`, :func:`reduction_trigger`,
+:func:`payment_timing`, :func:`mort_basis` and :func:`sex`, the reports :func:`result_cf`
+and :func:`result_pols`, and the checks :func:`check_lives_roll_fwd` and
+:func:`check_payment_factor` are written for a reader and for the comparison with
+:mod:`~.SPIA_US_S`, which has every one of them: a table row, text, DataFrames and two
+verdicts. No other cell calls them: each reads the number ``Data`` decoded from the same
+column instead, the decodes' flags and the schedules the sexes select. So the row, the
+text and the frames stay Python when the model compiles. Each label returns its point's
+column: ``form``, ``reduction_trigger`` and ``mort_basis`` the column of their own name,
+``payment_timing`` the ``timing`` column and ``sex(life)`` the ``primary_sex`` or
+``joint_sex`` column by life, as the registry declares them. The first four validate
+their column, as :mod:`~.SPIA_US_S`'s do, so each returns text or raises; ``sex`` returns
+its column as read, text or not, a blank second life on a single-life contract as NaN,
+and the compiled accessor returns the same. Every other cell returns a C ``bint``,
+``long long`` or ``double``, and so do the two checks, which may stay Python but compile
+to a ``bint``, their verdict, as their per-month residuals, ``*_resid``, compile to a
+``double``.
 """
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda point_id: None
+_formula = lambda idx: None
 
 _bases = []
 
@@ -470,8 +550,22 @@ _spaces = []
 # Cells
 
 def model_point():
-    """The selected model point, its row of ``model_point_table_sec.csv``, as a Series."""
-    return data.model_point_table().loc[point_id]                    # noqa: F821
+    """The selected model point, its row of ``model_point_table_sec.csv``, as a Series.
+
+    Row ``idx`` of the table, for a reader who wants every column at once: a reporting
+    cell (the Space docstring's *Reporting cells*), which only the label accessors read.
+    Every projection cell reads its own ``Data`` vector instead.
+    """
+    return data.model_point_table().iloc[idx]                        # noqa: F821
+
+
+def point_id():
+    """The label of the selected model point, its ``point_id``, from ``Data.point_id``.
+
+    ``Projection`` is indexed by position, ``idx``, as ``basiclife.BasicTerm_SC`` is; the
+    label is what a reader finds in the table, so every refusal names it.
+    """
+    return int(data.point_id()[idx])                                 # noqa: F821
 
 
 def premium_pp():
@@ -481,16 +575,31 @@ def premium_pp():
     no premium income, for a contract commencing after the valuation date as for one
     already in payment.  It enters the projection only through the refund forms, where the
     guarantee is measured against it.
+
+    Read from ``Data.premium``.  A premium that is not a number is refused here, naming
+    the point, as ``SPIA_US_S``'s ``float()`` refuses it; so is a blank or infinite one on
+    a cash or installment refund, whose refund balance ``max(0, P - G)`` and refund period
+    ``G(k) >= P`` would read it as a number (``Data``'s ``premium_ok``).  On the other forms
+    a blank is NaN, as in ``SPIA_US_S``.
     """
-    return float(model_point()["premium"])
+    if data.premium_ok()[idx] == 0:                                  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: premium must be a number, and a finite "
+                         f"one on a cash or installment refund, which reads it; it is "
+                         f"not")
+    return float(data.premium()[idx])                                # noqa: F821
 
 
 def premium_tax_rate():
     """tau: the state premium tax rate deducted before income is determined **[std]**.
 
-    Zero in the base run; no source quantifies a rate [S6][S7][S11].
+    Zero in the base run; no source quantifies a rate [S6][S7][S11].  Read from
+    ``Data.premium_tax_rate``; text is refused here, naming the point, and a blank is NaN,
+    as in ``SPIA_US_S``.
     """
-    return float(model_point()["premium_tax_rate"])
+    if data.premium_tax_rate_ok()[idx] == 0:                         # noqa: F821
+        raise ValueError(f"point_id {point_id()}: premium_tax_rate must be a number or "
+                         f"blank; it is not")
+    return float(data.premium_tax_rate()[idx])                       # noqa: F821
 
 
 def premium_net_pp():
@@ -511,9 +620,10 @@ def policy_count():
     count enters the projection once: as :func:`pols_if_init` for the first, as
     :func:`pols_new_biz` in the month the annuity commences for the second.  It is
     ``SPIA_US_S``'s ``pols_if_init`` column, renamed, and like it a constant on the books:
-    mortality decrements each life's survival, :func:`lives_if`, never the count.
+    mortality decrements each life's survival, :func:`lives_if`, never the count.  Read
+    from ``Data.policy_count``.
     """
-    return float(model_point()["policy_count"])
+    return float(data.policy_count()[idx])                           # noqa: F821
 
 
 def pols_if_init():
@@ -524,7 +634,7 @@ def pols_if_init():
     contracts enter through :func:`pols_new_biz` in the month the annuity commences
     instead, as in ``basiclife.BasicTerm_SE``.  So on a point commencing at ``t = 0`` this
     is 0, where ``SPIA_US_S``'s is the count itself; on either model the count that weights
-    row 0 is the same, here ``pols_if_at(0, "BEF_DECR")``.
+    row 0 is the same, here ``pols_if_at(0, BEF_DECR)``.
     """
     return policy_count() if duration_mth_init() > 0 else 0.0
 
@@ -532,7 +642,9 @@ def pols_if_init():
 def form():
     """The payout form: one of the five forms of [S1][S2][S4][S5].
 
-    life_only, life_certain, cash_refund, installment_refund, certain_only.
+    life_only, life_certain, cash_refund, installment_refund, certain_only.  A label
+    accessor, which no projection cell calls: it returns the ``form`` column, compared
+    exactly, or raises.
     """
     v = model_point()["form"]
     if v not in ("life_only", "life_certain", "cash_refund",
@@ -546,15 +658,14 @@ def is_period_certain():
 
     One of four decodes of the model point's ``form`` column, as are the three below it,
     so that no projection cell compares text or calls :func:`form`, the label accessor,
-    which is left to reporting.  Each reads the column as :func:`form` does and validates
-    it as :func:`form` does, so an invalid form raises ``ValueError("invalid form")``
-    wherever the projection first meets it.
+    which is left to reporting.  Each reads ``Data``'s flag for its value, and
+    ``Data.has_form``, which says whether the column holds one of the five values
+    :func:`form` accepts, compared as :func:`form` compares them, so an invalid form raises
+    ``ValueError("invalid form")`` wherever the projection first meets it.
     """
-    f = model_point()["form"]
-    if f not in ("life_only", "life_certain", "cash_refund", "installment_refund",
-                 "certain_only"):
+    if data.has_form()[idx] == 0:                                    # noqa: F821
         raise ValueError("invalid form")
-    return bool(f == "life_certain" or f == "certain_only")
+    return bool(data.is_period_certain()[idx])                       # noqa: F821
 
 
 def is_certain_only():
@@ -562,11 +673,9 @@ def is_certain_only():
 
     A decode of the ``form`` column, validated as :func:`form` validates it.
     """
-    f = model_point()["form"]
-    if f not in ("life_only", "life_certain", "cash_refund", "installment_refund",
-                 "certain_only"):
+    if data.has_form()[idx] == 0:                                    # noqa: F821
         raise ValueError("invalid form")
-    return bool(f == "certain_only")
+    return bool(data.is_certain_only()[idx])                         # noqa: F821
 
 
 def is_cash_refund():
@@ -574,11 +683,9 @@ def is_cash_refund():
 
     A decode of the ``form`` column, validated as :func:`form` validates it.
     """
-    f = model_point()["form"]
-    if f not in ("life_only", "life_certain", "cash_refund", "installment_refund",
-                 "certain_only"):
+    if data.has_form()[idx] == 0:                                    # noqa: F821
         raise ValueError("invalid form")
-    return bool(f == "cash_refund")
+    return bool(data.is_cash_refund()[idx])                          # noqa: F821
 
 
 def is_installment_refund():
@@ -586,16 +693,15 @@ def is_installment_refund():
 
     A decode of the ``form`` column, validated as :func:`form` validates it.
     """
-    f = model_point()["form"]
-    if f not in ("life_only", "life_certain", "cash_refund", "installment_refund",
-                 "certain_only"):
+    if data.has_form()[idx] == 0:                                    # noqa: F821
         raise ValueError("invalid form")
-    return bool(f == "installment_refund")
+    return bool(data.is_installment_refund()[idx])                   # noqa: F821
 
 
 def is_joint():
-    """True when the contract covers two annuitants."""
-    return bool(model_point()["joint"])
+    """True when the contract covers two annuitants: ``bool()`` of the ``joint`` column,
+    from ``Data.is_joint``."""
+    return bool(data.is_joint()[idx])                                # noqa: F821
 
 
 def age_at_entry(life):
@@ -605,16 +711,34 @@ def age_at_entry(life):
     2012 IAM/IAR family is tabulated ANB [R2][R9].  The age at the annuity date, which
     ``SPIA_US_S`` collapses onto the issue date, and not at the valuation date:
     ``age(0, life)`` is the attained age then.
+
+    Read from ``Data.primary_age`` and ``Data.joint_age``, ``int()`` of the column, so a
+    fraction truncates as in ``SPIA_US_S``.  An age ``int()`` cannot read, text or a blank,
+    or one of ``2**53`` or more in size, is refused here, naming the point: a single-life
+    contract's blank ``joint_age``, which no projection reads, only by a direct call.
+    :func:`proj_len` refuses an issue age the contract does not cover.
     """
     if life == 1:
-        return int(model_point()["primary_age"])
+        if data.primary_age_ok()[idx] == 0:                          # noqa: F821
+            raise ValueError(f"point_id {point_id()}: primary_age must be a number int() "
+                             f"reads, below 2**53 in size; it is not")
+        return int(data.primary_age()[idx])                          # noqa: F821
     if life == 2:
-        return int(model_point()["joint_age"])
+        if data.joint_age_ok()[idx] == 0:                            # noqa: F821
+            raise ValueError(f"point_id {point_id()}: joint_age must be a number int() "
+                             f"reads, below 2**53 in size; it is not")
+        return int(data.joint_age()[idx])                            # noqa: F821
     raise ValueError("invalid life")
 
 
 def sex(life):
-    """Sex (M / F) of the primary (life = 1) or joint (life = 2) annuitant."""
+    """Sex (M / F) of the primary (life = 1) or joint (life = 2) annuitant.
+
+    A label accessor, which no projection cell calls: it returns the ``primary_sex`` or
+    ``joint_sex`` column as read, a single-life contract's blank second life as NaN.  The
+    two age readers join on the sex through :func:`mort_schedule` and
+    :func:`improvement_schedule` instead.
+    """
     if life == 1:
         return model_point()["primary_sex"]
     if life == 2:
@@ -623,15 +747,26 @@ def sex(life):
 
 
 def survivor_pct():
-    """delta: the survivor percentage, in {0.50, 2/3, 0.75, 1.00} [S1][S2][S5][S6][S7]."""
-    return float(model_point()["survivor_pct"])
+    """delta: the survivor percentage, in {0.50, 2/3, 0.75, 1.00} [S1][S2][S5][S6][S7].
+
+    Read from ``Data.survivor_pct``.  Text is refused here, naming the point, and so is a
+    blank or infinite percentage on a joint contract with a life contingency, the one
+    reader, whose payment factor's ``max(C, L)`` would read it as a number
+    (``Data``'s ``survivor_pct_ok``).
+    """
+    if data.survivor_pct_ok()[idx] == 0:                             # noqa: F821
+        raise ValueError(f"point_id {point_id()}: survivor_pct must be a number, and a "
+                         f"finite one on a joint contract with a life contingency, which "
+                         f"reads it; it is not")
+    return float(data.survivor_pct()[idx])                           # noqa: F821
 
 
 def reduction_trigger():
     """trig: whether the reduction is triggered by *either* death or the *primary*'s.
 
     A switch, not a parameter: the two conventions coincide on the primary's death and
-    differ only on the secondary's [S1][S2][S3][S7].
+    differ only on the secondary's [S1][S2][S3][S7].  A label accessor, which no
+    projection cell calls.
     """
     v = model_point()["reduction_trigger"]
     if v not in ("either", "primary"):
@@ -642,37 +777,55 @@ def reduction_trigger():
 def is_trigger_either():
     """Whether either death triggers the survivor reduction, not the primary's alone.
 
-    A decode of the model point's ``reduction_trigger`` column, read and validated as
-    :func:`reduction_trigger` reads and validates it, so that :func:`payment_factor_life`
-    branches on a flag and no projection cell calls the label accessor, which is left to
-    reporting.
+    A decode of the model point's ``reduction_trigger`` column, ``Data.is_trigger_either``,
+    validated by ``Data.has_reduction_trigger`` as :func:`reduction_trigger` validates it,
+    so that :func:`payment_factor_life` branches on a flag and no projection cell calls the
+    label accessor, which is left to reporting.
     """
-    v = model_point()["reduction_trigger"]
-    if v == "either":
-        return True
-    if v == "primary":
-        return False
-    raise ValueError("invalid reduction_trigger")
+    if data.has_reduction_trigger()[idx] == 0:                       # noqa: F821
+        raise ValueError("invalid reduction_trigger")
+    return bool(data.is_trigger_either()[idx])                       # noqa: F821
 
 
 def certain_mths():
-    """n: the elected certain period in months, 0 or 60-360 [S1][S2][S4][S5]."""
-    return int(model_point()["certain_months"])
+    """n: the elected certain period in months, 0 or 60-360 [S1][S2][S4][S5].
+
+    Read from ``Data.certain_months``, ``int()`` of the column; one ``int()`` cannot read,
+    or of ``2**53`` or more in size, is refused here, naming the point.  Only a form with
+    an elected certain period reads it, so a blank elsewhere is refused only by a direct
+    call.  :func:`proj_len` refuses a period longer than the caches hold.
+    """
+    if data.certain_months_ok()[idx] == 0:                           # noqa: F821
+        raise ValueError(f"point_id {point_id()}: certain_months must be a number int() "
+                         f"reads, below 2**53 in size; it is not")
+    return int(data.certain_months()[idx])                           # noqa: F821
 
 
 def payment_freq():
-    """m: payments per year, in {12, 4, 2, 1} [S1][S2]."""
-    v = int(model_point()["frequency"])
-    if v not in (12, 4, 2, 1):
-        raise ValueError("invalid frequency")
-    return v
+    """m: payments per year, in {12, 4, 2, 1} [S1][S2].
+
+    Read from ``Data.frequency``, ``int()`` of the column, so 12.5 is monthly, as in
+    ``SPIA_US_S``; one ``int()`` cannot read, or of ``2**53`` or more in size, is refused,
+    naming the point, and any other number raises ``SPIA_US_S``'s
+    ``ValueError("invalid frequency")``.  The element is compared, never held in a local,
+    so the compiled cell keeps no Python object.
+    """
+    if data.frequency_ok()[idx] == 0:                                # noqa: F821
+        raise ValueError(f"point_id {point_id()}: frequency must be a number int() reads, "
+                         f"below 2**53 in size; it is not")
+    if (data.frequency()[idx] == 12 or data.frequency()[idx] == 4    # noqa: F821
+            or data.frequency()[idx] == 2 or data.frequency()[idx] == 1):  # noqa: F821
+        return int(data.frequency()[idx])                            # noqa: F821
+    raise ValueError("invalid frequency")
 
 
 def payment_timing():
     """Whether instalments fall in *arrears* (the **[std]** default) or in *advance*.
 
     No product document states the convention; VM-V's prescribed weight-table cash flow
-    model assumes payments at the end of each period, so arrears is the default [R1].
+    model assumes payments at the end of each period, so arrears is the default [R1].  A
+    label accessor, which no projection cell calls: it returns the ``timing`` column,
+    compared exactly, or raises.
     """
     v = model_point()["timing"]
     if v not in ("arrears", "advance"):
@@ -683,22 +836,28 @@ def payment_timing():
 def is_arrears():
     """Whether instalments fall in arrears, at the end of the month, rather than in advance.
 
-    A decode of the model point's ``timing`` column, read and validated as
-    :func:`payment_timing` reads and validates it, so that the payment months, the
-    survival point, the refund balance and the refund-period search branch on a flag and
-    no projection cell calls the label accessor, which is left to reporting.
+    A decode of the model point's ``timing`` column, ``Data.is_arrears``, validated by
+    ``Data.has_timing`` as :func:`payment_timing` validates it, so that the payment
+    months, the survival point, the refund balance and the refund-period search branch on
+    a flag and no projection cell calls the label accessor, which is left to reporting.
     """
-    v = model_point()["timing"]
-    if v == "arrears":
-        return True
-    if v == "advance":
-        return False
-    raise ValueError("invalid timing")
+    if data.has_timing()[idx] == 0:                                  # noqa: F821
+        raise ValueError("invalid timing")
+    return bool(data.is_arrears()[idx])                              # noqa: F821
 
 
 def cola_rate():
-    """g: the fixed compound COLA rate, in {0, .01, .02, .03, .04} [S1][S5]."""
-    return float(model_point()["cola_rate"])
+    """g: the fixed compound COLA rate, in {0, .01, .02, .03, .04} [S1][S5].
+
+    Read from ``Data.cola_rate``.  A rate that is not a finite number is refused here,
+    naming the point: it compounds every instalment past the first year, which the
+    refunds, the refund period and the withdrawal's floor read through a ``max``, a
+    ``min`` or a search.
+    """
+    if data.cola_rate_ok()[idx] == 0:                                # noqa: F821
+        raise ValueError(f"point_id {point_id()}: cola_rate must be a finite number; it "
+                         f"is not")
+    return float(data.cola_rate()[idx])                              # noqa: F821
 
 
 def annual_income_first():
@@ -706,34 +865,49 @@ def annual_income_first():
 
     Fixed at the annuity date and exogenous, as in ``SPIA_US_S``: no insurer publishes
     payout factors, so the model does not derive it from the premium.  The one cell that
-    reads the column, so that :func:`annual_income`, a recursion, reads no table in its own
-    formula.
+    reads the column, ``Data.annual_income``, so that :func:`annual_income`, a recursion,
+    reads no vector in its own formula.  An income that is not a finite number is refused
+    here, naming the point, for the reason :func:`cola_rate` gives.
     """
-    return float(model_point()["annual_income"])
+    if data.annual_income_ok()[idx] == 0:                            # noqa: F821
+        raise ValueError(f"point_id {point_id()}: annual_income must be a finite number; "
+                         f"it is not")
+    return float(data.annual_income()[idx])                          # noqa: F821
 
 
 def commutation_enabled():
-    """Whether the contract carries the certain-portion commutation right [S1]."""
-    return bool(model_point()["commutation_enabled"])
+    """Whether the contract carries the certain-portion commutation right [S1]: ``bool()``
+    of the column, from ``Data.commutation_enabled``."""
+    return bool(data.commutation_enabled()[idx])                     # noqa: F821
 
 
 def issue_state_excludes_withdrawal():
-    """True where the issue state bars the withdrawal feature (Oregon) [S1][S2]."""
-    return bool(model_point()["issue_state_excludes_withdrawal"])
+    """True where the issue state bars the withdrawal feature (Oregon) [S1][S2]: ``bool()``
+    of the column, from ``Data.issue_state_excludes_withdrawal``."""
+    return bool(data.issue_state_excludes_withdrawal()[idx])         # noqa: F821
 
 
 def qualified():
-    """True for qualified money.  Informational: the RMD overlay is not implemented."""
-    return bool(model_point()["qualified"])
+    """True for qualified money.  Informational: the RMD overlay is not implemented.
+
+    ``bool()`` of the column, from ``Data.qualified``; no flow reads it.
+    """
+    return bool(data.qualified()[idx])                               # noqa: F821
 
 
 def rating_factor():
     """theta: the substandard mortality multiplier **[std]**; 1.0 in the base run.
 
     ``q_rated = min(1, theta * q_be)``, the reference model's carrier for anti-selection
-    at outset and for rated ages [S8][R1][REG-R41].
+    at outset and for rated ages [S8][R1][REG-R41].  Read from ``Data.rating_factor``.
+    Text is refused here, naming the point, and so is a blank or infinite factor on the
+    table basis, the one reader, whose survival the payment factor's ``max(C, L)`` would
+    read as a number (``Data``'s ``rating_factor_ok``).
     """
-    return float(model_point()["rating_factor"])
+    if data.rating_factor_ok()[idx] == 0:                            # noqa: F821
+        raise ValueError(f"point_id {point_id()}: rating_factor must be a number, and a "
+                         f"finite one on the table basis, which reads it; it is not")
+    return float(data.rating_factor()[idx])                          # noqa: F821
 
 
 def annuity_year():
@@ -748,9 +922,15 @@ def annuity_year():
     :func:`calendar_year`).  A real block carries each contract's actual annuity year.
     The shipped points are test cases, restated from ``SPIA_US_S``'s at different months
     with ``SPIA_US_S``'s 2026 kept, so they stand at different calendar dates at their
-    common ``t = 0``.
+    common ``t = 0``.  Read from ``Data.annuity_year``, ``int()`` of the column; one
+    ``int()`` cannot read, or of ``2**53`` or more in size, is refused here, naming the
+    point.  Only the table basis reads it, so a blank on the scenario basis is refused only
+    by a direct call.
     """
-    return int(model_point()["annuity_year"])
+    if data.annuity_year_ok()[idx] == 0:                             # noqa: F821
+        raise ValueError(f"point_id {point_id()}: annuity_year must be a number int() "
+                         f"reads, below 2**53 in size; it is not")
+    return int(data.annuity_year()[idx])                             # noqa: F821
 
 
 def mort_basis():
@@ -760,7 +940,8 @@ def mort_basis():
     **[std]** replaces it with the step function ``1{duration_mth(t) <= death_mth(life)}``
     on the policy clock - alive at every time point up to the start of the month of death,
     dead from its end - so the notes' worked example, which is a scenario and not an
-    expectation, reproduces exactly.  See the Space docstring.
+    expectation, reproduces exactly.  See the Space docstring.  A label accessor, which
+    no projection cell calls.
     """
     v = model_point()["mort_basis"]
     if v not in ("table", "scenario"):
@@ -771,35 +952,44 @@ def mort_basis():
 def is_scenario():
     """Whether the run is the deterministic scenario, not the probability-weighted table.
 
-    A decode of the model point's ``mort_basis`` column, read and validated as
-    :func:`mort_basis` reads and validates it, so that :func:`lives_if` and its check
-    branch on a flag and no projection cell calls the label accessor, which is left to
-    reporting.
+    A decode of the model point's ``mort_basis`` column, ``Data.is_scenario``, validated by
+    ``Data.has_mort_basis`` as :func:`mort_basis` validates it, so that :func:`lives_if`
+    and its check branch on a flag and no projection cell calls the label accessor, which
+    is left to reporting.
     """
-    v = model_point()["mort_basis"]
-    if v == "scenario":
-        return True
-    if v == "table":
-        return False
-    raise ValueError("invalid mort_basis")
+    if data.has_mort_basis()[idx] == 0:                              # noqa: F821
+        raise ValueError("invalid mort_basis")
+    return bool(data.is_scenario()[idx])                             # noqa: F821
 
 
 def death_mth(life):
     """The scenario month of death of ``life``, a **policy month**; -1 if it survives.
 
-    Read only when ``mort_basis() == "scenario"``.  A blank cell in the model point table
-    means the life never dies in the scenario and is returned as -1, because month 0 is a
-    projectable month of death like any other.  The month counts from the annuity date,
+    Read only on the scenario basis, :func:`is_scenario`.  A blank cell in the model point
+    table means the life never dies in the scenario and is returned as -1, because month 0
+    is a projectable month of death like any other.  The month counts from the annuity date,
     on the clock :func:`duration_mth` counts, whatever the valuation date: a death "during
     policy month m" is decremented at the end of that month, so ``lives_if(t, life)`` is 1
     while ``duration_mth(t) <= m`` and 0 from the next time point on.  The model point
     table's ``death_mth_1`` / ``death_mth_2`` are month indices on this 0-based grid: the
     notes' "dies during month 14" is ``death_mth = 13``, which falls at ``t = 13`` on a
     point commencing at the valuation date and before it, at ``t = -1``, on point 16, in
-    payment 14 months.
+    payment 14 months.  Read from ``Data.death_mth_1`` and ``Data.death_mth_2``, which hold
+    the blank as -1 already; a month of ``2**53`` or more in size is refused here, naming
+    the point.  Any other life raises, where stage ``E`` read the joint annuitant's column
+    for any life but 1.
     """
-    v = model_point()["death_mth_1" if life == 1 else "death_mth_2"]
-    return -1 if pd.isna(v) else int(v)                              # noqa: F821
+    if life == 1:
+        if data.death_mth_1_ok()[idx] == 0:                          # noqa: F821
+            raise ValueError(f"point_id {point_id()}: death_mth_1 must be blank or below "
+                             f"2**53 months in size; it is not")
+        return int(data.death_mth_1()[idx])                          # noqa: F821
+    if life == 2:
+        if data.death_mth_2_ok()[idx] == 0:                          # noqa: F821
+            raise ValueError(f"point_id {point_id()}: death_mth_2 must be blank or below "
+                             f"2**53 months in size; it is not")
+        return int(data.death_mth_2()[idx])                          # noqa: F821
+    raise ValueError("invalid life")
 
 
 def duration_mth_init():
@@ -809,9 +999,13 @@ def duration_mth_init():
     before the valuation date, 0 for one commencing at it, and -13 for one to commence 13
     months after it, which ``Data`` admits up to ``future_horizon_mth`` months ahead.  It is
     read as ``basiclife.BasicTerm_SE`` reads it, by value, and is the one fact the policy
-    clock takes from the model point.
+    clock takes from the model point, from ``Data.duration_mth``; a value ``int()`` cannot
+    read, or of ``2**53`` or more in size, is refused here, naming the point.
     """
-    return int(model_point()["duration_mth"])
+    if data.duration_mth_ok()[idx] == 0:                             # noqa: F821
+        raise ValueError(f"point_id {point_id()}: duration_mth must be a number int() "
+                         f"reads, below 2**53 in size; it is not")
+    return int(data.duration_mth()[idx])                             # noqa: F821
 
 
 def lives_if_init(life):
@@ -826,12 +1020,12 @@ def lives_if_init(life):
     probabilities are the whole survival state.  A contract not yet in payment carries its
     values at the annuity date, 1 for each covered life, and ``lives_if_init_2`` is 0 on a
     single-life contract; ``Data`` checks both, and on the scenario basis that each status
-    is its death month's.
+    is its death month's.  Read from ``Data.lives_if_init_1`` and ``Data.lives_if_init_2``.
     """
     if life == 1:
-        return float(model_point()["lives_if_init_1"])
+        return float(data.lives_if_init_1()[idx])                    # noqa: F821
     if life == 2:
-        return float(model_point()["lives_if_init_2"])
+        return float(data.lives_if_init_2()[idx])                    # noqa: F821
     raise ValueError("invalid life")
 
 
@@ -844,9 +1038,9 @@ def commute_frac_cum_init():
     :func:`t_entry`.  Path-dependent, because it records the withdrawals actually taken,
     so the contract's terms cannot re-derive it.  0 at the annuity date, and so on every
     point not yet in payment; ``Data`` refuses a fraction where none could have been
-    taken, a necessary condition only.
+    taken, a necessary condition only.  Read from ``Data.commute_frac_cum_init``.
     """
-    return float(model_point()["commute_frac_cum_init"])
+    return float(data.commute_frac_cum_init()[idx])                  # noqa: F821
 
 
 def cmt10_shift_init():
@@ -862,9 +1056,10 @@ def cmt10_shift_init():
     annuity date carry one value.  0 at the annuity date, and so on every point not yet in
     payment, as ``Data`` checks.  The change made at the valuation date is
     ``cmt10_shift``, which a contract commencing later, bought after it, has not seen
-    (:func:`commute_disc_rate`).
+    (:func:`commute_disc_rate`).  Read from ``Data.cmt10_shift_init``, a float vector, in
+    the same order as at stage ``E``.
     """
-    return float(model_point()["cmt10_shift_init"])
+    return float(data.cmt10_shift_init()[idx])                       # noqa: F821
 
 
 def duration_mth(t):
@@ -964,12 +1159,13 @@ def horizon_mths():
     every covered life, ``m`` the policy month, and stopping on the primary's age alone
     would truncate a younger joint annuitant's tail.  Counted from the annuity date, so
     the last month it admits is policy month ``horizon_mths() - 1``, in which the youngest
-    life is still ``omega_age - 1`` - see :func:`proj_len`.
+    life is still ``omega_age - 1`` - see :func:`proj_len`.  The younger of the two ages is
+    found by one comparison, with no list.
     """
-    ages = [age_at_entry(1)]
-    if is_joint():
-        ages.append(age_at_entry(2))
-    return 12 * (omega_age - min(ages))                              # noqa: F821
+    youngest = age_at_entry(1)
+    if is_joint() and age_at_entry(2) < youngest:
+        youngest = age_at_entry(2)
+    return 12 * (omega_age - youngest)                               # noqa: F821
 
 
 def proj_len():
@@ -1001,29 +1197,61 @@ def proj_len():
     cover can end with a death.  The rule needs the certain period, which an installment
     refund derives from the schedule, so it is checked here rather than in ``Data``, and
     each message says, by form, why nothing is owed.
+
+    Before either, the contract the compiled model's caches are sized for
+    (``spec_sec.py``), each bound a lower-case Reference, each refusal naming the point:
+    an issue age of a covered life below ``issue_age_min``, 0, on every form, since a
+    frame runs to the age stop on its youngest life, the primary's and the joint
+    annuitant's each asked; and an elected certain period longer than ``12 * (omega_age -
+    issue_age_min)``, 1,440 months, which would carry the stop rule past the age stop at
+    ``issue_age_min``.  They come first, because :func:`stop_mth` reads the installment
+    refund's search, which reads :func:`cum_annuity_pp` up to :func:`horizon_mths`, past
+    the cache on a point issued younger.  ``SPIA_US_S`` projects every age from 0, on the
+    scenario basis, and on the table basis with a table starting below 40, and so does
+    this model, a lifetime form below the 18 product-spec issues at among them: a
+    negative issue age and a certain period above 1,440 months are outside every contract,
+    and refused as Term's issue ages are, a departure from ``SPIA_US_S``, which projects
+    them.  ``omega_age``
+    above 120, and ``Data.future_horizon_mth`` above 120, are not refused: each needs the
+    caches resized and the model rebuilt, and a report past them is a bare ``IndexError``
+    in the compiled model alone, where modelx projects.  So is a monthly cell called
+    directly on a point ``proj_len`` refuses, which reads :func:`stop_mth` through
+    :func:`is_active` without asking here.
     """
+    if age_at_entry(1) < issue_age_min:                              # noqa: F821
+        raise ValueError(f"point_id {point_id()}: issue age {age_at_entry(1)} is below "
+                         f"issue_age_min, {issue_age_min}")          # noqa: F821
+    if is_joint() and age_at_entry(2) < issue_age_min:               # noqa: F821
+        raise ValueError(f"point_id {point_id()}: joint issue age {age_at_entry(2)} "
+                         f"is below issue_age_min, {issue_age_min}")  # noqa: F821
+    if (is_period_certain()
+            and certain_mths() > 12 * (omega_age - issue_age_min)):  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: certain_months {certain_mths()} is above "
+                         f"12 * (omega_age - issue_age_min), "
+                         f"{12 * (omega_age - issue_age_min)}, the longest "  # noqa: F821
+                         f"certain period the caches are sized for")
     n = stop_mth() - duration_mth_init()
     if n <= 0:
         raise ValueError(
-            f"point_id {point_id}: duration_mth {duration_mth_init()} "  # noqa: F821
+            f"point_id {point_id()}: duration_mth {duration_mth_init()} "
             f"is at or past the end of the projection, policy month {stop_mth()}")
     d = duration_mth_init()
     n_eff = certain_mths_eff()
     if d > 0 and d >= n_eff:
         if is_certain_only():
             raise ValueError(
-                f"point_id {point_id}: duration_mth {d}: no payment is "  # noqa: F821
+                f"point_id {point_id()}: duration_mth {d}: no payment is "
                 f"owed after the valuation date: a certain_only contract pays nothing "
                 f"after its certain period, which ended at policy month {n_eff}")
         dead = not (lives_if_init(1) > 0.0 or (is_joint() and lives_if_init(2) > 0.0))
         if dead and n_eff > 0:
             raise ValueError(
-                f"point_id {point_id}: duration_mth {d}: no payment is "  # noqa: F821
+                f"point_id {point_id()}: duration_mth {d}: no payment is "
                 f"owed after the valuation date: every covered life has died, and the "
                 f"certain period ended at policy month {n_eff}")
         if dead:
             raise ValueError(
-                f"point_id {point_id}: duration_mth {d}: no payment is "  # noqa: F821
+                f"point_id {point_id()}: duration_mth {d}: no payment is "
                 f"owed after the valuation date: every covered life has died, and the "
                 f"form has no certain period")
     return n
@@ -1094,15 +1322,17 @@ def annual_income(y):
 
     Keyed by policy year, on the policy clock, and a deterministic schedule, so it needs no
     opening state.  Its recursion is based where the valuation date falls: for the policy
-    year containing it, ``policy_year(t_entry())``, one loop compounds ``B(1)`` year by
-    year, the same products in the same order as the recursion, so ``B`` is
-    ``SPIA_US_S``'s to the last bit, and a contract valued late in life reads its income
-    without recursing back to the annuity date.  Later years recurse back to that one, and
-    earlier years back to ``B(1)``, as in ``SPIA_US_S``.
+    year containing it, ``max(duration_mth_init(), 0) // 12 + 1``, the policy year of
+    :func:`t_entry`, one loop compounds ``B(1)`` year by year, the same products in the
+    same order as the recursion, so ``B`` is ``SPIA_US_S``'s to the last bit, and a
+    contract valued late in life reads its income without recursing back to the annuity
+    date.  Later years recurse back to that one, and earlier years back to ``B(1)``, as in
+    ``SPIA_US_S``.  The base year is read from the model point, not from the clock, so
+    reading it reads no month.
     """
     if y <= 1:
         return annual_income_first()
-    if y == policy_year(t_entry()):
+    if y == max(duration_mth_init(), 0) // 12 + 1:
         b = annual_income_first()
         for _ in range(y - 1):
             b *= 1.0 + cola_rate()
@@ -1152,7 +1382,8 @@ def cum_annuity_pp(k):
 
     The recursion ``G(k) = G(k-1) + inst(k-1)`` is ``SPIA_US_S``'s, but it is based where
     the valuation date falls: at the policy month of :func:`t_entry`,
-    ``duration_mth(t_entry())``, one loop sums the instalments scheduled before it, the
+    ``max(duration_mth_init(), 0)``, read from the model point rather than the clock, one
+    loop sums the instalments scheduled before it, the
     same additions in the same order as the recursion, so ``G`` is ``SPIA_US_S``'s to the
     last bit.  The refunds read ``G`` from there on and recurse back to it; the
     installment-refund search reads it upward from the first payment point and recurses
@@ -1162,7 +1393,7 @@ def cum_annuity_pp(k):
     """
     if k <= 0:
         return 0.0
-    if k == duration_mth(t_entry()):
+    if k == max(duration_mth_init(), 0):
         total = 0.0
         for j in range(k):
             total += annuity_pp_sched_pm(j)
@@ -1242,36 +1473,68 @@ def mort_rate_base_at(x, life):
     """The base-table annual mortality rate at attained age ``x``, for ``life``'s sex.
 
     The one cell that reads ``mort_table.csv``, keyed by age and life, so that the monthly
-    cells call it rather than join the table themselves.  The sex is the join key, read
-    from the model point's ``primary_sex`` or ``joint_sex`` column as :func:`sex` reads it,
-    and the label accessor itself is left to reporting.  Called only at ages the table
-    holds, below the limiting age: :func:`mort_rate_base` returns 1 at and above it
-    without calling here.
+    cells call it rather than join the table themselves.  The sex is the join key:
+    :func:`mort_schedule` gives ``life``'s row of ``Data.mort_table_array``, and the age is
+    its column, and the label accessor itself is left to reporting.  Called only below the
+    limiting age: :func:`mort_rate_base` returns 1 at and above it without calling here.
+    The age is checked against the row's first and last ages, ``Data.mort_age_first`` and
+    ``Data.mort_age_last``, before the array is read, so an age the table lacks, below
+    its first age, 40 as shipped, or any age on a sex the table lacks, whose row 0 holds
+    none, is refused, naming the point, the age and the life, where ``SPIA_US_S``'s
+    ``.loc`` raised ``KeyError``, and the padding is never read.
     """
-    if life == 1:
-        key = model_point()["primary_sex"]
-    elif life == 2:
-        key = model_point()["joint_sex"]
-    else:
-        raise ValueError("invalid life")
-    return float(data.mort_table().loc[(x, key), "mort_rate"])      # noqa: F821
+    s = mort_schedule(life)
+    if x < data.mort_age_first()[s] or x > data.mort_age_last()[s]:  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: mort_table.csv has no mort_rate at "
+                         f"attained age {x} for the sex of life {life}")
+    return float(data.mort_table_array()[s, x])                      # noqa: F821
 
 
 def improvement_rate_at(x, life):
     """The generational improvement rate at attained age ``x``, for ``life``'s sex.
 
     The one cell that reads ``improvement_scale.csv``, keyed by age and life and joined on
-    the sex as :func:`mort_rate_base_at` joins the mortality table, and called only below
-    the limiting age.
+    the sex as :func:`mort_rate_base_at` joins the mortality table, through
+    :func:`improvement_schedule`, the scale's own numbering of its sexes, and checked and
+    refused as it is.  Called only below the limiting age.
+    """
+    s = improvement_schedule(life)
+    if (x < data.improvement_age_first()[s]                          # noqa: F821
+            or x > data.improvement_age_last()[s]):                  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: improvement_scale.csv has no "
+                         f"improvement_rate at attained age {x} for the sex of life "
+                         f"{life}")
+    return float(data.improvement_array()[s, x])                     # noqa: F821
+
+
+def mort_schedule(life):
+    """The number of ``life``'s sex in the mortality table: its row of
+    ``Data.mort_table_array``.
+
+    ``Data.mort_schedule_1`` for the primary (life = 1) and ``Data.mort_schedule_2`` for
+    the joint annuitant (life = 2), 0 where the table lacks the sex, which
+    :func:`mort_rate_base_at` refuses; any other life raises.  A cell of its own, so that
+    the reader indexes the table by a cell's value, never by a ``Data`` array's.
     """
     if life == 1:
-        key = model_point()["primary_sex"]
-    elif life == 2:
-        key = model_point()["joint_sex"]
-    else:
-        raise ValueError("invalid life")
-    return float(                                                    # noqa: F821
-        data.improvement_scale().loc[(x, key), "improvement_rate"])
+        return int(data.mort_schedule_1()[idx])                      # noqa: F821
+    if life == 2:
+        return int(data.mort_schedule_2()[idx])                      # noqa: F821
+    raise ValueError("invalid life")
+
+
+def improvement_schedule(life):
+    """The number of ``life``'s sex in the improvement scale: its row of
+    ``Data.improvement_array``.
+
+    As :func:`mort_schedule`, on the scale's own numbering of its sexes, which need not be
+    the mortality table's.
+    """
+    if life == 1:
+        return int(data.improvement_schedule_1()[idx])               # noqa: F821
+    if life == 2:
+        return int(data.improvement_schedule_2()[idx])               # noqa: F821
+    raise ValueError("invalid life")
 
 
 def mort_rate_base(t, life):
@@ -1325,7 +1588,10 @@ def mort_rate(t, life):
     improvement of the calendar years it reaches, and nothing is re-based.  The A/E factor
     belongs on the *projected* basis, matching the study's measurement convention - on
     the unprojected table the study's own answer is 99.6% [R9], and applying 1.084 there
-    misstates the mortality level by about 8%.  The two caps keep ``q_rated`` at most 1,
+    misstates the mortality level by about 8%.  An improvement rate of exactly 1 at a
+    calendar year before ``mort_table_year`` raises ``0.0`` to a negative power, which
+    modelx refuses with ``ZeroDivisionError`` and the compiled model, whose power is C's,
+    reads as an infinity; no shipped rate is 1.  The two caps keep ``q_rated`` at most 1,
     so :func:`mort_rate_mth` stays real at any rating, and the code writes each with its
     float bound second, ``min(q, 1.0)``, as ``SPIA_US_S`` does, so that a missing input,
     a NaN, stays NaN, where ``min(1.0, q)`` would read it as 1.  Zero outside the frame,
@@ -1485,13 +1751,13 @@ def payment_factor(t):
 def pols_if(t):
     """IF(t): contracts with a payment obligation still open in month t.
 
-    ``pols_if_at(t, "BEF_DECR") * max(C(t), l_alive(t+1))`` **[std]** - the in-force
+    ``pols_if_at(t, BEF_DECR) * max(C(t), l_alive(t+1))`` **[std]** - the in-force
     measure the notes use to carry the maintenance expense, which runs while *any* payment
     obligation remains, whether that obligation is life-contingent or certain, on the
     contracts on the books.  The life-contingent leg is measured at the **end** of month t
     (time ``t + 1``), matching the notes' own end-of-month decrement, so this is a closing
     measure of the period rather than an opening count.  Unlike the library's usual
-    ``pols_if``, therefore, it is not ``pols_if_at(t, "BEF_DECR")``, the count that weights
+    ``pols_if``, therefore, it is not ``pols_if_at(t, BEF_DECR)``, the count that weights
     row t, and the registry marks the model ``closing_pols_if`` for that reason: on the
     anchor cell's twin, point 8, ``pols_if(0)`` is 0.99999986 against a count of 1.0, as in
     ``SPIA_US_S``, and on point 21, the same cell in its last month, 3.41e-06.
@@ -1509,39 +1775,41 @@ def pols_if(t):
     if not is_active(t):
         return 0.0
     alive = 0.0 if is_certain_only() else lives_if_last(t + 1)
-    return pols_if_at(t, "BEF_DECR") * max(certain_floor(t), alive)
+    return pols_if_at(t, BEF_DECR) * max(certain_floor(t), alive)    # noqa: F821
 
 
 def pols_if_at(t, timing):
     """Contracts on the books at time t, at the instant ``timing`` names.
 
-    ``"BEF_NB"``
+    ``BEF_NB``
         The contracts carried in from month t - 1, before month t's annuities commence:
         at :func:`t_entry`, the first month on the books, :func:`pols_if_init`, the count
         in payment at the valuation date (0 for a point commencing at or after it), and
         the whole ``policy_count()`` after it.  Zero outside the frame, so the contracts
         leave the books at the stop rule, at the end of the last projected month.
-    ``"BEF_DECR"``
-        ``"BEF_NB"`` plus :func:`pols_new_biz`: the count that weights every cash flow
+    ``BEF_DECR``
+        ``BEF_NB`` plus :func:`pols_new_biz`: the count that weights every cash flow
         of month t.
 
-    These are ``basiclife.BasicTerm_SE``'s names, and any other timing raises.  The count
+    These are ``basiclife.BasicTerm_SE``'s names, int codes (the Space docstring's
+    *Codes*), compared by ``==`` alone, and any other timing raises, a string among them in
+    modelx.  The count
     is not decremented: mortality decrements each life's survival, :func:`lives_if`, and
     every cash flow is this count times a per-contract amount weighted by survival, as
     ``SPIA_US_S`` weights its flows by the constant ``pols_if_init``.  A count weighted by
-    survival could not carry the two lives' independent probabilities.  So ``"BEF_NB"`` is
+    survival could not carry the two lives' independent probabilities.  So ``BEF_NB`` is
     a closed form, the same float that the recursion ``BEF_NB(t-1) + pols_new_biz(t-1)``
     gives, with no chain of calls back to :func:`t_entry`.  :func:`pols_if` is not
-    ``"BEF_DECR"``: it is the notes' closing obligation measure on this count.
+    ``BEF_DECR``: it is the notes' closing obligation measure on this count.
     """
-    if timing == "BEF_NB":
+    if timing == BEF_NB:                                             # noqa: F821
         if not is_active(t):
             return 0.0
         if t == t_entry():
             return pols_if_init()
         return policy_count()
-    elif timing == "BEF_DECR":
-        return pols_if_at(t, "BEF_NB") + pols_new_biz(t)
+    elif timing == BEF_DECR:                                         # noqa: F821
+        return pols_if_at(t, BEF_NB) + pols_new_biz(t)               # noqa: F821
     else:
         raise ValueError("invalid timing")
 
@@ -1631,16 +1899,16 @@ def commute_disc_rate(t):
 def is_disc_compound():
     """Whether the commuted value discounts at compound interest: the Reference decoded.
 
-    ``commute_disc_convention`` is ``"compound"`` (the default **[std]**) or ``"simple"``
-    (per [S7]); any other value raises.  A decode, so that :func:`commuted_value` branches
-    on a flag rather than on text.  It raises for an invalid convention whenever a certain
-    month remains to discount, where ``SPIA_US_S`` raises at the first instalment it
-    discounts.
+    ``commute_disc_convention`` is ``COMPOUND`` (the default **[std]**) or ``SIMPLE`` (per
+    [S7]), the int codes of ``SPIA_US_S``'s ``"compound"`` and ``"simple"``; any other value
+    raises, text among them in modelx, which a compiled model cannot hold.  A decode, so
+    that :func:`commuted_value` branches on a flag rather than on a Reference.  It raises
+    for an invalid convention whenever a certain month remains to discount, where
+    ``SPIA_US_S`` raises at the first instalment it discounts.
     """
-    conv = commute_disc_convention                                   # noqa: F821
-    if conv == "compound":
+    if commute_disc_convention == COMPOUND:                          # noqa: F821
         return True
-    if conv == "simple":
+    if commute_disc_convention == SIMPLE:                            # noqa: F821
         return False
     raise ValueError("invalid commute_disc_convention")
 
@@ -1657,9 +1925,12 @@ def commuted_value(t):
         simple   (per [S7]):           v = max(0, 1 - j*(s-m)/12)
 
     Only the certain tail is discounted; the life-contingent payments after the certain
-    period are untouched by a commutation [S1][S2][S5].  The instalments are read from the
-    schedule by policy month, :func:`annuity_pp_sched_pm`, in one loop, so that no month of
-    the frame ahead of t is read.  Zero outside the frame.
+    period are untouched by a commutation [S1][S2][S5].  A rate ``j`` below -100%, a
+    change in the CMT of more than about -104%, raises a negative number to a fractional
+    power under the compound convention, which modelx returns as a complex number and the
+    compiled model, whose power is C's, as NaN; no rate reaches it.  The instalments are
+    read from the schedule by policy month, :func:`annuity_pp_sched_pm`, in one loop, so
+    that no month of the frame ahead of t is read.  Zero outside the frame.
     """
     if not is_active(t):
         return 0.0
@@ -1756,13 +2027,14 @@ def surr_charge_rate(y):
     surrender-charge schedule found.  Contract years below and above the table's range
     take its first and last rows; year 1 is barred from withdrawing at all, so its rate
     is never reached through :func:`commute_amount`.  The years, the first and last among
-    them, and the rates are read from the scale ``Data`` has checked,
-    ``data.surr_charge_scale()``, where ``SPIA_US_S`` takes the first and last years from
-    the raw table.
+    them, and the rates are read from the scale ``Data`` has checked: the year is clamped
+    to ``Data.surr_charge_year_first`` and ``Data.surr_charge_year_last``, and the rate
+    read from ``Data.surr_charge_rate_array`` at it, where ``SPIA_US_S`` takes the first
+    and last years from the raw table.
     """
-    scale = data.surr_charge_scale()                                 # noqa: F821
-    lo, hi = int(scale.index.min()), int(scale.index.max())
-    return float(scale.loc[min(max(int(y), lo), hi), "surr_charge_rate"])
+    lo = data.surr_charge_year_first()                               # noqa: F821
+    hi = data.surr_charge_year_last()                                # noqa: F821
+    return float(data.surr_charge_rate_array()[min(max(y, lo), hi)])  # noqa: F821
 
 
 def surr_charge(t):
@@ -1773,7 +2045,7 @@ def surr_charge(t):
     """
     if not is_active(t):
         return 0.0
-    return (pols_if_at(t, "BEF_DECR") * commute_amount(t)
+    return (pols_if_at(t, BEF_DECR) * commute_amount(t)              # noqa: F821
             * surr_charge_rate(policy_year(t)))
 
 
@@ -1802,17 +2074,17 @@ def annuity_payments(t):
     """E[ANN(t)]: expected annuity outgo in month t.
 
     ``inst(t) * Phi(t) * (1 - theta_cum(t)*C(t))``, on the contracts on the books,
-    ``pols_if_at(t, "BEF_DECR")``.  This is the column the notes' worked-example table
+    ``pols_if_at(t, BEF_DECR)``.  This is the column the notes' worked-example table
     labels "CF": at t = 0 on point 1 it is 500.00, the instalment alone, with the
     maintenance expense carried separately in :func:`liability_cf`.
     """
-    return pols_if_at(t, "BEF_DECR") * annuity_pp_paid(t) * payment_factor(t)
+    return pols_if_at(t, BEF_DECR) * annuity_pp_paid(t) * payment_factor(t)  # noqa
 
 
 def claim_pp(t, kind):
     """The claim amount per contract in month t, by ``kind``.
 
-    ``"REFUND"`` - the cash refund lump sum ``max(0, P - G)``, zero on any form other
+    ``REFUND`` - the cash refund lump sum ``max(0, P - G)``, zero on any form other
     than cash_refund [S1][S3][S5].  Because :func:`cum_annuity_pp` is indexed by a time
     point on the policy clock, the balance is measured at ``G(m)``,
     ``m = duration_mth(t)``, on arrears - everything paid before month t opened, which is
@@ -1820,9 +2092,10 @@ def claim_pp(t, kind):
     month the instalment paid at the *start* of the death month has been paid, so
     ``G(m + 1)`` is used or the lump sum is overstated by one instalment.  On the cash
     refund in payment 13 months, point 17, that is 100,000 - G(13) = 93,485.00 at
-    ``t = 0``.  Zero outside the frame; any other kind raises.
+    ``t = 0``.  Zero outside the frame; any other kind raises, a string among them in
+    modelx.
     """
-    if kind != "REFUND":
+    if kind != REFUND:                                               # noqa: F821
         raise ValueError("invalid kind")
     if not is_active(t) or not is_cash_refund():
         return 0.0
@@ -1832,18 +2105,20 @@ def claim_pp(t, kind):
     return max(0.0, premium_pp() - cum_annuity_pp(k))
 
 
-def claims(t, kind=None):
-    """Expected claim outgo in month t; ``kind=None`` totals every kind.
+def claims(t):
+    """E[CR(t)]: expected claim outgo in month t, the cash refund.
 
-    The only kind on this product is ``"REFUND"``.  It is weighted by
-    :func:`lives_death_last`, the notes' ``d_term`` - the death that terminates the income
-    stream, which is the primary's on a single-life contract and the last death on a
-    joint one (a cash refund on a joint contract is offered only at delta = 100% [S5]) -
-    on the contracts on the books, ``pols_if_at(t, "BEF_DECR")``.
+    The only kind on this product is ``REFUND``, so this is its formula and the total
+    alike: ``SPIA_US_S``'s ``claims(t, kind=None)`` returns ``claims(t, "REFUND")``, whose
+    value this is, the same product in the same order, with no ``0.0 +`` that would turn
+    a ``-0.0`` into ``0.0``.  It is weighted by :func:`lives_death_last`, the notes'
+    ``d_term`` - the death that terminates the income stream, which is the primary's on a
+    single-life contract and the last death on a joint one (a cash refund on a joint
+    contract is offered only at delta = 100% [S5]) - on the contracts on the books,
+    ``pols_if_at(t, BEF_DECR)``.  The twin identity reaches ``SPIA_US_S``'s two keys,
+    ``(t, None)`` and ``(t, "REFUND")``, through the spec's ``twin_arg_map``.
     """
-    if kind is None:
-        return claims(t, "REFUND")
-    return pols_if_at(t, "BEF_DECR") * lives_death_last(t) * claim_pp(t, kind)
+    return pols_if_at(t, BEF_DECR) * lives_death_last(t) * claim_pp(t, REFUND)  # noqa
 
 
 def commutations(t):
@@ -1855,7 +2130,7 @@ def commutations(t):
     """
     if not is_active(t):
         return 0.0
-    return (pols_if_at(t, "BEF_DECR") * commute_amount(t)
+    return (pols_if_at(t, BEF_DECR) * commute_amount(t)              # noqa: F821
             * (1.0 - surr_charge_rate(policy_year(t))))
 
 
@@ -2046,7 +2321,19 @@ def result_pols():
 
 data = ("Interface", ("..", "Data"), "auto")
 
-point_id = 1
+idx = 0
+
+BEF_NB = 0
+
+BEF_DECR = 1
+
+REFUND = 0
+
+COMPOUND = 0
+
+SIMPLE = 1
+
+issue_age_min = 0
 
 omega_age = 120
 
@@ -2064,7 +2351,7 @@ commute_disc_rate_base = 0.04
 
 cmt10_shift = 0.0
 
-commute_disc_convention = "compound"
+commute_disc_convention = 0
 
 commute_min_amount = 5000.0
 

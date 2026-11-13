@@ -1135,6 +1135,41 @@ _SPIA_STATE = {
 }
 
 
+def _spia_twin_args(name, args):
+    """``SPIA_US_S``'s ``claims`` keys as ``SPIA_US_SEC`` takes them at stage "EC" (R12).
+
+    S's ``claims(t, kind=None)`` is cached under ``(t, None)``, where ``liability_cf``
+    asks for the total, and ``(t, "REFUND")``, where the total asks for its one kind; both
+    are SEC's ``claims(t)``, the one kind's formula, which is the total.  Only S's
+    two-argument keys are mapped, so that a comparison of SEC with SEC, whose keys are
+    ``(t,)``, passes through it unchanged; every other cell's arguments pass as they are.
+    """
+    if name == "claims" and len(args) == 2:
+        return args[:1]
+    return args
+
+
+def _spia_c4_also(proj):
+    """What C4 compares of a ``SPIA_US_SEC`` point beyond its full sweep (M23).
+
+    ``sec_support.full_sweep`` reaches a cell of more than ``t`` only at the keys some
+    swept cell asks of it, and no swept cell asks for ``lives_death(t, life)``, the one
+    per-life cell no report reads.  So, as ``sample_sec.py`` does, this calls it for both
+    lives, at ``t = 0 .. proj_len()``: life 2 on a single-life point among them, which the
+    sample traces too.  Every timing of ``pols_if_at`` and the one kind of ``claim_pp`` are
+    reached by the reports.  Passed to :func:`compiled_mismatches` as ``also``, which must
+    not raise: on a point its projection refuses after ``proj_len()``, a rating it cannot
+    use on the table basis, say, ``lives_death`` raises where the swept cells do, whose
+    raises the sweep records and C4 compares, so the call is left out there.
+    """
+    for t in range(proj.proj_len() + 1):
+        for life in (1, 2):
+            try:
+                proj.lives_death(t, life)
+            except Exception:               # a refused point: the sweep holds the raise
+                pass
+
+
 def _myga_entering(name):
     """What ``MYGA_US_S`` carries into month ``d`` in cells ``name``.
 
@@ -2114,32 +2149,27 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and test_immediate_annuity_us_sec.py compares
     #     the report itself with S's, column by column.
-    # S caches claims(t, kind=None) under (t, None); at stage EC, where that default
-    # becomes a named total (R12), T1 needs an arg_map for those keys.  S's label
-    # accessors stay S's, called by reporting and T1 alone.  R17 and C5 admit one that
-    # takes no argument and returns its point's column of its own name: form(),
-    # reduction_trigger() and mort_basis() do, but payment_timing() returns "timing" and
-    # sex(life) takes a life and returns "primary_sex" or "joint_sex", so SPIA's C step
-    # extends R17 and C5 for those two, or leaves them out of "reporting".
+    # S caches claims(t, kind=None) under (t, None) and (t, "REFUND"); at stage EC the one
+    # kind is claims(t), its formula and so the total (R12), and the spec's twin_arg_map,
+    # _spia_twin_args, maps both keys onto it.  S's label accessors stay S's, called by
+    # reporting and T1 alone.  R17 and C5 admit one that returns its point's column:
+    # form(), reduction_trigger() and mort_basis() return the column of their own name,
+    # and the registry's "reporting_columns" names what the other two return,
+    # payment_timing() the "timing" column, and sex(life) "primary_sex" or "joint_sex" by
+    # life (M23).
     #
-    # Phase 2 sizes its caches from the contract, each from these inputs:
-    #   t 0..1,344: the youngest lifetime issue age, 18 (product-spec), the limiting age
-    #     omega_age, 120, and future_horizon_mth, 120: the longest frame is
-    #     12 * (120 - 18) + 120 months, and lives_if reads the closing time point
-    #     t = proj_len().  The longest certain period, 360 months, lengthens a frame only
-    #     at issue ages above 90, and an installment refund's period stops at the age stop;
-    #   k 0..1,224, the policy months and time points: the youngest issue age and
-    #     omega_age, or the longest certain period if it were longer;
-    #   y 1..102, the policy years: k's bound, (stop_mth() - 1) // 12 + 1;
-    #   x 18..119, the attained ages, per life: the youngest issue age and omega_age - 1.
-    # Three inputs those sizes rest on are bounded by the product and by no cell, and
-    # proj_len() refuses none of them at stage E, as S projects each: the issue age of a
-    # lifetime form, 18 or more (S projects a younger one on the scenario basis, which
-    # reads no table); the issue age of the certain_only form, which product-spec bounds
-    # only above, to attained age 100, and whose frame also runs to the age stop on its
-    # youngest life; and certain_months, 0 or 60 to 360 by product-spec, where a value
-    # past 1,224 would lengthen both the k and the t frames.  Phase 2 refuses each in
-    # proj_len() beside the cover check, or sizes from the product's limits.
+    # Phase 2 sizes its caches from the contract (spec_sec.py holds each derivation):
+    #   t 0..1,560: issue_age_min, 0, the youngest issue age of every form and life,
+    #     since S projects every age from 0 and a frame runs to the age stop on its
+    #     youngest life, the limiting age omega_age, 120, and future_horizon_mth, 120: the
+    #     longest frame is 12 * (120 - 0) + 120 months, and lives_if reads the closing
+    #     time point t = proj_len();
+    #   k 0..1,440, the policy months and time points, from the same youngest age and
+    #     omega_age, which also bound the longest certain period the caches hold;
+    #   y 1..120, the policy years: k's last month // 12 + 1;
+    #   x 0..119, the attained ages, per life: the youngest issue age and omega_age - 1.
+    # proj_len() refuses an issue age of any life below issue_age_min, 0, and
+    # certain_months above 12 * (omega_age - issue_age_min), each naming the point (M23).
     "SPIA_US_SEC": SecSpec(
         twin="SPIA_US_S",
         derived=((1, 14), (6, 13), (5, 120), (13, 30), (9, 24), (8, 695)),
@@ -2147,6 +2177,7 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_SPIA_STATE,
         twin_state={c: f for c, f in _SPIA_STATE.items() if c != "policy_count"},
         exempt=frozenset({"result_pols"}),
+        twin_arg_map=_spia_twin_args,
     ),
     # MYGA's state is ten columns (_MYGA_STATE above), each read off S as S's own formulas
     # read it.  S's one column of the kind, tax_basis_initial, is renamed in place to
@@ -3936,6 +3967,119 @@ def reporting_cells(name, space):
         cell for cell in space.cells
         if cell == "model_point" or cell.startswith("result_") or cell in declared
         or (cell.startswith("check_") and not cell.endswith("_resid")))
+
+
+def reporting_columns_faults(entry):
+    """Where a registry entry's ``"reporting_columns"`` is not what R17 lets it say (M23).
+
+    The key says what a label accessor returns where that is not its point's column of
+    the label's own name (:mod:`us_registry`).  It is a stage-``"EC"`` key, as
+    ``"reporting"`` is, a dict whose every key is a label ``"reporting"`` names, each
+    mapped to one of three shapes: a column name; a non-empty dict of argument to column
+    name, for a label taking one argument; or a pair of a column name and a non-empty
+    dict of value to label, for a label returning the column's value through the dict.
+    ``entry`` is a :func:`us_registry.meta` dict.  Returns a line per fault.
+    """
+    if "reporting_columns" not in entry:
+        return []
+    columns = entry["reporting_columns"]
+    if entry.get("stage") != "EC":
+        return [f"reporting_columns is declared at stage {entry.get('stage')!r}; it widens "
+                f"the compiled model's label check, and the key belongs to stage 'EC'"]
+    if not (isinstance(columns, dict) and columns):
+        return [f"reporting_columns is {columns!r}, not a non-empty dict of labels"]
+    lines = []
+    reporting = entry.get("reporting", ())
+    for label, shape in columns.items():
+        if label not in reporting:
+            lines.append(f"reporting_columns names {label!r}, which reporting does not")
+        if isinstance(shape, str):
+            continue
+        if isinstance(shape, dict):
+            if not (shape and all(isinstance(c, str) for c in shape.values())):
+                lines.append(f"reporting_columns[{label!r}] is {shape!r}, not a non-empty "
+                             f"dict of argument to column")
+            continue
+        if (isinstance(shape, tuple) and len(shape) == 2 and isinstance(shape[0], str)
+                and isinstance(shape[1], dict) and shape[1]):
+            continue
+        lines.append(f"reporting_columns[{label!r}] is {shape!r}: neither a column, a dict "
+                     f"of argument to column, nor a pair of a column and a dict of value "
+                     f"to label")
+    return lines
+
+
+def _label_calls(shape):
+    """``[(args, column, mapping)]``: how :func:`label_faults` calls a label of ``shape``,
+    its ``"reporting_columns"`` entry or its own name."""
+    if isinstance(shape, dict):
+        return [((arg,), column, None) for arg, column in shape.items()]
+    if isinstance(shape, tuple):
+        return [((), shape[0], shape[1])]
+    return [((), shape, None)]
+
+
+def label_faults(model, name, entry=None):
+    """C5's check of the label accessors: each returns its point's column (R17), a line
+    per fault.
+
+    For each label SEC model ``name``'s registry entry names under ``"reporting"`` and
+    ``model``'s ``Projection`` holds, on every point of the table: called as the entry's
+    ``"reporting_columns"`` says (:func:`reporting_columns_faults`), or bare where it says
+    nothing, the label must return its point's column as the table holds it, through the
+    pair's dict where the shape is a pair, a value the dict lacks as it is.  Text must
+    equal the column's text; a blank column, NaN, is the label's value where the label
+    returns NaN, as ``SPIA_US_SEC``'s ``sex(2)`` does on a single-life point; anything else,
+    a raise among them, is a fault, as is a column the table lacks.  And an entry must be
+    needed: a label the entry names as a column or a pair, whose own name is also a
+    column, must not return that column, its default, on every point, which would leave
+    the entry stale.  ``entry`` stands in for the registry's, as a harness test's does.
+    """
+    from us_registry import meta, point_keys, projection
+    entry = meta(name) if entry is None else entry
+    columns = entry.get("reporting_columns", {})
+    labels = [cell for cell in entry.get("reporting", ()) if cell in model.Projection.cells]
+    found, own, points = [], {cell: 0 for cell in columns}, 0
+    table = model.Data.model_point_table()
+    for key, point_id in zip(point_keys(model), table.index):
+        points += 1
+        proj = projection(model, key)
+        row = proj.model_point()
+        for cell in labels:
+            for args, column, mapping in _label_calls(columns.get(cell, cell)):
+                call = f"Projection.{cell}({', '.join(repr(a) for a in args)})"
+                try:
+                    got = proj.cells[cell](*args)
+                except Exception as err:            # reported, so the scan goes on
+                    found.append(f"{call} raised {_error_text(err)} at point {point_id}, "
+                                 f"where the label returns the point's {column!r} column "
+                                 f"(R17)")
+                    continue
+                if column not in row.index:
+                    found.append(f"{call}: the table has no {column!r} column, which the "
+                                 f"registry says it returns (R17)")
+                    continue
+                want = row[column]
+                if mapping is not None and isinstance(want, str):
+                    want = mapping.get(want, want)
+                blank = (isinstance(want, float) and want != want
+                         and isinstance(got, float) and got != got)
+                if not ((isinstance(got, str) and got == want) or blank):
+                    found.append(f"{call} returns {got!r} at point {point_id}, where the "
+                                 f"label returns the point's {column!r} column, {want!r} "
+                                 f"(R17)")
+            if (cell in own and not isinstance(columns[cell], dict) and cell in row.index
+                    and isinstance(row[cell], str)):
+                try:
+                    if proj.cells[cell]() == row[cell]:
+                        own[cell] += 1
+                except Exception:                   # a fault above already
+                    pass
+    for cell, n in own.items():
+        if points and n == points:
+            found.append(f"reporting_columns[{cell!r}] is stale: {cell}() returns its own "
+                         f"{cell!r} column on every point, its default without the entry")
+    return found
 
 
 # ---------------------------------------------------------------------------

@@ -55,7 +55,8 @@ import pytest
 from sec_support import (
     C_CALLS, SEC_SPECS, c_faults, compiled_case, compiled_mismatches, cython_shards,
     release_faults, reporting_cells, spec_faults, static_faults, typing_faults)
-from us_registry import LIB, MODELS, is_sec, meta, model_path, point_keys, projection
+from sec_support import label_faults, reporting_columns_faults
+from us_registry import LIB, MODELS, is_sec, meta, model_path
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
 EC_MODELS = sorted(n for n in SEC_MODELS if meta(n).get("stage") == "EC")
@@ -101,6 +102,21 @@ def test_only_a_compiled_model_declares_reporting_cells(sec_name):
         f"{sec_name}: reporting is {declared!r}, not a tuple of cell names")
 
 
+@pytest.mark.parametrize("sec_name", SEC_MODELS)
+def test_reporting_columns_name_a_shape_for_a_declared_label(sec_name):
+    """``"reporting_columns"`` is a stage-``"EC"`` key naming a shape per label (M23).
+
+    It says what a label accessor of ``"reporting"`` returns where that is not its point's
+    column of its own name (us_registry), so it widens what C5's label check accepts: it
+    is declared only where that check runs, each key a label ``"reporting"`` names, each
+    value a column, a dict of argument to column, or a pair of a column and a dict of
+    value to label (``sec_support.reporting_columns_faults``).  That each entry is taken,
+    and each column it names is the table's, the label check holds on the model.
+    """
+    found = reporting_columns_faults(meta(sec_name))
+    assert not found, f"{sec_name}: " + "; ".join(found)
+
+
 def test_no_projection_formula_holds_python_machinery(name, model):
     """C5: no ``Projection`` formula outside R17's allowlist holds what C cannot run.
 
@@ -124,22 +140,14 @@ def test_no_projection_formula_holds_python_machinery(name, model):
 
     The registry's ``"reporting"`` widens the allowlist, so each cell it names must be
     what R17 admits, a label accessor: a ``Projection`` cell returning the model point's
-    column of its own name, exactly as the table holds it, on every committed point.
+    column of its own name, exactly as the table holds it, on every committed point, or
+    the column the entry's ``"reporting_columns"`` names for it, a blank column being the
+    label's value where the label returns it as read; and each such entry must be taken
+    (``sec_support.label_faults``).
     """
     found = static_faults(model, reporting=reporting_cells(name, model.Projection),
                           python_calls=meta(name).get("python_calls", {}))
-    labels = [cell for cell in meta(name).get("reporting", ())
-              if cell in model.Projection.cells]
-    for key, point_id in zip(point_keys(model), model.Data.model_point_table().index):
-        proj = projection(model, key)
-        row = proj.model_point()
-        for cell in labels:
-            got = proj.cells[cell]()
-            want = row[cell] if cell in row.index else "no such column"
-            if not (isinstance(got, str) and got == want):
-                found.append(f"Projection.{cell} returns {got!r} at point {point_id}, "
-                             f"where the label accessor returns the point's {cell!r} "
-                             f"column, {want!r} (R17)")
+    found += label_faults(model, name)
     assert not found, f"{name}: {len(found)} faults, first:\n  " + "\n  ".join(found[:20])
 
 
