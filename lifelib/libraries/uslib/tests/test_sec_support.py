@@ -1496,6 +1496,55 @@ def test_the_compiled_comparison_keeps_kinds_and_floors_at_the_magnitude():
         assert _value_text(*same, 0.0, rtol=0.0) is None
 
 
+def test_c4_expects_what_also_calls_beyond_the_full_sweep():
+    """``c4_expected`` takes what a product's ``also`` calls into C4's expectation (M17).
+
+    The full sweep reaches a cell of a timing only at the keys a swept cell asks of it, so
+    a timing no formula passes is compared only where ``also`` calls it; and a point whose
+    ``proj_len()`` raises is not given to ``also``, whose loops it bounds.
+    """
+    from sec_support import c4_expected
+    model = mx.new_model(_name("also"))
+    try:
+        proj = model.new_space("Projection")
+        proj.new_cells("proj_len", formula="lambda: 2")
+        proj.new_cells("at", formula="lambda t, timing: 1.0 * t + timing")
+        proj.new_cells("flow", formula="lambda t: at(t, 0)")
+        swept = c4_expected(proj)
+        also = c4_expected(proj, also=lambda p: [p.at(t, 5) for t in range(3)])
+        proj.cells["proj_len"].formula = "lambda: undefined_name"
+        called = []
+        c4_expected(proj, also=called.append)
+    finally:
+        model.close()
+    assert sorted(args for name, args in swept if name == "at") == [(0, 0), (1, 0), (2, 0)]
+    assert sorted(args for name, args in also if name == "at") == [
+        (0, 0), (0, 5), (1, 0), (1, 5), (2, 0), (2, 5)]
+    assert also[("at", (2, 5))] == ("ok", 7.0)
+    assert called == []
+
+
+def test_vul_maps_s_ids_and_totals_onto_its_positions_and_total_cells():
+    """``_vul_twin_args`` maps ``VUL_US_S``'s keys as ``VUL_US_SEC`` takes them (R9, R12).
+
+    S's totals, ``claims(t, None)`` and ``me_charge_pp(t, None)``, are SEC's one-argument
+    totals, and its kind and subaccount keys of those two are skipped; a subaccount id,
+    first or second among a cell's arguments, is its position in the shipped lineup; and
+    any other cell's arguments pass as they are.
+    """
+    from sec_support import _vul_twin_args
+    assert _vul_twin_args("claims", (5, None)) == (5,)
+    assert _vul_twin_args("claims", (5, "DEATH")) is None
+    assert _vul_twin_args("me_charge_pp", (5, None)) == (5,)
+    assert _vul_twin_args("me_charge_pp", (5, 2)) is None
+    assert _vul_twin_args("alloc", (2,)) == (1,)
+    assert _vul_twin_args("scenario_last_mth", (1,)) == (0,)
+    assert _vul_twin_args("sa_pp_at", (5, 2, "BEF_PREM")) == (5, 1, "BEF_PREM")
+    assert _vul_twin_args("sa_pricing_pp", (7, 1)) == (7, 0)
+    assert _vul_twin_args("av_pp_at", (5, "BEF_PREM")) == (5, "BEF_PREM")
+    assert _vul_twin_args("net_cf", (5,)) == (5,)
+
+
 def test_the_full_sweep_reaches_every_cell_and_every_month_and_keeps_the_raises():
     """``full_sweep`` evaluates every cell without parameters and every monthly cell at
     ``t = 0 .. proj_len()``, what they reach with them, and records each raise."""

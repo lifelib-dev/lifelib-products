@@ -42,12 +42,16 @@ tracking.
     it reads it, the keys and the values of every table read at a policy year or an
     attained age, the class factors, the surrender-charge schedules, the subaccount lineup
     and the return scenario. It takes no parameters, so each file is read **once per
-    model**.
+    model**. It hands the projection what the files hold as numpy vectors and arrays of
+    numbers, one element per model point, per subaccount, per key, per schedule or per
+    scenario.
 
 :mod:`~.VUL_US_SEC.Projection`
-    The by-policy projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its
-    ``data`` Reference, which resolves to the single :mod:`~.VUL_US_SEC.Data` Space.
+    The by-policy projection, parameterized by ``idx``, the position of a model point in
+    the ``Data`` vectors, as ``basiclife.BasicTerm_SC`` is: ``Projection[0]`` is an
+    ItemSpace projecting the table's first row, model point 1, and its ``point_id()`` is
+    that label. It reaches the inputs through its ``data`` Reference, which resolves to
+    the single :mod:`~.VUL_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized,
 every ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers
@@ -57,6 +61,19 @@ once, however many policies are projected.
 Input data is **external**: CSVs in the model folder's parent directory, read at run
 time rather than stored inside the model. The model folder itself holds no data, so
 the model and its inputs must travel together.
+
+**Compiled.** The model compiles under modelx-cython into C-typed code, as
+``basiclife/BasicTerm_SC`` does, from the two inputs beside it: ``sample_sec.py``, the run
+that types each cell, and ``spec_sec.py``, the length of each cell's cache.
+``Projection``'s cells read every model point attribute a projection cell uses as a C
+number from a ``Data`` vector at ``idx``, a subaccount's at its position in the lineup,
+and every table, the return scenario among them, as an array indexed by integers; a
+timing or a kind is an int code; and every cell but the reports, ``model_point`` and seven
+label accessors returns a C ``bint``, ``long long`` or ``double``, cached as a single
+value or in a C array sized from the contract. modelx reads and runs the same formulas,
+and computes the same numbers. ``products/variable_ul/model-sec.md`` says how to compile
+and run it, and what the compiled model does not do as modelx does: it clears no cache
+when a Reference is set, so every Reference is set on a model just imported.
 
 **Projection basis.** Monthly steps on policy monthiversaries, on two clocks. ``t``
 counts months from the valuation date, 0-based, as ``basiclife/BasicTerm_SE`` counts
@@ -115,8 +132,9 @@ leaves reserving and discounting to a separate layer.
 A partial withdrawal is a payment on the owner's election, not a claim, so it is
 :func:`~.VUL_US_SEC.Projection.withdrawals` in its own ``withdrawals`` column of
 ``result_cf()``; :func:`~.VUL_US_SEC.Projection.claims` covers deaths and surrenders
-only, and its surrender column is ``claims_lapse``, named for the ``"LAPSE"`` kind that
-produces it.
+only, :func:`~.VUL_US_SEC.Projection.claims_death` and
+:func:`~.VUL_US_SEC.Projection.claims_lapse`, and its surrender column is
+``claims_lapse``, named for the ``LAPSE`` kind that produces it.
 
 The claim cash flow is the **full death benefit less policy debt**, not the net amount
 at risk. The notes carry an explicit warning about this ("a common specification
@@ -223,7 +241,10 @@ actually projects.
 
 **Verification.** On point 3, the twin issued at the valuation date, every cell this
 model shares with :mod:`~.VUL_US_S` agrees with it at every argument the S model evaluates
-in its sweep, ``pols_if_init``, ``model_point`` and ``result_pols`` excepted; and on
+in its sweep, ``pols_if_init``, ``model_point``, ``result_pols``, ``subaccount_ids`` and
+``coi_rate_scale`` excepted, S's ``claims(t, None)`` and ``me_charge_pp(t, None)`` compared
+as :func:`~.VUL_US_SEC.Projection.claims` and :func:`~.VUL_US_SEC.Projection.me_charge_pp`
+and S's subaccount ids as positions in the lineup; and on
 points 1, 2 and 4, :mod:`~.VUL_US_S`'s in-force points, which both models open at the
 valuation date, every cell agrees from ``t = 0`` on. So the goldens
 ``tests/test_variable_ul_us.py`` asserts hold here too, with no number restated: every
@@ -257,8 +278,8 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/variable_ul/VUL_US_SEC")
-    >>> model.Projection[6].result_cf()
-    >>> model.Projection[6].result_av()
+    >>> model.Projection[5].result_cf()     # model point 6, the table's sixth row
+    >>> model.Projection[5].result_av()
 """
 
 from modelx.serialize.jsonvalues import *

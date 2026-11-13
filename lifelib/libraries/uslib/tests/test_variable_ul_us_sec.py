@@ -81,8 +81,25 @@ the rest of the plan's tests (its §5.2) and the product's own facts:
   mortality cap and a NaN that reaches it or a bound on the COI rate, the docstrings, the
   shared input tables, what the default grid reaches, the block, an in-force extract and
   the runner.
+* Stage EC, held in modelx: the split totals, ``claims(t)`` and ``me_charge_pp(t)``, are
+  S's bit for bit, the sign of a zero included; the padding of every array is NaN and no
+  reader reads it, the extract labelled otherwise than by position naming each point it
+  refuses, and the scenarios are numbered by their ids whatever the file's order; a
+  scenario month far past every frame adds nothing to ``Data``'s return array; what
+  ``Data`` cannot number or join, and a value no decode or join knows, its case or its
+  spaces changed, is refused by name; a point the contract does not issue is refused by
+  ``proj_len()``; the runner refuses to build from a copy without the repository, and
+  sums the block as ``groupby`` does; and the sample's recursion limit and the spec's
+  sizes are what their comments derive.
 * C2, the fingerprint: every committed point computes what the model computed when Phase 1
   ended, frozen at the end of this module before Phase 2 changed anything (§5.4).
+* The compiled model (Phase 2), in the ``cython`` job: it computes what modelx computes on
+  the splice grid, at the contract's extremes and on a lineup of nine, where the cap on
+  mortality binds and a NaN meets a bound, on labels that are not text and on keys
+  written as floats; it refuses what modelx refuses, and what only its caches bound; its
+  deepest call runs on a 1 MiB stack and on the main thread; past a lapse rate of 1 its
+  checks fail rather than raise; it clears no cache when a Reference is set; and the
+  runner prints it as it prints modelx.
 
 SEC month ``t`` is S month ``t + source_mth`` throughout, the direction in which
 ``sec_support`` takes its ``t_offset``: ``d`` for a point restated at S month ``d``, 0 for
@@ -121,27 +138,38 @@ policy and its month (``_row``), so neither a renumbered table nor Phase 2's pos
 point a test at the wrong row.  The one exception is a table ``Data`` refuses, which has
 no keys to give: it is read through the base ``Projection``'s default point.  And a timing
 or a kind is passed through ``_code``, which gives the model's Reference of that name
-where the model defines one and the string otherwise, and every cell-by-cell comparison
-goes through ``_twin``: Phase 2 changes the call syntax only (C1), each in one place.
+where the model defines one and the string otherwise, a subaccount through ``_sa`` and the
+lineup through ``_subaccounts``, and every cell-by-cell comparison goes through ``_twin``:
+Phase 2 changes the call syntax only (C1), each in one place.  At stage ``"EC"``, where the
+model now stands, the codes are the model's int References (USLIB-SEC-PLAN.md R9),
+``Projection`` is keyed by position, a subaccount is its position in the lineup, and
+``_twin`` maps S's ``claims(t, None)`` and ``me_charge_pp(t, None)`` onto the totals
+``claims(t)`` and ``me_charge_pp(t)``, and S's subaccount ids onto positions.
 """
+import ast
 import dataclasses
 import gc
 import itertools
+import json
 import math
 import os
+import pathlib
 import re
 import shutil
 import subprocess
 import sys
+import warnings
 
 import modelx as mx
+import numpy as np
 import pandas as pd
 import pytest
 
 from sec_support import (
-    GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, build_sec_table, check_generated,
-    codes, fingerprint_mismatches, frame_mismatches, shift_months, sweep, temp_inputs,
-    twin_mismatches)
+    GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, _VUL_LINEUP, _vul_c4_also,
+    build_sec_table, check_generated, codes, compiled_case, compiled_mismatches,
+    exact_here, fingerprint_mismatches, frame_mismatches, run_compiled, shift_months,
+    sweep, temp_inputs, twin_mismatches)
 from us_registry import model_path, point_keys, projection
 
 SEC, TWIN, TABLE = "VUL_US_SEC", "VUL_US_S", "model_point_table_sec.csv"
@@ -446,8 +474,8 @@ COUNTED = frozenset({
     "pols_lapse", "pols_maturity", "premiums", "prem_to_av", "premium_loads", "coi",
     "maint_fee", "mth_deduction", "inv_income", "me_charge", "loan_spread", "av_at",
     "av_change", "surr_charge", "claims_from_av", "claims_over_av", "claims", "claims_net",
-    "withdrawals", "wd_fees", "sa_transfer", "expenses", "premium_taxes", "margin_expense",
-    "margin_mortality", "net_cf", "net_cf_ga"})
+    "claims_death", "claims_lapse", "withdrawals", "wd_fees", "sa_transfer", "expenses",
+    "premium_taxes", "margin_expense", "margin_mortality", "net_cf", "net_cf_ga"})
 RELATIVE = ("check_av_roll_fwd_resid", "check_margin_resid", "check_net_view_resid")
 
 # result_pols' columns, in its order: the count, the new business within it, the month's
@@ -462,8 +490,11 @@ REPORTS = ("result_cf", "result_pols", "result_av", "result_net")
 # The timings and kinds the model knows: the count's three, which S's stub names and
 # answers with pols_if for each; the five intra-month points of the accounts, and av_at's
 # EOM; and the claim kinds, with claim_pp's WITHDRAWAL and claims_from_av's MATURITY,
-# always zero.  No call here takes claims' kind=None or me_charge_pp's i=None default,
-# which Phase 2 replaces with explicit total cells (USLIB-SEC-PLAN.md D11, R12).
+# always zero.  At stage EC each is the model's int Reference of its name, through _code,
+# and S's claims(t, kind=None) is two cells, claims_death and claims_lapse, and their
+# total, claims(t), and S's me_charge_pp(t, i=None) a cell of a subaccount,
+# me_charge_sa_pp(t, i), and their total, me_charge_pp(t), which this module calls by name
+# (USLIB-SEC-PLAN.md D11, R12).
 TIMINGS = ("BEF_MAT", "BEF_NB", "BEF_DECR")
 AV_TIMINGS = ("BEF_PREM", "BEF_WD", "BEF_FEE", "BEF_INV", "BEF_ME")
 KINDS = ("DEATH", "LAPSE")
@@ -471,7 +502,8 @@ CLAIM_KINDS = ("DEATH", "LAPSE", "WITHDRAWAL")
 AV_KINDS = ("DEATH", "LAPSE", "MATURITY")
 
 # The opening state, in Data's order, as each column is read: (the column, the accessor and
-# its arguments).  And the two first-month pins.
+# its arguments, a subaccount by its id, which _state_args passes through _sa).  And the
+# two first-month pins.
 STATE = {"sa_pp_init_1": ("sa_pp_init", (1,)), "sa_pp_init_2": ("sa_pp_init", (2,)),
          "fa_pp_init": ("fa_pp_init", ()), "la_pp_init": ("la_pp_init", ()),
          "loan_bal_init": ("loan_bal_init", ()),
@@ -488,7 +520,9 @@ NEW_CELLS = ("policy_count", "duration_mth_init", "t_entry", "omega_mth", "is_ac
              "surr_charge_rate_max", "surr_charge_runoff_years",
              "pricing_fixed_return_mth", "corridor_override_m1",
              "has_corridor_override_m1", "coi_rate_override_m1",
-             "has_coi_rate_override_m1", *RELATIVE, "result_pols")
+             "has_coi_rate_override_m1", *RELATIVE, "result_pols", "point_id",
+             "subaccount_count", "coi_schedule", "scenario_index", "claims_death",
+             "claims_lapse", "me_charge_sa_pp")
 LABELS = ("sex", "rate_class", "db_option", "qual_test", "premium_type", "surr_charge_id",
           "scenario_id")
 
@@ -509,13 +543,14 @@ CALL_DEPTH = 40
 
 # How deep a cold call may run beyond its chain, one cell a month from its month back to
 # the chain's base (D5): the cells above the chain and those below it, the first month's
-# charges and Data's first reads of its tables.  A cold net_cf in the last month runs 20 or
-# 21 cells beyond one cell a month back to t_entry() at the shipped References, on the
+# charges and Data's first reads of its tables.  A cold net_cf in the last month runs 21
+# cells beyond one cell a month back to t_entry() at the shipped References, on the
 # committed points and at the contract's longest cover, and with the behaviour module on,
-# 15 beyond one cell a month back to issue, through the pricing path, cold or swept in
-# ascending t; each chain called alone runs at most 10 beyond.  25 leaves Phase 2 four
-# levels for a Data vector read below a table's reader.  Any chain of two cells a month
-# runs a frame's length beyond.
+# 16 beyond one cell a month back to issue on the committed points, through the pricing
+# path, and 21 at the longest cover; the pricing path alone runs 8 beyond, and each chain
+# called alone at most 10 (measured at M17, at stage EC, where a Data vector and its
+# table's check stand below each reader: 20 or 21 at stage E).  25 leaves four levels.
+# Any chain of two cells a month runs a frame's length beyond.
 CHAIN_OVERHEAD = 25
 
 
@@ -542,15 +577,58 @@ def _code(proj, label):
     return value if isinstance(value, int) and not isinstance(value, bool) else label
 
 
-def _twin(s_proj, sec_proj, **kwargs):
+def _subaccounts(proj):
+    """The arguments that select each subaccount of ``proj``'s lineup, in lineup order.
+
+    Its positions, ``range(subaccount_count())``, where the model names a subaccount by its
+    position, as Phase 2 does (R9, R10), else its ids, ``subaccount_ids()``, as ``VUL_US_S``
+    does and the model did at stage ``"E"``.
+    """
+    if "subaccount_count" in proj.cells:
+        return range(proj.subaccount_count())
+    return proj.subaccount_ids()
+
+
+def _sa(proj, sa_id):
+    """The argument that selects subaccount ``sa_id`` on ``proj``: its position in the
+    lineup, ``Data.subaccounts()``, where the model names a subaccount by its position,
+    else the id itself."""
+    if "subaccount_count" in proj.cells:
+        return list(proj.data.subaccounts()).index(sa_id)
+    return sa_id
+
+
+def _state_args(proj, name, args):
+    """The arguments of :data:`STATE`'s accessor ``name`` on ``proj``: a subaccount's id
+    through :func:`_sa`."""
+    return tuple(_sa(proj, a) for a in args) if name == "sa_pp_init" else args
+
+
+def _twin(s_proj, sec_proj, *, arg_map=None, **kwargs):
     """``sec_support.twin_mismatches``, which every comparison in this module calls here.
 
     It passes the SEC Space's ``sec_support.codes``, which map S's timing and kind strings
-    to the int codes Phase 2 gives them.  At stage ``"E"`` there are none, and the codes are
-    ``{}``; every comparison goes through here, so each takes Phase 2's codes when they
-    come.
+    to the int codes Phase 2 gives them, and the spec's ``twin_arg_map``, which maps S's
+    ``claims(t, None)`` and ``me_charge_pp(t, None)``, the totals, onto Phase 2's
+    ``claims(t)`` and ``me_charge_pp(t)``, skips S's ``claims(t, kind)`` and
+    ``me_charge_pp(t, i)``, whose values are Phase 2's ``claims_death``, ``claims_lapse``
+    and ``me_charge_sa_pp``, and maps S's subaccount ids onto Phase 2's positions (R9,
+    R12).  The spec's map runs first, then the caller's ``arg_map``, on S's arguments.  It
+    maps S's keys alone, so where ``s_proj`` is a projection of this model, as T4's scaled
+    count compares one with another, it is not applied.  At stage ``"E"`` there were no
+    codes; every comparison goes through here, so each took Phase 2's codes and splits
+    when they came.
     """
-    return twin_mismatches(s_proj, sec_proj, codes=codes(sec_proj), **kwargs)
+    first = SPEC.twin_arg_map if "subaccount_ids" in s_proj.cells else None
+
+    def both(name, args):
+        if first is not None:
+            args = first(name, args)
+        if args is not None and arg_map is not None:
+            args = arg_map(name, args)
+        return args
+    return twin_mismatches(s_proj, sec_proj, codes=codes(sec_proj), arg_map=both,
+                           **kwargs)
 
 
 def _key(model, point_id):
@@ -718,7 +796,7 @@ def _sweep_s(proj):
     searches, so that the comparisons see them too.
     """
     sweep(proj)
-    ids = proj.subaccount_ids()
+    ids = _subaccounts(proj)
     for t in range(proj.proj_len()):
         for i in ids:
             proj.inv_return_mth(t, i)
@@ -1014,7 +1092,7 @@ def _sweep_on_the_books(proj):
     cannot judge: no loop reads the account value's opening balance at ``t_entry()`` on a
     point issued later.  A cell with a parameter the sets give no values raises.
     """
-    ids = proj.subaccount_ids()
+    ids = _subaccounts(proj)
     months = range(proj.t_entry(), proj.proj_len())
     for name in sorted(_monthly_cells(proj)):
         cells, rest = proj.cells[name], proj.cells[name].parameters[1:]
@@ -1136,6 +1214,7 @@ OUTSIDE_COVER = {
     "mth_deduction": 0.0, "inv_income": 0.0, "withdrawals": 0.0, "wd_fees": 0.0,
     "surr_charge": 0.0, "expenses": 0.0, "premium_taxes": 0.0, "claims_over_av": 0.0,
     "claims_net": 0.0, "me_charge": 0.0, "loan_spread": 0.0, "sa_transfer": 0.0,
+    "claims": 0.0, "claims_death": 0.0, "claims_lapse": 0.0, "me_charge_pp": 0.0,
     "margin_expense": 0.0, "margin_mortality": 0.0, "net_cf": 0.0, "net_cf_ga": 0.0,
     # the cells that read t + 1, which return their zero before they read it
     "av_change": 0.0, "check_av_roll_fwd_resid": 0.0, "check_margin_resid": 0.0,
@@ -1158,11 +1237,12 @@ LEVEL = ("loan_cr_rate_ann", "loan_cr_rate_mth")
 # reads them outside cover, and a re-based copy of a future row holds no month before
 # issue, so a read there raises.  At t = proj_len() they read the scenario's last month.
 IN_COVER_ONLY = ("gross_return_mth", "inv_return_mth")
-# Cells keyed by a subaccount as well, 0.0 at every id of the lineup outside cover; and
-# sa_pp_at at every id and every one of its timings.
-BY_SUBACCOUNT = ("sa_pp", "wd_sa_pp", "mth_deduction_sa_pp", "me_charge_pp", "sa_pp_at")
+# Cells keyed by a subaccount as well, 0.0 at every subaccount of the lineup outside cover;
+# and sa_pp_at at every subaccount and every one of its timings.
+BY_SUBACCOUNT = ("sa_pp", "wd_sa_pp", "mth_deduction_sa_pp", "me_charge_sa_pp",
+                 "sa_pp_at")
 # Cells with a timing or a kind, 0.0 at every one of these outside cover.
-BY_ARGUMENT = {"claim_pp": CLAIM_KINDS, "claims": KINDS, "claims_from_av": AV_KINDS,
+BY_ARGUMENT = {"claim_pp": CLAIM_KINDS, "claims_from_av": AV_KINDS,
                "av_pp_at": AV_TIMINGS[1:], "av_at": (*AV_TIMINGS[1:], "EOM"),
                "unloaned_av_pp_at": AV_TIMINGS, "fa_pp_at": AV_TIMINGS,
                "la_pp_at": AV_TIMINGS, "loan_bal_pp_at": AV_TIMINGS}
@@ -1225,7 +1305,7 @@ def _outside_cover_faults(p, where):
     """
     faults = []
     L, entry = p.proj_len(), p.t_entry()
-    ids = p.subaccount_ids()
+    ids = _subaccounts(p)
 
     def check(name, args, want):
         try:
@@ -1312,8 +1392,7 @@ def _carry(p):
         "av_at": p.av_at(L, bef_prem),
         "checks": (p.check_av_roll_fwd(), p.check_margin(), p.check_net_view()),
         "flows": [p.premiums(L), p.pols_death(L), p.pols_lapse(L), p.expenses(L),
-                  p.withdrawals(L), p.net_cf(L),
-                  *(p.claims(L, _code(p, kind)) for kind in KINDS)]}
+                  p.withdrawals(L), p.net_cf(L), p.claims_death(L), p.claims_lapse(L)]}
 
 
 def _dyn_raw(x, t):
@@ -1356,7 +1435,8 @@ def _face_raw(x, t):
 # raw value it bounds, a COI scale read past its last year, and a face cut past 0, the face
 # entering the month less the cut below 0 before the floor.
 AT_VALUATION = {
-    **{f"{column} in use": (lambda x, name=name, args=args: bool(x.cells[name](*args)))
+    **{f"{column} in use": (lambda x, name=name, args=args: bool(
+        x.cells[name](*_state_args(x, name, args))))
        for column, (name, args) in STATE.items()},
     "the face in force below the face at issue": lambda x: (
         0.0 < x.sum_assured_init() < x.sum_assured()),
@@ -1406,7 +1486,7 @@ IN_FRAME = {
     "the withdrawal's fallback share": lambda x, t: (
         x.wd_pp(t) > 0.0 and x.unloaned_av_pp_at(t, _code(x, "BEF_WD")) <= 0.0),
     "a subaccount below 0": lambda x, t: any(x.sa_pp(t, i) < 0.0
-                                            for i in x.subaccount_ids()),
+                                            for i in _subaccounts(x)),
     "the loan's preferred tier stepping in": lambda x, t: (
         x.duration_mth(t) == 12 * (x.loan_pref_year - 1)
         and x.loan_bal_pp_at(t, _code(x, "BEF_PREM")) > 0.0),
@@ -1508,7 +1588,7 @@ def _below(sp, d):
     Each subaccount and the fixed option, at ``VUL_US_S``'s opening timing, the values the
     generator restates: the one bound of ``Data``'s that a state S reaches can fail.
     """
-    accounts = [sp.sa_pp_at(d, i, "BEF_PREM") for i in sp.subaccount_ids()]
+    accounts = [sp.sa_pp_at(d, i, "BEF_PREM") for i in _subaccounts(sp)]
     return min(*accounts, sp.fa_pp_at(d, "BEF_PREM")) < 0.0
 
 
@@ -2280,7 +2360,8 @@ def _chains_cold(folder, labels, refs):
                                  f"called, so its chain was not cold")
                     continue
                 t = end + offset
-                args = (t, *(_code(p, x) if isinstance(x, str) else x for x in rest))
+                args = (t, *(_code(p, x) if isinstance(x, str) else _sa(p, x)
+                             for x in rest))
                 found += _one_cell_a_month(label, _cold_depth(p, cell, args),
                                            t - p.t_entry(), f"{cell}{args}")
         finally:
@@ -2686,10 +2767,14 @@ MALFORMED = [
     ("issued beyond the horizon", _set("duration_mth", [9], -121),
      "{file}: duration_mth must be -120 or more, a policy issued at most 120 months after "
      "the valuation date; it is not at point_id [9]"),
+    ("a duration of 2**53 months", _set("duration_mth", [6], 2.0 ** 53),
+     "{file}: duration_mth must be below 2**53 months in size; it is not at point_id [6]"),
     *[(f"an age_at_entry {what}", _set("age_at_entry", [5], value), _AGE.format(
         file="{file}", point=5))
       for what, value in (("of 45.5", 45.5), ("below 0", -1), ("as text", "45y"),
                           ("blank", float("nan")))],
+    ("an age_at_entry of 2**53", _set("age_at_entry", [5], 2.0 ** 53),
+     "{file}: age_at_entry must be below 2**53 in size; it is not at point_id [5]"),
     *[(f"no {column} column", _drop(column), f"{{file}} has no {column} column")
       for column in READ_COLUMNS],
     ("a repeated point_id",
@@ -2914,6 +2999,9 @@ MALFORMED_KEYS = [
           ("a gap", _drop_row(edited), f"no line holds {column} {first + edited}"),
           ("no row", _no_row, "no line holds policy_year 1" if column == "policy_year"
            else "no line holds an age"))],
+    *[(f"{file}: a negative age", file, _write_at("age", 0, -1), check,
+       f"{file}: age must be 0 or more; it is not on line [2]")
+      for file, (column, check, _, _) in KEY_TABLES.items() if column == "age"],
     *[(f"{file}: its first year missing", file, _drop_row(0), check,
        _RUNS[column].format(file=file) + "no line holds policy_year 1")
       for file, (column, check, _, _) in KEY_TABLES.items() if column == "policy_year"],
@@ -3018,7 +3106,8 @@ RATE_TABLES = {
     "prem_persistency.csv": ("prem_persistency", "prem_persistency_last_year", 2, 4,
                              "a number, zero or more"),
     "lapse_table.csv": ("lapse_rate_ann", "lapse_last_year", 4, 6, "a number from 0 to 1"),
-    "corridor_factors.csv": ("corridor_factor", "corridor_age_last", 29, 31, "a number"),
+    "corridor_factors.csv": ("corridor_factor", "corridor_age_last", 29, 31,
+                             "a number, zero or more"),
     "mort_table.csv": ("mort_rate", "mort_age_last", 29, 31, "a number from 0 to 1"),
     "coi_rates.csv": ("coi_rate_guar", "coi_rate_last_years", 9, 11,
                       "a number, zero or more"),
@@ -3032,6 +3121,7 @@ RATE_TABLES = {
 # The values outside a range, by table, each read on the row RATE_TABLES edits.
 OUT_OF_RANGE = {"prem_persistency.csv": (-0.5,), "lapse_table.csv": (1.2, -0.05),
                 "mort_table.csv": (1.01, -0.01), "coi_rates.csv": (-0.22,),
+                "corridor_factors.csv": (-0.5,),
                 "class_factor_table.csv": (-1.0,), "surr_charge_table.csv": (-18.0,),
                 "subaccount_table.csv": (-0.0075,)}
 
@@ -3141,8 +3231,10 @@ def test_an_assumption_table_with_a_value_that_is_not_a_number_is_refused(
 # rate of 0 in policy year 2 and of 1 in policy year 3, where S's point 1 is at t = 0; a
 # mortality rate of 0 at the table's first age; and a class factor, the anchor cell's
 # guaranteed COI rate in policy year 1, the bond subaccount's fund expense, the premium
-# persistency factor of policy year 3 and the schedule's initial surrender charge at 0.
+# persistency factor of policy year 3, the schedule's initial surrender charge and the
+# corridor factor at attained age 47, S's point 1's in policy year 3, at 0.
 AT_BOUNDS = {"prem_persistency.csv": (("prem_persistency", 2, 0.0),),
+             "corridor_factors.csv": (("corridor_factor", 29, 0.0),),
              "lapse_table.csv": (("lapse_rate_ann", 1, 0.0), ("lapse_rate_ann", 2, 1.0)),
              "mort_table.csv": (("mort_rate", 0, 0.0),),
              "class_factor_table.csv": (("factor", 0, 0.0),),
@@ -3165,11 +3257,12 @@ def test_a_rate_or_factor_at_the_bound_of_its_range_is_read(tmp_path):
 
     The ranges ``Data`` holds the tables to are closed: a lapse or mortality rate from 0 to
     1, the shipped mortality table reaching 1.0 at attained age 119, and a class factor, a
-    guaranteed COI rate, a fund expense, a premium persistency factor or a surrender
-    charge of 0 or more.  So a copy holding each bound (:data:`AT_BOUNDS`) reads, every
-    extent and count as shipped, and S's point 1, in policy year 3 at ``t = 0``, projects
-    its first month with the whole lapse rate of 1.0, a base persistency factor of 0 and
-    no surrender charge.
+    guaranteed COI rate, a fund expense, a premium persistency factor, a surrender charge
+    or a corridor factor of 0 or more.  So a copy holding each bound (:data:`AT_BOUNDS`)
+    reads, every extent and count as shipped, and S's point 1, in policy year 3 at
+    ``t = 0``, projects its first month with the whole lapse rate of 1.0, a base
+    persistency factor of 0 and no surrender charge, and its second with a corridor of 0,
+    which leaves the death benefit at the face.
     """
     folder = temp_inputs(tmp_path, model_path(SEC),
                          edits={file: _written(cells) for file, cells in AT_BOUNDS.items()})
@@ -3178,24 +3271,49 @@ def test_a_rate_or_factor_at_the_bound_of_its_range_is_read(tmp_path):
         assert (model.Data.prem_persistency_last_year(), model.Data.lapse_last_year(),
                 model.Data.mort_age_last(), model.Data.class_count(),
                 model.Data.surr_charge_count()) == (6, 11, 121, 6, 1)
-        assert len(model.Data.coi_rate_last_years()) == 1
-        assert model.Data.subaccounts().at[2, "fund_expense_ann"] == 0.0
+        assert model.Data.coi_schedules() == 1
         p = _row(model, "twin", 1, 0)
+        assert p.fund_expense_ann(_sa(p, 2)) == 0.0
         assert (p.lapse_rate(0), p.lapse_rate_mth(0)) == (1.0, 1.0)
         assert (p.prem_persistency_base(0), p.surr_charge_rate(0)) == (0.0, 0.0)
         assert type(p.net_cf(0)) is float and math.isfinite(p.net_cf(0))
+        assert (p.corridor_factor(1), p.db_pp(1)) == (0.0, p.sum_assured_at(1))
     finally:
         model.close()
 
 
-# A text column VUL_US_S branches on, holding a value its formulas do not know: the decodes
-# read it as no known value, and the cell that branches on it raises VUL_US_S's own message,
-# on S point 2's twin, which pins nothing, so that month 0 asks the corridor its rule, with
-# one column changed.  (case, column, value, message).
+# A text column VUL_US_S branches on or joins on, holding a value its formulas or tables do
+# not know, on S point 2's twin, which pins nothing, so that month 0 asks the corridor its
+# rule, with one column changed: an option, a test or a pattern no decode names, and a case
+# or a whitespace variant of every value each decode and each join names, which S's
+# comparisons and lookups, exact, do not know either.  The decodes read such a value as no
+# known value, and the cell that branches on it raises VUL_US_S's own message; the joins
+# refuse it, the class, the charged schedule and the scenario by the table, naming the
+# point, and the COI scale's keys where a rate is read, as VUL_US_S's lookups raised.
+# (case, column, value, message).
+_NO_CLASS_2 = "class_factor_table.csv has no factor for the rate_class of point_id [2]"
+_NO_SCHEDULE_2 = ("surr_charge_table.csv has no schedule for the surr_charge_id of "
+                  "point_id [2], each of which has_surr_charge")
+_NO_SCENARIO_2 = ("scenario_table.csv has no returns for every subaccount of the lineup on "
+                  "the scenario_id of point_id [2]")
+_NO_SCALE_2 = ("point_id 2: coi_rates.csv has no scale for the point's sex, rate_class and "
+               "age_at_entry")
 UNDECODABLE = [
     ("db_option C", "db_option", "C", "invalid db_option"),
     ("qual_test CVAT", "qual_test", "CVAT", "invalid qual_test"),
     ("premium_type FLEX", "premium_type", "FLEX", "invalid premium type"),
+    *[(f"db_option {value!r}", "db_option", value, "invalid db_option")
+      for value in ("a", " A", "b", "B ")],
+    *[(f"qual_test {value!r}", "qual_test", value, "invalid qual_test")
+      for value in ("gpt", "GPT ")],
+    *[(f"premium_type {value!r}", "premium_type", value, "invalid premium type")
+      for value in ("level", " LEVEL", "single", "SINGLE ")],
+    *[(f"rate_class {value!r}", "rate_class", value, _NO_CLASS_2)
+      for value in ("stdnt", "StdNT ")],
+    *[(f"sex {value!r}", "sex", value, _NO_SCALE_2) for value in ("m", " M")],
+    ("surr_charge_id 'vul14'", "surr_charge_id", "vul14", _NO_SCHEDULE_2),
+    *[(f"scenario_id {value!r}", "scenario_id", value, _NO_SCENARIO_2)
+      for value in ("we", " WE")],
 ]
 
 
@@ -3203,12 +3321,18 @@ UNDECODABLE = [
                          ids=[c[0] for c in UNDECODABLE])
 def test_a_value_no_decode_knows_is_refused_as_in_vul_us_s(tmp_path, case, column, value,
                                                           message):
-    """An unknown option, test or pattern raises ``VUL_US_S``'s message, not a branch.
+    """A value no decode or join knows is refused, by ``VUL_US_S``'s message or by name.
 
-    The five decodes each compare the text with one value, so a value none of them names
-    reads as no known one, and the cell that branches on them must raise as
-    ``VUL_US_S``'s does, rather than take its last branch.  The table reads, because the
-    text columns are the product's to judge, and the point's first projection raises.
+    The five decodes each compare the text with one value, exactly, as ``VUL_US_S``'s
+    formulas do, so a value none of them names reads as no known one, a case or a
+    whitespace variant of a value it names among them, and the cell that branches on them
+    must raise as ``VUL_US_S``'s does, rather than take its last branch.  The joins match
+    exactly too, as ``VUL_US_S``'s lookups do: a class, a charged schedule or a scenario
+    written otherwise than its table writes it is refused, naming the point, and a sex so
+    written leaves the point without a COI scale, refused where a rate is read.  A decode
+    or a join that folded case or stripped space would project a point ``VUL_US_S``
+    refuses.  The table reads, because the text columns are the product's to judge, and
+    the point's first projection raises (:data:`UNDECODABLE`).
     """
     point = _label(_committed(), "twin", 2, 0)
     model = mx.read_model(_sec_inputs(tmp_path, _set(column, [point], value)(_committed())),
@@ -3228,7 +3352,9 @@ def test_the_future_horizon_is_a_reference_that_bounds_future_business(tmp_path)
     frame opening at the valuation date and its policies arriving at ``t = 25``, and it is
     refused at 24, by name.  At 0 the model takes no future new business, D4's fallback for
     a product that cannot support it, and the message says so.  A negative horizon is
-    itself refused.  Each value is set on a model just read, before its table is.
+    itself refused, and so is a negative ``Data.return_horizon_mth``, the return
+    scenario's, by the scenario's check.  Each value is set on a model just read, before
+    its table is.
     """
     future = _label(_committed(), "future", 3, -25)
     later = (f"model_point_table_sec.csv: duration_mth must be -24 or more, a policy "
@@ -3256,6 +3382,14 @@ def test_the_future_horizon_is_a_reference_that_bounds_future_business(tmp_path)
                 assert p.pols_new_biz(25) == p.policy_count()
         finally:
             model.close()
+    model = mx.read_model(folder, name=_name("return_horizon"))
+    try:
+        assert model.Data.return_horizon_mth == 1585
+        model.Data.return_horizon_mth = -1
+        _refused_exactly(model.Data.scenario_count,
+                         "return_horizon_mth must be 0 months or more, not -1")
+    finally:
+        model.close()
 
 
 def _run_sec(script, *args, check=True):
@@ -3413,9 +3547,9 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
             assert (type(value), value) == (int, sec_model.Data.cells[cell]()), cell
         for cell in ("coi_rate_last_years", "scenario_last_mths"):
             got, want = model.Data.cells[cell](), sec_model.Data.cells[cell]()
-            assert got.equals(want) and got.dtype == "int64", cell
+            assert np.array_equal(got, want) and got.dtype == "int64", cell
         lineup = model.Data.subaccounts()
-        assert list(lineup.index) == [1, 2] and lineup.index.dtype == "int64"
+        assert list(lineup) == [1, 2] and lineup.dtype == "int64"
         read = model.Data.model_point_table()
         assert read["duration_mth"].dtype == float and read["age_at_entry"].dtype == float
         for label in probes:
@@ -3448,7 +3582,8 @@ def test_the_edges_of_the_in_force_interface_are_accepted(sec_model, tmp_path):
         p = _point(model, a_month_in)
         assert (p.duration_mth(0), p.t_entry(), p.proj_len()) == (1, 0, 923)
         for column, (cell, args) in STATE.items():
-            assert p.cells[cell](*args) == committed.at[equal, column], column
+            got = p.cells[cell](*_state_args(p, cell, args))
+            assert got == committed.at[equal, column], column
         assert 0.0 < p.sum_assured_init() <= p.sum_assured()
         assert math.isfinite(p.net_cf(0))
         p = _point(model, pinned_new)
@@ -3538,10 +3673,13 @@ def test_the_spec_restates_the_lineup_and_leaves_future_rows_unpinned(sec_model,
     has both pins blank, and a pinned new-business point fails here, by name, rather than
     in ``Data``.
     """
-    lineup = {f"sa_pp_init_{i}" for i in sec_model.Data.subaccounts().index}
+    ids = sec_model.Data.subaccounts().tolist()
+    lineup = {f"sa_pp_init_{i}" for i in ids}
     named = {column for column in SPEC.state if column.startswith("sa_pp_init_")}
     assert named == lineup, (
         f"sec_support._VUL_STATE reads {sorted(named)}, the lineup has {sorted(lineup)}")
+    assert _VUL_LINEUP == {i: k for k, i in enumerate(ids)}, (
+        f"sec_support._VUL_LINEUP is {_VUL_LINEUP}, the lineup's ids are {ids}")
     s_table = s_model.Data.model_point_table()
     pinned = [(p, pin) for p, _ in SPEC.future for pin in PINS
               if not pd.isna(s_table.at[p, pin])]
@@ -3640,8 +3778,8 @@ def test_s_in_force_points_are_their_twins_from_the_valuation_date(sec_model, s_
                4: (40000.0, 25000.0, 10000.0, 8000.0)}
     for point, (sa1, sa2, fa, loan) in opening.items():
         p, s = _row(sec_model, "twin", point, 0), _point(s_model, point)
-        assert (p.sa_pp_init(1), p.sa_pp_init(2), p.fa_pp_init(), p.loan_bal_init()) == (
-            sa1, sa2, fa, loan), point
+        assert (p.sa_pp_init(_sa(p, 1)), p.sa_pp_init(_sa(p, 2)), p.fa_pp_init(),
+                p.loan_bal_init()) == (sa1, sa2, fa, loan), point
         assert (s.sa_pp_init(1), s.sa_pp_init(2), s.fa_pp_init(), s.loan_bal_init()) == (
             sa1, sa2, fa, loan), point
         assert p.la_pp_init() == p.loan_bal_init(), point
@@ -3760,10 +3898,10 @@ def test_the_collateral_and_each_subaccount_open_from_their_own_columns(tmp_path
         bef_prem = _code(p, "BEF_PREM")
         assert (p.la_pp_init(), p.loan_bal_init()) == pytest.approx((8039.90, 8041.89),
                                                                     abs=0.005)
-        assert (p.sa_pp_init(1), p.sa_pp_init(2), p.fa_pp_init()) == pytest.approx(
-            (41701.23, 26052.83, 10454.95), abs=0.005)
-        assert (a.sa_pp_init(1), a.sa_pp_init(2), a.fa_pp_init()) == pytest.approx(
-            (39104.50, 23462.70, 15641.80), abs=0.005)
+        assert (p.sa_pp_init(_sa(p, 1)), p.sa_pp_init(_sa(p, 2)),
+                p.fa_pp_init()) == pytest.approx((41701.23, 26052.83, 10454.95), abs=0.005)
+        assert (a.sa_pp_init(_sa(a, 1)), a.sa_pp_init(_sa(a, 2)),
+                a.fa_pp_init()) == pytest.approx((39104.50, 23462.70, 15641.80), abs=0.005)
         assert (p.av_pp_at(0, bef_prem), r.av_pp_at(0, bef_prem)) == pytest.approx(
             (86248.90, 86250.89), abs=0.005)
         assert r.inv_income_pp(0) - p.inv_income_pp(0) == pytest.approx(0.00165, abs=5e-6)
@@ -3810,9 +3948,9 @@ def test_a_restated_row_reads_the_return_scenario_on_the_valuation_clock(s_model
         try:
             p = _point(model, int(rows["point_id"].iloc[0]))
             if tag == "as shipped":
-                assert (p.gross_return_mth(0, 1), s.gross_return_mth(12, 1)) == (
+                assert (p.gross_return_mth(0, _sa(p, 1)), s.gross_return_mth(12, 1)) == (
                     0.01, 0.0048675506)
-                assert (p.sa_pp(0, 1), s.sa_pp(12, 1)) == pytest.approx(
+                assert (p.sa_pp(0, _sa(p, 1)), s.sa_pp(12, 1)) == pytest.approx(
                     (34396.04, 34221.25), abs=0.005)
                 assert p.av_pp(0) - s.av_pp(12) == pytest.approx(-46.71, abs=0.005)
                 assert [p.net_cf(t) - s.net_cf(t + 12) for t in (0, 100)] == (
@@ -3946,11 +4084,11 @@ def test_fund_returns_and_the_declared_rate_run_on_the_valuation_clock(tmp_path)
             for t in (0, 1, 12):
                 for i in (1, 2):
                     want = paths.at[(p.scenario_id(), i, t), "gross_return_mth"]
-                    assert p.gross_return_mth(t, i) == want, (case, t, i)
+                    assert p.gross_return_mth(t, _sa(p, i)) == want, (case, t, i)
             for i, last in RISING_LAST.items():
-                assert p.scenario_last_mth(i) == last, (case, i)
+                assert p.scenario_last_mth(_sa(p, i)) == last, (case, i)
                 want = paths.at[(p.scenario_id(), i, last), "gross_return_mth"]
-                assert p.gross_return_mth(300, i) == want, (case, i)
+                assert p.gross_return_mth(300, _sa(p, i)) == want, (case, i)
             bef_prem = _code(p, "BEF_PREM")
             apart = [t for t in range(p.t_entry() + 1, p.proj_len())
                      if p.av_pp_at(t, bef_prem) != p.av_pp(t - 1)]
@@ -4005,6 +4143,102 @@ def test_fund_returns_and_the_declared_rate_run_on_the_valuation_clock(tmp_path)
     finally:
         for model in models.values():
             model.close()
+
+
+# The COI copy the numbering test reads: the splice's scales (_coi_rates_with_variants),
+# seven, written scale by scale in this order, which is not their keys' order, each scale's
+# lines in reverse, so that every scale's place in the file differs from its number; and
+# the keys S's four points are given on it, by S point, three of them not the anchor's, one
+# a scale whose last policy year, 50, is before the point's cover ends.
+COI_FILE_ORDER = (("M", "StdNT", 45), ("M", "StdPlusNT", 45), ("F", "PNT", 45),
+                  ("M", "StdTob", 45), ("M", "PPlusNT", 45), ("M", "StdNT", SECOND_AGE),
+                  ("M", "PTob", 45))
+COI_KEYS_OF = {1: ("M", "StdNT"), 2: ("F", "PNT"), 3: ("M", "StdTob"),
+               4: ("M", "StdPlusNT")}
+
+
+def _coi_shuffled(rates):
+    """The splice's COI scales, in :data:`COI_FILE_ORDER`, each scale's lines reversed."""
+    rates = _coi_rates_with_variants(rates)
+    place = {key: k for k, key in enumerate(COI_FILE_ORDER)}
+    rates = rates.iloc[::-1].reset_index(drop=True)
+    order = rates[["sex", "rate_class", "age_at_entry"]].apply(
+        lambda row: place[tuple(row)], axis=1)
+    return rates.iloc[order.argsort(kind="stable")].reset_index(drop=True)
+
+
+def _coi_keys(table):
+    """``table`` with the sex and class :data:`COI_KEYS_OF` gives S's point of each row's
+    ``policy_id``, which a twin keeps."""
+    s_points = dict(zip(_s_policies(), COI_KEYS_OF))
+    rows = table.copy()
+    for at, policy_id in table["policy_id"].items():
+        if policy_id in s_points:
+            rows.loc[at, ["sex", "rate_class"]] = COI_KEYS_OF[s_points[policy_id]]
+    return rows
+
+
+def _s_policies():
+    """The ``policy_id`` of S's points 1 to 4, in that order."""
+    table = pd.read_csv(model_path(TWIN).parent / "model_point_table.csv",
+                        index_col="point_id")
+    return [table.at[point, "policy_id"] for point in sorted(COI_KEYS_OF)]
+
+
+# VUL_US_S slices its COI scale from a MultiIndex the file leaves unsorted, which pandas
+# warns may be slow; the slice is the scale all the same.
+@pytest.mark.filterwarnings("ignore:indexing past lexsort depth")
+def test_the_coi_scales_are_numbered_by_key_on_a_file_out_of_key_order(tmp_path):
+    """On a COI file written out of its keys' order, each point reads its own scale, as S.
+
+    ``Data`` numbers the COI scales in their keys' order in all three cells that number
+    them, ``coi_schedule()``, the point's number, and ``coi_rate_array()`` and
+    ``coi_rate_last_years()``, the scales and their last policy years by number, so that
+    a point's number is the row of its own scale, whatever order the file is written in.
+    A ``Data`` numbering cannot be held by the compiled model's comparison with modelx,
+    which share ``Data``, nor by the fingerprint, on a file of one scale: it is held here,
+    against the file and against ``VUL_US_S``.  On a copy of seven scales, written in an
+    order of their own, each scale's lines reversed (:func:`_coi_shuffled`), S's four
+    points are given four of them (:data:`COI_KEYS_OF`), in both models: each scale's row
+    of ``coi_rate_array()`` is the file's rates for its keys, found by key, and its last
+    year the file's; and the twin of each S point is S's point, in every report and every
+    cell of S's (:func:`_continues_s`), its COI rate in every month among them, the point
+    whose scale ends at policy year 50 reading that year's rate past it.
+    """
+    edits = {"coi_rates.csv": _coi_shuffled}
+    committed = _committed()
+    twins = [_label(committed, "twin", point, 0) for point in sorted(COI_KEYS_OF)]
+    sec = _read(_sec_inputs(tmp_path / "sec", _coi_keys(committed.loc[twins]), edits),
+                "coi_order")
+    s = _read(temp_inputs(tmp_path / "s", model_path(TWIN),
+                          edits={**edits, "model_point_table.csv": _coi_keys}),
+              "s_coi_order")
+    try:
+        data = sec.Data
+        written = pd.read_csv(data.input_dir() / "coi_rates.csv")
+        keys = list(dict.fromkeys(zip(written["sex"], written["rate_class"],
+                                      written["age_at_entry"])))
+        assert keys == list(COI_FILE_ORDER) and keys != sorted(keys)
+        coi, last = data.coi_rate_array(), data.coi_rate_last_years()
+        assert data.coi_schedules() == len(keys)
+        for number, key in enumerate(sorted(keys), start=1):
+            scale = written[(written["sex"] == key[0]) & (written["rate_class"] == key[1])
+                            & (written["age_at_entry"] == key[2])]
+            assert last[number] == scale["policy_year"].max(), key
+            assert np.array_equal(coi[number, scale["policy_year"].to_numpy()],
+                                  scale["coi_rate_guar"].to_numpy()), key
+        for point in sorted(COI_KEYS_OF):
+            sp, p = _point(s, point), _row(sec, "twin", point, 0)
+            assert (p.sex(), p.rate_class()) == (sp.sex(), sp.rate_class()) == (
+                COI_KEYS_OF[point])
+            assert p.coi_schedule() == sorted(keys).index(
+                (*COI_KEYS_OF[point], 45)) + 1
+            _sweep_s(sp)
+            arg_map = _issued_later if point in NEW_BUSINESS else None
+            assert _continues_s(sp, p, 0, arg_map) == [], point
+    finally:
+        s.close()
+        sec.close()
 
 
 # The References under which two bounds of VUL_US_S's bind, which idle at the splice's: a
@@ -4349,7 +4583,7 @@ def _sweep_months(proj):
     """
     arguments = {**BY_ARGUMENT, **OPENING, "av_pp_at": AV_TIMINGS,
                  "av_at": (*AV_TIMINGS, "EOM")}
-    ids = proj.subaccount_ids()
+    ids = _subaccounts(proj)
     names = sorted(_monthly_cells(proj))
     for t in range(proj.proj_len()):
         for name in names:
@@ -4513,6 +4747,12 @@ def _nan_scale():
     return pd.Series(float("nan"), index=range(1, 123))
 
 
+def _nan_coi_array():
+    """The guaranteed COI rates, by schedule and policy year, not a number in any, as
+    ``Data.coi_rate_array`` holds them at stage ``"EC"``."""
+    return np.full((coi_schedules() + 1, 123), float("nan"))         # noqa: F821
+
+
 def _nan_pin():
     """A first-month COI pin that is not a number."""
     return float("nan")
@@ -4521,22 +4761,26 @@ def _nan_pin():
 # Each min written with its bound second that a NaN can reach, beyond the cap on mortality:
 # VUL_US_S's own bounds on the COI rate, the cap of $83.34 on the guaranteed scale and the
 # guaranteed rate and the cap over the current one, which the model keeps in S's order, and
-# the first-month pin's.  (case, the cell whose formula is replaced, its replacement, the
-# models it is replaced in, the calls on the twin of S's point 1 that must be NaN.)  A COI
-# rate is a charge, not a decrement, and is never capped at 1.
+# the first-month pin's.  (case, by model, the space and the cell whose formula is
+# replaced and its replacement, the calls on the twin of S's point 1 that must be NaN.)  A
+# COI rate is a charge, not a decrement, and is never capped at 1.  S's scale is a Series,
+# coi_rate_scale, which SEC at stage EC holds in Data's coi_rate_array instead, the one
+# change the dropped cell forces on this test.
 NAN_BOUNDS = [
-    ("the COI scale's bounds", "coi_rate_scale", _nan_scale, (SEC, TWIN),
+    ("the COI scale's bounds",
+     {SEC: ("Data", "coi_rate_array", _nan_coi_array),
+      TWIN: ("Projection", "coi_rate_scale", _nan_scale)},
      (("coi_rate_guar_at", (1,)), ("coi_rate_guar", (1,)), ("coi_rate_at", (3,)),
       ("coi_rate", (1,)))),
-    ("the COI pin's bounds", "coi_rate_override_m1", _nan_pin, (SEC,),
+    ("the COI pin's bounds",
+     {SEC: ("Projection", "coi_rate_override_m1", _nan_pin)},
      (("coi_rate", (0,)),)),
 ]
 
 
-@pytest.mark.parametrize("case, cell, formula, names, calls", NAN_BOUNDS,
+@pytest.mark.parametrize("case, replaced, calls", NAN_BOUNDS,
                          ids=[c[0] for c in NAN_BOUNDS])
-def test_a_nan_that_reaches_a_bound_written_second_stays_nan(case, cell, formula, names,
-                                                             calls):
+def test_a_nan_that_reaches_a_bound_written_second_stays_nan(case, replaced, calls):
     """A NaN that reaches a ``min`` with its bound second stays NaN, in both models.
 
     ``min(x, cap)`` keeps ``x`` unless the cap compares smaller, and no comparison with NaN
@@ -4547,9 +4791,9 @@ def test_a_nan_that_reaches_a_bound_written_second_stays_nan(case, cell, formula
     """
     models = {}
     try:
-        for name in names:
+        for name, (space, cell, formula) in replaced.items():
             models[name] = mx.read_model(model_path(name), name=_name("nan_bound"))
-            models[name].Projection.cells[cell].formula = formula
+            models[name].spaces[space].cells[cell].formula = formula
         lost = []
         for name, model in models.items():
             p = _row(model, "twin", 1, 0) if name == SEC else _point(model, 1)
@@ -4793,6 +5037,811 @@ def test_run_sec_prints_a_point_and_the_block(sec_model, s_model):
     annual = block.drop(columns="pols_if").groupby(years).sum()
     annual.insert(0, "pols_if", [block.at[12 * (y - 1), "pols_if"] for y in annual.index])
     assert annual.head(12).round(2).to_string() in out
+
+
+# ---------------------------------------------------------------------------
+# Stage EC -- what compiling changed, held in modelx (USLIB-SEC-PLAN.md Phase 2)
+
+
+def test_the_split_totals_are_s_totals_bit_for_bit(sec_model, s_model):
+    """``claims(t)`` and ``me_charge_pp(t)`` are ``VUL_US_S``'s totals, bit for bit (R12).
+
+    S's ``claims(t, kind=None)`` is the two kinds and their total in one cell, and its
+    ``me_charge_pp(t, i=None)`` each subaccount's charge and their total, each total a
+    ``sum`` of a generator.  Here the kinds are ``claims_death`` and ``claims_lapse``, a
+    subaccount's charge is ``me_charge_sa_pp(t, i)``, and each total is written out from
+    ``0.0``; T1 reaches S's totals through the spec's ``twin_arg_map`` to its tolerance,
+    and skips S's keys of a kind or a subaccount.  So they are held here, exactly: on the
+    twins of S's four points, which S opens at its own ``t = 0``, in every month of the
+    frame, each total equal to S's, its type and the sign of a zero included, each kind
+    equal to S's ``claims(t, kind)``, and each subaccount's charge, at its position, to
+    S's ``me_charge_pp(t, i)`` at its id.  Python's ``sum`` of two floats is their one
+    rounded sum, so the totals written out are S's floats in every month of the shipped
+    lineup of two.
+    """
+    found = []
+    for point in (*IN_FORCE, *NEW_BUSINESS):
+        mine, theirs = _row(sec_model, "twin", point, 0), _point(s_model, point)
+        assert mine.proj_len() == theirs.proj_len()
+        ids = theirs.subaccount_ids()
+        for t in range(mine.proj_len()):
+            for cell in ("claims", "me_charge_pp"):
+                got, want = mine.cells[cell](t), theirs.cells[cell](t)
+                if (got != want or type(got) is not type(want)
+                        or math.copysign(1.0, got) != math.copysign(1.0, want)):
+                    found.append(f"point {point}: {cell}({t}) {got!r}, S's {want!r}")
+            for cell, kind in (("claims_death", "DEATH"), ("claims_lapse", "LAPSE")):
+                if mine.cells[cell](t) != theirs.claims(t, kind):
+                    found.append(f"point {point}: {cell}({t}) is not S's "
+                                 f"claims({t}, {kind!r})")
+            for i in ids:
+                if mine.me_charge_sa_pp(t, _sa(mine, i)) != theirs.me_charge_pp(t, i):
+                    found.append(f"point {point}: me_charge_sa_pp({t}, {_sa(mine, i)}) is "
+                                 f"not S's me_charge_pp({t}, {i})")
+    assert not found, found[:20]
+
+
+# The month at which the sign test sets the kinds and the subaccounts' charges on the
+# worked example's twin: in cover, where each is nonzero.
+ZERO_MONTH = 5
+
+
+def test_negative_zero_parts_total_a_positive_zero_as_s_sum_does():
+    """Each total is ``0.0``, not ``-0.0``, where every part is ``-0.0``, as S's ``sum``.
+
+    S's totals are ``sum`` of their parts, which starts at the int 0, and ``0 + -0.0`` is
+    ``0.0``, so S's total of negative zeros is a positive zero.  ``claims(t)`` and
+    ``me_charge_pp(t)`` start their sums at ``0.0`` for that reason, and the split test
+    cannot hold it: no committed month has negative zero parts.  So here, on a read of each
+    model of its own, the two kinds and the two subaccounts' charges of the worked
+    example's twin at :data:`ZERO_MONTH` are set to ``-0.0`` as modelx input values, and
+    so are S's ``claims(t, kind)`` and ``me_charge_pp(t, i)`` of its point 1 in the same
+    month, and each total must be S's: ``0.0``, a float, with a positive sign.  A total
+    started at its first part, or written without its ``0.0``, gives ``-0.0`` and fails.
+    """
+    s = mx.read_model(model_path(TWIN), name=_name("s_zeros"))
+    sec = mx.read_model(model_path(SEC), name=_name("zeros"))
+    try:
+        theirs, mine = _point(s, 1), _row(sec, "twin", 1, 0)
+        assert mine.claims_death(ZERO_MONTH) == theirs.claims(ZERO_MONTH, "DEATH") != 0.0
+        for i in theirs.subaccount_ids():
+            assert mine.me_charge_sa_pp(ZERO_MONTH, _sa(mine, i)) == theirs.me_charge_pp(
+                ZERO_MONTH, i) != 0.0
+            theirs.me_charge_pp[ZERO_MONTH, i] = -0.0
+            mine.me_charge_sa_pp[ZERO_MONTH, _sa(mine, i)] = -0.0
+        for kind in ("DEATH", "LAPSE"):
+            theirs.claims[ZERO_MONTH, kind] = -0.0
+        for cell in ("claims_death", "claims_lapse"):
+            mine.cells[cell][ZERO_MONTH] = -0.0
+        totals = (theirs.claims(ZERO_MONTH), mine.claims(ZERO_MONTH),
+                  theirs.me_charge_pp(ZERO_MONTH), mine.me_charge_pp(ZERO_MONTH))
+    finally:
+        sec.close()
+        s.close()
+    for total in totals:
+        assert type(total) is float and total == 0.0, totals
+        assert math.copysign(1.0, total) == 1.0, totals
+
+
+# The extract's labels, in the order its rows are written: the committed table's point_id
+# plus 100, row 9 first, so that a label read as a position, or as a position plus one,
+# names another point (test_an_in_force_extract_needs_none_of_the_generator_columns).
+EXTRACT_LABELS = list(range(109, 100, -1))
+
+
+def _extract():
+    """The committed table as an administration extract would hold it: without the
+    generator's columns, and labelled :data:`EXTRACT_LABELS`, row 9 first."""
+    extract = _committed().drop(columns=list(GENERATED_COLUMNS)).iloc[::-1]
+    extract.index = pd.Index(EXTRACT_LABELS, name="point_id")
+    return extract
+
+
+# The reads beyond a table on the committed inputs, as (cell, arguments, the message after
+# the point's label): a policy year below 1, where VUL_US_S's .loc and slice raised
+# KeyError, which each year reader refuses before it reads its padded array; and a
+# subaccount's position past the lineup, either side, which each reader of a subaccount's
+# input refuses before it reads, where VUL_US_S's column or .loc raised KeyError.
+_NO_POSITION = "no subaccount at position {} of the lineup of 2"
+BEYOND = [
+    ("prem_persistency_py", (0,), "prem_persistency.csv has no factor for policy year 0"),
+    ("lapse_rate_base_py", (0,), "lapse_table.csv has no rate for policy year 0"),
+    ("coi_rate_guar_at", (0,), "coi_rates.csv has no rate for policy year 0"),
+    ("prem_persistency_py", (-1,), "prem_persistency.csv has no factor for policy year -1"),
+    ("lapse_rate_base_py", (-1,), "lapse_table.csv has no rate for policy year -1"),
+    ("coi_rate_guar_at", (-1,), "coi_rates.csv has no rate for policy year -1"),
+    *[(cell, (2,), _NO_POSITION.format(2))
+      for cell in ("alloc", "fund_expense_ann", "sa_pp_init", "scenario_last_mth")],
+    *[(cell, (-1,), _NO_POSITION.format(-1))
+      for cell in ("alloc", "fund_expense_ann", "sa_pp_init", "scenario_last_mth")],
+    ("gross_return_mth", (0, 2), _NO_POSITION.format(2)),
+]
+NO_SCALE = "coi_rates.csv has no scale for the point's sex, rate_class and age_at_entry"
+
+
+def _scenarios_unsorted(_):
+    """Three return scenarios, written out of their ids' order, one of them read by none.
+
+    ``LEVEL6``, ``MID`` and ``WE``, sorted, written ``WE``, ``MID``, ``LEVEL6``, line by
+    line in reverse, with ``MID``, which no point names, between the two that points read;
+    each scenario and subaccount a path of its own, from its own first month, ``WE``'s
+    bond path from month 3, so that a row or a first month read for another scenario
+    changes a number or a refusal.
+    """
+    rows = []
+    for scenario, base, first in (("LEVEL6", 0.0050, 0), ("MID", 0.0070, 0),
+                                  ("WE", 0.0035, 0)):
+        for i, step in ((1, 0.0001), (2, 0.00003)):
+            start = 3 if (scenario, i) == ("WE", 2) else first
+            for t in range(start, start + 30):
+                rows.append((scenario, i, t, round(base + step * t, 10), "test copy"))
+    return pd.DataFrame(rows[::-1], columns=["scenario_id", "subaccount_id", "t",
+                                             "gross_return_mth", "provenance"])
+
+
+def test_every_padded_array_holds_nan_and_no_reader_reads_it(sec_model, tmp_path):
+    """The padding is NaN, the readers refuse a key before a table, by name (§7.1 item 9).
+
+    Each reader of a padded table refuses a key below it (:data:`BEYOND`), naming the
+    point by its label, on the extract labelled otherwise than by position, where a label
+    read as ``idx + 1`` would name another: a policy year below 1 in the three year
+    readers, and a subaccount's position past the lineup, either side, in the four readers
+    of a subaccount's input and the return.  A year past a table reads its last row and an
+    age outside the two age tables the nearest row, as ``VUL_US_S`` reads them.  A point
+    whose COI scale the table lacks, issued at 36, has schedule 0 and is refused by
+    ``coi_rate_last_year()`` once a rate is read, by its projection, and projects once
+    ``charges_cease_age`` is 36, where no rate is read, as ``VUL_US_S`` projects it.
+
+    The padding is NaN, as the ``Data`` docstrings say, so that a read past a check, were
+    one lost, would make every number after it NaN rather than another key's value: row 0
+    of the COI scale, its column of policy year 0 and every year past each schedule's last;
+    year 0 of the two policy-year tables; the ages below each age table's first; row 0 of
+    the return array, each month before a path's first and after its last; and nothing
+    inside.  The scenarios are numbered in their ids' order in all four cells that number
+    them, and on a copy written out of that order, with a scenario no point names between
+    two that points name (:func:`_scenarios_unsorted`), each point's row of each array is
+    its own scenario's, read from the file by key; the return the point reads in a month
+    before its path's first is refused, naming the subaccount and the month.
+    """
+    extract = _extract()
+    label = extract.index[0]
+    model = mx.read_model(_sec_inputs(tmp_path / "extract", extract), name=_name("beyond"))
+    try:
+        p = _point(model, label)
+        assert p.point_id() == label != point_keys(model)[0] + 1
+        found = []
+        for cell, args, message in BEYOND:
+            with pytest.raises(Exception) as excinfo:
+                p.cells[cell](*args)
+            if _raised(excinfo.value) != f"ValueError: point_id {label}: {message}":
+                found.append(f"{cell}{args}: {_raised(excinfo.value)}")
+        assert not found, found
+        assert p.prem_persistency_py(500) == p.prem_persistency_py(
+            model.Data.prem_persistency_last_year())
+        assert p.lapse_rate_base_py(500) == p.lapse_rate_base_py(
+            model.Data.lapse_last_year())
+        assert p.coi_rate_guar_at(500) == p.coi_rate_guar_at(p.coi_rate_last_year())
+        data = model.Data
+        assert [p.corridor_factor_at(a) for a in (0, 17, 18)] == [2.5] * 3
+        assert p.corridor_factor_at(500) == p.corridor_factor_at(data.corridor_age_last())
+        assert p.mort_rate_base_at(0) == p.mort_rate_base_at(data.mort_age_first())
+        coi, last = data.coi_rate_array(), data.coi_rate_last_years()
+        assert np.isnan(coi[0]).all() and np.isnan(coi[:, 0]).all() and last[0] == 0
+        for s in range(1, data.coi_schedules() + 1):
+            assert not np.isnan(coi[s, 1:last[s] + 1]).any(), s
+            assert np.isnan(coi[s, last[s] + 1:]).all(), s
+        for array, first in ((data.prem_persistency_array(), 1),
+                             (data.lapse_rate_array(), 1),
+                             (data.corridor_factor_array(), data.corridor_age_first()),
+                             (data.mort_table_array(), data.mort_age_first())):
+            assert np.isnan(array[:first]).all() and not np.isnan(array[first:]).any()
+        assert first == 18
+    finally:
+        model.close()
+    unscaled = _set("age_at_entry", [label], 36)(extract)
+    for cease in (None, 36):
+        model = mx.read_model(_sec_inputs(tmp_path / f"unscaled{cease}", unscaled),
+                              name=_name("unscaled"))
+        try:
+            if cease is not None:
+                model.Projection.charges_cease_age = cease
+            p = _point(model, label)
+            assert p.coi_schedule() == 0
+            if cease is None:
+                _refused_exactly(p.result_cf, f"point_id {label}: {NO_SCALE}")
+                continue
+            assert len(p.result_cf()) == p.proj_len() == 12 * (121 - 36 + 1) + 25
+            assert not p.cells["coi_rate_guar_at"].keys()
+        finally:
+            model.close()
+    model = mx.read_model(_sec_inputs(tmp_path / "unsorted", extract,
+                                      {"scenario_table.csv": _scenarios_unsorted}),
+                          name=_name("scenarios"))
+    try:
+        data = model.Data
+        written = pd.read_csv(data.input_dir() / "scenario_table.csv")
+        assert list(dict.fromkeys(written["scenario_id"])) == ["WE", "MID", "LEVEL6"]
+        assert data.scenario_count() == 3
+        returns, firsts, lasts = (data.gross_return_array(), data.scenario_first_mths(),
+                                  data.scenario_last_mths())
+        assert np.isnan(returns[0]).all() and (firsts[0] == 0).all()
+        assert (lasts[0] == -1).all()
+        ids = list(data.subaccounts())
+        for s in range(1, 4):
+            for k in range(len(ids)):
+                held = returns[s, k]
+                assert not np.isnan(held[firsts[s, k]:lasts[s, k] + 1]).any(), (s, k)
+                assert np.isnan(held[:firsts[s, k]]).all(), (s, k)
+                assert np.isnan(held[lasts[s, k] + 1:]).all(), (s, k)
+        numbers = dict(zip(extract.index, data.scenario_index()))
+        for point, scenario in extract["scenario_id"].items():
+            s = numbers[point]
+            assert s == {"LEVEL6": 1, "WE": 3}[scenario], (point, s)
+            mine = written[written["scenario_id"] == scenario]
+            for k, sa in enumerate(ids):
+                path = mine[mine["subaccount_id"] == sa].set_index("t")["gross_return_mth"]
+                assert (firsts[s, k], lasts[s, k]) == (path.index.min(), path.index.max())
+                assert np.array_equal(returns[s, k, path.index.to_numpy()],
+                                      path.to_numpy()), (point, sa)
+        we = extract.index[extract["scenario_id"] == "WE"][0]
+        p = _point(model, we)
+        _refused_exactly(lambda: p.gross_return_mth(2, _sa(p, 2)),
+                         f"point_id {we}: scenario_table.csv has no return for "
+                         f"subaccount_id 2 at t 2")
+        assert p.gross_return_mth(3, _sa(p, 2)) == returns[3, _sa(p, 2), 3]
+    finally:
+        model.close()
+
+
+# Far months in the return scenario, as (case, the scenario edit): a scenario no point
+# names, of one row at a month a billion months on, and LEVEL6, the scenario of every
+# committed point but two, held to month 3,000, past every frame, each month its own
+# return.  Neither may make Data's return array any longer than the months a frame reads.
+FAR_MONTH = 10 ** 9
+
+
+def _far_scenario(rows):
+    """S's scenario table and ``ZFAR``, a scenario of one row at :data:`FAR_MONTH`, whose
+    id sorts last, so that the shipped scenarios keep their numbers."""
+    far = pd.DataFrame({"scenario_id": "ZFAR", "subaccount_id": [1, 2], "t": FAR_MONTH,
+                        "gross_return_mth": [0.25, -0.25], "provenance": "test copy"})
+    return pd.concat([rows, far], ignore_index=True)
+
+
+def _long_scenario(rows):
+    """S's scenario table with ``LEVEL6`` held to month 3,000, its months its own."""
+    held = rows[rows["scenario_id"] != "LEVEL6"]
+    level = pd.DataFrame([("LEVEL6", i, t, round(0.0048675506 + 1e-7 * t * i, 10),
+                           "test copy") for i in (1, 2) for t in range(3001)],
+                         columns=list(rows.columns))
+    return pd.concat([held, level], ignore_index=True)
+
+
+def test_a_far_month_of_the_return_scenario_allocates_nothing_and_projects_as_s(
+        sec_model, tmp_path):
+    """A scenario month far past every frame adds nothing to ``Data``'s return array.
+
+    ``Data.gross_return_array`` holds the months a frame reads, to
+    ``Data.return_horizon_mth``, 1,585, the last month a compiled cache keyed by ``t``
+    holds: an array to the table's last month would allocate a billion months for each
+    scenario and subaccount on a table of a few lines.  So, beside the shipped scenarios,
+    a scenario no point names, of one row a billion months on (:func:`_far_scenario`),
+    leaves the array as it was, its new row all NaN, and every committed point projects
+    exactly what it projects on the shipped table.  And ``LEVEL6`` written to month 3,000,
+    each month a return of its own (:func:`_long_scenario`), is held to month 1,585, the
+    array no longer, its last month given as 1,585: every month a frame reads, to the
+    month after the contract's longest, 1,584, is the table's own, and the committed
+    points read the months they read on the table as written, as ``VUL_US_S`` reads them.
+    A month past the horizon, which no frame reads, is refused, naming the point and the
+    scenario's number, rather than answered with the horizon's return.  And ``ZLATE``, a
+    scenario whose months start past the horizon, at 1,590 (:func:`_late_scenario`), holds
+    nothing in the array, its last month falling below its first; on a point that names
+    it, a month before its first is refused, as ``VUL_US_S``'s lookup raised there, and so
+    is every month from its first on, which would otherwise read the padding.
+    """
+    reach = sec_model.Data.return_horizon_mth
+    shipped = sec_model.Data.gross_return_array()
+    far = _read(_sec_inputs(tmp_path / "far", _committed(),
+                            {"scenario_table.csv": _far_scenario}), "far")
+    try:
+        held = far.Data.gross_return_array()
+        assert held.shape == (shipped.shape[0] + 1, *shipped.shape[1:]), held.shape
+        assert np.isnan(held[3]).all()
+        assert np.array_equal(held[:3], shipped, equal_nan=True)
+        for key in point_keys(far):
+            mine, base = projection(far, key), projection(sec_model, key)
+            for report in REPORTS:
+                assert frame_mismatches(base.cells[report](), mine.cells[report](),
+                                        rtol=0, atol=0) == [], (key, report)
+            _release(far, key)
+    finally:
+        far.close()
+    long = _read(_sec_inputs(tmp_path / "long", _committed(),
+                             {"scenario_table.csv": _long_scenario}), "long")
+    try:
+        data = long.Data
+        written = pd.read_csv(data.input_dir() / "scenario_table.csv").set_index(
+            ["scenario_id", "subaccount_id", "t"])["gross_return_mth"]
+        assert data.gross_return_array().shape == (3, 2, reach + 1)
+        assert (data.scenario_last_mths()[1] == reach).all()
+        later = _label(_committed(), "future", 3, -25)
+        p = _point(long, later)
+        for i, sa in enumerate((1, 2)):
+            for t in (0, 25, 1584, reach):
+                assert p.gross_return_mth(t, i) == written[("LEVEL6", sa, t)], (t, sa)
+            for t in (reach + 1, 3000):
+                _refused_exactly(lambda: p.gross_return_mth(t, i),
+                                 f"point_id {later}: {_PAST_HORIZON.format(reach, 1)} "
+                                 f"{sa} at t {t}")
+        assert len(p.result_cf()) == p.proj_len()
+    finally:
+        long.close()
+    late_point = _committed().loc[[later]].assign(scenario_id="ZLATE")
+    late = _read(_sec_inputs(tmp_path / "late", late_point,
+                             {"scenario_table.csv": _late_scenario}), "late")
+    try:
+        data = late.Data
+        s = list(data.scenario_index())[0]
+        assert s == 3
+        assert list(data.scenario_first_mths()[s]) == [LATE_FIRST] * 2
+        assert (data.scenario_last_mths()[s] < LATE_FIRST).all()
+        assert np.isnan(data.gross_return_array()[s]).all()
+        p = _point(late, later)
+        for i, sa in enumerate((1, 2)):
+            _refused_exactly(lambda: p.gross_return_mth(reach, i),
+                             f"point_id {later}: scenario_table.csv has no return for "
+                             f"subaccount_id {sa} at t {reach}")
+            for t in (LATE_FIRST, LATE_FIRST + 5):
+                _refused_exactly(lambda: p.gross_return_mth(t, i),
+                                 f"point_id {later}: {_PAST_HORIZON.format(reach, s)} "
+                                 f"{sa} at t {t}")
+    finally:
+        late.close()
+
+
+# The refusal of a return past Data.return_horizon_mth, to the subaccount's id: the
+# scenario is named by its number, scenario_index(), since no projection cell may read the
+# label scenario_id(), even to refuse (R17).
+_PAST_HORIZON = ("scenario_table.csv is read to return_horizon_mth, {}, so its scenario "
+                 "{}, in the order of the ids, has no return for subaccount_id")
+
+# The first month of _late_scenario's path, past Data.return_horizon_mth.
+LATE_FIRST = 1590
+
+
+def _late_scenario(rows):
+    """S's scenario table and ``ZLATE``, a path from :data:`LATE_FIRST` to month 1,600,
+    past ``Data.return_horizon_mth``, whose id sorts last."""
+    late = pd.DataFrame([("ZLATE", i, t, 0.001 * i, "test copy") for i in (1, 2)
+                         for t in range(LATE_FIRST, 1601)], columns=list(rows.columns))
+    return pd.concat([rows, late], ignore_index=True)
+
+
+# What Data cannot number or join, refused when the vector is first read, naming every
+# point at fault (the Data docstring): a label that is not a whole number, or one of 2**53
+# or more in size, which numpy would read as the least int64 once past int64; a rate_class
+# the class factors lack; a scenario_id the return scenario lacks, or one without a row for
+# a subaccount of the lineup; and, on a point that has_surr_charge, a surr_charge_id the
+# schedules lack, or a run-off of 2**53 years or more, the bound of every number read as an
+# int, past which lapse_shock_month's compiled int() would in time raise OverflowError.
+# The surrender-charge cases leave the charge on points 4 and 6 alone, so that the message
+# names those two and not the table; a point without a charge projects whatever its
+# schedule, which _a_schedule_no_charged_point_reads holds.  The class and scenario joins
+# refuse the table: every point reads its class factor and every subaccount's return in
+# its first month on the books.  Each case is (case, the table's edit, the schedules'
+# run-off or None, the scenario edit or None, the Data cell asked, the message, the label
+# whose projection meets it): a label's refusal is met by that point's own point_id(),
+# which every refusal names it by; a table's by point 1's result_cf(); and the schedules'
+# by point 4's, which has a charge.
+_CHARGED = (4, 6)
+_NO_CLASS = "class_factor_table.csv has no factor for the rate_class of point_id [3, 6]"
+_NO_SCENARIO = ("scenario_table.csv has no returns for every subaccount of the lineup on "
+                "the scenario_id of point_id {}")
+_NO_SCHEDULE = ("surr_charge_table.csv has no schedule for the surr_charge_id of point_id "
+                "[6], each of which has_surr_charge")
+_RUNOFF_HUGE = ("surr_charge_table.csv: runoff_years must be below 2**53 years in size on "
+                "the schedule of point_id [4, 6], each of which has_surr_charge")
+
+
+def _charged_only(points, edit=None):
+    """An edit that leaves the surrender charge on ``points`` alone, after ``edit``."""
+    def charged(table):
+        table = table if edit is None else edit(table)
+        return table.assign(has_surr_charge=table.index.isin(points))
+    return charged
+
+
+def _relabelled(label, new):
+    """An edit that labels the table's row ``label`` ``new``, a label as written."""
+    return lambda table: table.rename(index={label: new})
+
+
+def _no_bond_on_we(rows):
+    """S's scenario table without ``WE``'s rows for subaccount 2."""
+    return rows[~((rows["scenario_id"] == "WE") & (rows["subaccount_id"] == 2))]
+
+
+UNJOINED = [
+    ("a label that is not whole", _relabelled(4, 4.5), None, None, "point_id",
+     f"{TABLE}: point_id must be a whole number; [4.5] is not", 4.5),
+    ("a label written as text", _relabelled(4, "4x"), None, None, "point_id",
+     f"{TABLE}: point_id must be a whole number; ['4x'] is not", "4x"),
+    ("a label of 2**53", _relabelled(4, 2 ** 53), None, None, "point_id",
+     f"{TABLE}: point_id must be below 2**53 in size; [{2 ** 53}] is not", 2 ** 53),
+    ("a class the table lacks, at two points", _set("rate_class", [3, 6], "SuperPNT"),
+     None, None, "class_factor", _NO_CLASS, 1),
+    ("a scenario the table lacks, at two points", _set("scenario_id", [3, 7], "CRASH"),
+     None, None, "scenario_index", _NO_SCENARIO.format([3, 7]), 1),
+    ("a scenario without a row for subaccount 2", lambda table: table, None,
+     {"scenario_table.csv": _no_bond_on_we}, "scenario_index",
+     _NO_SCENARIO.format([1, 2]), 1),
+    ("a schedule the table lacks, on a point with a charge",
+     _charged_only(_CHARGED, _set("surr_charge_id", [6, 7], "VUL5")), None, None,
+     "surr_charge_rate_max", _NO_SCHEDULE, 4),
+    ("a schedule the table lacks, by the run-off's vector",
+     _charged_only(_CHARGED, _set("surr_charge_id", [6, 7], "VUL5")), None, None,
+     "surr_charge_runoff_years", _NO_SCHEDULE, 4),
+    ("a run-off of 2**53 years", _charged_only(_CHARGED), 2.0 ** 53, None,
+     "surr_charge_runoff_years", _RUNOFF_HUGE, 4),
+    ("a run-off of 2**53 years, by the rate's vector", _charged_only(_CHARGED), 2.0 ** 53,
+     None, "surr_charge_rate_max", _RUNOFF_HUGE, 4),
+]
+
+
+def _unjoined_edits(runoff, scenarios):
+    """The edits of an :data:`UNJOINED` case: the schedules' run-off and the scenario."""
+    edits = dict(scenarios or {})
+    if runoff is not None:
+        edits["surr_charge_table.csv"] = lambda table: table.assign(runoff_years=runoff)
+    return edits or None
+
+
+@pytest.mark.parametrize("case, edit, runoff, scenarios, cell, message, label", UNJOINED,
+                         ids=[c[0] for c in UNJOINED])
+def test_what_data_cannot_number_or_join_is_refused_naming_it(tmp_path, case, edit, runoff,
+                                                             scenarios, cell, message,
+                                                             label):
+    """``Data`` refuses what it cannot number or join, naming every point at fault.
+
+    ``VUL_US_S`` reads a point's class factor and every subaccount's return in its first
+    month on the books, and the schedule of a point with a surrender charge in every month
+    of its cover, so it fails every projection of a point whose class, scenario or charged
+    schedule the tables lack, and this model refuses the table at the first read instead
+    (:data:`UNJOINED`), in the vector's own cell and in a projection, with the message
+    matched whole.  A label is read by no projection but in a refusal, which names the
+    point by ``point_id()``, so that cell refuses it.  The message names every point at
+    fault and no other.
+    """
+    model = mx.read_model(_sec_inputs(tmp_path, edit(_committed()),
+                                      _unjoined_edits(runoff, scenarios)),
+                          name=_name("unjoined"))
+    try:
+        assert len(model.Data.model_point_table()) == len(_committed())
+        _refused_exactly(model.Data.cells[cell], message)
+        call = "point_id" if cell == "point_id" else "result_cf"
+        _refused_exactly(_point(model, label).cells[call], message)
+    finally:
+        model.close()
+
+
+def test_a_schedule_no_charged_point_reads_is_accepted(tmp_path):
+    """A schedule no point with a charge reads may be missing, or run off over 2**53 years.
+
+    ``VUL_US_S`` reads a point's schedule only if it ``has_surr_charge``, so a point without
+    one projects whatever its ``surr_charge_id`` names, as it does in ``VUL_US_S``.  With
+    the charge off on every point, the schedule run off over ``2**53`` years, and the twin
+    of S's point 2 naming a schedule the table lacks, the table reads, both join vectors
+    are 0.0 at every point, and every point projects exactly what it projects on the
+    committed schedule with the charge off.  The joins refuse a charged point alone
+    (:data:`UNJOINED`).
+    """
+    committed = _committed()
+    lost = _label(committed, "twin", 2, 0)
+    uncharged = _charged_only([])(committed)
+    base = mx.read_model(_sec_inputs(tmp_path / "base", uncharged), name=_name("uncharged"))
+    model = mx.read_model(_sec_inputs(tmp_path / "huge",
+                                      _set("surr_charge_id", [lost], "VUL5")(uncharged),
+                                      _unjoined_edits(2.0 ** 53, None)),
+                          name=_name("runoff_huge"))
+    try:
+        assert len(model.Data.model_point_table()) == len(committed)
+        for cell in ("surr_charge_rate_max", "surr_charge_runoff_years"):
+            assert (model.Data.cells[cell]() == 0.0).all(), cell
+        for label in committed.index:
+            mine, theirs = _point(model, label), _point(base, label)
+            for report in REPORTS:
+                assert frame_mismatches(theirs.cells[report](), mine.cells[report](),
+                                        rtol=0, atol=0) == [], (label, report)
+            _release(model, _key(model, label))
+            _release(base, _key(base, label))
+    finally:
+        model.close()
+        base.close()
+
+
+# A point the contract does not issue, refused by proj_len() in its rules' order, as (case,
+# the table's edit, the inputs' edits, the References set, the label, the message, and,
+# where it projects once its bound is moved, the References that move it and its frame
+# then).  The first rule, issued above omega_age, is asked before the cover's, so a point to
+# be issued there, or in force there, is refused as never in cover; the cover's before the
+# issue ages', so a point issued at 86 and past its cover is refused as past it.  The issue
+# age of 86 projects once issue_age_max is 86, on a COI copy with rows of its own
+# (_coi_at); the point refused at an issue_age_min raised to 46 projects at the shipped 0;
+# and the lineup of ten, every point's, projects once subaccount_max is 10
+# (_ten_subaccounts).  PAST_COVER's two cases, the cover's rule alone, are its own test's,
+# with the block run.
+_ABOVE_OMEGA = ("point_id {}: age_at_entry 122 is above omega_age, 121: a policy issued "
+                "there would never be in cover")
+
+
+def _coi_at(age):
+    """An edit of the COI scale that adds ``(M, StdNT, age)``, geometric in the year."""
+    def edit(rates):
+        years = list(range(1, 122 - age + 1))
+        added = pd.DataFrame({
+            "sex": "M", "rate_class": "StdNT", "age_at_entry": age, "policy_year": years,
+            "coi_rate_guar": [round(0.9 * 1.08 ** (y - 1), 6) for y in years],
+            "provenance": "test copy"})
+        return pd.concat([rates, added], ignore_index=True)
+    return edit
+
+
+# The ten subaccounts of _ten_subaccounts, by id.
+TEN = tuple(range(1, 11))
+
+
+def _ten_subaccounts(table):
+    """A lineup of ten, and the table's columns for it: the inputs' edits and the table.
+
+    Subaccounts 3 to 10 join the shipped two, each with a fund expense and a path in every
+    scenario of its own, and each point holds none of them, its premium allocated as
+    shipped, so that the lineup alone is past ``subaccount_max``.
+    """
+    def lineup(rows):
+        more = pd.DataFrame({"subaccount_id": TEN[2:], "subaccount_name": "test copy",
+                             "fund_expense_ann": [0.001 * i for i in TEN[2:]],
+                             "provenance": "test copy"})
+        return pd.concat([rows, more], ignore_index=True)
+
+    def scenarios(rows):
+        more = [rows[rows["subaccount_id"] == 1].assign(
+            subaccount_id=i, gross_return_mth=rows["gross_return_mth"] + 0.0001 * i)
+            for i in TEN[2:]]
+        return pd.concat([rows, *more], ignore_index=True)
+
+    table = table.assign(**{f"{column}_{i}": 0.0 for i in TEN[2:]
+                            for column in ("alloc", "sa_pp_init")})
+    return table, {"subaccount_table.csv": lineup, "scenario_table.csv": scenarios}
+
+
+def _not_issued_cases():
+    """:data:`NOT_ISSUED`'s inputs, as (case, the table, the edits, the References set,
+    the label, the message, the References that issue it or None, its frame then)."""
+    committed = _committed()
+    ten, ten_edits = _ten_subaccounts(committed)
+    return [
+        ("an issue age of 86", _set("age_at_entry", [3], 86)(committed),
+         {"coi_rates.csv": _coi_at(86)}, {}, 3,
+         "point_id 3: issue age 86 is above issue_age_max, 85", {"issue_age_max": 86},
+         12 * (121 - 86 + 1)),
+        ("an issue age below a bound raised to 46", committed, None, {"issue_age_min": 46},
+         3, "point_id 3: issue age 45 is below issue_age_min, 46", {}, 12 * (121 - 45 + 1)),
+        ("to be issued above omega_age", _set("age_at_entry", [9], 122)(committed), None,
+         {}, 9, _ABOVE_OMEGA.format(9), None, None),
+        ("in force above omega_age: the first rule before the cover's",
+         _set("age_at_entry", [4], 122)(committed), None, {}, 4, _ABOVE_OMEGA.format(4),
+         None, None),
+        ("issued at 86 and past its cover: the cover's rule before the bound's",
+         _moved(4, 432, age_at_entry=86)(committed), None, {}, 4,
+         "point_id 4: duration_mth 432 is at or past the end of the projection, policy "
+         "month 432, attained age 122", None, None),
+        ("a lineup of ten subaccounts", ten, ten_edits, {}, 1,
+         "point_id 1: the subaccount lineup holds 10 subaccounts, above subaccount_max, 9",
+         {"subaccount_max": 10}, 900),
+    ]
+
+
+NOT_ISSUED = _not_issued_cases()
+
+
+@pytest.mark.parametrize("case, table, edits, refs, label, message, issue, frame",
+                         NOT_ISSUED, ids=[c[0] for c in NOT_ISSUED])
+def test_a_point_the_contract_does_not_issue_is_refused_by_proj_len(tmp_path, case, table,
+                                                                    edits, refs, label,
+                                                                    message, issue, frame):
+    """``proj_len()`` refuses a point the contract does not issue, naming it (§6.1).
+
+    ``VUL_US_S`` projects a point issued at any age its tables serve, on any lineup, and so
+    would modelx here, but the compiled caches are sized from the contract, cover from
+    ``issue_age_min``, 0, to attained age 122, the shipped horizon and a lineup of up to
+    ``subaccount_max``, 9 (``spec_sec.py``), and a point past them runs past the caches.
+    So the frame refuses such a point, naming it: issued above ``issue_age_max``, 85, the
+    oldest age ``product-spec.md`` issues at, which no cache needs; issued below
+    ``issue_age_min``; issued above ``omega_age``, which ``VUL_US_S`` projects as months in
+    which nothing happens; or on a lineup past ``subaccount_max``, each by the rule asked
+    first (:data:`NOT_ISSUED`).  The table reads, since these are rules of the product,
+    and every report is refused with the frame.  The point issued at 86 projects once
+    ``issue_age_max`` is 86, the one refused at a bound of 46 projects at the shipped 0,
+    and the lineup of ten once ``subaccount_max`` is 10: the Reference is what refuses
+    each, and a bound off by one, or a refusal lost or asked in another order, lets a point
+    through or names the wrong rule.
+    """
+    model = _read(_sec_inputs(tmp_path, table, edits), "not_issued", refs)
+    try:
+        assert len(model.Data.model_point_table()) == len(table)
+        for report in REPORTS:
+            _refused_exactly(_point(model, label).cells[report], message)
+    finally:
+        model.close()
+    if issue is None:
+        return
+    model = _read(_sec_inputs(tmp_path / "issued", table, edits), "issued", issue)
+    try:
+        p = _point(model, label)
+        assert p.proj_len() == len(p.result_cf()) == frame
+        assert p.check_av_roll_fwd() and p.check_margin() and p.check_net_view()
+    finally:
+        model.close()
+
+
+# run_sec.py run as though it sat at /m/products/variable_ul, a copy too shallow to have a
+# repository above it: the source compiled under that name, so that its own __file__ is
+# it.
+SHALLOW_RUN = """\
+import sys
+source = open(sys.argv[1], encoding="utf-8").read()
+where = "/m/products/variable_ul/run_sec.py"
+sys.argv = [where, "--cython"]
+exec(compile(source, where, "exec"), {"__name__": "__main__", "__file__": where})
+"""
+
+
+def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
+    """``run_sec.py --cython`` outside the repository stops, saying it cannot build.
+
+    ``--cython`` builds with the repository's ``tools/build_sec_cy.py``, which a
+    ``lifelib.create()`` copy does not carry, wherever the copy is: beside a copy of the
+    model and its inputs, and at a path too shallow to hold a repository above the product
+    at all.  Each must exit nonzero having printed nothing, and say why.  Neither needs
+    modelx-cython, since neither gets as far as building, so this runs wherever the module
+    does, on Windows and macOS among them.
+    """
+    runner = model_path(SEC).parent / "run_sec.py"
+    copy = _sec_inputs(tmp_path / "copy", _committed()).parent / "run_sec.py"
+    shutil.copy(runner, copy)
+    shallow = tmp_path / "shallow.py"
+    shallow.write_text(SHALLOW_RUN, encoding="utf-8")
+    for args in ((copy, "1", "--cython"), (shallow, runner)):
+        done = _run_sec(*args, check=False)
+        stderr = done.stderr.decode(errors="replace")
+        assert done.returncode != 0 and done.stdout == b"", stderr
+        assert "a lifelib.create() copy carries no tools/, so it cannot build" in stderr, (
+            stderr)
+
+
+def test_the_runner_sums_the_block_as_groupby_does(sec_model):
+    """``run_sec.py``'s running sum of the block is pandas' ``groupby`` sum, bit for bit.
+
+    A block run keeps one point's frame at a time, so it sums the frames as it goes,
+    compensated, with ``add``, so that the block is the frames concatenated and summed by
+    ``t``, to the last bit.  The printed block, to two decimals, cannot show a last bit,
+    so ``add`` itself is read from the runner, which runs the model when imported, and run
+    here on the committed points' frames.  A plain running sum differs from ``groupby``'s
+    on them, so the comparison can fail.
+    """
+    tree = ast.parse((model_path(SEC).parent / "run_sec.py").read_text(encoding="utf-8"))
+    found = [node for node in tree.body
+             if isinstance(node, ast.FunctionDef) and node.name == "add"]
+    assert len(found) == 1
+    space = {}
+    exec(compile(ast.Module(found, []), "run_sec.py", "exec"), space)
+    frames = [projection(sec_model, key).result_cf() for key in point_keys(sec_model)]
+    columns = list(frames[0].columns)
+    rows = max(len(frame) for frame in frames)
+    total, compensation = np.zeros((rows, len(columns))), np.zeros((rows, len(columns)))
+    plain = np.zeros((rows, len(columns)))
+    for frame in frames:
+        space["add"](total, compensation, frame[columns].to_numpy())
+        plain[:len(frame)] += frame[columns].to_numpy()
+    want = pd.concat(frames).groupby(level="t").sum()[columns].to_numpy()
+    assert np.array_equal(total, want)
+    assert not np.array_equal(plain, want)
+
+
+def test_the_sample_raises_the_recursion_limit_its_comment_derives():
+    """``sample_sec.py`` sets the recursion limit its comment derives, before the import.
+
+    The export does not raise the recursion limit as modelx does (F7), so the sample sets
+    it, and its comment records the measured need: a cold ``net_cf`` in the last month of
+    the longest frame, issue age 0 issued 120 months on, needs a limit of 2,994 in the
+    export, and the reports the sample runs in ascending ``t`` with the behaviour module
+    on, the export's import among the frames they run under, 1,834.  The limit is four
+    times the first, rounded up to the thousand.  No build can tell a lower limit above
+    the reports' need: a limit of 2,000 builds the same model.  So this holds the limit,
+    read from the sample's code, to the value derived from its comment's need, and holds
+    the call before the import of the export.  A change to the need is measured again and
+    written in the comment.
+    """
+    source = (model_path(SEC).parent / "sample_sec.py").read_text(encoding="utf-8")
+    comment = " ".join(line.lstrip("# ") for line in source.splitlines()
+                       if line.startswith("#"))
+    need = re.search(r"needs a limit of ([\d,]+) in the export", comment)
+    reports = re.search(r"ascending t with the module on, need ([\d,]+)", comment)
+    assert need and reports, comment
+    need, reports = (int(m.group(1).replace(",", "")) for m in (need, reports))
+    tree = ast.parse(source)
+    calls = [(node.lineno, node.args[0].value) for node in ast.walk(tree)
+             if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)
+             and node.func.attr == "setrecursionlimit"
+             and isinstance(node.args[0], ast.Constant)]
+    imports = [node.lineno for node in ast.walk(tree) if isinstance(node, ast.ImportFrom)
+               and node.module == f"{SEC}_nomx"]
+    assert len(calls) == 1 and len(imports) == 1, (calls, imports)
+    (line, limit), = calls
+    assert reports < need and line < imports[0], (reports, need, line, imports)
+    assert limit == -(-4 * need // 1000) * 1000, (limit, need)
+
+
+def _references(space):
+    """The References a space's ``__init__.py`` assigns, a name to a literal value."""
+    source = (model_path(SEC) / space / "__init__.py").read_text(encoding="utf-8")
+    return {node.targets[0].id: node.value.value for node in ast.parse(source).body
+            if isinstance(node, ast.Assign) and len(node.targets) == 1
+            and isinstance(node.targets[0], ast.Name)
+            and isinstance(node.value, ast.Constant)}
+
+
+# The codes, in their numbering's order: the timings, the count's three and the account
+# value's six, one numbering; and the kinds.
+TIMING_CODES = ("BEF_NB", "BEF_DECR", "BEF_MAT", "BEF_PREM", "BEF_WD", "BEF_FEE", "BEF_INV",
+                "BEF_ME", "EOM")
+KIND_CODES = ("DEATH", "LAPSE", "MATURITY", "WITHDRAWAL")
+
+
+def test_the_spec_sizes_each_cache_as_its_comment_derives():
+    """``spec_sec.py`` gives each cache the size its comment derives from the contract.
+
+    The spec check, C3, holds the compiled caches to the spec, and C4 at the contract's
+    extremes holds the spec to the largest argument a projection reads; neither sees a
+    size one below the comment's, which drops the headroom and reads the same numbers.
+    So this reads the spec as mx2cy does, and the bounds of the contract from the model's
+    own References, and holds each size to the comment's derivation from them: ``t`` to
+    ``12 * (omega_age - issue_age_min + 1) + the horizon + 2``, ``m`` to
+    ``12 * (omega_age - issue_age_min + 1) + 1``, ``y`` to ``omega_age - issue_age_min +
+    3``, ``a`` to ``omega_age + 2`` and ``i`` to ``subaccount_max``; every dimension after
+    the first to one width, the widest of the timings' count, the kinds' and
+    ``subaccount_max``, the 2-D caches ``(N, width)`` and the 3-D ``(N, width, width)``
+    (§7.2, *For M16 and later*, item 16); the codes dense from 0; and
+    ``Data.return_horizon_mth``, the last month the return array holds, to ``t``'s last
+    index.  A change to a bound or a size is derived again in the comment and here.
+    """
+    source = (model_path(SEC).parent / "spec_sec.py").read_text(encoding="utf-8")
+    comment = " ".join(line.lstrip("# ") for line in source.splitlines()
+                       if line.startswith("#"))
+    for formula in ("needs t raised to 12 * (omega_age - issue_age_min + 1) + the "
+                    "horizon + 2", "needs m raised to 12 * (omega_age - issue_age_min + "
+                    "1) + 1", "needs y raised to omega_age - issue_age_min + 3",
+                    "needs a raised to omega_age + 2",
+                    "needs i and the width raised to it"):
+        assert formula in comment, formula
+    sizes = ast.literal_eval(source)["spaces"]["Projection"]["cells_param_size"]
+    proj, data = _references("Projection"), _references("Data")
+    low, omega, horizon = proj["issue_age_min"], proj["omega_age"], data[
+        "future_horizon_mth"]
+    lineup = proj["subaccount_max"]
+    timings = [proj[code] for code in TIMING_CODES]
+    kinds = [proj[code] for code in KIND_CODES]
+    assert timings == list(range(len(timings))), timings
+    assert kinds == list(range(len(kinds))), kinds
+    t = 12 * (omega - low + 1) + horizon + 2
+    m = 12 * (omega - low + 1) + 1
+    width = max(len(timings), len(kinds), lineup)
+    assert sizes == {"t": t, ("t", "timing"): (t, width), ("t", "kind"): (t, width),
+                     ("t", "i"): (t, width), ("t", "i", "timing"): (t, width, width),
+                     "m": m, ("m", "timing"): (m, width), ("m", "i"): (m, width),
+                     ("m", "i", "timing"): (m, width, width), "i": lineup,
+                     "y": omega - low + 3, "a": omega + 2}, sizes
+    assert data["return_horizon_mth"] == t - 1, data["return_horizon_mth"]
 
 
 # ---------------------------------------------------------------------------
@@ -5214,3 +6263,928 @@ FINGERPRINT = {
     },
 }
 # END generated fingerprint: VUL_US_SEC
+
+
+# ---------------------------------------------------------------------------
+# Compiled (USLIB-SEC-PLAN.md Phase 2)
+#
+# These compile the model, once a session, into a temporary directory (conftest.sec_build),
+# and run the compiled package in a child process only.  They skip without modelx-cython or
+# a C compiler, and the cython CI job, which sets USLIB_REQUIRE_CYTHON=1, fails a skip.
+# test_compiled_conventions.py checks the compiled model's types, its caches and its
+# release, and compares it with modelx on the committed points; these hold what is VUL's
+# own: the comparison on the splice grid, at the contract's extremes, on a lineup of nine,
+# where the cap on mortality binds, on labels that are not text and on keys written as
+# floats, the refusals, the deepest call, a lapse rate past 1, a Reference set late and the
+# runner.  Each comparison but the cap's adds sec_support._vul_c4_also's calls, the codes
+# and the pricing path's closes no swept cell reaches.  None asks for sec_read, sec_model
+# or s_model, which sweep every committed point; the grid test alone asks for spliced.
+
+
+def _as_modelx(have, want):
+    """Whether a compiled value is modelx's: identical where ``exact_here()``, as on
+    x86-64, and to 1e-12 relative elsewhere, as C4 compares (sec_support)."""
+    return have == want if exact_here() else have == pytest.approx(want, rel=1e-12, abs=0)
+
+
+def _copied(folder, file):
+    """An edit that replaces ``file`` with the copy in ``folder``, as written there."""
+    return lambda _: pd.read_csv(pathlib.Path(folder) / file)
+
+
+# How many rows of the splice grid C4 compares at once.  compiled_mismatches sweeps every
+# row of its case in one modelx read, _vul_c4_also's calls with it, and keeps every value of
+# every row, in the parent and in the child, until it compares them.  A VUL row runs up to
+# 1,344 months on the grid, with the behaviour module on, which reads the pricing path from
+# issue.  On the core grid, eight rows at a time peaked at 4.6 GB, the module's fixtures and
+# the children included, and four at 3.6 GB, near the module's own peak, in 308 s against
+# 305 (measured at M17, under load), so VUL compares four rows at a time
+# (USLIB-SEC-PLAN.md §7.2, *For M16 and later*, item 7).
+C4_CHUNK = 4
+
+
+@pytest.mark.cython
+def test_the_compiled_model_computes_what_modelx_computes_on_the_splice_grid(spliced,
+                                                                             sec_build,
+                                                                             tmp_path):
+    """C4 on the branches: compiled, every cell of the splice grid is modelx's.
+
+    The sample traces the committed points alone, and they leave branches untaken, which
+    are typed all the same, because every branch of a cell returns the one type the
+    others return (sample_sec.py).  What the compiled model computes on them is held
+    here: the splice grid's points, S's restated in force at T2's months and issued later,
+    and the variants, withdrawals on either option, a single premium without a surrender
+    charge, an Option B point funded past its face, a second surrender-charge schedule
+    with a loan, an issue age below the tables' first age whose COI rate reaches its cap,
+    each first-month pin alone, the COI pin above the guaranteed rate that bounds it and a
+    withdrawal that cuts the face past 0, under the splice's References, with the
+    behaviour module on, charges ceasing in cover and the lapse spike
+    (:data:`SPLICED_REFS`),
+    on the splice's COI, surrender-charge and stepped scenario copies, each row's scenario
+    re-based to its month (:func:`_spliced_folders`).  The grid is the one this run's
+    ``spliced`` selects, the core by default and the full grid under ``USLIB_SEC_FULL=1``,
+    and the test carries no ``sec_full`` mark, since a skipped compile test fails the
+    cython job.  The grid's SEC table goes beside the build :data:`C4_CHUNK` rows at a
+    time, with the spliced folder's own tables; modelx sweeps every row fully, every
+    account cell at every timing and the pricing path at every month with it
+    (``sec_support._vul_c4_also``), and the compiled model must agree at every argument
+    modelx caches, identically on x86-64 and to 1e-12 relative elsewhere, with every raise
+    and every ``Data`` array (``sec_support.compiled_mismatches``).
+    """
+    build = sec_build(SEC)
+    inputs = spliced[1].Data.input_dir()
+    table = pd.read_csv(inputs / TABLE, index_col="point_id")
+    assert len(table) == len(spliced[1].Data.model_point_table())
+    edits = {file: _copied(inputs, file) for file in SPLICED_EDITS}
+    chunks = [table.iloc[i:i + C4_CHUNK] for i in range(0, len(table), C4_CHUNK)]
+    assert sum(len(chunk) for chunk in chunks) == len(table) and len(chunks) > 1
+    found = []
+    for i, chunk in enumerate(chunks):
+        folder = compiled_case(build, tmp_path / f"grid{i}", model_points=chunk,
+                               edits=edits)
+        found += compiled_mismatches(build, folder, refs=SPLICED_REFS, also=_vul_c4_also)
+        shutil.rmtree(tmp_path / f"grid{i}")
+    assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found[:50])
+
+
+# The References at the contract's extremes: the splice's, inflation on, and the A/E at
+# the shipped 1.0, so that StdTob's annual mortality passes 1 and is capped.
+EXTREME_REFS = {**SWITCHED_ON, "mort_ae_factor": 1.0}
+
+# The COI keys the contract's extremes read beyond S's, and one no point reads between
+# them, each geometric in the policy year from a base of its own at a ratio of its own,
+# every policy year its cover reaches, as (sex, rate_class, age_at_entry, base, ratio).
+EXTREME_COI = ((("M", "StdNT", 0), 0.031, 1.064), (("M", "StdNT", 30), 0.052, 1.071),
+               (("M", "StdTob", 85), 3.1, 1.09))
+
+
+def _coi_extremes(rates):
+    """S's COI scale with :data:`EXTREME_COI`'s keys, every line in reverse key order, so
+    that a schedule numbered in file order is another schedule's number."""
+    added = [pd.DataFrame({"sex": sex, "rate_class": rate_class, "age_at_entry": age,
+                           "policy_year": range(1, 123 - age),
+                           "coi_rate_guar": [round(base * ratio ** (y - 1), 6)
+                                             for y in range(1, 123 - age)],
+                           "provenance": "test copy"})
+             for (sex, rate_class, age), base, ratio in EXTREME_COI]
+    rates = pd.concat([rates, *added]).sort_values(COI_KEYS, ignore_index=True)
+    return rates.iloc[::-1].reset_index(drop=True)
+
+
+def _younger(column, value):
+    """An edit of an age table that adds ages 0 to 17, ``value(age)`` at each."""
+    def edit(rates):
+        ages = list(range(18))
+        young = pd.DataFrame({"age": ages, column: [value(a) for a in ages],
+                              "provenance": "test copy"})
+        return pd.concat([young, rates], ignore_index=True)
+    return edit
+
+
+# The tables the extremes and the lineup of nine read: the COI copy, and the mortality and
+# corridor tables from age 0, each age's value its own.
+EXTREME_EDITS = {
+    "coi_rates.csv": _coi_extremes,
+    "mort_table.csv": _younger("mort_rate", lambda a: round(0.00021 * 1.041 ** a, 6)),
+    "corridor_factors.csv": _younger("corridor_factor",
+                                     lambda a: round(2.5 + 0.0013 * (18 - a), 6))}
+
+# The frames of the contract's extremes, in _contract_extremes' order, and the COI
+# schedule each reads, its keys' place among the copy's four.
+EXTREME_FRAMES = [1584, 1464, 564, 1, 1464, 900]
+EXTREME_SCHEDULES = [1, 1, 4, 1, 1, 3]
+
+
+def _contract_extremes():
+    """Inputs for the contract's longest frames, its oldest issue age and the bounds of its
+    values: a table.
+
+    Six points made from the committed twins.  S's point 3 issued at 0, the youngest age
+    the contract issues at, 120 months on, the shipped ``future_horizon_mth``: a frame of
+    1,584 months, the longest the contract allows, which reads every cache as far as
+    ``spec_sec.py`` sizes it, ``t`` to 1,584 in C4's sweep of the month after it, the
+    policy year to 122, the attained age from 0 to 121 and, with the behaviour module on,
+    the pricing path to policy month 1,463.  S's point 1 issued at 0 at the valuation date,
+    with both pins, withdrawing $60 a month on Option A, each cutting the face.  StdTob
+    issued at 85, the oldest age, 120 months on, whose annual mortality passes 1 at
+    attained age 113 and is capped.  S's point 3 at 0 in force in its last covered month,
+    policy month 1,463: a frame of one row, whose first month reads the pricing path cold
+    from issue.  A single premium of $50,000 at 0 without a surrender charge.  And the
+    worked example's twin at a premium load of 1, whose pricing path opens every month on
+    an account of 0, the denominator of its shares.
+    """
+    committed = _committed()
+
+    def twin(s_point, **columns):
+        return committed.loc[[_label(committed, "twin", s_point, 0)]].assign(**columns)
+
+    opened = {"sa_pp_init_1": 0.0, "sa_pp_init_2": 0.0, "fa_pp_init": 0.0,
+              "la_pp_init": 0.0, "loan_bal_init": 0.0, "sum_assured_init": 0.0}
+    rows = pd.concat([
+        twin(3, age_at_entry=0, duration_mth=-120),
+        twin(1, age_at_entry=0, duration_mth=0, wd_pp=60.0, **opened),
+        twin(3, age_at_entry=85, rate_class="StdTob", duration_mth=-120),
+        twin(3, age_at_entry=0, duration_mth=1463, policy_count=0.5, sa_pp_init_1=30000.0,
+             sa_pp_init_2=20000.0, sum_assured_init=500000.0),
+        twin(3, age_at_entry=0, premium_type="SINGLE", premium_pp_ann=50000.0,
+             has_surr_charge=False),
+        twin(1, load_prem_rate=1.0)])
+    rows.index = pd.Index(range(1, len(rows) + 1), name="point_id")
+    return rows
+
+
+# The lineup of nine, subaccount_max, written out of their ids' order, and the shares and
+# opening values each point holds of each, by id.
+NINE = (3, 1, 9, 2, 7, 5, 8, 4, 6)
+
+
+def _nine_subaccounts():
+    """A lineup of nine and two points that hold every subaccount: a table and edits.
+
+    ``subaccount_table.csv`` holds nine ids, written out of order (:data:`NINE`), each with
+    a fund expense of its own; ``scenario_table.csv`` gives each id a path of its own, in
+    each scenario, ``WE`` for 13 months and ``LEVEL6`` past ``Data.return_horizon_mth``,
+    to month 2,000, beside ``ZFAR``, a scenario no point names of one row a billion months
+    on; and two points, S's point 4 in force at 120 and S's point 3 issued 25 months on,
+    hold a share of their premiums and, in force, an opening value of their own in each.
+    """
+    committed = _committed()
+    rows = committed.loc[[_label(committed, "twin", 4, 0),
+                          _label(committed, "future", 3, -25)]]
+    rows = rows.drop(columns=["alloc_1", "alloc_2", "sa_pp_init_1", "sa_pp_init_2"])
+    in_force = rows["duration_mth"] > 0
+    rows = rows.assign(alloc_fixed=0.1, **{
+        f"alloc_{i}": 0.02 * i for i in NINE}, **{
+        f"sa_pp_init_{i}": in_force * (1000.0 * i + 37.5) for i in NINE})
+    rows.index = pd.Index([1, 2], name="point_id")
+
+    def lineup(table):
+        return pd.DataFrame({"subaccount_id": NINE,
+                             "subaccount_name": [f"fund {i}" for i in NINE],
+                             "fund_expense_ann": [round(0.003 + 0.0007 * i, 6)
+                                                  for i in NINE],
+                             "provenance": "test copy"})
+
+    def scenarios(_):
+        paths = [(scenario, i, t, round(base + 0.0003 * i + step * t * i, 10))
+                 for scenario, base, step, last in (("WE", 0.002, 0.00001, 12),
+                                                    ("LEVEL6", 0.004, 0.0000007, 2000))
+                 for i in NINE for t in range(last + 1)]
+        paths += [("ZFAR", i, FAR_MONTH, 0.01) for i in NINE]
+        return pd.DataFrame([(*path, "test copy") for path in paths],
+                            columns=["scenario_id", "subaccount_id", "t",
+                                     "gross_return_mth", "provenance"])
+
+    return rows, {**EXTREME_EDITS, "subaccount_table.csv": lineup,
+                  "scenario_table.csv": scenarios}
+
+
+@pytest.mark.cython
+def test_the_compiled_model_computes_what_modelx_computes_at_the_contract_extremes(
+        sec_build, tmp_path):
+    """C4 where the caches end: the contract's longest frames and a lineup of nine.
+
+    The six points of :func:`_contract_extremes`, the longest frames the contract allows,
+    its oldest issue age and the bounds of its values, read every cache keyed by ``t``,
+    ``m``, ``y`` and ``a`` as far as ``spec_sec.py`` sizes it: ``t`` to 1,584, the month
+    after the 1,584-month frame, which the roll-forwards read, the pricing month to 1,463,
+    the policy year to 122 and the attained age from 0.  They run under
+    :data:`EXTREME_REFS`, the behaviour module and inflation on, every premium pattern
+    among them, from a COI copy written in reverse key order, with a schedule no point
+    reads between two that points read, and mortality and corridor tables from age 0, each
+    key with values of its own, so that a compiled read of the key beside the right one,
+    which a padded array allows, changes a number the comparison sees.  ``Data``'s
+    numbering of the scales, which both engines share, moves both alike, so the comparison
+    cannot see it: it is held against the file and ``VUL_US_S`` by
+    :func:`test_the_coi_scales_are_numbered_by_key_on_a_file_out_of_key_order`.  Frames
+    and schedules are asserted first.
+
+    And the lineup of ``subaccount_max``, nine, written out of its ids' order, each
+    subaccount with a fund expense, a share, an opening value and a return path of its own
+    (:func:`_nine_subaccounts`), on a point in force and one issued later: every cache
+    keyed by a subaccount, and by a subaccount and a timing, is read to its last column.
+    Its sums over nine subaccounts are this model's loops, which ``VUL_US_S``'s ``sum``
+    would differ from in a last bit, so the comparison is the compiled model's with
+    modelx's, which loop alike.  One scenario runs past ``Data.return_horizon_mth`` and
+    another starts a billion months on: the return array holds the months a frame reads,
+    no more, in both.
+
+    modelx sweeps each point fully, with every code and the pricing path's closes
+    (``sec_support._vul_c4_also``), and the compiled model must agree everywhere, every
+    raise included.  A cache one too small for the contract raises ``IndexError`` compiled
+    where modelx reads on, and fails here, though the spec check passes it, which holds
+    the caches to the spec and not the spec to the contract.
+    """
+    build = sec_build(SEC)
+    folder = compiled_case(build, tmp_path / "extremes", model_points=_contract_extremes(),
+                           edits=EXTREME_EDITS)
+    model = mx.read_model(folder, name=_name("extremes_frames"))
+    try:
+        frames = [projection(model, key).proj_len() for key in point_keys(model)]
+        schedules = list(model.Data.coi_schedule())
+    finally:
+        model.close()
+    assert frames == EXTREME_FRAMES, frames
+    assert schedules == EXTREME_SCHEDULES, schedules
+    found = compiled_mismatches(build, folder, refs=EXTREME_REFS, also=_vul_c4_also)
+    rows, edits = _nine_subaccounts()
+    folder = compiled_case(build, tmp_path / "nine", model_points=rows, edits=edits)
+    model = mx.read_model(folder, name=_name("nine"))
+    try:
+        data = model.Data
+        assert list(data.subaccounts()) == list(NINE)
+        assert data.gross_return_array().shape == (4, 9, data.return_horizon_mth + 1)
+        assert [projection(model, key).subaccount_count() for key in point_keys(model)] == (
+            [9, 9])
+    finally:
+        model.close()
+    found += compiled_mismatches(build, folder, refs=EXTREME_REFS, also=_vul_c4_also)
+    assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found)
+
+
+# The point in force near its end that the label cases make refuse, a frame of four
+# months, since modelx sweeps a raise in every cell of every month: S's in-force point 4,
+# moved to policy month 920.
+LATE_MTH = 920
+
+
+def _labels_not_text():
+    """The labels ``Data`` accepts that are not text, as (case, the table's rows, edits).
+
+    Made from the committed twins of S's points 1, 2 and 4: on a point without a charge, a
+    blank ``surr_charge_id``, NaN as pandas reads it, beside a point with one, and a row
+    with a blank option, test, pattern and sex, which the point's first projection
+    refuses, in force in a month near its end, :data:`LATE_MTH`; a blank ``rate_class``,
+    which ``Data`` refuses at its class join, on that row alone; an id column of numbers,
+    ints, on points without a charge; and ``scenario_id`` written as numbers in both files,
+    1 for ``WE`` and 2 for ``LEVEL6``, which pandas reads as ints in both and joins.
+    """
+    committed = _committed()
+
+    def twin(s_point, **columns):
+        return committed.loc[[_label(committed, "twin", s_point, 0)]].assign(**columns)
+
+    def numbered(rows):
+        return rows.assign(scenario_id=rows["scenario_id"].map({"WE": 1, "LEVEL6": 2}))
+
+    late = {"duration_mth": LATE_MTH}
+    cases = [
+        ("blank", pd.concat([twin(1), twin(2, has_surr_charge=False, surr_charge_id=None),
+                             twin(4, db_option=None, qual_test=None, premium_type=None,
+                                  sex=None, **late)]), None),
+        ("blank class", twin(4, rate_class=None, **late), None),
+        ("numeric", pd.concat([twin(1, has_surr_charge=False, surr_charge_id=0),
+                               twin(2, has_surr_charge=False, surr_charge_id=9)]), None),
+        ("numeric scenarios", numbered(pd.concat([twin(1), twin(3)])),
+         {"scenario_table.csv": numbered}),
+    ]
+    for _, rows, _ in cases:
+        rows.index = pd.Index(range(1, len(rows) + 1), name="point_id")
+    return cases
+
+
+@pytest.mark.cython
+def test_the_compiled_model_returns_a_label_that_is_not_text_as_modelx_does(sec_build,
+                                                                             tmp_path):
+    """C4 on labels that are not text: the compiled accessors return what modelx returns.
+
+    ``Data`` accepts a blank ``surr_charge_id`` on a point without a charge, and an id
+    column of numbers, since ``VUL_US_S`` never reads such a point's schedule and projects
+    it; a ``scenario_id`` written as numbers in both files, which joins as text does; and
+    blank options and a blank sex, which the point's first projection refuses, and a blank
+    class, which the class join refuses.  modelx returns each label as pandas reads it,
+    NaN or an int, and an accessor typed ``str`` would raise ``TypeError`` compiled; the
+    sample types the seven as Python objects (sample_sec.py).  So on each case of
+    :func:`_labels_not_text`, after checking that the file reads as the case says, modelx
+    sweeps every point fully, with every code where no cell raises
+    (``sec_support._vul_c4_also``), and the compiled model must agree everywhere, the
+    label accessors and every raise included.
+    """
+    build = sec_build(SEC)
+    found = []
+    for case, rows, edits in _labels_not_text():
+        folder = compiled_case(build, tmp_path / case, model_points=rows, edits=edits)
+        model = mx.read_model(folder, name=_name(f"labels_{case.replace(' ', '_')}"))
+        try:
+            points = [projection(model, key) for key in point_keys(model)]
+            labels = {label: [p.cells[label]() for p in points] for label in LABELS}
+        finally:
+            model.close()
+        if case == "blank":
+            ids, options = labels["surr_charge_id"], labels["db_option"]
+            assert ids[0] == "VUL14" and math.isnan(ids[1]), ids
+            assert options[:2] == ["A", "A"] and math.isnan(options[2]), options
+            assert math.isnan(labels["sex"][2]), labels["sex"]
+        elif case == "blank class":
+            assert math.isnan(labels["rate_class"][0]), labels
+        elif case == "numeric":
+            ids = labels["surr_charge_id"]
+            assert ids == [0, 9] and all(isinstance(i, (int, np.integer)) for i in ids), ids
+        else:
+            ids = labels["scenario_id"]
+            assert ids == [1, 2] and all(isinstance(i, (int, np.integer)) for i in ids), ids
+        also = _vul_c4_also if case.startswith("numeric") else None
+        found += [f"{case}: {line}" for line in compiled_mismatches(build, folder,
+                                                                     also=also)]
+    assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found)
+
+
+@pytest.mark.cython
+def test_the_compiled_model_reads_keys_written_as_floats_as_modelx_does(sec_build,
+                                                                         tmp_path):
+    """C4 on keys written as floats: the compiled model reads 16.0 as 16, as modelx does.
+
+    Every keyed table's key columns, the lineup's and the scenario's among them, written
+    as floats, as a spreadsheet can save them (:data:`FLOAT_KEYS`), and the model point
+    table's ``duration_mth`` and ``age_at_entry`` too: ``Data`` reads each key by value,
+    so every extent, the lineup's ids and the scenario's months are ints, and the edges
+    test holds modelx to the shipped tables' numbers.  Here the twins of S's points 1 and
+    4 and the row issued 25 months on, which between them read every table, with the
+    behaviour module on, are swept in modelx with every code
+    (``sec_support._vul_c4_also``), and the compiled model must agree everywhere, every
+    ``Data`` array included, in dtype and shape.  First, in seconds, modelx's ``Data`` on
+    the floats is held to its ``Data`` on the same rows as written: every array of the
+    same dtype, and every extent and count of the same type, so that a key read as a float
+    fails here, naming its cell, and not in the compiled sweep, where each typed read of
+    a float array would raise and the sweep run out of time.
+    """
+    build = sec_build(SEC)
+    committed = _committed()
+    rows = committed.loc[[_label(committed, "twin", 1, 0), _label(committed, "twin", 4, 0),
+                          _label(committed, "future", 3, -25)]]
+    as_written = _read(_sec_inputs(tmp_path / "ints", rows), "keys_ints")
+    rows = rows.assign(duration_mth=rows["duration_mth"].astype(float),
+                       age_at_entry=rows["age_at_entry"].astype(float))
+    folder = compiled_case(build, tmp_path / "floats", model_points=rows, edits={
+        file: _as_floats(columns) for file, columns in FLOAT_KEYS.items()})
+    for file, columns in FLOAT_KEYS.items():
+        written = pd.read_csv(folder.parent / file)
+        assert all(written[c].dtype == float for c in columns), file
+    floats = mx.read_model(folder, name=_name("keys_floats"))
+    try:
+        apart = []
+        for name, cell in as_written.Data.cells.items():
+            if cell.parameters:
+                continue
+            want, got = cell(), floats.Data.cells[name]()
+            if isinstance(want, np.ndarray):
+                if not isinstance(got, np.ndarray) or got.dtype != want.dtype:
+                    apart.append(f"{name}: {getattr(got, 'dtype', type(got))}, not "
+                                 f"{want.dtype}")
+            elif isinstance(want, (int, float, np.integer, np.floating)):
+                if type(got) is not type(want):
+                    apart.append(f"{name}: {type(got).__name__}, not "
+                                 f"{type(want).__name__}")
+        assert not apart, apart
+    finally:
+        floats.close()
+        as_written.close()
+    found = compiled_mismatches(build, folder, refs={"dyn_behavior_on": True},
+                                also=_vul_c4_also)
+    assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found)
+
+
+def _capped_table(tmp_path):
+    """The cap test's rows, built by the generator from S under :data:`CAPPED_REFS`.
+
+    The point of :data:`CAPPED`, alone in a copy of S's table on the splice's COI copy:
+    its twin, issued at the valuation date; issued 25 months after it; and restated in
+    force in the month before the cap first binds, :data:`CAPPED_MTH`, opened with S's
+    count and state there.  As the cap test builds them.
+    """
+    base, changes = CAPPED
+    s_table = pd.read_csv(model_path(TWIN).parent / "model_point_table.csv",
+                          index_col="point_id")
+    s = _read(temp_inputs(tmp_path, model_path(TWIN),
+                          model_points=s_table.loc[[base]].assign(**changes),
+                          edits=CAPPED_EDITS), "capped_s", CAPPED_REFS)
+    try:
+        spec = dataclasses.replace(SPEC, derived=((base, CAPPED_MTH - 1),),
+                                   future=((base, 25),))
+        table, _ = build_sec_table(spec, s)
+    finally:
+        s.close()
+    return table.set_index("point_id")
+
+
+@pytest.mark.cython
+def test_the_compiled_model_computes_what_modelx_computes_where_the_cap_binds(sec_build,
+                                                                              tmp_path):
+    """C4 where ``mort_rate`` caps the annual rate at 1, and where a NaN meets a bound.
+
+    The three rows of the cap's test (:func:`_capped_table`), on whose frames the annual
+    rate passes 1 from attained age 113, go beside the build, under :data:`CAPPED_REFS`.
+    modelx sweeps them fully, with every code (``sec_support._vul_c4_also``), and the
+    compiled model must agree at every argument modelx caches, identically on x86-64 and
+    to 1e-12 relative elsewhere.  The extremes reach the side of ``min(q, 1.0)`` that
+    returns 1 too, on one point issued later; these reach it on a point issued at the
+    valuation date, on one issued later and on one in force when it binds.
+
+    And the committed twins of S's points 1 and 4 under an A/E of NaN, a Reference, which
+    the compiled model reads as modelx does, so that a NaN reaches the cap compiled:
+    ``min`` keeps its first argument there as in modelx, and C4 holds the compiled NaN to
+    modelx's, in every cell it reaches.  The same for the M&E rate, ``me_rate_ann``, on the
+    worked example's twin and the row issued 25 months on: a NaN that reaches every
+    account and the residuals of the three checks, which modelx and the compiled model
+    must fail alike.
+    """
+    build = sec_build(SEC)
+    rows = _capped_table(tmp_path / "s")
+    folder = compiled_case(build, tmp_path / "capped", model_points=rows,
+                           edits=CAPPED_EDITS)
+    found = compiled_mismatches(build, folder, refs=CAPPED_REFS, also=_vul_c4_also)
+    committed = _committed()
+    for ref, points in (("mort_ae_factor", (("twin", 1, 0), ("twin", 4, 0))),
+                        ("me_rate_ann", (("twin", 1, 0), ("future", 3, -25)))):
+        twins = committed.loc[[_label(committed, *point) for point in points]]
+        folder = compiled_case(build, tmp_path / ref, model_points=twins)
+        model = _read(folder, f"nan_{ref}", {ref: float("nan")})
+        try:
+            for key in point_keys(model):
+                p = projection(model, key)
+                t = p.t_entry()
+                value = p.mort_rate(t) if ref == "mort_ae_factor" else p.me_charge_pp(t)
+                assert math.isnan(value), (ref, key)
+        finally:
+            model.close()
+        found += compiled_mismatches(build, folder, refs={ref: float("nan")})
+    assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found)
+
+
+# The compiled model's own refusals: what it does with a key past the caches spec_sec.py
+# sizes, which no projection the contract allows reaches, as (cell, arguments, what modelx
+# does).  modelx answers a month after cover with a zero, and runs a month before the
+# valuation date of a point in force back through its accounts, the policy being in force
+# then, until it reads a return before the scenario's first month, which it refuses; it
+# answers a pricing month past the path with a number, and a policy year or an age past
+# its table with the table's last row, as the cells say, and refuses a code past the
+# timings and the kinds, a subaccount's position past the lineup and a policy year below 1
+# by name; compiled, each is past a cache, and raises IndexError rather than read or write
+# beyond it.  Every cache after its
+# first dimension is nine wide (spec_sec.py), so the first code or position past it is 9.
+COMPILED_ONLY = [
+    ("net_cf", (1586,), ("ok", 0.0)),
+    ("net_cf", (-1,), ("raised", "ValueError: point_id 1: scenario_table.csv has no return "
+                                 "for subaccount_id 1 at t -25")),
+    ("pols_if_at", (0, 9), ("raised", "ValueError: invalid timing")),
+    ("av_at", (0, 9), ("raised", "ValueError: invalid timing")),
+    ("claim_pp", (0, 9), ("raised", "ValueError: invalid kind")),
+    ("claims_from_av", (0, 9), ("raised", "ValueError: invalid kind")),
+    ("sa_pp_at", (0, 9, "BEF_PREM"),
+     ("raised", "ValueError: point_id 1: no subaccount at position 9 of the lineup of 2")),
+    ("alloc", (9,),
+     ("raised", "ValueError: point_id 1: no subaccount at position 9 of the lineup of 2")),
+    ("sa_pp", (0, -1),
+     ("raised", "ValueError: point_id 1: no subaccount at position -1 of the lineup of 2")),
+    ("av_pricing_pp_at", (1465, "BEF_PREM"), ("ok", None)),
+    ("prem_persistency_py", (124,), ("ok", None)),
+    ("prem_persistency_py", (-1,), ("raised", "ValueError: point_id 1: "
+                                    "prem_persistency.csv has no factor for policy year "
+                                    "-1")),
+    ("coi_rate_guar_at", (124,), ("ok", None)),
+    ("corridor_factor_at", (123,), ("ok", None)),
+    ("mort_rate_base_at", (123,), ("ok", None)),
+]
+
+# The codes inside the timing and kind caches that a cell does not take, since one
+# numbering serves every timing family and every cache after its first dimension is nine
+# wide (spec_sec.py): there the cell itself refuses the code, compiled as in modelx.  As
+# (cell, its arguments, a code by its name or number).
+CODES_IN_CACHE = [
+    ("pols_if_at", (0, "BEF_PREM")), ("pols_if_at", (0, "EOM")),
+    ("av_pp_at", (0, "BEF_NB")), ("av_pp_at", (0, "EOM")), ("av_at", (0, "BEF_MAT")),
+    ("sa_pp_at", (0, 0, "EOM")), ("sa_pp_at", (0, 0, "BEF_NB")), ("fa_pp_at", (0, "EOM")),
+    ("la_pp_at", (0, "BEF_DECR")), ("loan_bal_pp_at", (0, "EOM")),
+    ("unloaned_av_pp_at", (0, "BEF_MAT")), ("sa_pricing_pp_at", (0, 0, "BEF_WD")),
+    ("fa_pricing_pp_at", (0, "BEF_ME")), ("av_pricing_pp_at", (0, "EOM")),
+    ("claim_pp", (0, "MATURITY")), ("claim_pp", (0, 8)),
+    ("claims_from_av", (0, "WITHDRAWAL")), ("claims_from_av", (0, 8)),
+    ("sa_pp_at", (0, 2, "BEF_PREM")), ("sa_pp", (0, 8)), ("fund_expense_ann", (8,)),
+]
+
+
+def _refusal_cases():
+    """Every refusal the compiled model must make as modelx does, as (case, the table, the
+    edits, the References, [(position, cell, arguments)], the Data cells to read).
+
+    A position, not a label, since a table ``Data`` refuses has no keys to give: each is
+    the row's place in the table written, ``Projection``'s ``idx``, which the test indexes
+    ``Projection`` by in modelx too.
+    """
+    committed, extract = _committed(), _extract()
+
+    def at(table, label):
+        return list(table.index).index(label)
+
+    moved = _label(committed, "twin", 4, 0)
+    cases = [
+        *[(f"past its cover, {case}", _set("duration_mth", [moved], month)(committed),
+           None, {}, [(at(committed, moved), "proj_len", ())], ())
+          for case, month in PAST_COVER],
+        ("past its cover, on the extract", _set("duration_mth", [104], 924)(extract),
+         None, {}, [(at(extract, 104), "proj_len", ())], ()),
+        ("beyond the tables, on the extract", extract, None, {},
+         [(0, cell, args) for cell, args, _ in BEYOND if min(args) >= 0], ()),
+        ("a point without a COI scale, on the extract",
+         _set("age_at_entry", [109], 36)(extract), None, {}, [(0, "result_cf", ())], ()),
+        ("an issue age of 86, on the extract", _set("age_at_entry", [103], 86)(extract),
+         None, {}, [(at(extract, 103), "proj_len", ())], ()),
+        ("a class the table lacks, on the extract",
+         _set("rate_class", [103, 106], "SuperPNT")(extract), None, {},
+         [(0, "result_cf", ())], ("class_factor",)),
+        ("a scenario the table lacks, on the extract",
+         _set("scenario_id", [102], "CRASH")(extract), None, {},
+         [(0, "result_cf", ())], ("scenario_index",)),
+        ("a label written as text, on the extract", _relabelled(107, "7x")(extract),
+         None, {}, [(at(extract, 107), "point_id", ())], ("point_id",)),
+        ("codes and positions no cell takes, inside the caches", committed, None, {},
+         [(0, cell, args) for cell, args in CODES_IN_CACHE], ()),
+        ("a return before its path's first month", committed,
+         {"scenario_table.csv": _scenarios_unsorted}, {},
+         [(0, "gross_return_mth", (2, 1)), (0, "result_cf", ())], ()),
+    ]
+    for case, table, edits, refs, label, _, _, _ in NOT_ISSUED:
+        cases.append((case, table, edits, refs, [(at(table, label), "result_cf", ())], ()))
+    for case, edit, runoff, scenarios, cell, _, label in UNJOINED:
+        table = edit(committed)
+        call = "point_id" if cell == "point_id" else "result_cf"
+        cases.append((case, table, _unjoined_edits(runoff, scenarios), {},
+                      [(at(table, label), call, ())], (cell,)))
+    point = _label(committed, "twin", 2, 0)
+    for case, column, value, _ in UNDECODABLE:
+        cases.append((case, _set(column, [point], value)(committed), None, {},
+                      [(at(committed, point), "result_cf", ())], ()))
+    for case, edit, _ in MALFORMED:
+        cases.append((case, edit(committed), None, {}, [(0, "result_cf", ())],
+                      ("model_point_table",)))
+    for case, file, edit, check, _ in MALFORMED_KEYS + MALFORMED_RATES:
+        cases.append((case, committed, {file: edit}, {"dyn_behavior_on": True},
+                      [(0, "net_cf", (0,))], (check,)))
+    return cases
+
+
+def _modelx_did(call):
+    """``("ok", value)`` or ``("raised", "Type: message")``: what modelx did on ``call``."""
+    try:
+        return ("ok", call())
+    except Exception as err:                    # what modelx raised is what compiled must
+        return ("raised", _raised(err))
+
+
+@pytest.mark.cython
+def test_the_compiled_model_refuses_what_modelx_refuses(sec_build, tmp_path):
+    """Compiled, the model refuses what modelx refuses, with modelx's error and message.
+
+    A ``ValueError`` raised in a cell typed ``long long`` or ``double`` propagates out of
+    the compiled model as out of modelx.  So, each on its own inputs and References
+    (:func:`_refusal_cases`): ``proj_len()`` refuses a point past its cover, naming it
+    by ``point_id()``, on the committed table (:data:`PAST_COVER`) and on the extract
+    labelled otherwise than by position (:func:`_extract`), and a point the contract does
+    not issue, which the compiled caches are not sized for (:data:`NOT_ISSUED`, each on
+    its own inputs), and on the extract an issue age past ``issue_age_max``; each reader
+    of a padded table refuses policy year 0, below it, each reader of a subaccount's input
+    a position past the lineup, and a point without a COI scale is refused where its first
+    rate is read, on the extract (:data:`BEYOND`; a key below 0 is past the cache, below);
+    a return before its path's first month is refused; every case of :data:`UNJOINED`, on
+    the extract a class and a scenario the tables lack and a label written as text among
+    them, of :data:`UNDECODABLE`, each text variant among them, of :data:`MALFORMED` and of
+    :data:`MALFORMED_KEYS` and :data:`MALFORMED_RATES`, is refused by a projection, and by
+    the ``Data`` cell that checks it, compiled as in modelx, so a compiled ``Data`` cell
+    refuses each value its modelx cell refuses; and a code a cell does not take, or a
+    position past the lineup, inside its cache, is refused by the cell
+    (:data:`CODES_IN_CACHE`).
+
+    And the refusals that are the compiled model's alone (:data:`COMPILED_ONLY`): a month
+    past the ``t`` cache either side, a code past the timing and kind caches, a position
+    past the subaccount caches, a pricing month past the ``m`` cache, a policy year past
+    the ``y`` cache either side and an age past the ``a`` cache, each raising
+    ``IndexError`` compiled, beside what modelx does.
+
+    The cases share one directory, which each case's inputs overwrite in turn, and one
+    copy of the compiled package: each child reads its inputs afresh, as the compiled
+    ``Data`` reads its files once an import.
+    """
+    build = sec_build(SEC)
+    cases = _refusal_cases()
+    cases.append(("compiled only", _committed(), None, {},
+                  [(0, cell, args) for cell, args, _ in COMPILED_ONLY], ()))
+    dest = tmp_path / "refused"
+    folder = compiled_case(build, dest)
+    found, refused, only = [], 0, iter(COMPILED_ONLY)
+    for case, table, edits, refs, calls, data in cases:
+        temp_inputs(dest, model_path(SEC), model_points=table, model_point_file=TABLE,
+                    edits=edits)
+        model = mx.read_model(folder, name=_name("refused"))
+        try:
+            for ref, value in refs.items():
+                setattr(model.Projection, ref, value)
+            calls = [(idx, cell, tuple(_code(model.Projection, a) if isinstance(a, str)
+                                       else a for a in args))
+                     for idx, cell, args in calls]
+            want = [_modelx_did(lambda: model.Projection[idx].cells[cell](*args))
+                    for idx, cell, args in calls]
+            want_data = {name: _modelx_did(model.Data.cells[name]) for name in data}
+        finally:
+            model.close()
+        job = {"refs": refs, "calls": {}, "data": list(data)}
+        for idx, cell, args in calls:
+            job["calls"].setdefault(idx, []).append((cell, args))
+        got = run_compiled(dest, build.package.name, job)
+        assert got["exit"] == 0, f"{case}: the compiled run failed:\n{got['stderr']}"
+        assert all(got["compiled"].values()), got["compiled"]
+        have = {idx: iter(values) for idx, values in got["values"].items()}
+        for (idx, cell, args), modelx_did in zip(calls, want):
+            status, text = next(have[idx])
+            where = f"{case}: idx {idx}: {cell}{args}"
+            if case == "compiled only":
+                *_, expected = next(only)
+                if (expected[1] is None and modelx_did[0] != "ok"
+                        or expected[1] is not None and modelx_did != expected):
+                    found.append(f"{where}: modelx {modelx_did}, not {expected}")
+                if (status, text.split(":")[0]) != ("raised", "IndexError"):
+                    found.append(f"{where}: compiled {status} {text!r}, not IndexError")
+                continue
+            if modelx_did[0] != "raised":
+                found.append(f"{where}: modelx returned, where a refusal was meant")
+            elif (status, text) != modelx_did:
+                found.append(f"{where}: compiled {status} {text!r}, modelx {modelx_did}")
+            refused += 1
+        for name, modelx_did in want_data.items():
+            if modelx_did[0] != "raised":
+                found.append(f"{case}: Data.{name}: modelx returned, where a refusal was "
+                             f"meant")
+            elif got["data"][name] != modelx_did:
+                found.append(f"{case}: Data.{name}: compiled {got['data'][name]}, modelx "
+                             f"{modelx_did}")
+            refused += 1
+    assert not found, "\n".join(found)
+    assert refused == sum(len(calls) + len(data) for *_, calls, data in cases[:-1])
+
+
+# The cold call the stack test makes compiled, in a thread whose stack is reserved at each
+# of these sizes in KiB, and then on the main thread.  1 MiB is the size asserted; the
+# others bracket what the call needs, and the test reports the smallest that ran.
+STACK_KIB = (256, 384, 512, 768, 1024, 1536, 2048)
+
+# How long the stack test waits for each child, in seconds: one runs in a few seconds, more
+# under load.  A bracketing size may kill its child on a stack overflow by design, and
+# where the overflow hangs instead, as Windows Error Reporting could, the wait ends sooner
+# than for the two runs asserted, and the size is recorded as timed out.
+BRACKET_TIMEOUT, ASSERTED_TIMEOUT = 120, 300
+
+
+@pytest.mark.cython
+def test_the_longest_frame_runs_cold_on_a_one_megabyte_stack(sec_build, tmp_path):
+    """The deepest call the contract allows runs compiled on a 1 MiB stack (F7).
+
+    On the two points of :func:`_longest_cover`, S's point 3 at issue age 0, issued now
+    and 120 months on, whose cover runs 1,464 months, a cold ``net_cf`` in the last month,
+    with the behaviour module on, runs the funding ratio's pricing path from the policy
+    month of the last month back to issue, 1,463 months, and the cells above and below it
+    deep, 1,484 in modelx on a model just read
+    (:func:`test_every_chain_runs_one_cell_a_month_from_a_cold_start`), and compiled it
+    runs on the C stack, which the interpreter's recursion limit does not count.  1 MiB
+    is the stack MSVC gives an executable's main thread unless the executable asks for
+    more: a host that embeds Python, where python.exe itself asks for 2,000,000 bytes.  A
+    thread whose stack is reserved at 1 MiB stands in for it on every platform
+    (``sec_support.run_compiled``), and in one each call runs cold and returns modelx's
+    number, identically on x86-64 (``sec_support.exact_here``) and to 1e-12 elsewhere.
+    With gcc the calls need between 256 and 384 KiB, about 240 bytes a level, the least
+    margin under 1 MiB of the family's models: at the 325 to 433 bytes a level MSVC took
+    on WholeLife's chain, they would need 470 to 630 KiB.  A stack too small kills the
+    child, and the test fails naming the stack.  The thread's stack is read back too, from
+    Windows or from glibc, and must be at most 1 MiB and a page: a stand-in larger than
+    asked for would stand for nothing.  And the calls run again on the child's main
+    thread, which is what ``run_sec.py --cython`` runs on.
+
+    No run has measured what the calls need with MSVC.  So they run first at each size of
+    :data:`STACK_KIB`, before anything is asserted, and every size's outcome goes into a
+    warning, which the job's summary shows, and into the failure, if there is one: the
+    smallest size that ran bounds the stack the chain needs on the compiler at hand.  A
+    size below the need kills its child on a stack overflow, by design: with gcc, 256 KiB
+    does.  Each bracketing child is waited for :data:`BRACKET_TIMEOUT` seconds and the two
+    asserted runs :data:`ASSERTED_TIMEOUT`, so that an overflow that hangs, rather than
+    ends its child, costs minutes, not the job's hour, and a bracketing size that timed
+    out is recorded as such.
+    """
+    build = sec_build(SEC)
+    longest, labels = _longest_cover(tmp_path / "copy")
+    rows = pd.read_csv(longest.parent / TABLE, index_col="point_id")
+    folder = compiled_case(build, tmp_path / "extremes", model_points=rows, edits={
+        file: _copied(longest.parent, file)
+        for file in ("coi_rates.csv", "mort_table.csv", "corridor_factors.csv")})
+    on = {"dyn_behavior_on": True}
+    model = _read(folder, "longest", on)
+    try:
+        calls, want = {}, {}
+        for key, label in zip(point_keys(model), labels):
+            proj = projection(model, key)
+            last = proj.proj_len() - 1
+            assert proj.duration_mth(last) == 12 * 122 - 1, label
+            calls[key] = [("net_cf", (last,))]
+            want[key] = proj.net_cf(last)
+    finally:
+        model.close()
+    job = {"refs": on, "calls": calls}
+
+    def child(timeout, **where):
+        try:
+            return run_compiled(tmp_path / "extremes", build.package.name, job,
+                                timeout=timeout, **where)
+        except subprocess.TimeoutExpired:
+            return {"exit": f"none, timed out after {timeout} s", "stderr": ""}
+
+    runs = {f"a {kib} KiB thread": child(ASSERTED_TIMEOUT if kib == 1024
+                                         else BRACKET_TIMEOUT, stack_kib=kib)
+            for kib in STACK_KIB}
+    runs["the main thread"] = child(ASSERTED_TIMEOUT, main_thread=True)
+    ran = [kib for kib in STACK_KIB if runs[f"a {kib} KiB thread"]["exit"] == 0]
+    late = [kib for kib in STACK_KIB
+            if str(runs[f"a {kib} KiB thread"]["exit"]).startswith("none")]
+    record = (f"the compiled cold net_cf at the longest cover ran on a thread of "
+              f"{ran or 'no size'} KiB and not of "
+              f"{[kib for kib in STACK_KIB if kib not in ran]} KiB"
+              f"{f', timed out at {late} KiB' if late else ''}; on the main thread "
+              f"{'it ran' if runs['the main thread']['exit'] == 0 else 'it failed'}")
+    warnings.warn(record, UserWarning)
+    for where in ("a 1024 KiB thread", "the main thread"):
+        got = runs[where]
+        assert got["exit"] == 0, (
+            f"the compiled model's deepest cold call failed on {where}, exit code "
+            f"{got['exit']} ({record}):\n{got['stderr']}")
+        assert all(got["compiled"].values()), got["compiled"]
+        for key, value in want.items():
+            assert got["values"][key][0][0] == "ok", (where, got["values"][key])
+            have = got["values"][key][0][1]
+            assert _as_modelx(have, value), (where, have, value)
+        reserved = got["stack"]["reserved"]
+        if where == "a 1024 KiB thread" and reserved is not None:
+            assert reserved <= (1 << 20) + 4096, (
+                f"the thread has {reserved} bytes of stack, not 1 MiB")
+
+
+@pytest.mark.cython
+def test_past_a_lapse_rate_of_1_the_compiled_checks_fail(sec_build, tmp_path):
+    """Past a lapse rate of 1 the compiled checks return ``False``, where modelx raises.
+
+    ``VUL_US_S``'s lapse rate has no cap, and this model keeps it so: under a spike of
+    :data:`LAPSE_SHOCK` S's point 3's annual rate is 1.2 in its cliff month,
+    :data:`SHOCK_MTH`, where ``1 - (1 - q)^(1/12)`` has no real value.  modelx computes
+    it complex and every check raises ``TypeError``
+    (:func:`test_a_lapse_rate_past_1_makes_each_check_raise_as_in_vul_us_s`).  Compiled,
+    the power is C's ``pow`` of a negative base, NaN, and NaN runs through every count and
+    residual after it, so each check's ``abs(residual) <= tolerance`` is false: the
+    compiled model reports a failed check rather than an error.  This pins that
+    behaviour, which ``model-sec.md`` records among what the compiled model does
+    differently, on the twin of S's point 3: the rate itself is 1.2, its monthly rate
+    NaN, and the three checks ``False``.
+    """
+    build = sec_build(SEC)
+    folder = compiled_case(build, tmp_path / "lapse")
+    committed = _committed()
+    idx = list(committed.index).index(_label(committed, "twin", 3, 0))
+    model = _read(folder, "lapse_past_1", {"lapse_shock_mult": LAPSE_SHOCK})
+    try:
+        assert projection(model, idx).lapse_rate(SHOCK_MTH) == 1.2
+        assert type(projection(model, idx).lapse_rate_mth(SHOCK_MTH)) is complex
+    finally:
+        model.close()
+    checks = ("check_av_roll_fwd", "check_margin", "check_net_view")
+    job = {"refs": {"lapse_shock_mult": LAPSE_SHOCK},
+           "calls": {idx: [("lapse_rate", (SHOCK_MTH,)), ("lapse_rate_mth", (SHOCK_MTH,)),
+                           *((check, ()) for check in checks)]}}
+    got = run_compiled(folder.parent, build.package.name, job)
+    assert got["exit"] == 0, got["stderr"]
+    assert all(got["compiled"].values()), got["compiled"]
+    (rate, monthly, *verdicts) = got["values"][idx]
+    assert rate == ("ok", 1.2), rate
+    assert monthly[0] == "ok" and math.isnan(monthly[1]), monthly
+    assert verdicts == [("ok", False)] * 3, verdicts
+
+
+# A compiled model's Reference set after it has computed, in a child of its own: what the
+# base Projection, an ItemSpace made before the change and one made after give for
+# expenses(12), before expense_maint is set to 90.0 and after.
+STALE_CHILD = """\\
+import json, sys
+sys.path.insert(0, sys.argv[1])
+model = __import__(sys.argv[2]).mx_model
+p = model.Projection
+early = p[3]
+values = [p.expenses(12), early.expenses(12)]
+p.expense_maint = 90.0
+values += [p.expenses(12), early.expenses(12), p[5].expenses(12)]
+print(json.dumps(values))
+"""
+
+
+@pytest.mark.cython
+def test_a_compiled_model_clears_no_cache_when_a_reference_is_set(sec_build, tmp_path):
+    """Compiled, a Reference set after a Space has computed leaves its values as they were.
+
+    modelx recomputes what a Reference reaches when it is set.  The compiled model clears
+    no cache: the base ``Projection``, and an ItemSpace made before the Reference was set,
+    keep the values they computed, and only an ItemSpace made afterwards, which takes the
+    References when it is made, computes with the new value.  The Projection docstring
+    and ``model-sec.md`` say so, and tell a user to set every Reference on a model just
+    imported.  This holds the compiled model to what they say, on ``expense_maint``, which
+    moves ``expenses(12)`` on every point in force then (VUL ships ``inflation_rate`` at 0,
+    which would move nothing): the base ``Projection``, the worked example's twin at
+    ``idx`` 0, S's in-force point 4's twin, made before, and S's point 4 restated six
+    months on, made after, so that a modelx-cython that began to clear caches would be
+    seen here, and the advice changed with it.  A compiled value meets modelx's as C4
+    holds it (:func:`_as_modelx`), and one the compiled model kept, its own value of
+    before, identically.
+    """
+    build = sec_build(SEC)
+    folder = compiled_case(build, tmp_path / "stale")
+    child = tmp_path / "stale_child.py"
+    child.write_text(STALE_CHILD, encoding="utf-8")
+    done = subprocess.run([sys.executable, "-P", str(child), str(folder.parent),
+                           build.package.name], capture_output=True, text=True,
+                          timeout=300)
+    assert done.returncode == 0, done.stderr
+    base, early, base_after, early_after, late = json.loads(done.stdout.splitlines()[-1])
+    model = mx.read_model(folder, name=_name("stale"))
+    try:
+        p = model.Projection
+        before = (p.expenses(12), projection(model, 3).expenses(12))
+        p.expense_maint = 90.0
+        fresh = (p.expenses(12), projection(model, 3).expenses(12),
+                 projection(model, 5).expenses(12))
+    finally:
+        model.close()
+    assert _as_modelx(base, before[0]) and _as_modelx(early, before[1]), (base, early,
+                                                                          before)
+    assert fresh[0] != base and fresh[1] != early
+    assert (base_after, early_after) == (base, early), "the compiled model cleared a cache"
+    assert _as_modelx(late, fresh[2]), (late, fresh[2])
+
+
+@pytest.mark.cython
+def test_run_sec_prints_the_compiled_model_as_it_prints_modelx(sec_build, tmp_path):
+    """``run_sec.py --cython`` prints, for a point and for the block, what modelx prints.
+
+    Each run in an interpreter of its own, as a user runs it.  With ``--build`` it runs the
+    session's build, so nothing is built in the tree, and it checks for itself that the
+    package it imported is compiled.  Line for line, the compiled model's output is
+    modelx's: point 6's description, S's in-force point 4 restated six months on, with its
+    loan, and its first twelve rows of cash flows, of the account value roll-forward and
+    of counts, and the block's lines for each point, its first twelve rows and its first
+    twelve projection years.
+
+    The same output is what a runner that ignored ``--build`` and ran modelx would print,
+    so the runner is also given a directory that holds no build, and must refuse it,
+    saying so, rather than print anything.
+    """
+    build = sec_build(SEC)
+    runner = model_path(SEC).parent / "run_sec.py"
+    for args in (("6",), ("--block",)):
+        expected = _run_sec(runner, *args)
+        assert _run_sec(runner, *args, "--cython", "--build", str(build.out)) == expected
+    empty = tmp_path / "no_build"
+    empty.mkdir()
+    done = _run_sec(runner, "6", "--build", str(empty), check=False)
+    stderr = done.stderr.decode(errors="replace")
+    assert done.returncode != 0 and done.stdout == b"", stderr
+    assert f"holds no build of {SEC} for this interpreter" in stderr, stderr

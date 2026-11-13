@@ -1467,6 +1467,83 @@ _VUL_STATE = {
     "coi_rate_override_m1": _vul_no_pin,
 }
 
+# VUL_US_S names each subaccount by its id, and VUL_US_SEC at stage EC by its position in
+# the lineup, from 0 (R9, R10): the shipped lineup's ids, 1 and 2, at positions 0 and 1.
+# test_variable_ul_us_sec.py asserts that this agrees with subaccount_table.csv, as
+# _VUL_STATE's ids do.
+_VUL_LINEUP = {1: 0, 2: 1}
+
+# The cells of VUL_US_S that take a subaccount id, by the place of the id among their
+# arguments.
+_VUL_BY_ID = {"alloc": 0, "fund_expense_ann": 0, "sa_pp_init": 0, "scenario_last_mth": 0,
+              "gross_return_mth": 1, "inv_return_mth": 1, "wd_sa_pp": 1,
+              "mth_deduction_sa_pp": 1, "sa_pp_at": 1, "sa_pp": 1, "sa_pricing_pp_at": 1,
+              "sa_pricing_pp": 1}
+
+
+def _vul_twin_args(name, args):
+    """``VUL_US_S``'s keys as ``VUL_US_SEC`` takes them at stage ``"EC"`` (R9, R12).
+
+    S's ``claims(t, None)`` and ``me_charge_pp(t, None)``, the totals its ``net_cf`` and
+    ``me_charge`` cache, are SEC's ``claims(t)`` and ``me_charge_pp(t)``.  S's
+    ``claims(t, kind)`` and ``me_charge_pp(t, i)`` keys have no SEC cell of that
+    signature: they are SEC's ``claims_death(t)``, ``claims_lapse(t)`` and
+    ``me_charge_sa_pp(t, i)``, which T1 reaches through ``result_cf``'s columns and the
+    totals, and ``test_variable_ul_us_sec.py`` compares with S's keys, so they are skipped.
+    A subaccount id, S's argument of a cell of :data:`_VUL_BY_ID`, is its position in the
+    lineup, :data:`_VUL_LINEUP`.  Every other cell's arguments pass as they are.
+    """
+    if name in ("claims", "me_charge_pp"):
+        return (args[0],) if args[1] is None else None
+    if name in _VUL_BY_ID:
+        at = _VUL_BY_ID[name]
+        return args[:at] + (_VUL_LINEUP.get(args[at], args[at]),) + args[at + 1:]
+    return args
+
+
+def _vul_c4_also(proj):
+    """What C4 compares of a ``VUL_US_SEC`` point beyond its full sweep (M17).
+
+    ``sec_support.full_sweep`` reaches a cell of more than ``t`` only at the keys some
+    swept cell asks of it.  So, as ``sample_sec.py`` does, this calls every account cell at
+    every timing it takes and ``av_at`` at ``EOM``, ``pols_if_at`` at ``BEF_MAT``, both
+    claim cells at every kind they take and every subaccount's timings, at
+    ``t = 0 .. proj_len()``, and ``inv_return_mth``, an economic input that refuses a
+    month before its re-based path's first, from ``t_entry()``; and the pricing path at
+    every policy month from issue to the last in cover, at every timing it takes, with its
+    three closes, which with the behaviour module off no cell reaches.  Passed to
+    :func:`compiled_mismatches` as ``also``.
+    """
+    account = (proj.BEF_PREM, proj.BEF_WD, proj.BEF_FEE, proj.BEF_INV, proj.BEF_ME)
+    pricing = (proj.BEF_PREM, proj.BEF_FEE, proj.BEF_INV)
+    n = proj.subaccount_count()
+    for t in range(proj.proj_len() + 1):
+        proj.pols_if_at(t, proj.BEF_MAT)
+        for timing in account:
+            for cell in ("av_pp_at", "unloaned_av_pp_at", "av_at", "fa_pp_at", "la_pp_at",
+                         "loan_bal_pp_at"):
+                proj.cells[cell](t, timing)
+        proj.av_at(t, proj.EOM)
+        for i in range(n):
+            if t >= proj.t_entry():
+                proj.inv_return_mth(t, i)
+            for timing in account:
+                proj.sa_pp_at(t, i, timing)
+        for kind in (proj.DEATH, proj.LAPSE, proj.WITHDRAWAL):
+            proj.claim_pp(t, kind)
+        for kind in (proj.DEATH, proj.LAPSE, proj.MATURITY):
+            proj.claims_from_av(t, kind)
+    for m in range(proj.duration_mth(proj.proj_len() - 1) + 1):
+        proj.fa_pricing_pp(m)
+        proj.av_pricing_pp(m)
+        for timing in pricing:
+            proj.fa_pricing_pp_at(m, timing)
+            proj.av_pricing_pp_at(m, timing)
+        for i in range(n):
+            proj.sa_pricing_pp(m, i)
+            for timing in pricing:
+                proj.sa_pricing_pp_at(m, i, timing)
+
 
 def _rila_entering(name):
     """What ``RILA_US_S`` carries into month ``d`` in cells ``name``.
@@ -2416,26 +2493,39 @@ SEC_SPECS: dict[str, SecSpec] = {
     # not committed.
     #
     # T1 holds on VUL at any count: S charges acquisition on the policies in force in the
-    # issue month, the policies issued, as SEC does.  It skips one S cell besides the
+    # issue month, the policies issued, as SEC does.  It skips three S cells besides the
     # default three:
     #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and test_variable_ul_us_sec.py compares the
     #     report itself with S's, on every column both hold.
+    #   subaccount_ids: S's lineup, a list of the ids, which no compiled cell returns
+    #     (R10).  SEC counts the lineup instead, subaccount_count, and names a subaccount
+    #     by its position, which _vul_twin_args maps S's ids onto, so every value S reads
+    #     by an id reaches T1 through the cells of a subaccount, at every month S read.
+    #   coi_rate_scale: S's guaranteed COI scale for the point's cell, a Series, which no
+    #     compiled cell returns (R10).  SEC numbers the scale instead, coi_schedule, and
+    #     every value of it reaches T1 through coi_rate_guar and coi_rate_guar_at, which T1
+    #     compares at every month and policy year S read.
     # S's net_cf calls claims(t) with its kind=None default and S's me_charge calls
     # me_charge_pp(t) with its i=None, so S's sweep caches claims under (t, None) and
-    # me_charge_pp under (t, None).  Phase 2 replaces both defaults with total cells (R12),
-    # and its T1 then needs an arg_map from those keys to them.  The label accessors (sex,
+    # me_charge_pp under (t, None), and its result_cf and its sum over the lineup cache the
+    # kinds and the subaccounts.  At stage EC claims is split into claims_death and
+    # claims_lapse, the result_cf columns, and a total claims(t), and me_charge_pp into
+    # me_charge_sa_pp(t, i) and a total me_charge_pp(t) (R12), so the spec's twin_arg_map,
+    # _vul_twin_args, maps S's two totals onto SEC's and skips the kind and subaccount keys,
+    # whose values reach T1 through the totals and the reports, and which
+    # test_variable_ul_us_sec.py compares with S's bit for bit.  The label accessors (sex,
     # rate_class, db_option, qual_test, premium_type, surr_charge_id, scenario_id) are
-    # called by no projection cell, so Phase 2 declares them reporting; and the two
-    # first-month pins, read once a point as a value and a flag (corridor_override_m1,
-    # has_corridor_override_m1, coi_rate_override_m1, has_coi_rate_override_m1), become a
-    # value array and a 0/1 flag array (R8).  No cell takes a float parameter.
+    # called by no projection cell, and are declared reporting; and the two first-month
+    # pins are a value array, NaN where blank as S reads it, and a 0/1 flag array (R8).  No
+    # cell takes a float parameter.
     #
-    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 0
-    # to 85 (product-spec), and S projects any age its tables serve; at stage E Data
-    # refuses only an issue age below 0 or not whole, Phase 2 refuses one outside 0 to 85
-    # in proj_len(), and every size below rests on the youngest, 0.  Ages 0 to 17 sit
+    # Phase 2's sizes (spec_sec.py), each with the inputs it depends on.  The contract
+    # issues at ages 0 to 85 (product-spec), and S projects any age its tables serve; Data
+    # refuses an issue age below 0 or not whole, proj_len() refuses one below
+    # issue_age_min, 0, or above issue_age_max, 85, and a lineup of more than
+    # subaccount_max, 9, and every size below rests on the youngest, 0.  Ages 0 to 17 sit
     # below the mortality and corridor tables' first age, 18, and read those tables
     # clamped there, as S does.
     #   t: 0 to 1,584, the longest frame and the month after it, which the roll-forwards
@@ -2457,8 +2547,11 @@ SEC_SPECS: dict[str, SecSpec] = {
     #   attained ages a (corridor_factor_at, mort_rate_base_at): youngest issue age 0 to
     #     omega_age 121; corridor_factor_at is read from the issue age on by the pricing
     #     path.
-    #   subaccounts i: the lineup's size, 2 shipped; and each scenario path to its cell's
-    #     last month (scenario_last_mth), read at min(t, last).
+    #   subaccounts i: positions 0 to subaccount_max - 1, 8, the one width of every 2-D
+    #     cache and of each dimension of every 3-D cache, nine, which timing's nine codes
+    #     share; 2 shipped.  Each scenario path is read to its cell's last month
+    #     (scenario_last_mth), at min(t, last), from Data's array by scenario, subaccount
+    #     and month.
     # The lapse rate, base x the cliff's spike x the dynamic multiplier, has no cap in S or
     # here, and Data holds each base rate to 0 to 1.  With lapse_shock_mult and
     # lapse_dyn_cap at 0 or more, the annual lapse rate is at most max(1, lapse_shock_mult)
@@ -2475,7 +2568,8 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_VUL_STATE,
         twin_state={c: f for c, f in _VUL_STATE.items()
                     if c in ("la_pp_init", "sum_assured_init")},
-        exempt=frozenset({"result_pols"}),
+        exempt=frozenset({"result_pols", "subaccount_ids", "coi_rate_scale"}),
+        twin_arg_map=_vul_twin_args,
     ),
     # RILA's state is thirteen columns and the row's scenario (_RILA_STATE above): seven
     # amounts per contract entering the valuation month, the Investment Amount, which is
@@ -4210,8 +4304,27 @@ def _outcome_text(want, have, scale, rtol=COMPILED_RTOL):
     return f"modelx {show[want[0]](want[1])}, compiled {show[have[0]](have[1])}"
 
 
+def c4_expected(proj, also=None):
+    """What C4 expects of one modelx point: ``{(cell, args): ("ok", value) | ("raised",
+    "Type: message")}``.
+
+    :func:`full_sweep` first, then, unless the point's ``proj_len()`` raised, ``also(proj)``
+    where it is given, a product's calls of the cells and codes no swept cell reaches, the
+    pricing path's closes or a timing no formula passes; then every value the point has
+    cached, at every argument, and every raise the sweep recorded.  So what ``also`` calls
+    enters the expectation, and the compiled run, which repeats every expected call, makes
+    it too.  ``also`` must not raise: it calls only what the point computes.
+    """
+    raised = full_sweep(proj)
+    if also is not None and ("proj_len", ()) not in raised:
+        also(proj)
+    found = {call: ("ok", value) for call, value in _cached_values(proj).items()}
+    found.update((call, ("raised", text)) for call, text in raised.items())
+    return found
+
+
 def compiled_mismatches(build, folder, *, refs=None, stack_kib=65536, limit=50,
-                        exact=None):
+                        exact=None, also=None):
     """C4: where the compiled model departs from modelx on the model in ``folder``, cell
     by cell.
 
@@ -4224,7 +4337,8 @@ def compiled_mismatches(build, folder, *, refs=None, stack_kib=65536, limit=50,
     of the same model's instance may forbid.  The compiled package then makes the same
     calls on the same points with the same ``refs``, in a child (:func:`run_compiled`), on
     a thread of ``stack_kib`` KiB, and reads every ``Data`` cell whose modelx value is an
-    array or a number.
+    array or a number.  ``also``, a callable of one modelx point, adds what it calls to
+    the expectation, and so to the compiled run's calls (:func:`c4_expected`).
 
     They must agree: a number identical where ``exact`` holds, by default where
     :func:`exact_here` does, and elsewhere within :data:`COMPILED_RTOL` relative, floored
@@ -4245,11 +4359,7 @@ def compiled_mismatches(build, folder, *, refs=None, stack_kib=65536, limit=50,
         labels = list(model.Data.model_point_table().index)
         keys, expected = point_keys(model), {}
         for key in keys:
-            proj = projection(model, key)
-            raised = full_sweep(proj)
-            found = {call: ("ok", value) for call, value in _cached_values(proj).items()}
-            found.update((call, ("raised", text)) for call, text in raised.items())
-            expected[key] = found
+            expected[key] = c4_expected(projection(model, key), also)
         data = {}
         for name, cells in model.Data.cells.items():
             try:
@@ -4306,7 +4416,13 @@ PANDAS_ATTRIBUTES = frozenset({
 C_CALLS = frozenset({"int", "float", "bool", "abs", "min", "max", "range"})
 """The builtins a compiled formula may call, beside cells and ``Data`` vectors: Cython
 turns each into C on C numbers, where any other builtin, ``round`` and ``sum`` among them,
-is a call into the interpreter, which no declaration shows (R12, R16)."""
+is a call into the interpreter, which no declaration shows (R12, R16).  But for ``int`` of
+a double: Cython makes it a Python int, converted back to a C integer where it is
+returned or used, exact below ``2**63`` and raising ``OverflowError`` past it, a call into
+Python that :func:`c_faults` sees only when the int is held in a local, and not as the
+temporary of an expression.  A model records each such call (UL's and VUL's
+``model-sec.md``, *No Python call kept*), and holds its input below ``2**53`` in
+``Data``."""
 
 
 def _spaces(model):

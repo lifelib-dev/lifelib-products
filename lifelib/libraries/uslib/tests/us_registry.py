@@ -99,7 +99,7 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # one product at a time,
 # each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
-# WholeLife_US_SEC the second, and UL_US_SEC the third.
+# WholeLife_US_SEC the second, UL_US_SEC the third, and VUL_US_SEC the fourth.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -123,7 +123,9 @@ MODELS = {
                    {**MONTHLY, "twin": "IUL_US_S", "stage": "E"}),
     "VUL_US_S": ("products/variable_ul/VUL_US_S", MONTHLY),
     "VUL_US_SEC": ("products/variable_ul/VUL_US_SEC",
-                   {**MONTHLY, "twin": "VUL_US_S", "stage": "E"}),
+                   {**MONTHLY, "twin": "VUL_US_S", "stage": "EC", "param": "idx",
+                    "reporting": ("db_option", "premium_type", "qual_test", "rate_class",
+                                  "scenario_id", "sex", "surr_charge_id")}),
     "ULSG_US_S": ("products/guaranteed_ul/ULSG_US_S", MONTHLY),
     "ULSG_US_SEC": ("products/guaranteed_ul/ULSG_US_SEC",
                     {**MONTHLY, "twin": "ULSG_US_S", "stage": "E"}),

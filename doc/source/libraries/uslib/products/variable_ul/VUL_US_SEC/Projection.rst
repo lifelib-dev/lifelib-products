@@ -8,6 +8,8 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
@@ -36,7 +38,7 @@ Cells Descriptions
 
 .. autofunction:: load_prem_rate
 
-.. autofunction:: subaccount_ids
+.. autofunction:: subaccount_count
 
 .. autofunction:: alloc
 
@@ -73,6 +75,8 @@ Cells Descriptions
 .. autofunction:: surr_charge_runoff_years
 
 .. autofunction:: scenario_id
+
+.. autofunction:: scenario_index
 
 .. autofunction:: corridor_override_m1
 
@@ -188,7 +192,7 @@ Cells Descriptions
 
 .. autofunction:: net_amt_at_risk
 
-.. autofunction:: coi_rate_scale
+.. autofunction:: coi_schedule
 
 .. autofunction:: coi_rate_last_year
 
@@ -245,6 +249,8 @@ Cells Descriptions
 .. autofunction:: av_change
 
 .. autofunction:: me_charge_pp
+
+.. autofunction:: me_charge_sa_pp
 
 .. autofunction:: me_charge
 
@@ -315,6 +321,10 @@ Cells Descriptions
 .. autofunction:: claims_over_av
 
 .. autofunction:: claims
+
+.. autofunction:: claims_death
+
+.. autofunction:: claims_lapse
 
 .. autofunction:: claims_net
 
