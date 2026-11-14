@@ -1066,7 +1066,9 @@ are not shipped. So each input now reaches a cell as a number:
   in force, a plain running sum where `DIA_US_S`'s `claims_ann` is Python's `sum`, which
   compensates its rounding: so `claims_ann(y, kind)` differs from `DIA_US_S`'s by an ulp or
   two in some years, the total in 154 of the twins' policy years at the shipped
-  assumptions, which the twin identity compares to its tolerance, 1e-9 relative. No
+  assumptions on Windows and 152 on Linux and macOS, whose `libm` rounds the survival
+  otherwise in the last bit, which the twin identity compares to its tolerance, 1e-9
+  relative. No
   number moved for it: compensating the sum would move the annual report from what the
   model computed before compiling. `claim_pp(t, kind)` takes `DEATH` or `REFUND` alone,
   and refuses `ALL`, `invalid kind`, as `DIA_US_S`'s `claim_pp(t, None)` raises. The twin

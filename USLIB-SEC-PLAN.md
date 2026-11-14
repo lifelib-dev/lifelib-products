@@ -13431,8 +13431,11 @@ heavy run beside each unless called alone.
   through `twin_arg_map`, and a test holds the sign of zero by `float.hex`.
 - *`claims_ann`* is a plain left-to-right sum, as since M12, where S's is Python's
   compensated `sum`: it differs in 154 of the twins' policy years at the shipped
-  assumptions, by at most two ulps (3.7e-16 relative), 283 at A/E −0.5. No number moved
-  from Phase 1; a test holds the plain sum, the bound and the count.
+  assumptions on Windows, by at most two ulps (3.7e-16 relative), 283 at A/E −0.5. No
+  number moved from Phase 1; a test holds the plain sum and the bound, and the count to a
+  band: Tests run 24, the first CI run on M24, found 152 on Linux and macOS, their `libm`
+  rounding the survival otherwise in the last bit, and failed the count's first form, an
+  exact 154, on both legs.
 - *Rounding* (R16). `purchase_rate` keeps `round(pr, dp)`, its rate built from `Projection`
   References, admitted through `"python_calls"` and held at exact binary ties.
   `rop_factor`'s `int(round(deferral_yrs(k)))` becomes `rop_deferral_yrs(k)`, an int cell

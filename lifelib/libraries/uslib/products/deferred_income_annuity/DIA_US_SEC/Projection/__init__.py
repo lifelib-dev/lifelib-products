@@ -3684,7 +3684,8 @@ def claims_ann(y, kind):
     worked example computes it.  ``ALL``, ``DIA_US_S``'s ``kind=None``, sums the months'
     totals, :func:`claims` at ``ALL``.  Each kind is a plain left-to-right sum, as at
     stage ``E``, an ulp or two from ``DIA_US_S``'s compensated ``sum`` in some years: at
-    ``ALL``, in 154 of the twins' policy years at the shipped assumptions.
+    ``ALL``, in 154 of the twins' policy years at the shipped assumptions on Windows, 152
+    on Linux and macOS.
     """
     d = duration_mth_init()
     entry = t_entry()
