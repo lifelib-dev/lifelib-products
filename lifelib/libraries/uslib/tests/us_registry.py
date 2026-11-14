@@ -118,8 +118,8 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
 # WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth, ULSG_US_SEC the
-# fifth, MYGA_US_SEC the sixth, SPIA_US_SEC the seventh, DIA_US_SEC the eighth and
-# FIA_US_SEC the ninth.
+# fifth, MYGA_US_SEC the sixth, SPIA_US_SEC the seventh, DIA_US_SEC the eighth,
+# FIA_US_SEC the ninth and IUL_US_SEC the tenth.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -140,7 +140,11 @@ MODELS = {
                                  "sex", "surr_charge_id")}),
     "IUL_US_S": ("products/indexed_ul/IUL_US_S", MONTHLY),
     "IUL_US_SEC": ("products/indexed_ul/IUL_US_SEC",
-                   {**MONTHLY, "twin": "IUL_US_S", "stage": "E"}),
+                   {**MONTHLY, "twin": "IUL_US_S", "stage": "EC", "param": "idx",
+                    "reporting": ("db_option", "premium_mode", "premium_type", "qual_test",
+                                  "rate_class", "sex", "surr_charge_id"),
+                    "engine": ("index_change", "index_credit", "index_credit_rate",
+                               "seg_credit_base", "seg_matured_value")}),
     "VUL_US_S": ("products/variable_ul/VUL_US_S", MONTHLY),
     "VUL_US_SEC": ("products/variable_ul/VUL_US_SEC",
                    {**MONTHLY, "twin": "VUL_US_S", "stage": "EC", "param": "idx",

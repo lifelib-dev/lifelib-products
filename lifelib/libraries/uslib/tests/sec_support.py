@@ -577,8 +577,9 @@ def twin_mismatches(s_proj, sec_proj, *, exempt=TWIN_EXEMPT_DEFAULT, arg_map=Non
     skipped: no month precedes the valuation date, and R1 forbids evaluating one.  Under an
     offset a ``t``-indexed Series or DataFrame, such as ``result_cf()``, is relabelled the
     same way before it is compared.  Only the
-    parameter named ``t`` moves.  Another that holds a month, such as the segment month
-    ``m`` of IUL's ``seg_bal_pp(t, m)``, moves through ``arg_map``.
+    parameter named ``t`` moves.  Another that holds a month, such as the creation month
+    ``m`` of ``IUL_US_S``'s ``seg_bal_pp(t, m)``, which ``IUL_US_SEC`` keys by slot,
+    moves through ``arg_map``.
 
     Values compare by kind (:func:`_value_diffs`): numbers with ``rtol`` and ``atol``,
     symmetrically; bools and strings exactly; pandas values on their shared labels, with
@@ -2089,6 +2090,35 @@ def _iul_ladder(s_model, table):
     return pd.DataFrame(rows, columns=list(_IUL_LADDER))
 
 
+_IUL_SEGMENT = frozenset({"seg_share", "seg_wd_pp", "seg_ded_pp", "seg_bal_pp",
+                          "seg_ded_cum_pp", "seg_wd_cum_pp"})
+
+
+def _iul_twin_args(name, args):
+    """``IUL_US_S``'s keys as ``IUL_US_SEC`` takes them at stage ``"EC"`` (R12, R15).
+
+    S's ``claims(t, None)``, the total its ``net_cf`` caches, is SEC's ``claims(t)``; S's
+    ``claims(t, kind)`` keys have no SEC cell of that signature: they are SEC's
+    ``claims_death(t)`` and ``claims_lapse(t)``, which T1 reaches through ``result_cf``'s
+    columns and the total, so they are skipped.  S's six segment cells are keyed by
+    ``(t, m)``, ``m`` the segment's creation month, and SEC's by ``(t, k)``, ``k`` its
+    slot, the months since its creation in month ``t``, ``duration_mth(t) - m``.  S's
+    ``t`` is its projection month, which on every S point, all new business, is the
+    policy month, so the slot is ``t - m`` on S's clock, before :func:`twin_mismatches`
+    moves ``t`` by ``t_offset``: one map for T1, T2's restated rows and T3's rows issued
+    later.  A key whose slot falls below 0, a segment not yet born in month ``t``, which S
+    answers 0 and SEC's cells answer 0 without a call, is skipped.  Every other cell's
+    arguments pass as they are, the engine cells' among them, which SEC keeps with S's
+    ``None`` defaults (R14).
+    """
+    if name == "claims":
+        return (args[0],) if args[1] is None else None
+    if name in _IUL_SEGMENT:
+        t, m = args
+        return None if t < m else (t, t - m)
+    return args
+
+
 # SEC model name -> its SecSpec.  Phase 1 registers each product's spec here as its SEC
 # model lands, Term first (§5.3).  The conventions suite reads ``exempt`` from it for T1,
 # the product module's T6 calls :func:`check_generated` with the name, and
@@ -3018,38 +3048,28 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     it.  S's check is False on its point 5, whose loan overruns its cash value from
     #     policy month 383, and SEC's True; on points 1 to 4 both are True.
     # S's net_cf calls claims(t) with its kind=None default, so S's sweep caches claims
-    # under (t, None); and S's projection calls its engine cells with their None defaults,
-    # index_credit_rate(r, None), seg_credit_base(b, d, None) and index_credit(b, d, r,
-    # None, None), where SEC passes each segment's cap and the convention explicitly.
-    # Phase 2 replaces the defaults with a total cell and inlined engine forms (R12, R14),
-    # and its T1 then needs an arg_map for those keys, and R15's from S's (t, m) keys to
-    # (t, slot), the slot duration_mth(t) - m.  The label accessors (sex, rate_class,
+    # under (t, None), and its result_cf under (t, kind).  At stage EC claims is a total
+    # cell, claims(t), and two cells of a kind, claims_death(t) and claims_lapse(t) (R12),
+    # and the six (t, m) segment cells are keyed by slot, (t, k), k = duration_mth(t) - m
+    # (R15), so the spec's twin_arg_map, _iul_twin_args, maps S's total onto SEC's, skips
+    # S's kind keys, and moves S's creation month to the slot.  S's projection calls its
+    # engine cells with their None defaults, index_credit_rate(r, None),
+    # seg_credit_base(b, d, None) and index_credit(b, d, r, None, None), and SEC keeps the
+    # five engine cells (index_change, index_credit_rate, seg_credit_base, index_credit,
+    # seg_matured_value) for S's worked example and for T1, which compares S's keys
+    # through them unmapped, S's "REMAINING" read as its code (R14); no SEC projection cell
+    # calls them, the credit inlined into seg_return, seg_credit_rate and
+    # index_credit_pp.  T1 skips one more S cell: coi_rate_scale, a Series sliced from
+    # the COI table, which no compiled cell can hold; SEC reads the scale through
+    # coi_schedule() and the Data array instead, and every rate S reads from it reaches T1
+    # through coi_rate_guar_py and coi_rate_guar.  The label accessors (sex, rate_class,
     # db_option, qual_test, premium_type, premium_mode, surr_charge_id) are called by no
-    # projection cell, so Phase 2 declares them reporting.  The engine cells index_change,
-    # index_credit_rate, seg_credit_base, index_credit and seg_matured_value take floats
-    # and are kept at stage E (R14), the first four on the projection path and the last
-    # for S's worked-example test, which alone calls it; the ladder's companion is read by
-    # a Data reader of its own, inforce_segments, as no S reader fits.  SEC adds no
-    # float-parameter cell and no uncached cell.
+    # projection cell, and are declared reporting.
     #
-    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 0
-    # to 85 (product-spec), and S projects any age its tables serve: the shipped COI scale
-    # serves the anchor cell, M / NT / 45, alone.  At stage E Data refuses an issue age only
-    # below 0 or not whole, and proj_len() one at or past maturity_age; Phase 2's sizes rest
-    # on the contract's youngest issue age, 0:
-    #   t: 0 to 1,572, 1,573 values: 12 x (maturity_age 121 - youngest issue age 0) =
-    #     1,452 months of cover, plus future_horizon_mth 120, and t = proj_len(), which the
-    #     count and the account value's opening timing are carried into and av_change and
-    #     check_av_roll_fwd_resid read from the last month.
-    #   policy years y (lapse_rate_base_py, coi_rate_guar_py): 1 to 121, the year of the
-    #     last covered month at the youngest issue age; the lapse table's last year, 11 as
-    #     shipped, and the COI scale's, 76, clamp them.
-    #   attained ages a (mort_rate_base_at, corridor_factor_at): 0 to 120, read only in
-    #     cover; each reader clamps the age to its table's first and last ages, the
-    #     mortality table's first, 18, binding below it.
-    #   slots k (the five seg_*_init readers): 1 to seg_term_mth, 12; the six (t, m)
-    #     segment cells by policy month m, 0 to 1,451, until R15 re-keys them by slot,
-    #     0 to 11 live.
+    # The compiled model's sizes are spec_sec.py's, each with the References it rests on:
+    # the contract issues at ages 0 to 85 (product-spec), which proj_len() holds by
+    # issue_age_min and issue_age_max, the projection ends at maturity_age, 121, and the
+    # segment term is seg_term_mth, 12, the width of every 2-D cache.
     "IUL_US_SEC": SecSpec(
         twin="IUL_US_S",
         duration_of=lambda row: int(row["duration_mth"]),
@@ -3058,8 +3078,9 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_IUL_STATE,
         twin_state={c: f for c, f in _IUL_STATE.items()
                     if c not in ("av_pp_init", "loan_bal_init")},
-        exempt=frozenset({"result_pols", "check_margin"}),
+        exempt=frozenset({"result_pols", "check_margin", "coi_rate_scale"}),
         companions={"inforce_segments_sec.csv": _iul_ladder},
+        twin_arg_map=_iul_twin_args,
     ),
 }
 
