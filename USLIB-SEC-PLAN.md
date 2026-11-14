@@ -23,14 +23,16 @@ step, M18, is done, 2026-11-13: Tests run 21 passed all 60 jobs, the `cython` jo
 `guaranteed_ul` legs on Linux and Windows among them (§7.5, *Record — M18*). MYGA's compile
 step, M20, is done, 2026-11-13: Tests run 22 passed all 62 jobs, the `cython` job's
 `fixed_deferred_annuity` legs on Linux and Windows among them (§7.10, *Record — M20*).
-SPIA's compile step, M23, built and tested on Windows in a separate local session after
-M20 and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, the
-`cython` job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record —
-M23*). DIA's compile step, M24, built and tested there after M23, has landed, 2026-11-14,
-and awaits CI (§7.12, *Record — M24*); RILA's, M25, may start now that M20 has landed.
-The open decisions of §8.2 are settled, the last of them, item 4, on 2026-11-03. Like
-USLIB-MERGE-PLAN.md, this document is both the specification and the record: each phase
-records what it actually did, including where the implementation departed from the plan.
+SPIA's compile step, M23, built and tested on Windows in a separate local session after M20
+and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, the `cython`
+job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record — M23*). DIA's
+compile step, M24, built and tested there after M23, has landed, 2026-11-14, and awaits CI
+(§7.12, *Record — M24*); RILA's, M25, may start now that M20 has landed. FIA's compile step,
+M21, landed after them, 2026-11-14, and awaits CI (§7.11, *Record — M21*); IUL's, M19, is in
+its fix stage and lands next, and VA's, M22, starts now. The open decisions of §8.2 are
+settled, the last of them, item 4, on 2026-11-03. Like USLIB-MERGE-PLAN.md, this document is
+both the specification and the record: each phase records what it actually did, including
+where the implementation departed from the plan.
 
 Every number in it was measured in this repository, or in lifelib 0.17.2, modelx 0.33.0 and
 modelx-cython 0.1.0 as installed for the purpose, and each is quoted with the experiment
@@ -11210,19 +11212,22 @@ and later*:
 9. *Labels* traced on the committed points and on a second instance with blank labels and
    numeric keys, read from one-key table copies by absolute path.
 10. Cython evaluates a two-argument `max`/`min` right to left. A cell that takes two
-    operands from cells binds them to locals in S's order first (M20: six sites), so a
-    point two refusals reach raises S's first; a blank-label point in the labels test holds
-    this. A divisor that a cell's inputs can bring to zero is tested, and raises
-    `ZeroDivisionError("float division by zero")`, as UL's does (M20: `lapse_dyn_rate`'s
-    AV, reached by a withdrawal of the whole account value; the geometric MVA; the
-    statutory step). Every checked table refuses a key not below 2**53 before its int64
-    cast, naming the file, the column and the lines. The scenario and withdrawal arrays are
-    held only to the last month a read reaches, `Data.read_last_mth` (the `t` cache's last
-    element, held to the spec by a test), so a key far past the frame neither widens an
-    array nor refuses a point S projects. Carried: an annual rate at or below -100%
-    (`gmir`, `declared_rate_initial`, `mgsv_rate`, a scenario yield or market rate,
+    operands from cells binds them to locals in S's order first (M20: six sites), so a point
+    two refusals reach raises S's first; a blank-label point in the labels test holds this.
+    A divisor that a cell's inputs can bring to zero is tested, and raises
+    `ZeroDivisionError("float division by zero")`, as UL's does (M20: `lapse_dyn_rate`'s AV,
+    reached by a withdrawal of the whole account value; the geometric MVA; the statutory
+    step). Every checked table refuses a key not below 2**53 before its int64 cast, naming
+    the file, the column and the lines. The scenario and withdrawal arrays are held only to
+    the last month a read reaches, `Data.read_last_mth` (the `t` cache's last element, held
+    to the spec by a test), so a key far past the frame neither widens an array nor refuses
+    a point S projects. Carried: an annual rate at or below -100% (`gmir`,
+    `declared_rate_initial`, `mgsv_rate`, a scenario yield or market rate,
     `mva_ref_yield_locked_init`) gives `**` a negative base, where compiled code returns NaN
-    and Python a complex number; M21 makes it a Data refusal in each rate column.
+    and Python a complex number; M21 refuses it at the cell that takes the power when the
+    base is below 0, in both engines, naming the point and the Reference, since FIA's bases
+    are Projection References `Data` cannot read; −1 itself projects. MYGA's own refusal
+    stays carried to a later MYGA change.
 11. *A product bound no size rests on*, as the top issue age, is still a Reference
     `proj_len()` checks, with a `NOT_ISSUED` case that projects once it moves.
 12. *Depth*: run every chain head cold on the point that deepens it most, not `net_cf`
@@ -11232,9 +11237,12 @@ and later*:
 **Carried into M21 or later.**
 - *CI's `cython` job on d9788b0*, Linux and Windows: met by Tests run 22 (*CI: green*,
   above); MSVC's figure per level is in that run's warning, not yet copied here.
-- *`**` with a negative base*, an annual rate at or below -100% in a rate column, refused
-  by `Data` from M21 (item 10 above); until then both engines project it differently, NaN
-  compiled where S's complex number usually raises at the next `max` or `min`.
+- *`**` with a negative base*, an annual rate at or below -100% in a rate column, to be
+  refused by `Data` in a later MYGA change, since M21 changes no MYGA file; M21 refuses it
+  at the cell that takes the power when the base is below 0, in both engines, naming the
+  point and the Reference, since FIA's bases are Projection References `Data` cannot read;
+  −1 itself projects (item 10 above). Until then both engines project MYGA's differently,
+  NaN compiled where S's complex number usually raises at the next `max` or `min`.
 - *The compiled stack test* runs the anchor at issue age 0, not the interest-only,
   GMIR-floored point whose residual is deepest, 2 levels more; the modelx depth test holds
   that point.
@@ -11329,11 +11337,14 @@ exception. Point 4, with 20 % in the fixed account, gets `av_fixed_pp_init = all
 - Timing parameters on seven `*_at` cells, `credit_rate_on(r, method)`, and R14 for three
   float-parameter cells, `bonus_clawback_on`, `mva_pp_on` and `wd_reduction_rate_on`, each
   inlined into the cached cell that calls it or keyed by an int code. Two more,
-  `mgsv_rate_statutory(cmt5, option_cost)` and `mgsv_rate_is_compliant`, are never
-  reached (below): the second is the first's only caller, and no cell calls it. S's
-  tests call all five directly, and `credit_rate_on`, so S's cells stay for them,
-  admitted by name, or go with a T1 exemption (R14). `math.floor` becomes integer
-  arithmetic and `math.isclose` goes (R12).
+  `mgsv_rate_statutory(cmt5, option_cost)` and `mgsv_rate_is_compliant`, are never reached
+  (below): the second is the first's only caller, and no cell calls it. `bonus_clawback_on`,
+  `mva_pp_on` and `wd_reduction_rate_on` are inlined into their int-keyed callers and
+  dropped, T1 exempting S's three, since only `FIA_US_S`'s own tests call them;
+  `credit_rate_on` and `payout_rate`, which S's projection calls and T1 compares, and
+  `mgsv_rate_statutory` and `mgsv_rate_is_compliant` stay S's formulas, `math.floor`
+  included, under the registry's `"engine"` (§7.10, *For M21 and later*, item 6).
+  `math.isclose` went at stage `E`.
 - Never reached by any report or check on the committed points: `wd_cum_pp`,
   `av_indexed_pp*`, `activation_rate`, `bonus_factor`, `claims_over_av`,
   `mgsv_rate_statutory`, `mgsv_rate_is_compliant`; in `FIA_US_SEC` also `wd_cum_pp_init`,
@@ -11603,18 +11614,19 @@ below).
   `codes=codes(sec_proj)` from the build on, but its runner does not yet carry Term's
   `--cython`, `--build` and `_tool()`, nor its module the `create()`-copy test (§7.1,
   *Record — M14*). §7.12's carried items postdate the build, and three of them it does not
-  yet meet. The NaN-residual test replaces `mort_rate_base_at`'s formula, which needs
-  modelx (K7), though a Reference, `mort_ae_factor`, feeds the same rate (the cap's NaN
-  test replaces it too, which §5.1's step 6 admits), and it asserts the NaN at `t = 0`
-  alone: a NaN mortality rate, by either route, makes both residuals NaN in every month of
-  the frame, so no month shows the check passing a finite residual. The committed future
-  row is compared with S only in the block's sum, beside the anchor's twin and its row at
-  240, column by column of `result_cf`, not alone and cell by cell. And the product tests
-  read the committed model and `FIA_US_S`, each swept once and held to the module's end,
-  about 1.0 GB each at the tests stage, where §7.12's record has those rows built in the
-  splice's fixture while S is swept and each S point released after its last T2 case. M13
-  took up the future row's comparison before FIA's fingerprint was frozen (§5.4), and
-  FIA's C step takes the rest, M14's runner items and `create()`-copy test among them.
+  yet meet. The NaN-residual test replaces `mort_rate_base_at`'s formula, which needs modelx
+  (K7), though a Reference, `mort_ae_factor`, feeds the same rate (the cap's NaN test
+  replaces it too, which §5.1's step 6 admits), and it asserts the NaN at `t = 0` alone: a
+  NaN mortality rate, by either route, makes both residuals NaN in every month of the frame,
+  so no month shows the check passing a finite residual. The committed future row is
+  compared with S only in the block's sum, beside the anchor's twin and its row at 240,
+  column by column of `result_cf`, not alone and cell by cell. And the product tests read
+  the committed model and `FIA_US_S`, each swept once and held to the module's end, about
+  1.0 GB each at the tests stage, where §7.12's record has those rows built in the splice's
+  fixture while S is swept and each S point released after its last T2 case. M13 took up the
+  future row's comparison before FIA's fingerprint was frozen (§5.4), and FIA's C step takes
+  the rest, M14's runner items and `create()`-copy test among them, but the fixture item,
+  which stays a Phase 1 test debt (M21).
 
 **Measured for K6 and F7.** Every time below was taken with other workflows sharing the
 machine, the second fix's at load averages of 2.1 to 3.2.
@@ -11919,15 +11931,22 @@ came from the design and its critique:
 
 **Carried into Phase 2.**
 - *Caches and bounds:* `t` 0..1,092, 1,093 values, which hold because the count's residual
-  is guarded at `t = proj_len()`; contract years 1..81, attained ages 40..120,
-  contract-year counts 0..80 and anniversaries 0..81; and `payout_rate_at`'s age from
-  `min_income_age`, 50 as shipped, to 121, clamped inside to the bands' last age, 120. The
-  deepest cold call at the longest cover is a count's, `pols_if` at 997 levels (`net_cf`
-  979), and the export's limits above size `sample_sec.py` and `run_sec.py --cython`. No
-  `Projection` Reference bounds the issue age to the product's 40 to 80: the mortality
-  join refuses an age below 40, an age above 80 projects, as in S, and `proj_len()`
-  refuses one past `maturity_age`. Phase 2 makes each bound a Reference that `proj_len()`
-  checks.
+  is guarded at `t = proj_len()`; contract years 1..81, attained ages 40..120, contract-year
+  counts 0..80 and anniversaries 0..81; and `payout_rate_at`'s age from `min_income_age`, 50
+  as shipped, to 121, clamped inside to the bands' last age, 120. The deepest cold call at
+  the longest cover is a count's, `pols_if` at 997 levels (`net_cf` 979), and the export's
+  limits above size `sample_sec.py` and `run_sec.py --cython`. No `Projection` Reference
+  bounds the issue age to the product's 40 to 80: the mortality join refuses an age below
+  40, an age above 80 projects, as in S, and `proj_len()` refuses one past `maturity_age`.
+  Phase 2 makes each bound a Reference that `proj_len()` checks. Re-measured at M21: in the
+  EC export the cold residual, `expenses` and `pols_lapse` need a limit of 2,001, `net_cf`
+  1,976, the ascending reports 742; `sample_sec.py` sets 9,000. M21 indexes the payout array
+  from its first band's age and the mortality from its first age (0 if lower), both held to
+  `Data.read_last_age`, 122, the `a` cache's last element, so neither a negative age nor a
+  far one refuses or allocates where `FIA_US_S` projects. The ascending sweep of the
+  committed points reaches 370 on point 9, as `FIA_US_S`'s does; a compiled cold `net_cf` at
+  the longest cover needs 236 KiB of gcc's stack and the count's residual 238, 242 to 247
+  bytes a level.
 - *The mortality table's last age:* a substituted table that stops below `maturity_age`
   raises a bare `KeyError` from `mort_rate_base_at`, naming no file, since `Data`'s join
   checks only the first month on the books; Phase 2 checks it in `proj_len()`, as §7.10's
@@ -12036,6 +12055,310 @@ edits the review led to (*Landing*, above), FIA's module gave 231 passed and 49 
 `test_sec_support.py` 53 passed; doccheck, the two generators' checks,
 `gen_scaffolding.py --dry-run`, `gen_citation_links.py --dry-run` and md_lint, run again
 on the tree as committed, reported as above, md_lint 0 on uslib and on this plan.
+
+#### Record — M21, landed 2026-11-14
+
+M21 is FIA's compile step, 080d5d3, the second on the deferred annuities' chassis, MYGA's,
+by Term's template (§7.1, *Record — M14*, *The Phase 2 template*), §7.2's *For M16 and
+later*, §7.3's *For M17 and later*, §7.6's *For M18 and later*, §7.5's *For M19 and later*,
+§7.10's *For M21 and later* and this section's *C*. Its Phase 1 fingerprint had been frozen
+at M13, so no freeze commit came first, and the `cython` job gains its shard,
+`fixed_indexed_annuity`. It ran beside M19, IUL: its design, build, docs, tests, review and
+fix on 4eedea4, M20's record, sharing the machine with M19's stages. It landed on 72a94fb,
+after the local session's M23 and M24, and before M19, which is in its fix stage and lands
+next; VA's, M22, starts now. A design was prototyped and critiqued first: 0 blockers, 4
+major and 9 minor findings, each taken by the build or the tests, or ruled on. The four
+majors: the design refused a negative mortality age and a negative payout band at `Data`
+load, tables `FIA_US_S` projects, and sized both age arrays from the largest age, so that
+one row at age 10**9 for a sex no point uses asked for an 8 GB array (*Departures*, the age
+arrays); FIA has `**` with a negative base through three References, which the design only
+documented, where compiled code returns NaN or a silent 0.0 and S a complex number or a
+`TypeError` (*Departures*); it built only Phase 1's representation, not the whole-model
+prototype §7.5's *For M19 and later*, item 9, asks, so the build's first step was that
+prototype, which passed C3, C4 and C5 before docs or tests began; and no planned test held a
+sex read at its own ages or a rollup schedule keyed from after year 1, which two tests now
+hold. The build, then the docs with C6, then tests written against it and checked by
+injected faults followed. One merged reviewer found 0 blockers, 0 major and 5 minor, all
+applied by a fix stage: `run_sec.py`'s extension-module check was reached by no test, so a
+runner running uncompiled survived every test (now a modelx-level test on a fake package;
+the fault fails it); the committed-point C4 calls swept all 18 points at once, taking the
+shard to 6.2 GB and the default local run to 9.1 GB (every case of more than four points is
+now chunked: 4.2 and 6.8 GB); `index.md` reflowed nine lines to add one name; `model-sec.md`
+said `claim_pp(t, ALL)` is refused, which it is not in a `DEPLETED` month; and two build
+times were given for one build. There was no re-review: the review found no major, and the
+fix's runs all passed. The full uslib suite and the full grid under `USLIB_SEC_FULL=1` were
+not run locally: CI runs both.
+
+**CI: pending** until the Tests workflow is green on 080d5d3: C1–C5 on Linux and Windows
+(§6.3, §9), the `cython` job's `fixed_indexed_annuity` legs among them, with MSVC's stack
+bracket (*Windows*, below).
+
+**What exists now.**
+- `FIA_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 200
+  cells, keyed by `idx`, with a Reference `idx = 0`: Phase 1's 198 less
+  `bonus_clawback_on`, `mva_pp_on` and `wd_reduction_rate_on`, inlined (R14), and five new,
+  `point_id`, `mort_schedule`, `rollup_number`, `scenario_number` and
+  `wd_schedule_number`. 135 return `double`, 25 `long long`, 26 `bint` and 14 `object`.
+  182 are C in signature and cache, the two checks among the `bint`s. The 14 `object` cells
+  are `model_point`, the five reports and eight label accessors, which the registry's
+  `"reporting"` names. The four engine cells, `credit_rate_on`, `payout_rate`,
+  `mgsv_rate_statutory` and `mgsv_rate_is_compliant`, compile with C signatures and dict
+  caches, their bodies S's, `math.floor` included, admitted by `"engine"`. No other cache
+  is a dict. The caches are 104 of 1,094 by `t`, 13 of 1,094 by 12 (seven timed, six
+  kinded), `scenario_value`'s 83 by 12, five of 83 by year, three of 123 by attained age,
+  one of 82 by count of completed years, and the scalars.
+- Thirty codes: twelve timings in one numbering over three families, the count's `BEF_NB` 0
+  to `AFT_DECR` 4, `BEF_MORT` 2 among them, the account value's `BEF_PREM` 5 to `EOY` 9,
+  and the benefit base's own `BEF_ROLLUP` 10 and `BEF_STEP_UP` 11, which shares `BEF_WD`
+  and `EOY` with the account value; four kinds, `DEATH` 0, `LAPSE` 1, `MATURITY` 2 and
+  `ALL` 3, S's chain of `+`; the scenario's two columns, `INDEX_LEVEL` 0 and
+  `MVA_REF_YIELD` 1; six switch settings, which the three string References,
+  `step_up_mode`, `rb_wd_convention` and `mva_collar_basis`, now hold, read through six
+  decodes; and the six phases from stage `E`. One inner width, 12. The contract the caches
+  hold is `issue_age_min` 40, new, which the sizes rest on, `maturity_age` 120 and `Data`'s
+  `future_horizon_mth` 120; `proj_len()` refuses below `issue_age_min`, above
+  `issue_age_max` 80, new, and a point whose sex's mortality stops below `maturity_age`.
+- `Data` keeps its 17 cells and adds 59, 76 in all: `point_id` and the int64 and float64
+  vectors by point, read from the checked table with no numeric copy; the seven decodes of
+  `glwb_basis` and `credit_method` as int64 flags; the joins by point; mortality
+  `[sex, age]` with each sex's first and last age; the surrender charge and vesting
+  `[year]`; rollups `[schedule, year]`; payout rates `[age, basis]`; the index level and the
+  MVA reference yield `[scenario, month]`; and withdrawals `[programme, completed years]`.
+  13 extents and counts return `long long`. It gains three References, `np`,
+  `read_last_mth`, 1,093, and `read_last_age`, 122.
+- A compiled `Projection` ItemSpace is 3,398,096 bytes, 1.35 times MYGA's.
+- Beside the model: `sample_sec.py` and `spec_sec.py`; `run_sec.py`, MYGA's runner with
+  FIA's lines, `--cython`, `--build DIR`, the in-place rebuild, the block's compensated sum
+  and `gc.unfreeze()`; and in `model-sec.md` *The compiled model*, in Term's seven
+  subsections, linking MYGA's *What the deferred annuities inherit* for the rest and naming
+  each departure from it, the rest of the page brought to stage `EC`. The API pages of
+  `Data` and `Projection` are regenerated.
+- Shared files, added to in place: `us_registry.py` (the entry at `EC`, with `idx`, the
+  eight reporting labels and the four engine cells, and one comment line);
+  `sec_support.py` (`_fia_codes`, mapping S's `None` totals to `ALL` and the scenario's
+  column names to codes, and FIA's spec exempting S's three inlined cells, with
+  `twin_arg_map`); uslib's `index.md` (FIA among the compiled models, one line broken in
+  two); and `tests.yml`, the shard alone. `conftest.py`, the conventions, `tools/`, every
+  CSV and every S model are unchanged.
+
+**The gate, on Linux.** On the shared 4-CPU machine under load, with M19's stages beside it.
+- C1: the module's Phase 1 tests changed in call syntax only: timings, kinds and the
+  scenario's columns through the codes, `ALL` for S's `None`, S's switch texts mapped to
+  the codes, any other text passed on to meet S's refusal, the spec's `twin_arg_map`
+  composed, and the `mva_pp_on` calls dropped; three `NOT_ISSUED` cases issued at 100 or
+  101 set `issue_age_max` 121. After the fix, with modelx-cython installed, the module gave
+  308 passed and 49 skipped (`sec_full`), its compiled tests and the compile among them,
+  and `test_compiled_conventions.py` 65 passed and none skipped, every `EC` model built.
+- C2: `gen_sec_fingerprint.py FIA_US_SEC --check` reproduces, and the block between the
+  markers is byte for byte M13's; `gen_sec_points.py --check` finds the files current. The
+  review ran 4eedea4's model beside this one on 26 points the committed table lacks, every
+  shared cell at every month of the frame and the month after, every timing and kind, and
+  `ALL` against S's `None`: 2.36 million calls under the shipped References and 1.64
+  million under switched ones, identical.
+- C3: the 182, the 14 and the four above, no other dict cache, one inner width. In the
+  generated C no compiled formula holds a Python object local or calls a builtin other
+  than an exception; a Python call appears only on a raise path, and `math` only in
+  `mgsv_rate_statutory`.
+- C4 exact on the committed points, with `also=` adding every code of each timed and
+  kinded cell, `ALL`, the engine cells and every reader at every key its cache holds, the
+  keys it refuses dropped; on the splice grid, spliced and switched; at ten contract
+  extremes, issue ages 40 and 80 now and 120 months on, a joint age of 30, the last covered
+  month and exercises at 54, 55, 59 and 60; where the mortality, lapse and rider-charge caps
+  bind; on labels that are not text; on keys as floats out of order; on keys at `1e10`; and
+  under NaN References. Every case of more than four points runs in chunks of four. The
+  build's own probe compared 15 cases, about 41 million calls, and the review 138 new
+  points, 13.86 million calls ascending and again descending: no difference inside the
+  caches.
+- C5: the release, the compiled refusals in one case directory, each by a projection call
+  that reaches its table, the switch codes 2 and −1, the codes inside the caches and 27
+  compiled-only `IndexError`s, the zero divisor, the negative power base, the stale
+  Reference, and the compiled runner with its refusal leg pass, beside a modelx-level test
+  of the runner's extension-module check. The `cython` selection as CI runs it,
+  `USLIB_CYTHON_SHARD=fixed_indexed_annuity`, gave 17 passed and none skipped. doccheck
+  built 521 pages with 0 warnings, md_lint reported 0, and `gen_scaffolding.py --dry-run` 0
+  files in each of the six libraries.
+- *Depth (F7).* modelx at the longest cover, issue age 40 and 972 months, issued now or 120
+  months on: `pols_if` 997, the count's residual, `expenses` and `pols_lapse` 998, `net_cf`
+  and `check_av_roll_fwd_resid` 979. On the committed points the deepest is 716, point 6.
+  The ascending sweep of the committed points reaches 370 on point 9, as `FIA_US_S`'s does,
+  one less than at stage `E`, the inlining having removed a level. In the export the cold
+  residual, `expenses` and `pols_lapse` need a limit of 2,001, `net_cf` 1,976, and the
+  ascending reports 742; `sample_sec.py` sets 9,000, four times 2,001 rounded up, which a
+  test holds to its derivation. Compiled with gcc 13.3, thread sizes searched in 2 KiB
+  steps: a cold `net_cf` at issue age 40 runs on 236 KiB and not on 234, the count's
+  residual on 238 and not on 236, 242 to 247 bytes a level; the review found the same 34
+  cells failing at 230 KiB on every point and all 1,340 calls running at 240. The stack
+  test's seven sizes, 256 KiB included, and the main thread ran.
+
+**Departures and precisions.**
+- *`BEF_MORT` keeps its own code*, 2, as MYGA's, though S's alias names `BEF_DECR`'s
+  instant: one string, one code. A shared code would need a second name on one value and
+  save one cache column, about 8.6 KiB.
+- *`issue_age_min` 40 and `issue_age_max` 80 are References `proj_len()` checks*, and
+  `proj_len()` checks the mortality table's last age for the point's sex, the three bounds
+  this section's *Carried into Phase 2* named. The top issue age and the table's last age
+  are refusals S lacks, as MYGA's top age is; `NOT_ISSUED` cases at 39, at 81 and on a
+  female table ending at 119 each project once the Reference moves.
+- *Age arrays from the table's first age*, by ruling, against §7.3's *For M17 and later*,
+  item 10, and MYGA's precedent (§7.10, *For M21 and later*, item 5). `FIA_US_S` projects
+  payout bands and mortality ages below 0, so nothing is refused at `Data` load: the payout
+  array is indexed from its first band's age and the mortality from `max(first age, 0)`,
+  both held to `read_last_age`, 122, the `a` cache's last element, and the scenario,
+  rollup and withdrawal arrays to `read_last_mth`, 1,093, the `t` cache's last; a spec
+  test holds each. A negative or far age neither refuses nor allocates where `FIA_US_S`
+  projects, and the clamp at 0 stops a far-negative row of an unused sex allocating
+  gigabytes. Rows past the last payout band hold its rates, stage `E`'s reading there.
+- *Fixed-width keyed arrays.* The scenario, rollup and withdrawal arrays are always held to
+  `read_last_mth` (rollups to its contract year, withdrawals to its count), not to the
+  lesser of the largest key and the hold, as MYGA's are, and each reader refuses a read
+  past the hold rather than clamping, `scenario_value` in the year headroom among them.
+  This costs about 18 KB a scenario.
+- *A rate below −1 under `**` is refused at the read, in both engines.* `fixed_interest_pp`,
+  `mgsv_pp` and `inflation_factor` raise `ValueError` naming the point and the Reference,
+  `fixed_rate_min` with `fixed_rate`, `mgsv_rate` or `inflation_rate`, when the base is
+  below 0; −1 itself projects. `Data` cannot read `Projection` References, so the refusal
+  sits at the cell. It is a departure: `FIA_US_S` projects a complex `result_cf` at an
+  `inflation_rate` of −1.5 and, at a `mgsv_rate` of −1.5, raises `TypeError` at `mgsv_pp`'s
+  `max`, where compiled code would have returned NaN or a silent 0.0. Every other `**` base
+  is a column stage `E` already refuses at or below −1, or a capped rate.
+- *A table read outside cover raises `ValueError`* naming the point, where stage `E` raised
+  a bare `KeyError`, as MYGA's `mort_rate_at` does: `mort_rate_base_at`, and
+  `surr_charge_rate_py` and `vest_rate_py` below year 1. No projection reaches either.
+- *No numeric copy*, contrary to §7.10's *For M21 and later*, item 8. Stage `E`'s 38 rules
+  refuse text, blanks and ranges by column and point, and a probe of 16 edge strings found
+  none that `pd.to_numeric` and `float()` both accept with different values; `1_000` and
+  Arabic digits, which `float()` reads, stage `E` already refuses. No number moves.
+- *Values of `2**53` or more are refused* in the four model-point int columns, `point_id`
+  and every table key. `FIA_US_S` lacks the refusal on `joint_age` and `income_start_age`,
+  which it projects at `1e20`; `model-sec.md` says so.
+- *Three engines inlined, four kept.* `bonus_clawback_on`, `mva_pp_on` and
+  `wd_reduction_rate_on` are inlined into their int-keyed callers, bit for bit with S's
+  order and association, and T1 exempts S's three through `twin_arg_map`. `credit_rate_on`
+  and `payout_rate` take a `str` compiled, so a value that is not text raises `TypeError`
+  where modelx names the invalid basis or method; `model-sec.md` says so.
+- *Operands bound in S's order* (§7.10, *For M21 and later*, item 10) at five sites:
+  `wd_guar_pp`, `wd_unfunded_pp`, `wd_free_pp`, `surr_benefit_pp`, and `claim_pp` at
+  `DEATH` and `MATURITY`.
+- *`claim_pp(t, ALL)` answers 0.0 in a `DEPLETED` month*, as S's does, testing the phase
+  before the kind; `ALL` is refused there only by the other one-kind cells, and in every
+  month by `pols_decr`, `claim_from_av_pp` and `claims_from_av`.
+- *A table without `glwb_basis` or `credit_method`* keeps stage `E`'s behaviour: the decode
+  raises pandas' `KeyError` at its first read, and a rider-less point, which never reads
+  the basis, projects; a test holds both, in modelx and compiled.
+- *The sample's recursion limit* is 9,000, four times the export's deepest, 2,001.
+- *§7.12's fixture item is deferred*: the product tests' rows are not built in the splice
+  fixture with S released. It is test memory, not compile risk, and stays a Phase 1 test
+  debt, as M17 left M4's (*Carried into M22 or later*).
+
+**Measured, under load.** On the shared 4-CPU machine, with M19's stages beside it; single
+runs.
+- *Compile.* 204 s at the fix stage; 210 to 281 s across the other stages, with no
+  `-Werror` hit.
+- *The module.* Its modelx part, `-m "not cython"`, 8 min 3 s. By default with
+  modelx-cython installed, the compile tests among it, 25 min 50 s, peak 6.77 GB, down
+  from 9.1 GB before the chunking. The `sec` job's form, with no compiler, 293 passed and
+  63 skipped in 7 min 30 s, peak 3.26 GB, which fits every `sec` runner, macOS's about
+  7 GB included.
+- *The shard*, as CI runs it: 18 min 22 s with the build, inside the leg's 60, peak
+  4.20 GB, down from 6.23 GB before the chunking; the peak is now the far-key test's
+  in-process modelx frame comparison of two full models, not C4. Its split: C3 with the
+  build 201.5 s, the refusals 150.6 s, the grid 107.3 and 89.4 s, the caps 114.5 s, the
+  NaN References 96.2 s, the far keys 87.1 s, the labels 80.0 s, the floats 56.5 s, the
+  extremes 37.2 s, C4 36.7 s and the runner 28.7 s. modelx holds about 135 MB a committed
+  point once swept, so C4 runs four points a chunk, against MYGA's 20.
+- *The full grid*, `USLIB_SEC_FULL=1`, was not run whole: the review timed the spliced grid
+  at 413 s, the switched at 95 s and the extremes at 62 s, and estimates CI's Linux leg at
+  about 23 minutes.
+- *Speed (C6).* `tools/bench_sec_cy.py fixed_indexed_annuity`, three repeats, the fastest
+  shown, on 2026-11-13 (Xeon 2.10 GHz × 4, 1-minute load 3.1 to 5.1; Python 3.13.18, gcc
+  13.3). Compiled, 6,012 points: 1.32 ms a point on `net_cf` and 2.26 ms on `result_cf`,
+  92 MB. The export, 612 points: 14.6 and 15.8 ms, 92 MB. modelx, 126 points: 489 and
+  579 ms, 170 MB. So the compiled model runs 11.1 times the export on `net_cf` and 7.0 on
+  `result_cf`, and 370 and 256 times modelx; a second run gave 12.2 and 6.9, and the
+  review's 12.0 and 7.0. Stage `E`'s representation compiled ran 1.5 times its export; the
+  `EC` compiled model runs 19 times that build. An ItemSpace made and released takes
+  0.14 ms; without the collection, 504 compiled points peak at 1,601 MB. Recorded in
+  `model-sec.md`'s *Speed*.
+
+**Faults.** Each alone in a copy.
+- *Build*: two, `proj_len()` reading one sex's last age for every point and a rollup
+  step-filled from year 1, each failing its new test.
+- *Tests stage*: 19, each caught, from a cell returning `numpy.bool_` and a timing string
+  put back to a policy-year read at index −1 and `ALL` summing `LAPSE` twice. A spec `t` of
+  1,092 passes C3 and fails the spec-size test and C4 at the extremes; the credit
+  cap and floor in the wrong order fail only the test that sets the floor above the cap;
+  and a switch decode reading another switch fails only the test that sets each switch
+  alone.
+- *Review*: 7, six caught. A padding fault fails only the NaN-padding test, and a branch
+  only `also` reaches fails only the spliced grid. The survivor, the runner's
+  extension-module check disabled, now fails the fix stage's runner test. No known
+  survivor remains.
+
+**Windows.** MSVC is unmeasured until CI's Windows leg runs. At the 325 to 433 bytes a level
+MSVC took on WholeLife's chain, FIA's 998 levels need about 317 to 422 KiB, inside 1 MiB by
+about 2.4 times; the stack test runs seven sizes, reports the smallest it ran on and
+asserts 1 MiB and the main thread, so the first run measures it. The other risks: the one
+inner width, 12, which every 2-D cache shares, avoiding the mixed-width unpickle pointer
+gcc 14 refuses; `long long` for every int, covering MSVC's 32-bit `long`; the 3.4 MB
+ItemSpace, against MYGA's 2.5 MB, whose release convention runs in the shard; and the new
+runner test, which uses only the first extension suffix and stubs, so it runs on every
+`sec` leg. `pow` gives NaN for a negative base on MSVC too, so the `**` refusals hold on
+both platforms.
+
+**Cost.** About 3.0 million subagent tokens over seven stages: design 0.55M, critique
+0.33M, build 0.58M, docs 0.44M, tests 0.45M, review 0.41M and fix 0.23M; this record beyond
+them.
+
+**For M22 and later.** What FIA settles for VA, which builds on MYGA's chassis and FIA's,
+in addition to §7.10's *For M21 and later*:
+1. *Chunk every C4 call* of more than `C4_CHUNK` points through one helper, not only the
+   grid's. Measure modelx's memory a swept point first (FIA: about 135 MB) and size the
+   chunk from it.
+2. *Test the runner's extension-module check at modelx level*: a fake package, sources
+   timed by `os.utime`, a stubbed import whose `Projection` comes from `_mx_classes.py`,
+   both paths, nothing built; prove it by disabling the check.
+3. *Hold every branch only `also` reaches by a fault* that only the grid catches.
+4. *Edit shared prose by the smallest line break*, never a reflow.
+5. *Switches as int codes with decodes.* A test helper maps S's exact texts to the codes,
+   so other text meets S's refusal. Families sharing timing names share one Reference, a
+   third family numbered after the others, and one width serves every family.
+6. *Hold every keyed array to a fixed `read_last_*`*, readers refusing past it, and index
+   age arrays from the first age, clamped at 0.
+7. *A `**` with a Reference base* is refused at its cell below 0, in both engines, with a
+   test beside S's own outcome.
+8. *Drop projection-path float engines* that only S's test module calls; keep under
+   `"engine"` the ones T1 reaches.
+9. *Choose the refusal call by when the table is read*: `result_cf()`, not `net_cf(0)`, for
+   a table read at exercise. No `also` call raises: refused keys are dropped inside it
+   and held by the refusal test.
+10. *Set each switch alone, and set the floor above the cap*: a grid setting every switch
+    at once, or a floor at or below the cap, hides decode mix-ups and order mistakes.
+11. *Say exactly where a code is refused.* A cell that tests a phase before its kind
+    answers some codes (FIA's `claim_pp` in `DEPLETED`).
+12. *Write the refusal list from both engines' messages*, taken from a probe, not by
+    analogy.
+13. *Search stack sizes in 2 KiB steps*, with a shallow control call.
+14. *The whole-model prototype first*: FIA's passed C3 and C4 unchanged into the final
+    build. Re-measure each export depth head at `EC`, where a `Data` read can add frames
+    (three here), and the ascending sweep after an inlining.
+15. *A NaN at a cap follows S's operand order*: say which caps keep NaN and which return the
+    bound.
+
+**Carried into M22 or later.**
+- *CI's `cython` job on 080d5d3*, Linux and Windows: MSVC's stack, estimated at 317 to
+  422 KiB, and the Windows risks above, untested here.
+- *The full Linux leg under `USLIB_SEC_FULL=1`*, estimated at about 23 minutes, and the full
+  uslib suite, which CI runs.
+- *The shard's peak*, 4.2 GB, is the far-key test's in-process modelx comparison of two
+  full models; if a runner tightens, release each point after comparing.
+- *Merges with M19*: the registry's comment line, `tests.yml`'s shard list and `index.md`'s
+  sentence, one line each.
+- *§7.12's fixture item*, deferred (above), a Phase 1 test debt.
+- *MYGA's own `**` refusal*, in its rate columns, stays carried to a later MYGA change
+  (§7.10, *Carried into M21 or later*).
+- *The module's default run*, under K6: the modelx part 8 min 3 s, with the compile tests
+  25 min 50 s and 6.8 GB; the `cython` shard 18 min 22 s with the build, 4.2 GB, inside the
+  leg's 60.
 
 ### 7.12 DIA — `DIA_US_SEC` (E: L, C: L)
 
@@ -13283,5 +13606,6 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M20 | Phase 2 for MYGA, the fifth after M13 — **done**, 2026-11-13; Tests run 22 passed all 62 jobs (§7.10, *Record — M20*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` key; the `fixed_deferred_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M23 | Phase 2 for SPIA, the sixth after M13 and the first payout annuity — **done**, 2026-11-14, after M20 and before M19, out of this table's order, built and tested on Windows in a separate local session; Tests run 23 passed all 64 jobs (§7.9, *Record — M23*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"reporting_columns"` key; the `immediate_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M24 | Phase 2 for DIA, the seventh after M13, on SPIA's payout chassis — landed 2026-11-14, after M23, out of this table's order, built and tested on Windows in the local session that built M23, CI pending (§7.12, *Record — M24*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` widened to parameterless container cells; `bench_sec_cy.py` repeating point-keyed companions; the `deferred_income_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M19, M21, M22, M25 | Phase 2 for the other four, one PR per product: M19 IUL, M21 FIA, M22 VA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M19, whose build starts now, lands after M20, rebased onto it; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M21 | Phase 2 for FIA, the eighth after M13, on MYGA's chassis — landed 2026-11-14, after M23 and M24, CI pending (§7.11, *Record — M21*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `fixed_indexed_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
+| M19, M22, M25 | Phase 2 for the other three, one PR per product: M19 IUL, M22 VA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M19, in its fix stage, lands next, after M21; M22 starts now; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
