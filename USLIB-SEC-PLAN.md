@@ -1029,6 +1029,11 @@ a usage error, and so, under `USLIB_REQUIRE_CYTHON=1`, is a shard that selects n
 out of CI: its C step adds its shard. Locally under load, the full-size legs took 34 s
 (toolchain), 104 s (Term) and 356 s (WholeLife).
 
+The `cython` job stays an ordinary CI job, not a required status check on the branch
+(decided 2026-11-15): its legs run on every dispatch and a red leg is fixed before a
+product's step is recorded done, as every Phase 2 record shows, but no branch protection
+rule names them. M26 does not change that.
+
 ---
 
 ## 4. Phase 0 — shared infrastructure
@@ -14484,4 +14489,4 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M19 | Phase 2 for IUL, the ninth after M13, the last on UL's chassis — **done**, 2026-11-14, after M21; Tests run 27 passed all 70 jobs (§7.4, *Record — M19*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `indexed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M22 | Phase 2 for VA, the tenth after M13, on MYGA's and FIA's chassis — **done**, 2026-11-14, after M19 and before M25; Tests run 29, on its fix, passed all 72 jobs (§7.7, *Record — M22*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `variable_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M25 | Phase 2 for RILA, the last product — **done**, 2026-11-15, landed after M22, built and tested on Windows in the local session that built M23 and M24; Tests run 31 passed all 74 jobs (§7.8, *Record — M25*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; `"python_calls"` taking dotted names, `math` admitted by cell; the `registered_index_linked_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
+| M26 | Close | A benchmark table in `index.md`; the shared conventions and items the product records carry into M26 (the `cython` job stays an ordinary job, not a required check: D13) | — |
