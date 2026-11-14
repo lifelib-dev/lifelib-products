@@ -38,9 +38,10 @@ unit ledger, a four-base charge stack and two path-dependent guarantees.
     parameters, so each file is read **once per model**.
 
 :mod:`~.VA_US_SEC.Projection`
-    The by-contract projection, parameterized by ``point_id``: ``Projection[1]`` is an
-    ItemSpace projecting model point 1. It reaches the input tables through its ``data``
-    Reference, which resolves to the single :mod:`~.VA_US_SEC.Data` Space.
+    The by-contract projection, parameterized by ``idx``, a model point's position in the
+    table: ``Projection[0]`` is an ItemSpace projecting the first row, model point 1. It
+    reaches the input tables through its ``data`` Reference, which resolves to the single
+    :mod:`~.VA_US_SEC.Data` Space.
 
 The split matters for more than tidiness. Because ``Projection`` is parameterized, every
 ``Projection[N]`` is a separate ItemSpace with its own cells cache; readers placed there
@@ -95,7 +96,7 @@ row, so the in-force column of ``result_cf()`` reconciles with the cash flows pr
 beside it. A point in force at the valuation date opens with its ``policy_count``, and
 one issued at or after it takes its ``policy_count`` as ``pols_new_biz`` in its issue
 month; ``result_pols()`` sets the counts out. The notes' own end-of-month ``l(t)`` is
-``pols_if_at(t, "AFT_DECR")``. Two other names follow the library rather than the notes:
+``pols_if_at(t, AFT_DECR)``. Two other names follow the library rather than the notes:
 ``lapse_rate(t)`` is the **annual** surrender rate and ``lapse_rate_mth(t)`` the monthly
 one, matching ``mort_rate`` / ``mort_rate_mth``; and the net premium credited to the
 account value is ``prem_to_av_pp(t)``, the per-contract form of ``prem_to_av(t)``.
@@ -238,8 +239,13 @@ Example:
 
     >>> import modelx as mx
     >>> model = mx.read_model("products/variable_annuity/VA_US_SEC")
-    >>> model.Projection[1].result_cf()            # by month from the valuation date
-    >>> model.Projection[2].result_cf()            # the worked example's month at t = 0
+    >>> model.Projection[0].result_cf()            # by month from the valuation date
+    >>> model.Projection[1].result_cf()            # the worked example's month at t = 0
+
+The model compiles, as ``basiclife/BasicTerm_SC`` does, with modelx-cython: the
+repository's ``tools/build_sec_cy.py`` builds it from ``products/variable_annuity``'s
+``sample_sec.py`` and ``spec_sec.py``, and ``run_sec.py --cython`` runs the compiled model
+(``products/variable_annuity/model-sec.md``).
 """
 
 from modelx.serialize.jsonvalues import *

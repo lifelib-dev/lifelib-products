@@ -106,7 +106,8 @@ jobs:
         shard: [toolchain, term_life, whole_life, universal_life, variable_ul,
                 guaranteed_ul, fixed_deferred_annuity, immediate_annuity,
                 deferred_income_annuity,
-                fixed_indexed_annuity, indexed_ul]
+                fixed_indexed_annuity, indexed_ul,
+                variable_annuity]
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.13']
     env:

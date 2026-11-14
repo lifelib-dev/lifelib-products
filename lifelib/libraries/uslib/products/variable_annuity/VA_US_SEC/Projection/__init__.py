@@ -5,20 +5,40 @@
 
 """The by-contract projection of :mod:`~.VA_US_SEC`.
 
-The Space is parameterized by ``point_id``, so ``Projection[1]`` is an ItemSpace
-projecting model point 1, the worked example's anchor cell issued at the valuation date::
+The Space is parameterized by ``idx``, the position of a model point in the table and in
+every :mod:`~.VA_US_SEC.Data` vector, as ``basiclife.BasicTerm_SC`` is:
+``Projection[0]`` is an ItemSpace projecting the table's first row, model point 1, the
+worked example's anchor cell issued at the valuation date, and :func:`point_id` is its
+label::
 
-    >>> Projection[1].result_cf()          # one row per month from the valuation date
-    >>> Projection.point_id = 2            # or switch the default
+    >>> Projection[0].result_cf()          # one row per month from the valuation date
+    >>> Projection[0].point_id()           # 1, the row's point_id
+    >>> Projection.idx = 1                 # or switch the default, before it computes
 
-Switch the default, as any Reference, before the model computes anything.
+Compiled, no cache is ever cleared: set ``idx``, like every Reference, on a model just
+imported, before anything is computed, or project through ``Projection[i]``. modelx
+recomputes what a Reference reaches when it is set; a compiled ItemSpace takes the
+References when it is made and keeps every value it has computed until it is deleted,
+and the base ``Projection`` and ``Data`` keep theirs for good. And it holds each Reference
+as a C variable of its shipped value's type: a float set on an int Reference truncates
+toward zero, and an int set on a float Reference reads as a float
+(``products/variable_annuity/model-sec.md``).
+
+Any ``idx`` makes an ItemSpace, and none is refused here. ``Projection[-1]`` reads every
+vector at its last element, as numpy and a compiled memoryview both do, so it is the
+table's last point, under that point's own :func:`point_id`; an ``idx`` past the last
+row raises ``IndexError`` at its first read of a vector, which modelx reports inside its
+``FormulaError``.
 
 This is :mod:`~.VA_US_S` taught to run in force at a valuation date, as lifelib's
-``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``. A formula of
-:mod:`~.VA_US_S` is rewritten where it depends on where the projection starts, where it
-must answer for a month outside cover, where it read a scenario or a contractual event
-at the wrong clock, where it compared a model point's text, or where its recursion ran
-two cells a month; every other is :mod:`~.VA_US_S`'s own.
+``basiclife.BasicTerm_SE`` extends ``basiclife.BasicTerm_S``, and then made to compile, as
+``basiclife.BasicTerm_SC`` is made from ``basiclife.BasicTerm_S``, on the chassis
+:mod:`.MYGA_US_SEC` and :mod:`.FIA_US_SEC` compiled first. A formula of :mod:`~.VA_US_S`
+is rewritten where it depends on where the projection starts, where it must answer for a
+month outside cover, where it read a scenario or a contractual event at the wrong clock,
+where it compared a model point's text or a timing, a kind or a phase as text, where its
+recursion ran two cells a month, or where it reads a table or text the compiled model
+holds as numbers; every other is :mod:`~.VA_US_S`'s own.
 ``products/variable_annuity/model-sec.md`` lists the rewritten cells with the reason for
 each.
 
@@ -41,34 +61,50 @@ Space, reached here through the ``data`` Reference, so each file is read once pe
 rather than once per model point. Five assumption tables are the files
 :mod:`~.VA_US_S` reads, read in place; the model point table and the two scenarios are
 this model's own, generated from :mod:`~.VA_US_S` and its inputs. The projection reads
-each table as ``Data`` returns it checked, its keys read by value, and through cells of
-its own, three for the fund table, two for the programme and one for each other table:
+each table as ``Data`` holds it in arrays, built from the table checked, its keys read by
+value, and through cells of its own:
 
-=========================  ==============================  ==========================
-Reference (on Data)        Cells the projection reads      File
-=========================  ==============================  ==========================
-model_point_file           data.model_point_table()        model_point_table_sec.csv
-mort_table_file            data.mort_rates()               mort_table.csv
-fund_file                  data.fund_sets()                fund_table.csv
-return_scenario_file       data.return_scenario_steps()    return_scenario_sec.csv
-rate_scenario_file         data.rate_scenario_steps()      rate_scenario_sec.csv
-gawa_pct_file              data.gawa_pct_bands()           gawa_pct_table.csv
-cdsc_file                  data.cdsc_scale()               cdsc_table.csv
-transaction_file           data.transactions()             transaction_table.csv
-=========================  ==============================  ==========================
+=========================  ================================  ==========================
+Reference (on Data)        Arrays the projection reads       File
+=========================  ================================  ==========================
+model_point_file           data.premium() and the vectors    model_point_table_sec.csv
+mort_table_file            data.mort_table_array()           mort_table.csv
+fund_file                  data.fund_sub_ids(),              fund_table.csv
+                           data.alloc_array(),
+                           data.fund_expense_array()
+return_scenario_file       data.return_array()               return_scenario_sec.csv
+rate_scenario_file         data.vix_sq_array(),              rate_scenario_sec.csv
+                           data.cmt10_array()
+gawa_pct_file              data.gawa_pct_array()             gawa_pct_table.csv
+cdsc_file                  data.surr_charge_rate_array()     cdsc_table.csv
+transaction_file           data.prem_amount_array(),         transaction_table.csv
+                           data.wd_amount_array()
+=========================  ================================  ==========================
 
-:func:`model_point`, :func:`mort_rate_base_at`, :func:`sub_ids` with :func:`alloc` and
-:func:`fund_expense_rate`, :func:`inv_return_mth`, :func:`scenario_rate`,
-:func:`gawa_pct_at_age`, :func:`surr_charge_rate_at`, and :func:`prem_scheduled_pm` with
-:func:`wd_scheduled_pm` are those cells, in that order, and :func:`sa_pp_init` reads the
-subaccount values the model point table carries, through ``data.fund_values_init()``. The
-first takes no key, and every accessor of the point reads it; :func:`sub_ids` takes none
-either; each of the others is keyed by an age, a subaccount, a month, a count of years or
-a policy month, and called by a monthly cell in cover only. The mortality, the fund set,
-the two scenarios, the grid, the withdrawal charge schedule and the programme are joined
-on a text key, the model point's ``sex``, ``fund_set``, ``scenario_id``, ``glwb_option``,
-``cdsc_schedule`` or ``txn_id``, each inside the cells that read its table, and Phase 2
-re-keys them.
+The model point's attributes are each one element of a ``Data`` vector, read by an
+accessor of the column's name, ``premium_single`` reading ``data.premium()[idx]``;
+:func:`model_point`, the whole row, is for a reader. :func:`mort_rate_base_at`,
+:func:`subaccount_id` with :func:`alloc` and :func:`fund_expense_rate`,
+:func:`inv_return_mth`, :func:`scenario_rate`, :func:`gawa_pct_at_age`,
+:func:`surr_charge_rate_at`, and :func:`prem_scheduled_pm` with :func:`wd_scheduled_pm` are
+the tables' readers, in that order, and :func:`sa_pp_init` reads the subaccount values the
+model point table carries, through ``Data.sa_pp_init_array``. Each is keyed by an age, a
+position or an id of a subaccount, a month, a count of years or a policy month, and
+called by a monthly cell in cover only. The mortality, the fund set, the two scenarios,
+the grid, the withdrawal charge schedule and the programme are read at the row ``Data``
+numbers the point's ``sex``, ``fund_set``, ``scenario_id``, ``glwb_option``,
+``cdsc_schedule`` or ``txn_id`` by, :func:`mort_schedule`, :func:`fund_set_number`,
+:func:`return_scenario_number` and :func:`rate_scenario_number`,
+:func:`gawa_grid_number`, :func:`cdsc_number` and :func:`txn_number` (``Data``'s
+docstring, *The vectors*).
+
+A subaccount is named by its id throughout, as :mod:`~.VA_US_S` names it,
+``sa_pp(t, i)`` with ``i`` 1 or 2 as shipped: a point's fund set picks its own ids, which
+the returns and the opening columns key alike. The ids run from 1 to
+``subaccount_id_max``, 9, the subaccount axis of every compiled cache, and a sum over the
+subaccounts loops over the positions of the point's set, ``0 .. subaccount_count() - 1``,
+taking each id from :func:`subaccount_id`, in the file's order, the order
+:mod:`~.VA_US_S` sums in.
 
 .. rubric:: Projection basis
 
@@ -158,26 +194,26 @@ reproducing any of them.
 
 .. rubric:: Naming
 
-Cells names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
+Cell names follow lifelib's ``basiclife.BasicTerm_S`` and ``savings.CashValue_SE``
 wherever those models have an analogue, and :mod:`.MYGA_US_S` — the deferred
 annuity chassis of this library — wherever the two products share a concept:
 ``pols_*`` for policy counts, ``av_*`` for account values, plural nouns for cash flows,
 ``*_rate`` for rates, ``*_pp`` for per-contract amounts, ``*_at(t, timing)`` for a
 quantity read at a point inside the month. What running in force adds is named as
 ``basiclife.BasicTerm_SE`` names it: ``duration_mth`` read from the model point,
-``policy_count``, ``pols_new_biz``, ``pols_if_at`` with its ``"BEF_NB"`` timing,
+``policy_count``, ``pols_new_biz``, ``pols_if_at`` with its ``BEF_NB`` timing,
 ``is_active`` and ``result_pols``; ``t_entry`` and ``maturity_mth`` are
 :mod:`.MYGA_US_SEC`'s, and ``anniv_mth`` and ``year_open_mth`` :mod:`.FIA_US_SEC`'s. A
 column of the opening state is the cell it opens with ``_init`` added, ``gwb_pp_init``
 for :func:`gwb_pp`; a value of the contract year to date adds ``_ytd_init``, and a
 balance at the anniversary that opened the year under way ``_prev_anniv_init``. A reader
 keyed by an age, a year count or a policy month is ``<cell>_at`` or ``<cell>_pm``. The
-``is_*`` cells decode the model point's four switch columns, once a point, into the flags
-the projection branches on, so that no monthly cell compares a column's text and none
-calls a label accessor (``stepup_basis``, ``gmdb_option``, ``scenario_id``, ...), which is
-left to reporting. The text a monthly cell still compares is :mod:`~.VA_US_S`'s timing
-and kind strings, which Phase 2 turns into int codes, and the join keys each table is read
-on, inside the cells that read it. The technical notes use compact actuarial symbols
+``is_*`` cells read the model point's four switch columns as ``Data`` decodes them into
+flags, so that no monthly cell compares a column's text and none calls a label accessor
+(``stepup_basis``, ``gmdb_option``, ``scenario_id``, ...), which is left to reporting; a
+``*_number`` cell, and :func:`mort_schedule`, is the row ``Data`` numbers a text key by.
+No cell compares text: :mod:`~.VA_US_S`'s timings, kinds, rate columns and phases are int
+codes (*Codes*, below). The technical notes use compact actuarial symbols
 instead. The notes' month index is this model's ``duration_mth(t)``, so the notes' ``t``
 in the left-hand column is ``duration_mth(t)`` throughout. The mapping is:
 
@@ -204,6 +240,8 @@ k = t//3 + 1                  contract_quarter(t)             Contract quarter c
                                                               valuation clock
 (policy month to t)           t_of_month(m)                   Valuation month of policy
                                                               month m
+(the row's label)             point_id()                      The point_id of the point at
+                                                              idx
 x, issue_age                  age_at_entry                    Issue age (ANB)
 a(t) = x + y - 1              age(t)                          Attained age during month t
 (a at the anniversary)        age_at_anniv(t)                 Attained age just after the
@@ -266,12 +304,19 @@ glwb_stepup_basis             stepup_basis()                  annual_CV or
 (VIX fee reset)               is_fee_reset_vix()              fee_reset_rule is vix
 (fixed roll-up)               is_rollup_fixed()               rollup_rule is fixed
 (CMT-linked roll-up)          is_rollup_cmt_linked()          rollup_rule is cmt_linked
-i                             sub_ids                         Subaccount indices
+i                             sub_ids                         Subaccount ids, a list (an
+                                                              engine cell)
+(the point's fund set)        fund_set_number()               Data's number for fund_set
+(subaccounts held)            subaccount_count()              Subaccounts the fund set holds
+(the j-th subaccount)         subaccount_id(j)                Its id, in file order
 alloc[i]                      alloc(i)                        Allocation of net premium to
                                                               subaccount i
 e_i                           fund_expense_rate(i)            Annual fund expense ratio
 r_i(t)                        inv_return_mth(t, i)            Gross monthly fund return
                                                               (scenario input)
+(the point's returns)         return_scenario_number()        Data's number for its
+                                                              scenario_id, the returns
+(the point's rates)           rate_scenario_number()          The same, the rate scenarios
 (the rate scenario)           scenario_rate(t, name)          Level of column name in force
                                                               at month t
 (VIX-squared average)         vix_sq(k)                       Quarterly average of daily
@@ -309,6 +354,7 @@ P(t)                          premium_pp(t)                   Gross premium at B
                                                               transaction_table.csv
 (premium at policy month)     prem_scheduled_pm(m)            The programme's premium at
                                                               policy month m
+(the point's programme)       txn_number()                    Data's number for txn_id
 P(t)(1 - tau)                 prem_to_av_pp(t)                Net premium buying units
 tau                           premium_tax_rate                Premium tax rate
 W(t)                          wd_pp(t)                        Gross withdrawal, inclusive of
@@ -355,6 +401,8 @@ CDSC scale                    surr_charge_rate(t)             CDSC % by complete
                                                               since receipt
 (CDSC by year count)          surr_charge_rate_at(k)          The schedule's rate at k
                                                               completed years
+(the point's scale)           cdsc_number()                   Data's number for
+                                                              cdsc_schedule
 (surrender free amount)       surr_free_pp(t)                 Charge-free amount left for a
                                                               full surrender
 (surrender chargeable base)   surr_chargeable_pp(t)           Remaining Premium withdrawn on
@@ -383,6 +431,7 @@ GAWA(t)                       gawa_pp(t)                      Guaranteed Annual 
                                                               Amount
 GAWA in the month             gawa_pp_at(t, timing)           BEF_PREM / BEF_WD / BEF_ANNIV
 g(a)                          gawa_pct_at_age(a)              GAWA% at attained age a
+(the point's grid)            gawa_grid_number()              Data's number for glwb_option
 gawa_pct_fixed                gawa_pct_fixed(t)               GAWA% locked at the first
                                                               withdrawal
 ADJ(t)                        adj_pp(t)                       GWB Adjustment amount
@@ -439,7 +488,7 @@ phase(t)                      phase(t)                        PRE_ISSUE, ACCUM, 
                                                               EXPIRED
 M_G(t)                        moneyness_glwb(t)               GWB / AV
 M_D(t)                        moneyness_gmdb(t)               max(NP, RB) / AV
-lambda(M)                     lapse_itm_mult(m)               The VM-21 7.B.1 multiplier
+lambda(M)                     lapse_itm_mult(ratio)           The VM-21 7.B.1 multiplier
 lambda*(t)                    lapse_dyn_mult(t)               min of the two, per VM-21
                                                               6.C.6
 kappa(t)                      lapse_wd_factor(t)              0.60 in a withdrawal year
@@ -452,8 +501,9 @@ q^d(t)                        mort_rate_mth(t)                Monthly mortality 
                                                               attained age
 (the table's q_x)             mort_rate_base_at(x)            Table rate at attained age x
                                                               and the sex
+(the point's sex)             mort_schedule()                 Data's number for sex
 l(t-1)                        pols_if(t)                      Count at the START of month t
-l(t)                          pols_if_at(t, "AFT_DECR")       In-force at the end of month t
+l(t)                          pols_if_at(t, AFT_DECR)         In-force at the end of month t
 l(-1)                         pols_if_init                    In force at the valuation
                                                               date; 0 on new business
 l(t-1), ...                   pols_if_at(t, timing)           BEF_NB, BEF_DECR, BEF_LAPSE,
@@ -471,11 +521,11 @@ Charge income - CDSC          wd_charges(t)                   CDSC on withdrawal
                                                               below)
 Withdrawal proceeds           withdrawals(t)                  W(t) - c(t), weighted
 Post-depletion GLWB payments  glwb_payments(t)                GAWA paid after depletion
-Death benefit (gross)         claims(t, "DEATH")              DB(t) x deaths
+Death benefit (gross)         claims(t, DEATH)                DB(t) x deaths
 Death benefit (net strain)    gmdb_claims(t)                  GuaranteeClaim x deaths (memo)
-Surrender proceeds            claims(t, "LAPSE")              surr_benefit_pp(t) x
+Surrender proceeds            claims(t, LAPSE)                surr_benefit_pp(t) x
                                                               surrenders
-(horizon benefit)             claims(t, "MATURITY")           Survivors in the last covered
+(horizon benefit)             claims(t, MATURITY)             Survivors in the last covered
                                                               month
 Maintenance expense           expenses(t)                     VM-21 6.C.2 prescribed expense
 (expense inflation)           inflation_factor(t)             1.025^(years from 2015 to the
@@ -499,7 +549,7 @@ Nine names needed care.
 ``premiums(t) / premium_pp(t)`` is exactly ``pols_if(t)`` and the printed in-force column
 reconciles with the row it sits on. That is the library-wide convention, set by
 :mod:`.Term_US_S` and by ``savings.CashValue_SE``. The notes' own end-of-month ``l(t)``
-has not gone anywhere: it is ``pols_if_at(t, "AFT_DECR")``, and the roll-forward
+has not gone anywhere: it is ``pols_if_at(t, AFT_DECR)``, and the roll-forward
 is written across it.
 
 ``lapse_rate(t)`` is the **annual** total surrender rate and :func:`lapse_rate_mth` the
@@ -519,7 +569,7 @@ at all. The two differ by exactly :func:`wd_nonexcess_pp`, and it is
 
 ``E(t)`` is the **guarantee** excess here — the portion of a withdrawal above the GLWB
 annual limit — and :func:`wd_excess_pp` carries that meaning. In
-:mod:`.MYGA_US_S` the same cells name means the portion of a withdrawal above
+:mod:`.MYGA_US_S` the same cell name means the portion of a withdrawal above
 the free allowance, i.e. the *charge* base. On this product those are two different
 quantities and both exist: the charge base is :func:`wd_chargeable_pp`. Reading
 ``wd_excess_pp`` across the two models without checking is the single easiest mistake to
@@ -611,44 +661,45 @@ and on the carried state in force at 26 months it is ``t = 0``.
 
 Account and subaccount values, following ``CashValue_SE``'s ``av_pp_at``:
 
-``"BEF_PREM"``
+``BEF_PREM``
     ``AV(t-1)``, at the start of month ``t`` before the premium — the opening balance,
     and in the first month on the books, :func:`t_entry`, the model point's opening
     state, :func:`sa_pp_init` and :func:`av_pp_init`, which are 0 on new business.
-``"BEF_WD"``
+``BEF_WD``
     after the premium has bought units, before the withdrawal.
-``"BEF_INV"``
+``BEF_INV``
     ``AV'(t)``, after the withdrawal, before unit value growth.
-``"BEF_FEE"``
+``BEF_FEE``
     after growth, before the rider fees and the contract fee. This is the point at which
     the notes read the pro-rata key ``w_i``.
-``"EOM"``
+``EOM``
     ``AV(t)``, after every charge. Equal to :func:`av_pp`.
 
-Guarantee bases (``gwb_pp_at``, ``gawa_pp_at``, ``rb_pp_at``) take ``"BEF_PREM"``,
-``"BEF_WD"`` and ``"BEF_ANNIV"``; their end-of-month value, after the anniversary
+Guarantee bases (``gwb_pp_at``, ``gawa_pp_at``, ``rb_pp_at``) take ``BEF_PREM``,
+``BEF_WD`` and ``BEF_ANNIV``; their end-of-month value, after the anniversary
 guarantee events, is the plain cells (:func:`gwb_pp`, :func:`gawa_pp`, :func:`rb_pp`).
-``"BEF_PREM"`` opens on the model point's ``_init`` column at :func:`t_entry`.
+``BEF_PREM`` opens on the model point's ``_init`` column at :func:`t_entry`.
 
 Policy counts, following ``CashValue_SE``'s ``pols_if_at`` and
 ``basiclife.BasicTerm_SE``:
 
-``"BEF_NB"``
+``BEF_NB``
     the count carried in from month ``t - 1``, before month ``t``'s new business:
     :func:`pols_if_init` at :func:`t_entry`, the contracts in force at the valuation
     date, 0 on new business.
-``"BEF_DECR"``
-    ``l(t-1)``, in force at the start of month ``t``: ``"BEF_NB"`` plus that month's
+``BEF_DECR``
+    ``l(t-1)``, in force at the start of month ``t``: ``BEF_NB`` plus that month's
     :func:`pols_new_biz`. Equal to ``pols_if(t)``.
-``"BEF_LAPSE"``
+``BEF_LAPSE``
     after deaths, ``l(t-1)(1 - q^d(t))``.
-``"AFT_DECR"``
+``AFT_DECR``
     after surrenders, ``l(t)`` — the notes' end-of-month count, and equal to
-    ``pols_if_at(t + 1, "BEF_NB")`` except in the last covered month, where the survivors
+    ``pols_if_at(t + 1, BEF_NB)`` except in the last covered month, where the survivors
     leave as :func:`pols_maturity` instead.
 
-Benefit ``kind`` arguments are ``"DEATH"``, ``"LAPSE"`` and ``"MATURITY"``. Any other
-value of any of these raises ``ValueError``.
+Benefit ``kind`` arguments are ``DEATH``, ``LAPSE`` and ``MATURITY``, and ``ALL``, the
+three kinds' total, for :func:`claims` and :func:`claims_over_av`. Any other value of any
+of these raises ``ValueError``. Each is an int code (*Codes*, below).
 
 .. rubric:: pols_maturity and the projection horizon
 
@@ -663,13 +714,13 @@ policy month :func:`maturity_mth` ``= 12 * policy_term()``, which is
 ``duration_mth(t) = maturity_mth() - 1``, which is ``t = proj_len() - 1`` — zero
 everywhere else — so that::
 
-    pols_if(t) - pols_if_at(t + 1, "BEF_NB") = pols_death(t) + pols_lapse(t)
+    pols_if(t) - pols_if_at(t + 1, BEF_NB) = pols_death(t) + pols_lapse(t)
                                                + pols_maturity(t)
 
 holds for every ``t``, including the last, where the block would otherwise appear to lose
 lives with no cause. The identity is written on start-of-month counts because that is
 what :func:`pols_if` carries: the next month opens on what is left, before its own new
-business, and in the last covered month ``pols_if_at(proj_len(), "BEF_NB")`` is zero,
+business, and in the last covered month ``pols_if_at(proj_len(), BEF_NB)`` is zero,
 every survivor of that month having left as :func:`pols_maturity`. The name follows
 ``BasicTerm_S.pols_maturity`` and the construction follows :mod:`.Term_US_S` and
 :mod:`.MYGA_US_S`. It is bookkeeping determined by the horizon, not an added
@@ -678,11 +729,101 @@ assumption.
 The contract's own Latest Income Date — the Contract Anniversary at owner age 95 [S2] —
 is **not** implemented as a forced annuitization; see the model docstring's list of what
 is not implemented.
+
+.. rubric:: Codes
+
+What :mod:`~.VA_US_S` spells as text, a timing, a kind, a rate scenario's column or a
+phase, is here an int Reference named as the text it replaces, so that every cell takes
+and returns C numbers. A call site reads as it did, less the quotes:
+``pols_if_at(t, BEF_DECR)``, ``av_pp_at(t, BEF_WD)``, ``claims(t, DEATH)``.
+
+===============  =====  =============================================================
+Reference        Value  Meaning
+===============  =====  =============================================================
+BEF_NB           0      :func:`pols_if_at`: the count carried in from month t - 1
+BEF_DECR         1      :func:`pols_if_at`: that count plus month t's new business
+BEF_LAPSE        2      :func:`pols_if_at`: after deaths
+AFT_DECR         3      :func:`pols_if_at`: after surrenders, the notes' l(t)
+BEF_PREM         4      the account value and the bases: the opening balance
+BEF_WD           5      the account value and the bases: after the premium
+BEF_INV          6      the account value: after the withdrawal, before the growth
+BEF_FEE          7      the account value: after the growth, before the charges
+EOM              8      the account value: closing the month
+BEF_ANNIV        9      the bases: after the withdrawal, before the anniversary
+DEATH            0      the claim cells: the death claim
+LAPSE            1      the claim cells: the surrender claim
+MATURITY         2      the claim cells: the survivors at the horizon
+ALL              3      :func:`claims`, :func:`claims_over_av`: the three kinds' total
+VIX_SQ           0      :func:`scenario_rate`: the ``vix_sq`` column
+CMT10            1      :func:`scenario_rate`: the ``cmt10`` column
+PRE_ISSUE        0      :func:`phase`: before issue
+ACCUM            1      :func:`phase`: in cover, the account value not run out
+DEPLETED         2      :func:`phase`: in cover, the account value run out
+EXPIRED          3      :func:`phase`: from the end of cover
+===============  =====  =============================================================
+
+The model has three families of timing, the count's, the account value's and the bases',
+passed to different cells, and they are numbered as one: ``BEF_NB`` 0 and ``BEF_DECR`` 1,
+as in every SEC model, then the count's others, then the account value's, then the
+bases' own one, each family in the order of its instants. The bases share ``BEF_PREM``
+and ``BEF_WD`` with the account value, where :mod:`~.VA_US_S` spells them alike, so each
+is one Reference. So a code of one family passed to another's cell,
+``av_pp_at(t, BEF_NB)``, is refused as any timing the cell does not take is,
+``ValueError("invalid timing")``, in both engines, rather than read as a timing of the
+cell's own. Kinds are numbered in ``result_cf``'s order, which is the order
+:mod:`~.VA_US_S` adds them in its total, and ``ALL``, its ``kind=None``, after them;
+:func:`claims` and :func:`claims_over_av` answer ``ALL`` with :mod:`~.VA_US_S`'s chain of
+``+``, so that the total is :mod:`~.VA_US_S`'s bit for bit, and the other claim cells
+refuse it, ``ValueError("invalid kind")``. The columns are :mod:`~.VA_US_S`'s names
+upper-cased. A code a cell takes indexes that cell's cache, a C array of ten codes a
+month, since every 2-D cache of the model has one width, the timings' count, which is the
+subaccount axis's too (``spec_sec.py``), so codes are numbered densely from 0, and a code
+a cell does not take but below 10 is refused inside the cache; a code from 10 raises
+``IndexError``, compiled alone. Codes are References, not cells, so the symbol map does
+not list them. Every other Reference is named in lower case, the contract's bounds among
+them: ``issue_age_min``, ``issue_age_max``, ``glwb_issue_age_max`` and
+``gmdb_issue_age_max``, the product's issue ages, 35, 85, 80 and 79, and
+``subaccount_id_max``, 9, the largest subaccount id a fund set may hold, which
+:func:`proj_len` checks, the first and the last of which, with ``omega_age``, the compiled
+model's caches are sized from.
+
+.. rubric:: Reporting cells
+
+:func:`model_point`, the thirteen label accessors :func:`policy_id`, :func:`sex`,
+:func:`designated_lives`, :func:`tax_status`, :func:`fund_set`, :func:`glwb_option`,
+:func:`stepup_basis`, :func:`gmdb_option`, :func:`cdsc_schedule`, :func:`fee_reset_rule`,
+:func:`rollup_rule`, :func:`scenario_id` and :func:`txn_id`, the reports
+:func:`result_cf`, :func:`result_pols`, :func:`result_av` and :func:`result_bases`, and the
+checks :func:`check_av_roll_fwd`, :func:`check_pols_roll_fwd` and
+:func:`check_charge_split` are written for a reader and for the comparison with
+:mod:`~.VA_US_S`, which has every one of them: a table row, text, DataFrames and three
+verdicts. No other cell calls them: each reads the number ``Data`` decoded from the same
+column instead, the decodes' flags and the rows the keys select. So the row, the text and
+the frames stay Python when the model compiles. A label accessor returns its column as
+read, text or not: ``Data`` accepts, and the model projects, a point whose ``policy_id``,
+``designated_lives`` or ``tax_status`` is blank or a number, which no cell reads, whose
+``glwb_stepup_basis``, ``gmdb_option``, ``fee_reset_rule`` or ``rollup_rule`` is blank,
+which its decodes answer False to, or whose ``sex``, ``fund_set``, ``glwb_option``,
+``cdsc_schedule``, ``scenario_id`` or ``txn_id`` is a number, where its table's keys are
+numbers, and the compiled accessor returns what modelx returns, NaN or an int. Every
+other cell returns a C ``bint``, ``long long`` or ``double``, and so do the three checks,
+which may stay Python but compile to a ``bint``, their verdict, as their per-month
+residuals, ``*_resid``, compile to a ``double``.
+
+Four cells compile with C signatures and dict caches, or stay Python, the engine cells
+:func:`lapse_itm_mult`, :func:`fee_rate_vix_raw` and :func:`fee_rate_vix_clip`, keyed by
+floats, and :func:`sub_ids`, a list: :mod:`~.VA_US_S`'s own, kept for its tests, for T1,
+which compares them at the arguments :mod:`~.VA_US_S`'s tests use, and for a reader. No
+projection cell calls them, and a cell keyed by a float compiles with a Python dict for a
+cache, so the registry admits them by name. The projection writes the three float
+engines inline in the cells that call them, :func:`lapse_dyn_mult` and
+:func:`phi_glwb_vix`, in :mod:`~.VA_US_S`'s order of evaluation, and loops over the
+subaccounts by position itself.
 """
 
 from modelx.serialize.jsonvalues import *
 
-_formula = lambda point_id: None
+_formula = lambda idx: None
 
 _bases = []
 
@@ -694,8 +835,22 @@ _spaces = []
 # Cells
 
 def model_point():
-    """The selected model point, its row of ``model_point_table_sec.csv``, as a Series."""
-    return data.model_point_table().loc[point_id]                    # noqa: F821
+    """The selected model point, its row of ``model_point_table_sec.csv``, as a Series.
+
+    Row ``idx`` of the table, for a reader who wants every column at once: a reporting
+    cell (the Space docstring's *Reporting cells*), which no projection cell reads. Each
+    accessor reads its own ``Data`` vector instead.
+    """
+    return data.model_point_table().iloc[idx]                        # noqa: F821
+
+
+def point_id():
+    """The label of the selected model point, its ``point_id``, from ``Data.point_id``.
+
+    ``Projection`` is indexed by position, ``idx``, as ``basiclife.BasicTerm_SC`` is; the
+    label is what a reader finds in the table, so every refusal names it.
+    """
+    return int(data.point_id()[idx])                                 # noqa: F821
 
 
 def policy_id():
@@ -705,12 +860,26 @@ def policy_id():
 
 def age_at_entry():
     """x: the issue age (ANB) of the selected model point."""
-    return int(model_point()["age_at_entry"])
+    return int(data.age_at_entry()[idx])                             # noqa: F821
 
 
 def sex():
-    """The sex of the Designated Life, M or F."""
+    """The sex of the Designated Life, M or F.
+
+    A label for reporting: the projection reads the mortality at :func:`mort_schedule`.
+    """
     return model_point()["sex"]
+
+
+def mort_schedule():
+    """The number ``Data`` gives the point's ``sex``, by which its mortality is read.
+
+    The row of ``Data.mort_table_array``. The join on the text key, made once in ``Data``
+    (R7), where ``VA_US_S``'s reader selects its rows by the key itself:
+    :func:`mort_rate_base_at` reads the table at this number, so no projection cell
+    compares the key or calls the label accessor.
+    """
+    return int(data.mort_schedule()[idx])                            # noqa: F821
 
 
 def designated_lives():
@@ -743,7 +912,7 @@ def policy_count():
     whatever the count, and every cash flow is a per-contract amount weighted by it.
     ``VA_US_S``'s ``pols_if_init`` column, renamed, as ``basiclife.BasicTerm_SE`` names it.
     """
-    return float(model_point()["policy_count"])
+    return float(data.policy_count()[idx])                           # noqa: F821
 
 
 def pols_if_init():
@@ -766,7 +935,7 @@ def premium_tax_rate():
     checkable; premium tax is contractually deducted from the amounts that initialize the
     guarantee bases [S1].
     """
-    return float(model_point()["premium_tax_rate"])
+    return float(data.premium_tax_rate()[idx])                       # noqa: F821
 
 
 def premium_single():
@@ -777,49 +946,111 @@ def premium_single():
     at the valuation date paid it before the frame, and its opening state carries what it
     bought.
     """
-    return float(model_point()["premium"])
+    return float(data.premium()[idx])                                # noqa: F821
 
 
 def fund_set():
-    """The key into *fund_table.csv* naming this contract's subaccount allocation."""
+    """The key into *fund_table.csv* naming this contract's subaccount allocation.
+
+    A label for reporting: the projection reads the set at :func:`fund_set_number`.
+    """
     return model_point()["fund_set"]
 
 
+def fund_set_number():
+    """The number ``Data`` gives the point's ``fund_set``, by which its funds are read.
+
+    The row of ``Data``'s fund arrays, ``fund_sub_ids``, ``fund_held``, ``alloc_array``
+    and ``fund_expense_array``, the join on the text key made once in ``Data`` (R7).
+    """
+    return int(data.fund_set_number()[idx])                          # noqa: F821
+
+
+def subaccount_count():
+    """The number of subaccounts the point's fund set holds."""
+    return int(data.fund_sub_count()[fund_set_number()])             # noqa: F821
+
+
+def subaccount_id(j):
+    """The id of the subaccount at position ``j`` of the point's fund set, in file order.
+
+    ``j`` runs from 0 to ``subaccount_count() - 1``, in the order ``VA_US_S``'s
+    ``sub_ids`` returns the ids and its sums run in, so that a loop over the positions,
+    taking each id from here, sums the subaccounts as ``VA_US_S`` does. A position outside
+    the set raises ``ValueError``, naming the point, and so does any position of a set
+    holding an id past ``Data.read_last_sub_id``, which ``Data`` does not hold and
+    :func:`proj_len` refuses first.
+    """
+    f = fund_set_number()
+    if data.fund_sub_id_last()[f] > data.read_last_sub_id:           # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the fund set holds subaccount "
+                         f"{data.fund_sub_id_last()[f]}, past Data.read_last_sub_id, "
+                         f"{data.read_last_sub_id}")                 # noqa: F821
+    if j < 0 or j >= subaccount_count():
+        raise ValueError(f"point_id {point_id()}: the fund set holds no subaccount at "
+                         f"position {j}")
+    return int(data.fund_sub_ids()[f, j])                            # noqa: F821
+
+
 def sub_ids():
-    """The subaccount indices of the model point's allocation set, in file order.
+    """The subaccount ids of the model point's allocation set, in file order, as a list.
 
     Two subaccounts **[std]** — the minimum that exercises pro-rata charge allocation and
     unit accounting. Real contracts offer far more; one carrier's build-your-own menu
     lists 76 options across 12 asset classes [S4].
 
-    Read from ``data.fund_sets()``, the fund table with its keys and values checked, and
-    joined on the model point's ``fund_set`` column, a join on text that Phase 2 re-keys.
+    ``VA_US_S``'s cell, kept for a reader and for the comparison with ``VA_US_S``: a list,
+    which no C type holds, so it is an engine cell (the Space docstring's *Reporting
+    cells*), built by an explicit loop over :func:`subaccount_id`, and no other cell calls
+    it. Every sum over the subaccounts loops over the positions itself.
     """
-    return list(data.fund_sets().loc[model_point()["fund_set"]].index)  # noqa: F821
+    ids = []
+    for j in range(subaccount_count()):
+        ids.append(subaccount_id(j))
+    return ids
 
 
 def alloc(i):
     """alloc[i]: the share of net premium allocated to subaccount i, no rebalancing.
 
-    Read from ``data.fund_sets()``, the checked fund table, at the model point's
-    ``fund_set`` column and ``i``.
+    ``Data.alloc_array`` at the point's :func:`fund_set_number` and the subaccount id
+    ``i``. An id outside 1 to ``Data.read_last_sub_id``, or one the set does not hold,
+    raises ``ValueError``, naming the point, where ``VA_US_S``'s lookup raised
+    ``KeyError``.
     """
-    return float(data.fund_sets().loc[(model_point()["fund_set"], i), "alloc"])  # noqa
+    f = fund_set_number()
+    if i < 1 or i > data.read_last_sub_id or data.fund_held()[f, i] == 0:  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the fund set holds no subaccount {i}")
+    return float(data.alloc_array()[f, i])                           # noqa: F821
 
 
 def fund_expense_rate(i):
     """e_i: the annual fund expense ratio of subaccount i, paid to the fund [S2].
 
-    Read from ``data.fund_sets()``, the checked fund table, at the model point's
-    ``fund_set`` column and ``i``.
+    ``Data.fund_expense_array`` at the point's :func:`fund_set_number` and ``i``, refused
+    as :func:`alloc` refuses.
     """
-    return float(data.fund_sets().loc[(model_point()["fund_set"], i),  # noqa: F821
-                                      "fund_expense"])
+    f = fund_set_number()
+    if i < 1 or i > data.read_last_sub_id or data.fund_held()[f, i] == 0:  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the fund set holds no subaccount {i}")
+    return float(data.fund_expense_array()[f, i])                    # noqa: F821
 
 
 def glwb_option():
-    """The GLWB election, and the key into the GAWA% grid; ``s3_single`` [S3]."""
+    """The GLWB election, and the key into the GAWA% grid; ``s3_single`` [S3].
+
+    A label for reporting: the projection reads the grid at :func:`gawa_grid_number`.
+    """
     return model_point()["glwb_option"]
+
+
+def gawa_grid_number():
+    """The number ``Data`` gives the point's ``glwb_option``, the row of its GAWA% grid.
+
+    The row of ``Data.gawa_pct_array``, the join made once in ``Data`` (R7), which
+    :func:`gawa_pct_at_age` reads.
+    """
+    return int(data.gawa_grid_number()[idx])                         # noqa: F821
 
 
 def stepup_basis():
@@ -842,21 +1073,22 @@ def stepup_basis():
 def is_stepup_annual():
     """Whether the step-up basis is ``annual_CV``, the column decoded once a point.
 
-    ``model_point()["glwb_stepup_basis"] == "annual_CV"``, as a bool. Read by
-    :func:`stepup_base_pp` where ``VA_US_S`` compares :func:`stepup_basis` with the text;
-    Phase 2 moves the decode to a ``Data`` vector.
+    ``Data.is_stepup_annual``, ``glwb_stepup_basis`` compared with ``"annual_CV"`` as
+    ``VA_US_S`` compares it, element by element, read at the point. Read by
+    :func:`stepup_base_pp` where ``VA_US_S`` compares :func:`stepup_basis` with the text.
     """
-    return bool(model_point()["glwb_stepup_basis"] == "annual_CV")
+    return bool(data.is_stepup_annual()[idx])                        # noqa: F821
 
 
 def is_stepup_highest_quarterly():
     """Whether the step-up basis is ``highest_quarterly_CV``, the column decoded.
 
-    ``model_point()["glwb_stepup_basis"] == "highest_quarterly_CV"``, as a bool. Read by
-    :func:`stepup_base_pp`; a basis that is neither of the two raises ``VA_US_S``'s
-    message there. Phase 2 moves the decode to a ``Data`` vector.
+    ``Data.is_stepup_highest_quarterly``, ``glwb_stepup_basis`` compared with
+    ``"highest_quarterly_CV"`` as ``VA_US_S`` compares it, element by element, read at the
+    point. Read by :func:`stepup_base_pp`; a basis that is neither of the two raises
+    ``VA_US_S``'s message there.
     """
-    return bool(model_point()["glwb_stepup_basis"] == "highest_quarterly_CV")
+    return bool(data.is_stepup_highest_quarterly()[idx])             # noqa: F821
 
 
 def gmdb_option():
@@ -881,37 +1113,49 @@ def gmdb_option():
 def is_gmdb_rollup():
     """Whether the GMDB election is ``rollup``, the column decoded once a point.
 
-    ``model_point()["gmdb_option"] == "rollup"``, as a bool. Read by :func:`rb_pp`,
+    ``Data.is_gmdb_rollup``, ``gmdb_option`` compared with ``"rollup"`` as ``VA_US_S``
+    compares it, element by element, read at the point. Read by :func:`rb_pp`,
     :func:`rb_pp_at`, :func:`gmdb_wd_dfd_pp` and :func:`gmdb_wd_excess_pp`, where
-    ``VA_US_S`` compares :func:`gmdb_option` with the text; Phase 2 moves the decode to a
-    ``Data`` vector.
+    ``VA_US_S`` compares :func:`gmdb_option` with the text.
     """
-    return bool(model_point()["gmdb_option"] == "rollup")
+    return bool(data.is_gmdb_rollup()[idx])                          # noqa: F821
 
 
 def is_gmdb_ratchet():
     """Whether the GMDB election is ``ratchet``, the annual ratchet, the column decoded.
 
-    ``model_point()["gmdb_option"] == "ratchet"``, as a bool. Read by :func:`rb_pp`; Phase 2
-    moves the decode to a ``Data`` vector.
+    ``Data.is_gmdb_ratchet``, ``gmdb_option`` compared with ``"ratchet"`` as ``VA_US_S``
+    compares it, element by element, read at the point. Read by :func:`rb_pp`.
     """
-    return bool(model_point()["gmdb_option"] == "ratchet")
+    return bool(data.is_gmdb_ratchet()[idx])                         # noqa: F821
 
 
 def is_gmdb_basic():
     """Whether the GMDB election is ``basic``, the return of premium, the column decoded.
 
-    ``model_point()["gmdb_option"] == "basic"``, as a bool. Read by :func:`rb_pp`,
+    ``Data.is_gmdb_basic``, ``gmdb_option`` compared with ``"basic"`` as ``VA_US_S``
+    compares it, element by element, read at the point. Read by :func:`rb_pp`,
     :func:`gmdb_guarantee_pp` and :func:`phi_gmdb`; an election that is none of the three
-    raises ``VA_US_S``'s message in :func:`rb_pp`. Phase 2 moves the decode to a ``Data``
-    vector.
+    raises ``VA_US_S``'s message in :func:`rb_pp`.
     """
-    return bool(model_point()["gmdb_option"] == "basic")
+    return bool(data.is_gmdb_basic()[idx])                           # noqa: F821
 
 
 def cdsc_schedule():
-    """The key into *cdsc_table.csv* naming this contract's withdrawal charge scale."""
+    """The key into *cdsc_table.csv* naming this contract's withdrawal charge scale.
+
+    A label for reporting: the projection reads the scale at :func:`cdsc_number`.
+    """
     return model_point()["cdsc_schedule"]
+
+
+def cdsc_number():
+    """The number ``Data`` gives the point's ``cdsc_schedule``, the row of its scale.
+
+    The row of ``Data.surr_charge_rate_array``, the join made once in ``Data`` (R7),
+    which :func:`surr_charge_rate_at` reads.
+    """
+    return int(data.cdsc_number()[idx])                              # noqa: F821
 
 
 def fee_reset_rule():
@@ -932,30 +1176,31 @@ def fee_reset_rule():
 def is_fee_reset_none():
     """Whether the GLWB fee reset rule is ``none``, the column decoded once a point.
 
-    ``model_point()["fee_reset_rule"] == "none"``, as a bool. Read by :func:`phi_glwb`,
-    where ``VA_US_S`` compares :func:`fee_reset_rule` with the text; Phase 2 moves the
-    decode to a ``Data`` vector.
+    ``Data.is_fee_reset_none``, ``fee_reset_rule`` compared with ``"none"`` as ``VA_US_S``
+    compares it, element by element, read at the point. Read by :func:`phi_glwb`, where
+    ``VA_US_S`` compares :func:`fee_reset_rule` with the text.
     """
-    return bool(model_point()["fee_reset_rule"] == "none")
+    return bool(data.is_fee_reset_none()[idx])                       # noqa: F821
 
 
 def is_fee_reset_quinquennial():
     """Whether the GLWB fee reset rule is ``quinquennial``, the column decoded.
 
-    ``model_point()["fee_reset_rule"] == "quinquennial"``, as a bool. Read by
-    :func:`phi_glwb`; Phase 2 moves the decode to a ``Data`` vector.
+    ``Data.is_fee_reset_quinquennial``, ``fee_reset_rule`` compared with ``"quinquennial"``
+    as ``VA_US_S`` compares it, element by element, read at the point. Read by
+    :func:`phi_glwb`.
     """
-    return bool(model_point()["fee_reset_rule"] == "quinquennial")
+    return bool(data.is_fee_reset_quinquennial()[idx])               # noqa: F821
 
 
 def is_fee_reset_vix():
     """Whether the GLWB fee reset rule is ``vix``, the column decoded once a point.
 
-    ``model_point()["fee_reset_rule"] == "vix"``, as a bool. Read by :func:`phi_glwb`; a
-    rule that is none of the three raises ``VA_US_S``'s message there. Phase 2 moves the
-    decode to a ``Data`` vector.
+    ``Data.is_fee_reset_vix``, ``fee_reset_rule`` compared with ``"vix"`` as ``VA_US_S``
+    compares it, element by element, read at the point. Read by :func:`phi_glwb`; a rule
+    that is none of the three raises ``VA_US_S``'s message there.
     """
-    return bool(model_point()["fee_reset_rule"] == "vix")
+    return bool(data.is_fee_reset_vix()[idx])                        # noqa: F821
 
 
 def rollup_rule():
@@ -976,21 +1221,22 @@ def rollup_rule():
 def is_rollup_fixed():
     """Whether the GMDB roll-up rule is ``fixed``, the column decoded once a point.
 
-    ``model_point()["rollup_rule"] == "fixed"``, as a bool. Read by :func:`rollup_rate`,
-    where ``VA_US_S`` compares :func:`rollup_rule` with the text; Phase 2 moves the
-    decode to a ``Data`` vector.
+    ``Data.is_rollup_fixed``, ``rollup_rule`` compared with ``"fixed"`` as ``VA_US_S``
+    compares it, element by element, read at the point. Read by :func:`rollup_rate`, where
+    ``VA_US_S`` compares :func:`rollup_rule` with the text.
     """
-    return bool(model_point()["rollup_rule"] == "fixed")
+    return bool(data.is_rollup_fixed()[idx])                         # noqa: F821
 
 
 def is_rollup_cmt_linked():
     """Whether the GMDB roll-up rule is ``cmt_linked``, the column decoded once a point.
 
-    ``model_point()["rollup_rule"] == "cmt_linked"``, as a bool. Read by
+    ``Data.is_rollup_cmt_linked``, ``rollup_rule`` compared with ``"cmt_linked"`` as
+    ``VA_US_S`` compares it, element by element, read at the point. Read by
     :func:`rollup_rate`; a rule that is neither of the two raises ``VA_US_S``'s message
-    there. Phase 2 moves the decode to a ``Data`` vector.
+    there.
     """
-    return bool(model_point()["rollup_rule"] == "cmt_linked")
+    return bool(data.is_rollup_cmt_linked()[idx])                    # noqa: F821
 
 
 def wd_start_age():
@@ -1001,7 +1247,7 @@ def wd_start_age():
     prescribed alternative is VM-21's Withdrawal Delay Cohort Method, which is **not
     implemented**.
     """
-    return int(model_point()["wd_start_age"])
+    return int(data.wd_start_age()[idx])                             # noqa: F821
 
 
 def wd_intensity():
@@ -1011,7 +1257,7 @@ def wd_intensity():
     prescribed partial-withdrawal assumption is 90% for lifetime GMWBs and 70% for
     non-lifetime ones [R1].
     """
-    return float(model_point()["wd_intensity"])
+    return float(data.wd_intensity()[idx])                           # noqa: F821
 
 
 def scenario_id():
@@ -1021,15 +1267,46 @@ def scenario_id():
     for a contract issued at the valuation date, and ``{id}-M{m}`` or ``{id}-F{k}`` for
     one in force at policy month ``m`` or issued ``k`` months later
     (``Data.return_scenario``). A label accessor, called by no projection cell:
-    :func:`inv_return_mth` and :func:`scenario_rate` read the column from
-    :func:`model_point`.
+    :func:`inv_return_mth` and :func:`scenario_rate` read the scenarios at
+    :func:`return_scenario_number` and :func:`rate_scenario_number`.
     """
     return model_point()["scenario_id"]
 
 
+def return_scenario_number():
+    """The number ``Data`` gives the point's ``scenario_id`` in the return scenarios.
+
+    The row of ``Data.return_array``, the join made once in ``Data`` (R7), which
+    :func:`inv_return_mth` reads.
+    """
+    return int(data.return_scenario_number()[idx])                   # noqa: F821
+
+
+def rate_scenario_number():
+    """The number ``Data`` gives the point's ``scenario_id`` in the rate scenarios.
+
+    The row of ``Data.vix_sq_array`` and ``Data.cmt10_array``, which
+    :func:`scenario_rate` reads; 0 where the rate scenarios lack the id, which ``Data``
+    accepts on a point no level is read for and :func:`scenario_rate` refuses.
+    """
+    return int(data.rate_scenario_number()[idx])                     # noqa: F821
+
+
 def txn_id():
-    """The scheduled transaction programme, a key into *transaction_table.csv*."""
+    """The scheduled transaction programme, a key into *transaction_table.csv*.
+
+    A label for reporting: the projection reads the programme at :func:`txn_number`.
+    """
     return model_point()["txn_id"]
+
+
+def txn_number():
+    """The number ``Data`` gives the point's ``txn_id``, the row of its programme.
+
+    The row of ``Data.prem_amount_array`` and ``Data.wd_amount_array``, the join made once
+    in ``Data`` (R7), which :func:`prem_scheduled_pm` and :func:`wd_scheduled_pm` read.
+    """
+    return int(data.txn_number()[idx])                               # noqa: F821
 
 
 def duration_mth_init():
@@ -1043,7 +1320,7 @@ def duration_mth_init():
     clock takes from the model point. ``VA_US_S``'s ``duration_mth_init`` column, renamed;
     ``VA_US_S`` can take it as 0 or as a month in force, never as a month to come.
     """
-    return int(model_point()["duration_mth"])
+    return int(data.duration_mth()[idx])                             # noqa: F821
 
 
 def is_inforce():
@@ -1059,7 +1336,8 @@ def is_inforce():
 def av_pp_init():
     """AV entering month 0, per contract: the sum of the subaccount values carried in.
 
-    ``sum_i sa_pp_init(i)`` over :func:`sub_ids`, an explicit loop, so 0 on a contract
+    ``sum_i sa_pp_init(i)`` over the set's subaccounts, an explicit loop over the
+    positions taking each id from :func:`subaccount_id`, so 0 on a contract
     issued at or after the valuation date. ``VA_US_S`` carries one account value,
     ``av_init``, and splits it across the subaccounts by the target allocation **[std]**,
     which holds for its in-force point, exactly at its 60/40 target, and fails wherever
@@ -1069,8 +1347,8 @@ def av_pp_init():
     whose sum is at or below ``av_depletion_threshold`` as depleted from month 0.
     """
     total = 0.0
-    for i in sub_ids():
-        total = total + sa_pp_init(i)
+    for j in range(subaccount_count()):
+        total = total + sa_pp_init(subaccount_id(j))
     return total
 
 
@@ -1078,12 +1356,18 @@ def sa_pp_init(i):
     """SA_i entering month 0, per contract: the model point's ``sa_pp_init_<i>`` column.
 
     The value of subaccount ``i`` at the start of month 0, before any month-0 event, read
-    through ``data.fund_values_init()``, which holds one column for each subaccount a fund
-    set has; 0 on a contract issued at or after the valuation date, whose premium buys its
-    units in the issue month. :func:`sa_pp_at` and :func:`sa_pp` open on it at
-    :func:`t_entry`, where ``VA_US_S`` opens on ``alloc(i) x av_pp_init()``.
+    from ``Data.sa_pp_init_array`` at the point's position and the subaccount id; 0 on a
+    contract issued at or after the valuation date, whose premium buys its units in the
+    issue month, and 0 for an id the point's set does not hold. :func:`sa_pp_at` and
+    :func:`sa_pp` open on it at :func:`t_entry`, where ``VA_US_S`` opens on
+    ``alloc(i) x av_pp_init()``. An id outside 1 to ``Data.read_last_sub_id`` raises
+    ``ValueError``, naming the point.
     """
-    return float(data.fund_values_init().loc[point_id, i])          # noqa: F821
+    if i < 1 or i > data.read_last_sub_id:                           # noqa: F821
+        raise ValueError(f"point_id {point_id()}: subaccount ids run from 1 to "
+                         f"{data.read_last_sub_id}, Data.read_last_sub_id; there is no "
+                         f"subaccount {i}")
+    return float(data.sa_pp_init_array()[idx, i])                    # noqa: F821
 
 
 def gwb_pp_init():
@@ -1092,7 +1376,7 @@ def gwb_pp_init():
     0 on a contract issued at or after the valuation date, where the premium creates it
     in the issue month [S1]; ``VA_US_S``'s ``gwb_init`` column, renamed.
     """
-    return float(model_point()["gwb_pp_init"])
+    return float(data.gwb_pp_init()[idx])                            # noqa: F821
 
 
 def gawa_pp_init():
@@ -1102,7 +1386,7 @@ def gawa_pp_init():
     column, renamed. On a contract depleted at the valuation date it is the amount the
     GLWB pays at each contract year's start, read by :func:`glwb_payment_pp` at ``t = 0``.
     """
-    return float(model_point()["gawa_pp_init"])
+    return float(data.gawa_pp_init()[idx])                           # noqa: F821
 
 
 def gawa_pct_init():
@@ -1113,7 +1397,7 @@ def gawa_pct_init():
     percentage above 0 here with :func:`has_wd_init` False. The column of the name, as in
     ``VA_US_S``, which infers its withdrawal status from it.
     """
-    return float(model_point()["gawa_pct_init"])
+    return float(data.gawa_pct_init()[idx])                          # noqa: F821
 
 
 def has_wd_init():
@@ -1127,7 +1411,7 @@ def has_wd_init():
     the status is a column of its own here. ``Data`` reads it by value and ties it to the
     GWB Adjustment, to the year's withdrawal flag and to the GAWA%.
     """
-    return bool(model_point()["has_wd_init"])
+    return bool(data.has_wd_init()[idx])                             # noqa: F821
 
 
 def bb_pp_init():
@@ -1135,7 +1419,7 @@ def bb_pp_init():
 
     ``VA_US_S``'s ``bb_init`` column, renamed; 0 on new business.
     """
-    return float(model_point()["bb_pp_init"])
+    return float(data.bb_pp_init()[idx])                             # noqa: F821
 
 
 def rb_pp_init():
@@ -1143,7 +1427,7 @@ def rb_pp_init():
 
     ``VA_US_S``'s ``rb_init`` column, renamed; 0 on new business.
     """
-    return float(model_point()["rb_pp_init"])
+    return float(data.rb_pp_init()[idx])                             # noqa: F821
 
 
 def np_pp_init():
@@ -1151,7 +1435,7 @@ def np_pp_init():
 
     ``VA_US_S``'s ``np_init`` column, renamed; 0 on new business.
     """
-    return float(model_point()["np_pp_init"])
+    return float(data.np_pp_init()[idx])                             # noqa: F821
 
 
 def rp_pp_init():
@@ -1159,7 +1443,7 @@ def rp_pp_init():
 
     ``VA_US_S``'s ``rp_init`` column, renamed; 0 on new business.
     """
-    return float(model_point()["rp_pp_init"])
+    return float(data.rp_pp_init()[idx])                             # noqa: F821
 
 
 def adj_pp_init():
@@ -1169,7 +1453,7 @@ def adj_pp_init():
     contract issued at or after the valuation date; 0 too once any withdrawal has voided it
     or its date has passed. ``VA_US_S``'s ``adj_init`` column, renamed.
     """
-    return float(model_point()["adj_pp_init"])
+    return float(data.adj_pp_init()[idx])                            # noqa: F821
 
 
 def bonus_end_init():
@@ -1179,7 +1463,7 @@ def bonus_end_init():
     on one issued at or after it, whose Bonus Period opens at ``bonus_period_years`` = 10
     [S1] in its issue month (:func:`bonus_end`).
     """
-    return int(model_point()["bonus_end_init"])
+    return int(data.bonus_end_init()[idx])                           # noqa: F821
 
 
 def sum_wd_pp_ytd_init():
@@ -1191,7 +1475,7 @@ def sum_wd_pp_ytd_init():
     before the valuation date; ``VA_US_S`` restarts the sum at ``t = 0`` as though every
     valuation were a year's start.
     """
-    return float(model_point()["sum_wd_pp_ytd_init"])
+    return float(data.sum_wd_pp_ytd_init()[idx])                     # noqa: F821
 
 
 def free_wd_used_cum_pp_ytd_init():
@@ -1203,7 +1487,7 @@ def free_wd_used_cum_pp_ytd_init():
     allowance month 0 allows, which is recomputed every month from the earnings and the
     Remaining Premium.
     """
-    return float(model_point()["free_wd_used_cum_pp_ytd_init"])
+    return float(data.free_wd_used_cum_pp_ytd_init()[idx])           # noqa: F821
 
 
 def gmdb_dfd_acc_pp_ytd_init():
@@ -1214,7 +1498,7 @@ def gmdb_dfd_acc_pp_ytd_init():
     valuation date; 0 at a year's start, off the ``rollup`` election and on new business.
     Part of :func:`sum_wd_pp_ytd_init`.
     """
-    return float(model_point()["gmdb_dfd_acc_pp_ytd_init"])
+    return float(data.gmdb_dfd_acc_pp_ytd_init()[idx])               # noqa: F821
 
 
 def gmdb_factor_acc_ytd_init():
@@ -1226,7 +1510,7 @@ def gmdb_factor_acc_ytd_init():
     business, which has no opening state and opens the factor at 1 in its issue month, a
     year's start.
     """
-    return float(model_point()["gmdb_factor_acc_ytd_init"])
+    return float(data.gmdb_factor_acc_ytd_init()[idx])               # noqa: F821
 
 
 def wd_this_year_init():
@@ -1237,7 +1521,7 @@ def wd_this_year_init():
     for the rest; ``VA_US_S``'s scan starts at ``t = 0``. False at a year's start and on
     new business.
     """
-    return bool(model_point()["wd_this_year_init"])
+    return bool(data.wd_this_year_init()[idx])                       # noqa: F821
 
 
 def rb_pp_prev_anniv_init():
@@ -1248,10 +1532,10 @@ def rb_pp_prev_anniv_init():
     :func:`rb_prior_anniv_pp` reads where that anniversary precedes the books. In the
     first policy year it is the issue value, the premium credited at issue, and at a year's
     start it equals :func:`rb_pp_init`, the two being one instant; ``Data`` checks both.
-    ``VA_US_S`` reads ``rb_pp_at(0, "BEF_WD")`` there instead, wrong wherever a premium was
+    ``VA_US_S`` reads ``rb_pp_at(0, BEF_WD)`` there instead, wrong wherever a premium was
     credited after the anniversary and before the valuation month. 0 on new business.
     """
-    return float(model_point()["rb_pp_prev_anniv_init"])
+    return float(data.rb_pp_prev_anniv_init()[idx])                  # noqa: F821
 
 
 def stepup_base_pp_ytd_init():
@@ -1266,7 +1550,7 @@ def stepup_base_pp_ytd_init():
     business; on the highest-quarterly basis above ``av_depletion_threshold`` from it on a
     contract not depleted, which :func:`proj_len` checks.
     """
-    return float(model_point()["stepup_base_pp_ytd_init"])
+    return float(data.stepup_base_pp_ytd_init()[idx])                # noqa: F821
 
 
 def phi_glwb_init():
@@ -1278,7 +1562,7 @@ def phi_glwb_init():
     fixings before the frame. 0 in the first contract quarter, off the rule and on new
     business.
     """
-    return float(model_point()["phi_glwb_init"])
+    return float(data.phi_glwb_init()[idx])                          # noqa: F821
 
 
 def policy_term():
@@ -1308,10 +1592,26 @@ def proj_len():
     ``len(result_cf()) == proj_len()``. ``VA_US_S`` computes the same number,
     ``12 * policy_term() - duration_mth_init()``, on every point it can project.
 
-    A point at or past the end of cover at the valuation date has no frame, and raises
-    here, naming the point, rather than projecting nothing: an in-force extract should not
-    carry it. So does a point issued at or past ``omega_age``, whose cover from issue is
-    empty.
+    First the contract's bounds, each a Reference, set before the model computes
+    anything, and each refusal naming the point, its value and the Reference that would
+    admit it, in this order: an issue age below ``issue_age_min``, 35, the GLWB's youngest
+    (product-spec.md, *Eligible ages*), from which the compiled model's caches are sized
+    (``spec_sec.py``), so that lowering it needs the spec recomputed and the model
+    rebuilt; above ``issue_age_max``, 85, the base contract's oldest; above
+    ``glwb_issue_age_max``, 80, the GLWB's oldest, which every point carries; above
+    ``gmdb_issue_age_max``, 79, the add-on GMDB's oldest, on the two elected forms,
+    ``rollup`` and ``ratchet``, the ``basic`` form, included at no charge, having none;
+    and a fund set holding a subaccount id above ``subaccount_id_max``, 9, the subaccount
+    axis of every compiled cache, which needs ``Data.read_last_sub_id`` raised with it,
+    the spec recomputed and the model rebuilt. Each sizes nothing else. ``VA_US_S``
+    projects a point past each bound, given the tables to read it with, so each is a
+    refusal ``VA_US_S`` lacks.
+
+    Then a point at or past the end of cover at the valuation date has no frame, and
+    raises here, naming the point, rather than projecting nothing: an in-force extract
+    should not carry it. So does a point issued at or past ``omega_age``, whose cover from
+    issue is empty, which the ages refuse first unless ``issue_age_max`` is raised past
+    it.
 
     And so, on a contract in force, does an opening state that no contract can be in by a
     rule needing a Reference of this Space, which ``Data`` cannot read, each refusal naming
@@ -1343,57 +1643,80 @@ def proj_len():
 
     The other refusals of the opening state are ``Data``'s, as the table is read.
     """
+    x = age_at_entry()
+    if x < issue_age_min:                                            # noqa: F821
+        raise ValueError(f"point_id {point_id()}: issue age {x} is below issue_age_min, "
+                         f"{issue_age_min}; lower issue_age_min, and rebuild a compiled "
+                         f"model, whose caches it sizes, to project it")
+    if x > issue_age_max:                                            # noqa: F821
+        raise ValueError(f"point_id {point_id()}: issue age {x} is above issue_age_max, "
+                         f"{issue_age_max}; raise issue_age_max to project it")  # noqa
+    if x > glwb_issue_age_max:                                       # noqa: F821
+        raise ValueError(f"point_id {point_id()}: issue age {x} is above "
+                         f"glwb_issue_age_max, {glwb_issue_age_max}, the GLWB's oldest; "
+                         f"raise glwb_issue_age_max to project it")
+    if (is_gmdb_rollup() or is_gmdb_ratchet()) and x > gmdb_issue_age_max:  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: issue age {x} is above "
+                         f"gmdb_issue_age_max, {gmdb_issue_age_max}, the add-on GMDB's "
+                         f"oldest; raise gmdb_issue_age_max to project it")
+    top = data.fund_sub_id_last()[fund_set_number()]                 # noqa: F821
+    if top > subaccount_id_max:                                      # noqa: F821
+        raise ValueError(f"point_id {point_id()}: its fund set holds subaccount {top}, "
+                         f"above subaccount_id_max, {subaccount_id_max}; raise "  # noqa
+                         f"subaccount_id_max and Data.read_last_sub_id, and rebuild a "
+                         f"compiled model, whose caches it sizes, to project it")
     if maturity_mth() <= 0:
         raise ValueError(
-            f"point_id {point_id}: age_at_entry {age_at_entry()} is at or past "  # noqa
+            f"point_id {point_id()}: age_at_entry {age_at_entry()} is at or past "
             f"omega_age {omega_age}: the contract has no cover")             # noqa: F821
     n = maturity_mth() - duration_mth_init()
     if n <= 0:
         raise ValueError(
-            f"point_id {point_id}: duration_mth {duration_mth_init()} "      # noqa: F821
+            f"point_id {point_id()}: duration_mth {duration_mth_init()} "
             f"is at or past the end of cover, policy month {maturity_mth()}")
     d = duration_mth_init()
     if d <= 0:
         return n
     threshold = av_depletion_threshold                               # noqa: F821
-    depleted = av_pp_init() <= threshold
-    if depleted and not abs(av_pp_init()) <= 1e-8:
+    if av_pp_init() <= threshold and not abs(av_pp_init()) <= 1e-8:
         raise ValueError(
-            f"point_id {point_id}: av_pp_init must be 0, to within 1e-8, on a "  # noqa
+            f"point_id {point_id()}: av_pp_init must be 0, to within 1e-8, on a "
             f"policy depleted at the valuation date, its account value at or below "
             f"av_depletion_threshold {threshold}: depletion releases the account in month "
             f"0 with no flow; it is {av_pp_init()}")
-    if not has_wd_init() and not depleted and gawa_pct_init() > 0.0:
+    if not has_wd_init() and not av_pp_init() <= threshold and gawa_pct_init() > 0.0:
         raise ValueError(
-            f"point_id {point_id}: gawa_pct_init must be 0 on a policy "      # noqa: F821
+            f"point_id {point_id()}: gawa_pct_init must be 0 on a policy "
             f"that has not withdrawn and is not depleted, its account value above "
             f"av_depletion_threshold {threshold}: the GAWA% locks at the first "
             f"withdrawal or at depletion; it is {gawa_pct_init()}")
-    if (not has_wd_init() and depleted and gawa_pct_init() == 0.0
-            and not bool(data.gawa_pct_zero_by_point().loc[point_id])):    # noqa: F821
+    if (not has_wd_init() and av_pp_init() <= threshold and gawa_pct_init() == 0.0
+            and data.gawa_pct_zero_by_point()[idx] == 0):              # noqa: F821
         raise ValueError(
-            f"point_id {point_id}: gawa_pct_init must be more than 0 on a "   # noqa: F821
+            f"point_id {point_id()}: gawa_pct_init must be more than 0 on a "
             f"depleted policy that has not withdrawn: depletion locks the GAWA% of the "
             f"attained age it falls at, which the point's grid gives as more than 0 at "
             f"every attained age the policy reached before the valuation month")
-    if (is_stepup_highest_quarterly() and d % 12 >= 3 and not depleted
+    if (is_stepup_highest_quarterly() and d % 12 >= 3 and not av_pp_init() <= threshold
             and not stepup_base_pp_ytd_init() > threshold):
         raise ValueError(
-            f"point_id {point_id}: stepup_base_pp_ytd_init must be above "     # noqa: F821
+            f"point_id {point_id()}: stepup_base_pp_ytd_init must be above "
             f"av_depletion_threshold {threshold} on a policy not depleted, duration_mth "
             f"% 12 3 or more: every quarter end of the year before the valuation month "
             f"closed above it; it is {stepup_base_pp_ytd_init()}")
-    curr, lo, hi = phi_glwb_curr, vix_corridor_lo, vix_corridor_hi  # noqa: F821
+    curr = phi_glwb_curr                                             # noqa: F821
+    lo = vix_corridor_lo                                             # noqa: F821
+    hi = vix_corridor_hi                                             # noqa: F821
     if is_fee_reset_vix() and 3 <= d < 6 and phi_glwb_init() != curr:
         raise ValueError(
-            f"point_id {point_id}: phi_glwb_init must be phi_glwb_curr, "      # noqa: F821
+            f"point_id {point_id()}: phi_glwb_init must be phi_glwb_curr, "
             f"{curr}, in the second contract quarter, duration_mth 3 to 5: the prior is "
             f"the first quarter's rate; it is {phi_glwb_init()}")
-    floored = curr >= lo and lo <= hi
-    if is_fee_reset_vix() and d >= 6 and not (phi_glwb_init() <= hi
-                                              and (phi_glwb_init() >= lo or not floored)):
+    if is_fee_reset_vix() and d >= 6 and not (
+            phi_glwb_init() <= hi
+            and (phi_glwb_init() >= lo or not (curr >= lo and lo <= hi))):
         raise ValueError(
-            f"point_id {point_id}: phi_glwb_init must be at most "             # noqa: F821
+            f"point_id {point_id()}: phi_glwb_init must be at most "
             f"vix_corridor_hi, {hi}, and at least vix_corridor_lo, {lo}, where "
             f"phi_glwb_curr is, from the third contract quarter, duration_mth 6 or more: "
             f"the clip holds every rate after the first there; it is {phi_glwb_init()}")
@@ -1529,16 +1852,17 @@ def t_of_month(m):
 
 
 def phase(t):
-    """PRE_ISSUE, ACCUM, DEPLETED or EXPIRED at month t.
+    """The phase at month t, a code: PRE_ISSUE, ACCUM, DEPLETED or EXPIRED.
 
-    ``"PRE_ISSUE"`` before issue and ``"EXPIRED"`` from the end of cover, outside cover;
-    in cover ``"DEPLETED"`` once the account value has run out with the GLWB alive and
-    ``"ACCUM"`` before. ``VA_US_S``'s labels, and a leaf: no cell, report or check reads
-    it, the projection's state being :func:`depleted_flag`.
+    ``PRE_ISSUE`` before issue and ``EXPIRED`` from the end of cover, outside cover; in
+    cover ``DEPLETED`` once the account value has run out with the GLWB alive and
+    ``ACCUM`` before. ``VA_US_S``'s labels, each an int Reference here (R10, the Space
+    docstring's *Codes*), and a leaf: no cell, report or check reads it, the projection's
+    state being :func:`depleted_flag`.
     """
     if not is_active(t):
-        return "PRE_ISSUE" if t < t_entry() else "EXPIRED"
-    return "DEPLETED" if depleted_flag(t) else "ACCUM"
+        return PRE_ISSUE if t < t_entry() else EXPIRED                # noqa: F821
+    return DEPLETED if depleted_flag(t) else ACCUM                   # noqa: F821
 
 
 def inv_return_mth(t, i):
@@ -1555,24 +1879,30 @@ def inv_return_mth(t, i):
     recognized market indices [R1]; the model takes the return series as an input rather
     than hard-coding one.
 
-    The table is read with its keys checked, ``data.return_scenario_steps()``, the one cell
-    that reads it, by an explicit loop, and joined on the model point's ``scenario_id``
-    column, a join on text that Phase 2 re-keys. ``VA_US_S`` reads a month before the
-    scenario's first row at its issue month, ``max(duration_mth(t), 0)``. Here a month
-    with no row at or before it raises, naming the point: ``Data`` refuses a point whose
-    scenario sets no return for a subaccount of its fund set by its first month on the
-    books, and no cell reads the return outside cover, so the raise is the guard behind
-    that refusal.
+    ``Data`` holds the scenarios step-filled by valuation month, ``Data.return_array``, at
+    the row :func:`return_scenario_number` gives the point's ``scenario_id``, the column
+    of subaccount id ``i`` and the month, to ``Data.read_last_mth``, 1,141, the last a
+    read reaches; a month past it, which no projection reads, raises, naming the point,
+    and so does an id outside 1 to ``Data.read_last_sub_id``. ``VA_US_S`` reads a month
+    before the scenario's first row at its issue month, ``max(duration_mth(t), 0)``. Here
+    a month with no row at or before it raises, naming the point
+    (``Data.return_first_mths``): ``Data`` refuses a point whose scenario sets no return
+    for a subaccount of its fund set by its first month on the books, and no cell reads
+    the return outside cover, so the raise is the guard behind that refusal.
     """
-    sub = data.return_scenario_steps().loc[(model_point()["scenario_id"], i)]  # noqa
-    key = -1
-    for m in sub.index:
-        if key < m <= t:
-            key = m
-    if key < 0:
-        raise ValueError(f"point_id {point_id}: the return scenario sets no return "  # noqa
+    if i < 1 or i > data.read_last_sub_id:                           # noqa: F821
+        raise ValueError(f"point_id {point_id()}: subaccount ids are held from 1 to "
+                         f"{data.read_last_sub_id}, Data.read_last_sub_id; there is no "
+                         f"subaccount {i}")
+    s = return_scenario_number()
+    if t < data.return_first_mths()[s, i]:                           # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the return scenario sets no return "
                          f"for subaccount {i} by month {t}")
-    return float(sub.loc[key, "gross_return"])
+    if t > data.read_last_mth:                                       # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the return scenarios are held to month "
+                         f"{data.read_last_mth}, Data.read_last_mth, and no projection "
+                         f"reads month {t}")
+    return float(data.return_array()[s, i, t])                       # noqa: F821
 
 
 def scenario_rate(t, name):
@@ -1584,22 +1914,29 @@ def scenario_rate(t, name):
     valuation date. Each row of the model point table reads its own copy of ``VA_US_S``'s
     path, re-based to its months in force, as :func:`inv_return_mth` reads the returns.
 
-    The table is read with its keys checked, ``data.rate_scenario_steps()``, the one cell
-    that reads it, by an explicit loop, and joined on the model point's ``scenario_id``
-    column. A month with no row at or before it raises, naming the point: ``Data`` refuses
-    a point on the ``vix`` fee or the ``cmt_linked`` roll-up whose scenario sets no level
-    by its first month on the books, and only those read it. ``name``, ``"vix_sq"`` or
-    ``"cmt10"``, is the column read, a text parameter Phase 2 makes a code.
+    ``Data`` holds the scenarios step-filled by valuation month, ``Data.vix_sq_array`` and
+    ``Data.cmt10_array``, at the row :func:`rate_scenario_number` gives the point's
+    ``scenario_id``, to ``Data.read_last_mth``; a month past it, which no projection
+    reads, raises, naming the point. A month with no row at or before it raises, naming
+    the point (``Data.rate_first_mths``): ``Data`` refuses a point on the ``vix`` fee or
+    the ``cmt_linked`` roll-up whose scenario sets no level by its first month on the
+    books, and only those read it. ``name`` is the column's code, ``VIX_SQ`` or ``CMT10``,
+    ``VA_US_S``'s ``"vix_sq"`` and ``"cmt10"`` upper-cased; any other raises
+    ``ValueError("invalid name")``.
     """
-    sub = data.rate_scenario_steps().loc[model_point()["scenario_id"]]  # noqa: F821
-    key = -1
-    for m in sub.index:
-        if key < m <= t:
-            key = m
-    if key < 0:
-        raise ValueError(f"point_id {point_id}: the rate scenario sets no level by "  # noqa
+    s = rate_scenario_number()
+    if t < data.rate_first_mths()[s]:                                # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the rate scenario sets no level by "
                          f"month {t}")
-    return float(sub.loc[key, name])
+    if t > data.read_last_mth:                                       # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the rate scenarios are held to month "
+                         f"{data.read_last_mth}, Data.read_last_mth, and no projection "
+                         f"reads month {t}")
+    if name == VIX_SQ:                                               # noqa: F821
+        return float(data.vix_sq_array()[s, t])                      # noqa: F821
+    elif name == CMT10:                                              # noqa: F821
+        return float(data.cmt10_array()[s, t])                       # noqa: F821
+    raise ValueError("invalid name")
 
 
 def vix_sq(k):
@@ -1608,7 +1945,7 @@ def vix_sq(k):
     Read at the last month of the quarter, which is the month with ``3k - 1`` elapsed
     policy months. Used only by the ``vix`` fee reset rule.
     """
-    return scenario_rate(t_of_month(3 * k - 1), "vix_sq")
+    return scenario_rate(t_of_month(3 * k - 1), VIX_SQ)              # noqa: F821
 
 
 def cmt10(t):
@@ -1616,7 +1953,7 @@ def cmt10(t):
 
     Used only by the ``cmt_linked`` roll-up rule.
     """
-    return scenario_rate(t, "cmt10")
+    return scenario_rate(t, CMT10)                                   # noqa: F821
 
 
 def unit_growth(t, i):
@@ -1640,28 +1977,28 @@ def sa_pp_at(t, i, timing):
     A withdrawal and a unit cancellation both scale the subaccount by
     ``(1 - amount / AV)`` — pro-rata deduction — so neither moves the value weights.
 
-    ``"BEF_PREM"`` is the opening balance of month t: the model point's
+    ``BEF_PREM`` is the opening balance of month t: the model point's
     :func:`sa_pp_init` in the first month on the books, :func:`t_entry`, and
-    ``sa_pp(t - 1, i)`` after it. ``"EOM"`` is :func:`sa_pp` itself, which carries the
+    ``sa_pp(t - 1, i)`` after it. ``EOM`` is :func:`sa_pp` itself, which carries the
     month's steps one cell a month. 0.0 outside cover and once the contract is depleted
     entering the month, :func:`depleted_open`.
     """
     if not is_active(t) or depleted_open(t):
         return 0.0
     sa = sa_pp(t - 1, i) if t > t_entry() else sa_pp_init(i)
-    if timing == "BEF_PREM":
+    if timing == BEF_PREM:
         return sa
     sa = sa + alloc(i) * prem_to_av_pp(t)
-    if timing == "BEF_WD":
+    if timing == BEF_WD:
         return sa
-    base = av_pp_at(t, "BEF_WD")
+    base = av_pp_at(t, BEF_WD)
     sa = sa * (1.0 - wd_pp(t) / base) if base > 0.0 else 0.0
-    if timing == "BEF_INV":
+    if timing == BEF_INV:
         return sa
     sa = sa * unit_growth(t, i)
-    if timing == "BEF_FEE":
+    if timing == BEF_FEE:
         return sa
-    if timing == "EOM":
+    if timing == EOM:
         return sa_pp(t, i)
     raise ValueError("invalid timing")
 
@@ -1673,7 +2010,7 @@ def sa_pp(t, i):
     ``sa_pp(t - 1, i)``, or :func:`sa_pp_init` at :func:`t_entry`, read first, then the
     month's steps in the notes' order — the premium bought at ``alloc(i)``, the withdrawal
     and the charges cancelling units pro rata, the growth in between — each as
-    :func:`sa_pp_at` computes it. ``VA_US_S`` reads ``sa_pp_at(t, i, "EOM")``, which reads
+    :func:`sa_pp_at` computes it. ``VA_US_S`` reads ``sa_pp_at(t, i, EOM)``, which reads
     ``sa_pp(t - 1, i)``, two cells a month. 0.0 outside cover and once the contract is
     depleted entering the month.
     """
@@ -1681,34 +2018,36 @@ def sa_pp(t, i):
         return 0.0
     sa = sa_pp(t - 1, i) if t > t_entry() else sa_pp_init(i)
     sa = sa + alloc(i) * prem_to_av_pp(t)
-    base = av_pp_at(t, "BEF_WD")
+    base = av_pp_at(t, BEF_WD)
     sa = sa * (1.0 - wd_pp(t) / base) if base > 0.0 else 0.0
     sa = sa * unit_growth(t, i)
-    base = av_pp_at(t, "BEF_FEE")
+    base = av_pp_at(t, BEF_FEE)
     return sa * (1.0 - charge_pp(t) / base) if base > 0.0 else 0.0
 
 
 def av_pp_at(t, timing):
     """AV at month t read at the point given by ``timing``: the sum over subaccounts.
 
-    An explicit loop over :func:`sub_ids`, where ``VA_US_S`` sums a generator: the same
+    An explicit loop over the positions of the point's set, each id from
+    :func:`subaccount_id`, where ``VA_US_S`` sums a generator over ``sub_ids``: the same
     sum, in the same order.
     """
     total = 0.0
-    for i in sub_ids():
-        total = total + sa_pp_at(t, i, timing)
+    for j in range(subaccount_count()):
+        total = total + sa_pp_at(t, subaccount_id(j), timing)
     return total
 
 
 def av_pp(t):
     """AV(t): the contract value per contract at the end of month t.
 
-    The sum of :func:`sa_pp` over :func:`sub_ids`, an explicit loop, which is
-    ``av_pp_at(t, "EOM")``; 0.0 outside cover.
+    The sum of :func:`sa_pp` over the set's subaccounts, an explicit loop over the
+    positions, as :func:`av_pp_at` sums, which is
+    ``av_pp_at(t, EOM)``; 0.0 outside cover.
     """
     total = 0.0
-    for i in sub_ids():
-        total = total + sa_pp(t, i)
+    for j in range(subaccount_count()):
+        total = total + sa_pp(t, subaccount_id(j))
     return total
 
 
@@ -1718,21 +2057,22 @@ def sa_weight(t, i):
     Read at ``BEF_FEE``, where the notes read it: after the month's growth and before the
     charges that cancel units.
     """
-    base = av_pp_at(t, "BEF_FEE")
-    return sa_pp_at(t, i, "BEF_FEE") / base if base > 0.0 else 0.0
+    base = av_pp_at(t, BEF_FEE)
+    return sa_pp_at(t, i, BEF_FEE) / base if base > 0.0 else 0.0
 
 
 def gross_inv_income_pp(t):
     """The gross fund return over month t, before any charge.
 
-    An explicit loop over :func:`sub_ids`, where ``VA_US_S`` sums a generator; 0.0 outside
+    An explicit loop over the positions, as :func:`av_pp_at` sums; 0.0 outside
     cover and once the contract is depleted entering the month.
     """
     if not is_active(t) or depleted_open(t):
         return 0.0
     total = 0.0
-    for i in sub_ids():
-        total = total + sa_pp_at(t, i, "BEF_INV") * inv_return_mth(t, i)
+    for j in range(subaccount_count()):
+        i = subaccount_id(j)
+        total = total + sa_pp_at(t, i, BEF_INV) * inv_return_mth(t, i)
     return total
 
 
@@ -1741,14 +2081,15 @@ def fund_expense_pp(t):
 
     ``Σ_i SA_i(1 + r_i) e_i/12``. **Not insurer revenue** — it is paid to the underlying
     funds — so it never enters :func:`charge_income` or :func:`net_cf`. An explicit loop
-    over :func:`sub_ids`; 0.0 outside cover and once the contract is depleted entering the
+    over the positions; 0.0 outside cover and once the contract is depleted entering the
     month.
     """
     if not is_active(t) or depleted_open(t):
         return 0.0
     total = 0.0
-    for i in sub_ids():
-        total = total + (sa_pp_at(t, i, "BEF_INV") * (1.0 + inv_return_mth(t, i))
+    for j in range(subaccount_count()):
+        i = subaccount_id(j)
+        total = total + (sa_pp_at(t, i, BEF_INV) * (1.0 + inv_return_mth(t, i))
                          * fund_expense_rate(i) / 12.0)
     return total
 
@@ -1758,15 +2099,16 @@ def asset_charge_pp(t):
 
     ``Σ_i SA_i^{pre-charge}(t) (m + alpha)/12`` where the pre-charge value is net of the
     fund's own expense, which is deducted first inside :func:`unit_growth`. This is
-    insurer charge income. An explicit loop over :func:`sub_ids`; 0.0 outside cover and
+    insurer charge income. An explicit loop over the positions; 0.0 outside cover and
     once the contract is depleted entering the month.
     """
     if not is_active(t) or depleted_open(t):
         return 0.0
     rate = (asset_charge_me + asset_charge_admin) / 12.0             # noqa: F821
     total = 0.0
-    for i in sub_ids():
-        total = total + (sa_pp_at(t, i, "BEF_INV") * (1.0 + inv_return_mth(t, i))
+    for j in range(subaccount_count()):
+        i = subaccount_id(j)
+        total = total + (sa_pp_at(t, i, BEF_INV) * (1.0 + inv_return_mth(t, i))
                          * (1.0 - fund_expense_rate(i) / 12.0) * rate)
     return total
 
@@ -1779,21 +2121,27 @@ def inv_income_pp(t):
     """
     if not is_active(t):
         return 0.0
-    return av_pp_at(t, "BEF_FEE") - av_pp_at(t, "BEF_INV")
+    return av_pp_at(t, BEF_FEE) - av_pp_at(t, BEF_INV)
 
 
 def prem_scheduled_pm(m):
     """The gross premium the point's programme schedules at policy month ``m``, else 0.
 
-    ``data.transactions()`` at ``(txn_id, m)``, an exact-key lookup: a month with no row
-    takes nothing. **The key is the elapsed policy month**, on the policy clock, as
-    *transaction_table.csv* states it. The table's one reader of the premium, its months
-    checked, joined on the model point's ``txn_id`` column, a join on text that Phase 2
-    re-keys; :func:`prem_scheduled_pp` calls it in cover only.
+    ``Data.prem_amount_array`` at the row :func:`txn_number` gives the point's ``txn_id``
+    and policy month ``m``, 0.0 at a month the programme has no row for, as
+    ``VA_US_S``'s exact-key lookup answers it: a month with no row takes nothing. **The
+    key is the elapsed policy month**, on the policy clock, as *transaction_table.csv*
+    states it. The table's one reader of the premium; :func:`prem_scheduled_pp` calls it
+    in cover only. A month below 0 is no row, 0.0, before the array is read; one past
+    ``Data.read_last_mth``, which no projection reads, raises, naming the point.
     """
-    table = data.transactions()                                      # noqa: F821
-    key = (model_point()["txn_id"], m)
-    return float(table.loc[key, "prem_amount"]) if key in table.index else 0.0
+    if m < 0:
+        return 0.0
+    if m > data.read_last_mth:                                       # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the programmes are held to policy month "
+                         f"{data.read_last_mth}, Data.read_last_mth, and no projection "
+                         f"reads policy month {m}")
+    return float(data.prem_amount_array()[txn_number(), m])          # noqa: F821
 
 
 def prem_scheduled_pp(t):
@@ -1840,14 +2188,18 @@ def prem_to_av_pp(t):
 def wd_scheduled_pm(m):
     """The gross withdrawal the point's programme schedules at policy month ``m``, else 0.
 
-    ``data.transactions()`` at ``(txn_id, m)``, an exact-key lookup, as
-    :func:`prem_scheduled_pm` reads the premium: the elapsed policy month, on the policy
-    clock. The table's one reader of the withdrawal; :func:`wd_scheduled_pp` calls it in
-    cover only.
+    ``Data.wd_amount_array`` at the row :func:`txn_number` gives the point's ``txn_id``
+    and policy month ``m``, as :func:`prem_scheduled_pm` reads the premium: the elapsed
+    policy month, on the policy clock. The table's one reader of the withdrawal;
+    :func:`wd_scheduled_pp` calls it in cover only.
     """
-    table = data.transactions()                                      # noqa: F821
-    key = (model_point()["txn_id"], m)
-    return float(table.loc[key, "wd_amount"]) if key in table.index else 0.0
+    if m < 0:
+        return 0.0
+    if m > data.read_last_mth:                                       # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the programmes are held to policy month "
+                         f"{data.read_last_mth}, Data.read_last_mth, and no projection "
+                         f"reads policy month {m}")
+    return float(data.wd_amount_array()[txn_number(), m])            # noqa: F821
 
 
 def wd_scheduled_pp(t):
@@ -1925,7 +2277,7 @@ def is_wd_year(t):
     scans from ``t = 0``, as though no year had begun before its frame. It is read at a
     year's last month only, by :func:`bonus_pp` at the anniversary and by
     :func:`lapse_wd_factor` at :func:`anniv_mth`, so the scan reaches no month after its
-    own. Called at another month of the year, as Phase 2's full sweep calls every cell at
+    own. Called at another month of the year, as C4's full sweep calls every cell at
     every month, it answers the same and scans the year's months after it, inside the
     frame: a read past ``t + 1`` that no cell of the model makes. False outside cover.
     """
@@ -1943,19 +2295,25 @@ def is_wd_year(t):
 def gawa_pct_at_age(a):
     """g(a): the GAWA% for attained age a, from *gawa_pct_table.csv* [S3].
 
-    The band starting at the largest ``age_from`` at or below ``a``, found by an explicit
-    loop over ``data.gawa_pct_bands()``, the grid with its keys checked, joined on the
-    model point's ``glwb_option`` column, a join on text that Phase 2 re-keys; 0.0 below
-    the grid's first band. Called in cover only, at :func:`age`.
+    The band starting at the largest ``age_from`` at or below ``a``, ``Data.gawa_pct_array``
+    at the row :func:`gawa_grid_number` gives the point's ``glwb_option`` and the age;
+    0.0 below the grid's first band, ``VA_US_S``'s value there, and at a negative age,
+    before the array is read. Called in cover only, at :func:`age`. The array holds ages
+    to ``Data.read_last_age``, 120; an older age reads the rate there where the grid's
+    last band starts at or below it, since every age from that band on reads its rate, and
+    raises, naming the point, where the last band starts past it, which no projection
+    reads.
     """
-    grid = data.gawa_pct_bands().loc[model_point()["glwb_option"]]   # noqa: F821
-    band = -1
-    for b in grid.index:
-        if band < b <= a:
-            band = b
-    if band < 0:
+    g = gawa_grid_number()
+    if a < 0:
         return 0.0
-    return float(grid.loc[band, "gawa_pct"])
+    if a > data.read_last_age:                                       # noqa: F821
+        if data.gawa_last_band()[g] > data.read_last_age:            # noqa: F821
+            raise ValueError(f"point_id {point_id()}: the GAWA% grids are held to age "
+                             f"{data.read_last_age}, Data.read_last_age, and no "  # noqa
+                             f"projection reads age {a}")
+        a = data.read_last_age                                       # noqa: F821
+    return float(data.gawa_pct_array()[g, a])                        # noqa: F821
 
 
 def wd_limit_pp(t):
@@ -1968,8 +2326,8 @@ def wd_limit_pp(t):
     if not is_active(t):
         return 0.0
     if is_first_wd(t):
-        return gawa_pct_at_age(age(t)) * gwb_pp_at(t, "BEF_WD")
-    return gawa_pp_at(t, "BEF_WD")
+        return gawa_pct_at_age(age(t)) * gwb_pp_at(t, BEF_WD)
+    return gawa_pp_at(t, BEF_WD)
 
 
 def wd_glwb_pp(t):
@@ -1995,8 +2353,15 @@ def wd_pp(t):
     Measured **inclusive of withdrawal charges, MVAs, advisory fees and every other
     charge** for all guarantee calculations [S1]; using net proceeds would understate the
     benefit-base reduction. Capped at the available contract value **[std]**.
+
+    Each operand of the ``min`` that calls a cell is a local, assigned in ``VA_US_S``'s
+    order of evaluation, left to right, since a compiled ``min`` or ``max`` evaluates its
+    arguments right to left: so a point that reaches two refusals raises ``VA_US_S``'s first
+    in both engines.
     """
-    return min(wd_pp_due(t), av_pp_at(t, "BEF_WD"))
+    due = wd_pp_due(t)
+    held = av_pp_at(t, BEF_WD)
+    return min(due, held)
 
 
 def sum_wd_pp(t):
@@ -2042,7 +2407,7 @@ def cv_pre_excess_pp(t):
     **first**, and the proportional factor for the excess is computed against the
     contract value *after* that reduction. Reversing it changes both GWB and GAWA.
     """
-    return av_pp_at(t, "BEF_WD") - wd_nonexcess_pp(t)
+    return av_pp_at(t, BEF_WD) - wd_nonexcess_pp(t)
 
 
 def excess_factor(t):
@@ -2064,7 +2429,7 @@ def free_wd_allow(t):
     if not is_active(t):
         return 0.0
     rp = (rp_pp(t - 1) if t > t_entry() else rp_pp_init()) + premium_pp(t)
-    earnings = max(0.0, av_pp_at(t, "BEF_WD") - rp)
+    earnings = max(0.0, av_pp_at(t, BEF_WD) - rp)
     return max(earnings, free_wd_rate * rp)                          # noqa: F821
 
 
@@ -2097,8 +2462,15 @@ def wd_free_pp(t):
     portion is already exempt from the CDSC under the within-``L`` rule [S1]. The
     portion of ``W(t)`` bearing no charge *at all* is therefore the wider
     :func:`wd_exempt_pp`, not this cell.
+
+    Each operand of the ``min`` that calls a cell is a local, assigned in ``VA_US_S``'s
+    order of evaluation, left to right, since a compiled ``min`` or ``max`` evaluates its
+    arguments right to left: so a point that reaches two refusals raises ``VA_US_S``'s first
+    in both engines.
     """
-    return min(free_wd_avail(t), wd_excess_pp(t))
+    avail = free_wd_avail(t)
+    excess = wd_excess_pp(t)
+    return min(avail, excess)
 
 
 def free_wd_used_cum_pp(t):
@@ -2129,8 +2501,15 @@ def wd_exempt_pp(t):
     covers part of what is left. So this is identically
     ``wd_nonexcess_pp(t) + wd_free_pp(t)``, and it — not :func:`wd_free_pp` — is what
     complements :func:`wd_chargeable_pp`.
+
+    Each operand of the ``min`` that calls a cell is a local, assigned in ``VA_US_S``'s
+    order of evaluation, left to right, since a compiled ``min`` or ``max`` evaluates its
+    arguments right to left: so a point that reaches two refusals raises ``VA_US_S``'s first
+    in both engines.
     """
-    return min(wd_pp(t), wd_nonexcess_pp(t) + free_wd_avail(t))
+    w = wd_pp(t)
+    cap = wd_nonexcess_pp(t) + free_wd_avail(t)
+    return min(w, cap)
 
 
 def wd_chargeable_pp(t):
@@ -2141,19 +2520,25 @@ def wd_chargeable_pp(t):
 def surr_charge_rate_at(k):
     """The withdrawal charge rate of the point's schedule at ``k`` completed years.
 
-    ``data.cdsc_scale()`` at ``(cdsc_schedule, min(k, last))``, where ``last`` is the
-    schedule's last year, found by an explicit loop: the last row holds for every later
-    year, as ``VA_US_S`` caps the year at the table's largest. The table's one reader, its
-    years checked, joined on the model point's ``cdsc_schedule`` column, a join on text
-    that Phase 2 re-keys; :func:`surr_charge_rate` calls it in cover only, at
-    :func:`duration`.
+    ``Data.surr_charge_rate_array`` at the row :func:`cdsc_number` gives the point's
+    ``cdsc_schedule`` and ``min(k, last)``, where ``last`` is the schedule's last year,
+    ``Data.cdsc_last_years``: the last row holds for every later year, as ``VA_US_S`` caps
+    the year at the table's largest. The table's one reader; :func:`surr_charge_rate`
+    calls it in cover only, at :func:`duration`. A count below 0 raises ``ValueError``,
+    naming the point, where ``VA_US_S``'s lookup raised ``KeyError``; so does a year past
+    the 95 the array holds, ``Data.read_last_mth // 12``, which no projection reads.
     """
-    grid = data.cdsc_scale().loc[model_point()["cdsc_schedule"]]     # noqa: F821
-    last = -1
-    for y in grid.index:
-        if y > last:
-            last = y
-    return float(grid.loc[min(k, last), "surr_charge_rate"])
+    c = cdsc_number()
+    if k < 0:
+        raise ValueError(f"point_id {point_id()}: the withdrawal charge scale gives no "
+                         f"rate at {k} completed years")
+    last = data.cdsc_last_years()[c]                                 # noqa: F821
+    y = min(k, last)
+    if y > data.read_last_mth // 12:                                 # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the withdrawal charge scales are held to "
+                         f"{data.read_last_mth // 12} completed years, and no projection "
+                         f"reads {y}")
+    return float(data.surr_charge_rate_array()[c, y])                # noqa: F821
 
 
 def surr_charge_rate(t):
@@ -2196,8 +2581,16 @@ def surr_free_pp(t):
 
 
 def surr_chargeable_pp(t):
-    """The Remaining Premium withdrawn on a full surrender, net of the free amount [S2]."""
-    return min(rp_pp(t), max(0.0, av_pp(t) - surr_free_pp(t)))
+    """The Remaining Premium withdrawn on a full surrender, net of the free amount [S2].
+
+    Each operand of the outer ``min`` that calls a cell is a local, assigned in
+    ``VA_US_S``'s order of evaluation, left to right, since a compiled ``min`` or ``max``
+    evaluates its arguments right to left: so a point that reaches two refusals raises
+    ``VA_US_S``'s first in both engines.
+    """
+    rp = rp_pp(t)
+    over = max(0.0, av_pp(t) - surr_free_pp(t))
+    return min(rp, over)
 
 
 def surr_charge_pp(t):
@@ -2249,6 +2642,9 @@ def fee_rate_vix_raw(phi_0, vix_sq_avg):
     ``phi_0 + 0.05% x [ QuarterlyAverage(daily VIX^2) / 33 - 10 ]``. The disclosed
     examples are an initial 1.45% with a quarterly average of 204.42 giving 1.26%, and
     602.30 giving an unclipped 1.86%.
+
+    ``VA_US_S``'s cell, an engine cell (the Space docstring's *Reporting cells*), called by
+    no other: :func:`phi_glwb_vix` writes it inline.
     """
     return phi_0 + vix_fee_coef * (vix_sq_avg / vix_divisor - vix_offset)  # noqa: F821
 
@@ -2259,6 +2655,9 @@ def fee_rate_vix_clip(prior, raw):
     The band is +/-0.40% annualized against the prior quarter's rate (advisory class) and
     the corridor is [0.60%, 2.50%]. The second disclosed example clips to 1.82% against a
     prior rate of 1.42%.
+
+    ``VA_US_S``'s cell, an engine cell, called by no other: :func:`phi_glwb_vix` writes it
+    inline.
     """
     lo = max(vix_corridor_lo, prior - vix_band)                      # noqa: F821
     hi = min(vix_corridor_hi, prior + vix_band)                      # noqa: F821
@@ -2276,6 +2675,14 @@ def phi_glwb_vix(k):
     first. That quarter is ``max(duration_mth_init(), 0) // 3 + 1``, a key the model point
     fixes, which is ``contract_quarter(t_entry())`` read without a clock (R2). No quarter
     before it is read.
+
+    ``VA_US_S``'s :func:`fee_rate_vix_raw` and :func:`fee_rate_vix_clip`, written inline
+    (R14), in the order ``VA_US_S``'s call evaluates them: the prior, then the quarter's
+    VIX-squared average, then the raw rate, then the clip, each ``min`` and ``max`` with
+    its operands as :func:`fee_rate_vix_clip` writes them. A ``vix_divisor`` of 0 raises
+    Python's ``ZeroDivisionError("float division by zero")`` after the average is read,
+    where ``VA_US_S``'s division raises it, since a compiled division by 0 raises with
+    another message.
     """
     if k <= 1:
         return phi_glwb_curr                                         # noqa: F821
@@ -2283,8 +2690,13 @@ def phi_glwb_vix(k):
         prior = phi_glwb_init()
     else:
         prior = phi_glwb_vix(k - 1)
-    return fee_rate_vix_clip(
-        prior, fee_rate_vix_raw(phi_glwb_curr, vix_sq(k)))           # noqa: F821
+    avg = vix_sq(k)
+    if vix_divisor == 0.0:                                           # noqa: F821
+        raise ZeroDivisionError("float division by zero")
+    raw = phi_glwb_curr + vix_fee_coef * (avg / vix_divisor - vix_offset)  # noqa: F821
+    lo = max(vix_corridor_lo, prior - vix_band)                      # noqa: F821
+    hi = min(vix_corridor_hi, prior + vix_band)                      # noqa: F821
+    return min(hi, max(lo, raw))
 
 
 def phi_gmdb(t):
@@ -2313,6 +2725,15 @@ def rollup_rate(t):
     the 10-year CMT plus 1.00%, or 1.50% before the first withdrawal, rounded to 0.10%,
     floored at 4% and capped at 8% [S7]. The rule is read through its decodes,
     :func:`is_rollup_fixed` and :func:`is_rollup_cmt_linked`. 0.0 outside cover.
+
+    ``VA_US_S`` rounds with ``math.floor(raw / step + 0.5) * step``. Here the floor is the
+    float floor division by 1.0, ``v // 1.0``, which is ``math.floor(v)`` as a float for
+    every finite ``v`` in both engines, exactly, so no number moves and no module is read;
+    ``VA_US_S``'s three refusals are written out in its order, a ``cmt_round_step`` of 0,
+    ``ZeroDivisionError("float division by zero")``, then a ``v`` that is NaN,
+    ``ValueError("cannot convert float NaN to integer")``, or infinite,
+    ``OverflowError("cannot convert float infinity to integer")``, each with Python's
+    message.
     """
     if not is_active(t):
         return 0.0
@@ -2322,7 +2743,14 @@ def rollup_rate(t):
         spread = cmt_spread if has_wd_by(t) else cmt_spread_predraw  # noqa: F821
         raw = cmt10(t) + spread
         step = cmt_round_step                                        # noqa: F821
-        rounded = math.floor(raw / step + 0.5) * step                # noqa: F821
+        if step == 0.0:
+            raise ZeroDivisionError("float division by zero")
+        v = raw / step + 0.5
+        if v != v:
+            raise ValueError("cannot convert float NaN to integer")
+        if v - v != 0.0:
+            raise OverflowError("cannot convert float infinity to integer")
+        rounded = (v // 1.0) * step
         return max(cmt_floor, min(cmt_cap, rounded))                 # noqa: F821
     else:
         raise ValueError("invalid rollup_rule")
@@ -2338,7 +2766,7 @@ def fee_glwb_pp_due(t):
     """
     if not is_active(t) or depleted_open(t) or not is_quarterly_anniv(t):
         return 0.0
-    return (phi_glwb(t) / 4.0) * gwb_pp_at(t, "BEF_ANNIV")
+    return (phi_glwb(t) / 4.0) * gwb_pp_at(t, BEF_ANNIV)
 
 
 def fee_gmdb_pp_due(t):
@@ -2350,7 +2778,7 @@ def fee_gmdb_pp_due(t):
     """
     if not is_active(t) or depleted_open(t) or not is_quarterly_anniv(t):
         return 0.0
-    return (phi_gmdb(t) / 4.0) * rb_pp_at(t, "BEF_ANNIV")
+    return (phi_gmdb(t) / 4.0) * rb_pp_at(t, BEF_ANNIV)
 
 
 def maint_fee_pp_due(t):
@@ -2363,7 +2791,7 @@ def maint_fee_pp_due(t):
     """
     if not is_active(t) or depleted_open(t) or not is_anniv(t):
         return 0.0
-    after_riders = (av_pp_at(t, "BEF_FEE")
+    after_riders = (av_pp_at(t, BEF_FEE)
                     - fee_glwb_pp_due(t) - fee_gmdb_pp_due(t))
     return 0.0 if after_riders >= maint_fee_waiver_av else maint_fee  # noqa: F821
 
@@ -2383,7 +2811,7 @@ def charge_scale(t):
     due = charge_pp_due(t)
     if due <= 0.0:
         return 0.0
-    return min(1.0, av_pp_at(t, "BEF_FEE") / due)
+    return min(1.0, av_pp_at(t, BEF_FEE) / due)
 
 
 def fee_glwb_pp(t):
@@ -2418,7 +2846,7 @@ def charge_income_pp(t):
 def gwb_pp_at(t, timing):
     """GWB at month t read at ``BEF_PREM``, ``BEF_WD`` or ``BEF_ANNIV`` [S1].
 
-    ``"BEF_PREM"`` is the opening balance of month t: the model point's
+    ``BEF_PREM`` is the opening balance of month t: the model point's
     :func:`gwb_pp_init` in the first month on the books, :func:`t_entry`, and
     ``gwb_pp(t - 1)`` afterwards. Once the contract is depleted entering the month every
     timing is that opening balance. 0.0 outside cover.
@@ -2428,17 +2856,17 @@ def gwb_pp_at(t, timing):
     g = gwb_pp(t - 1) if t > t_entry() else gwb_pp_init()
     if depleted_open(t):
         return g
-    if timing == "BEF_PREM":
+    if timing == BEF_PREM:
         return g
     g = min(gwb_cap, g + prem_to_av_pp(t))                           # noqa: F821
-    if timing == "BEF_WD":
+    if timing == BEF_WD:
         return g
     if wd_pp(t) > 0.0:
         if sum_wd_pp(t) <= wd_limit_pp(t):
             g = max(g - wd_pp(t), 0.0)
         else:
             g = max((g - wd_nonexcess_pp(t)) * excess_factor(t), 0.0)
-    if timing == "BEF_ANNIV":
+    if timing == BEF_ANNIV:
         return g
     raise ValueError("invalid timing")
 
@@ -2458,7 +2886,7 @@ def bb_pp_bef_anniv(t):
         return prev
     b = min(gwb_cap, prev + prem_to_av_pp(t))                        # noqa: F821
     if wd_pp(t) > 0.0 and sum_wd_pp(t) > wd_limit_pp(t):
-        b = min(gwb_pp_at(t, "BEF_ANNIV"), b)
+        b = min(gwb_pp_at(t, BEF_ANNIV), b)
     return b
 
 
@@ -2485,7 +2913,7 @@ def bonus_pp(t):
 
 def gwb_pp_aft_bonus(t):
     """GWB after anniversary sub-step 3, the GLWB bonus."""
-    return gwb_pp_at(t, "BEF_ANNIV") + bonus_pp(t)
+    return gwb_pp_at(t, BEF_ANNIV) + bonus_pp(t)
 
 
 def stepup_base_pp(t):
@@ -2534,9 +2962,17 @@ def gwb_pp_aft_stepup(t):
     is strictly more generous. The research file does not settle the interaction, and the
     choice made here follows the one design in the set that states it explicitly [S8].
     Treat the alternative as a first-order sensitivity, not a rounding issue.
+
+    Each operand of the ``max`` that calls a cell is a local, assigned in ``VA_US_S``'s
+    order of evaluation, left to right, since a compiled ``min`` or ``max`` evaluates its
+    arguments right to left: so a point that reaches two refusals raises ``VA_US_S``'s first
+    in both engines.
     """
-    return (max(gwb_pp_aft_bonus(t), stepup_base_pp(t)) if is_anniv(t)
-            else gwb_pp_aft_bonus(t))
+    if not is_anniv(t):
+        return gwb_pp_aft_bonus(t)
+    g = gwb_pp_aft_bonus(t)
+    cv = stepup_base_pp(t)
+    return max(g, cv)
 
 
 def gwb_adj_year():
@@ -2674,30 +3110,37 @@ def gawa_pct_fixed(t):
 def gawa_pp_at(t, timing):
     """GAWA at month t read at ``BEF_PREM``, ``BEF_WD`` or ``BEF_ANNIV`` [S1].
 
-    ``"BEF_PREM"`` is the opening balance of month t: the model point's
+    ``BEF_PREM`` is the opening balance of month t: the model point's
     :func:`gawa_pp_init` in the first month on the books, :func:`t_entry`, and
     ``gawa_pp(t - 1)`` after it; the withdrawal status and the GAWA% carried in are read
     the same way, from :func:`has_wd_init` and :func:`gawa_pct_init` there. 0.0 outside
     cover.
+
+    Each operand of the excess's ``min`` that calls a cell is a local, assigned in
+    ``VA_US_S``'s order of evaluation, left to right, since a compiled ``min`` or ``max``
+    evaluates its arguments right to left: so a point that reaches two refusals raises
+    ``VA_US_S``'s first in both engines.
     """
     if not is_active(t):
         return 0.0
     g = gawa_pp(t - 1) if t > t_entry() else gawa_pp_init()
     if depleted_open(t):
         return g
-    if timing == "BEF_PREM":
+    if timing == BEF_PREM:
         return g
     had_wd = has_wd_by(t - 1) if t > t_entry() else has_wd_init()
     if had_wd and prem_to_av_pp(t) > 0.0:
         pct = gawa_pct_fixed(t - 1) if t > t_entry() else gawa_pct_init()
         g = g + pct * prem_to_av_pp(t)
-    if timing == "BEF_WD":
+    if timing == BEF_WD:
         return g
     if is_first_wd(t):
-        g = gawa_pct_at_age(age(t)) * gwb_pp_at(t, "BEF_WD")
+        g = gawa_pct_at_age(age(t)) * gwb_pp_at(t, BEF_WD)
     if wd_pp(t) > 0.0 and sum_wd_pp(t) > wd_limit_pp(t):
-        g = min(g * excess_factor(t), gwb_pp_at(t, "BEF_ANNIV"))
-    if timing == "BEF_ANNIV":
+        scaled = g * excess_factor(t)
+        cap = gwb_pp_at(t, BEF_ANNIV)
+        g = min(scaled, cap)
+    if timing == BEF_ANNIV:
         return g
     raise ValueError("invalid timing")
 
@@ -2716,7 +3159,7 @@ def gawa_pp(t):
     prev = gawa_pp(t - 1) if t > t_entry() else gawa_pp_init()
     if depleted_open(t):
         return prev
-    g = gawa_pp_at(t, "BEF_ANNIV")
+    g = gawa_pp_at(t, BEF_ANNIV)
     if is_anniv(t):
         pct = gawa_pct_fixed(t)
         if has_wd_by(t) and pct > 0.0:
@@ -2761,7 +3204,7 @@ def rp_reduction_pp(t):
     if not is_active(t) or wd_pp(t) <= 0.0:
         return 0.0
     rp = (rp_pp(t - 1) if t > t_entry() else rp_pp_init()) + premium_pp(t)
-    earnings = max(0.0, av_pp_at(t, "BEF_WD") - rp)
+    earnings = max(0.0, av_pp_at(t, BEF_WD) - rp)
     return min(rp, max(0.0, wd_pp(t) - earnings))
 
 
@@ -2789,7 +3232,7 @@ def rb_prior_anniv_pp(t):
     under way opened before it, from the model point's :func:`rb_pp_prev_anniv_init`. And
     in the first contract year of a contract issued at or after the valuation date, by
     ``VA_US_S``'s issue rule: the Benefit Base after the premium taken at the beginning of
-    the issue month, ``rb_pp_at(t_entry(), "BEF_WD")``. ``VA_US_S`` reads that last value
+    the issue month, ``rb_pp_at(t_entry(), BEF_WD)``. ``VA_US_S`` reads that last value
     wherever the anniversary precedes its frame, which is wrong on a contract in force
     once a premium has been credited after the anniversary and before the valuation
     month. 0.0 outside cover.
@@ -2801,7 +3244,7 @@ def rb_prior_anniv_pp(t):
         return rb_pp(u)
     if duration_mth_init() > 0:
         return rb_pp_prev_anniv_init()
-    return rb_pp_at(t_entry(), "BEF_WD")
+    return rb_pp_at(t_entry(), BEF_WD)
 
 
 def gmdb_allow_pp(t):
@@ -2821,6 +3264,11 @@ def gmdb_wd_dfd_pp(t):
     before the valuation date, the model point's :func:`gmdb_dfd_acc_pp_ytd_init`;
     ``VA_US_S`` takes 0 at ``t == 0``. Only the ``rollup`` election,
     :func:`is_gmdb_rollup`, reduces dollar for dollar. 0.0 outside cover.
+
+    Each operand of the outer ``min`` that calls a cell is a local, assigned in
+    ``VA_US_S``'s order of evaluation, left to right, since a compiled ``min`` or ``max``
+    evaluates its arguments right to left: so a point that reaches two refusals raises
+    ``VA_US_S``'s first in both engines.
     """
     if not is_active(t) or wd_pp(t) <= 0.0 or not is_gmdb_rollup():
         return 0.0
@@ -2830,7 +3278,9 @@ def gmdb_wd_dfd_pp(t):
         used = gmdb_dfd_acc_pp(t - 1)
     else:
         used = gmdb_dfd_acc_pp_ytd_init()
-    return min(wd_pp(t), max(0.0, gmdb_allow_pp(t) - used))
+    w = wd_pp(t)
+    left = max(0.0, gmdb_allow_pp(t) - used)
+    return min(w, left)
 
 
 def gmdb_wd_excess_pp(t):
@@ -2854,7 +3304,7 @@ def gmdb_wd_factor(t):
     """
     if gmdb_wd_excess_pp(t) <= 0.0:
         return 1.0
-    base = av_pp_at(t, "BEF_WD") - gmdb_wd_dfd_pp(t)
+    base = av_pp_at(t, BEF_WD) - gmdb_wd_dfd_pp(t)
     if base <= 0.0:
         return 0.0
     return max(0.0, 1.0 - gmdb_wd_excess_pp(t) / base)
@@ -2903,7 +3353,7 @@ def rb_pp_at(t, timing):
 
     The ``rollup`` form accrues its withdrawal adjustment and applies it at the Contract
     Year end; the ``ratchet`` and ``basic`` forms reduce the base proportionally at the
-    withdrawal itself [S1]. ``"BEF_PREM"`` is the opening balance, the model point's
+    withdrawal itself [S1]. ``BEF_PREM`` is the opening balance, the model point's
     :func:`rb_pp_init` at :func:`t_entry` and ``rb_pp(t - 1)`` after it. 0.0 outside
     cover.
     """
@@ -2912,15 +3362,15 @@ def rb_pp_at(t, timing):
     r = rb_pp(t - 1) if t > t_entry() else rb_pp_init()
     if depleted_open(t):
         return r
-    if timing == "BEF_PREM":
+    if timing == BEF_PREM:
         return r
     r = r + prem_to_av_pp(t)
-    if timing == "BEF_WD":
+    if timing == BEF_WD:
         return r
     if wd_pp(t) > 0.0 and not is_gmdb_rollup():
-        base = av_pp_at(t, "BEF_WD")
+        base = av_pp_at(t, BEF_WD)
         r = r * max(0.0, 1.0 - wd_pp(t) / base) if base > 0.0 else 0.0
-    if timing == "BEF_ANNIV":
+    if timing == BEF_ANNIV:
         return r
     raise ValueError("invalid timing")
 
@@ -2941,7 +3391,7 @@ def rb_pp(t):
     prev = rb_pp(t - 1) if t > t_entry() else rb_pp_init()
     if depleted_open(t):
         return prev
-    r = rb_pp_at(t, "BEF_ANNIV")
+    r = rb_pp_at(t, BEF_ANNIV)
     if not is_anniv(t):
         return r
     if is_gmdb_rollup():
@@ -2975,10 +3425,17 @@ def gmdb_guarantee_pp(t):
     conflict and the choice; :func:`np_pp` still carries cumulative net premiums, and a
     test pins the difference on model point 9. The election is read through
     :func:`is_gmdb_basic`.
+
+    Each operand of the ``max`` that calls a cell is a local, assigned in ``VA_US_S``'s
+    order of evaluation, left to right, since a compiled ``min`` or ``max`` evaluates its
+    arguments right to left: so a point that reaches two refusals raises ``VA_US_S``'s first
+    in both engines.
     """
     if is_gmdb_basic():
         return rb_pp(t)
-    return max(np_pp(t), rb_pp(t))
+    net = np_pp(t)
+    rb = rb_pp(t)
+    return max(net, rb)
 
 
 def db_pp(t):
@@ -2987,10 +3444,17 @@ def db_pp(t):
     Zero once the contract value has reached zero with the GLWB in force: all other
     endorsements terminate without value and **no death benefit is payable on subsequent
     death** [S1].
+
+    Each operand of the ``max`` that calls a cell is a local, assigned in ``VA_US_S``'s
+    order of evaluation, left to right, since a compiled ``min`` or ``max`` evaluates its
+    arguments right to left: so a point that reaches two refusals raises ``VA_US_S``'s first
+    in both engines.
     """
     if depleted_flag(t):
         return 0.0
-    return max(av_pp(t), gmdb_guarantee_pp(t))
+    av = av_pp(t)
+    floor = gmdb_guarantee_pp(t)
+    return max(av, floor)
 
 
 def gmdb_claim_pp(t):
@@ -3084,16 +3548,28 @@ def glwb_payment_pp(t):
 def mort_rate_base_at(x):
     """The table's annual mortality rate at attained age ``x`` and the model point's sex.
 
-    ``data.mort_rates()`` at ``(min(x, top), sex)``, where ``top`` is the table's last age,
+    ``Data.mort_table_array`` at the row :func:`mort_schedule` gives the point's ``sex``
+    and the column of age ``min(x, top)``, where ``top`` is the table's last age,
     :func:`~.VA_US_SEC.Data.mort_last_age`, as ``VA_US_S`` caps the age at the table's
-    largest. The table's one reader, keyed by the age and joined on the model point's
-    ``sex`` column, a join on text that Phase 2 re-keys; :func:`mort_rate` calls it in
-    cover only, at :func:`age`. ``Data`` refuses a point whose sex the table lacks, or whose
-    attained age in its first month on the books it gives no rate at.
+    largest. The table's one reader, keyed by the age; :func:`mort_rate` calls it in cover
+    only, at :func:`age`. ``Data`` refuses a point whose sex the table lacks, or whose
+    attained age in its first month on the books it gives no rate at. An age outside the
+    sex's rates, which no projection reads, raises ``ValueError`` naming the point, where
+    ``VA_US_S``'s lookup raised ``KeyError``; so does one outside the ages the array holds,
+    from the table's first, or 0 if that is lower, to ``Data.read_last_age``, 120.
     """
     top = data.mort_last_age()                                       # noqa: F821
-    return float(data.mort_rates().loc[(min(x, top), model_point()["sex"]),  # noqa
-                                       "mort_rate"])
+    b = min(x, top)
+    s = mort_schedule()
+    if b < data.mort_age_firsts()[s] or b > data.mort_age_lasts()[s]:  # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the mortality table gives no rate at "
+                         f"attained age {b}")
+    base = data.mort_age_base()                                      # noqa: F821
+    if b < base or b > data.read_last_age:                           # noqa: F821
+        raise ValueError(f"point_id {point_id()}: the mortality table is held from age "
+                         f"{base} to {data.read_last_age}, Data.read_last_age, and no "
+                         f"projection reads age {b}")
+    return float(data.mort_table_array()[s, b - base])               # noqa: F821
 
 
 def mort_rate(t):
@@ -3151,15 +3627,19 @@ def moneyness_gmdb(t):
     return gmdb_guarantee_pp(t) / av_pp(t) if av_pp(t) > 0.0 else 0.0
 
 
-def lapse_itm_mult(m):
+def lapse_itm_mult(ratio):
     """lambda(M): the VM-21 §7.B.1 Alternative Methodology multiplier [R1].
 
     ``min[U, max(L, 1 - Mult (M - D))]`` with U = 1.00, L = 0.50, Mult = 1.25, D = 1.10 —
     the only closed-form dynamic lapse formula the Valuation Manual publishes for VAs.
     Note that it floors suppression at 50% while Table 6.3's own ITM grading implies an
     84% suppression; compose one or the other, never both.
+
+    ``VA_US_S``'s cell, an engine cell, called by no other: :func:`lapse_dyn_mult` writes it
+    inline. Its parameter is ``ratio``, ``VA_US_S``'s ``m``, since ``spec_sec.py`` sizes a
+    cache by ``m``, a policy month, and a parameter it sizes would compile to C.
     """
-    raw = 1.0 - lapse_itm_mult_coef * (m - lapse_itm_threshold)      # noqa: F821
+    raw = 1.0 - lapse_itm_mult_coef * (ratio - lapse_itm_threshold)  # noqa: F821
     return min(lapse_itm_upper, max(lapse_itm_lower, raw))           # noqa: F821
 
 
@@ -3169,11 +3649,23 @@ def lapse_dyn_mult(t):
     The contract carries both a VAGLB and a GMDB, and VM-21 §6.C.6 directs that such
     contracts use the **lower** of the two ITM-based rates. 1.0 outside cover, no
     adjustment; ``VA_US_S`` reads the multiplier there of an empty account's moneyness.
+
+    ``VA_US_S``'s :func:`lapse_itm_mult` of each moneyness, written inline (R14), its
+    operands in ``VA_US_S``'s order: the GLWB's moneyness and its multiplier first, as
+    ``VA_US_S``'s call evaluates its first argument first, then the GMDB's, each clamp
+    ``min(lapse_itm_upper, max(lapse_itm_lower, raw))`` as :func:`lapse_itm_mult` writes
+    it, so that a NaN meets the bound it meets there. So no compiled cell calls the engine
+    cell, keyed by a float.
     """
     if not is_active(t):
         return 1.0
-    return min(lapse_itm_mult(moneyness_glwb(t)),
-               lapse_itm_mult(moneyness_gmdb(t)))
+    m_g = moneyness_glwb(t)
+    raw_g = 1.0 - lapse_itm_mult_coef * (m_g - lapse_itm_threshold)  # noqa: F821
+    lam_g = min(lapse_itm_upper, max(lapse_itm_lower, raw_g))        # noqa: F821
+    m_d = moneyness_gmdb(t)
+    raw_d = 1.0 - lapse_itm_mult_coef * (m_d - lapse_itm_threshold)  # noqa: F821
+    lam_d = min(lapse_itm_upper, max(lapse_itm_lower, raw_d))        # noqa: F821
+    return min(lam_g, lam_d)
 
 
 def lapse_wd_factor(t):
@@ -3217,48 +3709,48 @@ def lapse_rate_mth(t):
 def pols_if(t):
     """The in-force count at the **start** of projection month t, after its new business.
 
-    ``pols_if_at(t, "BEF_DECR")``: the notes' ``l(t-1)``, and the weight applied to month
+    ``pols_if_at(t, BEF_DECR)``: the notes' ``l(t-1)``, and the weight applied to month
     ``t``'s cash flows, so that the ``pols_if`` column of :func:`result_cf` reconciles with
     the row it sits on: ``premiums(t) / premium_pp(t)`` is exactly ``pols_if(t)``. This is
     the library-wide convention, set by :mod:`.Term_US_S` and by ``savings.CashValue_SE``.
     In the issue month it is the count issued, :func:`pols_new_biz`, and on a contract in
     force at the valuation date it opens month 0 at :func:`pols_if_init`.
 
-    The notes' own end-of-month ``l(t)`` is ``pols_if_at(t, "AFT_DECR")``. The
-    two coincide — ``pols_if_at(t + 1, "BEF_NB") == pols_if_at(t, "AFT_DECR")`` —
+    The notes' own end-of-month ``l(t)`` is ``pols_if_at(t, AFT_DECR)``. The
+    two coincide — ``pols_if_at(t + 1, BEF_NB) == pols_if_at(t, AFT_DECR)`` —
     everywhere but the last covered month, where the survivors leave as
     :func:`pols_maturity` and nothing is in force at the start of the month after it.
     """
-    return pols_if_at(t, "BEF_DECR")
+    return pols_if_at(t, BEF_DECR)
 
 
 def pols_if_at(t, timing):
     """In-force at month t read at ``BEF_NB``, ``BEF_DECR``, ``BEF_LAPSE`` or ``AFT_DECR``.
 
-    ``"BEF_NB"`` is the count carried in from month ``t - 1``, before month ``t``'s new
+    ``BEF_NB`` is the count carried in from month ``t - 1``, before month ``t``'s new
     business, the chain of the count, one cell a month: :func:`pols_if_init` at
     :func:`t_entry`, and ``(BEF_NB(t-1) + pols_new_biz(t-1)) x (1 - q^d) x (1 - q^w)``
-    after it, as ``basiclife.BasicTerm_SE`` rolls it. ``"BEF_DECR"`` adds the month's new
+    after it, as ``basiclife.BasicTerm_SE`` rolls it. ``BEF_DECR`` adds the month's new
     business and is ``pols_if(t)``. Then the order is the notes'
     ``l(t) = l(t-1)(1 - q^d(t))(1 - q^w(t))`` — **death first, then surrender**
-    **[std]** — and ``"AFT_DECR"`` is the notes' ``l(t)``, the end-of-month count.
-    ``VA_US_S`` rolls ``pols_if(t)`` through ``pols_if_at(t - 1, "AFT_DECR")``, two cells a
+    **[std]** — and ``AFT_DECR`` is the notes' ``l(t)``, the end-of-month count.
+    ``VA_US_S`` rolls ``pols_if(t)`` through ``pols_if_at(t - 1, AFT_DECR)``, two cells a
     month. 0.0 outside cover at every timing.
     """
-    if timing == "BEF_NB":
+    if timing == BEF_NB:
         if not is_active(t):
             return 0.0
         if t == t_entry():
             return pols_if_init()
-        return ((pols_if_at(t - 1, "BEF_NB") + pols_new_biz(t - 1))
+        return ((pols_if_at(t - 1, BEF_NB) + pols_new_biz(t - 1))
                 * (1.0 - mort_rate_mth(t - 1)) * (1.0 - lapse_rate_mth(t - 1)))
-    elif timing == "BEF_DECR":
-        return pols_if_at(t, "BEF_NB") + pols_new_biz(t)
-    elif timing == "BEF_LAPSE" or timing == "AFT_DECR":
+    elif timing == BEF_DECR:
+        return pols_if_at(t, BEF_NB) + pols_new_biz(t)
+    elif timing == BEF_LAPSE or timing == AFT_DECR:
         if not is_active(t):
             return 0.0
-        pols = pols_if_at(t, "BEF_DECR") * (1.0 - mort_rate_mth(t))
-        if timing == "BEF_LAPSE":
+        pols = pols_if_at(t, BEF_DECR) * (1.0 - mort_rate_mth(t))
+        if timing == BEF_LAPSE:
             return pols
         return pols * (1.0 - lapse_rate_mth(t))
     raise ValueError("invalid timing")
@@ -3270,7 +3762,7 @@ def pols_new_biz(t):
     The month with ``duration_mth(t) == 0``, which is :func:`t_entry` on a contract issued
     at or after the valuation date; a contract in force at it has no new business, its
     count entering as :func:`pols_if_init` instead. As ``basiclife.BasicTerm_SE`` takes
-    it, the issued count joins ``"BEF_NB"`` to make ``"BEF_DECR"``, before the month's
+    it, the issued count joins ``BEF_NB`` to make ``BEF_DECR``, before the month's
     decrements.
     """
     return policy_count() if duration_mth(t) == 0 else 0.0
@@ -3290,7 +3782,7 @@ def pols_lapse(t):
     """Full surrenders in month t, on the survivors of mortality; 0.0 outside cover."""
     if not is_active(t):
         return 0.0
-    return pols_if_at(t, "BEF_LAPSE") * lapse_rate_mth(t)
+    return pols_if_at(t, BEF_LAPSE) * lapse_rate_mth(t)
 
 
 def pols_maturity(t):
@@ -3303,16 +3795,16 @@ def pols_maturity(t):
     """
     if duration_mth(t) != maturity_mth() - 1:
         return 0.0
-    return pols_if_at(t, "AFT_DECR")
+    return pols_if_at(t, AFT_DECR)
 
 
 def pols_decr(t, kind):
     """The number of contracts leaving in month t by benefit ``kind``."""
-    if kind == "DEATH":
+    if kind == DEATH:
         return pols_death(t)
-    elif kind == "LAPSE":
+    elif kind == LAPSE:
         return pols_lapse(t)
-    elif kind == "MATURITY":
+    elif kind == MATURITY:
         return pols_maturity(t)
     else:
         raise ValueError("invalid kind")
@@ -3321,15 +3813,15 @@ def pols_decr(t, kind):
 def claim_pp(t, kind):
     """The benefit paid per contract in month t by ``kind``.
 
-    ``"DEATH"`` is the gross death benefit :func:`db_pp`. ``"LAPSE"`` is the surrender
-    proceeds :func:`surr_benefit_pp`. ``"MATURITY"`` is the surrender value of the
+    ``DEATH`` is the gross death benefit :func:`db_pp`. ``LAPSE`` is the surrender
+    proceeds :func:`surr_benefit_pp`. ``MATURITY`` is the surrender value of the
     survivors at the projection horizon.
     """
-    if kind == "DEATH":
+    if kind == DEATH:
         return db_pp(t)
-    elif kind == "LAPSE":
+    elif kind == LAPSE:
         return surr_benefit_pp(t)
-    elif kind == "MATURITY":
+    elif kind == MATURITY:
         return surr_benefit_pp(t)
     else:
         raise ValueError("invalid kind")
@@ -3340,8 +3832,9 @@ def claim_from_av_pp(t, kind):
 
     Always ``AV(t)``: the separate account gives up the account value, and whatever the
     guarantee adds on top is general-account money, reported as :func:`claims_over_av`.
+    The kind is tested by a chain of ``==``, where ``VA_US_S`` tests it in a tuple.
     """
-    if kind in ("DEATH", "LAPSE", "MATURITY"):
+    if kind == DEATH or kind == LAPSE or kind == MATURITY:
         return av_pp(t)
     raise ValueError("invalid kind")
 
@@ -3434,11 +3927,16 @@ def glwb_payments(t):
     return glwb_payment_pp(t) * pols_if(t)
 
 
-def claims(t, kind=None):
-    """Benefit outgo in month t, for one ``kind`` or, with ``kind=None``, all three."""
-    if kind is None:
-        return (claims(t, "DEATH") + claims(t, "LAPSE")
-                + claims(t, "MATURITY"))
+def claims(t, kind):
+    """Benefit outgo in month t, for one ``kind`` or, with ``ALL``, all three.
+
+    ``ALL`` is ``VA_US_S``'s ``kind=None``, its total ``VA_US_S``'s chain of ``+`` in its
+    order, so that the total is ``VA_US_S``'s bit for bit (the Space docstring's
+    *Codes*).
+    """
+    if kind == ALL:                                                  # noqa: F821
+        return (claims(t, DEATH) + claims(t, LAPSE)
+                + claims(t, MATURITY))
     return claim_pp(t, kind) * pols_decr(t, kind)
 
 
@@ -3447,16 +3945,17 @@ def claims_from_av(t, kind):
     return claim_from_av_pp(t, kind) * pols_decr(t, kind)
 
 
-def claims_over_av(t, kind=None):
+def claims_over_av(t, kind):
     """Benefit paid less the contract value released, ``claims - claims_from_av``.
 
     On death this is exactly the GMDB guarantee claim — the general-account strain. On a
     surrender it is negative by the withdrawal charge, which the separate account keeps.
-    A reconciliation quantity, never a ledger line of its own.
+    A reconciliation quantity, never a ledger line of its own. ``ALL``, ``VA_US_S``'s
+    ``kind=None``, is the three kinds' total, ``VA_US_S``'s chain of ``+``.
     """
-    if kind is None:
-        return (claims_over_av(t, "DEATH") + claims_over_av(t, "LAPSE")
-                + claims_over_av(t, "MATURITY"))
+    if kind == ALL:                                                  # noqa: F821
+        return (claims_over_av(t, DEATH) + claims_over_av(t, LAPSE)
+                + claims_over_av(t, MATURITY))
     return claims(t, kind) - claims_from_av(t, kind)
 
 
@@ -3489,9 +3988,21 @@ def inflation_factor(t):
     the contract. ``VA_US_S`` counts the contract's own years instead, ``duration(t)``,
     which is ``t // 12`` on a contract issued at the valuation date and mixes the two
     clocks on any other.
+
+    The exponent is an int, so a base below 0 gives a real power in both engines. Where
+    Python's float power raises, the cell raises Python's message, which a compiled
+    ``pow`` would not: a base of 0 to a negative power, ``inflation_rate`` -1 and a
+    valuation year before the base year, ``ZeroDivisionError``; and a power past the
+    largest float from a finite base, ``OverflowError``.
     """
-    return (1.0 + inflation_rate) ** (                               # noqa: F821
-        valuation_year - expense_base_year + t // 12)                # noqa: F821
+    base = 1.0 + inflation_rate                                      # noqa: F821
+    n = valuation_year - expense_base_year + t // 12                 # noqa: F821
+    if base == 0.0 and n < 0:
+        raise ZeroDivisionError("0.0 cannot be raised to a negative power")
+    factor = base ** n
+    if factor - factor != 0.0 and base - base == 0.0:
+        raise OverflowError("(34, 'Numerical result out of range')")
+    return factor
 
 
 def expenses(t):
@@ -3526,7 +4037,7 @@ def net_cf(t):
     account-value identity.
     """
     return (premiums(t) + charge_income(t)
-            - withdrawals(t) - glwb_payments(t) - claims(t)
+            - withdrawals(t) - glwb_payments(t) - claims(t, ALL)
             - expenses(t) - commissions(t) - premium_taxes(t))
 
 
@@ -3546,7 +4057,7 @@ def av_at(t, timing):
     """The in-force weighted contract value at month t; see :func:`av_pp_at`.
 
     Every timing inside the month is weighted by the contracts in force at the start of
-    it, ``pols_if(t)``. ``"EOM"`` is weighted by ``pols_if_at(t + 1, "BEF_NB")``
+    it, ``pols_if(t)``. ``EOM`` is weighted by ``pols_if_at(t + 1, BEF_NB)``
     — the count still in force once the month's decrements have gone, before the next
     month's new business — which is zero in the last covered month, where the survivors
     leave as :func:`pols_maturity` and their contract value is released through
@@ -3559,8 +4070,8 @@ def av_at(t, timing):
     """
     if not is_active(t):
         return 0.0
-    if timing == "EOM":
-        return av_pp(t) * pols_if_at(t + 1, "BEF_NB")
+    if timing == EOM:
+        return av_pp(t) * pols_if_at(t + 1, BEF_NB)
     return av_pp_at(t, timing) * pols_if(t)
 
 
@@ -3599,13 +4110,13 @@ def av_change(t):
 
     The opening value is the carried-in ``av_pp_init() x pols_if_init()`` in the first
     month on the books, :func:`t_entry` — 0 on new business, whose purchase payment is the
-    month's net premium in — and ``av_at(t - 1, "EOM")`` after it. 0.0 outside cover.
+    month's net premium in — and ``av_at(t - 1, EOM)`` after it. 0.0 outside cover.
     """
     if not is_active(t):
         return 0.0
-    opening = (av_at(t - 1, "EOM") if t > t_entry()
+    opening = (av_at(t - 1, EOM) if t > t_entry()
                else av_pp_init() * pols_if_init())
-    return av_at(t, "EOM") - opening
+    return av_at(t, EOM) - opening
 
 
 def check_av_roll_fwd_resid(t):
@@ -3626,8 +4137,8 @@ def check_av_roll_fwd_resid(t):
         return 0.0
     expected = (prem_to_av(t) - wd_from_av(t) + inv_income(t)
                 - charges_from_av(t)
-                - claims_from_av(t, "DEATH") - claims_from_av(t, "LAPSE")
-                - claims_from_av(t, "MATURITY"))
+                - claims_from_av(t, DEATH) - claims_from_av(t, LAPSE)
+                - claims_from_av(t, MATURITY))
     return av_change(t) - expected
 
 
@@ -3654,7 +4165,7 @@ def check_av_roll_fwd():
 def check_pols_roll_fwd_resid(t):
     """In-force roll-forward residual; zero to floating point in every covered month.
 
-    ``pols_if(t) - pols_if_at(t + 1, "BEF_NB") = deaths + surrenders + horizon
+    ``pols_if(t) - pols_if_at(t + 1, BEF_NB) = deaths + surrenders + horizon
     survivors``, written on the start-of-month counts :func:`pols_if` carries: the next
     month opens on what is left, before its own new business. In the last covered month
     the next month's count is zero and :func:`pols_maturity` absorbs the survivors. 0.0
@@ -3662,7 +4173,7 @@ def check_pols_roll_fwd_resid(t):
     """
     if not is_active(t):
         return 0.0
-    return (pols_if(t) - pols_if_at(t + 1, "BEF_NB") - pols_death(t)
+    return (pols_if(t) - pols_if_at(t + 1, BEF_NB) - pols_death(t)
             - pols_lapse(t) - pols_maturity(t))
 
 
@@ -3731,9 +4242,9 @@ def result_cf():
             "maint_fees": [maint_fees(t) for t in ts],
             "withdrawals": [withdrawals(t) for t in ts],
             "glwb_payments": [glwb_payments(t) for t in ts],
-            "claims_death": [claims(t, "DEATH") for t in ts],
-            "claims_lapse": [claims(t, "LAPSE") for t in ts],
-            "claims_maturity": [claims(t, "MATURITY") for t in ts],
+            "claims_death": [claims(t, DEATH) for t in ts],
+            "claims_lapse": [claims(t, LAPSE) for t in ts],
+            "claims_maturity": [claims(t, MATURITY) for t in ts],
             "expenses": [expenses(t) for t in ts],
             "commissions": [commissions(t) for t in ts],
             "premium_taxes": [premium_taxes(t) for t in ts],
@@ -3760,7 +4271,7 @@ def result_pols():
             "pols_death": [pols_death(t) for t in ts],
             "pols_lapse": [pols_lapse(t) for t in ts],
             "pols_maturity": [pols_maturity(t) for t in ts],
-            "pols_if_aft_decr": [pols_if_at(t, "AFT_DECR") for t in ts],
+            "pols_if_aft_decr": [pols_if_at(t, AFT_DECR) for t in ts],
         },
         index=pd.Index(ts, name="t"),                                # noqa: F821
     )
@@ -3774,9 +4285,10 @@ def result_av():
     """
     ts = list(range(proj_len()))
     cols = {}
-    for i in sub_ids():
+    for j in range(subaccount_count()):
+        i = subaccount_id(j)
         cols["sa_pp_%s" % i] = [sa_pp(t, i) for t in ts]
-    cols["av_pp_bef_fee"] = [av_pp_at(t, "BEF_FEE") for t in ts]
+    cols["av_pp_bef_fee"] = [av_pp_at(t, BEF_FEE) for t in ts]
     cols["fee_glwb_pp"] = [fee_glwb_pp(t) for t in ts]
     cols["fee_gmdb_pp"] = [fee_gmdb_pp(t) for t in ts]
     cols["maint_fee_pp"] = [maint_fee_pp(t) for t in ts]
@@ -3814,7 +4326,17 @@ def result_bases():
 
 data = ("Interface", ("..", "Data"), "auto")
 
-point_id = 1
+idx = 0
+
+issue_age_min = 35
+
+issue_age_max = 85
+
+glwb_issue_age_max = 80
+
+gmdb_issue_age_max = 79
+
+subaccount_id_max = 9
 
 omega_age = 120
 
@@ -3927,6 +4449,46 @@ check_tol_av = 1e-06
 check_tol_pols = 1e-12
 
 check_tol_charge = 1e-08
+
+BEF_NB = 0
+
+BEF_DECR = 1
+
+BEF_LAPSE = 2
+
+AFT_DECR = 3
+
+BEF_PREM = 4
+
+BEF_WD = 5
+
+BEF_INV = 6
+
+BEF_FEE = 7
+
+EOM = 8
+
+BEF_ANNIV = 9
+
+DEATH = 0
+
+LAPSE = 1
+
+MATURITY = 2
+
+ALL = 3
+
+VIX_SQ = 0
+
+CMT10 = 1
+
+PRE_ISSUE = 0
+
+ACCUM = 1
+
+DEPLETED = 2
+
+EXPIRED = 3
 
 math = ("Module", "math")
 

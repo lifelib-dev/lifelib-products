@@ -3,6 +3,7 @@
     python products/variable_annuity/run_sec.py          # point 1, the anchor cell
     python products/variable_annuity/run_sec.py 2        # the worked example, in force
     python products/variable_annuity/run_sec.py --block  # the block, row by row
+    python products/variable_annuity/run_sec.py 1 --cython  # on the compiled model
 
 ``t`` counts months from the valuation date, which is the same instant for every model
 point, so row ``t`` of one point's frame is the same month as row ``t`` of any other's, and
@@ -17,51 +18,176 @@ anniversary months, those where ``duration_mth(t) % 12 == 11``, and the cash flo
 printed month by month for the first year and summed into projection years,
 ``t // 12 + 1``, by the runner itself: ``VA_US_SEC`` publishes no annual report.
 
-Points are named by their ``point_id``. The runner looks each one up in ``Projection`` the
-way the model indexes it, by the label itself or, on a model indexed by position, by its
-position in the table, and passes each timing, ``"BEF_PREM"`` or ``"BEF_FEE"``, as the
-model's own Reference of the name where it defines one, the int code Phase 2 gives it, and
-as the text otherwise, so it runs unchanged once the model is compiled. A label the table
-does not hold, a number or not, is refused with the labels it does hold.
+Points are named by their ``point_id``, and ``Projection`` is indexed by a point's position
+in the table, as basiclife's BasicTerm_SC is, so the runner maps the one to the other.  It
+takes the key from the model: the position where ``Projection`` takes ``idx``, as every
+compiled model does, and the label where it takes ``point_id``, as an SEC model does before
+its Phase 2.  It passes each timing, ``BEF_PREM`` or ``BEF_FEE``, as the model's own
+Reference of the name, the int code, where the model defines one, and as the text
+otherwise.  A label the table does not hold, a number or not, is refused with the labels
+it does hold.
+
+``--cython`` runs the compiled model instead of modelx, and prints the same lines.  It is
+``VA_US_SEC_nomx_cy`` beside the model, which the repository's ``tools/build_sec_cy.py``
+builds there the first time, and again whenever it is not built for this interpreter or
+the model, ``sample_sec.py``, ``spec_sec.py`` or the tool is newer than it: about five
+minutes, which it says on stderr.  The build is never committed, and ``.gitignore`` covers
+everything it leaves.  A ``lifelib.create()`` copy of the library carries no ``tools/``,
+wherever it is put, so there ``--cython`` stops, saying so, where it would build.
+``--build DIR`` runs the package a build put in ``DIR`` instead, on the CSVs the build
+copied there, and never builds.  Either way the runner stops, saying why, if the package
+imports without its extension modules, which would compute the same numbers
+uncompiled.
 
 A block run asks every point for its frame before it projects any, because whether a point
-is still in cover is the product's rule, which ``proj_len()`` applies, and a point past its
-cover would otherwise stop the run part-way. It releases each point once it is read, and
-collects, because a released point sits in reference cycles that only Python's cyclic
-collector frees, in the pass that asks each point for its frame as in the pass that
-projects it. It freezes everything alive (``gc.freeze``) before each pass, the model and
-its table first, so that each collection scans only what the block has made since.
+is still in cover, and whether the contract issues it, are the product's rules, which
+``proj_len()`` applies, and such a point would otherwise stop the run part-way.  It
+releases each point's ItemSpace once it is read, so that it holds one point's cells at a
+time.  Deleting the ItemSpace is not enough, because it sits in reference cycles that only
+Python's cyclic collector frees, so the runner collects after each release, in both
+passes.  It freezes everything alive (``gc.freeze``) once the model and its table are read,
+and again once it has every point's length, so that each collection scans only what the
+block has made since, and it unfreezes them at the end.  The block's sum is kept as it
+goes, a frame at a time, compensated as pandas' ``groupby`` sum is, so that it is the sum
+of the frames concatenated and grouped by ``t``, bit for bit; a NaN in a frame, which
+``groupby`` would skip, propagates into the sum.
 
 Output is ASCII-only so it prints on a Windows console under any code page.
 """
 import gc
+import importlib
+import importlib.machinery
+import subprocess
 import sys
 from pathlib import Path
 
-import modelx as mx
+import numpy as np
 import pandas as pd
 
-USAGE = "usage: python run_sec.py [point_id | --block]"
+HERE = Path(__file__).resolve().parent
+NAME = "VA_US_SEC"
+SUFFIXES = tuple(importlib.machinery.EXTENSION_SUFFIXES)
+USAGE = "usage: python run_sec.py [point_id | --block] [--cython] [--build DIR]"
 
-args = sys.argv[1:]
-if len(args) > 1 or args[:1] in (["--help"], ["-h"]):
-    sys.exit(USAGE)
 
-model = mx.read_model(Path(__file__).parent / "VA_US_SEC")
+def parse(argv):
+    """``(point_id or None for the block, cython, build_dir)``, or exit with the usage.
+
+    A point is named by its label, read as an int where it is one: a label that is not a
+    number is no ``point_id``, and is refused with the table's labels, by name.
+    """
+    point, block, cython, build = None, False, False, None
+    args = iter(argv)
+    for arg in args:
+        if arg == "--block":
+            block = True
+        elif arg == "--cython":
+            cython = True
+        elif arg == "--build":
+            build = next(args, None)
+            if build is None:
+                sys.exit(USAGE)
+            cython = True
+        elif arg in ("--help", "-h") or point is not None:
+            sys.exit(USAGE)
+        else:
+            try:
+                point = int(arg)
+            except ValueError:
+                point = arg
+    if block and point is not None:
+        sys.exit(USAGE)
+    return (None if block else (1 if point is None else point)), cython, build
+
+
+def _built(package):
+    """The compiled space module of ``package`` built for this interpreter, if any."""
+    found = [package / f"_mx_classes{suffix}" for suffix in SUFFIXES]
+    return [path for path in found if path.is_file()]
+
+
+def _tool():
+    """``tools/build_sec_cy.py`` of the repository holding this product, or ``None``.
+
+    The product sits at ``lifelib/libraries/<lib>/products/<product>`` in the repository,
+    and a ``lifelib.create()`` copy of the library has no repository above it, and no
+    tool, wherever it is put, as ``sec_support._tool`` finds it.
+    """
+    up = HERE.parents
+    if len(up) < 5 or up[2].name != "libraries":
+        return None
+    return up[4] / "tools" / "build_sec_cy.py"
+
+
+def compiled_model(build_dir):
+    """The compiled model: from ``build_dir``, or built in place first where it is stale."""
+    if build_dir is None:
+        out, tool = HERE, _tool()
+        package = out / f"{NAME}_nomx_cy"
+        sources = [*(HERE / NAME).rglob("*.py"), HERE / "sample_sec.py",
+                   HERE / "spec_sec.py", *([tool] if tool else [])]
+        built = _built(package)
+        newest = max((path.stat().st_mtime for path in sources if path.is_file()),
+                     default=0.0)
+        if not built or min(path.stat().st_mtime for path in built) < newest:
+            if tool is None or not tool.is_file():
+                sys.exit("--cython builds the model with the source repository's "
+                         "tools/build_sec_cy.py, and a lifelib.create() copy carries no "
+                         "tools/, so it cannot build")
+            print(f"building {NAME} with {tool.name}, which takes about five "
+                  f"minutes ...", file=sys.stderr)
+            done = subprocess.run([sys.executable, str(tool), str(HERE)],
+                                  stdout=subprocess.DEVNULL)
+            if done.returncode:
+                sys.exit(f"the build failed; {tool.name} printed why")
+    else:
+        out = Path(build_dir).resolve()
+        package = out / f"{NAME}_nomx_cy"
+        if not _built(package):
+            sys.exit(f"{package} holds no build of {NAME} for this interpreter")
+    sys.path.insert(0, str(out))
+    model = importlib.import_module(f"{NAME}_nomx_cy").mx_model
+    space = type(model.Projection)
+    if not sys.modules[space.__module__].__file__.endswith(SUFFIXES):
+        sys.exit(f"{package} imported without its extension modules, so it would run "
+                 f"uncompiled; rebuild it with tools/build_sec_cy.py")
+    return model
+
+
+point_id, cython, build_dir = parse(sys.argv[1:])
+if cython:
+    model = compiled_model(build_dir)
+else:
+    import modelx as mx
+    model = mx.read_model(HERE / NAME)
 table = model.Data.model_point_table()
-position = {label: i for i, label in enumerate(table.index)}
+# Projection's key for each point_id: its position, or the label itself (the docstring).
+if cython or tuple(model.Projection.parameters) == ("idx",):
+    position = {label: i for i, label in enumerate(table.index)}
+else:
+    position = {label: label for label in table.index}
 
 
 def key(label):
     """The key that selects point ``label`` in ``Projection``."""
-    return position[label] if model.Projection.parameters == ("idx",) else label
+    return position[label]
 
 
 def code(label):
     """The argument that stands for timing ``label``: the model's own int Reference named
-    ``label`` where it defines one, as Phase 2 does, and the text otherwise."""
-    value = model.Projection.refs.get(label)
+    ``label`` where it defines one, and the text otherwise."""
+    value = getattr(model.Projection, label, label)
     return value if isinstance(value, int) and not isinstance(value, bool) else label
+
+
+def add(total, compensation, frame):
+    """Add ``frame``'s rows to the running sum's first rows, compensated (Kahan), as
+    pandas' ``groupby`` sum adds each group's values in turn."""
+    rows = len(frame)
+    y = frame - compensation[:rows]
+    t = total[:rows] + y
+    compensation[:rows] = (t - total[:rows]) - y
+    total[:rows] = t
 
 
 def months(n):
@@ -125,23 +251,29 @@ def events(proj, n):
     return "first withdrawal {}; account value runs out {}".format(wd, out)
 
 
-if args == ["--block"]:
+if point_id is None:
     gc.freeze()
     rows = {}
     for label in table.index:
         rows[label] = model.Projection[key(label)].proj_len()
         release(label)
     gc.freeze()
-    frames = []
+    total, columns = np.zeros((max(rows.values(), default=0), 0)), None
     print("model points, t = 0 the valuation date for each:")
     for label in table.index:
         proj = model.Projection[key(label)]
-        frames.append(proj.result_cf())
+        df = proj.result_cf()
+        if columns is None:
+            columns = list(df.columns)
+            total = np.zeros((len(total), len(columns)))
+            compensation = np.zeros_like(total)
+        add(total, compensation, df[columns].to_numpy())
         print("  {:>2}  {:<16} {}; proj_len {}".format(
             label, table.at[label, "policy_id"], describe(proj), rows[label]))
-        del proj
+        del proj, df
         release(label)                          # each point is read once, then released
-    block = pd.concat(frames).groupby(level="t").sum()
+    block = pd.DataFrame(total, columns=columns,
+                         index=pd.RangeIndex(len(total), name="t"))
     print()
     print("the block, first 12 rows, t = 0..11 (months from the valuation date):")
     print(block.head(12).round(2).to_string())
@@ -152,10 +284,7 @@ if args == ["--block"]:
     annual.insert(0, "pols_if", block["pols_if"].groupby(years).first())
     print(annual.head(12).round(2).to_string())
 else:
-    try:
-        label = int(args[0]) if args else 1
-    except ValueError:      # not a number, so no point_id: refused below, by name
-        label = args[0]
+    label = point_id
     if label not in position:
         sys.exit("no model point {} in the table: {}".format(label, list(position)))
     proj = model.Projection[key(label)]
@@ -222,5 +351,6 @@ else:
     annual.insert(0, "pols_if", cf["pols_if"].groupby(years).first())
     print(annual.head(14).round(2).to_string())
 
-model.close()
+if not cython:
+    model.close()
 gc.unfreeze()

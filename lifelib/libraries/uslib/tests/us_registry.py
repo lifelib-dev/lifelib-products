@@ -119,7 +119,7 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
 # WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth, ULSG_US_SEC the
 # fifth, MYGA_US_SEC the sixth, SPIA_US_SEC the seventh, DIA_US_SEC the eighth,
-# FIA_US_SEC the ninth and IUL_US_SEC the tenth.
+# FIA_US_SEC the ninth, IUL_US_SEC the tenth and VA_US_SEC the eleventh.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -175,7 +175,14 @@ MODELS = {
                                "mgsv_rate_statutory", "payout_rate")}),
     "VA_US_S": ("products/variable_annuity/VA_US_S", MONTHLY),
     "VA_US_SEC": ("products/variable_annuity/VA_US_SEC",
-                  {**MONTHLY, "twin": "VA_US_S", "stage": "E"}),
+                  {**MONTHLY, "twin": "VA_US_S", "stage": "EC", "param": "idx",
+                   "reporting": ("cdsc_schedule", "designated_lives", "fee_reset_rule",
+                                 "fund_set", "glwb_option", "gmdb_option", "policy_id",
+                                 "rollup_rule", "scenario_id", "sex", "stepup_basis",
+                                 "tax_status", "txn_id"),
+                   "reporting_columns": {"stepup_basis": "glwb_stepup_basis"},
+                   "engine": ("fee_rate_vix_clip", "fee_rate_vix_raw", "lapse_itm_mult",
+                              "sub_ids")}),
     "RILA_US_S": (
         "products/registered_index_linked_annuity/RILA_US_S", MONTHLY),
     "RILA_US_SEC": ("products/registered_index_linked_annuity/RILA_US_SEC",

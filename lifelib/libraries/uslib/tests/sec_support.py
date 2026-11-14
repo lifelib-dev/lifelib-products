@@ -1479,6 +1479,22 @@ def _fia_codes(name, args):
     return args
 
 
+def _va_twin_args(name, args):
+    """``VA_US_S``'s keys as ``VA_US_SEC`` takes them at stage ``"EC"`` (R9, R12).
+
+    S's ``claims(t, None)`` and ``claims_over_av(t, None)``, the ``kind=None`` totals,
+    are SEC's ``(t, "ALL")``, and S's ``scenario_rate(t, name)`` columns their names
+    upper-cased, ``"VIX_SQ"`` and ``"CMT10"``; :func:`codes` then turns each string into
+    SEC's int code, as it turns S's timings and kinds.  Every other cell's arguments pass
+    as they are, and so do SEC's own codes.
+    """
+    if name in ("claims", "claims_over_av") and args[1] is None:
+        return (args[0], "ALL")
+    if name == "scenario_rate" and isinstance(args[1], str):
+        return (args[0], args[1].upper())
+    return args
+
+
 # FIA_US_SEC's opening state (D6): what FIA_US_S carries into month d, each read as S's own
 # formulas read it.  The account value, the fixed account, the Model #805 floor and the
 # withdrawals to date entering the month; the account value and the fixed account at the
@@ -2799,51 +2815,55 @@ SEC_SPECS: dict[str, SecSpec] = {
     # S cell besides the default three:
     #   result_pols: SEC's gains pols_new_biz, the count D5 puts there.  Each column it
     #     shares with S is a cell T1 compares, and the module compares the report itself.
-    # At stage EC, T1 also needs a mapping for S's claims(t, None) and
-    # claims_over_av(t, None) keys, the kind=None totals that R9 and R12 replace.
+    # At stage EC (M22), S's claims(t, None) and claims_over_av(t, None) keys, the
+    # kind=None totals, are SEC's code ALL, and S's scenario_rate columns, "vix_sq" and
+    # "cmt10", are SEC's codes named as them upper-cased: the spec's twin_arg_map,
+    # _va_twin_args, maps both, and codes maps the rest, the timings, the kinds and the
+    # phases.  The three engine cells, lapse_itm_mult, fee_rate_vix_raw and
+    # fee_rate_vix_clip, are S's formulas, and sub_ids S's list; each is kept for T1 and
+    # a reader and admitted by the registry's "engine" (R14), and T1 compares them at the
+    # arguments the module's sweep calls S's with.
     #
-    # No projection cell calls a label accessor or compares a model point column's text:
-    # glwb_stepup_basis, gmdb_option, fee_reset_rule and rollup_rule are decoded into the
-    # ten is_* bools, each read where S asks its question, so a value S does not know is
-    # answered as S answers it, with S's message.  The text a projection cell still
-    # compares is S's timing and kind strings; seven joins on text keys wait for R7, each
-    # in the cells that read its table: fund_set in sub_ids, alloc and fund_expense_rate,
-    # scenario_id in inv_return_mth and scenario_rate, txn_id in prem_scheduled_pm and
-    # wd_scheduled_pm, glwb_option in gawa_pct_at_age, cdsc_schedule in
-    # surr_charge_rate_at and sex in mort_rate_base_at.  phase(t) keeps S's labels, a leaf
-    # no cell reads, with PRE_ISSUE before issue: codes() is {} at stage E, and R10 codes
-    # the phase.
+    # No projection cell calls a label accessor or compares text: glwb_stepup_basis,
+    # gmdb_option, fee_reset_rule and rollup_rule are decoded in Data into the ten 0/1
+    # vectors the is_* cells read, each read where S asks its question, so a value S
+    # does not know is answered as S answers it, with S's message (R6).  The seven joins
+    # on text keys are numbered in Data (R7): the fund set by fund_set_number, which
+    # alloc, fund_expense_rate, subaccount_count and subaccount_id read; the scenario by
+    # return_scenario_number and rate_scenario_number, which inv_return_mth and
+    # scenario_rate read; the programme by txn_number; the grid by gawa_grid_number; the
+    # withdrawal charge schedule by cdsc_number; and the sex by mort_schedule.  The
+    # subaccount cells keep S's subaccount id as their argument, alloc(i) and sa_pp(t, i),
+    # since a point's fund set picks its own ids, keyed alike in the returns and the
+    # opening columns, so T1 compares them as S keys them.  phase(t) returns a code
+    # (R10), with PRE_ISSUE before issue.
     #
-    # For Phase 2's caches, each size with every input it depends on.  The GLWB issues at
-    # Designated Life ages 35 to 80 (product-spec), and cover runs to attained age
-    # omega_age, 120, a Projection Reference:
-    #   t: 0 .. 1,140, 1,141 values: 1,020 months of cover at the youngest issue age, 35,
-    #     plus future_horizon_mth, 120, the frame's last month 1,139, and the month after,
-    #     t = proj_len(), which Phase 2's sweep calls: every cell that reads t + 1 is
-    #     guarded there, the count's roll-forward residual and av_at's EOM included, so
-    #     nothing reads 1,141;
-    #   m (prem_scheduled_pm, wd_scheduled_pm): policy months 0 .. 1,019, from the
-    #     youngest issue age and omega_age;
+    # The caches, each size with every input it depends on (spec_sec.py).  The GLWB
+    # issues at Designated Life ages 35 to 80 (product-spec), and cover runs to attained
+    # age omega_age, 120, a Projection Reference:
+    #   t: 0 .. 1,140: 1,020 months of cover at the youngest issue age, 35, plus
+    #     future_horizon_mth, 120, the frame's last month 1,139, and the month after,
+    #     t = proj_len(), which C4's sweep calls: every cell that reads t + 1 is guarded
+    #     there, the count's roll-forward residual and av_at's EOM included, so nothing
+    #     reads 1,141;
+    #   m (t_of_month, prem_scheduled_pm, wd_scheduled_pm): policy months 0 .. 1,019;
     #   k (surr_charge_rate_at): completed years 0 .. 84, each schedule's last year capping
-    #     the read (7 for commission_7yr, 0 for none);
-    #   x (mort_rate_base_at): attained ages 35 .. 119 in cover, by sex, the read capped at
-    #     the table's last age, Data.mort_last_age(), 120 as shipped; the shipped table
-    #     starts at 40, so Data's join refuses a younger age until a table rates it, and
-    #     R7's array pads the ages below the first;
-    #   a (gawa_pct_at_age): attained ages 35 .. 119, an age below a grid's first band
-    #     reading 0;
-    #   k (phi_glwb_vix, vix_sq): contract quarters 1 .. 340.
-    # No Projection Reference bounds the issue age to the product's (35 to 80 for the
-    # GLWB, 79 or younger for the GMDB, 85 at most): Data's mortality join refuses an age
-    # the table does not rate, below 40 as shipped, and proj_len() refuses one at or past
-    # omega_age, whose cover is empty.  Phase 2 makes each bound a Reference that
-    # proj_len() checks.  The join checks the attained age in the point's first month on
-    # the books only, and mort_rate_base_at caps the age at the table's last, as S does, so
-    # a substituted table that stops below omega_age reads its last rate on, without a
-    # word.  The float-parameter cells are S's, for Phase 2 to inline: lapse_itm_mult(m),
-    # fee_rate_vix_raw and fee_rate_vix_clip, still called with float arguments.  SEC adds
-    # none, and no uncached cell.  S rounds no input per t; rollup_rate's math.floor of the
-    # CMT rate becomes integer arithmetic.
+    #     the read; k (phi_glwb_vix, vix_sq): contract quarters 1 .. 340;
+    #   x (mort_rate_base_at) and a (gawa_pct_at_age): attained ages 35 .. 119;
+    #   i (alloc, fund_expense_rate, sa_pp_init, and beside t): subaccount ids 1 ..
+    #     subaccount_id_max, 9; j (subaccount_id): positions 0 .. 8.
+    # So spec_sec.py sizes t 1,142, m 1,021, k 342, x and a 121, i and j 10, with one
+    # inner width, 10, for the timing, kind, name and subaccount codes, and (1,142, 10,
+    # 10) for sa_pp_at; Data.read_last_mth, 1,141, Data.read_last_age, 120, and
+    # Data.read_last_sub_id, 9, hold the arrays to the last month, age and id a read
+    # reaches.  proj_len refuses an issue age below issue_age_min, 35, or above
+    # issue_age_max, 85, glwb_issue_age_max, 80, or, on an elected GMDB,
+    # gmdb_issue_age_max, 79, and a fund set holding an id above subaccount_id_max, 9.
+    # The float-parameter cells lapse_itm_mult, fee_rate_vix_raw and fee_rate_vix_clip
+    # are written inline in lapse_dyn_mult and phi_glwb_vix, and kept as engine cells;
+    # lapse_itm_mult's parameter is ratio, a name no size holds.  SEC adds no uncached
+    # cell.  S rounds no input per t; rollup_rate's math.floor of the CMT rate becomes a
+    # float floor, v // 1.0, exact for every finite v, with S's three raises written out.
     "VA_US_SEC": SecSpec(
         twin="VA_US_S",
         column_map={"duration_mth_init": "duration_mth", "av_init": None,
@@ -2858,6 +2878,7 @@ SEC_SPECS: dict[str, SecSpec] = {
         state=_VA_STATE,
         twin_state=_VA_STATE,
         exempt=frozenset({"result_pols"}),
+        twin_arg_map=_va_twin_args,
         companions={"return_scenario_sec.csv": _va_rebased_returns,
                     "rate_scenario_sec.csv": _va_rebased_rates},
         future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},

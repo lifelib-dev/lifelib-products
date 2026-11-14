@@ -8,11 +8,15 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: policy_id
 
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
+
+.. autofunction:: mort_schedule
 
 .. autofunction:: designated_lives
 
@@ -28,6 +32,12 @@ Cells Descriptions
 
 .. autofunction:: fund_set
 
+.. autofunction:: fund_set_number
+
+.. autofunction:: subaccount_count
+
+.. autofunction:: subaccount_id
+
 .. autofunction:: sub_ids
 
 .. autofunction:: alloc
@@ -35,6 +45,8 @@ Cells Descriptions
 .. autofunction:: fund_expense_rate
 
 .. autofunction:: glwb_option
+
+.. autofunction:: gawa_grid_number
 
 .. autofunction:: stepup_basis
 
@@ -51,6 +63,8 @@ Cells Descriptions
 .. autofunction:: is_gmdb_basic
 
 .. autofunction:: cdsc_schedule
+
+.. autofunction:: cdsc_number
 
 .. autofunction:: fee_reset_rule
 
@@ -72,7 +86,13 @@ Cells Descriptions
 
 .. autofunction:: scenario_id
 
+.. autofunction:: return_scenario_number
+
+.. autofunction:: rate_scenario_number
+
 .. autofunction:: txn_id
+
+.. autofunction:: txn_number
 
 .. autofunction:: duration_mth_init
 
