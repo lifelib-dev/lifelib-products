@@ -26,11 +26,12 @@ step, M20, is done, 2026-11-13: Tests run 22 passed all 62 jobs, the `cython` jo
 SPIA's compile step, M23, built and tested on Windows in a separate local session after M20
 and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, the `cython`
 job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record — M23*). DIA's
-compile step, M24, built and tested there after M23, has landed, 2026-11-14, and awaits CI
-(§7.12, *Record — M24*); RILA's, M25, may start now that M20 has landed. FIA's compile step,
-M21, landed after them, 2026-11-14, and awaits CI (§7.11, *Record — M21*). IUL's compile
-step, M19, landed after M21, 2026-11-14, and awaits CI (§7.4, *Record — M19*); VA's, M22, is
-in its build stage. The open decisions of §8.2 are settled, the last of them, item 4, on
+compile step, M24, built and tested there after M23, is done, 2026-11-14: Tests run 27
+passed all 70 jobs, the `cython` job's `deferred_income_annuity` legs among them (§7.12,
+*Record — M24*); RILA's, M25, may start now that M20 has landed. FIA's compile step, M21,
+landed after them, 2026-11-14, and awaits CI (§7.11, *Record — M21*). IUL's compile step,
+M19, landed after M21, 2026-11-14, and awaits CI (§7.4, *Record — M19*); VA's, M22, is in
+its build stage. The open decisions of §8.2 are settled, the last of them, item 4, on
 2026-11-03. Like USLIB-MERGE-PLAN.md, this document is both the specification and the
 record: each phase records what it actually did, including where the implementation departed
 from the plan.
@@ -13312,7 +13313,7 @@ doccheck again built 497 pages with 0 warnings, md_lint reported 0 on uslib and 
 plan, `gen_citation_links.py --dry-run` nothing on its 301 source tags, and
 `gen_scaffolding.py --dry-run` 0 files in each of the six libraries.
 
-#### Record — M24, landed 2026-11-14
+#### Record — M24, done 2026-11-14
 
 M24 is DIA's compile step, ca5610b, built on SPIA's payout chassis and by Term's template
 (§7.1, *Record — M14*), §7.2's *For M16 and later*, §7.3's *For M17 and later*, §7.6's
@@ -13336,9 +13337,19 @@ read by the mortality table's numbering, both factor tables holding both sexes. 
 re-review found 0 blockers and 0 majors and three minors, applied in a final round. The full
 suite and the full grid were not run locally: CI runs both.
 
-**CI: pending** until the Tests workflow is green on ca5610b: C1–C5 on Linux and Windows
-(§6.3, §9), the `cython` job's `deferred_income_annuity` legs among them, with gcc's stack
-bracket (*Measured*, below).
+**CI: green.** M24's gate, C1–C5 green on Linux and Windows (§6.3, §9), is met by Tests
+run 27, dispatched on 63d57e4: all 70 jobs passed, the `cython` job's
+`deferred_income_annuity` legs on Linux and Windows among them, the full grid and the full
+suite too. Run 24, the cloud session's on M21, which carried ca5610b, had failed two of
+DIA's `sec` legs, Linux's full grid and macOS's core, on one test: the count of policy
+years in which `claims_ann` differs from `DIA_US_S`'s compensated sum, pinned at
+Windows' 154, is 152 on Linux and macOS, whose `libm` rounds the survival otherwise in
+the last bit; every year stayed within two ulps. 63d57e4 holds the count to a band
+(*Departures*, below), and changes no number. The stack test's bracket: on gcc the cold
+`net_cf` at the longest cover ran on threads of 768 KiB and more and on the main thread,
+and not on 640, about 450 to 540 bytes a level, 1.33 to 1.6 times under 1 MiB, as SPIA's
+and inside the estimate; on `windows-latest`'s MSVC on 448 KiB and not on 384, one step
+above MSVC 14.37 here, as on SPIA.
 
 **What exists now.**
 - `DIA_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 154
@@ -13509,9 +13520,9 @@ and re-review 0.17M.
     twice MSVC's bytes a level, and check the 1 MiB margin before CI runs.
 
 **Carried into M25 or later.**
-- *CI's `cython` job on ca5610b*: gcc's stack bracket for DIA, estimated 1.3 to 1.7 times
-  under 1 MiB, and `windows-latest`'s MSVC.
-- *The full grid* under `USLIB_SEC_FULL=1` and the full suite, which CI runs.
+- *gcc's stack margin*, 1.33 to 1.6 times under 1 MiB at 1,451 levels, as SPIA's
+  (*CI: green*): a payout chain longer on gcc takes the remedy §7.9's *Record — M11*
+  names, a survival recursion blocked by year.
 - *The compiled-only limit* below an A/E of 1 (above), documented, not refused.
 - *M23's two harness items*, the C5 check of a negative literal index and the runner test
   of `--block`'s compensated sum, stand.
@@ -13945,7 +13956,7 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M18 | Phase 2 for ULSG, the fourth after M13 — **done**, 2026-11-13; Tests run 21 passed all 60 jobs (§7.5, *Record — M18*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `guaranteed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M20 | Phase 2 for MYGA, the fifth after M13 — **done**, 2026-11-13; Tests run 22 passed all 62 jobs (§7.10, *Record — M20*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` key; the `fixed_deferred_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M23 | Phase 2 for SPIA, the sixth after M13 and the first payout annuity — **done**, 2026-11-14, after M20 and before M19, out of this table's order, built and tested on Windows in a separate local session; Tests run 23 passed all 64 jobs (§7.9, *Record — M23*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"reporting_columns"` key; the `immediate_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M24 | Phase 2 for DIA, the seventh after M13, on SPIA's payout chassis — landed 2026-11-14, after M23, out of this table's order, built and tested on Windows in the local session that built M23, CI pending (§7.12, *Record — M24*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` widened to parameterless container cells; `bench_sec_cy.py` repeating point-keyed companions; the `deferred_income_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
+| M24 | Phase 2 for DIA, the seventh after M13, on SPIA's payout chassis — **done**, 2026-11-14, after M23, out of this table's order, built and tested on Windows in the local session that built M23; Tests run 27 passed all 70 jobs (§7.12, *Record — M24*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` widened to parameterless container cells; `bench_sec_cy.py` repeating point-keyed companions; the `deferred_income_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M21 | Phase 2 for FIA, the eighth after M13, on MYGA's chassis — landed 2026-11-14, after M23 and M24, CI pending (§7.11, *Record — M21*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `fixed_indexed_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M19 | Phase 2 for IUL, the ninth after M13, the last on UL's chassis — landed 2026-11-14, after M21, CI pending (§7.4, *Record — M19*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `indexed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M22, M25 | Phase 2 for the other two, one PR per product: M22 VA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M22 is in its build stage; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
