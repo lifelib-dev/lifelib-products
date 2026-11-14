@@ -491,7 +491,7 @@ arguments, would fail it otherwise. Of `Data`'s nine, running in force rewrote
 `model_point_table` to check the table as it reads it, and added nine cells, eighteen in
 all: the extents of the five tables read at a policy year or an attained age, each of
 which checks its table's keys and rates, and `class_count` and `surr_charge_count`, which
-check the class factors and the surrender-charge schedules. Compiling added 34, 52 in all,
+check the class factors and the surrender-charge schedules. Compiling added 35, 53 in all,
 and widened the checks of the model point table and of the two age tables. Some
 departures come from compiling rather than from the clock: `proj_len`'s two new refusals
 and the last four rows below.
@@ -503,7 +503,7 @@ and the last four rows below.
 | `av_pp_at` (`BEF_PREM`), `loan_bal_pp_bom` | `av_pp_init()` and `loan_bal_init()` at `t = 0`, then `av_pp(t − 1)` and `loan_bal_pp(t − 1)`: chains of five cells a month and of two | the same openings at `t_entry()`, then the previous month's close formed in the cell itself, `UL_US_S`'s arithmetic in its order | Every chain one cell a month, since a compiled model runs it on the C stack |
 | `sum_assured_at`, `wd_used_year`, `cum_prem_pp`, `is_mec`, `premium_pp` | opened at `t = 0` at the face at issue, 0, 0 and `False`, and the TARGET cap's premiums to date at 0 | opened at `t_entry()` from `sum_assured_init()`, `wd_used_year_init()`, `cum_prem_init()` and `is_mec_init()` on a point in force, and from the issue values on any other | A policy in force brings in its face, the year's withdrawals, its premiums and its MEC status |
 | `prem_persistency`, `coi_rate_guar`, `lapse_rate_base`, `corridor_factor`, `mort_rate` | the table read in the monthly cell, at `policy_year(t)` or `age(t)`, clamped to the extent of the key column as pandas reads it | one reader keyed by the year or the age — `prem_persistency_py`, `coi_rate_guar_py`, `lapse_rate_base_py`, `corridor_factor_at`, `mort_rate_base_at` — with `UL_US_S`'s clamp, to the extents `Data` reads from each key column once it has checked the keys and the rates, called inside cover only; a policy year below 1 refused, naming the point, where `UL_US_S`'s lookup raised `KeyError` | No table is read at a year or an age the policy does not have, each is read once a year or an age, and a blank, text or fractional key, keys that repeat or leave a gap and a rate that is not a number are refused by name, where `UL_US_S`'s extent skips a blank key and cuts the table short, and a blank rate is a missing value |
-| `surr_charge_rate`, `lapse_shock_year` | the schedule's row read in each | `surr_charge_rate_max()` and `surr_charge_runoff_years()`, one accessor for each of the schedule's two columns, which `Data` joins to the points once `surr_charge_count()` has checked the table, 0.0 on a point without a charge | The same numbers for any schedule, with no table read in a monthly cell; a blank charge, which `UL_US_S`'s `max` reads as no charge, is refused. Compiling changed one value no projection reads: on a point without a charge the two accessors read 0.0, where at stage E they read the point's schedule, 5.0 on one named `UL0`, and raised `KeyError` on a blank id |
+| `surr_charge_rate`, `lapse_shock_year` | the schedule's row read in each | `surr_charge_rate_max()` and `surr_charge_runoff_years()`, one accessor for each of the schedule's two columns, which `Data` joins to the points once `surr_charge_count()` has checked the table, on every point whose ID the table holds, with a charge or without; on a point without one whose ID the table lacks, a blank ID included, both accessors raise `KeyError`, naming the point, as their `.loc` did at stage E | The same numbers for any schedule, with no table read in a monthly cell; a blank charge, which `UL_US_S`'s `max` reads as no charge, is refused |
 | `premium_pp`, `db_pp`, `face_reduction_pp`, `corridor_factor` | branches on the text of `premium_type()`, `db_option()` and `qual_test()` | branches on six decodes, `is_level_premium()`, `is_single_premium()`, `is_target_premium()`, `is_db_option_a()`, `is_db_option_b()` and `is_gpt()`, each read from a 0/1 vector `Data` decodes from the column | No projection cell reads text. The label accessors stay for reporting, and an unknown value still raises `UL_US_S`'s message |
 | `class_factor` | the factor of the point's class, read from the table | the same, joined to the points in `Data` once `class_count()` has checked the table's classes and factors | A blank factor, a missing value to `UL_US_S`, would reach the cap on `mort_rate`, `min(q, 1.0)`, which keeps it missing |
 | `prem_persistency`, `premium_pp`, `wd_pp`, `wd_used_year`, `sum_assured_at`, `corridor_factor`, `db_pp`, `coi_rate_guar`, `coi_pp`, `maint_fee_pp`, `surr_charge_rate`, `cum_prem_pp`, `gpt_limit`, `gpt_ok`, `seven_pay_limit`, `is_mec`, `mort_rate`, `lapse_rate_base`, `lapse_rate_sc_mult` | unguarded: no `UL_US_S` frame has a month before issue | zero or false outside cover, `is_active(t)`, before any table or rate is read; `lapse_rate_sc_mult` 1.0 | A future point's months before issue have `t ≥ 0` and policy years down to −2, and policy year 0 is the shock year of a point with no surrender charge. At `t = proj_len()` nothing is charged, paid or withdrawn, whatever `omega_age` and `charges_cease_age` are set to |
@@ -632,7 +632,10 @@ number:
   joined to the points in `Data`, which refuses a key the table lacks, naming every such
   point, since `UL_US_S` reads both on every projection of the point: the class factor in
   every month on the books, and the schedule in every month of a point with a charge. A
-  point without a charge is never refused for its schedule, which `UL_US_S` never reads.
+  point without a charge is never refused for its schedule, which `UL_US_S` never reads;
+  it reads its schedule's two columns where the table holds its ID, as at stage E, and
+  where the table does not, `has_surr_charge_schedule()` is 0 and both accessors raise
+  `KeyError`, naming the point, where their `.loc` raised it at stage E.
   A point whose COI scale the table lacks is another matter: it reads the scale only while
   charges run, and a point valued or issued at or past `charges_cease_age` never does, so
   `UL_US_S` projects it. So it is schedule 0, with a last year of 0, and
@@ -822,7 +825,10 @@ The compiled model refuses what modelx refuses, with the same message. modelx ra
   [4], each of which has_surr_charge`, and a run-off of 0 years, which the charge's run-off
   divides by. `UL_US_S` fails every projection of such a point, with a `KeyError` or a
   `ZeroDivisionError`, and no projection of a point without a charge reads its schedule, so
-  none is refused for it. And, before it is cast to int64, a number of `2**53` or more in
+  none is refused for it; on such a point whose ID the table lacks,
+  `surr_charge_rate_max()` and `surr_charge_runoff_years()` raise `KeyError`, `'point_id
+  7: surr_charge_table.csv has no schedule for its surr_charge_id'`, compiled as in
+  modelx. And, before it is cast to int64, a number of `2**53` or more in
   size, which numpy would cast to the least int64 past int64: a `point_id`, a model point's
   issue age, `model_point_table_sec.csv: age_at_entry must be below 2**53 in size; it is not
   at point_id [3]`, and a `duration_mth`, a policy issued `2**63` months on, and, on a point
@@ -1091,8 +1097,9 @@ one to compare.
   negative age in an age table, and each model point value a bound reads written blank, as
   text, as an infinity or outside its range, is refused naming the points, the table or
   its lines, by the `Data` cell that first reads it and by a projection; a point without a
-  charge is not refused for its schedule; and each edge of each range is accepted and
-  projects.
+  charge is not refused for its schedule, reads it where the table holds its ID, as at
+  stage E, and raises `KeyError` where it does not; and each edge of each range is
+  accepted and projects.
 - **No pandas in `Projection`** (C5), in `tests/test_compiled_conventions.py`, which holds
   what every `_SEC` model meets once it compiles. Read from the formulas, with no compiler:
   no cell but the reporting ones refers to pandas, numpy or another module, reads a table
@@ -1118,10 +1125,12 @@ one to compare.
   values, from a COI copy written out of its keys' order; and
   where the cap binds, and where a NaN reaches it; the compiled model refuses what modelx
   refuses, with modelx's message, on the relabelled extract too, and an argument past a
-  cache raises `IndexError`; the deepest call the contract allows runs cold on a 1 MiB
-  stack and on the main thread, and the test reports the smallest of seven stacks, 256 KiB
-  to 2 MiB, it ran on, waiting a bounded time for each; a Reference set after the model has
-  computed changes no value it has cached; and `run_sec.py --cython` prints what
+  cache raises `IndexError`; on points without a charge, the two schedule accessors read
+  the stage E values, and raise `KeyError` on an ID the table lacks, as modelx does, and
+  `Data`'s joins are modelx's arrays; the deepest call the contract allows runs cold on a
+  1 MiB stack and on the main thread, and the test reports the smallest of seven stacks,
+  256 KiB to 2 MiB, it ran on, waiting a bounded time for each; a Reference set after the
+  model has computed changes no value it has cached; and `run_sec.py --cython` prints what
   `run_sec.py` prints, and refuses a directory that holds no build. They are marked
   `cython`, and they skip without the toolchain, but in the `cython` CI job, which installs
   it on Linux and on Windows, one leg a product, a skip fails, whatever made it.

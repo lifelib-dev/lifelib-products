@@ -5530,9 +5530,10 @@ def test_a_schedule_no_charged_point_reads_is_accepted(tmp_path):
     ``VUL_US_S`` reads a point's schedule only if it ``has_surr_charge``, so a point without
     one projects whatever its ``surr_charge_id`` names, as it does in ``VUL_US_S``.  With
     the charge off on every point, the schedule run off over ``2**53`` years, and the twin
-    of S's point 2 naming a schedule the table lacks, the table reads, both join vectors
-    are 0.0 at every point, and every point projects exactly what it projects on the
-    committed schedule with the charge off.  The joins refuse a charged point alone
+    of S's point 2 naming a schedule the table lacks, the table reads; both join vectors
+    read the schedule, 18.0 and ``2**53``, at every point but that one, which is NaN with a
+    ``has_surr_charge_schedule`` of 0; and every point projects exactly what it projects on
+    the committed schedule with the charge off.  The joins refuse a charged point alone
     (:data:`UNJOINED`).
     """
     committed = _committed()
@@ -5545,8 +5546,15 @@ def test_a_schedule_no_charged_point_reads_is_accepted(tmp_path):
                           name=_name("runoff_huge"))
     try:
         assert len(model.Data.model_point_table()) == len(committed)
-        for cell in ("surr_charge_rate_max", "surr_charge_runoff_years"):
-            assert (model.Data.cells[cell]() == 0.0).all(), cell
+        lost_at = list(committed.index).index(lost)
+        for cell, value in (("surr_charge_rate_max", 18.0),
+                            ("surr_charge_runoff_years", 2.0 ** 53)):
+            want = np.full(len(committed), value)
+            want[lost_at] = np.nan
+            assert np.array_equal(model.Data.cells[cell](), want, equal_nan=True), cell
+        flags = model.Data.has_surr_charge_schedule()
+        assert flags.dtype == np.int64 and flags.tolist() == [
+            int(i != lost_at) for i in range(len(committed))]
         for label in committed.index:
             mine, theirs = _point(model, label), _point(base, label)
             for report in REPORTS:
@@ -5557,6 +5565,79 @@ def test_a_schedule_no_charged_point_reads_is_accepted(tmp_path):
     finally:
         model.close()
         base.close()
+
+
+# Points without a surrender charge, as (point_id, the surr_charge_id written, the charge
+# and the run-off their accessors read, or None where the table lacks the id).  Each is the
+# value bc8ce29's model, VUL_US_SEC at stage E, read there, its .loc reading the schedule
+# of a point with a charge or without, and raising KeyError on an id the table lacks: SC7,
+# a second schedule the copy adds; HUGE, a third, run off over 2**53 years, which only a
+# point with a charge is refused; VUL14 as shipped; VUL5, which no table has; and a blank
+# id.
+UNCHARGED = ((3, "SC7", (9.5, 7.0)), (5, "HUGE", (3.0, 2.0 ** 53)),
+             (6, "VUL14", (18.0, 14.0)), (7, "VUL5", None), (8, None, None))
+_NO_ID = ("KeyError: 'point_id {}: surr_charge_table.csv has no schedule for its "
+          "surr_charge_id'")
+
+
+def _surr_charges_with_sc7(table):
+    """The shipped schedules with SC7, $9.50 per $1,000 over 7 years, and HUGE, $3.00 per
+    $1,000 over ``2**53`` years."""
+    added = pd.DataFrame([
+        {"surr_charge_id": "SC7", "sc_per_1000_init": 9.5, "runoff_years": 7,
+         "provenance": "test copy"},
+        {"surr_charge_id": "HUGE", "sc_per_1000_init": 3.0, "runoff_years": 2.0 ** 53,
+         "provenance": "test copy"}])
+    return pd.concat([table, added], ignore_index=True)
+
+
+def _uncharged():
+    """The committed table with :data:`UNCHARGED`'s points uncharged on their ids."""
+    table = _committed()
+    for point, label, _ in UNCHARGED:
+        table = _set("has_surr_charge", [point], False)(_set("surr_charge_id", [point],
+                                                             label)(table))
+    return table
+
+
+def test_a_point_without_a_charge_reads_its_schedule_as_at_stage_e(tmp_path):
+    """On a point without a charge, the two schedule accessors read what they read at E.
+
+    No cell reads ``surr_charge_rate_max`` or ``surr_charge_runoff_years`` on a point
+    without a charge, since ``surr_charge_rate`` returns 0.0 and ``lapse_shock_month`` -1
+    first, but each is a cell, and Phase 2 moves no number (D2): so each reads the point's
+    schedule wherever the table holds its id, a run-off of ``2**53`` years included, and
+    raises ``KeyError`` where it does not, naming the point, as the ``.loc`` of the model
+    at stage ``E`` did (:data:`UNCHARGED`, pinned to bc8ce29's values).  ``Data`` joins
+    the schedule wherever it can, NaN and a ``has_surr_charge_schedule`` of 0 where it
+    cannot, and refuses no point without a charge, which projects as ``VUL_US_S`` projects
+    it, its schedule unread.
+    """
+    folder = _sec_inputs(tmp_path, _uncharged(),
+                         edits={"surr_charge_table.csv": _surr_charges_with_sc7})
+    model = _read(folder, "uncharged")
+    try:
+        for point, label, want in UNCHARGED:
+            p = _point(model, point)
+            have = p.surr_charge_id()
+            assert not p.has_surr_charge() and (have == label if label else have != have)
+            assert len(p.result_cf()) == p.proj_len() and p.surr_charge_rate(0) == 0.0
+            assert p.lapse_shock_month() == -1
+            cells = (p.cells["surr_charge_rate_max"], p.cells["surr_charge_runoff_years"])
+            if want is None:
+                for cell in cells:
+                    with pytest.raises(Exception) as excinfo:
+                        cell()
+                    assert _raised(excinfo.value) == _NO_ID.format(point)
+            else:
+                assert [(type(v), v) for v in (cell() for cell in cells)] == [
+                    (float, want[0]), (float, want[1])]
+            _release(model, _key(model, point))
+        known = dict(zip(model.Data.model_point_table().index,
+                         model.Data.has_surr_charge_schedule()))
+        assert [known[point] for point, _, _ in UNCHARGED] == [1, 1, 1, 0, 0]
+    finally:
+        model.close()
 
 
 # A point the contract does not issue, refused by proj_len() in its rules' order, as (case,
@@ -6682,6 +6763,56 @@ def test_the_compiled_model_reads_keys_written_as_floats_as_modelx_does(sec_buil
     found = compiled_mismatches(build, folder, refs={"dyn_behavior_on": True},
                                 also=_vul_c4_also)
     assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found)
+
+
+@pytest.mark.cython
+def test_the_compiled_model_reads_the_schedule_of_a_point_without_a_charge(sec_build,
+                                                                           tmp_path):
+    """Compiled, a point without a charge reads its schedule as modelx does, as at E.
+
+    On :data:`UNCHARGED`'s table, beside the copy's SC7 and HUGE, the compiled model's
+    ``surr_charge_rate_max()`` and ``surr_charge_runoff_years()`` on each point without a
+    charge are bc8ce29's numbers, pinned, of type float, and modelx's, and on the points
+    whose id the table lacks, or which have none, each raises ``KeyError``, naming the
+    point, with modelx's message; ``Data``'s two joins and ``has_surr_charge_schedule``
+    are modelx's arrays, NaN where the id is missing included, and each point's
+    ``net_cf(0)`` is modelx's.
+    """
+    build = sec_build(SEC)
+    table = _uncharged()
+    edits = {"surr_charge_table.csv": _surr_charges_with_sc7}
+    folder = compiled_case(build, tmp_path / "uncharged", model_points=table, edits=edits)
+    cells = ("surr_charge_rate_max", "surr_charge_runoff_years", "net_cf")
+    data = ("surr_charge_rate_max", "surr_charge_runoff_years", "has_surr_charge_schedule")
+    places = {point: list(table.index).index(point) for point, _, _ in UNCHARGED}
+    model = _read(folder, "uncharged_cy")
+    try:
+        want = {idx: [_modelx_did(lambda: model.Projection[idx].cells[cell](
+            *((0,) if cell == "net_cf" else ()))) for cell in cells]
+            for idx in places.values()}
+        want_data = {name: model.Data.cells[name]() for name in data}
+    finally:
+        model.close()
+    job = {"refs": {}, "data": list(data), "calls": {
+        idx: [(cell, (0,) if cell == "net_cf" else ()) for cell in cells]
+        for idx in places.values()}}
+    got = run_compiled(tmp_path / "uncharged", build.package.name, job)
+    assert got["exit"] == 0, got["stderr"]
+    assert all(got["compiled"].values()), got["compiled"]
+    for point, _, pinned in UNCHARGED:
+        idx = places[point]
+        accessors = (("raised", _NO_ID.format(point)),) * 2 if pinned is None else tuple(
+            ("ok", v) for v in pinned)
+        have = got["values"][idx]
+        assert tuple(want[idx][:2]) == accessors, (point, want[idx])
+        assert [(status, type(v), v) for status, v in have[:2]] == [
+            (status, type(v), v) for status, v in accessors], (point, have)
+        assert have[2][0] == want[idx][2][0] == "ok", (point, have)
+        assert _as_modelx(have[2][1], want[idx][2][1]), (point, have, want[idx])
+    for name, array in want_data.items():
+        status, value = got["data"][name]
+        assert status == "ok" and np.array_equal(np.asarray(value), array, equal_nan=True)
+        assert np.asarray(value).dtype == array.dtype, name
 
 
 def _capped_table(tmp_path):

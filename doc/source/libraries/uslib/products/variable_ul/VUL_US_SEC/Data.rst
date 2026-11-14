@@ -132,4 +132,6 @@ Cells Descriptions
 
 .. autofunction:: surr_charge_runoff_years
 
+.. autofunction:: has_surr_charge_schedule
+
 .. autofunction:: scenario_index

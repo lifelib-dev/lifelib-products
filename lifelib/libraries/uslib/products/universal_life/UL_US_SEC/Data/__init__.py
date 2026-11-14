@@ -87,9 +87,9 @@ that do not run one row a year or an age, without a gap or a repeat, policy year
 And so is a rate that is blank, text or infinite, naming the column and its lines.
 :func:`class_count` and :func:`surr_charge_count` check the class factors and the
 surrender-charge schedules the same way, for the joins that read them,
-:func:`class_factor`, :func:`surr_charge_rate_max` and :func:`surr_charge_runoff_years`.
-Each reader and each join asks for its extent, or the count, before it reads a value, so
-a projection meets the checks first.
+:func:`class_factor`, :func:`surr_charge_rate_max`, :func:`surr_charge_runoff_years`
+and :func:`has_surr_charge_schedule`. Each reader and each join asks for its extent, or
+the count, before it reads a value, so a projection meets the checks first.
 
 ``UL_US_S``'s readers take the extent from the key column as pandas reads it, where a blank
 key is a missing value the extent skips: the table is cut short, and every later year reads
@@ -161,6 +161,8 @@ surr_charge_rate_max()          float64  [point]          *surr_charge_table.csv
                                                           joined
 surr_charge_runoff_years()      float64  [point]          *surr_charge_table.csv*,
                                                           joined
+has_surr_charge_schedule()      int64    [point]          the same, 1 where the table
+                                                          holds the id
 coi_schedules()                 int      scalar           *coi_rates.csv*, checked
 coi_schedule()                  int64    [point]          sex, class and issue age,
                                                           joined; 0 where not
@@ -197,7 +199,9 @@ whose class or charged schedule the tables lack, or whose run-off is 0, since it
 class factor in every month on the books, and its schedule in every month of a point with
 a charge. It projects a run-off of ``2**53`` years or more, which is refused for the
 compiled ``int()`` of it (below). A point without a charge is never refused for its
-schedule, whatever its id, as ``UL_US_S`` never reads it. A point whose COI cell the
+schedule, whatever its id, as ``UL_US_S`` never reads it: its schedule is read where the
+table holds its id, and where it does not, ``Projection.surr_charge_rate_max`` raises
+``KeyError``, as at stage ``E``. A point whose COI cell the
 scale lacks is another matter: it reads its scale only while charges run, and a point
 valued or issued at or past ``charges_cease_age`` never does, so ``UL_US_S`` projects it.
 It is given schedule 0, and ``Projection.coi_rate_last_year`` refuses it, naming it, where
@@ -1241,17 +1245,20 @@ def surr_charge_rate_max():
     it runs off: float64 [point].
 
     The ``sc_per_1000_init`` of the point's ``surr_charge_id`` in
-    *surr_charge_table.csv*, once :func:`surr_charge_count` has checked the table, on a
-    point that ``has_surr_charge``, and 0.0 on one that does not, whose schedule
-    ``UL_US_S`` never reads.  The join refuses, naming every such point with a charge,
-    and only on a point with one, since ``UL_US_S`` reads the schedule in every month of
-    such a point's cover: an id the table lacks, where ``UL_US_S``'s ``.loc`` raised
-    ``KeyError``; a ``runoff_years`` of 0, which ``Projection.surr_charge_rate`` divides
-    by; and one of ``2**53`` years or more in size, the bound of every number read as an
-    int, past which the compiled ``int()`` in ``Projection.lapse_shock_year`` would in
-    time raise ``OverflowError``.  The same checks run in
-    :func:`surr_charge_runoff_years`, the join's other vector, so that whichever a
-    projection reads first refuses the point.
+    *surr_charge_table.csv*, once :func:`surr_charge_count` has checked the table, on
+    every point whose id the table holds, with a charge or without, as ``UL_US_SEC``'s
+    accessor read it at stage ``E``: a point without a charge reads its schedule, though
+    no cell reads it there.  On a point without a charge whose id the table lacks, blank
+    included, it is NaN, and :func:`has_surr_charge_schedule` 0: the point projects, and
+    ``Projection.surr_charge_rate_max`` raises ``KeyError`` on it, as the ``.loc`` did at
+    stage ``E``.  The join refuses, naming every such point with a charge, and only on a
+    point with one, since ``UL_US_S`` reads the schedule in every month of such a point's
+    cover: an id the table lacks, where ``UL_US_S``'s ``.loc`` raised ``KeyError``; a
+    ``runoff_years`` of 0, which ``Projection.surr_charge_rate`` divides by; and one of
+    ``2**53`` years or more in size, the bound of every number read as an int, past which
+    the compiled ``int()`` in ``Projection.lapse_shock_year`` would in time raise
+    ``OverflowError``.  The same checks run in :func:`surr_charge_runoff_years`, the
+    join's other vector, so that whichever a projection reads first refuses the point.
     """
     surr_charge_count()
     table = model_point_table()
@@ -1260,16 +1267,15 @@ def surr_charge_rate_max():
     years = pd.to_numeric(schedules["runoff_years"])                 # noqa: F821
     flags = (table["has_surr_charge"].astype(str).str.lower() == "true").tolist()
     ids = table["surr_charge_id"].tolist()
-    out = np.zeros(len(ids), dtype="float64")                        # noqa: F821
+    out = np.full(len(ids), np.nan, dtype="float64")                 # noqa: F821
     missing, zero, huge = [], [], []
     for i in range(len(ids)):
-        if not flags[i]:
-            continue
         if ids[i] not in charges.index:
-            missing.append(table.index[i])
-        elif years[ids[i]] == 0:
+            if flags[i]:
+                missing.append(table.index[i])
+        elif flags[i] and years[ids[i]] == 0:
             zero.append(table.index[i])
-        elif not abs(years[ids[i]]) < 2.0 ** 53:
+        elif flags[i] and not abs(years[ids[i]]) < 2.0 ** 53:
             huge.append(table.index[i])
         else:
             out[i] = float(charges[ids[i]])
@@ -1292,24 +1298,25 @@ def surr_charge_runoff_years():
     [point].
 
     The ``runoff_years`` of the point's ``surr_charge_id`` in *surr_charge_table.csv*, on
-    a point that ``has_surr_charge``, and 0.0 on one that does not, joined and checked
-    as :func:`surr_charge_rate_max` joins and checks the charge, with its refusals.
+    every point whose id the table holds, NaN on a point without a charge whose id it
+    lacks, joined and checked as :func:`surr_charge_rate_max` joins and checks the charge,
+    with its refusals.  A point without a charge reads the run-off as written, 0 or
+    ``2**53`` years included, which no cell reads there.
     """
     surr_charge_count()
     table = model_point_table()
     years = pd.to_numeric(surr_charge_table()["runoff_years"])       # noqa: F821
     flags = (table["has_surr_charge"].astype(str).str.lower() == "true").tolist()
     ids = table["surr_charge_id"].tolist()
-    out = np.zeros(len(ids), dtype="float64")                        # noqa: F821
+    out = np.full(len(ids), np.nan, dtype="float64")                 # noqa: F821
     missing, zero, huge = [], [], []
     for i in range(len(ids)):
-        if not flags[i]:
-            continue
         if ids[i] not in years.index:
-            missing.append(table.index[i])
-        elif years[ids[i]] == 0:
+            if flags[i]:
+                missing.append(table.index[i])
+        elif flags[i] and years[ids[i]] == 0:
             zero.append(table.index[i])
-        elif not abs(years[ids[i]]) < 2.0 ** 53:
+        elif flags[i] and not abs(years[ids[i]]) < 2.0 ** 53:
             huge.append(table.index[i])
         else:
             out[i] = float(years[ids[i]])
@@ -1324,6 +1331,26 @@ def surr_charge_runoff_years():
         raise ValueError(f"{surr_charge_file}: runoff_years must be below 2**53 years in "
                          f"size on the schedule of point_id {huge}, each of which "
                          f"has_surr_charge")                         # noqa: F821
+    return out
+
+
+def has_surr_charge_schedule():
+    """Whether *surr_charge_table.csv* holds each model point's schedule: int64 [point].
+
+    1 where the point's ``surr_charge_id`` is a ``surr_charge_id`` of the table, compared
+    exactly, as ``UL_US_S``'s ``.loc`` compares it, and 0 where it is not, blank
+    included, once :func:`surr_charge_count` has checked the table.  0 only on a point
+    without a charge, since :func:`surr_charge_rate_max` refuses the table where a point
+    with a charge names an id it lacks: there ``Projection.surr_charge_rate_max`` and
+    ``Projection.surr_charge_runoff_years`` raise ``KeyError``, naming the point.
+    """
+    surr_charge_count()
+    known = surr_charge_table().index                                # noqa: F821
+    ids = model_point_table()["surr_charge_id"].tolist()
+    out = np.zeros(len(ids), dtype="int64")                          # noqa: F821
+    for i in range(len(ids)):
+        if ids[i] in known:
+            out[i] = 1
     return out
 
 

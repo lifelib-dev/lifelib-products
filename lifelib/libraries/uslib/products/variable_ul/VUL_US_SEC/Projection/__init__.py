@@ -1017,12 +1017,19 @@ def surr_charge_rate_max():
     The ``sc_per_1000_init`` column of this point's row of *surr_charge_table.csv*,
     $18.00 on the shipped ``VUL14`` schedule; :func:`surr_charge_rate` steps it down by
     policy year from here.  ``Data.surr_charge_rate_max`` joins it to the points by
-    ``surr_charge_id``, once the table and the join are checked, and 0.0 on a point
-    without a charge, so that no projection cell reads the table: a blank charge would
-    come out of :func:`surr_charge_rate`'s ``max`` as no charge at all, and ``Data``
-    refuses one.  Read only where :func:`has_surr_charge` is true.
+    ``surr_charge_id``, once the table and the join are checked, so that no projection
+    cell reads the table: a blank charge would come out of :func:`surr_charge_rate`'s
+    ``max`` as no charge at all, and ``Data`` refuses one.  :func:`surr_charge_rate`
+    reads it only where :func:`has_surr_charge` is true, but a point without a charge
+    reads its schedule too, as at stage ``E``, where the table holds its id; where it
+    does not, ``Data.has_surr_charge_schedule`` is 0, and this raises ``KeyError``, naming
+    the point, where stage ``E``'s ``.loc`` raised it.
     """
-    return float(data.surr_charge_rate_max()[idx])                   # noqa: F821
+    rate = float(data.surr_charge_rate_max()[idx])                   # noqa: F821
+    if not data.has_surr_charge_schedule()[idx]:                     # noqa: F821
+        raise KeyError(f"point_id {point_id()}: surr_charge_table.csv has no schedule "
+                       f"for its surr_charge_id")
+    return rate
 
 
 def surr_charge_runoff_years():
@@ -1035,10 +1042,16 @@ def surr_charge_runoff_years():
     by it, and :func:`lapse_shock_month` counts policy years on its ``int()``, as
     ``VUL_US_S`` does: the compiled ``int()`` converts it through a Python int to a C
     ``long long``, exact below ``2**63``.  Joined by ``Data.surr_charge_runoff_years`` as
-    :func:`surr_charge_rate_max` is, 0.0 on a point without a charge.  Read only where
-    :func:`has_surr_charge` is true.
+    :func:`surr_charge_rate_max` is.  Read by those two only where :func:`has_surr_charge`
+    is true; on a point without a charge it reads the schedule where the table holds its
+    id, as at stage ``E``, and raises ``KeyError``, naming the point, where it does not,
+    as :func:`surr_charge_rate_max` does.
     """
-    return float(data.surr_charge_runoff_years()[idx])               # noqa: F821
+    years = float(data.surr_charge_runoff_years()[idx])              # noqa: F821
+    if not data.has_surr_charge_schedule()[idx]:                     # noqa: F821
+        raise KeyError(f"point_id {point_id()}: surr_charge_table.csv has no schedule "
+                       f"for its surr_charge_id")
+    return years
 
 
 def scenario_id():

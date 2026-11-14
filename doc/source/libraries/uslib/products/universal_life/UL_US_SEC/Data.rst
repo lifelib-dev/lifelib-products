@@ -109,3 +109,5 @@ Cells Descriptions
 .. autofunction:: surr_charge_rate_max
 
 .. autofunction:: surr_charge_runoff_years
+
+.. autofunction:: has_surr_charge_schedule

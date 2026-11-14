@@ -881,11 +881,18 @@ def surr_charge_rate_max():
     The ``sc_per_1000_init`` column of this point's row of *surr_charge_table.csv*,
     $9.00 on the shipped ``UL9`` schedule; :func:`surr_charge_rate` amortizes it linearly
     from here.  ``Data.surr_charge_rate_max`` joins it to the points by
-    ``surr_charge_id``, once the table and the join are checked, and 0.0 on a point
-    without a charge, so that no projection cell reads the table.  Read only where
-    :func:`has_surr_charge` is true.
+    ``surr_charge_id``, once the table and the join are checked, so that no projection
+    cell reads the table.  :func:`surr_charge_rate` reads it only where
+    :func:`has_surr_charge` is true, but a point without a charge reads its schedule too,
+    as at stage ``E``, where the table holds its id; where it does not,
+    ``Data.has_surr_charge_schedule`` is 0, and this raises ``KeyError``, naming the point,
+    where stage ``E``'s ``.loc`` raised it.
     """
-    return float(data.surr_charge_rate_max()[idx])                   # noqa: F821
+    rate = float(data.surr_charge_rate_max()[idx])                   # noqa: F821
+    if not data.has_surr_charge_schedule()[idx]:                     # noqa: F821
+        raise KeyError(f"point_id {point_id()}: surr_charge_table.csv has no schedule "
+                       f"for its surr_charge_id")
+    return rate
 
 
 def surr_charge_runoff_years():
@@ -899,9 +906,16 @@ def surr_charge_runoff_years():
     would divide by, or one of ``2**53`` years or more in size, the bound every number
     read as an int is held to: the compiled ``int()`` in :func:`lapse_shock_year`
     converts it through a Python int to a C ``long long``, exact below ``2**63`` and
-    raising ``OverflowError`` past it.  Read only where :func:`has_surr_charge` is true.
+    raising ``OverflowError`` past it.  Read by those two only where
+    :func:`has_surr_charge` is true; on a point without a charge it reads the schedule
+    where the table holds its id, as at stage ``E``, and raises ``KeyError``, naming the
+    point, where it does not, as :func:`surr_charge_rate_max` does.
     """
-    return float(data.surr_charge_runoff_years()[idx])               # noqa: F821
+    years = float(data.surr_charge_runoff_years()[idx])              # noqa: F821
+    if not data.has_surr_charge_schedule()[idx]:                     # noqa: F821
+        raise KeyError(f"point_id {point_id()}: surr_charge_table.csv has no schedule "
+                       f"for its surr_charge_id")
+    return years
 
 
 def gsp():
