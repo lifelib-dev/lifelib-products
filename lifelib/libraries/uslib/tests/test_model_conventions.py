@@ -1046,8 +1046,15 @@ def twin_model(name, tmp_path_factory):
 # where DIA_US_S measures it at the exercise month (DIA_US_SEC's docstring): on point 15
 # the one value, -2.9e-11, a rounding about zero, sits at month 359 in SEC and at month 252
 # in S, so each model's 0.0 meets the other's rounding.  It keeps the residual's own floor.
+#
+# RILA_US_SEC adds an option portfolio's legs by Neumaier's loop, as Python's `sum` does
+# from 3.12, where RILA_US_S calls `sum`; on Python 3.11 `sum` adds left to right, so the
+# account value differs in its last bits and the roll-forward residual, a rounding about
+# zero near 1e-11, differs by up to 1.2e-11 (Tests run 30's 3.11 legs).  It keeps the
+# residual's own floor.
 TWIN_FLOORS = {
     "DIA_US_SEC": {"check_commutation_value_resid": 1e-9},
+    "RILA_US_SEC": {"check_av_roll_fwd_resid": 1e-9},
 }
 
 

@@ -133,6 +133,7 @@ comparison through :func:`_mismatches`, so that the same calls serve Phase 2's i
 """
 import ast
 import dataclasses
+import errno
 import gc
 import importlib.machinery
 import inspect
@@ -5581,6 +5582,10 @@ _VOL = 1.3407807929942596e154
 # edits, [(cell, arguments, SEC's outcome)], S's outcome of the first call).  An outcome
 # "S" is S's float, bit for bit; "complex" S's complex number; and any other text the
 # raise, whole.  Each bound is met on both sides, a case that projects beside one refused.
+# S's own `**` overflow raises with the platform's text for ERANGE: "Result too large" on
+# Windows, "Numerical result out of range" with glibc (Tests run 30's Linux leg).
+_S_OVERFLOW = f"OverflowError: (34, '{os.strerror(errno.ERANGE)}')"
+
 _FAR = "is past the largest float"
 POWERS = [
     ("a one-year term's budget past 1: an integral power of a negative base", 4, {},
@@ -5628,14 +5633,14 @@ POWERS = [
      {SCENARIOS: _market_at(0, impl_vol=math.nextafter(_VOL, math.inf))},
      [("result_cf", (), f"OverflowError: point_id 1: opt_component_at(0, 0, 1), the "
        f"volatility 1.3407807929942597e+154 squared, {_FAR}")],
-     "OverflowError: (34, 'Result too large')"),
+     _S_OVERFLOW),
     ("the interim value's rate adjustment below the largest float", 1, {}, None,
      {SCENARIOS: _market_at(0, mvr=1e50)}, [("mva_factor", (0,), "S")], "S"),
     ("the interim value's rate adjustment past the largest float", 1, {}, None,
      {SCENARIOS: _market_at(0, mvr=1e60)},
      [("mva_factor", (0,), f"OverflowError: point_id 1: mva_factor(0): "
        f"9.615384615384615e+59 ** 5.916666666666667 {_FAR}")],
-     "OverflowError: (34, 'Result too large')"),
+     _S_OVERFLOW),
     ("the notional's discount on a 150-year term", 7, {"iv_credit_spread": -1.03},
      _set("term_years", [7], 150), {"guar_min_rate_table.csv": _floors_for(150)},
      [("fixed_proxy_factor", (0,), "S"), ("result_cf", (), "S")], "S"),
@@ -5644,7 +5649,7 @@ POWERS = [
      {"guar_min_rate_table.csv": _floors_for(200)},
      [("fixed_proxy_factor", (0,), f"OverflowError: point_id 7: fixed_proxy_factor(0): "
        f"0.010000000000000009 ** -199.91666666666666 {_FAR}")],
-     "OverflowError: (34, 'Result too large')"),
+     _S_OVERFLOW),
     ("math.exp past the largest float, on a dividend yield near -1", 1, {},
      _set("term_years", [1], 20), {"guar_min_rate_table.csv": _floors_for(20),
                                    SCENARIOS: _market_at(0, div_yield=-1 + 2.0 ** -52)},
