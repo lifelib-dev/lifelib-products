@@ -1460,6 +1460,24 @@ def _fia_rebased_scenarios(s_model, table):
     return pd.concat(out, ignore_index=True)
 
 
+def _fia_codes(name, args):
+    """``FIA_US_S``'s keys as ``FIA_US_SEC`` takes them at stage ``"EC"`` (R9, R12).
+
+    S's ``claims(t, None)`` and ``claims_over_av(t, None)``, the ``kind=None`` totals,
+    are SEC's ``(t, "ALL")``, and S's ``scenario_value(y, name)`` columns their names
+    upper-cased, ``"INDEX_LEVEL"`` and ``"MVA_REF_YIELD"``; :func:`codes` then turns each
+    string into SEC's int code, as it turns S's timings and kinds.  Every other cell's
+    arguments pass as they are, and so do SEC's own codes, where a comparison of two SEC
+    models passes it SEC's keys: ``MYGA_US_SEC``'s map, :func:`_myga_codes`, on FIA's
+    scenario reader.
+    """
+    if name in ("claims", "claims_over_av") and args[1] is None:
+        return (args[0], "ALL")
+    if name == "scenario_value" and isinstance(args[1], str):
+        return (args[0], args[1].upper())
+    return args
+
+
 # FIA_US_SEC's opening state (D6): what FIA_US_S carries into month d, each read as S's own
 # formulas read it.  The account value, the fixed account, the Model #805 floor and the
 # withdrawals to date entering the month; the account value and the fixed account at the
@@ -2455,50 +2473,56 @@ SEC_SPECS: dict[str, SecSpec] = {
     #     replace them.
     #   result_pols: SEC's gains pols_new_biz, the count D5 puts there.  Each column it
     #     shares with S is a cell T1 compares, and the module compares the report itself.
-    # At stage EC, T1 also needs a mapping for S's claims(t, None) and
-    # claims_over_av(t, None) keys, the kind=None totals that R9 and R12 replace.
+    # At stage EC (M21), S's claims(t, None) and claims_over_av(t, None) keys, the
+    # kind=None totals, are SEC's code ALL, and S's scenario_value columns,
+    # "index_level" and "mva_ref_yield", are SEC's codes named as them upper-cased: the
+    # spec's twin_arg_map, _fia_codes, maps both, and codes maps the rest.  T1 skips three
+    # more S cells at stage EC:
+    #   bonus_clawback_on, mva_pp_on, wd_reduction_rate_on: S's float-parameter cells,
+    #     which SEC writes inline in the int-keyed cells that call them (R14):
+    #     wd_clawback_pp and surr_clawback_pp, wd_mva_pp and mva_pp, and
+    #     wd_reduction_rate.  Their every value on the projection path reaches T1 through
+    #     those cells, which it compares at every month.
+    # The four engine cells, credit_rate_on, payout_rate, mgsv_rate_statutory and
+    # mgsv_rate_is_compliant, are S's formulas, kept for T1 and a reader and admitted by
+    # the registry's "engine" (R14); T1 compares them at the arguments the module's sweep
+    # calls S's with.
     #
-    # No projection cell calls a label accessor or compares a model point column's text:
-    # glwb_basis and credit_method are decoded into the is_*_basis and is_credit_* bools,
-    # and the three string References, step_up_mode, rb_wd_convention and
-    # mva_collar_basis, into is_step_up_*, is_rb_* and is_collar_*, each read where S asks
-    # its question, so a value S does not know is answered as S answers it.  The text a
-    # projection cell still compares is S's timing and kind strings; four joins on text
-    # keys wait for R7, each in the one cell that reads its table (mort_rate_base_at on
-    # sex, rollup_rate_py on rollup_id, wd_scheduled_at on wd_schedule_id and
-    # scenario_value on scenario_id).
+    # No projection cell calls a label accessor or compares text: glwb_basis and
+    # credit_method are decoded in Data into the 0/1 vectors the is_*_basis and
+    # is_credit_* cells read, and the three References, step_up_mode, rb_wd_convention
+    # and mva_collar_basis, hold int codes the is_step_up_*, is_rb_* and is_collar_*
+    # cells compare, each read where S asks its question, so a value S does not know is
+    # answered as S answers it (R6, R10).  The four joins on text keys are numbered in
+    # Data (R7): mort_rate_base_at on the point's sex, by mort_schedule; rollup_rate_py on
+    # its rollup_id, by rollup_number; scenario_value on its scenario_id, by
+    # scenario_number; and wd_scheduled_at on its wd_schedule_id, by wd_schedule_number.
     #
-    # For Phase 2's caches, each size with every input it depends on.  The contract issues
-    # at ages 40 to 80 (product-spec) and runs to the year entered at maturity_age, 120:
-    #   t: 0 .. 1,092, 1,093 values: 972 months of cover at the youngest issue age, 40
-    #     (the mortality table's first and product-spec's lowest), plus future_horizon_mth,
-    #     120, the frame's last month 1,091, and the month after, t = proj_len(), which
-    #     Phase 2's sweep calls: every cell that reads t + 1 is guarded there, the count's
-    #     roll-forward residual included, so nothing reads 1,093;
+    # The caches, each size with every input it depends on (spec_sec.py).  The contract
+    # issues at ages 40 to 80 (product-spec) and runs to the year entered at maturity_age,
+    # 120:
+    #   t: 0 .. 1,092: 972 months of cover at the youngest issue age, 40, plus
+    #     future_horizon_mth, 120, the frame's last month 1,091, and the month after,
+    #     t = proj_len(), which C4's sweep calls: every cell that reads t + 1 is guarded
+    #     there, the count's roll-forward residual included, so nothing reads 1,093;
     #   y (surr_charge_rate_py, vest_rate_py, rollup_rate_py): contract years 1 .. 81, from
     #     the youngest issue age and maturity_age; the surrender table's last year, 11 as
     #     shipped, caps the first two;
-    #   x (mort_rate_base_at): attained ages 40 .. 120, by sex; a (payout_rate_at): the
+    #   a (mort_rate_base_at): attained ages 40 .. 120, by sex; a (payout_rate_at): the
     #     exercise ages, min_income_age, 50 as shipped, .. 121, the covered age 120 opening
     #     the last contract year plus 1, read in the payout bands' first to last age, the
     #     last band holding above it, so the cache runs to 121 though the table stops at
     #     120;
     #   k (wd_scheduled_at): contract-year counts 0 .. 80; y (index_level, mva_ref_yield,
     #     scenario_value): anniversary numbers 0 .. 81, each read at its valuation month;
-    #     scenario_value(y, name) keeps S's text parameter name, "index_level" or
-    #     "mva_ref_yield", the column read, which R9 makes a code, as MYGA's scenario
-    #     column name is.
-    # No Projection Reference bounds the issue age to the product's 40 to 80: Data's
-    # mortality join refuses an age below the table's first, 40, an age above 80 projects,
-    # as in S, and proj_len() refuses one past maturity_age, whose cover is empty.  Phase 2
-    # makes each bound a Reference that proj_len() checks.  The join checks the attained
-    # age in the point's first month on the books only, so on a substituted mortality table
-    # that stops below maturity_age, an attained age past its last raises a bare KeyError
-    # from mort_rate_base_at, naming no file, as MYGA's join does.  The float-parameter
-    # cells are S's, for Phase 2 to inline: bonus_clawback_on, mva_pp_on and
-    # wd_reduction_rate_on, still called; credit_rate_on and payout_rate, kept for S's tests
-    # and called by no projection cell; and mgsv_rate_statutory and mgsv_rate_is_compliant,
-    # which nothing reaches.  SEC adds none, and no uncached cell.
+    #     scenario_value(y, name) takes the column's code, INDEX_LEVEL or MVA_REF_YIELD.
+    # So spec_sec.py sizes t 1,094, y 83, a 123 and k 82, with one inner width, 12, for the
+    # timing, kind and name codes; Data.read_last_mth, 1,093, and Data.read_last_age, 122,
+    # hold the scenario, rollup, withdrawal, mortality and payout arrays to the last month
+    # and age a read reaches.  proj_len refuses an issue age below issue_age_min, 40, or
+    # above issue_age_max, 80, the product's ages, and a point whose sex's mortality stops
+    # below maturity_age, against Data's mort_age_lasts, since maturity_age is a Projection
+    # Reference that Data cannot read.
     "FIA_US_SEC": SecSpec(
         twin="FIA_US_S",
         column_map={"entry_year": None, "av_initial": "av_pp_init",
@@ -2514,7 +2538,9 @@ SEC_SPECS: dict[str, SecSpec] = {
         twin_state=_FIA_STATE,
         exempt=frozenset({"av_pp_init", "av_fixed_pp_init", "benefit_base_pp_init",
                           "rollup_base_pp_init", "mgsv_pp_init", "phase_init",
-                          "payout_rate_init", "entry_year", "entry_mth", "result_pols"}),
+                          "payout_rate_init", "entry_year", "entry_mth", "result_pols",
+                          "bonus_clawback_on", "mva_pp_on", "wd_reduction_rate_on"}),
+        twin_arg_map=_fia_codes,
         companions={"rate_scenario_sec.csv": _fia_rebased_scenarios},
         future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},
     ),

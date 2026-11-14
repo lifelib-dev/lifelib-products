@@ -118,7 +118,8 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # each directly after its twin and with its INPUT_FILES set below, and Phase 2 moves each
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
 # WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth, ULSG_US_SEC the
-# fifth and MYGA_US_SEC the sixth.
+# fifth, MYGA_US_SEC the sixth, SPIA_US_SEC the seventh, DIA_US_SEC the eighth and
+# FIA_US_SEC the ninth.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -163,7 +164,11 @@ MODELS = {
                                 "mva_ref_term_years")}),
     "FIA_US_S": ("products/fixed_indexed_annuity/FIA_US_S", MONTHLY),
     "FIA_US_SEC": ("products/fixed_indexed_annuity/FIA_US_SEC",
-                   {**MONTHLY, "twin": "FIA_US_S", "stage": "E"}),
+                   {**MONTHLY, "twin": "FIA_US_S", "stage": "EC", "param": "idx",
+                    "reporting": ("credit_method", "glwb_basis", "policy_id", "rollup_id",
+                                  "scenario_id", "sex", "tax_status", "wd_schedule_id"),
+                    "engine": ("credit_rate_on", "mgsv_rate_is_compliant",
+                               "mgsv_rate_statutory", "payout_rate")}),
     "VA_US_S": ("products/variable_annuity/VA_US_S", MONTHLY),
     "VA_US_SEC": ("products/variable_annuity/VA_US_SEC",
                   {**MONTHLY, "twin": "VA_US_S", "stage": "E"}),

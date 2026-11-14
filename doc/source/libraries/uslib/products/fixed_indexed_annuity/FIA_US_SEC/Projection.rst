@@ -8,11 +8,15 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: policy_id
 
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
+
+.. autofunction:: mort_schedule
 
 .. autofunction:: tax_status
 
@@ -62,11 +66,17 @@ Cells Descriptions
 
 .. autofunction:: rollup_id
 
+.. autofunction:: rollup_number
+
 .. autofunction:: mva_ref_yield_at_issue
 
 .. autofunction:: scenario_id
 
+.. autofunction:: scenario_number
+
 .. autofunction:: wd_schedule_id
+
+.. autofunction:: wd_schedule_number
 
 .. autofunction:: av_pp_init
 
@@ -260,8 +270,6 @@ Cells Descriptions
 
 .. autofunction:: bonus_factor
 
-.. autofunction:: bonus_clawback_on
-
 .. autofunction:: mva_ref_yield
 
 .. autofunction:: mva_term
@@ -274,8 +282,6 @@ Cells Descriptions
 
 .. autofunction:: is_collar_surrender_value
 
-.. autofunction:: mva_pp_on
-
 .. autofunction:: wd_charge_pp
 
 .. autofunction:: wd_clawback_pp
@@ -283,8 +289,6 @@ Cells Descriptions
 .. autofunction:: wd_mva_pp
 
 .. autofunction:: wd_payment_pp
-
-.. autofunction:: wd_reduction_rate_on
 
 .. autofunction:: wd_reduction_rate
 
