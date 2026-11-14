@@ -38,7 +38,9 @@ cell calls and which stay Python when the model compiles, beside ``model_point``
 a ``Projection`` cell to the Python builtins its formula may still call, R16's ``round`` of
 a projected amount, which the typing guard's check of the generated C and the static check
 of the formulas then admit in that cell alone, and nowhere else; ``WholeLife_US_SEC``'s
-dividend is the first.  It names builtins only, by their bare names.  ``"engine"``, at
+dividend is the first.  It names a builtin by its bare name, or a module's function by
+its dotted name, ``"math.erf"``, as ``RILA_US_SEC``'s pricing keeps ``math``'s (M25), each
+call wrapped in ``float(...)`` so that its locals stay C.  ``"engine"``, at
 stage ``"EC"``, names S's cells of float parameters that an SEC model keeps for a reader and
 for the twin identity, which no compiled cell calls and which compile with C signatures
 and dict caches, their bodies Python, admitted to the typing guard and the static check
@@ -119,7 +121,8 @@ MONTHLY = {"grid": "monthly", "age_basis": "ANB", "discounted": False}
 # to stage "EC"; Term_US_SEC, the first, was entered exactly so, and is the first at "EC",
 # WholeLife_US_SEC the second, UL_US_SEC the third, VUL_US_SEC the fourth, ULSG_US_SEC the
 # fifth, MYGA_US_SEC the sixth, SPIA_US_SEC the seventh, DIA_US_SEC the eighth,
-# FIA_US_SEC the ninth, IUL_US_SEC the tenth and VA_US_SEC the eleventh.
+# FIA_US_SEC the ninth, IUL_US_SEC the tenth, VA_US_SEC the eleventh and RILA_US_SEC the
+# twelfth.
 MODELS = {
     # Life
     "Term_US_S": ("products/term_life/Term_US_S", MONTHLY),
@@ -186,7 +189,22 @@ MODELS = {
     "RILA_US_S": (
         "products/registered_index_linked_annuity/RILA_US_S", MONTHLY),
     "RILA_US_SEC": ("products/registered_index_linked_annuity/RILA_US_SEC",
-                    {**MONTHLY, "twin": "RILA_US_S", "stage": "E"}),
+                    {**MONTHLY, "twin": "RILA_US_S", "stage": "EC", "param": "idx",
+                     "reporting": ("amort_rule", "crediting_type", "iv_family",
+                                   "policy_id", "scenario_id", "sex", "wd_schedule_id"),
+                     "engine": ("bs_binary_call", "bs_call", "bs_d1", "bs_d2", "bs_put",
+                                "credit_rate_at", "norm_cdf", "opt_budget_at_cap",
+                                "opt_component", "opt_portfolio", "opt_portfolio_abs"),
+                     "python_calls": {
+                         "cap_solved_at_start": ("math.erf", "math.exp", "math.log",
+                                                 "math.sqrt"),
+                         "fixed_leg_yield": ("math.log",),
+                         "fixed_proxy_factor": ("math.log",),
+                         "inflation_factor": ("math.log",),
+                         "mva_factor": ("math.log",),
+                         "opt_budget_target": ("math.log",),
+                         "opt_component_at": ("math.erf", "math.exp", "math.log",
+                                              "math.sqrt")}}),
     # Annuity — payout
     "SPIA_US_S": ("products/immediate_annuity/SPIA_US_S", MONTHLY),
     "SPIA_US_SEC": ("products/immediate_annuity/SPIA_US_SEC",

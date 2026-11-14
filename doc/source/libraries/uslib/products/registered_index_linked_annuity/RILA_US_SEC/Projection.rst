@@ -8,11 +8,15 @@ Cells Descriptions
 
 .. autofunction:: model_point
 
+.. autofunction:: point_id
+
 .. autofunction:: policy_id
 
 .. autofunction:: age_at_entry
 
 .. autofunction:: sex
+
+.. autofunction:: mort_schedule
 
 .. autofunction:: premium_pp
 
@@ -49,6 +53,10 @@ Cells Descriptions
 .. autofunction:: scenario_id
 
 .. autofunction:: wd_schedule_id
+
+.. autofunction:: wd_schedule_number
+
+.. autofunction:: scenario_number
 
 .. autofunction:: is_cap_crediting
 
@@ -172,19 +180,29 @@ Cells Descriptions
 
 .. autofunction:: declared_cap_solved
 
+.. autofunction:: cap_solved_at_start
+
 .. autofunction:: cap_rate
 
 .. autofunction:: step_rate
 
 .. autofunction:: edge_rate
 
-.. autofunction:: opt_legs
+.. autofunction:: opt_leg_count
+
+.. autofunction:: opt_leg
 
 .. autofunction:: opt_component
+
+.. autofunction:: opt_component_at
 
 .. autofunction:: opt_portfolio
 
 .. autofunction:: opt_portfolio_abs
+
+.. autofunction:: opt_portfolio_at
+
+.. autofunction:: opt_portfolio_abs_at
 
 .. autofunction:: opt_budget
 
@@ -193,6 +211,8 @@ Cells Descriptions
 .. autofunction:: nge_spread_implied
 
 .. autofunction:: credit_rate_at
+
+.. autofunction:: credit_rate_by
 
 .. autofunction:: credit_rate_term
 

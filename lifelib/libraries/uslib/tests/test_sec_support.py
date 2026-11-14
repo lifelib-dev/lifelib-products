@@ -1450,6 +1450,51 @@ def test_the_static_check_finds_what_a_compiled_cell_cannot_run():
     assert elsewhere == found, elsewhere
 
 
+def test_static_faults_admit_a_module_call_by_its_dotted_name():
+    """``"python_calls"`` admits ``"math.erf"`` in its cell alone, wrapped in ``float``.
+
+    ``RILA_US_SEC``'s pricing keeps Python's ``math`` (M25): C5 clears the module name
+    only as the head of a call the cell's admission names, and only where that call is the
+    one argument of a ``float(...)``, which keeps the cell's locals C.  A module attribute
+    read but not called, ``math.inf``, stays a fault whatever is admitted, and so do an
+    admitted call left unwrapped and a call admitted in another cell.
+    """
+    import math
+    from sec_support import static_faults
+    cells = {
+        "erfs": "lambda t: float(math.erf(t / 2.0))",
+        "logs": "lambda t: float(math.log(t + 1.0))",
+        "infs": "lambda t: math.inf",
+        "bare": "lambda t: math.erf(t / 2.0) + 1.0",
+    }
+    model = mx.new_model(_name("dotted"))
+    try:
+        data = model.new_space("Data")
+        proj = model.new_space("Projection")
+        proj.data, proj.math = data, math
+        for name, formula in cells.items():
+            proj.new_cells(name, formula=formula)
+
+        def faults(admitted):
+            return sorted(f.split(",")[0] for f in static_faults(
+                model, reporting=set(), python_calls=admitted))
+
+        everything = ["Projection.bare", "Projection.erfs", "Projection.infs",
+                      "Projection.logs"]
+        assert faults({}) == everything
+        assert all(f.endswith("refers to the module math")
+                   for f in static_faults(model, reporting=set()))
+        assert faults({"erfs": ("math.erf",)}) == [
+            "Projection.bare", "Projection.infs", "Projection.logs"]
+        assert faults({"infs": ("math.inf",)}) == everything
+        assert faults({"logs": ("math.erf",)}) == everything
+        assert faults({"bare": ("math.erf",)}) == everything
+        assert faults({"erfs": ("math.erf",), "logs": ("math.log",)}) == [
+            "Projection.bare", "Projection.infs"]
+    finally:
+        model.close()
+
+
 ENGINE_PROJECTION = {
     "model_point": "lambda: data.table()",
     "result_cf": "lambda: 0",

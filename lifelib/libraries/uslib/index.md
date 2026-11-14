@@ -66,13 +66,14 @@ Every product also carries a second model, `<product>_US_SEC`, derived from its 
 model point, and a model point may be a policy issued at that date, one already in force at
 it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
 `basiclife/BasicTerm_SC` does; `Term_US_SEC`, `WholeLife_US_SEC`, `UL_US_SEC`, `VUL_US_SEC`,
-`ULSG_US_SEC`, `MYGA_US_SEC`, `SPIA_US_SEC`, `DIA_US_SEC`, `FIA_US_SEC`, `IUL_US_SEC` and
-`VA_US_SEC` compile, and each `model-sec.md` says how. On the `_S` model's new-business
-points, issued at the valuation date, an `_SEC` model reproduces its `_S` model cell by
-cell. Where the worked example's point is already in force, as whole life's, the FIA's, the
-variable annuity's and guaranteed UL's are, the `_SEC` twin of that point continues the `_S`
-projection from the month it is valued at, its expenses apart, which inflate from the
-valuation date. Each `model-sec.md` says what running in force changes. `Term_US_SEC`,
+`ULSG_US_SEC`, `MYGA_US_SEC`, `SPIA_US_SEC`, `DIA_US_SEC`, `FIA_US_SEC`, `IUL_US_SEC`,
+`VA_US_SEC` and `RILA_US_SEC` compile, and each `model-sec.md` says how. On the `_S`
+model's new-business points, issued at the valuation date, an `_SEC` model reproduces its
+`_S` model cell by cell. Where the worked example's point is already in force, as whole
+life's, the FIA's, the variable annuity's and guaranteed UL's are, the `_SEC` twin of that
+point continues the `_S` projection from the month it is valued at, its expenses apart,
+which inflate from the valuation date. Each `model-sec.md` says what running in force
+changes. `Term_US_SEC`,
 `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`, `DIA_US_SEC`, `FIA_US_SEC`,
 `VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC`, `ULSG_US_SEC` and `IUL_US_SEC` are all twelve:
 every product has its in-force model.

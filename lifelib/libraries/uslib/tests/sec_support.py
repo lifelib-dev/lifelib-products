@@ -1748,6 +1748,23 @@ def _rila_rebased_scenarios(s_model, table):
     return pd.concat(out, ignore_index=True)
 
 
+def _rila_codes(name, args):
+    """``RILA_US_S``'s keys as ``RILA_US_SEC`` takes them at stage ``"EC"`` (R9, R12).
+
+    S's ``claims(t, None)`` and ``claims_over_av(t, None)``, the ``kind=None`` totals,
+    are SEC's ``(t, "ALL")``, and S's ``market_state(k, name)`` columns their names
+    upper-cased, ``"INDEX_LEVEL"`` to ``"IMPL_VOL"``; :func:`codes` then turns each string
+    into SEC's int code, as it turns S's timings, kinds, buckets, legs and markets.  Every
+    other cell's arguments pass as they are, and so do SEC's own codes, where a comparison
+    of two SEC models passes it SEC's keys: :func:`_fia_codes` on RILA's scenario reader.
+    """
+    if name in ("claims", "claims_over_av") and args[1] is None:
+        return (args[0], "ALL")
+    if name == "market_state" and isinstance(args[1], str):
+        return (args[0], args[1].upper())
+    return args
+
+
 # RILA_US_SEC's opening state (D6): what RILA_US_S carries into month d, each read as S's
 # own formulas read it.  The Investment Amount, the Fixed and Holding Accounts, the Account
 # Value, the Free Withdrawal Amount still unused and the return-of-premium base entering
@@ -2730,49 +2747,22 @@ SEC_SPECS: dict[str, SecSpec] = {
     #
     # T1 holds on RILA at any count: S weights its premium and its acquisition by
     # pols_if(0), the count issued, as SEC weights them by the contracts issued.  It skips
-    # one S cell besides the default three:
+    # two S cells besides the default three:
     #   result_pols: SEC's gains pols_new_biz, the count D5 puts there, so the frame has a
     #     column S's lacks and cannot agree as a whole.  Each column it shares with S is a
     #     cell T1 compares at every month, and the product module compares the report
     #     itself with S's, column by column.
-    # S caches claims(t, kind=None) and claims_over_av(t, kind=None) under (t, None); at
-    # stage EC, where that default becomes a named total (R12), T1 needs an arg_map for
-    # those keys.  No projection cell calls a label accessor or compares the model point's
-    # text: crediting_type, iv_family and amort_rule are decoded into the ten is_* bools,
-    # each read where S asks its question, and the three joins on text keys read
-    # model_point() in the one cell that reads each table (mort_rate_base_at on sex,
-    # market_state on scenario_id and wd_amount_pm on wd_schedule_id).  The text a
-    # projection cell still compares is S's own: the timing, kind, bucket, leg and market
-    # strings, which R9 numbers, and opt_legs' tuple of leg names (R10).  The
-    # float-parameter cells are S's, for Phase 2 to inline or re-key (R14): norm_cdf, the
-    # five Black-Scholes cells, opt_component, opt_portfolio, opt_portfolio_abs,
-    # credit_rate_at and opt_budget_at_cap.  S's tests call opt_component, opt_portfolio,
-    # credit_rate_at and bs_binary_call directly.  SEC adds none, and no uncached cell.
-    #
-    # Phase 2's sizes, each with the inputs it depends on.  The contract issues at ages 0
-    # to 85 (product-spec); Data refuses an issue age below 0 and one whose attained age in
-    # the first month on the books the mortality table does not rate, below 40 as shipped,
-    # and no cell refuses one above 85, as in S, so Phase 2 refuses an issue age outside
-    # 0 to 85 in proj_len(), beside the cover check:
-    #   t: 0 to 1,201.  The longest frame is maturity_mth() - duration_mth_init(), where
-    #     maturity_mth() is 12 x max(maturity_age - age_at_entry, maturity_min_years): 1,080
-    #     months at the youngest issue age, 0, and maturity_age, 90, plus
-    #     future_horizon_mth, 120, so the frame's last month is 1,199.  Phase 2's sweep
-    #     calls every cell at t = proj_len(), 1,200.  Every monthly cell holds t to
-    #     proj_len(): the count's residual and the Account Value after the withdrawal are
-    #     0.0 there before they read t + 1, so the furthest count read is
-    #     pols_if_at(proj_len(), "BEF_NB"), 0.0, which both read in the last covered month.
-    #     market_state holds the instant proj_len() + 1, 1,201, which index_level, mvr,
-    #     risk_free, div_yield and impl_vol, unguarded, read at t = proj_len().
-    #   x (mort_rate_base_at): attained ages from the youngest issue age, 0, to the oldest
-    #     issue age, 85, plus maturity_min_years, 10, less 1: 0 to 94.
-    #   cy (surr_charge_rate_at): complete contract years at a month end, 0 to the longest
-    #     policy_term(), 90 at issue age 0; lapse_shock_year reads the table's own years.
-    #   y (lapse_rate_base_py): contract years 1 to 91, the policy_year of the last
-    #     covered month at issue age 0.
-    #   m (wd_amount_pm): policy month ends 1 to 1,080, at issue age 0.
-    # Phase 2's market_state becomes per-field [scenario, month] arrays, whose months run to
-    # the frame's end, and its future copies keep their months before issue unreadable.
+    #   opt_legs: S's tuple of leg names, which no C type holds (R10), is SEC's
+    #     opt_leg_count() and opt_leg(i), int leg codes, which the product module maps back
+    #     onto S's tuple on every twin.
+    # S caches claims(t, kind=None) and claims_over_av(t, kind=None) under (t, None), and
+    # market_state(k, name) under its lower-case column names: _rila_codes maps the first
+    # to SEC's ALL and the second to SEC's upper-cased codes (R9, R12), and codes maps every
+    # other string, the timings, kinds, buckets, legs and markets.  S's float-parameter
+    # cells, norm_cdf, the five Black-Scholes cells, opt_component, opt_portfolio,
+    # opt_portfolio_abs, credit_rate_at and opt_budget_at_cap, are SEC's engine cells
+    # (R14), kept for S's tests and T1 and called by no compiled cell; the projection reads
+    # their int-keyed forms.  Phase 2's sizes are spec_sec.py's, derived there.
     "RILA_US_SEC": SecSpec(
         twin="RILA_US_S",
         derived=((1, 71), (2, 36), (13, 80), (13, 72), (4, 30), (15, 59), (12, 40),
@@ -2780,7 +2770,8 @@ SEC_SPECS: dict[str, SecSpec] = {
         future=((1, 13),),
         state=_RILA_STATE,
         twin_state={c: f for c, f in _RILA_STATE.items() if c != "scenario_id"},
-        exempt=frozenset({"result_pols"}),
+        exempt=frozenset({"result_pols", "opt_legs"}),
+        twin_arg_map=_rila_codes,
         companions={"market_scenario_sec.csv": _rila_rebased_scenarios},
         future_state={"scenario_id": lambda s, k: f"{s.scenario_id()}-F{k}"},
     ),
@@ -4778,6 +4769,26 @@ def _vector_text(value):
     return f"a {type(value).__module__.split('.')[0]} {type(value).__name__}"
 
 
+def _admitted_call(node, parents, cell, python_calls):
+    """Whether module name ``node`` heads a call ``python_calls`` admits in ``cell``.
+
+    ``math.erf(x)`` is admitted where the cell's admission names ``"math.erf"``, and only
+    as the one argument of a ``float(...)``, which Cython turns into a C double at once, so
+    that the call keeps no Python object among the cell's locals or temporaries (R16,
+    M25).  A module attribute read but not called, ``math.inf``, is no call, and stays a
+    fault; so does an admitted call left unwrapped.
+    """
+    import ast
+    attr = parents.get(node)
+    call = parents.get(attr)
+    wrap = parents.get(call)
+    return (isinstance(attr, ast.Attribute) and attr.value is node
+            and isinstance(call, ast.Call) and call.func is attr
+            and f"{node.id}.{attr.attr}" in python_calls.get(cell, ())
+            and isinstance(wrap, ast.Call) and isinstance(wrap.func, ast.Name)
+            and wrap.func.id == "float" and wrap.args == [call] and not wrap.keywords)
+
+
 def static_faults(model, *, reporting, python_calls=None):
     """C5: what a formula of ``model`` holds that a compiled cell cannot run in C.
 
@@ -4801,7 +4812,9 @@ def static_faults(model, *, reporting, python_calls=None):
     included, because mx2cy keeps every cell of such a name a Python method (R12).  The
     registry's ``reporting`` must name ``Projection`` cells.  ``python_calls``, the
     registry's ``"python_calls"``, ``{cell: (builtin, ...)}``, admits each builtin it names
-    in that cell's formula alone, R16's ``round`` of a projected amount.  Returns a line
+    in that cell's formula alone, R16's ``round`` of a projected amount, and each module's
+    function it names by its dotted name, ``"math.erf"``, where the call is the one
+    argument of a ``float(...)`` (:func:`_admitted_call`, M25).  Returns a line
     per fault, ``"Projection.mort_rate_base, line 9: reads .loc"``, the line counted in the
     formula.
     """
@@ -4858,7 +4871,8 @@ def static_faults(model, *, reporting, python_calls=None):
                     and parents[node].slice is node):
                 lines.append(f"{where}: builds a {kind}, a Python object")
             if isinstance(node, ast.Name):
-                if node.id in modules:
+                if node.id in modules and not _admitted_call(node, parents, name,
+                                                             python_calls):
                     lines.append(f"{where}: refers to the module {node.id}")
                 elif node.id in reporting:
                     lines.append(f"{where}: refers to the reporting cell {node.id}")

@@ -107,7 +107,7 @@ jobs:
                 guaranteed_ul, fixed_deferred_annuity, immediate_annuity,
                 deferred_income_annuity,
                 fixed_indexed_annuity, indexed_ul,
-                variable_annuity]
+                variable_annuity, registered_index_linked_annuity]
         os: [ubuntu-latest, windows-latest]
         python-version: ['3.13']
     env:

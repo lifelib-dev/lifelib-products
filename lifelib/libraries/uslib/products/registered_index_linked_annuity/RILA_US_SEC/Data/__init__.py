@@ -7,10 +7,10 @@
 
 The seven input CSVs are read here, **once per model**, and referenced from
 :mod:`~.RILA_US_SEC.Projection` as ``data``. :mod:`~.RILA_US_SEC.Projection` is
-parameterized by ``point_id``, so each ``Projection[N]`` is a separate ItemSpace with its
-own cells cache; if the readers lived there, every model point would re-read every file.
-Holding them in an unparameterized Space reads each file once no matter how many
-contracts are projected.
+parameterized by ``idx``, a point's position in the table, so each ``Projection[i]`` is a
+separate ItemSpace with its own cells cache; if the readers lived there, every model point
+would re-read every file. Holding them in an unparameterized Space reads each file once no
+matter how many contracts are projected.
 
 Inputs are **external files**: plain CSVs in the model folder's parent directory,
 ``products/registered_index_linked_annuity/``, rather than data stored inside the model.
@@ -34,7 +34,7 @@ never opens.
 
 :func:`input_dir` resolves the directory from ``_model.path.parent`` at run time, so the
 model works wherever the repository is checked out. Each table has a filename Reference
-and a reader Cells:
+and a reader cell:
 
 =========================  ==============================  ==========================
 Reference                  Cells                           File
@@ -76,9 +76,10 @@ is 36, and refuses a key that is blank, text or not a whole number, and a key on
 one row; where a reader reads every key from the first to the last, a gap too. Each
 refuses a value that is blank, text, infinite or outside its range, every value a cap, a
 ``min`` or a ``max`` reads among them, which would lose a blank without a word. Every
-message names the file, the column and the lines at fault. Each table's one reader in
-``Projection`` asks its count before it reads a value, so a projection meets the checks
-first.
+message names the file, the column and the lines at fault. ``Data``'s vectors and
+arrays, which ``Projection`` reads, ask for their table's count before they are built, and
+``Projection``'s lapse and surrender-charge readers ask it themselves, so a projection
+meets the checks first.
 
 ``market_scenario`` is the file peculiar to this product. A RILA's *contractual* formula
 consumes market data — an index level, a Constant Maturity Treasury yield at the term's
@@ -119,6 +120,143 @@ name, before the model computes anything. No formula changes. Replacing a file c
 production implementation supplies a volatility *surface* rather than the flat scalar
 shipped here, and that is a change to the scenario file plus a strike-and-maturity
 lookup, not to the crediting or interim-value formulas.
+
+A compiled model clears no cache, so there a file name is set on a package just imported,
+before anything is read.
+
+**The vectors.** The readers and the checked tables return what the files hold, and no
+:mod:`~.RILA_US_SEC.Projection` cell but ``model_point``, a reporting cell, reads them.
+The others read the arrays below instead, one element at a time, a model point's
+attribute being the element at its position, ``data.premium()[idx]``. That is what lets
+the model compile to C, as ``basiclife.BasicTerm_SC`` does: each array is a numpy vector
+or table of int64 or float64, which compiles to a typed memoryview, never one of bools,
+objects or text, and each count and extent is an int.
+
+Text the projection needs is decoded here, into the number it selects: each value of the
+three categorical columns ``RILA_US_S`` branches on, ``crediting_type``, ``iv_family`` and
+``amort_rule``, into a 0/1 flag, the ten ``is_*`` cells, the ``nge_reset`` flag into
+another, and a blank ``declared_cap``, an uncapped option, into a third. Each table keyed
+by more than a number becomes an integer-indexed array: the mortality table, the scenarios
+and the withdrawal programmes are numbered, each point carrying the number of its own,
+``mort_schedule``, ``scenario_number`` and ``wd_schedule_number``, all three numbered from
+1 in the sorted order of their keys; the mortality is held by attained age, the surrender
+charge by complete contract year, the scenarios step-filled by valuation month and the
+programmes by policy month end, so that the age, the year or the month is the index; the
+guaranteed minimum rates are joined to each point's term; and the lapse table, a short
+step function keyed by contract years no contract bounds, stays two row vectors, scanned
+by its one reader:
+
+====================================  =======  ===================  ======================
+Cells                                 dtype    Shape                From
+====================================  =======  ===================  ======================
+point_id()                            int64    [point]              the table's index
+age_at_entry(), duration_mth()        int64    [point]              the two columns, 0
+                                                                    where too large
+term_years()                          int64    [point]              ``term_years``, the
+                                                                    same
+age_at_entry_ok() and two more        int64    [point]              1 where an int64
+                                                                    holds the value
+policy_count() .. wd_rate_ann()       float64  [point]              ``policy_count``,
+                                                                    ``premium`` and seven
+                                                                    more
+inv_amt_pp_init() and twelve more     float64  [point]              the thirteen columns
+                                                                    of the opening state
+nge_reset()                           int64    [point]              the checked flag
+is_uncapped()                         int64    [point]              ``declared_cap``
+                                                                    blank
+cap_uncapped()                        float    scalar               ``+inf``
+is_cap_crediting() and nine more      int64    [point]              the ten decodes, 1 on
+                                                                    the value
+guar_min_cap(), guar_min_step(),      float64  [point]              the point's term's
+guar_min_edge()                                                     row, joined
+scenario_count()                      int      scalar               the companion
+scenario_number()                     int64    [point]              ``scenario_id``,
+                                                                    joined
+scenario_first_mths()                 int64    [scenario]           each first ``t``
+scenario_last_mth()                   int      scalar               ``read_last_mth``
+index_level_array() and four more     float64  [scenario, t]        step-filled, one a
+                                                                    scenario column
+mort_sexes()                          int      scalar               *mort_table.csv*
+mort_schedule()                       int64    [point]              ``sex``, joined
+mort_age_firsts(), mort_age_lasts()   int64    [schedule]           each sex's ages
+mort_age_held()                       int      scalar               ``read_last_age``
+mort_rate_array()                     float64  [schedule, age]      *mort_table.csv*
+surr_charge_array()                   float64  [cy]                 *surr_charge_table.csv*
+lapse_years(), lapse_rates()          float64  [row]                *lapse_table.csv*
+wd_schedule_count()                   int      scalar               *withdrawal_table.csv*
+wd_schedule_number()                  int64    [point]              ``wd_schedule_id``,
+                                                                    joined
+wd_last_mth()                         int      scalar               ``read_last_mth``
+wd_amount_array()                     float64  [programme, m]       ``wd_amount``, 0.0
+                                                                    without a row
+====================================  =======  ===================  ======================
+
+The table checks are what they were, :func:`model_point_table` and the six checked
+tables, beside their int counts, and their refusals are stage ``E``'s, messages included.
+No copy of the numeric columns is read beside the table: :func:`model_point_table`
+refuses every numeric column the projection reads, by column and point, where it is
+blank, text or out of range, so each vector is the checked column, read as
+``RILA_US_S``'s ``float()``, ``int()`` or ``bool()`` reads it.
+
+**Every array is held to the last age or month a read reaches.** Two References say
+where: ``read_last_mth``, 1,202, the last element of ``Projection``'s ``t`` cache,
+``12 x max(maturity_age - issue_age_min, maturity_min_years) + future_horizon_mth + 2``,
+and ``read_last_age``, 121, the last element of its ``a`` cache,
+``max(maturity_age, issue_age_max + maturity_min_years)``, both derived in
+``spec_sec.py``, since ``Data`` cannot read ``Projection``'s References; a test holds
+each to the spec. The scenarios are held by valuation month to ``read_last_mth``, a
+scenario's last row holding to the end, as ``RILA_US_S``'s step function holds it, and
+the programmes by policy month end to the same month; the mortality is held by age to
+``read_last_age``. So a key far past any read, which ``RILA_US_S`` holds and never
+reaches, neither widens an array nor refuses a point ``RILA_US_S`` projects: it is
+dropped before it is cast, whatever its size, ``1e20`` or ``2**60`` among them. A read
+past an array, which no projection makes, is refused by its reader in
+:mod:`~.RILA_US_SEC.Projection`, naming the point, rather than clamped. The mortality is
+indexed from age 0, where no attained age is below; a sex's first and last ages are held
+as read, clamped to ``-1 .. read_last_age + 1``, so that a table rating more than the
+array holds is told apart from one rating less (``Projection.proj_len``). A change to
+``maturity_age``, ``maturity_min_years``, ``issue_age_min``, ``issue_age_max`` or
+``future_horizon_mth`` needs both References recomputed with the spec.
+
+**An array is read by element, never whole,** in this Space as in
+:mod:`~.RILA_US_SEC.Projection`. The compiler types an array cell as a memoryview only
+once it has seen that every use of it, in either Space, is an element read: one ``len()``,
+slice, loop over it or numpy call on it anywhere, and the cell compiles as a Python
+object. So an array derived here reads the table's column itself, never another cell's
+array, and a width comes from a table or a count cell. Each table's check is the one cell
+that every array, extent and number of the table reads first, so that a projection, which
+reads an extent or a number first, meets the same refusal as a reader of the array. A
+keyword named as a cell of this Space would be rewritten by the export, so none is
+passed, and a local of a formula is named apart from the cells.
+
+**What cannot be decoded is refused,** when the vector is first read, naming every point
+at fault, where it is not ``RILA_US_S``'s reading: a ``point_id`` that is not a whole
+number below ``2**53``. A decode compares the text exactly, element by element, as
+``RILA_US_S`` compares it, so a value written in another case or with a space, ``Cap``,
+or ``CAP`` with a leading space, is no flag, and the projection answers as ``RILA_US_S``
+answers it, raising ``invalid crediting_type``, ``invalid iv_family`` or ``invalid
+amort_rule`` where it raises it. A join number maps the point's key as ``RILA_US_S``'s
+``.loc`` matches it, by the value pandas read, and :func:`model_point_table` has refused a
+key its table lacks. A read beyond a table's extent is refused where ``RILA_US_S``'s
+lookup raised, by the one :mod:`~.RILA_US_SEC.Projection` cell that reads the table,
+naming the point: an attained age outside the sex's in ``mort_rate_base_at``, a month
+before the scenario's first in ``market_state``, a contract year before the lapse
+table's first in ``lapse_rate_base_py``, each a ``ValueError`` where ``RILA_US_S`` raised
+``KeyError`` or its own message. A year past the charge schedule, and a month end a
+programme has no row at, are no charge and no withdrawal, as there.
+
+**An int64 holds what it is read from.** A float past int64 casts to the least int64
+without a word, so a number read into an int64 vector is refused unless it is below
+``2**53`` in size, where the int64 holds ``RILA_US_S``'s reading of it: the ``point_id``
+(:func:`point_id`), at its first read, and ``term_years``, which
+*guar_min_rate_table.csv* may floor at any whole number, ``age_at_entry`` and
+``duration_mth``, by the point's own ``Projection`` accessor, through
+:func:`term_years_ok`, :func:`age_at_entry_ok` and :func:`duration_mth_ok`, so that no
+point is refused for another's value. ``RILA_US_S`` projects such a term, so that is a
+recorded refusal; an issue age or a duration of that size passes
+:func:`model_point_table` only where the mortality table rates the attained age it
+reaches, a table of one row there, and ``RILA_US_S`` projects it too. A table key is never
+cast before its hold has dropped it.
 """
 
 from modelx.serialize.jsonvalues import *
@@ -268,15 +406,19 @@ def model_point_table():
     four amounts rounding can move apart by two.
 
     The table is returned with the columns those checks read by value as the numbers they
-    were checked as: ``duration_mth``, ``age_at_entry`` and ``term_years`` int64;
+    were checked as: ``duration_mth``, ``age_at_entry`` and ``term_years`` int64, or
+    float64 where a value of the column is ``2**53`` or more in size, which an int64
+    cannot be trusted to hold and ``Projection`` refuses for its own point;
     ``policy_count``, ``premium``, the rates and the thirteen opening-state columns
     float64, blank as NaN; and ``nge_reset`` the flags it was checked as. What it cannot
     check, ``Projection.proj_len`` does where it can: whether the point is still in cover
     at the valuation date, which needs ``maturity_age`` and ``maturity_min_years``, and
     whether the free withdrawal amount unused is within the contract year's, where the
-    year's base is 0 or more, which needs ``free_wd_rate``. Left to the projection: a
-    mortality table that stops before the maturity age, and whether a term-start value is
-    the one the point's history ran on, since no scenario holds a path before ``t = 0``.
+    year's base is 0 or more, which needs ``free_wd_rate``. A mortality table that stops
+    before the age the last covered year is entered at is refused by
+    ``Projection.proj_len``, naming the point. Left to the projection: whether a
+    term-start value is the one the point's history ran on, since no scenario holds a path
+    before ``t = 0``.
     """
     name = model_point_file                                          # noqa: F821
     table = pd.read_csv(input_dir() / name, index_col="point_id")    # noqa: F821
@@ -316,21 +458,24 @@ def model_point_table():
         raise ValueError(f"{name}: duration_mth must be -{horizon} or more, a policy "
                          f"issued at most {horizon} months after the valuation date; it "
                          f"is not at point_id {bad}")
-    checked = {"policy_count": count.astype("float64"),
-               "duration_mth": months.astype("int64")}
+    checked = {"policy_count": count.astype("float64"),        # an int64 holds no
+               "duration_mth": months.astype(                  # value of 2**53 or more
+                   "float64" if (~(months.abs() < 2.0 ** 53)).any() else "int64")}
     ages = pd.to_numeric(table["age_at_entry"], errors="coerce")     # noqa: F821
     bad = table.index[~((ages % 1 == 0) & (ages >= 0))].tolist()
     if bad:
         raise ValueError(f"{name}: age_at_entry must be a whole number of years, 0 or "
                          f"more; it is not at point_id {bad}")
-    checked["age_at_entry"] = ages.astype("int64")
+    checked["age_at_entry"] = ages.astype(
+        "float64" if (~(ages.abs() < 2.0 ** 53)).any() else "int64")
     term = pd.to_numeric(table["term_years"], errors="coerce")       # noqa: F821
     bad = table.index[~((term % 1 == 0) & (term >= 1))].tolist()
     if bad:
         raise ValueError(f"{name}: term_years must be a whole number of years, 1 or more: "
                          f"the term clock counts months modulo 12 x term_years; it is not "
                          f"at point_id {bad}")
-    checked["term_years"] = term.astype("int64")
+    checked["term_years"] = term.astype(
+        "float64" if (~(term.abs() < 2.0 ** 53)).any() else "int64")
     premium = pd.to_numeric(table["premium"], errors="coerce")       # noqa: F821
     bad = table.index[~((premium > 0) & (premium < float("inf")))].tolist()
     if bad:
@@ -568,7 +713,8 @@ def market_scenario():
     contract issued at the valuation date is ``RILA_US_S``'s own clock; each model point
     restated in force or issued later reads its own copy, re-based to its month, which
     holds no level before the point's issue month. :func:`market_scenario_count` checks
-    the table, and ``Projection.market_state``, its one reader, asks for the count first.
+    the table, and ``Data``'s scenario arrays, which ``Projection.market_state`` reads, ask
+    for the count before they are built.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / market_scenario_file,                          # noqa: F821
@@ -612,8 +758,8 @@ def withdrawal_table():
     Indexed by ``(wd_schedule_id, month_end)`` - the **policy** month end the withdrawal
     is taken at, counted from the Issue Date, since a withdrawal programme is a contractual
     schedule and stays on the policy clock; a month end with no row takes no withdrawal.
-    :func:`withdrawal_count` checks the table, and ``Projection.wd_amount_pm``, its one
-    reader, asks for the count first.
+    :func:`withdrawal_count` checks the table, and :func:`wd_amount_array`, which
+    ``Projection.wd_amount_pm`` reads, asks for the count before it is built.
     """
     return pd.read_csv(                                              # noqa: F821
         input_dir() / withdrawal_file,                               # noqa: F821
@@ -637,8 +783,8 @@ def market_scenario_count():
     is a level that never holds. A scenario may start after ``t = 0``, for business issued
     later, so the month a scenario must start by is the point's: :func:`model_point_table`
     refuses a point whose scenario sets no level by its first month on the books.
-    ``Projection.market_state``, the table's one reader, asks for the count before it
-    reads a level, so a projection meets the checks first.
+    ``Data``'s scenario arrays, which ``Projection.market_state`` reads, ask for the count
+    before they are built, so a projection meets the checks first.
     """
     name = market_scenario_file                                      # noqa: F821
     rows = market_scenario().reset_index()
@@ -680,9 +826,9 @@ def mort_table_count():
     naming each age missing. And so is a ``mort_rate`` that is blank, text, infinite or
     below 0, naming its lines: through the cap on mortality the rate reaches every count in
     force, and a blank would survive the cap as a NaN, text fail far from here. A rate
-    above 1 is accepted, and capped. ``Projection.mort_rate_base_at``, the table's one
-    reader, asks for the count before it reads a rate, so a projection meets the checks
-    first.
+    above 1 is accepted, and capped. :func:`mort_rate_array` and the age vectors, which
+    ``Projection.mort_rate_base_at`` reads, ask for the count before they are built, so a
+    projection meets the checks first.
     """
     name = mort_table_file                                           # noqa: F821
     rows = mort_table().reset_index()
@@ -768,8 +914,8 @@ def guar_min_rate_count():
     refused, naming the file, the column and the lines it is on, and so is a term on more
     than one row. And so is a ``guar_min_cap``, a ``guar_min_step`` or a ``guar_min_edge``
     that is blank, text, infinite or below 0, naming its lines: each floors a declared
-    rate through a ``max``, which would lose a blank. ``Projection.guar_min_rate``, the
-    table's one reader, asks for the count before it reads a floor, and
+    rate through a ``max``, which would lose a blank. The floor vectors, which
+    ``Projection.guar_min_rate`` reads, ask for the count before they are built, and
     :func:`model_point_table` refuses a point whose term the table lacks.
     """
     name = guar_min_rate_file                                        # noqa: F821
@@ -841,8 +987,8 @@ def withdrawal_count():
     lines. And so is a ``wd_amount`` that is blank, text, infinite or below 0, naming its
     lines: the withdrawal reaches the account value through a ``min``, which would lose a
     blank. ``RILA_US_S``'s lookup matches the raw months, so one written as text turns them
-    all to text, and every scheduled withdrawal is then zero. ``Projection.wd_amount_pm``,
-    the table's one reader, asks for the count before it reads an amount, and
+    all to text, and every scheduled withdrawal is then zero. :func:`wd_amount_array`, which
+    ``Projection.wd_amount_pm`` reads, asks for the count before it is built, and
     :func:`model_point_table` refuses a point whose programme the table lacks.
     """
     name = withdrawal_file                                           # noqa: F821
@@ -870,6 +1016,777 @@ def withdrawal_count():
                          f"not on line {bad}")
     return int(len(rows))
 
+def point_id():
+    """The ``point_id`` of each row, an int64 vector, read by value from the table's index.
+
+    ``Projection`` is indexed by position, ``idx``, and reads its point's label here, so
+    that every refusal names the point by the label a reader finds in the table. A label
+    that is not a whole number, or not below ``2**53`` in size, is refused, naming it:
+    ``RILA_US_S`` keys its points by any label pandas reads.
+    """
+    table = model_point_table()
+    labels = pd.to_numeric(pd.Series(table.index), errors="coerce")  # noqa: F821
+    bad = table.index[~(labels % 1 == 0).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: point_id must be a whole "  # noqa: F821
+                         f"number; {bad} is not")
+    bad = table.index[~(labels.abs() < 2.0 ** 53).to_numpy()].tolist()
+    if bad:
+        raise ValueError(f"{model_point_file}: point_id must be below 2**53 "  # noqa: F821
+                         f"in size; {bad} is not")
+    return labels.to_numpy(dtype="int64")
+
+
+def age_at_entry():
+    """The issue age of each point, an int64 vector; 0 where :func:`age_at_entry_ok` is
+    0."""
+    values = model_point_table()["age_at_entry"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        if abs(values[i]) < 2 ** 53:
+            out[i] = int(values[i])
+    return out
+
+
+def age_at_entry_ok():
+    """1 where the point's ``age_at_entry`` is below ``2**53`` in size, else 0, int64.
+
+    :func:`model_point_table` refuses such an age unless the mortality table rates its
+    sex there, which only a table of one row at that age does; ``Projection.age_at_entry``
+    refuses the point where this is 0, as :func:`term_years_ok`'s does.
+    """
+    values = model_point_table()["age_at_entry"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        if abs(values[i]) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def duration_mth():
+    """The policy months completed at the valuation date, an int64 vector; 0 where
+    :func:`duration_mth_ok` is 0."""
+    values = model_point_table()["duration_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        if abs(values[i]) < 2 ** 53:
+            out[i] = int(values[i])
+    return out
+
+
+def duration_mth_ok():
+    """1 where the point's ``duration_mth`` is below ``2**53`` in size, else 0, int64.
+
+    As :func:`age_at_entry_ok`: the mortality table's key check refuses such a duration
+    unless the table rates the attained age it reaches, and ``Projection.duration_mth_init``
+    refuses the point where this is 0.
+    """
+    values = model_point_table()["duration_mth"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        if abs(values[i]) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def term_years():
+    """T, the index-linked term of each point, an int64 vector; 0 where
+    :func:`term_years_ok` is 0.
+
+    :func:`model_point_table` has refused a term that is not a whole number, 1 or more,
+    and one *guar_min_rate_table.csv* does not floor, but that table may floor any whole
+    term, ``2**60`` or ``1e20`` among them, which an int64 cannot be trusted to hold.
+    """
+    values = model_point_table()["term_years"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        if abs(values[i]) < 2 ** 53:
+            out[i] = int(values[i])
+    return out
+
+
+def term_years_ok():
+    """1 where the point's ``term_years`` is below ``2**53`` in size, else 0, int64.
+
+    ``Projection.term_years`` refuses the point where it is 0, before the term clock reads
+    the term: ``RILA_US_S`` projects such a term on Python's exact ints, so that is a
+    recorded refusal.
+    """
+    values = model_point_table()["term_years"].tolist()
+    out = np.zeros(len(values), dtype="int64")                       # noqa: F821
+    for i in range(len(values)):
+        if abs(values[i]) < 2 ** 53:
+            out[i] = 1
+    return out
+
+
+def policy_count():
+    """The contracts each point stands for, a float64 vector."""
+    return model_point_table()["policy_count"].to_numpy(dtype="float64")
+
+
+def premium():
+    """P, the single purchase payment per contract of each point, a float64 vector."""
+    return model_point_table()["premium"].to_numpy(dtype="float64")
+
+
+def buffer():
+    """b, the buffer of each point, a float64 vector."""
+    return model_point_table()["buffer"].to_numpy(dtype="float64")
+
+
+def floor_rate():
+    """f, the floor of each point's ``FLOOR`` module, a float64 vector."""
+    return model_point_table()["floor_rate"].to_numpy(dtype="float64")
+
+
+def participation():
+    """PR, the participation rate of each point, a float64 vector."""
+    return model_point_table()["participation"].to_numpy(dtype="float64")
+
+
+def declared_cap():
+    """c, the declared Cap Rate of each point, a float64 vector; NaN where blank.
+
+    A blank is an uncapped option, which :func:`is_uncapped` decodes;
+    ``Projection.declared_cap`` returns the NaN as ``RILA_US_S``'s ``float()`` does, and
+    no cell reads it there.
+    """
+    return model_point_table()["declared_cap"].to_numpy(dtype="float64")
+
+
+def declared_step():
+    """s, the declared Step Rate of each point, a float64 vector."""
+    return model_point_table()["declared_step"].to_numpy(dtype="float64")
+
+
+def declared_edge():
+    """e, the declared Edge Rate of each point, a float64 vector."""
+    return model_point_table()["declared_edge"].to_numpy(dtype="float64")
+
+
+def wd_rate_ann():
+    """The behavioural withdrawal rate of each point, a float64 vector."""
+    return model_point_table()["wd_rate_ann"].to_numpy(dtype="float64")
+
+
+def inv_amt_pp_init():
+    """The Investment Amount entering month 0, per contract, a float64 vector."""
+    return model_point_table()["inv_amt_pp_init"].to_numpy(dtype="float64")
+
+
+def fixed_acct_pp_init():
+    """The Fixed Account entering month 0, per contract, a float64 vector."""
+    return model_point_table()["fixed_acct_pp_init"].to_numpy(dtype="float64")
+
+
+def holding_acct_pp_init():
+    """The Holding Account entering month 0, per contract, a float64 vector."""
+    return model_point_table()["holding_acct_pp_init"].to_numpy(dtype="float64")
+
+
+def av_pp_init():
+    """The Account Value entering month 0, per contract, a float64 vector."""
+    return model_point_table()["av_pp_init"].to_numpy(dtype="float64")
+
+
+def av_pp_prev_anniv_init():
+    """The Account Value before withdrawals at the anniversary on or before the valuation
+    date, per contract, a float64 vector."""
+    return model_point_table()["av_pp_prev_anniv_init"].to_numpy(dtype="float64")
+
+
+def free_wd_remain_init():
+    """The Free Withdrawal Amount still unused entering month 0, a float64 vector."""
+    return model_point_table()["free_wd_remain_init"].to_numpy(dtype="float64")
+
+
+def rop_pp_init():
+    """The return-of-premium base entering month 0, per contract, a float64 vector."""
+    return model_point_table()["rop_pp_init"].to_numpy(dtype="float64")
+
+
+def index_at_term_start_init():
+    """The index level on the Term Start Date of a term begun before the valuation month,
+    a float64 vector; NaN where blank, on every point whose term starts later."""
+    return model_point_table()["index_at_term_start_init"].to_numpy(dtype="float64")
+
+
+def mvr_at_term_start_init():
+    """The Market Value Rate on that Term Start Date, a float64 vector; NaN where blank."""
+    return model_point_table()["mvr_at_term_start_init"].to_numpy(dtype="float64")
+
+
+def risk_free_at_term_start_init():
+    """The risk-free rate on that Term Start Date, a float64 vector; NaN where blank."""
+    return model_point_table()["risk_free_at_term_start_init"].to_numpy(dtype="float64")
+
+
+def div_yield_at_term_start_init():
+    """The dividend yield on that Term Start Date, a float64 vector; NaN where blank."""
+    return model_point_table()["div_yield_at_term_start_init"].to_numpy(dtype="float64")
+
+
+def impl_vol_at_term_start_init():
+    """The implied volatility on that Term Start Date, a float64 vector; NaN where blank."""
+    return model_point_table()["impl_vol_at_term_start_init"].to_numpy(dtype="float64")
+
+
+def cap_rate_init():
+    """The cap re-solved at a renewal under ``nge_reset`` before the valuation month, a
+    float64 vector; NaN where blank, on every other point."""
+    return model_point_table()["cap_rate_init"].to_numpy(dtype="float64")
+
+
+def nge_reset():
+    """Whether each point re-solves its cap at each renewal, 1 or 0, an int64 vector.
+
+    :func:`model_point_table` has read the flag by value into bools, so ``"False"`` written
+    as text is 0, not ``bool("False")``.
+    """
+    return model_point_table()["nge_reset"].to_numpy(dtype="int64")
+
+
+def is_uncapped():
+    """1 where a point leaves ``declared_cap`` blank, an uncapped option, else 0, int64.
+
+    ``RILA_US_S`` asks ``pd.isna`` of the model point's column; it is asked here once, by
+    element (R8).
+    """
+    return model_point_table()["declared_cap"].isna().to_numpy(dtype="int64")
+
+
+def cap_uncapped():
+    """The cap of an uncapped option, ``+inf``, a float.
+
+    ``RILA_US_S``'s ``math.inf``, which ``Projection.cap_rate`` returns for an uncapped
+    option: a C double holds it, and a compiled formula reads it here rather than from the
+    ``math`` module.
+    """
+    return float("inf")
+
+
+def is_cap_crediting():
+    """1 where ``crediting_type`` is ``CAP``, else 0, an int64 vector.
+
+    ``RILA_US_S``'s comparison, made element by element, exactly: ``Cap``, or ``CAP`` with
+    a space, is 0, and so is a blank, so that the projection answers as ``RILA_US_S``
+    answers it, raising ``invalid crediting_type`` where none of the four decodes is 1.
+    """
+    return (model_point_table()["crediting_type"] == "CAP").to_numpy(dtype="int64")
+
+
+def is_step_crediting():
+    """1 where ``crediting_type`` is ``STEP``, else 0, an int64 vector."""
+    return (model_point_table()["crediting_type"] == "STEP").to_numpy(dtype="int64")
+
+
+def is_edge_crediting():
+    """1 where ``crediting_type`` is ``EDGE``, else 0, an int64 vector."""
+    return (model_point_table()["crediting_type"] == "EDGE").to_numpy(dtype="int64")
+
+
+def is_floor_crediting():
+    """1 where ``crediting_type`` is ``FLOOR``, else 0, an int64 vector."""
+    return (model_point_table()["crediting_type"] == "FLOOR").to_numpy(dtype="int64")
+
+
+def is_iv_portfolio():
+    """1 where ``iv_family`` is ``portfolio``, else 0, an int64 vector.
+
+    Compared exactly, element by element, as :func:`is_cap_crediting` compares; the
+    projection raises ``invalid iv_family`` where none of the four is 1.
+    """
+    return (model_point_table()["iv_family"] == "portfolio").to_numpy(dtype="int64")
+
+
+def is_iv_notional():
+    """1 where ``iv_family`` is ``notional``, else 0, an int64 vector."""
+    return (model_point_table()["iv_family"] == "notional").to_numpy(dtype="int64")
+
+
+def is_iv_delta():
+    """1 where ``iv_family`` is ``delta``, else 0, an int64 vector."""
+    return (model_point_table()["iv_family"] == "delta").to_numpy(dtype="int64")
+
+
+def is_iv_legacy():
+    """1 where ``iv_family`` is ``legacy``, else 0, an int64 vector."""
+    return (model_point_table()["iv_family"] == "legacy").to_numpy(dtype="int64")
+
+
+def is_straight_line():
+    """1 where ``amort_rule`` is ``straight_line``, else 0, an int64 vector.
+
+    Compared exactly, element by element; the projection raises ``invalid amort_rule``
+    where neither decode of the column is 1.
+    """
+    return (model_point_table()["amort_rule"] == "straight_line").to_numpy(dtype="int64")
+
+
+def is_updated_expiry():
+    """1 where ``amort_rule`` is ``updated_expiry``, else 0, an int64 vector."""
+    return (model_point_table()["amort_rule"] == "updated_expiry").to_numpy(dtype="int64")
+
+
+def guar_min_cap():
+    """The guaranteed minimum cap of each point's term, a float64 vector.
+
+    *guar_min_rate_table.csv*'s row of the point's ``term_years``, joined by value, as
+    ``RILA_US_S``'s ``.loc`` matches it, after :func:`guar_min_rate_count`'s checks;
+    :func:`model_point_table` refuses a point whose term the table lacks.
+    """
+    guar_min_rate_count()
+    floors = guar_min_rate_table()
+    terms = pd.to_numeric(floors.index.to_series()).tolist()        # noqa: F821
+    values = pd.to_numeric(floors["guar_min_cap"]).tolist()         # noqa: F821
+    by_term = {}
+    for j in range(len(terms)):
+        by_term[terms[j]] = values[j]
+    points = model_point_table()["term_years"].tolist()
+    out = np.zeros(len(points))                                      # noqa: F821
+    for i in range(len(points)):
+        out[i] = by_term[points[i]]
+    return out
+
+
+def guar_min_step():
+    """The guaranteed minimum Step Rate of each point's term, a float64 vector.
+
+    Joined as :func:`guar_min_cap` joins the cap.
+    """
+    guar_min_rate_count()
+    floors = guar_min_rate_table()
+    terms = pd.to_numeric(floors.index.to_series()).tolist()        # noqa: F821
+    values = pd.to_numeric(floors["guar_min_step"]).tolist()        # noqa: F821
+    by_term = {}
+    for j in range(len(terms)):
+        by_term[terms[j]] = values[j]
+    points = model_point_table()["term_years"].tolist()
+    out = np.zeros(len(points))                                      # noqa: F821
+    for i in range(len(points)):
+        out[i] = by_term[points[i]]
+    return out
+
+
+def guar_min_edge():
+    """The guaranteed minimum Edge Rate of each point's term, a float64 vector.
+
+    Joined as :func:`guar_min_cap` joins the cap.
+    """
+    guar_min_rate_count()
+    floors = guar_min_rate_table()
+    terms = pd.to_numeric(floors.index.to_series()).tolist()        # noqa: F821
+    values = pd.to_numeric(floors["guar_min_edge"]).tolist()        # noqa: F821
+    by_term = {}
+    for j in range(len(terms)):
+        by_term[terms[j]] = values[j]
+    points = model_point_table()["term_years"].tolist()
+    out = np.zeros(len(points))                                      # noqa: F821
+    for i in range(len(points)):
+        out[i] = by_term[points[i]]
+    return out
+
+
+def scenario_count():
+    """The number of scenarios *market_scenario_sec.csv* holds, an int, the table checked.
+    """
+    market_scenario_count()
+    return int(len(set(market_scenario().reset_index()["scenario_id"].tolist())))
+
+
+def scenario_number():
+    """The row of the scenario arrays each point reads, by its ``scenario_id``, int64.
+
+    The scenarios are numbered from 1 in the sorted order of their ids, and each point
+    carries its own scenario's number, matched by the value pandas read, as
+    ``RILA_US_S``'s ``.loc`` matches it. :func:`model_point_table` refuses a point whose
+    scenario the table lacks, so 0, the number of no scenario, is never a point's.
+    """
+    market_scenario_count()
+    number = {}
+    for key in sorted(set(market_scenario().reset_index()["scenario_id"].tolist())):
+        number[key] = len(number) + 1
+    ids = model_point_table()["scenario_id"].tolist()
+    out = np.zeros(len(ids), dtype="int64")                          # noqa: F821
+    for i in range(len(ids)):
+        out[i] = number.get(ids[i], 0)
+    return out
+
+
+def scenario_first_mths():
+    """Each scenario's first month, by its number, an int64 vector.
+
+    The least ``month_end`` the scenario holds, read by value; ``read_last_mth + 1`` where
+    that is past ``read_last_mth``, a scenario no month the arrays hold can read, which no
+    point runs on, since :func:`model_point_table` refuses a point whose scenario sets no
+    level by its first month on the books. Row 0, no scenario, is 0.
+    """
+    market_scenario_count()
+    rows = market_scenario().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    ids = rows["scenario_id"].tolist()
+    last = scenario_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    first = {}
+    for i in range(len(ids)):
+        s = number[ids[i]]
+        if s not in first or months[i] < first[s]:
+            first[s] = months[i]
+    out = np.zeros(scenario_count() + 1, dtype="int64")             # noqa: F821
+    for s in first:
+        out[s] = int(first[s]) if first[s] <= last else last + 1
+    return out
+
+
+def scenario_last_mth():
+    """The last valuation month the scenario arrays hold, ``read_last_mth``, an int.
+
+    The last month any read reaches, whatever the scenario's keys: a scenario's last row
+    holds to there, as ``RILA_US_S``'s step function holds it, and a row past it is held
+    nowhere.
+    """
+    return read_last_mth                                             # noqa: F821
+
+
+def index_level_array():
+    """The index level by scenario and valuation month, ``[scenario, t]``.
+
+    Each scenario's rows step-filled from their month to the next row's, the last to
+    :func:`scenario_last_mth`, as ``RILA_US_S``'s step function reads them; NaN before a
+    scenario's first month and in row 0. A row past ``read_last_mth`` is dropped before its
+    month is cast, whatever its size.
+    """
+    market_scenario_count()
+    rows = market_scenario().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    values = pd.to_numeric(rows["index_level"]).tolist()            # noqa: F821
+    ids = rows["scenario_id"].tolist()
+    last = scenario_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    steps = {}
+    for i in range(len(ids)):
+        if months[i] <= last:
+            steps.setdefault(number[ids[i]], []).append((int(months[i]), values[i]))
+    out = np.full((scenario_count() + 1, last + 1), np.nan)          # noqa: F821
+    for s in steps:
+        pairs = sorted(steps[s])
+        for j in range(len(pairs)):
+            end = pairs[j + 1][0] if j + 1 < len(pairs) else last + 1
+            out[s, pairs[j][0]:end] = pairs[j][1]
+    return out
+
+
+def mvr_array():
+    """The Market Value Rate by scenario and valuation month, ``[scenario, t]``.
+
+    As :func:`index_level_array`, from the ``mvr`` column.
+    """
+    market_scenario_count()
+    rows = market_scenario().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    values = pd.to_numeric(rows["mvr"]).tolist()                    # noqa: F821
+    ids = rows["scenario_id"].tolist()
+    last = scenario_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    steps = {}
+    for i in range(len(ids)):
+        if months[i] <= last:
+            steps.setdefault(number[ids[i]], []).append((int(months[i]), values[i]))
+    out = np.full((scenario_count() + 1, last + 1), np.nan)          # noqa: F821
+    for s in steps:
+        pairs = sorted(steps[s])
+        for j in range(len(pairs)):
+            end = pairs[j + 1][0] if j + 1 < len(pairs) else last + 1
+            out[s, pairs[j][0]:end] = pairs[j][1]
+    return out
+
+
+def risk_free_array():
+    """The risk-free rate by scenario and valuation month, ``[scenario, t]``.
+
+    As :func:`index_level_array`, from the ``risk_free`` column.
+    """
+    market_scenario_count()
+    rows = market_scenario().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    values = pd.to_numeric(rows["risk_free"]).tolist()              # noqa: F821
+    ids = rows["scenario_id"].tolist()
+    last = scenario_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    steps = {}
+    for i in range(len(ids)):
+        if months[i] <= last:
+            steps.setdefault(number[ids[i]], []).append((int(months[i]), values[i]))
+    out = np.full((scenario_count() + 1, last + 1), np.nan)          # noqa: F821
+    for s in steps:
+        pairs = sorted(steps[s])
+        for j in range(len(pairs)):
+            end = pairs[j + 1][0] if j + 1 < len(pairs) else last + 1
+            out[s, pairs[j][0]:end] = pairs[j][1]
+    return out
+
+
+def div_yield_array():
+    """The dividend yield by scenario and valuation month, ``[scenario, t]``.
+
+    As :func:`index_level_array`, from the ``div_yield`` column.
+    """
+    market_scenario_count()
+    rows = market_scenario().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    values = pd.to_numeric(rows["div_yield"]).tolist()              # noqa: F821
+    ids = rows["scenario_id"].tolist()
+    last = scenario_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    steps = {}
+    for i in range(len(ids)):
+        if months[i] <= last:
+            steps.setdefault(number[ids[i]], []).append((int(months[i]), values[i]))
+    out = np.full((scenario_count() + 1, last + 1), np.nan)          # noqa: F821
+    for s in steps:
+        pairs = sorted(steps[s])
+        for j in range(len(pairs)):
+            end = pairs[j + 1][0] if j + 1 < len(pairs) else last + 1
+            out[s, pairs[j][0]:end] = pairs[j][1]
+    return out
+
+
+def impl_vol_array():
+    """The implied volatility by scenario and valuation month, ``[scenario, t]``.
+
+    As :func:`index_level_array`, from the ``impl_vol`` column.
+    """
+    market_scenario_count()
+    rows = market_scenario().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    values = pd.to_numeric(rows["impl_vol"]).tolist()               # noqa: F821
+    ids = rows["scenario_id"].tolist()
+    last = scenario_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    steps = {}
+    for i in range(len(ids)):
+        if months[i] <= last:
+            steps.setdefault(number[ids[i]], []).append((int(months[i]), values[i]))
+    out = np.full((scenario_count() + 1, last + 1), np.nan)          # noqa: F821
+    for s in steps:
+        pairs = sorted(steps[s])
+        for j in range(len(pairs)):
+            end = pairs[j + 1][0] if j + 1 < len(pairs) else last + 1
+            out[s, pairs[j][0]:end] = pairs[j][1]
+    return out
+
+
+def mort_sexes():
+    """The number of sexes *mort_table.csv* rates, an int, the table checked."""
+    mort_table_count()
+    return int(len(set(mort_table().reset_index()["sex"].tolist())))
+
+
+def mort_schedule():
+    """The row of :func:`mort_rate_array` each point reads, by its ``sex``, int64.
+
+    The sexes are numbered from 1 in their sorted order, ``F`` 1 and ``M`` 2, and each
+    point carries its own sex's number, matched by the value pandas read, as
+    ``RILA_US_S``'s ``.loc`` matches it. :func:`model_point_table` refuses a point whose
+    sex the table does not rate, so 0, the number of no sex, is never a point's.
+    """
+    mort_table_count()
+    number = {}
+    for key in sorted(set(mort_table().reset_index()["sex"].tolist())):
+        number[key] = len(number) + 1
+    sexes = model_point_table()["sex"].tolist()
+    out = np.zeros(len(sexes), dtype="int64")                        # noqa: F821
+    for i in range(len(sexes)):
+        out[i] = number.get(sexes[i], 0)
+    return out
+
+
+def mort_age_firsts():
+    """Each sex's first age in *mort_table.csv*, by its number, an int64 vector.
+
+    Read by value; 0 where it is below 0, since no attained age is, and
+    ``read_last_age + 1`` where it is past ``read_last_age``, an age the array does not
+    hold. Row 0, no sex, is 1, so that no age reads it.
+    """
+    mort_table_count()
+    rows = mort_table().reset_index()
+    ages = pd.to_numeric(rows["age"]).tolist()                       # noqa: F821
+    sexes = rows["sex"].tolist()
+    held = mort_age_held()
+    number = {}
+    for key in sorted(set(sexes)):
+        number[key] = len(number) + 1
+    first = {}
+    for i in range(len(sexes)):
+        s = number[sexes[i]]
+        if s not in first or ages[i] < first[s]:
+            first[s] = ages[i]
+    out = np.ones(mort_sexes() + 1, dtype="int64")                   # noqa: F821
+    for s in first:
+        out[s] = int(min(max(first[s], 0), held + 1))
+    return out
+
+
+def mort_age_lasts():
+    """Each sex's last age in *mort_table.csv*, by its number, an int64 vector.
+
+    Read by value; -1 where it is below 0, and ``read_last_age + 1`` where it is past
+    ``read_last_age``, the table rating more than the array holds, which
+    ``Projection.proj_len`` refuses only where a point's cover needs it. Row 0, no sex,
+    is 0.
+    """
+    mort_table_count()
+    rows = mort_table().reset_index()
+    ages = pd.to_numeric(rows["age"]).tolist()                       # noqa: F821
+    sexes = rows["sex"].tolist()
+    held = mort_age_held()
+    number = {}
+    for key in sorted(set(sexes)):
+        number[key] = len(number) + 1
+    last = {}
+    for i in range(len(sexes)):
+        s = number[sexes[i]]
+        if s not in last or ages[i] > last[s]:
+            last[s] = ages[i]
+    out = np.zeros(mort_sexes() + 1, dtype="int64")                  # noqa: F821
+    for s in last:
+        out[s] = int(min(max(last[s], -1), held + 1))
+    return out
+
+
+def mort_age_held():
+    """The age of :func:`mort_rate_array`'s last column, ``read_last_age``, an int."""
+    return read_last_age                                             # noqa: F821
+
+
+def mort_rate_array():
+    """The annual mortality by sex and attained age, ``[sex, age]``.
+
+    Row ``mort_schedule()`` of a point holds its sex's rates, row 0 none; column ``a`` is
+    attained age ``a``, from 0 to :func:`mort_age_held`, ``read_last_age``, the oldest age
+    a read reaches. Every cell outside a sex's ages, and row 0, is NaN, and an age below 0
+    or past ``read_last_age`` is held nowhere, so a row far past it, which ``RILA_US_S``
+    holds and never reads, neither widens the array nor refuses a point.
+    """
+    mort_table_count()
+    rows = mort_table().reset_index()
+    ages = pd.to_numeric(rows["age"]).tolist()                       # noqa: F821
+    rates = pd.to_numeric(rows["mort_rate"]).tolist()                # noqa: F821
+    sexes = rows["sex"].tolist()
+    held = mort_age_held()
+    number = {}
+    for key in sorted(set(sexes)):
+        number[key] = len(number) + 1
+    out = np.full((mort_sexes() + 1, held + 1), np.nan)              # noqa: F821
+    for i in range(len(ages)):
+        if 0 <= ages[i] <= held:
+            out[number[sexes[i]], int(ages[i])] = rates[i]
+    return out
+
+
+def surr_charge_array():
+    """The withdrawal charge rate by complete contract year, ``[cy]``, ``0 .. n - 1``.
+
+    :func:`surr_charge_count`, ``n``, holds the table's years to that run, one row a year,
+    so the year is the index.
+    """
+    n = surr_charge_count()
+    rows = surr_charge_table().reset_index()
+    years = pd.to_numeric(rows["contract_year"]).tolist()           # noqa: F821
+    rates = pd.to_numeric(rows["surr_charge_rate"]).tolist()        # noqa: F821
+    out = np.zeros(n)                                                # noqa: F821
+    for i in range(n):
+        out[int(years[i])] = rates[i]
+    return out
+
+
+def lapse_years():
+    """The lapse table's contract years, row by row, a float64 vector.
+
+    The keys as the table holds them, compared by value, never cast, so that a year of
+    any size is read as ``RILA_US_S`` compares it; ``Projection.lapse_rate_base_py``
+    scans them for the last year at or before its ``y``, its count
+    :func:`lapse_table_count` the bound.
+    """
+    lapse_table_count()
+    rows = lapse_table().reset_index()
+    return pd.to_numeric(rows["contract_year"]).to_numpy(dtype="float64")  # noqa: F821
+
+
+def lapse_rates():
+    """The lapse table's base surrender rates, row by row, a float64 vector."""
+    lapse_table_count()
+    rows = lapse_table().reset_index()
+    return pd.to_numeric(rows["lapse_rate_base"]).to_numpy(dtype="float64")  # noqa: F821
+
+
+def wd_schedule_count():
+    """The number of programmes *withdrawal_table.csv* holds, an int, the table checked."""
+    withdrawal_count()
+    return int(len(set(withdrawal_table().reset_index()["wd_schedule_id"].tolist())))
+
+
+def wd_schedule_number():
+    """The row of :func:`wd_amount_array` each point reads, by its ``wd_schedule_id``.
+
+    Numbered from 1 in the sorted order of the ids, int64, as :func:`scenario_number`
+    numbers the scenarios; :func:`model_point_table` refuses an id the table lacks.
+    """
+    withdrawal_count()
+    number = {}
+    for key in sorted(set(withdrawal_table().reset_index()["wd_schedule_id"].tolist())):
+        number[key] = len(number) + 1
+    ids = model_point_table()["wd_schedule_id"].tolist()
+    out = np.zeros(len(ids), dtype="int64")                          # noqa: F821
+    for i in range(len(ids)):
+        out[i] = number.get(ids[i], 0)
+    return out
+
+
+def wd_last_mth():
+    """The last policy month end :func:`wd_amount_array` holds, ``read_last_mth``, an int.
+
+    Past any month end a read reaches: a row past it is held nowhere.
+    """
+    return read_last_mth                                             # noqa: F821
+
+
+def wd_amount_array():
+    """The scheduled withdrawal by programme and policy month end, ``[programme, m]``.
+
+    0.0 at a month end a programme has no row for, a value, as ``RILA_US_S``'s exact-key
+    lookup answers it, not padding; row 0, which no point reads, is NaN. A row past
+    :func:`wd_last_mth` is dropped before its month is cast, whatever its size.
+    """
+    withdrawal_count()
+    rows = withdrawal_table().reset_index()
+    months = pd.to_numeric(rows["month_end"]).tolist()              # noqa: F821
+    amounts = pd.to_numeric(rows["wd_amount"]).tolist()             # noqa: F821
+    ids = rows["wd_schedule_id"].tolist()
+    last = wd_last_mth()
+    number = {}
+    for key in sorted(set(ids)):
+        number[key] = len(number) + 1
+    out = np.zeros((wd_schedule_count() + 1, last + 1))              # noqa: F821
+    out[0, :] = np.nan                                               # noqa: F821
+    for i in range(len(ids)):
+        if months[i] <= last:
+            out[number[ids[i]], int(months[i])] = amounts[i]
+    return out
+
 
 # ---------------------------------------------------------------------------
 # References
@@ -890,4 +1807,10 @@ withdrawal_file = "withdrawal_table.csv"
 
 future_horizon_mth = 120
 
+read_last_mth = 1202
+
+read_last_age = 121
+
 pd = ("Module", "pandas")
+
+np = ("Module", "numpy")

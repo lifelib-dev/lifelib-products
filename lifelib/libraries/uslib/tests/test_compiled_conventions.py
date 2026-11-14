@@ -47,6 +47,7 @@ import builtins
 import itertools
 import re
 import textwrap
+import types
 
 import modelx as mx
 import pandas as pd
@@ -156,6 +157,10 @@ def test_no_projection_formula_holds_python_machinery(name, model):
 def test_python_calls_are_declared_by_cell(sec_name):
     """``"python_calls"`` admits a Python builtin in a named cell, and each is taken.
 
+    Or a module's function, by its dotted name, ``"math.erf"``: ``RILA_US_SEC``'s pricing
+    keeps Python's ``math`` (M25), so a name ``"<module>.<function>"`` is valid where
+    ``<module>`` is a Reference of ``Projection`` holding a module with that function.
+
     R16 keeps one Python call in a projection formula, ``round`` of a projected amount,
     which cannot be precomputed, and the registry's ``"python_calls"`` admits it by cell
     (us_registry), so that C3 and C5 pass that call in that cell and fault it in every
@@ -210,8 +215,18 @@ def test_python_calls_are_declared_by_cell(sec_name):
             tree = ast.parse(textwrap.dedent(proj.cells[cell].formula.source))
             called = {node.func.id for node in ast.walk(tree)
                       if isinstance(node, ast.Call) and isinstance(node.func, ast.Name)}
+            called |= {f"{node.func.value.id}.{node.func.attr}" for node in ast.walk(tree)
+                       if isinstance(node, ast.Call)
+                       and isinstance(node.func, ast.Attribute)
+                       and isinstance(node.func.value, ast.Name)}
             for n in names:
-                if not hasattr(builtins, n) or n in C_CALLS:
+                head, _, tail = n.partition(".")
+                module = proj.refs.get(head) if tail else None
+                if tail and not (isinstance(module, types.ModuleType)
+                                 and callable(getattr(module, tail, None))):
+                    found.append(f"{cell}: {n} is not a function of a module Projection "
+                                 f"holds as a Reference")
+                elif not tail and (not hasattr(builtins, n) or n in C_CALLS):
                     found.append(f"{cell}: {n} is not a Python builtin outside C_CALLS")
                 elif n not in called:
                     found.append(f"{cell}: its formula calls no {n}(), so the admission "
