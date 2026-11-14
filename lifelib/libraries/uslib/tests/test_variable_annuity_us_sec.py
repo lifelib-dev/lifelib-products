@@ -191,6 +191,7 @@ import builtins
 import collections
 import contextlib
 import dataclasses
+import errno
 import gc
 import importlib.machinery
 import inspect
@@ -9832,7 +9833,7 @@ ZERO_DIVISORS = (({"vix_divisor": 0.0}, 6, ("phi_glwb_vix", (2,)),
                   ("inflation_factor", (0,)),
                   "ZeroDivisionError: 0.0 cannot be raised to a negative power"),
                  ({"inflation_rate": 1e300}, 1, ("inflation_factor", (0,)),
-                  "OverflowError: (34, 'Numerical result out of range')"))
+                  f"OverflowError: (34, {os.strerror(errno.ERANGE)!r})"))
 
 
 @pytest.mark.cython

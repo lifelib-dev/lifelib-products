@@ -1338,10 +1338,12 @@ below 0, an `inflation_rate` below −1, gives the same real power in both engin
 unlike `FIA_US_SEC`, whose powers take fractional exponents, the model refuses no rate
 there. Where Python's float power raises and C's `pow` does not, `inflation_factor` raises
 Python's message itself: a base of 0 to a negative power, an `inflation_rate` of −1 with a
-valuation year before the base year, `ZeroDivisionError: 0.0 cannot be raised to a
-negative power`, where C's `pow` gives infinity; and a power past the largest float from a
-finite base, an `inflation_rate` of `1e300`, `OverflowError: (34, 'Numerical result out of
-range')`, where `FIA_US_SEC`'s compiled power gives infinity.
+valuation year before the base year, `ZeroDivisionError: 0.0 cannot be raised to a negative
+power`, where C's `pow` gives infinity; and a power past the largest float from a finite
+base, an `inflation_rate` of `1e300`, where C's `pow` gives infinity, by calling Python's
+own float power there, which raises `OverflowError` with the platform's message: `(34,
+'Numerical result out of range')` on Linux and `(34, 'Result too large')` on Windows, as
+`VA_US_S` does.
 
 ### What a compiled run needs
 

@@ -3993,7 +3993,10 @@ def inflation_factor(t):
     Python's float power raises, the cell raises Python's message, which a compiled
     ``pow`` would not: a base of 0 to a negative power, ``inflation_rate`` -1 and a
     valuation year before the base year, ``ZeroDivisionError``; and a power past the
-    largest float from a finite base, ``OverflowError``.
+    largest float from a finite base, ``OverflowError``.  That last is Python's own float
+    power, called where the compiled ``pow`` gives an infinity, so that its message is the
+    platform's, ``Numerical result out of range`` on Linux and ``Result too large`` on
+    Windows, as Python's is; modelx never reaches it, its own power raising first.
     """
     base = 1.0 + inflation_rate                                      # noqa: F821
     n = valuation_year - expense_base_year + t // 12                 # noqa: F821
@@ -4001,7 +4004,7 @@ def inflation_factor(t):
         raise ZeroDivisionError("0.0 cannot be raised to a negative power")
     factor = base ** n
     if factor - factor != 0.0 and base - base == 0.0:
-        raise OverflowError("(34, 'Numerical result out of range')")
+        raise float.__pow__(base, n)
     return factor
 
 
