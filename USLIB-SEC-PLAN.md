@@ -34,7 +34,8 @@ landed after them, and IUL's, M19, after M21; both are done, 2026-11-14: Tests r
 all 70 jobs, their `cython` legs on Linux and Windows among them (§7.11, *Record — M21*;
 §7.4, *Record — M19*). VA's compile step, M22, landed before M25 and is done, 2026-11-14:
 Tests run 29, on its fix, passed all 72 jobs, the `cython` job's `variable_annuity` legs on
-Linux and Windows among them (§7.7, *Record — M22*). The open decisions of §8.2 are
+Linux and Windows among them (§7.7, *Record — M22*). M26, Phase 2's close, landed
+2026-11-15 (§6.4): Phase 2 is closed pending M26's CI run. The open decisions of §8.2 are
 settled, the last of them, item 4, on 2026-11-03. Like USLIB-MERGE-PLAN.md, this document is
 both the specification and the record: each phase records what it actually did, including
 where the implementation departed from the plan.
@@ -2035,11 +2036,16 @@ All marked `cython` unless noted.
   and takes only `bint`, `long long` or `double`, and keeps no dict cache, an uncached
   cell, which mx2cy leaves taking and returning `object`, failing it; every `Data` cell the
   S twin lacks, but a reader of a file, returns a typed memoryview of int64 or float64, or
-  a C scalar. Every integer-parameter tuple has a size in `spec_sec.py` that its caches
-  carry exactly, and every size is taken. In the generated C no projection formula outside
-  the allowlist declares a Python-object local, calls a Python builtin other than an
-  exception it raises, or builds a list, dict or set, and each translated module begins
-  with `infer_types=True` and `cpow=True`.
+  a C scalar. Every reporting cell a reader asks for, `model_point`, the `result_*`
+  reports and the label accessors, returns `object` where it compiles, so that a label the
+  sample traced on text alone, which raises `TypeError` compiled where modelx returns a
+  blank or a number, fails; a label may return `str` only where it refuses, in its own
+  formula, its point with the column blank and with a number, as a label validating its
+  column does (precised at M26). Every integer-parameter tuple has a size in `spec_sec.py`
+  that its caches carry exactly, and every size is taken. In the generated C no projection
+  formula outside the allowlist declares a Python-object local, calls a Python builtin
+  other than an exception it raises, or builds a list, dict or set, and each translated
+  module begins with `infer_types=True` and `cpow=True`.
 - **C4 — Compiled equals modelx, cell by cell** (`cython`). After a full modelx sweep,
   every `Projection` cell at every argument modelx caches matches the compiled model:
   identically on x86-64, where `build_sec_cy.py` compiles with `-ffp-contract=off` off
@@ -2060,13 +2066,17 @@ All marked `cython` unless noted.
   a cell, a `Data` vector and `int`, `float`, `bool`, `abs`, `min`, `max` and `range`, no
   method, and builds no list, dict, set or tuple but a table read's index. No cell outside
   the allowlist is uncached (R14). Every `Data` cell such a formula calls returns an int64
-  or float64 array or a Python int or float, and an array is read at once by element; the
-  same holds for every `Data` array another `Data` cell reads. No cell outside the
-  allowlist shares its name with what a keyword call calls anywhere in the model. Every
-  cell the registry declares reporting returns its point's column, of its own name or as
-  `"reporting_columns"` names it, and every such entry is needed (R17, precised at M23);
-  and every cell the registry names under `"engine"` is called by no compiled formula
-  (R14, precised at M24).
+  or float64 array or a Python int or float, and an array is read at once by element, at
+  no negative literal index, which compiled Cython wraps as Python does, so that C4 cannot
+  see a read from the wrong end (precised at M26); every `Data` array another `Data` cell
+  reads is read by element too. No cell outside the allowlist shares its name with what a
+  keyword call calls anywhere in the model. Every cell the registry declares reporting
+  returns its point's column, of its own name or as `"reporting_columns"` names it, and
+  every such entry is needed (R17, precised at M23); every cell the registry names under
+  `"engine"` is called by no compiled formula (R14, precised at M24); and `sample_sec.py`
+  calls each, read statically, by attribute, by `getattr` with its name, or over a literal
+  set of names holding it, a cell of no parameter also by a loop over every such cell,
+  since an engine cell the sample stops calling compiles untraced (precised at M26).
 - **Release, stack, refusals and References** (`cython`). `run_sec.py --block`, compiled,
   leaves no ItemSpace but the base alive after any collection it makes once frozen,
   collects at least once per point, and leaves none alive at the end
@@ -2077,6 +2087,11 @@ All marked `cython` unless noted.
   modelx's message, the only guard on its raises, the contract's own refusals and text
   keys among them; and a Reference set late changes no value it has cached (the product
   module). They gate a milestone as C1–C5 do (§6.3).
+- **The block's sum** (not marked `cython`; `test_compiled_conventions.py`). Every
+  product's `run_sec.py` sums the block with one `add`, compensated, which, read from the
+  runner and run on the committed points' finite frames, equals `pd.concat(frames)
+  .groupby(level=0).sum()` by `np.array_equal`; a plain running sum departs from it on
+  every product's committed points, so the comparison can fail on each (M26).
 - **C6 — Benchmark** (`tools/bench_sec_cy.py <product>`, a script, not a test). modelx,
   export and compiled timings on a replicated table, recorded in `model-sec.md`. The
   target is BasicTerm_SC's order of magnitude; a shortfall is reported, not hidden.
@@ -2090,6 +2105,133 @@ All marked `cython` unless noted.
 
 A milestone whose gate is met on Linux alone is done on Linux, and stays open until the
 `cython` job has run its tests on Windows (M14).
+
+### 6.4 Record — M26, landed 2026-11-15
+
+M26 closes Phase 2. It took up §9's row and the items the product records carry into it
+(§7.7, *Record — M22*, and §7.8, *Record — M25*, *Carried into M26*; §7.9, *Record — M23*,
+*Carried into M24 or later*; §7.5, *Record — M18*, *Carried into M19 or later*), in four
+commits on 535ebe8, M25's record:
+- c468418: uslib's `index.md` gains a table of the compiled models' speed, each SEC model's
+  `net_cf` time a point compiled, as the export and in modelx, with the two ratios, as its
+  `model-sec.md` records C6, and a note on how the figures were taken.
+- 427065c: the plan's change that the `cython` job stays an ordinary CI job, not a
+  required check (D13, decided 2026-11-15), and §9's row naming the table and the items.
+- 8f58256: `UL_US_SEC` and `VUL_US_SEC` keep stage `E`'s surrender-charge values, in
+  ULSG's value-and-flag form (§7.3, *Record — M16*; §7.6, *Record — M17*).
+- 66f1e47: four shared compiled-model checks, each with a harness test that catches a
+  constructed fault (§6.2), and the label fixes the first of them forced on Term,
+  WholeLife and RILA (§7.1, *Record — M14*; §7.2, *Record — M15*; §7.8, *Record — M25*).
+
+No number moved. Term's, WholeLife's, RILA's, UL's and VUL's fingerprints reproduce, and
+UL's and VUL's every cached value equals its stage-`E` model's at no tolerance.
+
+**CI: pending.** M26's gate, the whole matrix green, C1–C5 on Linux and Windows for all
+twelve among it (§6.3), awaits a Tests run dispatched on 66f1e47. Phase 2 is closed when
+that run passes; until then it is closed pending M26's CI run.
+
+**What exists now.**
+- Four conventions over every stage-`EC` model, in `sec_support.py` and
+  `test_compiled_conventions.py` (§6.2, precised at M26):
+  - *C3's reporting cells.* Every reporting cell a reader asks for, `model_point`, the
+    `result_*` reports and the registry's labels, returns `object` compiled
+    (`object_cells`, `object_return_faults`). A label may return `str` only where its own
+    formula refuses its point with the column blank and with the number 7, read in modelx
+    past every check of `Data`'s (`labels_refusing_non_text`); a refusal of `Data`'s is
+    never consulted. DIA's eight validated labels, SPIA's four and RILA's `sex` are
+    admitted so.
+  - *The sample calls every `"engine"` cell*, read statically from `sample_sec.py`
+    (`sample_engine_faults`): by attribute, by `getattr` with its name, over a literal set
+    of names, and, for a cell of no parameter, by a loop over every such cell, which alone
+    reaches VA's `sub_ids`. `test_the_sample_calls_every_engine_cell`, not marked `cython`.
+  - *C5 refuses a negative literal index* into a `Data` array (`_negative_index`, called
+    from `static_faults`), through unary signs: `[-1]`, `[0, -2]` and `[1][-1.0]` are
+    faults, `[t - 1]`, `[+1]`, `[- -1]` and `[-0]` are not.
+  - *The runner's block sum.* The twelve `run_sec.py` share one `add`, executed alone from
+    the runner's source (`runner_add`) and held to `pd.concat(frames).groupby(level=0)
+    .sum()` by `np.array_equal` on the committed points' finite frames (`block_sum_faults`),
+    beside a plain running sum that departs from it on each product.
+    `test_the_runner_sums_the_block_as_groupby_does`, not marked `cython`. The nine product
+    modules' own copies of this test stay, now redundant.
+- `label_mismatches`, a shared helper calling labels in modelx and, in a child, compiled.
+- `test_sec_support.py`: five new harness tests, each catching a constructed fault; the
+  file's 78 pass.
+- Term's and WholeLife's samples trace their labels on a blank copy of the first point, and
+  each module gains a compiled test of a label that is not text (§7.1, *Record — M14*;
+  §7.2, *Record — M15*). RILA's `sex()` refuses any value but M and F itself, held by a
+  test past `Data`'s checks (§7.8, *Record — M25*).
+- `UL_US_SEC`'s `Data` has 53 cells and `VUL_US_SEC`'s 65, `has_surr_charge_schedule()` the
+  new one in each; each module gains a modelx and a compiled test of a point without a
+  charge (§7.3, *Record — M16*; §7.6, *Record — M17*).
+- uslib's `index.md`: *Compiled speed*, the table of twelve rows.
+
+**The carried items**, one each, with where it stands:
+- *C3's reporting labels* (§7.7, *Record — M22*): done, with the refusing-label admission
+  above. The check failed Term's four labels, WholeLife's six and RILA's `sex`; Term and
+  WholeLife now trace a blank label, and RILA's `sex` refuses (*What exists now*).
+- *The sample calls every `"engine"` cell* (§7.8, *Record — M25*): done, over every model.
+- *C5's negative literal index* (§7.9, *Record — M23*): done.
+- *The runner's compensated block sum* (§7.9, *Record — M23*): done.
+- *UL's and VUL's surrender-charge accessors* (§7.5, *Record — M18*): done, 8f58256.
+- *The overflow guard* (§7.7, *Record — M22*; §7.8, *Record — M25*): decided. A later
+  product takes M22's form, Python's own float power where the compiled `pow` gives an
+  infinity, which raises the platform's message in both engines and needs no bound. RILA
+  keeps its bound check, recorded as the one other form; each raises in both engines.
+- *C3 on module calls* (§7.8, *Record — M25*): deferred. The recommendation: extend
+  `c_faults` to collect, in each formula's C body, the attribute names it looks up on a
+  Python object, and fault a function of a module Reference of `Projection` that its cell's
+  `"python_calls"` does not admit, with a harness case of written C; first read a RILA
+  build's C for the exact spelling. C5 holds the source already, so this is defence in
+  depth, not a known gap.
+- *The `math` C form*, 19% of a RILA point (§7.8, *Record — M25*): deferred, a tools
+  decision after Phase 2. If taken: an opt-in rewrite in `tools/build_sec_cy.py` keyed by
+  the registry's dotted admissions, each function shown exact under C4 on Linux and
+  Windows, each of `math`'s raises written out, gated by RILA's C4 and refusal tests on
+  both legs.
+- *vswhere's folder on `PATH` under Git Bash* in `tools/build_sec_cy.py` (§7.9, *Record —
+  M23*): deferred, a small separate task. The recommendation: on Windows, where
+  `ProgramFiles(x86)` is absent, set it for the build's child process, or put the Visual
+  Studio Installer's folder on `PATH` where it exists, with a unit test of the environment
+  the build is handed. CI, which builds from PowerShell and cmd, is unaffected.
+- *The sign of a zero claims total on MSVC* (§7.5, *Record — M18*): left as recorded; no
+  input reaches it, so it runs in modelx alone.
+- *A test of `phase` at known events* (§7.7, *Record — M22*): left optional.
+- *Memory* (§7.7, *Record — M22*): recorded. M22's figures stand under K6; M26's largest
+  process peaked at 4.1 GB in the compiled conventions and 4.6 GB in WholeLife's module.
+
+**Measured.** On the shared Linux machine, under load.
+- *The checks.* `test_compiled_conventions.py`, all twelve, under `USLIB_REQUIRE_CYTHON=1`:
+  118 passed and 3 failed in the first round, the three C3 failures above; 121 passed in
+  2,348 s at the close. `test_sec_support.py`: 78 passed, 25 s.
+  `test_model_conventions.py`: 672 passed and 24 skipped, 539 s.
+- *The labels.* Term's module 131 passed, 181 s; WholeLife's 247 passed and 98 skipped,
+  554 s; RILA's 297 passed, 75 skipped and 1 failed (*A local observation*, below), 1,189
+  s. The shards under `-m cython`: Term 11 passed, 123 s; WholeLife 11, 306 s; RILA 15, 840
+  s.
+- *The surrender charges.* UL's module, the `sec` job's selection: 270 passed and 41
+  skipped, 297 s; VUL's 300 passed and 43 skipped, 569 s. The shards: UL 12 passed, 407 s;
+  VUL 14, 690 s. Against stage `E`'s model in modelx, f77b290 for UL and bc8ce29 for VUL,
+  every value both cache, 642,855 and 856,796 on the committed points and 642,851 and
+  856,792 with five points without a charge, is identical; the four raises on the missing
+  and blank ids are `KeyError` in both, differing in message alone.
+- doccheck 521 pages and 0 warnings; md_lint 0; `gen_scaffolding.py --dry-run` 0 files in
+  each of the six libraries; `gen_sec_fingerprint.py --check` reproduces Term, WholeLife,
+  RILA, UL and VUL.
+
+**Faults.** A Term built from its old sample fails the new label test, `sex()` raising
+`TypeError` compiled on a blank and on 7 where modelx returns NaN and 7. With UL's and
+VUL's model files at 535ebe8, their two new modelx tests and two updated ones fail. Each
+harness test catches its constructed fault (§6.2).
+
+**A local observation, open.** RILA's module run fails one case,
+`test_a_power_off_its_domain_is_refused_beside_s`, on a volatility whose square is the
+largest float: `RILA_US_S`, untouched, raises `OverflowError` in `result_cf()` where the
+case expects S to compute a float. It fails identically at 535ebe8 on that machine, and
+CI's Linux leg passed run 31, so it is local only, likely a libm difference. It belongs to
+the overflow-guard item, and stays open.
+
+**Cost.** About 0.91 million subagent tokens: the harness about 0.64M and UL's and VUL's
+surrender charges about 0.27M; this record beyond them.
 
 ---
 
@@ -2968,6 +3110,13 @@ current, and C4 is exact on the grid, at the extremes and where the cap binds.
   bound first, as `SPIA_US_S`, `DIA_US_S`, `FIA_US_S` and `ULSG_US_S` do (§8.2, item 4).
   *Fixed on 2026-11-03 (§8.2, item 4): each of these caps now puts its bound second.*
 
+*Precised at M26.* C3 found the four label accessors compiled to `str`, the sample having
+traced them on text alone, where `Data` accepts a label blank, read as NaN, or a number:
+compiled, each raised `TypeError` where modelx returns the value. `sample_sec.py` now
+calls the four on a copy of the first point with every label blank, read by a second
+instance of the export, as UL's does, so that each compiles to a Python object, and a
+compile test holds each compiled label to modelx's NaN and 7. No number moves (§6.4).
+
 ### 7.2 Whole life — `WholeLife_US_SEC` (E: L, C: M)
 
 *Today:* policy clock, with in-force support in whole years only. `proj_start()` is
@@ -3517,6 +3666,15 @@ test.
   change, with their refusal and compiled cases.
 - *The module's default run*, about 3.5 minutes under load, is weighed with the others'
   under K6; nothing has moved behind `sec_full`.
+
+*Precised at M26.* C3 found the six label accessors compiled to `str`, the sample having
+traced them on text alone, where `Data` accepts a label blank, read as NaN, or a number:
+compiled, each raised `TypeError` where modelx returns the value. `sample_sec.py` now
+calls the six on a copy of the first point with every label blank and its paid-up
+additions, dividends and rider premium 0, which `Data` refuses on a product other than
+WL_PAR, read by a second instance of the export, so that each compiles to a Python
+object, and a compile test holds each compiled label to modelx's NaN and 7. No number
+moves (§6.4).
 
 ### 7.3 Universal life — `UL_US_SEC` (E: S, C: M)
 
@@ -4176,9 +4334,9 @@ the fix stage could not make locally.
   other's cells in both engines, inside the cache. The contract the caches hold is
   `issue_age_min` 18, which `proj_len()` now refuses below, `omega_age` 120, which it
   refuses above, and `Data`'s `future_horizon_mth` 120.
-- `Data` keeps its 18 cells and adds 34, 52 in all: nine readers, nine int counts and
-  extents, 13 int64 and 20 float64 vectors by point, and `coi_rate_array`,
-  `[schedule, policy_year]`. Each table's check is among them.
+- `Data` keeps its 18 cells and adds 34, 52 in all, and 53 since M26 (below): nine readers,
+  nine int counts and extents, 13 int64 and 20 float64 vectors by point, and
+  `coi_rate_array`, `[schedule, policy_year]`. Each table's check is among them.
 - A compiled `Projection` ItemSpace is 1,892,736 bytes, WholeLife's 1.6 times; the one
   numbering's width of 8 on five 2-D caches is about 652 KB of it.
 - Beside the model: `sample_sec.py` and `spec_sec.py`; `run_sec.py`, WholeLife's runner
@@ -4260,6 +4418,19 @@ the fix stage could not make locally.
 - *A value change from stage `E`* that no projection reads: on a point without a charge,
   `surr_charge_rate_max()` and `surr_charge_runoff_years()` read 0.0, where at stage `E`
   they read the point's schedule, 5.0 on `UL0`, and a blank id raised `KeyError`.
+- *The surrender-charge accessors keep stage `E`'s values* (precised at M26). M16 had
+  `surr_charge_rate_max()` and `surr_charge_runoff_years()` read 0.0 on a point without
+  a charge, where at stage `E` they read the point's schedule, and a blank id raised
+  `KeyError`. M26 took ULSG's value-and-flag form (§7.5, *Record — M18*): `Data` joins
+  the schedule wherever the table holds the point's id, charged or not, NaN where it does
+  not, with `has_surr_charge_schedule()`, a 0/1 int64 flag; on a point without a charge
+  the two read the schedule where the table holds its id, a run-off of 0 included, which
+  only a charged point is refused, and raise `KeyError` at the read where it does not,
+  naming the point where stage `E` quoted the id. A charged point with a missing id is
+  still refused at the table's first read. Against f77b290's model in modelx, on the
+  committed points and on a copy with five points without a charge, every value both
+  cache is identical, 642,855 and 642,851 of them, and only the two raises' messages
+  differ. Two tests pin the stage-`E` values and the refusal, in modelx and compiled.
 - *The claims total* is `0.0 + death + lapse`. T1 reaches it through `twin_arg_map`, which
   maps S's `(t, None)` onto it and skips the kind keys, to T1's tolerance; the module holds
   it to S's bit for bit, and at two negative zeros. This departs from §7.2's item 2, where
@@ -4345,10 +4516,13 @@ which copy its chassis:
    call kept*.
 6. *One numbering for two families of timing*, the count's first, so that a code of one
    family is refused by the other's cells inside the cache in both engines (R9).
-7. *The surrender-charge joins*: two float vectors by point, 0.0 on a point without a
-   charge; a charged point is refused for a missing id, a run-off of 0 or one of `2**53`
-   or more. Put each join refusal on a table where only some points are charged, so that
-   the message names exactly those, and hold the others projecting as before.
+7. *The surrender-charge joins*: two float vectors by point, 0.0 on a point without a charge
+   (at M26: read wherever the table holds the id and NaN where it does not, and a 0/1 int64
+   flag, `has_surr_charge_schedule()`, which the accessors raise `KeyError` on, M18's form,
+   taken back into UL and VUL); a charged point is refused for a missing id, a run-off of 0
+   or one of `2**53` or more. Put each join refusal on a table where only some points are
+   charged, so that the message names exactly those, and hold the others projecting as
+   before.
 8. *A division whose divisor S's own inputs can make zero*, in a cell no report reaches,
    is guarded to raise S's own error text, and held compiled by a refusal case and by C4
    at that bound.
@@ -6600,7 +6774,8 @@ it.
   join did, naming the point where stage `E` quoted the id. So Phase 2 moved no value of any
   cell (D2). This departs from UL's record (§7.3, *Record — M16*, *Departures and
   precisions*), where the two read 0.0, and from §7.3's *For M17 and later*, item 7: UL now
-  differs from ULSG (*Carried into M19 or later*).
+  differs from ULSG (*Carried into M19 or later*). *No longer since M26:* UL and VUL took
+  this form (§6.4).
 - *A charged point whose schedule the table lacks is refused at the table's first read*,
   naming every such point, Term's template, as are a class and a COI key the tables lack. S
   fails only that point's cash flows and margin check, since its counts, accounts and
@@ -6726,6 +6901,7 @@ landing and this record beyond them.
 - *Bring `UL_US_SEC`'s two accessors back to stage `E`'s values*, `surr_charge_rate_max()`
   and `surr_charge_runoff_years()`, which read 0.0 on a point without a charge (§7.3,
   *Record — M16*), by ULSG's value and flag; `VUL_US_SEC`'s page records the same 0.0 (M17).
+  *Done at M26*, VUL's with it (8f58256; §6.4).
 - *The sign of a zero claims total on MSVC* is untested: only three -0.0 parts expose a fold
   of `0.0 + x`, and no input gives them, the lapse and refund parts being products of
   factors 0.0 or more and the count chain adding +0.0, so the case runs in modelx alone. A
@@ -7654,12 +7830,13 @@ full-grid check this step did not make locally.
   five checks, a point issued above `omega_age` first. The caches are 1,586 by `t`, 1,465
   by the pricing month, 124 by policy year, 123 by attained age and 9 by subaccount; every
   2-D cache is 9 wide, and the two 3-D caches, `sa_pp_at` and `sa_pricing_pp_at`, 9 by 9.
-- `Data` has 64 cells: the table checks as ints, `subaccount_count`, `scenario_count` and
-  `coi_schedules`, which the arrays ask bare; int64 and float64 vectors by point, `alloc`
-  and `sa_pp_init` by point and subaccount, the COI scale `coi_rate_array[schedule, y]`
-  with `coi_rate_last_years` by schedule, `scenario_first_mths` and `scenario_last_mths`
-  by scenario and subaccount, and `gross_return_array[scenario, subaccount, t]`, built to
-  `return_horizon_mth`, a new Reference, 1,585, `t`'s last index.
+- `Data` has 64 cells, 65 since M26 (`has_surr_charge_schedule`): the table checks as ints,
+  `subaccount_count`, `scenario_count` and `coi_schedules`, which the arrays ask bare; int64
+  and float64 vectors by point, `alloc` and `sa_pp_init` by point and subaccount, the COI
+  scale `coi_rate_array[schedule, y]` with `coi_rate_last_years` by schedule,
+  `scenario_first_mths` and `scenario_last_mths` by scenario and subaccount, and
+  `gross_return_array[scenario, subaccount, t]`, built to `return_horizon_mth`, a new
+  Reference, 1,585, `t`'s last index.
 - A compiled `Projection` ItemSpace is 7,797,640 bytes, 4.1 times UL's; the two 3-D caches
   are about 2.9 MB of it with their flags.
 - Beside the model: `sample_sec.py` and `spec_sec.py`; `run_sec.py`, UL's runner with VUL's
@@ -7741,6 +7918,15 @@ full-grid check this step did not make locally.
   alone; `scenario_index` is the fourth such join. A COI scale the table lacks stays
   schedule 0, refused where read. A negative age in the corridor or mortality table and a
   corridor factor below 0 are refused, as M13 left to this step.
+- *The surrender-charge accessors keep stage `E`'s values* (precised at M26). M17 copied
+  UL's 0.0 on a point without a charge, which `model-sec.md` recorded as a value change
+  from stage `E`. M26 took ULSG's value-and-flag form, as for UL (§7.3, *Record — M16*):
+  the two read the schedule wherever the table holds the point's id, a run-off of
+  `2**53` years or more included on a point without a charge, NaN in `Data` and `KeyError`
+  at the read, naming the point, where it does not, with `has_surr_charge_schedule()`;
+  `Data` has 65 cells. Against bc8ce29's model in modelx, on the committed points and on
+  a copy with five points without a charge, every value both cache is identical, 856,796
+  and 856,792 of them, and only the two raises' messages differ. Two tests pin it.
 - *A blank pin keeps its NaN value*, the flag deciding (D2), where Term's reads 0.0.
 - *On three or more subaccounts* the loops can differ from S's compensated `sum` in the
   last bit; they are compared compiled against modelx only.
@@ -10436,6 +10622,14 @@ each other at one heavy run each.
 - *The `math` C form*, 19% a point, as a tools decision.
 - *M23's two harness items*, the negative-index check and the runner's compensated-sum
   test, stand.
+
+*Precised at M26.* C3 now asks that a label compiled to `str` refuse, in its own
+formula, a value that is not text. `sex()` compiles to `str`, since `Data` admits no sex
+but M and F, so it now refuses any other value itself, `ValueError` naming the point
+with `Data`'s wording, "sex must be M or F", a refusal `Data` keeps from being reached.
+A test holds it past `Data`'s checks. No number moves (§6.4). The overflow guard is
+settled there too: RILA keeps its bound check as the one other form, and a later product
+takes M22's.
 
 ### 7.9 SPIA — `SPIA_US_SEC` (E: L, C: M)
 
@@ -14489,4 +14683,4 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M19 | Phase 2 for IUL, the ninth after M13, the last on UL's chassis — **done**, 2026-11-14, after M21; Tests run 27 passed all 70 jobs (§7.4, *Record — M19*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `indexed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M22 | Phase 2 for VA, the tenth after M13, on MYGA's and FIA's chassis — **done**, 2026-11-14, after M19 and before M25; Tests run 29, on its fix, passed all 72 jobs (§7.7, *Record — M22*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `variable_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M25 | Phase 2 for RILA, the last product — **done**, 2026-11-15, landed after M22, built and tested on Windows in the local session that built M23 and M24; Tests run 31 passed all 74 jobs (§7.8, *Record — M25*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; `"python_calls"` taking dotted names, `math` admitted by cell; the `registered_index_linked_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M26 | Close | A benchmark table in `index.md`; the shared conventions and items the product records carry into M26 (the `cython` job stays an ordinary job, not a required check: D13) | — |
+| M26 | Close — **landed**, 2026-11-15, CI pending (§6.4) | A benchmark table in `index.md`; the shared conventions and items the product records carry into M26 (the `cython` job stays an ordinary job, not a required check: D13) | — |
