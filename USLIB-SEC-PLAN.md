@@ -28,8 +28,8 @@ and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, th
 job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record — M23*). DIA's
 compile step, M24, built and tested there after M23, is done, 2026-11-14: Tests run 27
 passed all 70 jobs, the `cython` job's `deferred_income_annuity` legs among them (§7.12,
-*Record — M24*); RILA's, M25, built and tested there after M24, has landed, 2026-11-14,
-after M22, and awaits CI (§7.8, *Record — M25*). FIA's compile step, M21,
+*Record — M24*); RILA's, M25, built and tested there after M24, is done, 2026-11-15:
+Tests run 31 passed all 74 jobs (§7.8, *Record — M25*). FIA's compile step, M21,
 landed after them, and IUL's, M19, after M21; both are done, 2026-11-14: Tests run 27 passed
 all 70 jobs, their `cython` legs on Linux and Windows among them (§7.11, *Record — M21*;
 §7.4, *Record — M19*). VA's compile step, M22, landed before M25 and is done, 2026-11-14:
@@ -10223,7 +10223,7 @@ test, generator or doccheck reads. On the tree as committed, `test_mortality_cap
 of the nine SEC models current, doccheck built 509 pages with 0 warnings, and md_lint
 reported 0 on uslib and on this plan.
 
-#### Record — M25, landed 2026-11-14
+#### Record — M25, done 2026-11-15
 
 M25 is RILA's compile step, 81c386d, the last product's, on MYGA's deferred chassis and
 FIA's index crediting, by Term's template (§7.1, *Record — M14*) and the later records'
@@ -10249,9 +10249,28 @@ minors, applied at landing. Two stages were interrupted by the account's usage l
 resumed from where they stopped. The full suite and the full grid were not run locally: CI
 runs both.
 
-**CI: pending** until the Tests workflow is green on 81c386d: C1–C5 on Linux and Windows
-(§6.3, §9), the `cython` job's `registered_index_linked_annuity` legs among them, with
-gcc's stack bracket.
+**CI: green.** M25's gate, C1–C5 green on Linux and Windows (§6.3, §9), is met by Tests
+run 31, dispatched on 36bcd34: all 74 jobs passed, the `cython` job's
+`registered_index_linked_annuity` legs on Linux and Windows among them, the full grid and
+the full suite too. Run 30, on 94f9306, which carried 81c386d, had passed every RILA
+compile and core leg and failed two things, each a platform's, neither a number:
+- *T1 on Python 3.11*, on every OS. The option portfolio adds its legs by Neumaier's loop,
+  as `sum` does from 3.12, where `RILA_US_S` calls `sum`, which 3.11 adds left to right;
+  the roll-forward residual, a rounding about zero near 1e-11, differed from S's by up to
+  1.2e-11, in 103 to 129 of its values by OS. `TWIN_FLOORS` gives
+  `check_av_roll_fwd_resid` its own floor of 1e-9, as DIA's residual has; run locally
+  with `sum` replaced by a left-to-right fold, the failure reproduced and then every twin
+  agreed, so no other cell differs.
+- *The power-refusal test on Linux's full grid* expected S's own overflow in Windows'
+  words, "Result too large", where glibc says "Numerical result out of range"; it now
+  reads the platform's text for `ERANGE`, as M22's test does.
+
+The stack test's bracket: on gcc the cold calls at the longest cover ran on threads of 768
+KiB and more and on the main thread, and not on 640, inside the estimate of about 680 KiB,
+1.33 to 1.6 times under 1 MiB; with 1,100 levels against SPIA's 1,453 and DIA's 1,451,
+the same bracket, so about 600 to 715 bytes a level, the most per level of the three. On
+`windows-latest`'s MSVC on 448 KiB and not on 384, one step above MSVC 14.37 here, as on
+SPIA and DIA.
 
 **What exists now.**
 - `RILA_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 202
@@ -10410,7 +10429,6 @@ each other at one heavy run each.
   through the Space's member).
 - *The overflow guard*: RILA's bound check and M22's Python power, one form for both.
 - *The `math` C form*, 19% a point, as a tools decision.
-- *gcc's stack figure* from the Linux leg's warning; the 1.5 times is an estimate.
 - *M23's two harness items*, the negative-index check and the runner's compensated-sum
   test, stand.
 
@@ -14465,5 +14483,5 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M21 | Phase 2 for FIA, the eighth after M13, on MYGA's chassis — **done**, 2026-11-14, after M23 and M24; Tests run 27 passed all 70 jobs (§7.11, *Record — M21*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `fixed_indexed_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M19 | Phase 2 for IUL, the ninth after M13, the last on UL's chassis — **done**, 2026-11-14, after M21; Tests run 27 passed all 70 jobs (§7.4, *Record — M19*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `indexed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M22 | Phase 2 for VA, the tenth after M13, on MYGA's and FIA's chassis — **done**, 2026-11-14, after M19 and before M25; Tests run 29, on its fix, passed all 72 jobs (§7.7, *Record — M22*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `variable_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M25 | Phase 2 for RILA, the last product — landed 2026-11-14, after M22, built and tested on Windows in the local session that built M23 and M24, CI pending (§7.8, *Record — M25*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; `"python_calls"` taking dotted names, `math` admitted by cell; the `registered_index_linked_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
+| M25 | Phase 2 for RILA, the last product — **done**, 2026-11-15, landed after M22, built and tested on Windows in the local session that built M23 and M24; Tests run 31 passed all 74 jobs (§7.8, *Record — M25*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; `"python_calls"` taking dotted names, `math` admitted by cell; the `registered_index_linked_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
