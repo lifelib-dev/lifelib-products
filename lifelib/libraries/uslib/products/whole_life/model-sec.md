@@ -589,8 +589,12 @@ each input now reaches a cell as a number:
   `premium_period()`, `sex()`, `risk_class()`, `dividend_option()` and `premium_mode()`,
   and the four reports return a table row, text and DataFrames, for a reader, for
   `run_sec.py` and for the comparison with `WholeLife_US_S`. No other cell calls them, so
-  they cost the projection nothing. The two checks are reporting cells too, but they
-  return a verdict, which compiles to a C `bint`.
+  they cost the projection nothing. A label accessor returns its column as read, and
+  `Data` accepts a label that is blank, which pandas reads as NaN, or a number, on a point
+  that carries no paid-up additions, dividends or rider premium, and the point's first
+  projection refuses it. So each of the six compiles to a Python object, as the sample
+  traces it (below), and returns what modelx returns (precised at M26). The two checks are
+  reporting cells too, but they return a verdict, which compiles to a C `bint`.
 
 The `Data` docstring lists its 42 vectors, arrays, extents and counts, each with the column
 or file it comes from: 19 vectors of int64, 15 of float64, three tables of float64 and five
@@ -628,8 +632,12 @@ periods, the three overlays and the dividend on the paid-up additions, all shipp
 rounding switched off, the cap on mortality. That still types every cell, because every
 branch of a cell returns the one type its others return, a count a float in every branch,
 and on points that take those branches the compiled model computes modelx's numbers (above).
-The sample also raises the recursion limit, which modelx raises and its export does not
-(*What a compiled run needs*, below).
+The label accessors are typed from more than the committed points: the sample also calls
+the six on a copy of the first point with every label blank and its paid-up additions,
+dividends and rider premium 0, written to a temporary directory and read by a second
+instance of the export, so that each compiles to a Python object (M26). The sample also
+raises the recursion limit, which modelx raises and its export does not (*What a compiled
+run needs*, below).
 
 `spec_sec.py` sizes each C-array cache, by the names of the cells' parameters, and a
 compiled cache raises `IndexError` for an argument outside it. So each size covers the

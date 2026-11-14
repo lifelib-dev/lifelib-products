@@ -46,7 +46,11 @@ C3, C4 and C5, and the release
     :func:`full_sweep` of every point, bit for bit where :func:`exact_here` (C4);
     :func:`static_faults` reads the formulas, and needs no compiler (C5); and
     :func:`release_faults` runs a product's ``run_sec.py --block`` on a compiled block and
-    counts the ItemSpaces it keeps (F5).
+    counts the ItemSpaces it keeps (F5).  :func:`object_return_faults` holds the reporting
+    cells of :func:`object_cells` to ``object`` in a build's declarations (C3);
+    :func:`sample_engine_faults` reads a ``sample_sec.py`` for a call of every engine
+    cell; and :func:`block_sum_faults` holds a runner's running sum, :func:`runner_add`,
+    to ``groupby``'s, bit for bit.
 
 **Why the generator lives in the tests.**  ``tools/gen_sec_points.py`` is only a command
 line over :func:`write_generated` and :func:`check_generated`.  The logic is here because
@@ -4079,6 +4083,106 @@ def engine_faults(space, declared, sized, reporting=()):
     return found
 
 
+def _names_bound(node, tree):
+    """The text constants a sample's loop variable ``node`` can take, or ``None``.
+
+    ``node`` is the name a ``getattr`` call reads its attribute from, as in ``for label in
+    LABELS: getattr(p, label)()``.  It is resolved through the ``for`` loop that binds it:
+    over a literal tuple, list or set of text, or a module-level name assigned one; or,
+    where the loop binds it first of a pair, over ``.items()`` of a dict literal, or of a
+    module-level name assigned one, its keys.  Any other loop, one over names the sample
+    computes, is not resolved.
+    """
+    import ast
+    assigned = {}
+    for statement in tree.body:
+        if isinstance(statement, ast.Assign):
+            for target in statement.targets:
+                if isinstance(target, ast.Name):
+                    assigned[target.id] = statement.value
+
+    def texts(value):
+        if isinstance(value, ast.Name):
+            value = assigned.get(value.id)
+        if isinstance(value, (ast.Tuple, ast.List, ast.Set)):
+            found = [e.value for e in value.elts
+                     if isinstance(e, ast.Constant) and isinstance(e.value, str)]
+            return set(found) if len(found) == len(value.elts) else None
+        return None
+
+    def keys(value):
+        if isinstance(value, ast.Name):
+            value = assigned.get(value.id)
+        if isinstance(value, ast.Dict):
+            found = [k.value for k in value.keys
+                     if isinstance(k, ast.Constant) and isinstance(k.value, str)]
+            return set(found) if len(found) == len(value.keys) else None
+        return None
+
+    for loop in ast.walk(tree):
+        if not isinstance(loop, ast.For):
+            continue
+        if isinstance(loop.target, ast.Name) and loop.target.id == node.id:
+            if any(child is node for child in ast.walk(loop)):
+                return texts(loop.iter)
+        if (isinstance(loop.target, ast.Tuple) and loop.target.elts
+                and isinstance(loop.target.elts[0], ast.Name)
+                and loop.target.elts[0].id == node.id
+                and any(child is node for child in ast.walk(loop))):
+            it = loop.iter
+            if (isinstance(it, ast.Call) and isinstance(it.func, ast.Attribute)
+                    and it.func.attr == "items" and not it.args):
+                return keys(it.func.value)
+            return None
+    return None
+
+
+def sample_engine_faults(source, engine, parameterless=()):
+    """Where a ``sample_sec.py`` calls an ``"engine"`` cell of the registry's nowhere.
+
+    No compiled cell calls an engine cell (:func:`engine_faults`), so the sample's own
+    call is the only trace mx2cy types it from: one the sample stops calling compiles with
+    object parameters, and C3 still passes, since it admits an engine cell's dict cache by
+    name (R14, M25).  So each cell of ``engine`` must be called in ``source``, the
+    sample's code, read statically: as an attribute, ``p.bs_call(...)``, through
+    ``getattr`` with its name as text, or through ``getattr`` with a loop variable that
+    :func:`_names_bound` resolves to a set of names holding it.  A cell of
+    ``parameterless``, the engine cells taking no parameter, is called too by a loop that
+    calls ``getattr(p, name)()`` over names the sample computes, as a sample that calls
+    every cell of no parameter does: such a cell returns a list, a dict or a DataFrame,
+    an object traced or not.  Returns a line per cell not called.
+    """
+    import ast
+    tree = ast.parse(source)
+    parents = {child: node for node in ast.walk(tree)
+               for child in ast.iter_child_nodes(node)}
+    called, computed = set(), False
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Call):
+            continue
+        if isinstance(node.func, ast.Attribute):
+            called.add(node.func.attr)
+        if not (isinstance(node.func, ast.Name) and node.func.id == "getattr"
+                and len(node.args) >= 2):
+            continue
+        name = node.args[1]
+        if isinstance(name, ast.Constant) and isinstance(name.value, str):
+            called.add(name.value)
+        elif isinstance(name, ast.Name):
+            bound = _names_bound(name, tree)
+            if bound is not None:
+                called |= bound
+            else:
+                up = parents.get(node)
+                if (isinstance(up, ast.Call) and up.func is node and not up.args
+                        and not up.keywords):
+                    computed = True
+    return [f"sample_sec.py calls no engine cell {cell}(): untraced, it compiles taking "
+            f"objects, which C3 admits in an engine cell (R14)"
+            for cell in engine
+            if cell not in called and not (computed and cell in parameterless)]
+
+
 def reporting_columns_faults(entry):
     """Where a registry entry's ``"reporting_columns"`` is not what R17 lets it say (M23).
 
@@ -4296,6 +4400,88 @@ def typing_faults(build, model, *, reporting, new_data):
                          f"scalar: an array of bools, objects or text, or one a cell uses "
                          f"whole (R5, R13)")
     return lines
+
+
+def object_cells(name, space):
+    """The cells of SEC model ``name``'s ``Projection`` that must compile to ``object``.
+
+    ``model_point``, every ``result_*`` report and the label accessors the registry entry
+    names under ``"reporting"``: the reporting cells that hand a reader a table row, a
+    DataFrame or a point's column as read, which ``Data`` may hold as text, a number or a
+    blank.  The other reporting cells of :func:`reporting_cells` are typed: a ``check_*``
+    returns a ``bint``, and an ``"engine"`` cell a C scalar.  ``space`` is the model's
+    ``Projection``.
+    """
+    from us_registry import meta
+    labels = set(meta(name).get("reporting", ()))
+    return frozenset(cell for cell in space.cells
+                     if cell == "model_point" or cell.startswith("result_")
+                     or cell in labels)
+
+
+def object_return_faults(build, cells, refusing=frozenset()):
+    """C3 of the reporting cells: each of ``cells`` that compiled returns ``object``.
+
+    A label accessor returns its point's column as read, and ``Data`` accepts a label that
+    is not text, a blank or a number.  mx2cy types a cell from what the sample's calls
+    return, so an accessor the sample traces on text alone compiles to ``str``, and the
+    compiled model raises ``TypeError`` where modelx returns the value.  The sample
+    therefore calls each on a point whose label is not text too, and this holds what it
+    makes of that: every cell of ``cells`` (:func:`object_cells`) that ``build``'s
+    ``_mx_classes.pxd`` declares returns ``object``, but a label of ``refusing``, which
+    modelx refuses wherever its column is not text (:func:`labels_refusing_non_text`), as
+    a label validating its column does: it returns text or raises, in either engine.  One
+    left a Python method is not declared, and returns what modelx does.  Returns a line
+    per fault.
+    """
+    declared, _ = pxd_declarations(build.pxd, "Projection")
+    return [f"Projection.{name} returns {declared[name][0]}, where a reporting cell "
+            f"returns object: a label the sample traced on text alone, which raises "
+            f"TypeError compiled on a label Data holds as a number or a blank, where "
+            f"modelx returns it (R17)"
+            for name in sorted(cells)
+            if name in declared and declared[name][0] != "object" and name not in refusing]
+
+
+def labels_refusing_non_text(name, labels):
+    """The labels of ``labels`` that SEC model ``name`` refuses, in their own formula,
+    wherever they are not text.
+
+    Each label is called, in modelx, on the committed model whose table,
+    ``Data.model_point_table()``, is replaced by an input value holding the first point's
+    column blank, and then the number 7, past every check ``Data``'s reader makes; called
+    as the registry's ``"reporting_columns"`` says (:func:`label_faults`), at each
+    argument.  A label is refusing where every such call raises, as a label validating
+    its column does.  A refusal of ``Data``'s is not the label's, and is not sought: a
+    key label returns a number where its tables are keyed by numbers.  A refusing label
+    returns text or raises, so it may compile to ``str`` (:func:`object_return_faults`).
+    """
+    from us_registry import meta, point_keys, projection
+    columns = meta(name).get("reporting_columns", {})
+    refusing = set()
+    for label in sorted(labels):
+        refused = True
+        for args, column, _ in _label_calls(columns.get(label, label)):
+            for value in (None, 7):
+                if not refused:
+                    break
+                model = mx.read_model(model_path(name),
+                                      name=f"{name}_text_{next(_c4_names)}")
+                try:
+                    table = model.Data.model_point_table().astype({column: object})
+                    table.iloc[0, table.columns.get_loc(column)] = value
+                    model.Data.model_point_table[()] = table
+                    proj = projection(model, point_keys(model)[0])
+                    try:
+                        proj.cells[label](*args)
+                        refused = False
+                    except Exception:       # the label's own refusal, which is sought
+                        pass
+                finally:
+                    model.close()
+        if refused:
+            refusing.add(label)
+    return frozenset(refusing)
 
 
 def spec_faults(build, spec_path):
@@ -4757,6 +4943,32 @@ def _element_read(call, parents, ndim):
     return not isinstance(getattr(node, "ctx", None), (ast.Store, ast.Del))
 
 
+def _negative_index(call, parents, ndim):
+    """The first negative literal among the indices ``call``'s array is read at, as
+    written, ``"-1"``, or ``None``: Python and compiled Cython both wrap it to the end of
+    the array, so a fault that reads one passes C4 (M23)."""
+    import ast
+    remaining, node = ndim, call
+    while remaining > 0:
+        up = parents.get(node)
+        if not (isinstance(up, ast.Subscript) and up.value is node):
+            return None
+        items = up.slice.elts if isinstance(up.slice, ast.Tuple) else [up.slice]
+        for item in items:
+            value = item
+            sign = 1
+            while isinstance(value, ast.UnaryOp) and isinstance(value.op,
+                                                                (ast.USub, ast.UAdd)):
+                sign *= -1 if isinstance(value.op, ast.USub) else 1
+                value = value.operand
+            if (isinstance(value, ast.Constant) and isinstance(value.value, numbers.Real)
+                    and not isinstance(value.value, bool) and sign * value.value < 0):
+                return ast.unparse(item)
+        remaining -= len(items)
+        node = up
+    return None
+
+
 def _vector_text(value):
     """What is wrong with a ``Data`` value a compiled cell reads, or ``None``: it must be
     an int64 or float64 array, a memoryview compiled, or a Python int or float (R5)."""
@@ -4803,8 +5015,10 @@ def static_faults(model, *, reporting, python_calls=None):
     builds no list, dict, set or tuple, but the index of a table read, ``[s, y]``: each is
     a call into Python inside a cell its declaration types as C (R10, R12).  Every
     ``Data`` cell it calls must return an int64 or float64 array or a Python int or float,
-    found by evaluating it, and an array must be read at once by element (R5, R13); so
-    must every ``Data`` array another ``Data`` cell calls.  No ``Projection`` cell outside
+    found by evaluating it, and an array must be read at once by element (R5, R13), at no
+    negative literal index, ``[-1]``, which C wraps as Python does, so that C4 cannot see
+    a read from the wrong end (:func:`_negative_index`, M23); every ``Data`` array another
+    ``Data`` cell calls must be read by element too.  No ``Projection`` cell outside
     the allowlist may be uncached, ``is_cached`` False: mx2cy traces a cell's ``_f_``
     formula, which an uncached cell has none of, so it compiles untyped (R14).  And no
     cell outside the allowlist, in any space, may share its name with a function or a
@@ -4910,6 +5124,12 @@ def static_faults(model, *, reporting, python_calls=None):
                           and not _element_read(node, parents, arrays[func.attr])):
                         lines.append(f"{where}: uses data.{func.attr}() other than by one "
                                      f"element")
+                    elif func.attr in arrays:
+                        negative = _negative_index(node, parents, arrays[func.attr])
+                        if negative:
+                            lines.append(f"{where}: reads data.{func.attr}() at the "
+                                         f"negative index {negative}, which wraps to the "
+                                         f"array's end in Python and in C alike")
     for name in data.cells:
         tree, _, parents, _ = trees[("Data", name)]
         for node in ast.walk(tree):
@@ -5050,3 +5270,112 @@ def release_faults(case_dir, package, runner, *, points, timeout=600):
         lines.append(f"the control: a collection left {found['freed']} deleted ItemSpaces "
                      f"alive")
     return lines
+
+
+def runner_add(runner):
+    """The running sum ``add(total, compensation, frame)`` of a product's ``run_sec.py``.
+
+    The runner runs the model when imported, so the function is read from its source and
+    run alone, as every product's runner defines it, at the module's top level.
+    """
+    import ast
+    tree = ast.parse(pathlib.Path(runner).read_text(encoding="utf-8"))
+    found = [node for node in tree.body
+             if isinstance(node, ast.FunctionDef) and node.name == "add"]
+    if len(found) != 1:
+        raise ValueError(f"{runner} defines add() {len(found)} times, not once")
+    space = {}
+    exec(compile(ast.Module(found, []), str(runner), "exec"), space)
+    return space["add"]
+
+
+def block_sum_faults(add, frames):
+    """Where a runner's running sum of ``frames`` is not pandas' ``groupby`` sum, a line.
+
+    A block run keeps one point's frame at a time, so it sums the frames as it goes, with
+    ``add``, compensated, so that its block is the frames concatenated and summed by
+    ``t``, bit for bit; the printed block, to two decimals, cannot show a last bit.  So
+    ``add`` (:func:`runner_add`) sums ``frames``, each a ``result_cf()`` indexed by ``t``
+    from 0, into arrays as long as the longest, as the runner does, and the sum must equal
+    ``pd.concat(frames).groupby(level=0).sum()`` by ``np.array_equal``.  The frames must
+    be finite: ``groupby`` skips a NaN, which the runner's sum carries.  Returns a line
+    per fault.
+    """
+    if not frames:
+        return ["no frames to sum"]
+    columns = list(frames[0].columns)
+    lines = []
+    for i, frame in enumerate(frames):
+        if list(frame.index) != list(range(len(frame))):
+            lines.append(f"frame {i} is not indexed by t = 0, 1, ...")
+        if list(frame.columns) != columns:
+            lines.append(f"frame {i} has the columns {list(frame.columns)}, not {columns}")
+        elif not np.isfinite(frame.to_numpy(dtype=float)).all():
+            lines.append(f"frame {i} is not finite, where groupby skips a NaN")
+    if lines:
+        return lines
+    rows = max(len(frame) for frame in frames)
+    total = np.zeros((rows, len(columns)))
+    compensation = np.zeros_like(total)
+    for frame in frames:
+        add(total, compensation, frame[columns].to_numpy())
+    want = pd.concat(frames).groupby(level=0).sum()[columns].to_numpy()
+    if want.shape != total.shape:
+        return [f"the sum is {total.shape}, groupby's {want.shape}"]
+    if not np.array_equal(total, want):
+        bad = np.argwhere(total != want)
+        t, c = bad[0]
+        lines.append(f"the running sum departs from groupby's in {len(bad)} values, first "
+                     f"{columns[c]} at t = {t}: {float(total[t, c])!r}, where groupby "
+                     f"gives {float(want[t, c])!r}")
+    return lines
+
+
+def label_mismatches(build, folder, labels):
+    """C4 on label accessors alone: ``(modelx's values, a line per mismatch)``.
+
+    ``folder`` is a :func:`compiled_case` of ``build``, and ``labels`` names label
+    accessors of no parameter.  Each is called on every point, in modelx and, in a child,
+    compiled (:func:`run_compiled`), and the two must agree: a value of the same kind,
+    equal, or NaN on both sides, or the same raise.  A label that is not text, a blank or
+    a number ``Data`` accepts, is where an accessor typed ``str`` compiled departs, raising
+    ``TypeError`` where modelx returns the value (C3, M22).  The values modelx returned
+    are ``{point_id: {label: ("ok", value) or ("raised", text)}}``, for the caller's
+    assertions on what the case holds.
+    """
+    from us_registry import point_keys, projection
+    model = mx.read_model(folder, name=f"{build.name}_labels_{next(_c4_names)}")
+    try:
+        ids = list(model.Data.model_point_table().index)
+        keys = point_keys(model)
+        want = {}
+        for point_id, key in zip(ids, keys):
+            proj = projection(model, key)
+            want[point_id] = {}
+            for label in labels:
+                try:
+                    want[point_id][label] = ("ok", proj.cells[label]())
+                except Exception as err:            # compared with the compiled raise
+                    want[point_id][label] = ("raised", _error_text(err))
+    finally:
+        model.close()
+    job = {"refs": {}, "calls": {i: [(label, ()) for label in labels]
+                                 for i in range(len(ids))}}
+    got = run_compiled(folder.parent, build.package.name, job)
+    if got["exit"]:
+        return want, [f"the compiled run failed: {got['stderr']}"]
+    lines = [f"{space} is not compiled" for space, done in got["compiled"].items()
+             if not done]
+    for i, point_id in enumerate(ids):
+        for label, have in zip(labels, got["values"][i]):
+            mine = want[point_id][label]
+            same = mine[0] == have[0] and (
+                (mine[0] == "raised" and mine[1] == have[1])
+                or (mine[0] == "ok" and _kind(mine[1]) == _kind(have[1])
+                    and (mine[1] == have[1]
+                         or (_kind(mine[1]) == "float" and mine[1] != mine[1]
+                             and have[1] != have[1]))))
+            if not same:
+                lines.append(f"point {point_id}: {label}() is {have!r} compiled, "
+                             f"{mine!r} in modelx")
+    return want, lines

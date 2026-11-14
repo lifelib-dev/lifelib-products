@@ -11,18 +11,23 @@ moves it there, Term_US_SEC first (M14):
   cell, no generator or comprehension, no call but to a cell, a ``Data`` vector or a
   builtin Cython turns into C, no list, dict, set or tuple built, no keyword call that
   would keep a cell a Python method, and every ``Data`` vector a numeric array read by
-  element.  Read from the formulas, so it runs in every suite, with or without a
-  compiler.
+  element, at no negative literal index.  Read from the formulas, so it runs in every
+  suite, with or without a compiler.
+* The sample: ``sample_sec.py`` calls every cell the registry names under ``"engine"``,
+  which no compiled cell calls, so that each is traced.  Read statically.
 * C3, the typing guard: the generated declarations say every projection cell returns and
   takes a C ``bint``, ``long long`` or ``double`` and caches in a C array of the spec's
   size, every new ``Data`` vector but a reader is a typed memoryview or a C scalar, and
   the generated C keeps no Python object in a projection cell's locals, calls no Python
-  builtin there and builds no container, under the two directives the build tool writes.
+  builtin there and builds no container, under the two directives the build tool writes;
+  and every reporting cell a reader asks for, a label among them, returns ``object``.
 * C4 on the committed points: the compiled model computes what modelx computes, every cell
   at every argument a full modelx sweep caches, every raise and every ``Data`` array, bit
   for bit on x86-64.
 * The release: ``run_sec.py --block``, run compiled, holds one point's ItemSpace at a time
   (F5, K2).
+* The block's sum: ``run_sec.py``'s running sum is ``groupby``'s, bit for bit, on the
+  committed points' frames, run in modelx, with or without a compiler.
 
 The allowlist of cells that stay Python is R17's, :func:`sec_support.reporting_cells`:
 ``model_point``, the ``result_*`` reports, the ``check_*`` checks, and the label accessors
@@ -58,7 +63,10 @@ from sec_support import (
     release_faults, reporting_cells, spec_faults, static_faults, typing_faults)
 from sec_support import label_faults, reporting_columns_faults
 from sec_support import engine_faults
-from us_registry import LIB, MODELS, is_sec, meta, model_path
+from sec_support import (
+    block_sum_faults, labels_refusing_non_text, object_cells, object_return_faults,
+    pxd_declarations, runner_add, sample_engine_faults)
+from us_registry import LIB, MODELS, is_sec, meta, model_path, point_keys, projection
 
 SEC_MODELS = sorted(n for n in MODELS if is_sec(n))
 EC_MODELS = sorted(n for n in SEC_MODELS if meta(n).get("stage") == "EC")
@@ -278,6 +286,54 @@ def test_engine_cells_are_declared_by_name(sec_name):
     assert not found, f"{sec_name}: engine: " + "; ".join(found)
 
 
+def test_the_sample_calls_every_engine_cell(name, model):
+    """``sample_sec.py`` calls every cell the registry names under ``"engine"`` (R14).
+
+    No compiled cell calls an engine cell, so only the sample's own call types one: an
+    engine cell the sample stops calling is traced at nothing and compiles with object
+    parameters, and the typing guard still passes, since it admits an engine cell's dict
+    cache by name (M25).  So the sample's code is read, statically, for a call of each
+    (``sec_support.sample_engine_faults``): by attribute, by ``getattr`` with its name,
+    or by ``getattr`` over a set of names that holds it; and one taking no parameter, by
+    the loop that calls every cell of no parameter, too.  A model without the key passes.
+    """
+    engine = meta(name).get("engine", ())
+    source = (model_path(name).parent / "sample_sec.py").read_text(encoding="utf-8")
+    parameterless = [cell for cell in engine if cell in model.Projection.cells
+                     and not model.Projection.cells[cell].parameters]
+    found = sample_engine_faults(source, engine, parameterless)
+    assert not found, f"{name}: " + "; ".join(found)
+
+
+def test_the_runner_sums_the_block_as_groupby_does(name):
+    """``run_sec.py --block``'s running sum is pandas' ``groupby`` sum, bit for bit.
+
+    A block run keeps one point's frame at a time, so it sums the frames as it goes,
+    compensated, with its ``add``, so that the block is the committed points' frames
+    concatenated and summed by ``t``, to the last bit, which the printed block cannot
+    show.  So ``add`` is read from the runner and run on the committed points' frames,
+    which must be finite, and its sum compared with ``groupby``'s by ``np.array_equal``
+    (``sec_support.block_sum_faults``, M23).  Every product's runner sums alike, so this
+    is one convention.  A plain running sum departs from ``groupby``'s on every product's
+    committed points, so the comparison can fail on each, and that is held too.
+    """
+    def plain(total, compensation, frame):
+        total[:len(frame)] += frame
+
+    add = runner_add(model_path(name).parent / "run_sec.py")
+    model = mx.read_model(model_path(name), name=f"{name}_block_{next(_names)}")
+    try:
+        frames = [projection(model, key).result_cf() for key in point_keys(model)]
+        found = block_sum_faults(add, frames)
+        naive = block_sum_faults(plain, frames)
+    finally:
+        model.close()
+    assert not found, f"{name}: " + "; ".join(found)
+    assert naive and naive[0].startswith("the running sum departs"), (
+        f"{name}: a plain running sum is groupby's on the committed points, so the "
+        f"comparison cannot fail there: {naive}")
+
+
 @pytest.mark.cython
 def test_every_projection_cell_compiles_to_a_c_type(name, model, sec_build):
     """C3: the compiled model's declarations, and its generated C, are C.
@@ -294,7 +350,15 @@ def test_every_projection_cell_compiles_to_a_c_type(name, model, sec_build):
     other than an exception it raises, or builds a list, dict or set, and every translated
     space module begins with ``infer_types=True`` and ``cpow=True``, without which an
     integer local is a Python object and a power drifts from modelx's.  A builtin the
-    registry's ``"python_calls"`` admits in a cell is no fault in that cell's C.
+    registry's ``"python_calls"`` admits in a cell is no fault in that cell's C.  And the
+    reporting cells a reader asks for, ``model_point``, the ``result_*`` reports and the
+    label accessors, return ``object`` where they compile: a label the sample traced on
+    text alone compiles to ``str``, and raises on a label ``Data`` holds as a number or a
+    blank, where modelx returns it (``sec_support.object_return_faults``, M22).  A label
+    compiled to ``str`` passes only where its own formula refuses its point's column blank
+    and as a number, ``Data``'s checks aside (``sec_support.labels_refusing_non_text``),
+    as a label validating its column does, which returns text or raises in either
+    engine.
     """
     build = sec_build(name)
     twin = mx.read_model(model_path(meta(name)["twin"]), name=f"{name}_ec_twin_"
@@ -304,7 +368,13 @@ def test_every_projection_cell_compiles_to_a_c_type(name, model, sec_build):
     finally:
         twin.close()
     reporting = reporting_cells(name, model.Projection)
+    readers = object_cells(name, model.Projection)
+    declared, _ = pxd_declarations(build.pxd, "Projection")
+    as_text = {cell for cell in readers & set(meta(name).get("reporting", ()))
+               if cell in declared and declared[cell][0] != "object"}
+    refusing = labels_refusing_non_text(name, as_text)
     found = (typing_faults(build, model, reporting=reporting, new_data=new_data)
+             + object_return_faults(build, readers, refusing)
              + spec_faults(build, model_path(name).parent / "spec_sec.py")
              + c_faults(build, reporting=reporting,
                         python_calls=meta(name).get("python_calls", {})))

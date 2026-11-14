@@ -97,7 +97,8 @@ import pytest
 from sec_support import (
     GENERATED_COLUMNS, SEC_SPECS, TWIN_EXEMPT_DEFAULT, build_sec_table, check_generated,
     codes, compiled_case, compiled_mismatches, exact_here, fingerprint_mismatches,
-    frame_mismatches, run_compiled, sweep, temp_inputs, twin_mismatches)
+    frame_mismatches, label_mismatches, run_compiled, sweep, temp_inputs,
+    twin_mismatches)
 from us_registry import model_path, point_keys, projection
 
 SEC, TWIN, TABLE = "Term_US_SEC", "Term_US_S", "model_point_table_sec.csv"
@@ -2551,6 +2552,40 @@ def test_the_compiled_model_computes_what_modelx_computes_where_the_cap_binds(se
                            edits=SPLICED_EDITS)
     found = compiled_mismatches(build, folder)
     assert not found, f"{len(found)} mismatches, first:\n  " + "\n  ".join(found)
+
+
+# The label accessors, which return the point's column as read (sample_sec.py).
+LABELS = ("sex", "rate_class", "plan", "premium_mode")
+
+
+@pytest.mark.cython
+def test_the_compiled_model_returns_a_label_that_is_not_text_as_modelx_does(sec_build,
+                                                                             tmp_path):
+    """C4 on labels that are not text: the compiled accessors return what modelx returns.
+
+    ``Data`` accepts a table whose labels are blank, which pandas reads as NaN, or a
+    number, on the first committed point.  modelx returns each label as
+    pandas reads it, and an accessor typed ``str`` would raise ``TypeError`` compiled;
+    the sample types the labels as Python objects from a blank copy (sample_sec.py, M26).
+    So on a copy of that point with every label blank, and on one with every label the
+    number 7, after checking that modelx returns NaN and 7, each label is called compiled
+    and must return what modelx returns (``sec_support.label_mismatches``).
+    """
+    build = sec_build(SEC)
+    first = _committed().iloc[[0]]
+    found = []
+    for case, value in (("blank", None), ("numeric", 7)):
+        rows = first.assign(**{label: value for label in LABELS})
+        folder = compiled_case(build, tmp_path / case, model_points=rows)
+        want, lines = label_mismatches(build, folder, LABELS)
+        (got,) = want.values()
+        for label in LABELS:
+            kind, read = got[label]
+            assert kind == "ok", (case, label, got[label])
+            assert (math.isnan(read) if value is None else read == value), (case, label,
+                                                                             read)
+        found += [f"{case}: {line}" for line in lines]
+    assert not found, "\n  ".join(found)
 
 
 @pytest.mark.cython

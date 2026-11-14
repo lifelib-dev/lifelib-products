@@ -32,11 +32,13 @@ What each test pins, against the plan (its §4 item 3 and §5.2):
 * Compiling: :func:`cython_missing` names what a machine lacks, and :func:`require_cython`
   skips, or fails under ``USLIB_REQUIRE_CYTHON=1``; :class:`SecBuilds` builds a model
   once and keeps a failed build's error for every asker; C3's readers find every kind of
-  fault in written declarations, a written spec and written C; C5's static check finds
-  every construct it forbids in a synthetic model and passes the ones it allows; C4's
-  comparison keeps a value's kind and floors its tolerance at the magnitude, or at a
-  tolerance of 0 tells one ulp apart; and :func:`full_sweep` reaches every cell at every
-  month and keeps each raise.  None of these compiles anything.
+  fault in written declarations, a reporting label typed as text among them, a written
+  spec and written C; C5's static check finds every construct it forbids in a synthetic
+  model, a negative literal index among them, and passes the ones it allows; the sample
+  check finds an engine cell no call reaches; C4's comparison keeps a value's kind and
+  floors its tolerance at the magnitude, or at a tolerance of 0 tells one ulp apart;
+  :func:`full_sweep` reaches every cell at every month and keeps each raise; and the
+  block-sum check fails a plain running sum by an ulp.  None of these compiles anything.
 
 modelx keeps every model in one registry, and ``conftest.term_life`` already holds the
 default name, so every model here is read under a name of its own and closed.
@@ -1876,3 +1878,186 @@ def test_reporting_columns_takes_three_shapes_of_a_declared_label(columns, fault
         assert len(found) == 1 and fault in found[0], found
     assert "belongs to stage 'EC'" in reporting_columns_faults(
         {"stage": "E", "reporting_columns": {"payment_timing": "timing"}})[0]
+
+
+# A compiled model's Projection as mx2cy declares it where a label was traced on text
+# alone: sex returns str and rate_class unicode, where plan and the reports return object;
+# mode stayed a Python method; check_roll returns a bint and statutory, an engine cell, a
+# double, as each may.
+LABEL_PXD = """\
+cdef class _c_Projection(_mx_sys.BaseSpace):
+
+    cdef object _v_model_point
+    cdef object _v_sex
+
+    cpdef object model_point(_c_Projection self)
+    cpdef str sex(_c_Projection self)
+    cpdef object plan(_c_Projection self)
+    cpdef unicode rate_class(_c_Projection self)
+    cpdef bint check_roll(_c_Projection self)
+    cpdef double statutory(_c_Projection self, double rate)
+    cpdef object result_cf(_c_Projection self)
+    cpdef double premium(_c_Projection self, long long t)
+"""
+
+
+def test_a_reporting_cell_compiled_to_text_is_a_fault(monkeypatch, tmp_path):
+    """C3 of the reporting cells (M22): :func:`object_cells` takes ``model_point``, the
+    reports and the registry's labels, and :func:`object_return_faults` faults each the
+    declarations type other than ``object``, ``str`` and ``unicode`` alike, but a label
+    it is told refuses what is not text; a label left a Python method, a check's
+    ``bint``, an engine cell's ``double`` and a compiled cell's are no fault of it."""
+    import us_registry
+    from sec_support import Build, object_cells, object_return_faults
+    model = mx.new_model(_name("labels"))
+    try:
+        proj = model.new_space("Projection")
+        for name in ("model_point", "sex", "plan", "rate_class", "mode", "check_roll",
+                     "result_cf"):
+            proj.new_cells(name, formula="lambda: 0")
+        proj.new_cells("statutory", formula="lambda rate: rate")
+        proj.new_cells("premium", formula="lambda t: 0.0")
+        monkeypatch.setitem(us_registry.MODELS, "Toy_US_SEC", (
+            "products/toy/Toy_US_SEC",
+            {"twin": "Toy_US_S", "stage": "EC", "param": "idx",
+             "reporting": ("sex", "plan", "rate_class", "mode"),
+             "engine": ("statutory",)}))
+        cells = object_cells("Toy_US_SEC", proj)
+    finally:
+        model.close()
+    assert cells == {"model_point", "sex", "plan", "rate_class", "mode", "result_cf"}
+    build = Build("Toy_US_SEC", tmp_path, tmp_path / "pkg", LABEL_PXD)
+    found = object_return_faults(build, cells)
+    assert [line.split(",")[0] for line in found] == [
+        "Projection.rate_class returns unicode", "Projection.sex returns str"], found
+    assert object_return_faults(build, cells - {"rate_class", "sex"}) == []
+    assert [line.split(",")[0] for line in object_return_faults(
+        build, cells, refusing={"rate_class"})] == ["Projection.sex returns str"]
+
+
+def test_a_label_refusing_what_is_not_text_may_compile_to_text():
+    """:func:`labels_refusing_non_text` (M22, precised at M26): a label whose own formula
+    refuses its column blank and as a number returns text or raises, so it may compile to
+    ``str``: ``SPIA_US_SEC``'s ``form`` and ``payment_timing`` validate theirs.  Its
+    ``sex(life)`` returns the column as read, and is not refusing; nor is
+    ``MYGA_US_SEC``'s ``sex``, which ``Data`` refuses as a number its mortality table
+    does not key, and which returns the number where the table keys it."""
+    from sec_support import labels_refusing_non_text
+    assert labels_refusing_non_text("SPIA_US_SEC", {"form", "payment_timing", "sex"}) == {
+        "form", "payment_timing"}
+    assert labels_refusing_non_text("MYGA_US_SEC", {"sex"}) == set()
+
+
+# Reads of a Data array at a negative literal index, which C5 refuses, and reads beside
+# them that it passes: an index computed from t, a literal written as +1, - -1 or -0.
+NEGATIVE_PROJECTION = {
+    "last": "lambda t: data.vec()[-1]",
+    "corner": "lambda t: data.grid()[0, -2] + data.grid()[t, 1]",
+    "ending": "lambda t: data.grid()[1][-1.0]",
+    "fine": "lambda t: data.vec()[t - 1] + data.vec()[+1] + data.vec()[- -1]"
+            " + data.vec()[-0]",
+}
+
+
+def test_the_static_check_refuses_a_negative_literal_index():
+    """C5 refuses ``data.x()[-1]`` in a projection formula (M23): Python and compiled
+    Cython both wrap it to the array's end, so a read from the wrong end passes C4.  Each
+    index of a 2-D read is held, a chained one included, and a computed index and a
+    literal that is not negative pass."""
+    from sec_support import static_faults
+    model = mx.new_model(_name("negative"))
+    try:
+        data = model.new_space("Data")
+        data.np = np
+        data.new_cells("vec", formula="lambda: np.array([1.0, 2.0, 3.0])")
+        data.new_cells("grid", formula="lambda: np.ones((2, 3))")
+        proj = model.new_space("Projection")
+        proj.data = data
+        for name, formula in NEGATIVE_PROJECTION.items():
+            proj.new_cells(name, formula=formula)
+        found = static_faults(model, reporting=set())
+    finally:
+        model.close()
+    assert found == [
+        "Projection.last, line 1: reads data.vec() at the negative index -1, which wraps "
+        "to the array's end in Python and in C alike",
+        "Projection.corner, line 1: reads data.grid() at the negative index -2, which "
+        "wraps to the array's end in Python and in C alike",
+        "Projection.ending, line 1: reads data.grid() at the negative index -1.0, which "
+        "wraps to the array's end in Python and in C alike"], found
+
+
+ENGINE_SAMPLE = '''\
+"""A sample's docstring names statutory(), which is no call."""
+LABELS = ("sex", "plan")
+NAMED = ("schedule", "plan")
+FAMILIES = {"curve": ("A",), "pols_if_at": ("BEF_NB",)}
+for idx in range(3):
+    p = projection[idx]
+    p.bs_call(100.0, 100.0, 1.0, 0.04, 0.02, 0.2)
+    getattr(p, "norm_cdf")(0.0)
+    for label in LABELS:
+        getattr(p, label)()
+    for name in NAMED:
+        getattr(p, name)()
+    for cell, labels in FAMILIES.items():
+        getattr(p, cell)(0)
+'''
+
+
+def test_the_sample_check_finds_an_engine_cell_it_never_calls():
+    """:func:`sample_engine_faults` (M25): an engine cell is called by attribute, by
+    ``getattr`` with its name, or by ``getattr`` over a literal set of names, or a dict's
+    keys, holding it; a name in the docstring or in a set no loop calls is no call.  A
+    loop calling ``getattr(p, name)()`` over names the sample computes reaches a cell of
+    no parameter alone, and only where the caller says the cell takes none."""
+    from sec_support import sample_engine_faults
+    engine = ("bs_call", "norm_cdf", "schedule", "curve", "statutory", "flags")
+    found = sample_engine_faults(ENGINE_SAMPLE, engine, ("flags",))
+    assert [line.split("(")[0] for line in found] == [
+        "sample_sec.py calls no engine cell statutory",
+        "sample_sec.py calls no engine cell flags"], found
+    computed = ENGINE_SAMPLE + (
+        "NOARG = sorted(n for n, params in cells.items() if not params)\n"
+        "for name in NOARG:\n    getattr(p, name)()\n")
+    found = sample_engine_faults(computed, engine, ("flags",))
+    assert [line.split("(")[0] for line in found] == [
+        "sample_sec.py calls no engine cell statutory"], found
+    assert len(sample_engine_faults(computed, engine, ())) == 2
+    argued = ENGINE_SAMPLE + "for name in NOARG:\n    getattr(p, name)(0.5)\n"
+    assert len(sample_engine_faults(argued, engine, ("flags",))) == 2
+    assert sample_engine_faults(ENGINE_SAMPLE, ()) == []
+
+
+def _block_frames():
+    """Three frames by ``t`` whose plain running sum at ``t = 0``, ``0.1 + 0.2 + 0.3``, is
+    ``0.6000000000000001``, where ``groupby``'s compensated sum is ``0.6``."""
+    return [pd.DataFrame({"net_cf": values, "pols_if": [1.0] * len(values)},
+                         index=pd.RangeIndex(len(values), name="t"))
+            for values in ([0.1, 1e16, 5.0], [0.2, 1.0], [0.3])]
+
+
+def test_the_block_sum_check_holds_a_runner_to_groupby_bit_for_bit():
+    """:func:`block_sum_faults` (M23): a runner's compensated ``add`` sums frames of
+    unequal lengths to ``groupby``'s sum, bit for bit, and a plain running sum, which
+    departs by an ulp, is a fault; so are a frame not finite, where ``groupby`` skips a
+    NaN, and one not indexed from 0.  :func:`runner_add` reads ``add`` from a product's
+    runner without running it."""
+    from sec_support import block_sum_faults, runner_add
+
+    def plain(total, compensation, frame):
+        total[:len(frame)] += frame
+
+    add = runner_add(model_path("Term_US_SEC").parent / "run_sec.py")
+    assert block_sum_faults(add, _block_frames()) == []
+    assert block_sum_faults(plain, _block_frames()) == [
+        "the running sum departs from groupby's in 1 values, first net_cf at t = 0: "
+        "0.6000000000000001, where groupby gives 0.6"]
+    frames = _block_frames()
+    frames[1].loc[1, "net_cf"] = np.nan
+    assert block_sum_faults(add, frames) == [
+        "frame 1 is not finite, where groupby skips a NaN"]
+    frames = _block_frames()
+    frames[2].index = pd.RangeIndex(1, 2, name="t")
+    assert block_sum_faults(add, frames) == ["frame 2 is not indexed by t = 0, 1, ..."]
+    assert block_sum_faults(add, []) == ["no frames to sum"]

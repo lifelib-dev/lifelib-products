@@ -44,10 +44,10 @@ copies of the scenario and withdrawal tables keyed by 1, all written to a tempor
 directory and read by a second instance of the export, whose ``Data`` reads them by
 absolute file names.  mx2cy then types the six as Python objects, as the reporting cells
 they are, and the compiled model returns what modelx returns.  ``sex`` stays text: the
-mortality table's check admits no sex but ``M`` and ``F``.  Nothing is written beside the
-export, and no other cell is called there but ``model_point``, ``model_point_table`` and
-``input_dir``, which are Python objects already, and the checks ``model_point_table``
-runs.
+mortality table's check admits no sex but ``M`` and ``F``, and ``sex`` refuses any other
+value itself.  Nothing is written beside the export, and no other cell is called there but
+``model_point``, ``model_point_table`` and ``input_dir``, which are Python objects already,
+and the checks ``model_point_table`` runs.
 """
 import pathlib
 import sys

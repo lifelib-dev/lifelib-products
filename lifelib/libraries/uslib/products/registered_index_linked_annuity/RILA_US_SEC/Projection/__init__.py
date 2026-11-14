@@ -762,10 +762,15 @@ def sex():
     """The sex of the selected model point, M or F.
 
     A label for reporting, which no projection cell calls: :func:`mort_rate_base_at` reads
-    the sex's rates by :func:`mort_schedule`. Text always, the mortality table's check
-    admitting no sex but ``M`` and ``F``, and ``Data`` no point of a sex it does not rate.
+    the sex's rates by :func:`mort_schedule`. Text always: the mortality table's check
+    admits no sex but ``M`` and ``F``, and ``Data`` no point of a sex it does not rate,
+    and the label refuses any other value itself, ``ValueError`` naming the point, so
+    that it returns text or raises in either engine.
     """
-    return model_point()["sex"]
+    v = model_point()["sex"]
+    if v not in ("M", "F"):
+        raise ValueError(f"point_id {point_id()}: sex must be M or F")
+    return v
 
 
 def mort_schedule():

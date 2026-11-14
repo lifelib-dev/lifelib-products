@@ -407,7 +407,11 @@ year's premium and each month's mortality. So each input now reaches a cell as a
 - **Reporting cells stay Python.** `model_point()`, the label accessors `sex()`,
   `rate_class()`, `plan()` and `premium_mode()`, and the three reports return a table row,
   text and DataFrames, for a reader, for `run_sec.py` and for the comparison with
-  `Term_US_S`. No other cell calls them, so they cost the projection nothing.
+  `Term_US_S`. No other cell calls them, so they cost the projection nothing. A label
+  accessor returns its column as read, and `Data` accepts a label that is blank, which
+  pandas reads as NaN, or a number, which the point's first projection refuses. So each of
+  the four compiles to a Python object, as the sample traces it (below), and returns what
+  modelx returns (precised at M26).
 
 The `Data` docstring lists its 23 vectors, arrays, extents and counts, each with the column
 or file it comes from. The six readers stay Python, returning DataFrames and a path, and no
@@ -442,9 +446,12 @@ leave branches untaken: the semi-annual, quarterly and monthly modes, a twenty-y
 period, the conversion window's age limit, cover that ends with the level period, the cap
 on mortality. That still types every cell, because every branch of a cell returns the one
 type its others return, a count a float in every branch, and on points that take those
-branches the compiled model computes modelx's numbers (above). The sample also raises the
-recursion limit, which modelx raises and its export does not (*What a compiled run
-needs*, below).
+branches the compiled model computes modelx's numbers (above). The label accessors are
+typed from more than the committed points: the sample also calls the four on a copy of the
+first point with every label blank, written to a temporary directory and read by a second
+instance of the export, so that each compiles to a Python object (M26). The sample also
+raises the recursion limit, which modelx raises and its export does not (*What a compiled
+run needs*, below).
 
 `spec_sec.py` sizes each C-array cache, by the names of the cells' parameters, and a
 compiled cache raises `IndexError` for an argument outside it. So each size covers the

@@ -1050,8 +1050,10 @@ month of every renewal term under `nge_reset`. So each input now reaches a cell 
   the projection meets as `RILA_US_S` does, and a numeric `scenario_id` or `wd_schedule_id`
   where its table's keys are numbers. So each of those six compiles to a Python object, as
   the sample traces it (below), and returns what modelx returns; `sex()` compiles to `str`,
-  since the mortality table's check admits no sex but `M` and `F`. The three checks are
-  reporting cells too, but they return a verdict, which compiles to a C `bint`.
+  since the mortality table's check admits no sex but `M` and `F`, and `sex()` refuses any
+  other value itself, naming the point, so that it returns text or raises in either engine,
+  which the typing guard asks of a label compiled to `str` (precised at M26). The three
+  checks are reporting cells too, but they return a verdict, which compiles to a C `bint`.
 - **Engine cells stay Python too.** The eleven cells of float parameters, `norm_cdf`,
   `bs_d1`, `bs_d2`, `bs_call`, `bs_put`, `bs_binary_call`, `opt_component`, `opt_portfolio`,
   `opt_portfolio_abs`, `credit_rate_at` and `opt_budget_at_cap`, are `RILA_US_S`'s formulas

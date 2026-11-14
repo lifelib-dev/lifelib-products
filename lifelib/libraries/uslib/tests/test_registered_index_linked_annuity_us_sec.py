@@ -4791,6 +4791,41 @@ def test_the_sample_calls_every_engine_cell():
     assert len(engine) == 11 and engine <= called, sorted(engine - called)
 
 
+def test_sex_refuses_a_value_that_is_not_text_itself():
+    """``sex()`` returns M or F, or raises ``ValueError`` naming the point (M26).
+
+    ``Data`` already refuses a point of any other sex, since the mortality table's check
+    admits no other, so ``sex()`` compiles to ``str``; the typing guard admits a label
+    typed ``str`` only where its own formula refuses what is not text
+    (``sec_support.labels_refusing_non_text``).  So the label is called on the committed
+    model whose table, past ``Data``'s checks, holds the first point's sex blank, the
+    number 7 and the text X: each raises, with ``Data``'s wording; and every committed
+    point's sex is returned as the table holds it.
+    """
+    from sec_support import labels_refusing_non_text
+    assert labels_refusing_non_text(SEC, {"sex"}) == {"sex"}
+    for value in (None, 7, "X"):
+        model = mx.read_model(model_path(SEC), name=_name("sex_refused"))
+        try:
+            table = model.Data.model_point_table().astype({"sex": object})
+            table.iloc[0, table.columns.get_loc("sex")] = value
+            model.Data.model_point_table[()] = table
+            first = table.index[0]
+            with pytest.raises(Exception) as raised:
+                projection(model, point_keys(model)[0]).sex()
+        finally:
+            model.close()
+        assert f"ValueError: point_id {first}: sex must be M or F" in str(raised.value), (
+            value, str(raised.value))
+    model = mx.read_model(model_path(SEC), name=_name("sex_read"))
+    try:
+        table = model.Data.model_point_table()
+        got = [projection(model, key).sex() for key in point_keys(model)]
+    finally:
+        model.close()
+    assert got == table["sex"].tolist(), got
+
+
 def test_the_spec_maps_s_totals_and_scenario_columns_onto_sec_codes():
     """``SPEC.twin_arg_map`` hands T1 S's keys as SEC names them (R9, R12).
 
