@@ -28,7 +28,8 @@ and out of §9's order, is done, 2026-11-14: Tests run 23 passed all 64 jobs, th
 job's `immediate_annuity` legs on Linux and Windows among them (§7.9, *Record — M23*). DIA's
 compile step, M24, built and tested there after M23, is done, 2026-11-14: Tests run 27
 passed all 70 jobs, the `cython` job's `deferred_income_annuity` legs among them (§7.12,
-*Record — M24*); RILA's, M25, may start now that M20 has landed. FIA's compile step, M21,
+*Record — M24*); RILA's, M25, built and tested there after M24, has landed, 2026-11-14,
+after M22, and awaits CI (§7.8, *Record — M25*). FIA's compile step, M21,
 landed after them, and IUL's, M19, after M21; both are done, 2026-11-14: Tests run 27 passed
 all 70 jobs, their `cython` legs on Linux and Windows among them (§7.11, *Record — M21*;
 §7.4, *Record — M19*). VA's, M22, is in its tests stage. The open decisions of §8.2 are
@@ -3430,6 +3431,8 @@ test.
    in its cell, no compiled formula calls an unadmitted builtin outside a raise, and no
    model before stage `EC` declares one, so the key's absence asserts something too. The
    key takes bare builtins: RILA extends it to dotted names, with its own harness test.
+   *Done at M25:* each dotted call admitted by cell, the sole argument of `float(...)`
+   (§7.8, *Record — M25*).
 2. *Split kinds and a total* where the kinds are `result_cf` columns; the arg map where
    S's total has a code, as MYGA's `ALL`. A total written left to right from `0.0` equals
    S's `sum` where at most two kinds are non-zero in a month, the sign of three zeros
@@ -9800,7 +9803,9 @@ the fixes it led to, its faults among them:
 - *Issue age:* Phase 2's `proj_len()` refuses one outside 0..85, beside the cover check
   (§7.1, *Record — M14*; §6.1, step 6). `Data` refuses one below 0 and one whose attained
   age in the first month on the books the mortality table does not rate, below 40 as
-  shipped; nothing refuses one above 85, as in S.
+  shipped; nothing refuses one above 85, as in S. *At M25:* `RILA_US_S` projects issue
+  ages to 111 on the shipped tables, so `proj_len()` refuses one outside 0..111,
+  `issue_age_max` 111 (D2; §7.8, *Record — M25*).
 - *M14's items for the C step:* the runner's `--cython`, `--build` and `_tool()`, with the
   `create()`-copy test and the compiled runner test's refusal leg (R4; §6.1, step 7).
 - *T1 and codes:* S caches `claims(t, kind=None)` and `claims_over_av(t, kind=None)` under
@@ -9912,6 +9917,197 @@ test, generator or doccheck reads. On the tree as committed, `test_mortality_cap
 32 passed and `test_sec_support.py` 53 passed, `gen_sec_points.py --check` found the files
 of the nine SEC models current, doccheck built 509 pages with 0 warnings, and md_lint
 reported 0 on uslib and on this plan.
+
+#### Record — M25, landed 2026-11-14
+
+M25 is RILA's compile step, 81c386d, the last product's, on MYGA's deferred chassis and
+FIA's index crediting, by Term's template (§7.1, *Record — M14*) and the later records'
+*For … and later* lists, SPIA's and DIA's rulings among them (§7.9, *Record — M23*;
+§7.12, *Record — M24*). It ran in the local session that built M23 and M24, on Windows,
+beside the cloud session's M22, and landed after it. Its Phase 1 fingerprint had been
+frozen at M13, and the `cython` job gains its shard, `registered_index_linked_annuity`. A
+design was prototyped whole and critiqued first: 0 blockers, 4 major and 12 minor findings.
+The majors: the design refused every `**` with a negative base, which also refused real
+results S computes (an integral exponent, a `-0.0` at a term end); compiled, an
+overflowing `**` returned an infinity where Python raises `OverflowError`, on inputs
+`Data` accepts (a volatility above about 1e154, the MVA factor, a long term's notional
+discount); a `term_years` of `2**53` or more passed the load checks and overflowed
+compiled; and the HOLDING bucket was 0 on every point, so a wrong bucket sum in
+`wd_alloc_pp` passed every test. The build, tests written against it and checked by 30
+injected faults, and the docs with C6 followed. One merged reviewer found 0 blockers, 2
+major and 11 minor: the stack need was recorded as 320 to 322 KiB, where Windows rounds a
+reservation to 64 KiB and the need lies between 320 and 384; and the cap bisection's
+comparison regrouped, `atm - (otm + otp)`, moved 240 solved caps by 16 ulps and passed the
+bit-for-bit engine test, which ran only where the two forms agree. A fix stage applied both
+and ten minors and carried one (below); the re-review found 0 blockers, 0 majors and three
+minors, applied at landing. Two stages were interrupted by the account's usage limit and
+resumed from where they stopped. The full suite and the full grid were not run locally: CI
+runs both.
+
+**CI: pending** until the Tests workflow is green on 81c386d: C1–C5 on Linux and Windows
+(§6.3, §9), the `cython` job's `registered_index_linked_annuity` legs among them, with
+gcc's stack bracket.
+
+**What exists now.**
+- `RILA_US_SEC` at stage `EC`, compiled and checked against modelx. `Projection` has 202
+  cells, keyed by `idx`. 190 compile to C types, 151 to `double`, 21 to `long long` and 18
+  to `bint`; the 12 that stay Python are `model_point`, the four reports, the six labels and
+  `sex`. S's eleven float-parameter Black–Scholes cells, `norm_cdf`, `bs_d1`, `bs_d2`,
+  `bs_call`, `bs_put`, `bs_binary_call`, `opt_component`, `opt_portfolio`,
+  `opt_portfolio_abs`, `credit_rate_at` and `opt_budget_at_cap`, stay S's under
+  `"engine"` for S's tests and T1, called by no compiled cell. The projection prices
+  through new int-keyed cells: `opt_component_at(t, leg, basis)`, `opt_portfolio_at`,
+  `opt_portfolio_abs_at`, `credit_rate_by(t, rule)` and `cap_solved_at_start`, the
+  declared cap's 80-step bisection keyed on the term start. `opt_legs()`, a tuple of leg
+  names, gives way to int leg codes, T1 exempting it.
+- 36 codes, the families of timing, kind, bucket, leg, market and basis, `CAP`, `STEP` and
+  `EDGE` numbered after `ALL`. The contract is `issue_age_min` 0 and `issue_age_max` 111,
+  the oldest issue age `RILA_US_S` projects on the shipped tables (it refuses 112 with a
+  `KeyError`), not §7.8's 85 (D2). Every 2-D cache is 9 wide and every 3-D cache 7 by 9.
+- `Data` has 81 cells: `market_state`'s list per call as `[scenario, month]` arrays by
+  field, a future copy's months before issue unreadable; the ten decodes; the count cells as
+  R7's checking ints; and int64 and float64 vectors by point, `_ok` flags among them.
+- A compiled `Projection` ItemSpace is 6,385,368 bytes, the library's largest.
+- Beside the model: `sample_sec.py`, `spec_sec.py`, `run_sec.py` and `model-sec.md`'s *The
+  compiled model*; the API pages regenerated.
+- Shared files: `us_registry.py` (the entry at `EC`, and the comment line, merged with
+  M22's); `sec_support.py` (`_admitted_call`, `_rila_codes`, and RILA's spec with the
+  `opt_legs` exemption and `twin_arg_map`); `test_compiled_conventions.py`, whose
+  `"python_calls"` check takes dotted names; `test_sec_support.py`, a harness test;
+  `tests.yml`, the shard; and uslib's `index.md`, merged with M22's sentence.
+
+**The gate, on Windows.** On the local machine of §7.9's *Record — M23*, with another heavy
+run beside each.
+- C1: the module's Phase 1 tests changed in call syntax only. After the fix stage it gave
+  297 passed and 75 skipped (`sec_full`), its compiled tests included, in 966 s, and 371
+  passed over the full grid in 1,047 s; the compiled conventions 93 passed in 829 s.
+- C2: `gen_sec_fingerprint.py RILA_US_SEC --check` reproduces, the frozen block byte for
+  byte M13's. The review compared this model with fb8c527's on 50 new points, issue ages 0
+  to 111, frames to 1,200 months, every option, family and rule, 14 in force and 4 issued
+  later: no cell of the four reports differs, at no tolerance.
+- C3: the 190 and the 12 above. The `math` calls stay Python calls in the generated C,
+  reached through the Space's `math` member, in the seven admitted cells and the engine
+  cells alone.
+- C4 exact on the committed points, on the splice grid, at the contract's extremes (issue
+  ages 0 and 111, frames to 1,200 months, `market_state` to 1,201), under moved References
+  with a NaN through each of seven, on labels that are not text, keys written as floats or
+  far past every frame, the powers off their domain and the `ALL` total's sign of zero. The
+  review went further: 23,962,197 compiled outcomes over three sweep orders on its 50
+  points, no mismatch but the documented compiled-only `IndexError`s.
+- C5, the release, the compiled refusals on a relabelled extract with 23 compiled-only
+  `IndexError`s, the stale Reference and the compiled runner with its refusal leg pass. The
+  shard as CI runs it gave 15 passed and none skipped, 608 s. doccheck built its pages with
+  0 warnings, md_lint reported 0, and `gen_scaffolding.py --dry-run` 0 files in each of the
+  six libraries.
+- *Depth (F7).* modelx's cold `net_cf` runs 1,100 deep at the longest cover, issue age 0,
+  and 380 on point 1; the export needs a recursion limit of 2,213, and `sample_sec.py` sets
+  9,000, held by a test. Compiled with MSVC 14.37, the call runs on a reservation of 384 KiB
+  and the main thread and dies on 320; Windows rounds a reservation up to 64 KiB, so the
+  need lies between the two, 2.7 to 3.2 times under 1 MiB, and from fixed reservations the
+  chain takes about 287 bytes a level and 31 KiB besides, about 340 KiB. gcc's, by the
+  ratio CI measured on SPIA and DIA, about twice MSVC's bytes a level, would be about 680
+  KiB, 1.5 times under 1 MiB: an estimate until the Linux leg records it.
+
+**Departures and precisions.**
+- *`math` admitted by cell.* The registry's `"python_calls"` takes dotted names, as §7.2's
+  *For M16 and later* item 1 foresaw for RILA: each admitted call is the sole argument of
+  `float(...)`, in the cells that price legs and in five more that take the overflow
+  bound's `math.log`, and C5 and a harness test hold each admission taken and none missing.
+  The C form, libc's `erf`, `exp`, `log` and `sqrt`, was prototyped: 0 of 22 million
+  arguments differed from Python's on MSVC, and it ran 19% faster a point, but it needs the
+  generated code rewritten and turns `math`'s raises into NaN and infinity. It is not
+  taken. With Python's calls kept, C4's exactness rests on one function on each platform.
+- *Powers* (critique M1). A `**` is refused only where Python's gives no real number S could
+  carry on with: a negative base with a non-integral exponent, refused at its cell with a
+  `ValueError` naming the point and the Reference, in both engines, beside a test of S's
+  own outcome; and a zero base with a negative exponent, which raises Python's own
+  `ZeroDivisionError` in both. A negative base with an integral exponent, and `-0.0`,
+  compute as S does. A `lapse_rate_max` above 1, which S projects as complex numbers, is
+  refused: a departure.
+- *Overflow* (critique M2). Each `**` an input `Data` accepts can overflow is guarded by a
+  bound on its operands, an exact square bound, a log bound with a margin and a check after,
+  so that both engines raise `OverflowError` with one message of SEC's own, naming the
+  point and the Reference, where S raises Python's and projects nothing. Within about
+  1e-12 relative of the largest float both engines raise, with different messages; only a
+  constructed input reaches it. M22 settled the same risk otherwise, calling Python's own
+  float power where the compiled `pow` gives an infinity, which raises the platform's own
+  message in both engines with no such sliver (7cf4074); the two are reconciled at M26.
+- *Ages* (D2). `issue_age_min` 0 and `issue_age_max` 111, the youngest and oldest issue ages
+  S projects. `age_at_entry`, `duration_mth` and `term_years` of `2**53` or more are refused
+  by the accessor of the point that reads them, before the int64 cast, the column kept as
+  float64 (critique M3).
+- *Keys past an array's hold* are dropped before any cast, not refused (MYGA's
+  `read_last_mth`), and every `Data` array's shape is held to its `read_last_*` plus one.
+  Stage `E`'s whole-table refusals are kept, as Phase 1 had them.
+- *Order of raises.* Inline copies of S's cells keep S's order of raising calls, the accrual
+  formed before the cover test.
+- *Precision:* the solved cap is S's bit for bit, held on stepped yearly markets under
+  `nge_reset`, where rounding variants part.
+
+**Measured.** 2026-11-14, on the local machine, the load stated with each stage's run.
+- *Compile.* 75 to 87 s.
+- *The module.* With its compile tests 953 to 966 s, about 9 minutes of it the compiled
+  section, build included; over the full grid 1,047 s. The compiled conventions 820 to
+  829 s.
+- *The shard*, as CI runs it: 608 to 671 s.
+- *Speed (C6).* `tools/bench_sec_cy.py registered_index_linked_annuity`, the fastest of
+  six. Compiled: 2.00 ms a point on `net_cf`. The export: 8.33 ms. modelx: 167 ms. So the
+  compiled model runs 4.2 times the export on `net_cf` and 3.5 on `result_cf`, and 83 and
+  69 times modelx, the lowest ratio to the export in the library: making and releasing the
+  6.4 MB ItemSpace takes 1.17 ms of the 2.00. Without the collection after each release,
+  504 points peak at 2,713 MB. The model as Phase 1 left it ran 1.01 times its export
+  compiled; this one runs 68 times that build. The review reproduced 3.9 and 83 times under
+  load.
+
+**Faults.** The tests stage injected 30, each caught; four first passed the engine test,
+which ran on the flat shipped markets (a market swapped, an erf form, floor and buffer
+swapped, the engine's `norm_cdf`), until it moved to stepped paths with the floor set apart
+from the buffer; an erf form written `0.5 * (1 + x)` against `0.5 + 0.5 * x` moves no bit,
+so the fault became an `erfc` form. The review injected 6, one in two versions, 5 caught;
+the survivors, the regrouped bisection and a withdrawal array one column short, now fail
+the engine test (on 132 months) and a width test. A static test holds the sample's calls
+of the engine cells; dropping `opt_budget_at_cap` from the sample fails it, where C3 alone
+did not.
+
+**Windows.** Run here on MSVC 14.37. The stack bracket steps in 64 KiB, Windows'
+reservation granularity: a finer step measures the rounding. Two stages here ran beside
+each other at one heavy run each.
+
+**Cost.** About 3.7 million subagent tokens over eight stages: design 0.69M, critique
+0.37M, build 0.63M, tests 0.67M, docs 0.52M, review 0.42M, fix 0.23M and re-review 0.14M.
+
+**For M26 and later.** What RILA settles for the close and any later product:
+1. *`"python_calls"` takes dotted names*, each admitted call the sole argument of
+   `float(...)`, held by C5 and a harness test.
+2. *Every `**` an input or a moved Reference can push off its domain is guarded*: refused
+   only where Python has no real result, Python's `ZeroDivisionError` kept, and overflow
+   raised in both engines (M22's form, Python's own power where `pow` gives an infinity, is
+   the simpler; M26 picks one).
+3. *A 1-D cache a 2-D cell passes its code to is as wide as the 2-D width*; sweep every code
+   below the width (`roll_share`'s bucket cache was 4 until the build's probe).
+4. *A float engine at fixed argument sets* is one int-keyed cell with a basis code, its 3-D
+   cache sharing the inner shape; a tuple-returning S cell becomes a count and int codes,
+   with a T1 exemption.
+5. *A solve repeated every month of a period* is keyed by the period's first month on the
+   books.
+6. *A bit-for-bit engine test runs where rounding variants part*: stepped markets, a
+   re-solve, inputs that ship equal set apart.
+7. *A struct-dominated model is accepted and reported*, C6 giving the ItemSpace's cost
+   beside the ratio.
+8. *On Windows a stack bracket steps in 64 KiB*, the reservation granularity.
+
+**Carried into M26.**
+- *A convention over every stage-`EC` model's `"engine"` cells*, that the sample calls each:
+  RILA's module test is the instance, and MYGA, FIA and DIA keep engine cells too.
+- *C3 on module calls*: flag a formula's read of a module member outside its cell's dotted
+  admissions, with a harness case, so that C3 holds the admissions as C5 does (the review's
+  minor 9; the pattern it proposed could not match the generated C, which reaches `math`
+  through the Space's member).
+- *The overflow guard*: RILA's bound check and M22's Python power, one form for both.
+- *The `math` C form*, 19% a point, as a tools decision.
+- *gcc's stack figure* from the Linux leg's warning; the 1.5 times is an estimate.
+- *M23's two harness items*, the negative-index check and the runner's compensated-sum
+  test, stand.
 
 ### 7.9 SPIA — `SPIA_US_SEC` (E: L, C: M)
 
@@ -13963,5 +14159,6 @@ Items 1, 2, 3 and 5 were confirmed on 2026-11-01, as recommended, and item 4 on
 | M24 | Phase 2 for DIA, the seventh after M13, on SPIA's payout chassis — **done**, 2026-11-14, after M23, out of this table's order, built and tested on Windows in the local session that built M23; Tests run 27 passed all 70 jobs (§7.12, *Record — M24*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the registry's `"engine"` widened to parameterless container cells; `bench_sec_cy.py` repeating point-keyed companions; the `deferred_income_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M21 | Phase 2 for FIA, the eighth after M13, on MYGA's chassis — **done**, 2026-11-14, after M23 and M24; Tests run 27 passed all 70 jobs (§7.11, *Record — M21*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `fixed_indexed_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
 | M19 | Phase 2 for IUL, the ninth after M13, the last on UL's chassis — **done**, 2026-11-14, after M21; Tests run 27 passed all 70 jobs (§7.4, *Record — M19*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; the `indexed_ul` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
-| M22, M25 | Phase 2 for the other two, one PR per product: M22 VA, M25 RILA; each reviewed by one merged reviewer, and each adds its shard to the `cython` job; M22 is in its build stage; M25 may start now that M20 has landed | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
+| M25 | Phase 2 for RILA, the last product — landed 2026-11-14, after M22, built and tested on Windows in the local session that built M23 and M24, CI pending (§7.8, *Record — M25*) | §6.1 recipe, `sample_sec.py`, `spec_sec.py`; one merged reviewer; `"python_calls"` taking dotted names, `math` admitted by cell; the `registered_index_linked_annuity` shard added to the `cython` job | C1–C5 green on Linux and Windows; C6 recorded |
+| M22 | Phase 2 for VA, one PR, reviewed by one merged reviewer, adding its shard to the `cython` job; M22 is in its build stage | §6.1 recipe, `sample_sec.py`, `spec_sec.py` | C1–C5 green on Linux and Windows; C6 recorded |
 | M26 | Close | The `cython` job made required; a benchmark table in `index.md` | — |
