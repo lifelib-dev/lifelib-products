@@ -67,16 +67,40 @@ model point, and a model point may be a policy issued at that date, one already 
 it, or one written after it, as in `basiclife/BasicTerm_SE`. `C` is for compiling, as
 `basiclife/BasicTerm_SC` does; `Term_US_SEC`, `WholeLife_US_SEC`, `UL_US_SEC`, `VUL_US_SEC`,
 `ULSG_US_SEC`, `MYGA_US_SEC`, `SPIA_US_SEC`, `DIA_US_SEC`, `FIA_US_SEC`, `IUL_US_SEC`,
-`VA_US_SEC` and `RILA_US_SEC` compile, and each `model-sec.md` says how. On the `_S`
-model's new-business points, issued at the valuation date, an `_SEC` model reproduces its
-`_S` model cell by cell. Where the worked example's point is already in force, as whole
-life's, the FIA's, the variable annuity's and guaranteed UL's are, the `_SEC` twin of that
-point continues the `_S` projection from the month it is valued at, its expenses apart,
-which inflate from the valuation date. Each `model-sec.md` says what running in force
-changes. `Term_US_SEC`,
-`WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`, `DIA_US_SEC`, `FIA_US_SEC`,
-`VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC`, `ULSG_US_SEC` and `IUL_US_SEC` are all twelve:
-every product has its in-force model.
+`VA_US_SEC` and `RILA_US_SEC` compile, and each `model-sec.md` says how. On the `_S` model's
+new-business points, issued at the valuation date, an `_SEC` model reproduces its `_S` model
+cell by cell. Where the worked example's point is already in force, as whole life's, the
+FIA's, the variable annuity's and guaranteed UL's are, the `_SEC` twin of that point
+continues the `_S` projection from the month it is valued at, its expenses apart, which
+inflate from the valuation date. Each `model-sec.md` says what running in force changes.
+`Term_US_SEC`, `WholeLife_US_SEC`, `SPIA_US_SEC`, `MYGA_US_SEC`, `UL_US_SEC`, `DIA_US_SEC`,
+`FIA_US_SEC`, `VUL_US_SEC`, `RILA_US_SEC`, `VA_US_SEC`, `ULSG_US_SEC` and `IUL_US_SEC` are
+all twelve: every product has its in-force model.
+
+**Compiled speed.** Each `_SEC` model's `model-sec.md` records what compiling buys, timed by
+`tools/bench_sec_cy.py`: one block of the committed model points repeated, each engine in a
+process of its own, the fastest of several runs. The figures below are `net_cf(t)` summed over
+each point's frame, the projection alone, in milliseconds a point, on the shared Linux
+machine each compile step ran on, under load, so they compare engines within a row better
+than products across rows. The export is the model as plain Python, `modelx`'s export,
+before compiling; `modelx` is the `_SEC` model itself. RILA's ratio to its export is the
+lowest, since making and releasing its 6.4 MB compiled point takes most of each point's
+time.
+
+| Product | Model | Compiled | Export | modelx | Compiled vs export | Compiled vs modelx |
+|---|---|---|---|---|---|---|
+| Term | [`Term_US_SEC`](products/term_life/model-sec.md) | 0.50 ms | 4.7 ms | 196 ms | 9.4× | 392× |
+| Whole life | [`WholeLife_US_SEC`](products/whole_life/model-sec.md) | 0.53 ms | 7.4 ms | 274 ms | 14.0× | 517× |
+| Universal life | [`UL_US_SEC`](products/universal_life/model-sec.md) | 1.21 ms | 14.5 ms | 545 ms | 12.0× | 450× |
+| Variable UL | [`VUL_US_SEC`](products/variable_ul/model-sec.md) | 2.53 ms | 34.9 ms | 964 ms | 13.8× | 381× |
+| Guaranteed UL | [`ULSG_US_SEC`](products/guaranteed_ul/model-sec.md) | 1.42 ms | 17.4 ms | 539 ms | 12.3× | 380× |
+| Indexed UL | [`IUL_US_SEC`](products/indexed_ul/model-sec.md) | 4.01 ms | 69.4 ms | 2,060 ms | 17.3× | 514× |
+| MYGA | [`MYGA_US_SEC`](products/fixed_deferred_annuity/model-sec.md) | 1.19 ms | 15.0 ms | 520 ms | 12.6× | 437× |
+| FIA | [`FIA_US_SEC`](products/fixed_indexed_annuity/model-sec.md) | 1.32 ms | 14.6 ms | 489 ms | 11.1× | 370× |
+| Variable annuity | [`VA_US_SEC`](products/variable_annuity/model-sec.md) | 1.70 ms | 22.2 ms | 815 ms | 13.1× | 479× |
+| RILA | [`RILA_US_SEC`](products/registered_index_linked_annuity/model-sec.md) | 2.00 ms | 8.33 ms | 167 ms | 4.2× | 84× |
+| SPIA | [`SPIA_US_SEC`](products/immediate_annuity/model-sec.md) | 0.808 ms | 7.66 ms | 197 ms | 9.5× | 244× |
+| DIA | [`DIA_US_SEC`](products/deferred_income_annuity/model-sec.md) | 0.860 ms | 8.49 ms | 199 ms | 9.9× | 231× |
 
 All twelve run on a **monthly** grid, the term, whole life and FIA models included since
 their conversion.
