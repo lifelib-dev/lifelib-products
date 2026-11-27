@@ -3850,28 +3850,26 @@ def fingerprint_mismatches(frozen, model):
 # ---------------------------------------------------------------------------
 # Compiling an SEC model, for the compile tests (Phase 2, D12, D13)
 #
-# A compile test builds the model with tools/build_sec_cy.py into a temporary directory,
-# never into the tree (D12), and runs the compiled package in a child process only: a
-# compiled model that overflows the C stack takes down the child and not the session, and
-# on Windows a .pyd that a process holds open cannot be deleted.
+# A compile test builds the model with the library's build_sec_cy.py into a temporary
+# directory, never into the tree (D12), and runs the compiled package in a child process
+# only: a compiled model that overflows the C stack takes down the child and not the
+# session, and on Windows a .pyd that a process holds open cannot be deleted.
 
 
 def _tool():
-    """``tools/build_sec_cy.py`` of the repository holding this library, or ``None``.
+    """The library's build tool, ``build_sec_cy.py`` at its root, beside ``tests/``.
 
-    A ``lifelib.create()`` copy of the library has no repository above it, and no tool.
+    The library carries it, so lifelib has it and so does every ``lifelib.create()`` copy,
+    wherever it is put, as each product's ``run_sec.py`` finds it there.
     """
-    lib = pathlib.Path(__file__).resolve().parents[1]
-    if lib.parent.name != "libraries":
-        return None
-    return lib.parents[2] / "tools" / "build_sec_cy.py"
+    return pathlib.Path(__file__).resolve().parents[1] / "build_sec_cy.py"
 
 
 def cython_missing():
     """What this machine lacks to compile a model, or ``None`` when it lacks nothing.
 
-    The tool, which a ``lifelib.create()`` copy lacks; modelx-cython, which
-    ``requirements.txt`` leaves out because it needs a C compiler; and, on POSIX, the C
+    The library's build tool, which only a copy that left it behind lacks; modelx-cython,
+    which no model requires, because it needs a C compiler; and, on POSIX, the C
     compiler setuptools would run, ``CC`` or the one the interpreter was built with, on
     ``PATH``.  On Windows setuptools finds MSVC through vswhere at build time, and
     ``cl.exe`` is on no ``PATH`` outside a developer prompt, so no probe is made there: a
@@ -3882,11 +3880,11 @@ def cython_missing():
     import shlex
     import shutil as _shutil
     import sysconfig
-    tool = _tool()
-    if tool is None or not tool.is_file():
-        return "tools/build_sec_cy.py is absent, as it is from a lifelib.create() copy"
+    if not _tool().is_file():
+        return "the library's build_sec_cy.py is absent, which it carries at its root"
     if importlib.util.find_spec("modelx_cython") is None:
-        return "modelx-cython is not installed: pip install -r requirements-cython.txt"
+        return ("modelx-cython is not installed, and it needs a C compiler: pip install "
+                "modelx-cython")
     if os.name == "posix":
         command = os.environ.get("CC") or sysconfig.get_config_var("CC") or "cc"
         compiler = (shlex.split(command) or ["cc"])[0]
@@ -3896,8 +3894,8 @@ def cython_missing():
 
 
 def require_cython():
-    """``tools/build_sec_cy.py`` as a module, or a skip, which ``USLIB_REQUIRE_CYTHON=1``
-    turns into a failure.
+    """The library's ``build_sec_cy.py`` as a module, or a skip, which
+    ``USLIB_REQUIRE_CYTHON=1`` turns into a failure.
 
     The compile tests skip where :func:`cython_missing` finds something missing, so the
     ``test`` CI job and lifelib's own bare ``pytest`` stay green without modelx-cython or a
@@ -3984,10 +3982,10 @@ class Build:
 class SecBuilds:
     """The SEC models compiled in this test session, each once: ``builds(name)``.
 
-    Each is built by ``tools/build_sec_cy.py`` into a directory of the session's own
-    (``tmp_path_factory.mktemp``), from the committed model, sample and spec, and kept as
-    a :class:`Build` for the rest of the session.  A build that fails is kept too, and its
-    error raised again to every test that asks for it, so a broken build reports itself
+    Each is built by the library's ``build_sec_cy.py`` into a directory of the session's
+    own (``tmp_path_factory.mktemp``), from the committed model, sample and spec, and kept
+    as a :class:`Build` for the rest of the session.  A build that fails is kept too, and
+    its error raised again to every test that asks for it, so a broken build reports itself
     in each test that needs it without being compiled again.  Without the toolchain,
     :func:`require_cython` skips, or fails in the ``cython`` job.  ``conftest.sec_build``
     is the session's one instance.
@@ -4720,9 +4718,10 @@ _C_FORMULA = re.compile(
     re.S | re.M)
 
 REQUIRED_DIRECTIVES = {"infer_types": "True", "cpow": "True"}
-"""The directives ``tools/build_sec_cy.py`` puts at the top of each translated space module,
-which C3 requires: without ``infer_types`` an integer local stays a Python object, and
-without ``cpow`` a power is complex, and drifts from modelx in its last bits (M14)."""
+"""The directives the library's ``build_sec_cy.py`` puts at the top of each translated
+space module, which C3 requires: without ``infer_types`` an integer local stays a Python
+object, and without ``cpow`` a power is complex, and drifts from modelx in its last bits
+(M14)."""
 
 # What a formula's C does that is Python's work: a builtin it looks up and calls, other
 # than an exception a refusal raises, and a list, dict or set it builds.
@@ -4751,7 +4750,8 @@ def c_faults(build, *, reporting, python_calls=None):
     list, dict or set.  Under Cython's default inference an
     integer local used in arithmetic, and any loop counter, is a Python object, and a
     power of two doubles is complex, so every translated space module must begin with the
-    directives of :data:`REQUIRED_DIRECTIVES`, which ``tools/build_sec_cy.py`` writes.
+    directives of :data:`REQUIRED_DIRECTIVES`, which the library's ``build_sec_cy.py``
+    writes.
     An uncached cell has no ``_f_`` formula, its public method being its formula, so its
     body is not read here; mx2cy types no such cell, and :func:`typing_faults` and
     :func:`static_faults` refuse it.  Returns a line per fault.
@@ -4763,7 +4763,7 @@ def c_faults(build, *, reporting, python_calls=None):
         missing = [f"{k}={v}" for k, v in REQUIRED_DIRECTIVES.items() if given.get(k) != v]
         if missing:
             lines.append(f"{module.name} begins {first!r}, without {', '.join(missing)}: "
-                         f"tools/build_sec_cy.py puts them on its first line")
+                         f"build_sec_cy.py puts them on its first line")
     source = build.package / "_mx_classes.c"
     if not source.is_file():
         return lines + [f"no generated C at {source}"]
@@ -4805,13 +4805,13 @@ cell's magnitude (:func:`exact_here`)."""
 def exact_here():
     """Whether C4 holds the compiled model to modelx bit for bit on this machine.
 
-    On x86-64 it does.  ``tools/build_sec_cy.py`` compiles with ``-ffp-contract=off``
-    there, after any ``-march`` the interpreter's flags or ``CFLAGS`` give, so that gcc and
-    clang fuse no multiply and add into one rounding, which they do by default wherever
-    the target has fused multiply-add; MSVC, on Windows, emits none for x64 without
-    ``/arch:AVX2``, which setuptools does not pass.  And with ``cpow=True`` the compiled
-    power is the C ``pow`` that Python's float power calls.  So a compiled cell does
-    modelx's arithmetic in modelx's order, and every value Term's tables reach is
+    On x86-64 it does.  The library's ``build_sec_cy.py`` compiles with
+    ``-ffp-contract=off`` there, after any ``-march`` the interpreter's flags or ``CFLAGS``
+    give, so that gcc and clang fuse no multiply and add into one rounding, which they do
+    by default wherever the target has fused multiply-add; MSVC, on Windows, emits none for
+    x64 without ``/arch:AVX2``, which setuptools does not pass.  And with ``cpow=True`` the
+    compiled power is the C ``pow`` that Python's float power calls.  So a compiled cell
+    does modelx's arithmetic in modelx's order, and every value Term's tables reach is
     identical (M14).  Elsewhere, on arm64 among others, no run has shown it yet, and C4
     compares to :data:`COMPILED_RTOL` instead.
     """

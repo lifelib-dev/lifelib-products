@@ -40,7 +40,7 @@
 # unpickle code converts the caches of one depth by their inner shape, with one function
 # for each shape: given two inner widths among the 2-D caches, it passes the narrower
 # array where the wider is expected, which gcc 14 refuses (-Wincompatible-pointer-types,
-# made an error on every gcc and clang by tools/build_sec_cy.py), and would write past its
+# made an error on every gcc and clang by build_sec_cy.py), and would write past its
 # end.  So every 2-D cache has one inner width, and every 3-D cache one inner shape; the
 # two depths need not agree, since the converters are named by the shape.  A kind 4 to 8,
 # a subaccount past the lineup, or a timing a cell does not take is inside the cache, where

@@ -1470,7 +1470,7 @@ def test_cython_missing_names_what_this_machine_lacks(monkeypatch):
     if importlib.util.find_spec("modelx_cython") is not None and os.name == "posix":
         monkeypatch.setenv("CC", "no-such-compiler-cc")
         found["compiler"] = uk_sec_support.cython_missing()
-    assert "tools/build_sec_cy.py is absent" in found["tool"]
+    assert "the library's build_sec_cy.py is absent" in found["tool"]
     assert "modelx-cython is not installed" in found["modelx_cython"]
     # Read only where it was taken: a machine without modelx-cython never reaches the
     # compiler check, as on every leg of CI's test job.
@@ -1480,7 +1480,11 @@ def test_cython_missing_names_what_this_machine_lacks(monkeypatch):
 
 def test_require_cython_skips_and_the_cython_job_fails_instead(monkeypatch):
     """Without the toolchain a compile test skips, and under ``UKLIB_REQUIRE_CYTHON=1``
-    fails, saying what is missing; with it, the build tool comes back as a module."""
+    fails, saying what is missing; with it, the build tool comes back as a module: the
+    library's own ``build_sec_cy.py``, at its root, which every copy of the library
+    carries."""
+    import pathlib
+
     import uk_sec_support
     monkeypatch.setattr(uk_sec_support, "cython_missing", lambda: "no compiler here")
     monkeypatch.delenv("UKLIB_REQUIRE_CYTHON", raising=False)
@@ -1494,10 +1498,12 @@ def test_require_cython_skips_and_the_cython_job_fails_instead(monkeypatch):
                        match="UKLIB_REQUIRE_CYTHON=1 forbids a skip, and no compiler here"):
         uk_sec_support.require_cython()
     tool = uk_sec_support._tool()
-    if tool is not None and tool.is_file():
-        monkeypatch.setattr(uk_sec_support, "cython_missing", lambda: None)
-        module = uk_sec_support.require_cython()
-        assert callable(module.build) and module.DIRECTIVE.startswith("# cython:")
+    library = pathlib.Path(uk_sec_support.__file__).resolve().parents[1]
+    assert tool == library / "build_sec_cy.py" and tool.is_file(), tool
+    monkeypatch.setattr(uk_sec_support, "cython_missing", lambda: None)
+    module = uk_sec_support.require_cython()
+    assert callable(module.build) and module.DIRECTIVE.startswith("# cython:")
+    assert pathlib.Path(module.__file__) == tool
 
 
 def test_sec_builds_compiles_each_model_once_and_keeps_a_failure(monkeypatch,
@@ -1700,8 +1706,8 @@ def test_the_generated_c_is_read_for_python_work_and_the_directives(tmp_path):
                            ("import x", "infer_types=True, cpow=True")):
         module.write_text(f"{first}\nimport x\n", encoding="utf-8")
         assert c_faults(build, reporting={"result_cf", "e", "g", "h", "k"}) == [
-            f"_mx_classes.py begins {first!r}, without {missing}: tools/build_sec_cy.py "
-            f"puts them on its first line"]
+            f"_mx_classes.py begins {first!r}, without {missing}: build_sec_cy.py puts "
+            f"them on its first line"]
     (package / "_mx_classes.c").write_text("int main(void) { return 0; }\n",
                                            encoding="utf-8")
     assert c_faults(build, reporting=set())[-1] == (

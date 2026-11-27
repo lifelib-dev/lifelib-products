@@ -26,7 +26,7 @@
 # Cython's generated unpickle code converts the 2-D caches of a space with one function,
 # written for one width: given (1,322, 3) beside (1,322, 5), it passed the narrower array
 # where the wider was expected, which gcc 14 refuses (-Wincompatible-pointer-types, made
-# an error on every gcc and clang by tools/build_sec_cy.py), and would write past its end.
+# an error on every gcc and clang by build_sec_cy.py), and would write past its end.
 # So a kind 3 or 4 is inside the cache, where claim_pp refuses it as modelx does,
 # ValueError("invalid kind"), and a kind from 5 raises IndexError, compiled alone.
 # y, shared by three cells keyed by one integer: cv_pp_anniv's policy year, 0 ..

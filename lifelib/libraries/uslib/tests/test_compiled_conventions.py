@@ -28,6 +28,10 @@ moves it there, Term_US_SEC first (M14):
   (F5, K2).
 * The block's sum: ``run_sec.py``'s running sum is ``groupby``'s, bit for bit, on the
   committed points' frames, run in modelx, with or without a compiler.
+* The build tool: each runner and each ``model-sec.md`` build with the library's own
+  ``build_sec_cy.py``, at its root, where lifelib and every ``lifelib.create()`` copy have
+  it too, and the tool names the modelx-cython ``requirements-cython.txt`` pins.  Read
+  statically.
 
 The allowlist of cells that stay Python is R17's, :func:`sec_support.reporting_cells`:
 ``model_point``, the ``result_*`` reports, the ``check_*`` checks, and the label accessors
@@ -483,6 +487,61 @@ def _matrix_list(job, key):
             items = text.split("]")[0].split(",")
             return [item.strip().strip("'\"") for item in items if item.strip()]
     return None
+
+
+@pytest.mark.parametrize("sec_name", EC_MODELS)
+def test_the_runner_and_its_page_build_with_the_library_s_own_tool(sec_name):
+    """``run_sec.py --cython`` builds with the library's own ``build_sec_cy.py``, and the
+    product's ``model-sec.md`` builds with it too (lifelib-dev/lifelib issue 195).
+
+    The tool sits at the library's root, beside ``products/``, so that it goes wherever the
+    library goes.  While it lived in the source repository's ``tools/``, which lifelib
+    does not take, every runner looked for it there and every page built with it there,
+    and in lifelib neither could build.  So the runner's ``_tool`` is read from its source,
+    which runs the model when imported, and run on the product directory: it must give the
+    library's tool, which must be there.  And the page must build with that tool, from the
+    library's folder, ``python build_sec_cy.py <product>``, and name no ``tools/`` copy of
+    it.  Read statically, so it runs in every suite, with or without a compiler.
+    """
+    product = model_path(sec_name).parent
+    tree = ast.parse((product / "run_sec.py").read_text(encoding="utf-8"))
+    found = [node for node in tree.body
+             if isinstance(node, ast.FunctionDef) and node.name == "_tool"]
+    assert len(found) == 1, f"{sec_name}'s run_sec.py defines _tool {len(found)} times"
+    space = {"HERE": product}
+    exec(compile(ast.Module(found, []), "run_sec.py", "exec"), space)
+    tool = space["_tool"]()
+    assert tool == LIB / "build_sec_cy.py" and tool.is_file(), (sec_name, tool)
+    page = (product / "model-sec.md").read_text(encoding="utf-8")
+    assert f"python build_sec_cy.py {product.name}" in page, (
+        f"{sec_name}'s model-sec.md builds with no python build_sec_cy.py {product.name}")
+    assert "tools/build_sec_cy.py" not in page, (
+        f"{sec_name}'s model-sec.md names tools/build_sec_cy.py, which lifelib has not")
+
+
+def test_the_build_tool_names_the_modelx_cython_the_requirements_pin():
+    """``build_sec_cy.py``'s ``MODELX_CYTHON`` is what ``requirements-cython.txt`` pins.
+
+    The tool names that release where modelx-cython is missing, so that a library away from
+    its source repository, in lifelib or in a ``lifelib.create()`` copy, where there is no
+    requirements file, still installs the release the compile tests run.  The source
+    repository pins it in ``requirements-cython.txt``, and moves the pin on purpose (the
+    plan's K1); the tool's line must move with it.  Both are read statically.  It skips
+    where the requirements file is absent, as in lifelib; uklib's tool is this one, byte
+    for byte, which uklib's suite holds.
+    """
+    requirements = LIB.parents[2] / "requirements-cython.txt"
+    if not requirements.is_file():
+        pytest.skip("requirements-cython.txt is the source repository's, and it is absent")
+    pins = [line.split("#", 1)[0].strip()
+            for line in requirements.read_text(encoding="utf-8").splitlines()]
+    pins = [pin for pin in pins if pin.startswith("modelx-cython")]
+    tool = ast.parse((LIB / "build_sec_cy.py").read_text(encoding="utf-8"))
+    named = [node.value.value for node in tool.body
+             if isinstance(node, ast.Assign) and len(node.targets) == 1
+             and getattr(node.targets[0], "id", None) == "MODELX_CYTHON"
+             and isinstance(node.value, ast.Constant)]
+    assert len(pins) == 1 and named == pins, (pins, named)
 
 
 def test_the_cython_job_runs_every_shard():

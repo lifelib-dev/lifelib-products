@@ -273,6 +273,16 @@ and a bare name that only one library with SEC models holds (`term_life` is in u
 jplib and krlib). `bench_sec_cy.py` takes the same lookup. Each tool's uslib behaviour is
 unchanged, and its existing tests and checks still pass.
 
+*Precised 2026-11-27 (lifelib-dev/lifelib issue 195):* the build tool is no longer one of
+this set. It moved into the libraries, `build_sec_cy.py` at the root of uslib and of
+uklib, one file in both, which `test_compiled_conventions_uk.py` holds byte for byte to
+uslib's, because lifelib takes a library and not this repository's `tools/`: there every
+runner's `--cython` stopped where it would build, and every page's build command named a
+script lifelib does not have. A bare product name now names a product of the tool's own
+library. `tools/build_sec_cy.py` stays, a command line over the product's library's copy
+that keeps the lookup above, and `bench_sec_cy.py` builds through it; the other tools stay
+one set.
+
 ### U5 — Registry and conventions
 
 `uk_registry.py` gains uslib's `meta`, `is_sec`, `point_keys` and `projection` and the

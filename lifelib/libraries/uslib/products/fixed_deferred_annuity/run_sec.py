@@ -14,16 +14,17 @@ position where ``Projection`` takes ``idx``, as every compiled model does, and t
 where it takes ``point_id``, as an SEC model does before its Phase 2.
 
 ``--cython`` runs the compiled model instead of modelx, and prints the same lines.  It is
-``MYGA_US_SEC_nomx_cy`` beside the model, which the repository's ``tools/build_sec_cy.py``
-builds there the first time, and again whenever it is not built for this interpreter or
-the model, ``sample_sec.py``, ``spec_sec.py`` or the tool is newer than it: about two
-minutes, which it says on stderr.  The build is never committed, and ``.gitignore``
-covers everything it leaves.  A ``lifelib.create()`` copy of the library carries no
-``tools/``, wherever it is put, so there ``--cython`` stops, saying so, where it would
-build.  ``--build DIR`` runs the package a build put in ``DIR`` instead, on the CSVs the
-build copied there, and never builds.  Either way the runner stops, saying why, if the
-package imports without its extension modules, which would compute the same numbers
-uncompiled.
+``MYGA_US_SEC_nomx_cy`` beside the model, which the library's ``build_sec_cy.py``, at its
+root, builds there the first time, and again whenever it is not built for this interpreter
+or the model, ``sample_sec.py``, ``spec_sec.py`` or the tool is newer than it: about two
+minutes, which it says on stderr.  The build is never committed, and ``.gitignore`` covers
+everything it leaves.  The tool goes wherever the library goes, into lifelib and into a
+``lifelib.create()`` copy, so the runner builds wherever the library is; a product
+directory taken out of its library has no tool above it, and there ``--cython`` stops,
+saying so, where it would build.  ``--build DIR`` runs the package a build put in ``DIR``
+instead, on the CSVs the build copied there, and never builds.  Either way the runner
+stops, saying why, if the package imports without its extension modules, which would
+compute the same numbers uncompiled.
 
 A block run asks every point for its frame before it projects any, because whether a point
 is still in cover, and whether the contract issues it, are the product's rules, which
@@ -85,16 +86,17 @@ def _built(package):
 
 
 def _tool():
-    """``tools/build_sec_cy.py`` of the repository holding this product, or ``None``.
+    """``build_sec_cy.py`` of the library holding this product, or ``None``.
 
-    The product sits at ``lifelib/libraries/<lib>/products/<product>`` in the repository,
-    and a ``lifelib.create()`` copy of the library has no repository above it, and no
-    tool, wherever it is put, as ``sec_support._tool`` finds it.
+    The product sits at ``<lib>/products/<product>``, and the library carries its build
+    tool at its root, beside ``products/``, wherever the library is: in its source
+    repository, in lifelib or in a ``lifelib.create()`` copy, as ``sec_support._tool``
+    finds it.  A product directory taken out of its library has no tool above it.
     """
     up = HERE.parents
-    if len(up) < 5 or up[2].name != "libraries":
+    if len(up) < 2 or up[0].name != "products":
         return None
-    return up[4] / "tools" / "build_sec_cy.py"
+    return up[1] / "build_sec_cy.py"
 
 
 def compiled_model(build_dir):
@@ -109,9 +111,9 @@ def compiled_model(build_dir):
                      default=0.0)
         if not built or min(path.stat().st_mtime for path in built) < newest:
             if tool is None or not tool.is_file():
-                sys.exit("--cython builds the model with the source repository's "
-                         "tools/build_sec_cy.py, and a lifelib.create() copy carries no "
-                         "tools/, so it cannot build")
+                sys.exit("--cython builds the model with its library's build_sec_cy.py, "
+                         "and this product directory is in no library that carries one, "
+                         "so it cannot build")
             print(f"building {NAME} with {tool.name}, which takes about two "
                   f"minutes ...", file=sys.stderr)
             done = subprocess.run([sys.executable, str(tool), str(HERE)],
@@ -128,7 +130,7 @@ def compiled_model(build_dir):
     space = type(model.Projection)
     if not sys.modules[space.__module__].__file__.endswith(SUFFIXES):
         sys.exit(f"{package} imported without its extension modules, so it would run "
-                 f"uncompiled; rebuild it with tools/build_sec_cy.py")
+                 f"uncompiled; rebuild it with the library's build_sec_cy.py")
     return model
 
 

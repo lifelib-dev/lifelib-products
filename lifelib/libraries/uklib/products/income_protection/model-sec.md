@@ -62,10 +62,10 @@ for bit, the frames concatenated and summed by `t`. Its projection years carry t
 of their first month, in force, healthy and in claim, and the flows of all twelve.
 
 `--cython` runs the compiled model in place of modelx and prints the same lines, building
-it first with the repository's `tools/build_sec_cy.py` where no build is current, and
-`--build DIR` runs a build made elsewhere (*The compiled model*, below). A
-`lifelib.create()` copy carries no `tools/`, and there `--cython` stops before building,
-saying so.
+it first with the library's own `build_sec_cy.py` where no build is current, and
+`--build DIR` runs a build made elsewhere (*The compiled model*, below). The tool goes with
+the library, into lifelib and into a `lifelib.create()` copy, so `--cython` builds there as
+here.
 
 ## Two clocks
 
@@ -463,11 +463,12 @@ elsewhere, where no run has shown it yet.
 
 ### Building it
 
-In the source repository:
+The library carries the tool at its root, so a model builds wherever the library is: in the
+source repository, in lifelib or in a `lifelib.create()` copy. From the library's folder:
 
 ```bash
-python tools/build_sec_cy.py income_protection                 # in place, beside the model
-python tools/build_sec_cy.py income_protection --out /tmp/ip   # elsewhere, with the CSVs
+python build_sec_cy.py income_protection                 # in place, beside the model
+python build_sec_cy.py income_protection --out /tmp/ip   # elsewhere, with the CSVs
 ```
 
 The tool exports the model to `IP_UK_SEC_nomx/`, the Python package modelx's `export`
@@ -492,15 +493,16 @@ keep theirs for good. So a Reference set on `Projection` after it has computed,
 computes with it. Set every Reference on a model just imported, before anything is
 computed, where modelx would recompute; a test holds the compiled model to this.
 
-A build takes about two minutes with gcc, 122 s here, and needs a C compiler,
-which is why `requirements.txt` leaves modelx-cython out: `pip install -r
-requirements-cython.txt`. `run_sec.py --cython` builds in place when it finds no build,
-or one older than the model, the sample, the spec or the tool, and `--build DIR` runs a
-build made with `--out DIR`. Nothing a build writes is committed. All of it derives from
-committed files, and an extension module is built for one operating system, processor and
-Python (`_mx_classes.cpython-313-x86_64-linux-gnu.so` here); in place, `.gitignore`
-covers all of it. A `lifelib.create()` copy of the library carries no `tools/`, so it
-cannot build, and `run_sec.py --cython` says so.
+A build takes about two minutes with gcc, 122 s here, and needs modelx-cython, which needs
+a C compiler, so the models do not require it: `pip install modelx-cython`, or
+`pip install -r requirements-cython.txt` in the source repository, which pins the release
+the compile tests run. `run_sec.py --cython` builds in place when it finds no build, or one
+older than the model, the sample, the spec or the tool, and `--build DIR` runs a build made
+with `--out DIR`. Nothing a build writes is committed. All of it derives from committed
+files, and an extension module is built for one operating system, processor and Python
+(`_mx_classes.cpython-313-x86_64-linux-gnu.so` here); in place, `.gitignore` covers all of
+it. The tool is the library's own, so lifelib and a `lifelib.create()` copy build as the
+source repository does.
 
 ### What compiling changed, and why
 
@@ -610,21 +612,21 @@ Python under its C declaration. So each input now reaches a cell as a number, as
   widths there hand a converter a temporary of the wrong shape, as uslib's
   `WholeLife_US_SEC` found (USLIB-SEC-PLAN.md §7.2, *Record — M15*): gcc 14 refuses the
   build by default, and gcc and clang under `-Werror=incompatible-pointer-types`, which
-  `tools/build_sec_cy.py` passes on Linux and macOS, but MSVC only warns, and the build
-  would write 746 × 626 doubles into a temporary of 746 × 4 as a point is unpickled. uslib
-  read that as one inner width a model, which here would widen `pols_if_at` and `claims`
-  to the cohorts' 626 claim durations, three such caches of about 5.6 MB a point, values
-  and flags. So the cohorts' cache takes an outer size of its own, `t`'s months and one
-  more, 747, beside the timings' and kinds' 746 by 4: the unpickle code,
+  the library's `build_sec_cy.py` passes on Linux and macOS, but MSVC only warns, and the
+  build would write 746 × 626 doubles into a temporary of 746 × 4 as a point is unpickled.
+  uslib read that as one inner width a model, which here would widen `pols_if_at` and
+  `claims` to the cohorts' 626 claim durations, three such caches of about 5.6 MB a point,
+  values and flags. So the cohorts' cache takes an outer size of its own, `t`'s months and
+  one more, 747, beside the timings' and kinds' 746 by 4: the unpickle code,
   `__pyx_unpickle__c_Projection__set_state`, shares a temporary of 746 by 4 between
   `claims` and `pols_if_at` for their values, a `double[746][4]`, and one for their flags,
   an `int[746][4]`, and gives the cohorts their own two of 747 by 626. That rests on an
   internal of Cython, 3.3.1 here, read in its `PyrexTypes.py` and `Code.py` (M8's review),
-  which a later Cython may change: the spec test holds the sizes, and a compiled test
-  reads the generated C, which Cython writes alike for every compiler, and holds each 2-D
-  cache to a temporary of its own shape, the guard a build with MSVC has. So the timings
-  and kinds keep their cells and their width of four, which every SEC model's conventions
-  read, and the cohorts alone carry the wide cache (*Departures from IP_UK_S*, above).
+  which a later Cython may change: the spec test holds the sizes, and a compiled test reads
+  the generated C, which Cython writes alike for every compiler, and holds each 2-D cache
+  to a temporary of its own shape, the guard a build with MSVC has. So the timings and
+  kinds keep their cells and their width of four, which every SEC model's conventions read,
+  and the cohorts alone carry the wide cache (*Departures from IP_UK_S*, above).
 - **No refusal formatted on a chain.** A compiled cell's C frame holds the code that
   formats each of its messages, whether a run reaches it or not, and a chain holds a frame
   of each cell it recurses through at each level (UKLIB-SEC-PLAN.md K12). The chains here,
@@ -732,17 +734,17 @@ again, as `spec_sec.py` derives them, the two bounds moved with them, and a rebu
 
 ### Two compiler directives
 
-`tools/build_sec_cy.py` puts `# cython: infer_types=True, cpow=True` at the top of the
-module mx2cy translates, before it compiles it, and on Linux and macOS compiles with
+The library's `build_sec_cy.py` puts `# cython: infer_types=True, cpow=True` at the top of
+the module mx2cy translates, before it compiles it, and on Linux and macOS compiles with
 `-ffp-contract=off` and `-Werror=incompatible-pointer-types`. Without `infer_types` an
 integer local, such as a loop's claim duration, stays a Python object, though the cell is
 typed `double`; without `cpow`, `1 − (1 − q)^(1/12)`, the monthly rate of each decrement
 here, is a complex power, whose last bits can differ from Python's; and gcc fuses a
-multiply and an add where the target has the instruction, one rounding where Python
-rounds twice, which the compensated sums would carry. The tool's docstring has the
-detail, and uslib's [`term_life/model-sec.md`](../../../uslib/products/term_life/model-sec.md)
-the measurements that put each there. With all four, every compiled value here agrees
-with modelx bit for bit.
+multiply and an add where the target has the instruction, one rounding where Python rounds
+twice, which the compensated sums would carry. The tool's docstring has the detail, and
+uslib's [`term_life/model-sec.md`](../../../uslib/products/term_life/model-sec.md) the
+measurements that put each there. With all four, every compiled value here agrees with
+modelx bit for bit.
 
 ### What a compiled run needs
 

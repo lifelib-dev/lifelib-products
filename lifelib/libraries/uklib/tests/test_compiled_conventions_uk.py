@@ -33,8 +33,11 @@ product meets it from the commit that moves it there, Term_UK_SEC first (M2):
   (F5, K2).
 * The block's sum: ``run_sec.py``'s running sum is ``groupby``'s, bit for bit, on the
   committed points' frames, run in modelx, with or without a compiler.
-* The directives: ``tools/build_sec_cy.py`` writes ``infer_types=True`` and ``cpow=True``
-  and no other, which C3, requiring the two, cannot see.  Read statically.
+* The directives: the library's ``build_sec_cy.py`` writes ``infer_types=True`` and
+  ``cpow=True`` and no other, which C3, requiring the two, cannot see.  Read statically.
+* The build tool: each runner and each ``model-sec.md`` build with the library's own
+  ``build_sec_cy.py``, at its root, where lifelib and every ``lifelib.create()`` copy have
+  it too, and the tool is uslib's, byte for byte.  Read statically.
 
 The allowlist of cells that stay Python is R17's, :func:`uk_sec_support.reporting_cells`:
 ``model_point``, the ``result_*`` reports, the ``check_*`` checks, and the label accessors
@@ -353,12 +356,13 @@ def test_the_runner_sums_the_block_as_groupby_does(name):
         f"comparison cannot fail there: {naive}")
 
 
-# The one line tools/build_sec_cy.py puts at the top of each translated space module.
+# The one line the library's build_sec_cy.py puts at the top of each translated space
+# module.
 DIRECTIVE = "# cython: infer_types=True, cpow=True"
 
 
 def test_the_build_writes_the_two_directives_and_no_other():
-    """``tools/build_sec_cy.py``'s ``DIRECTIVE`` is :data:`DIRECTIVE`, exactly.
+    """The library's ``build_sec_cy.py`` writes :data:`DIRECTIVE`, exactly.
 
     C3 requires both of ``uk_sec_support.REQUIRED_DIRECTIVES`` in each translated module,
     and reads no other, so a third would compile unseen: ``cdivision=True`` makes ``//``
@@ -367,13 +371,11 @@ def test_the_build_writes_the_two_directives_and_no_other():
     ``boundscheck=False`` lets an ``idx`` past the table read past a vector; and
     ``wraparound=False`` makes ``Projection[-1]`` raise where modelx reads the last point.
     So the tool's line is held to the two, read from its source, which needs no compiler,
-    and to the harness's own; it skips where the tool is absent, as from a
-    ``lifelib.create()`` copy.  The tool is the repository's, which uslib's models build
-    with too.
+    and to the harness's own.  The tool is the library's own, at its root, which every
+    copy of the library carries, and uslib's, byte for byte
+    (:func:`test_the_build_tool_is_uslib_s_byte_for_byte`).
     """
-    tool = LIB.parents[2] / "tools" / "build_sec_cy.py"
-    if not tool.is_file():
-        pytest.skip("tools/build_sec_cy.py is this repository's, and it is absent")
+    tool = LIB / "build_sec_cy.py"
     found = [node.value.value for node in ast.parse(tool.read_text(encoding="utf-8")).body
              if isinstance(node, ast.Assign) and len(node.targets) == 1
              and getattr(node.targets[0], "id", None) == "DIRECTIVE"
@@ -381,6 +383,54 @@ def test_the_build_writes_the_two_directives_and_no_other():
     assert found == [DIRECTIVE], found
     given = dict(part.strip().split("=") for part in DIRECTIVE.split(":", 1)[1].split(","))
     assert given == REQUIRED_DIRECTIVES, (given, REQUIRED_DIRECTIVES)
+
+
+def test_the_build_tool_is_uslib_s_byte_for_byte():
+    """uklib's ``build_sec_cy.py`` is uslib's, byte for byte.
+
+    The tool sits at the root of each library that holds SEC models, so that each carries
+    it wherever it goes alone: lifelib takes a library, and ``lifelib.create()`` copies
+    one.  So it is a copy, and a fix to one copy that never reached the other would be
+    found by nothing, since each library's suite builds with its own.  The tool holds
+    nothing of either library's, finding a product by its folder name in the library it
+    sits in, so the two are held to one file.  It skips where uslib's copy is absent, as
+    from a ``lifelib.create()`` copy of uklib.
+    """
+    mine, theirs = LIB / "build_sec_cy.py", LIB.parent / "uslib" / "build_sec_cy.py"
+    if not theirs.is_file():
+        pytest.skip(f"{theirs} is absent, as from a lifelib.create() copy of uklib")
+    assert mine.read_bytes() == theirs.read_bytes(), (
+        f"{mine} differs from {theirs}: they are one tool, so change both alike")
+
+
+@pytest.mark.parametrize("sec_name", EC_MODELS)
+def test_the_runner_and_its_page_build_with_the_library_s_own_tool(sec_name):
+    """``run_sec.py --cython`` builds with the library's own ``build_sec_cy.py``, and the
+    product's ``model-sec.md`` builds with it too (lifelib-dev/lifelib issue 195).
+
+    The tool sits at the library's root, beside ``products/``, so that it goes wherever the
+    library goes.  While it lived in the source repository's ``tools/``, which lifelib
+    does not take, every runner looked for it there and every page built with it there,
+    and in lifelib neither could build.  So the runner's ``_tool`` is read from its source,
+    which runs the model when imported, and run on the product directory: it must give the
+    library's tool, which must be there.  And the page must build with that tool, from the
+    library's folder, ``python build_sec_cy.py <product>``, and name no ``tools/`` copy of
+    it.  Read statically, so it runs in every suite, with or without a compiler.
+    """
+    product = model_path(sec_name).parent
+    tree = ast.parse((product / "run_sec.py").read_text(encoding="utf-8"))
+    found = [node for node in tree.body
+             if isinstance(node, ast.FunctionDef) and node.name == "_tool"]
+    assert len(found) == 1, f"{sec_name}'s run_sec.py defines _tool {len(found)} times"
+    space = {"HERE": product}
+    exec(compile(ast.Module(found, []), "run_sec.py", "exec"), space)
+    tool = space["_tool"]()
+    assert tool == LIB / "build_sec_cy.py" and tool.is_file(), (sec_name, tool)
+    page = (product / "model-sec.md").read_text(encoding="utf-8")
+    assert f"python build_sec_cy.py {product.name}" in page, (
+        f"{sec_name}'s model-sec.md builds with no python build_sec_cy.py {product.name}")
+    assert "tools/build_sec_cy.py" not in page, (
+        f"{sec_name}'s model-sec.md names tools/build_sec_cy.py, which lifelib has not")
 
 
 @pytest.mark.cython

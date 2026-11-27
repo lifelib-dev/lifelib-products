@@ -31,7 +31,7 @@
 # because Cython's generated unpickle code converts the 2-D caches of a space with one
 # function, written for one width: given two widths, it passes the narrower array where
 # the wider is expected, which gcc 14 refuses (-Wincompatible-pointer-types, made an error
-# on every gcc and clang by tools/build_sec_cy.py), and would write past its end.  So a
+# on every gcc and clang by build_sec_cy.py), and would write past its end.  So a
 # kind 5 to 7, a name 2 to 7, or a timing a cell does not take, is inside the cache, where
 # the cell refuses it as modelx does, ValueError("invalid kind"), ("invalid name") or
 # ("invalid timing"), and a code from 8 raises IndexError, compiled alone.

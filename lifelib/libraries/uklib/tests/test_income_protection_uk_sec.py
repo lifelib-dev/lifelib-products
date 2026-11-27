@@ -4963,8 +4963,8 @@ def test_run_sec_prints_a_point_and_the_block(sec_model):
     assert annual.head(12).round(2).to_string() in out
 
 
-# run_sec.py run as though it sat at /m/products/income_protection, a copy too shallow to
-# have a repository above it: the source compiled under that name, so that its own
+# run_sec.py run as though it sat at /m/products/income_protection, in a products/ folder
+# whose parent carries no build tool: the source compiled under that name, so that its own
 # __file__ is it.
 SHALLOW_RUN = """\
 import sys
@@ -4975,17 +4975,18 @@ exec(compile(source, where, "exec"), {"__name__": "__main__", "__file__": where}
 """
 
 
-def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
-    """``run_sec.py --cython`` outside the repository stops, saying it cannot build.
+def test_run_sec_says_a_product_outside_a_library_cannot_build(tmp_path):
+    """``run_sec.py --cython`` stops, saying it cannot build, outside a library.
 
     The runner is uslib Term's as it stands, ``--cython`` and ``_tool()`` included
     (USLIB-SEC-PLAN.md §7.1, *Record — M14*, *Carried into Phase 1*), so that the C step
-    changes nothing in it.  ``--cython`` builds with the repository's
-    ``tools/build_sec_cy.py``, which a ``lifelib.create()`` copy does not carry, wherever
-    the copy is: beside a copy of the model and its inputs, and at a path too shallow to
-    hold a repository above the product at all.  Each must exit nonzero having printed
-    nothing, and say why.  Neither needs modelx-cython, since neither gets as far as
-    building.
+    changes nothing in it.  ``--cython`` builds with the ``build_sec_cy.py`` the library
+    carries at its root, beside ``products/``, so that lifelib and every
+    ``lifelib.create()`` copy of the library build as the source repository does.  A
+    product directory taken out of its library has no tool above it, wherever it is put:
+    beside a copy of the model and its inputs, and in a ``products/`` folder whose parent
+    carries no tool.  Each must exit nonzero having printed nothing, and say why.  Neither
+    needs modelx-cython, since neither gets as far as building.
     """
     runner = model_path(SEC).parent / "run_sec.py"
     copy = _sec_inputs(tmp_path / "copy", _committed()).parent / "run_sec.py"
@@ -4996,8 +4997,7 @@ def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
         done = _run_sec(*args, check=False)
         stderr = done.stderr.decode(errors="replace")
         assert done.returncode != 0 and done.stdout == b"", stderr
-        assert "a lifelib.create() copy carries no tools/, so it cannot build" in stderr, (
-            stderr)
+        assert "is in no library that carries one, so it cannot build" in stderr, stderr
 
 
 def test_the_runner_sums_the_block_as_groupby_does(sec_model):
@@ -6211,19 +6211,20 @@ def test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer(tmp_path):
 
     ``compiled_model`` builds in place when no build for this interpreter is there, or
     when the model, ``sample_sec.py``, ``spec_sec.py`` or the tool is newer than it, and
-    otherwise imports what is there.  So its two functions are read from the runner, which
-    runs the model when imported, and run here on a fake product: empty sources, a tool
-    and an empty file standing for the extension module, their times set by ``os.utime``,
-    with the build and the import stubbed, so that nothing is built or imported.  Built
-    after every source, it must not build; with any one source newer than the build, or
-    no build, it must, and say so on stderr.
+    otherwise imports what is there.  So its three functions are read from the runner,
+    which runs the model when imported, and run here on a fake product in a fake library:
+    empty sources, the library's tool at its root, where ``_tool`` finds it, and an empty
+    file standing for the extension module, their times set by ``os.utime``, with the build
+    and the import stubbed, so that nothing is built or imported.  Built after every
+    source, it must not build; with any one source newer than the build, or no build, it
+    must, and say so on stderr.
     """
     tree = ast.parse((model_path(SEC).parent / "run_sec.py").read_text(encoding="utf-8"))
     found = [node for node in tree.body if isinstance(node, ast.FunctionDef)
-             and node.name in ("_built", "compiled_model")]
-    assert len(found) == 2
-    here = tmp_path / "product"
-    tool = tmp_path / "tools" / "build_sec_cy.py"
+             and node.name in ("_built", "_tool", "compiled_model")]
+    assert len(found) == 3
+    here = tmp_path / "products" / "product"
+    tool = tmp_path / "build_sec_cy.py"
     sources = [here / SEC / "Projection" / "__init__.py",
                here / SEC / "Data" / "__init__.py", here / SEC / "__init__.py",
                here / "sample_sec.py", here / "spec_sec.py", tool]
@@ -6249,8 +6250,7 @@ def test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer(tmp_path):
                                  exit=sys.exit, stderr=None)
     space = {"HERE": here, "NAME": SEC, "SUFFIXES": (suffix,), "Path": pathlib.Path,
              "sys": stub, "subprocess": types.SimpleNamespace(run=run, DEVNULL=None),
-             "importlib": types.SimpleNamespace(import_module=import_module),
-             "_tool": lambda: tool}
+             "importlib": types.SimpleNamespace(import_module=import_module)}
     exec(compile(ast.Module(found, []), "run_sec.py", "exec"), space)
 
     def rebuilt(newer=None):
@@ -7985,10 +7985,10 @@ def test_each_2d_cache_is_unpickled_through_a_temporary_of_its_shape(sec_build):
     cohorts' cache takes an outer size of its own, 747 by 626, beside the timings' and
     kinds' 746 by 4.  Were the two outer sizes one, the cohorts would be read into a
     temporary of 746 by 4: gcc and clang refuse the build under
-    ``-Werror=incompatible-pointer-types``, which ``tools/build_sec_cy.py`` passes on Linux
-    and macOS, and the spec test holds the sizes, but MSVC, on the ``cython_uk`` job's
-    Windows legs, only warns, and the build would write 746 x 626 doubles into it.  So this
-    reads the generated C, which Cython writes alike for every compiler: in
+    ``-Werror=incompatible-pointer-types``, which the library's ``build_sec_cy.py`` passes
+    on Linux and macOS, and the spec test holds the sizes, but MSVC, on the ``cython_uk``
+    job's Windows legs, only warns, and the build would write 746 x 626 doubles into it.
+    So this reads the generated C, which Cython writes alike for every compiler: in
     ``__pyx_unpickle__c_Projection__set_state``, every 2-D member of the compiled
     ``Projection``'s struct, values and flags, the caches ``spec_sec.py`` sizes in two
     dimensions among them, at its sizes (:func:`_two_d_caches`), is read through a 2-D

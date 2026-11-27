@@ -4510,9 +4510,9 @@ def test_the_runner_sums_the_block_as_groupby_does(sec_model):
     assert not np.array_equal(plain, want)
 
 
-# run_sec.py run as though it sat at /m/products/universal_life, a copy too shallow to have
-# a repository above it: the source compiled under that name, so that its own __file__ is
-# it.
+# run_sec.py run as though it sat at /m/products/universal_life, in a products/ folder
+# whose parent carries no build tool: the source compiled under that name, so that its own
+# __file__ is it.
 SHALLOW_RUN = """\
 import sys
 source = open(sys.argv[1], encoding="utf-8").read()
@@ -4522,15 +4522,17 @@ exec(compile(source, where, "exec"), {"__name__": "__main__", "__file__": where}
 """
 
 
-def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
-    """``run_sec.py --cython`` outside the repository stops, saying it cannot build.
+def test_run_sec_says_a_product_outside_a_library_cannot_build(tmp_path):
+    """``run_sec.py --cython`` stops, saying it cannot build, outside a library.
 
-    ``--cython`` builds with the repository's ``tools/build_sec_cy.py``, which a
-    ``lifelib.create()`` copy does not carry, wherever the copy is: beside a copy of the
-    model and its inputs, and at a path too shallow to hold a repository above the product
-    at all.  Each must exit nonzero having printed nothing, and say why.  Neither needs
-    modelx-cython, since neither gets as far as building, so this runs wherever the module
-    does, on Windows and macOS among them.
+    ``--cython`` builds with the ``build_sec_cy.py`` the library carries at its root,
+    beside ``products/``, so that lifelib and every ``lifelib.create()`` copy of the
+    library build as the source repository does.  A product directory taken out of its
+    library has no tool above it, wherever it is put: beside a copy of the model and its
+    inputs, and in a ``products/`` folder whose parent carries no tool.  Each must exit
+    nonzero having printed nothing, and say why.  Neither needs modelx-cython, since
+    neither gets as far as building, so this runs wherever the module does, on Windows and
+    macOS among them.
     """
     runner = model_path(SEC).parent / "run_sec.py"
     copy = _sec_inputs(tmp_path / "copy", _committed()).parent / "run_sec.py"
@@ -4541,8 +4543,7 @@ def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
         done = _run_sec(*args, check=False)
         stderr = done.stderr.decode(errors="replace")
         assert done.returncode != 0 and done.stdout == b"", stderr
-        assert "a lifelib.create() copy carries no tools/, so it cannot build" in stderr, (
-            stderr)
+        assert "is in no library that carries one, so it cannot build" in stderr, stderr
 
 
 def test_the_sample_raises_the_recursion_limit_its_comment_derives():
