@@ -31,7 +31,7 @@
 # one inner width, the widest, because Cython's generated unpickle code converts the 2-D
 # caches of a space with one function, written for one width: given two, it passes the
 # narrower array where the wider is expected, which gcc 14 refuses
-# (-Wincompatible-pointer-types, made an error by tools/build_sec_cy.py), and would write
+# (-Wincompatible-pointer-types, made an error by build_sec_cy.py), and would write
 # past its end.  So a timing 10 or 11, or a kind 4 to 11, is inside the cache, where the
 # cell refuses it as modelx does, and a code from 12 raises IndexError, compiled alone; a
 # slot from 12, which a seg_term_mth above 12 asks for, raises IndexError compiled, where

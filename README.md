@@ -37,6 +37,7 @@ trees, and every regulatory citation in them is a working link.
 lifelib/libraries/                   the path lifelib keeps its libraries on, and so does this
   <library>/                         uslib/, uklib/, jplib/, frlib/, delib/, krlib/ — named for the lifelib library each becomes
     index.md                         library overview, the models, citation conventions
+    build_sec_cy.py                  uslib, uklib: builds an _SEC model with modelx-cython
     products/
       <product>/                     each product's documents and its executable model, together
         product-spec.md              representative product specification

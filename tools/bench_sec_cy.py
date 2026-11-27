@@ -10,9 +10,9 @@ the machine is doing, so it reports both, and what it prints goes into the produ
 
 **The engines.**  ``modelx`` reads the model folder.  ``export`` imports the
 ``<Model>_nomx`` package that modelx's ``Model.export`` writes, the pure-Python form mx2cy
-compiles.  ``compiled`` imports ``<Model>_nomx_cy``, the package ``tools/build_sec_cy.py``
-compiles from it.  All three run the same formulas on the same inputs, so they must agree
-on every number, and the script checks that they do.
+compiles.  ``compiled`` imports ``<Model>_nomx_cy``, the package the library's
+``build_sec_cy.py`` compiles from it.  All three run the same formulas on the same inputs,
+so they must agree on every number, and the script checks that they do.
 
 **The blocks.**  The committed model point table, repeated: each copy keeps every cell's
 text as committed, and its ``point_id`` is renumbered so that every point has its own.  The
@@ -70,11 +70,11 @@ and repeat to 1e-9 relative, or the script exits 1 without a table.  And the com
 engine must have imported its extension modules: a package whose build lost one imports
 the translated Python beside it and computes the same numbers, uncompiled.
 
-The build is ``tools/build_sec_cy.py``'s, made into a temporary directory and removed at
-the end, or a directory a build was made in, given as ``--build``, which the script warns
-of when the model, the sample or the spec is newer than it.  The blocks go in a temporary
-directory too.  Nothing is written in the repository, unless ``--json`` names a file
-there.
+The build is the library's ``build_sec_cy.py``'s, made into a temporary directory and
+removed at the end, or a directory a build was made in, given as ``--build``, which the
+script warns of when the model, the sample or the spec is newer than it.  The blocks go in
+a temporary directory too.  Nothing is written in the repository, unless ``--json`` names a
+file there.
 
 Usage::
 
@@ -196,7 +196,9 @@ print(json.dumps({"points": n, "data_s": data_s, "frames_s": frames_s, "loop_s":
 
 
 def _build_tool():
-    """``tools/build_sec_cy.py``, beside this script, as a module."""
+    """``tools/build_sec_cy.py``, beside this script, as a module: the command line over
+    each library's own ``build_sec_cy.py``, which names a product as this script does and
+    hands back the tool of its library (``library_tool``)."""
     spec = importlib.util.spec_from_file_location(
         "build_sec_cy", pathlib.Path(__file__).with_name("build_sec_cy.py"))
     module = importlib.util.module_from_spec(spec)
@@ -458,9 +460,10 @@ def main(argv):
         if given is not None and given < 1:
             parser.error("copies must be 1 or more")
 
-    tool = _build_tool()
+    names = _build_tool()
     try:
-        product = tool.product_directory(args.product).resolve()
+        product = names.product_directory(args.product).resolve()
+        tool = names.library_tool(product)
     except ValueError as err:
         parser.error(str(err))
     try:

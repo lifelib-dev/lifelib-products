@@ -243,7 +243,7 @@ Example:
     >>> model.Projection[1].result_cf()            # the worked example's month at t = 0
 
 The model compiles, as ``basiclife/BasicTerm_SC`` does, with modelx-cython: the
-repository's ``tools/build_sec_cy.py`` builds it from ``products/variable_annuity``'s
+library's ``build_sec_cy.py`` builds it from ``products/variable_annuity``'s
 ``sample_sec.py`` and ``spec_sec.py``, and ``run_sec.py --cython`` runs the compiled model
 (``products/variable_annuity/model-sec.md``).
 """

@@ -38,7 +38,7 @@
 # converts the 2-D caches of a space with one function, written for one width: given two
 # widths, it passes the narrower array where the wider is expected, which gcc 14 refuses
 # (-Wincompatible-pointer-types, made an error on every gcc and clang by
-# tools/build_sec_cy.py), and would write past its end.  So a code a cell does not take but
+# build_sec_cy.py), and would write past its end.  So a code a cell does not take but
 # below 9 is inside the cache, where the cell refuses it as modelx does,
 # ValueError("invalid kind"), ("invalid bucket"), ("invalid name"), ("invalid basis"),
 # ("invalid rule") or ("invalid timing"), and a code from 9 raises IndexError, compiled

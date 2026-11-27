@@ -315,6 +315,8 @@ python -m pytest tests -q
   - Reads the model and prints its cash flow statement. `run_sec.py` does the same for an `_SEC` model, for one model point or the whole block, and `--cython` runs the compiled model.
 * - `products/<product>/sample_sec.py`, `spec_sec.py`
   - mx2cy's two inputs for compiling an `_SEC` model: the sample run that types each cell, and the size of each cell's cache.
+* - `build_sec_cy.py`
+  - The build tool for the `_SEC` models, at the library's root, so that it goes wherever the library goes, into lifelib and into a `lifelib.create()` copy: it exports a model, compiles it with modelx-cython from its `sample_sec.py` and `spec_sec.py`, and checks the build. `python build_sec_cy.py <product>`, from the library's folder, builds it in place, and `run_sec.py --cython` builds with it where no build is current.
 * - `references/`
   - The cross-product regulatory and actuarial bibliography, cited as `[REG-R#]`.
 * - `tests/`

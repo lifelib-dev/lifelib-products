@@ -4,10 +4,10 @@ UKLIB-SEC-PLAN.md compiles each SEC model at its C step and runs the compile tes
 ``cython_uk`` CI job of their own, on Linux and Windows (U7, after USLIB-SEC-PLAN.md D13).
 This module gives that job a test before any uklib model is written for the compiler
 (§3 item 4), so that its ``toolchain`` shard proves something real from the start: that
-``tools/build_sec_cy.py``, modelx-cython and the platform's C compiler together turn a
-uklib model into a compiled package, and that the package computes what modelx computes.
-It is uslib's ``test_cython_toolchain.py`` read for this library; each SEC model's own
-compile tests will stand beside it, from ``Term_UK_SEC``'s at M2.
+the library's ``build_sec_cy.py``, modelx-cython and the platform's C compiler together
+turn a uklib model into a compiled package, and that the package computes what modelx
+computes.  It is uslib's ``test_cython_toolchain.py`` read for this library; each SEC
+model's own compile tests will stand beside it, from ``Term_UK_SEC``'s at M2.
 
 **What it compiles.**  ``Term_UK_S``, an S model, which mx2cy compiles as it compiles any
 export (F2): one whose cells still read pandas, the shape mx2cy handles least well, where
@@ -54,16 +54,16 @@ The test reads the declarations itself rather than through ``uk_sec_support.spec
 and the harness, written for SEC models, which default no integer, would read the
 parameter's name as ``life=*``.
 
-**When it skips.**  Without modelx-cython, which ``requirements.txt`` leaves out because it
-needs a C compiler; without a C compiler, on a POSIX system; and without
-``tools/build_sec_cy.py``, which a ``lifelib.create()`` copy lacks, since it copies the
-library and not this repository's ``tools/``.  So the ``test`` CI job and lifelib's own bare
-``pytest`` skip it and stay green (D13).  The compiler is probed on POSIX only.  There
-setuptools runs ``CC``, or the compiler the interpreter was built with, from ``PATH``; on
-Windows it finds MSVC through vswhere at build time, and ``cl.exe`` is on no ``PATH``
-outside a developer prompt, so a ``PATH`` probe would skip on exactly the runner the job
-exists for.  On Windows a missing MSVC fails the build instead, and the error quotes
-setuptools saying so.
+**When it skips.**  Without modelx-cython, which no model requires, because it needs a C
+compiler; without a C compiler, on a POSIX system; and without the library's
+``build_sec_cy.py``, which only a copy that left it behind lacks: it sits at the library's
+root, so lifelib and every ``lifelib.create()`` copy carry it.  So the ``test`` CI job and
+lifelib's own bare ``pytest`` skip it and stay green (D13).  The compiler is probed on
+POSIX only.  There setuptools runs ``CC``, or the compiler the interpreter was built with,
+from ``PATH``; on Windows it finds MSVC through vswhere at build time, and ``cl.exe`` is on
+no ``PATH`` outside a developer prompt, so a ``PATH`` probe would skip on exactly the
+runner the job exists for.  On Windows a missing MSVC fails the build instead, and the
+error quotes setuptools saying so.
 
 **In the cython_uk job a skip is a failure.**  A skip there would be a green job that
 compiled nothing, so the job sets ``UKLIB_REQUIRE_CYTHON=1``, and each condition above then
@@ -197,7 +197,8 @@ def compiled_caches(pxd):
 
 @pytest.fixture(scope="module")
 def build_sec_cy():
-    """``tools/build_sec_cy.py`` as a module, or a skip, which the cython_uk job fails."""
+    """The library's ``build_sec_cy.py`` as a module, or a skip, which the cython_uk job
+    fails."""
     return require_cython()
 
 

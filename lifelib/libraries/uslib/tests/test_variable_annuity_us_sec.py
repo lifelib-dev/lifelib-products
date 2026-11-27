@@ -5896,8 +5896,8 @@ def test_a_decode_takes_s_text_exactly_and_refuses_a_variant_as_s_does(tmp_path)
         s.close()
 
 
-# run_sec.py run as though it sat at /m/products/variable_annuity, a copy too shallow to
-# have a repository above it: the source compiled under that name, so that its own
+# run_sec.py run as though it sat at /m/products/variable_annuity, in a products/ folder
+# whose parent carries no build tool: the source compiled under that name, so that its own
 # __file__ is it.
 SHALLOW_RUN = """\
 import sys
@@ -5908,15 +5908,17 @@ exec(compile(source, where, "exec"), {"__name__": "__main__", "__file__": where}
 """
 
 
-def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
-    """``run_sec.py --cython`` outside the repository stops, saying it cannot build.
+def test_run_sec_says_a_product_outside_a_library_cannot_build(tmp_path):
+    """``run_sec.py --cython`` stops, saying it cannot build, outside a library.
 
-    ``--cython`` builds with the repository's ``tools/build_sec_cy.py``, which a
-    ``lifelib.create()`` copy does not carry, wherever the copy is: beside a copy of the
-    model and its inputs, and at a path too shallow to hold a repository above the product
-    at all.  Each must exit nonzero having printed nothing, and say why.  Neither needs
-    modelx-cython, since neither gets as far as building, so this runs wherever the module
-    does, on Windows and macOS among them.
+    ``--cython`` builds with the ``build_sec_cy.py`` the library carries at its root,
+    beside ``products/``, so that lifelib and every ``lifelib.create()`` copy of the
+    library build as the source repository does.  A product directory taken out of its
+    library has no tool above it, wherever it is put: beside a copy of the model and its
+    inputs, and in a ``products/`` folder whose parent carries no tool.  Each must exit
+    nonzero having printed nothing, and say why.  Neither needs modelx-cython, since
+    neither gets as far as building, so this runs wherever the module does, on Windows and
+    macOS among them.
     """
     runner = model_path(SEC).parent / "run_sec.py"
     copy = _sec_inputs(tmp_path / "copy", _committed()).parent / "run_sec.py"
@@ -5927,23 +5929,23 @@ def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
         done = _run_sec(*args, check=False)
         stderr = done.stderr.decode(errors="replace")
         assert done.returncode != 0 and done.stdout == b"", stderr
-        assert "a lifelib.create() copy carries no tools/, so it cannot build" in stderr, (
-            stderr)
+        assert "is in no library that carries one, so it cannot build" in stderr, stderr
 
 
-def _runner_functions(tmp_path, names=("_built", "compiled_model")):
+def _runner_functions(tmp_path, names=("_built", "_tool", "compiled_model")):
     """``run_sec.py``'s functions ``names``, read from its source, and a fake product.
 
     The runner runs the model when imported, so its functions are taken from the source
-    by ``ast``.  The fake product holds empty sources, a tool and the package directory,
-    under ``tmp_path``.  Returns ``(found, here, tool, sources, package, suffix)``.
+    by ``ast``.  The fake product holds empty sources and the package directory, in the
+    ``products/`` of a fake library under ``tmp_path``, whose tool sits at its root, where
+    ``_tool`` finds it.  Returns ``(found, here, tool, sources, package, suffix)``.
     """
     tree = ast.parse((model_path(SEC).parent / "run_sec.py").read_text(encoding="utf-8"))
     found = [node for node in tree.body if isinstance(node, ast.FunctionDef)
              and node.name in names]
     assert len(found) == len(names)
-    here = tmp_path / "product"
-    tool = tmp_path / "tools" / "build_sec_cy.py"
+    here = tmp_path / "products" / "product"
+    tool = tmp_path / "build_sec_cy.py"
     sources = [here / SEC / "Projection" / "__init__.py",
                here / SEC / "Data" / "__init__.py", here / SEC / "__init__.py",
                here / "sample_sec.py", here / "spec_sec.py", tool]
@@ -5961,12 +5963,13 @@ def test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer(tmp_path):
 
     ``compiled_model`` builds in place when no build for this interpreter is there, or
     when the model, ``sample_sec.py``, ``spec_sec.py`` or the tool is newer than it, and
-    otherwise imports what is there.  So its two functions are read from the runner and
-    run here on a fake product (:func:`_runner_functions`): empty sources, a tool and an
-    empty file standing for the extension module, their times set by ``os.utime``, with
-    the build and the import stubbed, so that nothing is built or imported.  Built after
-    every source, it must not build; with any one source newer than the build, or no
-    build, it must, and say so on stderr.
+    otherwise imports what is there.  So its three functions are read from the runner and
+    run here on a fake product in a fake library (:func:`_runner_functions`): empty
+    sources, the library's tool at its root, where ``_tool`` finds it, and an empty file
+    standing for the extension module, their times set by ``os.utime``, with the build and
+    the import stubbed, so that nothing is built or imported.  Built after every source, it
+    must not build; with any one source newer than the build, or no build, it must, and say
+    so on stderr.
     """
     found, here, tool, sources, package, suffix = _runner_functions(tmp_path)
     built = package / f"_mx_classes{suffix}"
@@ -5986,8 +5989,7 @@ def test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer(tmp_path):
                                  exit=sys.exit, stderr=None)
     space = {"HERE": here, "NAME": SEC, "SUFFIXES": (suffix,), "Path": pathlib.Path,
              "sys": stub, "subprocess": types.SimpleNamespace(run=run, DEVNULL=None),
-             "importlib": types.SimpleNamespace(import_module=import_module),
-             "_tool": lambda: tool}
+             "importlib": types.SimpleNamespace(import_module=import_module)}
     exec(compile(ast.Module(found, []), "run_sec.py", "exec"), space)
 
     def rebuilt(newer=None):
@@ -6020,14 +6022,14 @@ def test_run_sec_refuses_a_package_that_imports_without_its_extension_modules(tm
     A compiled package whose extension module does not load falls back to the
     ``_mx_classes.py`` beside it, which computes the same numbers uncompiled, so no output
     can show it, and ``compiled_model`` checks the file its ``Projection``'s class came
-    from.  Its two functions are read from the runner and run here on a fake product, as
+    from.  Its three functions are read from the runner and run here on a fake product, as
     :func:`test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer` runs them, built
     after every source by ``os.utime``, so that the runner does not build, with a stubbed
-    import whose ``Projection`` comes from the extension module or from
-    ``_mx_classes.py``.  In place and from ``--build DIR``, the package whose extension is
-    missing must be refused, saying so, and the one whose extension loaded returned;
-    nothing is built either way.  This needs neither modelx-cython nor a compiler, so it
-    runs wherever the module does.
+    import whose ``Projection`` comes from the extension module or from ``_mx_classes.py``.
+    In place and from ``--build DIR``, the package whose extension is missing must be
+    refused, saying so, and the one whose extension loaded returned; nothing is built
+    either way.  This needs neither modelx-cython nor a compiler, so it runs wherever the
+    module does.
     """
     found, here, tool, sources, package, suffix = _runner_functions(tmp_path)
     built = package / f"_mx_classes{suffix}"
@@ -6056,8 +6058,7 @@ def test_run_sec_refuses_a_package_that_imports_without_its_extension_modules(tm
 
     space = {"HERE": here, "NAME": SEC, "SUFFIXES": (suffix,), "Path": pathlib.Path,
              "sys": stub, "subprocess": types.SimpleNamespace(run=run, DEVNULL=None),
-             "importlib": types.SimpleNamespace(import_module=import_module),
-             "_tool": lambda: tool}
+             "importlib": types.SimpleNamespace(import_module=import_module)}
     exec(compile(ast.Module(found, []), "run_sec.py", "exec"), space)
     said = []
     stub.stderr = types.SimpleNamespace(write=said.append, flush=lambda: None)

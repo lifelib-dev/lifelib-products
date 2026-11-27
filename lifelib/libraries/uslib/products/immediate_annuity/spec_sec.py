@@ -29,7 +29,7 @@
 # code converts the 2-D caches of a space with one function for each inner width: given
 # two widths, it passes the narrower array where the wider is expected, which gcc 14
 # refuses (-Wincompatible-pointer-types, made an error on every gcc and clang by
-# tools/build_sec_cy.py) and MSVC accepts, and would write past its end.  So (1,562, 3)
+# build_sec_cy.py) and MSVC accepts, and would write past its end.  So (1,562, 3)
 # for each.  A timing 2 or a kind 1 or 2 is inside the cache, where the cell refuses it
 # as modelx does, ValueError("invalid timing") or ValueError("invalid kind"), and a life
 # 0 likewise, ValueError("invalid life"); a code or a life of 3 raises IndexError,

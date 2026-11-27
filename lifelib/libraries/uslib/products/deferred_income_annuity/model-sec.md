@@ -38,8 +38,8 @@ python products/deferred_income_annuity/run_sec.py 19 --cython  # point 19, comp
 ```
 
 `--cython` runs the compiled model and prints the same lines. The runner builds it beside
-the model with the repository's `tools/build_sec_cy.py` the first time, in about a minute,
-and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer than the
+the model with the library's own `build_sec_cy.py` the first time, in about a minute, and
+again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer than the
 build, and says so on stderr. `--build DIR` runs a build made elsewhere instead (*The
 compiled model*, below). Nothing a build leaves is committed, and `.gitignore` covers it.
 
@@ -926,11 +926,12 @@ grid, which take the branches they do not. The compile tests hold it so on x86-6
 
 ### Building it
 
-In the source repository:
+The library carries the tool at its root, so a model builds wherever the library is: in the
+source repository, in lifelib or in a `lifelib.create()` copy. From the library's folder:
 
 ```bash
-python tools/build_sec_cy.py deferred_income_annuity             # in place, beside it
-python tools/build_sec_cy.py deferred_income_annuity --out /tmp/dia  # elsewhere
+python build_sec_cy.py deferred_income_annuity             # in place, beside it
+python build_sec_cy.py deferred_income_annuity --out /tmp/dia  # elsewhere
 ```
 
 The tool exports the model to `DIA_US_SEC_nomx/`, the Python package modelx's `export`
@@ -957,15 +958,16 @@ after, `Projection[1]`, computes 7.50 for point 2's. Set every Reference on a mo
 imported, before anything is computed, where modelx would recompute; a test holds the
 compiled model to this.
 
-A build takes about 53 s here, with MSVC, and needs a C compiler, which is why
-`requirements.txt` leaves modelx-cython out: `pip install -r requirements-cython.txt`.
-`run_sec.py --cython` builds in place when it finds no build, or one older than the model,
-the sample, the spec or the tool, and `--build DIR` runs a build made with `--out DIR`.
-Nothing a build writes is committed. All of it derives from committed files, and an
-extension module is built for one operating system, processor and Python
-(`_mx_classes.cp313-win_amd64.pyd` here); in place, `.gitignore` covers all of it. A
-`lifelib.create()` copy of the library carries no `tools/`, so it cannot build, and
-`run_sec.py --cython` says so.
+A build takes about 53 s here, with MSVC, and needs modelx-cython, which needs a C
+compiler, so the models do not require it: `pip install modelx-cython`, or
+`pip install -r requirements-cython.txt` in the source repository, which pins the release
+the compile tests run. `run_sec.py --cython` builds in place when it finds no build, or one
+older than the model, the sample, the spec or the tool, and `--build DIR` runs a build made
+with `--out DIR`. Nothing a build writes is committed. All of it derives from committed
+files, and an extension module is built for one operating system, processor and Python
+(`_mx_classes.cp313-win_amd64.pyd` here); in place, `.gitignore` covers all of it. The tool
+is the library's own, so lifelib and a `lifelib.create()` copy build as the source
+repository does.
 
 ### What compiling changed, and why
 
@@ -1238,28 +1240,29 @@ contract's, which extended tables reach.
 
 ### Two compiler directives
 
-`tools/build_sec_cy.py` marks the module mx2cy translates `# cython: infer_types=True,
-cpow=True`, and compiles it with `-ffp-contract=off` on every platform but Windows, as
-`Term_US_SEC`'s *Two compiler directives* sets out, with what each costs and what it was
-measured to change there. Here `cpow` reaches the powers of every compiled cell: the
-monthly mortality rates, `1 − (1 − q)^(1/12)` in `mort_rate_mth` and `mort_rate_mth_py`;
-the generational improvement, `(1 − G2_x)^k` in `mort_rate_py`; every discount of the
-pricing kernel, `v^((s − k)/12)` in `annuity_factor_at` and in `guarantee_mths_pricing`'s
-inline copy, `(1 + i_p)^(−d)` in `annuity_factor_def`, `rop_factor_calc` and
-`accel_cost`; the COLA, `(1 + c)^(d // 12)` in `cola_factor_pm`; the commutation discount,
-`(1 + i_c)^(−(k − m)/12)` in `commuted_value` and its check's residual; and expense
-inflation, `(1 + π)^(t // 12)` in `inflation_factor`. Without `cpow` a compiler with C99's
-complex numbers, gcc among them, computes a power of two doubles as a complex power, which
-can differ from Python's float power in its last bits. With both directives and the flag
-every compiled value agrees with modelx's bit for bit, and the compile tests hold each, by
-the module's first line, by the compiler's command lines and, on x86-64, by the comparison
-itself. On Windows MSVC compiles without the flag, since it emits no fused multiply-add for
-x64 without `/arch:AVX2`, which setuptools does not pass, and the comparison is exact there
-too. On the same platforms as the flag the tool adds `-Werror=incompatible-pointer-types`,
-so that gcc before 14, which only warns of a pointer of the wrong type, fails the build as
-gcc 14 does: the error two cache widths give (*The sample and the spec*, above). MSVC
-accepts two widths without a word, so on Windows the one width rests on a test that holds
-every 2-D size in `spec_sec.py` to the one width (*Tests*, below).
+The library's `build_sec_cy.py` marks the module mx2cy translates
+`# cython: infer_types=True, cpow=True`, and compiles it with `-ffp-contract=off` on every
+platform but Windows, as `Term_US_SEC`'s *Two compiler directives* sets out, with what each
+costs and what it was measured to change there. Here `cpow` reaches the powers of every
+compiled cell: the monthly mortality rates, `1 − (1 − q)^(1/12)` in `mort_rate_mth` and
+`mort_rate_mth_py`; the generational improvement, `(1 − G2_x)^k` in `mort_rate_py`; every
+discount of the pricing kernel, `v^((s − k)/12)` in `annuity_factor_at` and in
+`guarantee_mths_pricing`'s inline copy, `(1 + i_p)^(−d)` in `annuity_factor_def`,
+`rop_factor_calc` and `accel_cost`; the COLA, `(1 + c)^(d // 12)` in `cola_factor_pm`; the
+commutation discount, `(1 + i_c)^(−(k − m)/12)` in `commuted_value` and its check's
+residual; and expense inflation, `(1 + π)^(t // 12)` in `inflation_factor`. Without `cpow`
+a compiler with C99's complex numbers, gcc among them, computes a power of two doubles as a
+complex power, which can differ from Python's float power in its last bits. With both
+directives and the flag every compiled value agrees with modelx's bit for bit, and the
+compile tests hold each, by the module's first line, by the compiler's command lines and,
+on x86-64, by the comparison itself. On Windows MSVC compiles without the flag, since it
+emits no fused multiply-add for x64 without `/arch:AVX2`, which setuptools does not pass,
+and the comparison is exact there too. On the same platforms as the flag the tool adds
+`-Werror=incompatible-pointer-types`, so that gcc before 14, which only warns of a pointer
+of the wrong type, fails the build as gcc 14 does: the error two cache widths give (*The
+sample and the spec*, above). MSVC accepts two widths without a word, so on Windows the one
+width rests on a test that holds every 2-D size in `spec_sec.py` to the one width (*Tests*,
+below).
 
 ### What a compiled run needs
 

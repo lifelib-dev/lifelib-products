@@ -5950,9 +5950,9 @@ def test_an_int_column_past_2_53_is_refused_by_its_point_alone(tmp_path, column,
         s.close()
 
 
-# run_sec.py run as though it sat at /m/products/registered_index_linked_annuity, a copy
-# too shallow to have a repository above it: the source compiled under that name, so that
-# its own __file__ is it.
+# run_sec.py run as though it sat at /m/products/registered_index_linked_annuity, in a
+# products/ folder whose parent carries no build tool: the source compiled under that name,
+# so that its own __file__ is it.
 SHALLOW_RUN = """\
 import sys
 source = open(sys.argv[1], encoding="utf-8").read()
@@ -5962,15 +5962,17 @@ exec(compile(source, where, "exec"), {"__name__": "__main__", "__file__": where}
 """
 
 
-def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
-    """``run_sec.py --cython`` outside the repository stops, saying it cannot build.
+def test_run_sec_says_a_product_outside_a_library_cannot_build(tmp_path):
+    """``run_sec.py --cython`` stops, saying it cannot build, outside a library.
 
-    ``--cython`` builds with the repository's ``tools/build_sec_cy.py``, which a
-    ``lifelib.create()`` copy does not carry, wherever the copy is: beside a copy of the
-    model and its inputs, and at a path too shallow to hold a repository above the product
-    at all.  Each must exit nonzero having printed nothing, and say why.  Neither needs
-    modelx-cython, since neither gets as far as building, so this runs wherever the module
-    does, on Windows and macOS among them.
+    ``--cython`` builds with the ``build_sec_cy.py`` the library carries at its root,
+    beside ``products/``, so that lifelib and every ``lifelib.create()`` copy of the
+    library build as the source repository does.  A product directory taken out of its
+    library has no tool above it, wherever it is put: beside a copy of the model and its
+    inputs, and in a ``products/`` folder whose parent carries no tool.  Each must exit
+    nonzero having printed nothing, and say why.  Neither needs modelx-cython, since
+    neither gets as far as building, so this runs wherever the module does, on Windows and
+    macOS among them.
     """
     runner = model_path(SEC).parent / "run_sec.py"
     copy = _sec_inputs(tmp_path / "copy", _committed()).parent / "run_sec.py"
@@ -5981,8 +5983,7 @@ def test_run_sec_says_a_copy_without_the_repository_cannot_build(tmp_path):
         done = _run_sec(*args, check=False)
         stderr = done.stderr.decode(errors="replace")
         assert done.returncode != 0 and done.stdout == b"", stderr
-        assert "a lifelib.create() copy carries no tools/, so it cannot build" in stderr, (
-            stderr)
+        assert "is in no library that carries one, so it cannot build" in stderr, stderr
 
 
 def _runner_functions(names):
@@ -6000,16 +6001,16 @@ def test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer(tmp_path):
 
     ``compiled_model`` builds in place when no build for this interpreter is there, or
     when the model, ``sample_sec.py``, ``spec_sec.py`` or the tool is newer than it, and
-    otherwise imports what is there.  So its two functions are read from the runner and
-    run here on a fake product: empty sources, a tool and an empty file standing for the
-    extension module, their times set by ``os.utime``, with the build and the import
-    stubbed, so that nothing is built or imported.  Built after every source, it must not
-    build; with any one source newer than the build, or no build, it must, and say so on
-    stderr.
+    otherwise imports what is there.  So its three functions are read from the runner and
+    run here on a fake product in a fake library: empty sources, the library's tool at its
+    root, where ``_tool`` finds it, and an empty file standing for the extension module,
+    their times set by ``os.utime``, with the build and the import stubbed, so that nothing
+    is built or imported.  Built after every source, it must not build; with any one source
+    newer than the build, or no build, it must, and say so on stderr.
     """
-    module = _runner_functions(("_built", "compiled_model"))
-    here = tmp_path / "product"
-    tool = tmp_path / "tools" / "build_sec_cy.py"
+    module = _runner_functions(("_built", "_tool", "compiled_model"))
+    here = tmp_path / "products" / "product"
+    tool = tmp_path / "build_sec_cy.py"
     sources = [here / SEC / "Projection" / "__init__.py",
                here / SEC / "Data" / "__init__.py", here / SEC / "__init__.py",
                here / "sample_sec.py", here / "spec_sec.py", tool]
@@ -6035,8 +6036,7 @@ def test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer(tmp_path):
                                  exit=sys.exit, stderr=None)
     space = {"HERE": here, "NAME": SEC, "SUFFIXES": (suffix,), "Path": pathlib.Path,
              "sys": stub, "subprocess": types.SimpleNamespace(run=run, DEVNULL=None),
-             "importlib": types.SimpleNamespace(import_module=import_module),
-             "_tool": lambda: tool}
+             "importlib": types.SimpleNamespace(import_module=import_module)}
     exec(compile(module, "run_sec.py", "exec"), space)
 
     def rebuilt(newer=None):
@@ -6069,18 +6069,18 @@ def test_run_sec_refuses_a_package_that_imports_without_its_extension_modules(tm
     A compiled package whose extension module does not load falls back to the
     ``_mx_classes.py`` beside it, which computes the same numbers uncompiled, so no output
     can show it, and ``compiled_model`` checks the file its ``Projection``'s class came
-    from.  Its two functions are read from the runner and run here on a fake product, as
-    :func:`test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer` runs them:
-    empty sources and an empty file standing for the extension module, built after every
-    source, so that the runner does not build, and a stubbed import whose ``Projection``
-    comes from the extension module or from ``_mx_classes.py``.  In place and from
-    ``--build DIR``, the package whose extension is missing must be refused, saying so,
-    and the one whose extension loaded returned; nothing is built either way.  This needs
-    neither modelx-cython nor a compiler, so it runs wherever the module does.
+    from.  Its three functions are read from the runner and run here on a fake product, as
+    :func:`test_run_sec_rebuilds_in_place_exactly_when_a_source_is_newer` runs them: empty
+    sources and an empty file standing for the extension module, built after every source,
+    so that the runner does not build, and a stubbed import whose ``Projection`` comes from
+    the extension module or from ``_mx_classes.py``.  In place and from ``--build DIR``,
+    the package whose extension is missing must be refused, saying so, and the one whose
+    extension loaded returned; nothing is built either way.  This needs neither
+    modelx-cython nor a compiler, so it runs wherever the module does.
     """
-    module = _runner_functions(("_built", "compiled_model"))
-    here = tmp_path / "product"
-    tool = tmp_path / "tools" / "build_sec_cy.py"
+    module = _runner_functions(("_built", "_tool", "compiled_model"))
+    here = tmp_path / "products" / "product"
+    tool = tmp_path / "build_sec_cy.py"
     sources = [here / SEC / "Projection" / "__init__.py",
                here / SEC / "Data" / "__init__.py", here / SEC / "__init__.py",
                here / "sample_sec.py", here / "spec_sec.py", tool]
@@ -6116,8 +6116,7 @@ def test_run_sec_refuses_a_package_that_imports_without_its_extension_modules(tm
 
     space = {"HERE": here, "NAME": SEC, "SUFFIXES": (suffix,), "Path": pathlib.Path,
              "sys": stub, "subprocess": types.SimpleNamespace(run=run, DEVNULL=None),
-             "importlib": types.SimpleNamespace(import_module=import_module),
-             "_tool": lambda: tool}
+             "importlib": types.SimpleNamespace(import_module=import_module)}
     exec(compile(module, "run_sec.py", "exec"), space)
     said = []
     stub.stderr = types.SimpleNamespace(write=said.append, flush=lambda: None)

@@ -32,11 +32,11 @@ python products/registered_index_linked_annuity/run_sec.py 16 --cython  # point 
 ```
 
 `--cython` runs the compiled model and prints the same lines. The runner builds it beside
-the model with the repository's `tools/build_sec_cy.py` the first time, in about a minute
-and a half, and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is
-newer than the build, and says so on stderr. `--build DIR` runs a build made elsewhere
-instead (*The compiled model*, below). Nothing a build leaves is committed, and
-`.gitignore` covers it.
+the model with the library's own `build_sec_cy.py` the first time, in about a minute and a
+half, and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer
+than the build, and says so on stderr. `--build DIR` runs a build made elsewhere instead
+(*The compiled model*, below). Nothing a build leaves is committed, and `.gitignore` covers
+it.
 
 The first prints what `run.py` prints for `RILA_US_S`'s point 1, the worked example's
 anchor cell, issued here at the valuation date: the option budget of 10.0632%, 10,063.19
@@ -833,11 +833,12 @@ to price the option budget, the interim value and the cap solve.
 
 ### Building it
 
-In the source repository:
+The library carries the tool at its root, so a model builds wherever the library is: in the
+source repository, in lifelib or in a `lifelib.create()` copy. From the library's folder:
 
 ```bash
-python tools/build_sec_cy.py registered_index_linked_annuity               # in place
-python tools/build_sec_cy.py registered_index_linked_annuity --out /tmp/rila  # elsewhere
+python build_sec_cy.py registered_index_linked_annuity               # in place
+python build_sec_cy.py registered_index_linked_annuity --out /tmp/rila  # elsewhere
 ```
 
 The tool exports the model to `RILA_US_SEC_nomx/`, the Python package modelx's `export`
@@ -864,15 +865,16 @@ point 2's `expenses(1)` leaves it at 4.99, where an ItemSpace made after, `Proje
 computes 9.98 for point 3's. Set every Reference on a model just imported, before anything
 is computed, where modelx would recompute; a test holds the compiled model to this.
 
-A build took 75 s and 80 s here, in two runs, with MSVC, and needs a C compiler, which is
-why `requirements.txt` leaves modelx-cython out: `pip install -r requirements-cython.txt`.
-`run_sec.py --cython` builds in place when it finds no build, or one older than the model,
-the sample, the spec or the tool, and `--build DIR` runs a build made with `--out DIR`.
-Nothing a build writes is committed. All of it derives from committed files, and an
-extension module is built for one operating system, processor and Python
-(`_mx_classes.cp313-win_amd64.pyd` here); in place, `.gitignore` covers all of it. A
-`lifelib.create()` copy of the library carries no `tools/`, so it cannot build, and
-`run_sec.py --cython` says so.
+A build took 75 s and 80 s here, in two runs, with MSVC, and needs modelx-cython, which
+needs a C compiler, so the models do not require it: `pip install modelx-cython`, or
+`pip install -r requirements-cython.txt` in the source repository, which pins the release
+the compile tests run. `run_sec.py --cython` builds in place when it finds no build, or one
+older than the model, the sample, the spec or the tool, and `--build DIR` runs a build made
+with `--out DIR`. Nothing a build writes is committed. All of it derives from committed
+files, and an extension module is built for one operating system, processor and Python
+(`_mx_classes.cp313-win_amd64.pyd` here); in place, `.gitignore` covers all of it. The tool
+is the library's own, so lifelib and a `lifelib.create()` copy build as the source
+repository does.
 
 ### What compiling changed, and why
 
@@ -1172,31 +1174,32 @@ an extended table reaches.
 
 ### Two compiler directives
 
-`tools/build_sec_cy.py` marks the module mx2cy translates `# cython: infer_types=True,
-cpow=True`, and compiles it with `-ffp-contract=off` on every platform but Windows, as
-`Term_US_SEC`'s *Two compiler directives* sets out, with what each costs and what it was
-measured to change there. Here `cpow` reaches the powers of fifteen cells: the square of the
-volatility in `opt_component_at`, `cap_solved_at_start` and the engine's `bs_d1`; the
-moneyness factor's square in `lapse_iv_mult`; the monthly rates of both decrements, `1 − (1
-− q)^(1/12)` in `mort_rate_mth` and `lapse_rate_mth`; the accounts' monthly accrual, `(1 +
-i)^(1/12)` in `fixed_acct_pp_at`, `fixed_acct_pp`, `holding_acct_pp_at` and
-`holding_acct_pp`; the budget target's discount, `(1 + y_e − spread)^(−T)` in
-`opt_budget_target`; the fixed leg's yield, `(1 − beta)^(−1/T)` in `fixed_leg_yield`; the
-interim value's rate adjustment, `[(1 + r_0)/(1 + r(t))]^tau` in `mva_factor`; the family
-(c) discount, `(1 + r + spread)^(−tau)` in `fixed_proxy_factor`; and expense inflation,
-`1.025^(t // 12)` in `inflation_factor`. Without `cpow` a compiler with C99's complex
-numbers, gcc among them, computes a power of two doubles as a complex power, which can
-differ from Python's float power in its last bits. With both directives and the flag every
-compiled value agrees with modelx's bit for bit, and the compile tests hold each, by the
-module's first line, by the compiler's command lines and, on x86-64, by the comparison
-itself. On Windows MSVC compiles without the flag, since it emits no fused multiply-add for
-x64 without `/arch:AVX2`, which setuptools does not pass, and the comparison is exact there
-too: the inline Black–Scholes price holds many a product added to a third, each rounded
-apart. On the same platforms as the flag the tool adds `-Werror=incompatible-pointer-types`,
-so that gcc before 14, which only warns of a pointer of the wrong type, fails the build as
-gcc 14 does: the error two cache widths give (*The sample and the spec*, above). MSVC
-accepts two widths without a word, so on Windows the one width, and the one 3-D shape, rest
-on a test that holds every 2-D and 3-D size in `spec_sec.py` to them (*Tests*, below).
+The library's `build_sec_cy.py` marks the module mx2cy translates
+`# cython: infer_types=True, cpow=True`, and compiles it with `-ffp-contract=off` on every
+platform but Windows, as `Term_US_SEC`'s *Two compiler directives* sets out, with what each
+costs and what it was measured to change there. Here `cpow` reaches the powers of fifteen
+cells: the square of the volatility in `opt_component_at`, `cap_solved_at_start` and the
+engine's `bs_d1`; the moneyness factor's square in `lapse_iv_mult`; the monthly rates of
+both decrements, `1 − (1 − q)^(1/12)` in `mort_rate_mth` and `lapse_rate_mth`; the
+accounts' monthly accrual, `(1 + i)^(1/12)` in `fixed_acct_pp_at`, `fixed_acct_pp`,
+`holding_acct_pp_at` and `holding_acct_pp`; the budget target's discount,
+`(1 + y_e − spread)^(−T)` in `opt_budget_target`; the fixed leg's yield,
+`(1 − beta)^(−1/T)` in `fixed_leg_yield`; the interim value's rate adjustment,
+`[(1 + r_0)/(1 + r(t))]^tau` in `mva_factor`; the family (c) discount,
+`(1 + r + spread)^(−tau)` in `fixed_proxy_factor`; and expense inflation, `1.025^(t // 12)`
+in `inflation_factor`. Without `cpow` a compiler with C99's complex numbers, gcc among
+them, computes a power of two doubles as a complex power, which can differ from Python's
+float power in its last bits. With both directives and the flag every compiled value agrees
+with modelx's bit for bit, and the compile tests hold each, by the module's first line, by
+the compiler's command lines and, on x86-64, by the comparison itself. On Windows MSVC
+compiles without the flag, since it emits no fused multiply-add for x64 without
+`/arch:AVX2`, which setuptools does not pass, and the comparison is exact there too: the
+inline Black–Scholes price holds many a product added to a third, each rounded apart. On
+the same platforms as the flag the tool adds `-Werror=incompatible-pointer-types`, so that
+gcc before 14, which only warns of a pointer of the wrong type, fails the build as gcc 14
+does: the error two cache widths give (*The sample and the spec*, above). MSVC accepts two
+widths without a word, so on Windows the one width, and the one 3-D shape, rest on a test
+that holds every 2-D and 3-D size in `spec_sec.py` to them (*Tests*, below).
 
 A `**` is where the two engines would part. Python's `**` raises where it has no float to
 give, and C's `pow` raises nowhere: a base of 0 under a negative power gives an infinity in

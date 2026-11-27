@@ -49,7 +49,7 @@
 # double[746][4] and an int[746][4], and the cohorts, at 747, get a double[747][626] and
 # an int[747][626] of their own.  At an outer size of 746 the cohorts' converter would be
 # handed the [746][4] temporary, which gcc and clang refuse under
-# -Werror=incompatible-pointer-types, as tools/build_sec_cy.py builds on Linux and macOS,
+# -Werror=incompatible-pointer-types, as build_sec_cy.py builds on Linux and macOS,
 # and gcc 14 by default, and which MSVC only warns of, and then writes 746 x 626 doubles
 # into it as a point is unpickled.  This rests on an internal of Cython 3.3.1, measured at
 # M8 and read at its review; uslib's rule of one inner width a model (USLIB-SEC-PLAN.md

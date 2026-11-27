@@ -30,7 +30,7 @@
 # Cython's generated unpickle code converts the 2-D caches of a space with one function
 # for each inner width: given two widths, it passes the narrower array where the wider is
 # expected, which gcc 14 refuses (-Wincompatible-pointer-types, made an error on every gcc
-# and clang by tools/build_sec_cy.py) and MSVC accepts, and would write past its end.  So
+# and clang by build_sec_cy.py) and MSVC accepts, and would write past its end.  So
 # (1,563, 3) for each.  A timing 2, a kind beyond the cell's or a life 0 is inside the
 # cache, where the cell refuses it as modelx does, ValueError("invalid timing"),
 # ValueError("invalid kind") or ValueError("invalid life"); a code or a life of 3 raises

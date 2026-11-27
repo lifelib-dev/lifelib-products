@@ -1002,6 +1002,25 @@ product directory itself, and any `<out>` that holds a modelx model: copying the
 once overwrote another product's tracked inputs. It exports and compiles in child processes,
 and clears its previous outputs before a rebuild.
 
+*Moved into the libraries, 2026-11-27 (lifelib-dev/lifelib issue 195):* the tool is now
+`build_sec_cy.py` at the root of each library that holds SEC models, uslib's and uklib's
+one file, so that it goes wherever the library goes. In `tools/` it went nowhere: lifelib
+takes a library and not this repository's `tools/`, so there every `run_sec.py --cython`
+stopped where it would build, every `model-sec.md` gave a build command that failed, and
+every compile test skipped for want of the tool; a `lifelib.create()` copy was the same.
+Each runner's `_tool()` now reads the `build_sec_cy.py` beside `products/`, the harness's
+`_tool()` the one beside `tests/`, and each page builds with
+`python build_sec_cy.py <product>` from the library's folder. A bare product name names a
+product of the tool's own library. An `<out>` other than the product directory must lie
+outside the tree that holds the library: the repository where the library sits at
+`lifelib/libraries/<lib>`, as here and in lifelib, and otherwise the library itself. Where
+modelx-cython is missing, the tool names the release `requirements-cython.txt` pins, its
+`MODELX_CYTHON`, since a library away from this repository has no requirements file.
+`tools/build_sec_cy.py` stays, a command line over the product's library's copy that takes
+`<lib>/<product>` as before. `test_compiled_conventions.py` holds each runner and page to
+the library's tool and the tool's pin to the requirements file; uklib's suite holds its
+copy to uslib's.
+
 ### D13 — CI
 
 The existing matrix runs every pure-modelx suite, S and SEC alike. A new `cython` job —

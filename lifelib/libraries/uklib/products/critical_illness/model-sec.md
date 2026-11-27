@@ -28,10 +28,10 @@ python products/critical_illness/run_sec.py 9 --cython # point 9 on the compiled
 ```
 
 `--cython` runs the compiled model and prints the same lines. The runner builds it beside
-the model with the repository's `tools/build_sec_cy.py` the first time, in about a minute,
-and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer than the
-build, and says so on stderr. Nothing the build leaves there is committed, and
-`.gitignore` covers it.
+the model with the library's own `build_sec_cy.py` the first time, in about a minute, and
+again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer than the
+build, and says so on stderr. Nothing the build leaves there is committed, and `.gitignore`
+covers it.
 
 The first prints the twelve rows `run.py` prints for `CI_UK_S`'s point 1, with the policy
 counts behind them. Three lines to the same thing for point 9:
@@ -61,8 +61,9 @@ once the model and its table are read, and again once it has asked every point f
 frame, so that each collection scans only what the block has made since. It keeps the
 block's sum as it goes, compensated as pandas sums a `groupby`, so that the block is, bit
 for bit, the frames concatenated and summed by `t`. The runner is uslib Term's, and
-`--build DIR` runs a build made elsewhere (*The compiled model*). A `lifelib.create()`
-copy carries no `tools/`, and there `--cython` stops before building, saying so.
+`--build DIR` runs a build made elsewhere (*The compiled model*). The tool goes with the
+library, into lifelib and into a `lifelib.create()` copy, so `--cython` builds there as
+here.
 
 ## Two clocks
 
@@ -492,11 +493,12 @@ shown it yet.
 
 ### Building it
 
-In the source repository:
+The library carries the tool at its root, so a model builds wherever the library is: in the
+source repository, in lifelib or in a `lifelib.create()` copy. From the library's folder:
 
 ```bash
-python tools/build_sec_cy.py critical_illness                  # in place, beside the model
-python tools/build_sec_cy.py critical_illness --out /tmp/ci    # elsewhere, with the CSVs
+python build_sec_cy.py critical_illness                  # in place, beside the model
+python build_sec_cy.py critical_illness --out /tmp/ci    # elsewhere, with the CSVs
 ```
 
 The tool exports the model to `CI_UK_SEC_nomx/`, the Python package modelx's `export`
@@ -521,15 +523,16 @@ keep theirs for good. So a Reference set on `Projection` after it has computed,
 computes with it. Set every Reference on a model just imported, before anything is
 computed, where modelx would recompute; a test holds the compiled model to this.
 
-A build takes about a minute with gcc, 58 s here, and needs a C compiler, which is why
-`requirements.txt` leaves modelx-cython out: `pip install -r requirements-cython.txt`.
-`run_sec.py --cython` builds in place when it finds no build, or one older than the model,
-the sample, the spec or the tool, and `--build DIR` runs a build made with `--out DIR`.
-Nothing a build writes is committed. All of it derives from committed files, and an
-extension module is built for one operating system, processor and Python
+A build takes about a minute with gcc, 58 s here, and needs modelx-cython, which needs a C
+compiler, so the models do not require it: `pip install modelx-cython`, or
+`pip install -r requirements-cython.txt` in the source repository, which pins the release
+the compile tests run. `run_sec.py --cython` builds in place when it finds no build, or one
+older than the model, the sample, the spec or the tool, and `--build DIR` runs a build made
+with `--out DIR`. Nothing a build writes is committed. All of it derives from committed
+files, and an extension module is built for one operating system, processor and Python
 (`_mx_classes.cpython-313-x86_64-linux-gnu.so` here); in place, `.gitignore` covers all of
-it. A `lifelib.create()` copy of the library carries no `tools/`, so it cannot build, and
-`run_sec.py --cython` says so.
+it. The tool is the library's own, so lifelib and a `lifelib.create()` copy build as the
+source repository does.
 
 ### What compiling changed, and why
 
@@ -678,23 +681,22 @@ readers refuse the age, in both engines, naming the point, until the two are mov
 
 ### Two compiler directives
 
-`tools/build_sec_cy.py` puts `# cython: infer_types=True, cpow=True` at the top of the
-module mx2cy translates, before it compiles it, and on Linux and macOS compiles with
+The library's `build_sec_cy.py` puts `# cython: infer_types=True, cpow=True` at the top of
+the module mx2cy translates, before it compiles it, and on Linux and macOS compiles with
 `-ffp-contract=off` and `-Werror=incompatible-pointer-types`. Without `infer_types` an
-integer local, such as `d` in `proj_len()`, stays a Python object, though the cell is
-typed `long long`; without `cpow`, `1 − (1 − q)^(1/12)`, the monthly rate of every
-decrement here, is a complex power, which gcc computes with `cpow` rather than `pow`, and
-its last bits can differ from Python's; and gcc fuses a multiply and an add where the
-target has the instruction, one rounding where Python rounds twice. The tool's docstring
-has the detail, and uslib's
-[`term_life/model-sec.md`](../../../uslib/products/term_life/model-sec.md) the
+integer local, such as `d` in `proj_len()`, stays a Python object, though the cell is typed
+`long long`; without `cpow`, `1 − (1 − q)^(1/12)`, the monthly rate of every decrement
+here, is a complex power, which gcc computes with `cpow` rather than `pow`, and its last
+bits can differ from Python's; and gcc fuses a multiply and an add where the target has the
+instruction, one rounding where Python rounds twice. The tool's docstring has the detail,
+and uslib's [`term_life/model-sec.md`](../../../uslib/products/term_life/model-sec.md) the
 measurements that put each there. With all four, every compiled value here agrees with
-modelx bit for bit. The compile tests hold each directive in the module's first line, and
-a static test holds the tool's line to the two and no other: `cdivision=True` would make
-`//` on C integers truncate where Python floors, which only `duration(t)` meets, before
-issue, where the policy clock is negative; the reviews' `//` and `%` divide the policy
-clock inside cover alone, where it is 0 or more. And `boundscheck=False` or
-`wraparound=False` would change what an `idx` outside the table reads.
+modelx bit for bit. The compile tests hold each directive in the module's first line, and a
+static test holds the tool's line to the two and no other: `cdivision=True` would make `//`
+on C integers truncate where Python floors, which only `duration(t)` meets, before issue,
+where the policy clock is negative; the reviews' `//` and `%` divide the policy clock
+inside cover alone, where it is 0 or more. And `boundscheck=False` or `wraparound=False`
+would change what an `idx` outside the table reads.
 
 ### What a compiled run needs
 

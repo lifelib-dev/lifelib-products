@@ -44,6 +44,16 @@ relative or library-root-relative, so nothing inside names its own location. Eac
 is already called by its library name — the anchors, the `automodule` paths and the package
 names all say `uslib`, `uklib` and `jplib` today.
 
+That takes the compiler with them. uslib and uklib each carry `build_sec_cy.py` at their
+root, the tool that compiles their `_SEC` models with modelx-cython, one file in both and
+held so by uklib's suite. Each `run_sec.py --cython` builds with it, each `model-sec.md`
+gives `python build_sec_cy.py <product>` as the build, and the compile tests load it, so a
+build works in lifelib and in a `lifelib.create()` copy as it does here. Until 2026-11-27
+the tool lived in this repository's `tools/`, which this step does not copy, and lifelib
+was left with runners and pages naming a script it did not have (lifelib-dev/lifelib issue
+195). This repository's `tools/build_sec_cy.py` is now a command line over the libraries'
+copies, and stays here with the rest of `tools/`.
+
 **Take them together.** `uklib/index.md` links to `../uslib/index.md` and to two explicit
 targets on it — `#uslib-one-shape` and `#uslib-shared-vocabulary` — because D8 makes the
 enforced model shape and the settled cells vocabulary rulings for *all* the libraries, stated
@@ -183,10 +193,23 @@ and three entries in the toctree:
    jplib/index.md
 ```
 
-## 6. `.gitignore` — nothing to add
+## 6. `.gitignore` — what a compiled build leaves in place
 
-The page trees are committed source, not build output, so there is nothing to ignore beyond
-what lifelib already ignores.
+The page trees are committed source, not build output, so they need nothing. A compiled
+build does: `run_sec.py --cython`, and `python build_sec_cy.py <product>` without `--out`,
+build beside the model, in the product directory (§1). lifelib already ignores `build/`
+and `*.so`; add the rest of what a build leaves there, as this repository's `.gitignore`
+has it:
+
+```text
+*_nomx/
+*_nomx_cy/
+*.pyd
+lifelib/libraries/*/products/*/setup.py
+```
+
+The `setup.py` rule is anchored to the product directories, because a `setup.py` anywhere
+else can be source: lifelib's own is, at its root.
 
 ## 7. Verify
 

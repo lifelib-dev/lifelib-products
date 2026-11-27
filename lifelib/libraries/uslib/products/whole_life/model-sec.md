@@ -31,11 +31,11 @@ python products/whole_life/run_sec.py 19 --cython # point 19 on the compiled mod
 ```
 
 `--cython` runs the compiled model and prints the same lines. The runner builds it beside
-the model with the repository's `tools/build_sec_cy.py` the first time, in about a minute
-and a quarter, and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is
-newer than the build, and says so on stderr. `--build DIR` runs a build made elsewhere
-instead (*The compiled model*, below). Nothing a build leaves is committed, and
-`.gitignore` covers it.
+the model with the library's own `build_sec_cy.py` the first time, in about a minute and a
+quarter, and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer
+than the build, and says so on stderr. `--build DIR` runs a build made elsewhere instead
+(*The compiled model*, below). Nothing a build leaves is committed, and `.gitignore` covers
+it.
 
 The first prints, as rows `t = 0 … 11`, the twelve months `run.py` prints for
 `WholeLife_US_S`'s point 1, the worked example's policy year 10, with the counts and rates
@@ -485,11 +485,12 @@ points where the cap on mortality binds. The compile tests hold it so on x86-64,
 
 ### Building it
 
-In the source repository:
+The library carries the tool at its root, so a model builds wherever the library is: in the
+source repository, in lifelib or in a `lifelib.create()` copy. From the library's folder:
 
 ```bash
-python tools/build_sec_cy.py whole_life                   # in place, beside the model
-python tools/build_sec_cy.py whole_life --out /tmp/wl     # elsewhere, with the CSVs
+python build_sec_cy.py whole_life                   # in place, beside the model
+python build_sec_cy.py whole_life --out /tmp/wl     # elsewhere, with the CSVs
 ```
 
 The tool exports the model to `WholeLife_US_SEC_nomx/`, the Python package modelx's
@@ -515,15 +516,16 @@ point 1's frame under point 19's `point_id()`, and `Projection.div_round_digits`
 just imported, before anything is computed, where modelx would recompute; a test holds
 the compiled model to this.
 
-A build takes about a minute and a quarter with gcc, 80 s here, and needs a C compiler,
-which is why `requirements.txt` leaves modelx-cython out:
-`pip install -r requirements-cython.txt`. `run_sec.py --cython` builds in place when it
-finds no build, or one older than the model, the sample, the spec or the tool, and
-`--build DIR` runs a build made with `--out DIR`. Nothing a build writes is committed. All
-of it derives from committed files, and an extension module is built for one operating
-system, processor and Python (`_mx_classes.cpython-313-x86_64-linux-gnu.so` here); in
-place, `.gitignore` covers all of it. A `lifelib.create()` copy of the library carries no
-`tools/`, so it cannot build, and `run_sec.py --cython` says so.
+A build takes about a minute and a quarter with gcc, 80 s here, and needs modelx-cython,
+which needs a C compiler, so the models do not require it: `pip install modelx-cython`, or
+`pip install -r requirements-cython.txt` in the source repository, which pins the release
+the compile tests run. `run_sec.py --cython` builds in place when it finds no build, or one
+older than the model, the sample, the spec or the tool, and `--build DIR` runs a build made
+with `--out DIR`. Nothing a build writes is committed. All of it derives from committed
+files, and an extension module is built for one operating system, processor and Python
+(`_mx_classes.cpython-313-x86_64-linux-gnu.so` here); in place, `.gitignore` covers all of
+it. The tool is the library's own, so lifelib and a `lifelib.create()` copy build as the
+source repository does.
 
 ### What compiling changed, and why
 
@@ -669,20 +671,21 @@ it; an issue age of 0 is the contract's, which an extended table reaches.
 
 ### Two compiler directives
 
-`tools/build_sec_cy.py` marks the module mx2cy translates `# cython: infer_types=True,
-cpow=True`, and compiles it with `-ffp-contract=off` on every platform but Windows, as
-`Term_US_SEC`'s *Two compiler directives* sets out, with what each costs and what it
-was measured to change there. Here `cpow` reaches four powers of two doubles: the monthly
-rates of both decrements, `1 − (1 − q)^(1/12)` in `mort_rate_mth` and `lapse_rate_mth`,
-the monthly growth of the accumulated dividends, `(1 + i)^(1/12)` in `div_accum`, and
-expense inflation, `(1 + r)^(t/12)` in `inflation_factor`. Without `cpow` a compiler with
-C99's complex numbers, gcc among them, computes each as a complex power, which can differ
-from Python's float power in its last bits. With both directives and the flag every
-compiled value agrees with modelx's bit for bit, and the compile tests hold each, by the
-module's first line, by the compiler's command lines and, on x86-64, by the comparison
-itself. On the same platforms the tool adds `-Werror=incompatible-pointer-types`, so that
-gcc before 14, which only warns of a pointer of the wrong type, fails the build as gcc 14
-does: the error two cache widths gave (*The sample and the spec*, above).
+The library's `build_sec_cy.py` marks the module mx2cy translates
+`# cython: infer_types=True, cpow=True`, and compiles it with `-ffp-contract=off` on every
+platform but Windows, as `Term_US_SEC`'s *Two compiler directives* sets out, with what each
+costs and what it was measured to change there. Here `cpow` reaches four powers of two
+doubles: the monthly rates of both decrements, `1 − (1 − q)^(1/12)` in `mort_rate_mth` and
+`lapse_rate_mth`, the monthly growth of the accumulated dividends, `(1 + i)^(1/12)` in
+`div_accum`, and expense inflation, `(1 + r)^(t/12)` in `inflation_factor`. Without `cpow`
+a compiler with C99's complex numbers, gcc among them, computes each as a complex power,
+which can differ from Python's float power in its last bits. With both directives and the
+flag every compiled value agrees with modelx's bit for bit, and the compile tests hold
+each, by the module's first line, by the compiler's command lines and, on x86-64, by the
+comparison itself. On the same platforms the tool adds
+`-Werror=incompatible-pointer-types`, so that gcc before 14, which only warns of a pointer
+of the wrong type, fails the build as gcc 14 does: the error two cache widths gave (*The
+sample and the spec*, above).
 
 ### What a compiled run needs
 

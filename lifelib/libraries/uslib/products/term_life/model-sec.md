@@ -27,10 +27,10 @@ python products/term_life/run_sec.py 4 --cython # point 4 on the compiled model
 ```
 
 `--cython` runs the compiled model and prints the same lines. The runner builds it beside
-the model with the repository's `tools/build_sec_cy.py` the first time, in about a minute,
-and again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer than the
-build, and says so on stderr. Nothing the build leaves there is committed, and
-`.gitignore` covers it.
+the model with the library's own `build_sec_cy.py` the first time, in about a minute, and
+again whenever the model, `sample_sec.py`, `spec_sec.py` or the tool is newer than the
+build, and says so on stderr. Nothing the build leaves there is committed, and `.gitignore`
+covers it.
 
 The first prints the twelve rows `run.py` prints for `Term_US_S`'s point 1, with the
 policy counts behind them. Three lines to the same thing for point 4:
@@ -329,11 +329,12 @@ and to 1e-12 relative elsewhere, where no run has shown it yet.
 
 ### Building it
 
-In the source repository:
+The library carries the tool at its root, so a model builds wherever the library is: in the
+source repository, in lifelib or in a `lifelib.create()` copy. From the library's folder:
 
 ```bash
-python tools/build_sec_cy.py term_life                    # in place, beside the model
-python tools/build_sec_cy.py term_life --out /tmp/term    # elsewhere, with the CSVs
+python build_sec_cy.py term_life                    # in place, beside the model
+python build_sec_cy.py term_life --out /tmp/term    # elsewhere, with the CSVs
 ```
 
 The tool exports the model to `Term_US_SEC_nomx/`, the Python package modelx's `export`
@@ -358,15 +359,16 @@ the table was read refuses nothing. Set every Reference on a model just imported
 anything is computed, where modelx would recompute; a test holds the compiled model to
 this.
 
-A build takes about a minute with gcc, 53 s here, and needs a C compiler, which is why
-`requirements.txt` leaves modelx-cython out: `pip install -r requirements-cython.txt`.
-`run_sec.py --cython` builds in place when it finds no build, or one older than the model,
-the sample, the spec or the tool, and `--build DIR` runs a build made with `--out DIR`.
-Nothing a build writes is committed. All of it derives from committed files, and an
-extension module is built for one operating system, processor and Python
+A build takes about a minute with gcc, 53 s here, and needs modelx-cython, which needs a C
+compiler, so the models do not require it: `pip install modelx-cython`, or
+`pip install -r requirements-cython.txt` in the source repository, which pins the release
+the compile tests run. `run_sec.py --cython` builds in place when it finds no build, or one
+older than the model, the sample, the spec or the tool, and `--build DIR` runs a build made
+with `--out DIR`. Nothing a build writes is committed. All of it derives from committed
+files, and an extension module is built for one operating system, processor and Python
 (`_mx_classes.cpython-313-x86_64-linux-gnu.so` here); in place, `.gitignore` covers all of
-it. A `lifelib.create()` copy of the library carries no `tools/`, so it cannot build, and
-`run_sec.py --cython` says so.
+it. The tool is the library's own, so lifelib and a `lifelib.create()` copy build as the
+source repository does.
 
 ### What compiling changed, and why
 
@@ -479,10 +481,10 @@ and a rebuild; a longer horizon, `t` raised to 12 × 77 + the horizon + 2.
 
 ### Two compiler directives
 
-`tools/build_sec_cy.py` puts a line at the top of the module mx2cy translates, before it
-compiles it: `# cython: infer_types=True, cpow=True`. Without `infer_types`, an integer
-local such as `n = policy_term()` in `lapse_rate` stays a Python object, though the cell is
-typed `double`, and so does the loop counter in `shock_lapse_rate`. Without `cpow`,
+The library's `build_sec_cy.py` puts a line at the top of the module mx2cy translates,
+before it compiles it: `# cython: infer_types=True, cpow=True`. Without `infer_types`, an
+integer local such as `n = policy_term()` in `lapse_rate` stays a Python object, though the
+cell is typed `double`, and so does the loop counter in `shock_lapse_rate`. Without `cpow`,
 `x ** y` on two doubles is a complex power, which a compiler with C99's complex numbers,
 gcc among them, computes with `cpow` rather than `pow`. So `1 - (1 - q) ** (1 / 12)`, the
 monthly rate of every decrement here, can differ from Python's in its last bits: on the
@@ -490,9 +492,9 @@ splice grid's 55 points, 240 compiled values differed from modelx's without it, 
 2.4e-15 relative, the first point 9's `mort_rate_mth(708)`, at q near 0.44. With both
 directives, every value agrees bit for bit, and the compile tests hold each directive, by
 the module's first line and, on x86-64, by C4 itself. What they cost is C's semantics,
-which no formula here meets: a local assigned only from int literals is a C `long`, 32
-bits on Windows, and an int raised to a negative int truncates. The tool's docstring has
-the detail.
+which no formula here meets: a local assigned only from int literals is a C `long`, 32 bits
+on Windows, and an int raised to a negative int truncates. The tool's docstring has the
+detail.
 
 On Linux and macOS the tool also compiles with `-ffp-contract=off`, after any flags the
 interpreter or `CFLAGS` give. gcc fuses `a * b + c` into one fused multiply-add wherever
