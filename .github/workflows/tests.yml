@@ -22,6 +22,21 @@
 # (UKLIB-SEC-PLAN.md U7). They are copies rather than a library axis on uslib's
 # jobs, because uslib's shard test reads the job named `cython` and holds every shard in it
 # to uslib's registry, and because a leg takes one library's variables.
+#
+# A pull request runs what its change can reach, and nothing else. The first job,
+# `changes`, reads the paths the pull request's merge commit changes and selects the
+# libraries they reach (tools/select_libraries.py): a library's own folder reaches that
+# library, and uslib's build_sec_cy.py reaches uklib too, whose suite holds its copy to it
+# byte for byte; the documents no test reads, under doc/ and the markdown at the root,
+# reach none; and every other path -- this workflow, tools/, the requirements,
+# .gitattributes -- reaches every library. The `test` job still collects every library in
+# one process, as above, and deselects the tests of the libraries not selected, so that on
+# a pull request as on main every library's conftest.py, registry and test modules are
+# imported together, and the tests that run, run among them. `cython` and `sec` run where
+# uslib is selected, and `cython_uk` and `sec_uk` where uklib is; a pull request that
+# reaches no library runs no job but `changes`. A push to main and a manual run select
+# nothing: they run all of it, every library in every job, whatever `changes` gives, so
+# that what a pull request leaves out runs as it lands.
 
 name: Tests
 
@@ -38,8 +53,51 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    # The libraries a pull request reaches, for the jobs below; tools/select_libraries.py's
+    # docstring gives the rules. Its examples run first, on every event, so that a change
+    # to the rules that breaks one fails here, before anything is selected by it. The
+    # selection is a pull request's alone: on any other event the step does not run, its
+    # outputs are empty, and each job below runs on the event alone.
+    name: Select the libraries a pull request reaches
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      libraries: ${{ steps.select.outputs.libraries }}
+      deselect: ${{ steps.select.outputs.deselect }}
+      uslib: ${{ steps.select.outputs.uslib }}
+      uklib: ${{ steps.select.outputs.uklib }}
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        # On a pull request, the merge commit GitHub makes of it, and the merge's parents.
+        fetch-depth: 2
+
+    - name: Run the selector's examples
+      run: python3 -m doctest tools/select_libraries.py
+
+    - name: Select the libraries the pull request reaches
+      # HEAD is the pull request's merge commit, and HEAD^1, its first parent, the tip of
+      # main it merges into, so the diff between them is what the pull request changes on
+      # landing. Were HEAD no merge, HEAD^1 would be its parent and the diff one commit's,
+      # which could select less than the pull request reaches, so the step fails instead.
+      id: select
+      if: github.event_name == 'pull_request'
+      run: |
+        git rev-parse --verify --quiet HEAD^2 > /dev/null || {
+          echo "::error::HEAD is no merge commit, so HEAD^1 is not the pull request's base"
+          exit 1
+        }
+        python3 tools/select_libraries.py HEAD^1 HEAD
+
   test:
     name: Test Python ${{ matrix.python-version }} on ${{ matrix.os }}
+    # On a pull request, the legs run where `changes` selects any library; on any other
+    # event, always.
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.libraries != ''
     runs-on: ${{ matrix.os }}
     # The suites are slow: better than six thousand tests, every model reproducing its
     # technical notes' worked example cell by cell. Measured over the first full matrix
@@ -81,8 +139,14 @@ jobs:
       # cell by cell -- so report the slowest tests to keep an eye on which models
       # dominate the run. uslib's `_US_SEC` and uklib's `_UK_SEC` modules are left to the
       # `sec` and `sec_uk` jobs below; the SEC models' conventions, their registries and
-      # each library's harness still run here.
-      run: pytest -q --durations=10 --ignore-glob='*test_*_us_sec.py' --ignore-glob='*test_*_uk_sec.py'
+      # each library's harness still run here. On a pull request every library is
+      # collected all the same, and then the tests of each library `changes` did not
+      # select are deselected, `--deselect lifelib/libraries/<lib>/`; on any other event
+      # none is, and this is the bare `pytest` above.
+      run: >-
+        pytest -q --durations=10
+        --ignore-glob='*test_*_us_sec.py' --ignore-glob='*test_*_uk_sec.py'
+        ${{ github.event_name == 'pull_request' && needs.changes.outputs.deselect || '' }}
 
     - name: Run uklib's tests of a sum's bits where sum() adds left to right
       # Python 3.11's sum() adds floats left to right, where from 3.12 it compensates, so
@@ -96,7 +160,9 @@ jobs:
       # neither modelx-cython nor docutils, which this job does not install, and take about
       # two minutes. test_compiled_conventions_uk.py holds the step to -q, -rs and the node
       # ids of the tests that reach the guard, so that one guarded later fails until it is
-      # added here, and pins what each asserts before its guard.
+      # added here, and pins what each asserts before its guard. On a pull request it runs
+      # whether `changes` selects uklib or not, since that test holds its condition to the
+      # leg alone.
       if: matrix.python-version == '3.11' && matrix.os == 'ubuntu-latest'
       run: >-
         pytest -q -rs
@@ -113,7 +179,9 @@ jobs:
     - name: Hold uklib's SEC harness to uslib's
       # uk_sec_support.py is uslib's sec_support.py under uklib's own name, the libraries'
       # product specs apart; the check fails on any shared function, class or constant
-      # whose code differs (UKLIB-SEC-PLAN.md U3, K10). It reads the two files alone.
+      # whose code differs (UKLIB-SEC-PLAN.md U3, K10). It reads the two files alone. It
+      # runs on every leg the job runs, whatever `changes` selects, so a pull request that
+      # changes either copy is held to the other.
       run: python tools/check_sec_harness.py
 
   cython:
@@ -126,6 +194,9 @@ jobs:
     # above already runs every interpreter, and a compile failure belongs to the compiler
     # and the generated C rather than to an interpreter's minor version.
     name: Compile ${{ matrix.shard }} on ${{ matrix.os }}
+    # On a pull request, where `changes` selects uslib; on any other event, always.
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.uslib == 'true'
     runs-on: ${{ matrix.os }}
     # Run 18, with two models compiled, took 8 minutes a leg, WholeLife's share 4 to 5 of
     # them, so twelve would not fit an hour in one leg. A leg now runs one shard: the
@@ -205,6 +276,9 @@ jobs:
     # (M6), the pension annuity's, PA_UK_SEC's (M12), with-profits', WP_UK_SEC's (M14),
     # and income protection's, IP_UK_SEC's (M8).
     name: Compile uklib ${{ matrix.shard }} on ${{ matrix.os }}
+    # On a pull request, where `changes` selects uklib; on any other event, always.
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.uklib == 'true'
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     strategy:
@@ -252,6 +326,9 @@ jobs:
     # since the `test` job runs every interpreter over the S models these modules compare
     # with.
     name: SEC ${{ matrix.module }} (${{ matrix.grid }}) on ${{ matrix.os }}
+    # On a pull request, where `changes` selects uslib; on any other event, always.
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.uslib == 'true'
     runs-on: ${{ matrix.os }}
     # Measured locally under load, the slowest module, IUL's, took about 15 minutes over
     # its core and 34 over its full grid. An hour is room for a slower runner, and fails a
@@ -310,6 +387,9 @@ jobs:
     # runs on Windows and macOS, the full grid, which holds the core, on Linux; one Python,
     # as in the `sec` job. A product's E step adds its module to the list.
     name: SEC uklib ${{ matrix.module }} (${{ matrix.grid }}) on ${{ matrix.os }}
+    # On a pull request, where `changes` selects uklib; on any other event, always.
+    needs: changes
+    if: github.event_name != 'pull_request' || needs.changes.outputs.uklib == 'true'
     runs-on: ${{ matrix.os }}
     # Measured locally, Term_UK_SEC's module took about a minute over its core and two
     # over its full grid. The hour is the `sec` job's, room for the larger products to
