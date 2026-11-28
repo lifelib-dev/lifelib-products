@@ -1177,7 +1177,7 @@ def test_pitfall_renewal_decline_is_not_lapse_and_the_order_is_not_cosmetic(term
 # Pitfall: truncation shortens the cycle, not the horizon
 
 
-def test_pitfall_truncation_shortens_the_cycle_not_the_horizon():
+def test_pitfall_truncation_shortens_the_cycle_not_the_horizon(product_copy):
     """A 갱신형 issued at 45 on ten-year cycles has a **five**-year final cycle to 80.
 
     「갱신일부터 최종 갱신계약의 보험기간 종료일까지가 10년미만일 경우에는 … 갱신계약의
@@ -1187,14 +1187,14 @@ def test_pitfall_truncation_shortens_the_cycle_not_the_horizon():
     cycle, so the point is supplied through the filename Reference — which is the same
     swappable-input property the library advertises.
     """
-    src = pd.read_csv(CSV_DIR / "model_point_table.csv", index_col="point_id")
+    model = product_copy(MODEL_DIR, name="Term_KR_S_trunc")
+    src = pd.read_csv(model.Data.input_dir() / "model_point_table.csv", index_col="point_id")
     row = src.loc[3].copy()
     row["issue_age"] = 45
     row["policy_id"] = "KR-TL-TRUNC"
     alt = pd.DataFrame([row])
     alt.index = pd.Index([99], name="point_id")
 
-    model = _reread("trunc")
     alt_name = "model_point_table_trunc.csv"
     alt_path = model.Data.input_dir() / alt_name
     try:
@@ -1224,7 +1224,6 @@ def test_pitfall_truncation_shortens_the_cycle_not_the_horizon():
         assert p.check_decline_timing() is True and p.check_prem_level() is True
     finally:
         alt_path.unlink(missing_ok=True)
-        model.close()
 
 
 def test_pitfall_bi_gaengsin_never_renews(term_life):
@@ -2111,7 +2110,7 @@ def test_the_docstrings_carry_this_product_s_own_reference_material(term_life):
         assert cells in data, cells
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys, and it is what a user with a company
@@ -2128,30 +2127,27 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     linearity: asserting that the monthly claim doubled would be asserting that the model
     converts by dividing, which is the error this whole grid exists not to make.
     """
-    doubled = pd.read_csv(CSV_DIR / "mort_table.csv", index_col=["sex", "age"])
+    model = product_copy(MODEL_DIR, name="Term_KR_S_swap")
+    doubled = pd.read_csv(model.Data.input_dir() / "mort_table.csv", index_col=["sex", "age"])
     doubled["mort_rate"] = doubled["mort_rate"] * 2
-    model = _reread("swap")
     alt_name = "mort_table_doubled.csv"
+    alt_path = model.Data.input_dir() / alt_name
+    doubled.to_csv(alt_path)
     try:
-        alt_path = model.Data.input_dir() / alt_name
-        doubled.to_csv(alt_path)
-        try:
-            p = model.Projection[1]
-            base_annual, base_claim = p.mort_rate(0), p.claims(0, "DEATH")
-            model.Data.mort_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            q = model.Projection[1]
-            assert q.mort_rate(0) == pytest.approx(2 * base_annual, rel=1e-12)
-            assert q.mort_rate_mth(0) == pytest.approx(
-                1.0 - (1.0 - 2 * base_annual) ** (1.0 / 12.0), rel=1e-12)
-            claim = q.claims(0, "DEATH")
-            assert claim == pytest.approx(2 * base_claim, rel=1e-3)
-            assert claim > 2 * base_claim
-        finally:
-            alt_path.unlink(missing_ok=True)
+        p = model.Projection[1]
+        base_annual, base_claim = p.mort_rate(0), p.claims(0, "DEATH")
+        model.Data.mort_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        q = model.Projection[1]
+        assert q.mort_rate(0) == pytest.approx(2 * base_annual, rel=1e-12)
+        assert q.mort_rate_mth(0) == pytest.approx(
+            1.0 - (1.0 - 2 * base_annual) ** (1.0 / 12.0), rel=1e-12)
+        claim = q.claims(0, "DEATH")
+        assert claim == pytest.approx(2 * base_claim, rel=1e-3)
+        assert claim > 2 * base_claim
     finally:
-        model.close()
+        alt_path.unlink(missing_ok=True)
 
 
 def test_the_model_point_table_exercises_the_product(term_life):

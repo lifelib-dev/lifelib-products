@@ -461,28 +461,25 @@ def test_the_reversion_coefficient_is_definitive_and_applies_once(rente_viagere)
     assert rente_viagere.Projection[5].option_coeff() == 1.0
 
 
-def test_a_taux_de_reversion_off_the_published_grid_raises(rente_viagere):
+def test_a_taux_de_reversion_off_the_published_grid_raises(product_copy):
     """The [S6] table publishes 60%, 80% and 100%; the model refuses to guess the rest."""
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Rente_FR_S_revcoeff")
+    model = product_copy(MODEL_DIR, name="Rente_FR_S_revcoeff")
+    src = model.Data.input_dir() / "reversion_coeff_table.csv"
+    trimmed = pd.read_csv(src)
+    trimmed = trimmed[trimmed["reversion_pct"] != 0.60]
+    alt = "reversion_coeff_table_trimmed.csv"
+    trimmed.to_csv(model.Data.input_dir() / alt, index=False)
     try:
-        src = model.Data.input_dir() / "reversion_coeff_table.csv"
-        trimmed = pd.read_csv(src)
-        trimmed = trimmed[trimmed["reversion_pct"] != 0.60]
-        alt = "reversion_coeff_table_trimmed.csv"
-        trimmed.to_csv(model.Data.input_dir() / alt, index=False)
-        try:
-            assert model.Projection[1].reversion_coeff() == 0.76
-            model.Data.reversion_coeff_file = alt
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            with pytest.raises(FormulaError):
-                model.Projection[1].reversion_coeff()
-        finally:
-            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+        assert model.Projection[1].reversion_coeff() == 0.76
+        model.Data.reversion_coeff_file = alt
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        with pytest.raises(FormulaError):
+            model.Projection[1].reversion_coeff()
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_the_two_options_are_never_cumulative(rente_viagere):
@@ -889,31 +886,28 @@ def test_the_reversion_coefficient_table_marks_its_own_provenance():
     assert band.loc[0.60, "reversion_coeff"] > band.loc[1.00, "reversion_coeff"]
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a licensed TGH05/TGF05 file."""
     import pandas as pd
 
-    src = MODEL_DIR.parent / "mort_table.csv"
+    model = product_copy(MODEL_DIR, name="Rente_FR_S_swap")
+    src = model.Data.input_dir() / "mort_table.csv"
     lighter = pd.read_csv(src, index_col=["sex", "birth_year", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="Rente_FR_S_swap")
+    alt_name = "mort_table_light.csv"
+    lighter.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "mort_table_light.csv"
-        lighter.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[2].result_cf()["liability_cf"].sum()
-            model.Data.mort_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # Lighter mortality lengthens every annuity stream, so the liability rises,
-            # and the tariff the same table implies falls.  No formula changed.
-            assert model.Projection[2].result_cf()["liability_cf"].sum() > base
-            assert model.Projection[2].taux_rente_tariff() < 0.0330
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[2].result_cf()["liability_cf"].sum()
+        model.Data.mort_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # Lighter mortality lengthens every annuity stream, so the liability rises,
+        # and the tariff the same table implies falls.  No formula changed.
+        assert model.Projection[2].result_cf()["liability_cf"].sum() > base
+        assert model.Projection[2].taux_rente_tariff() < 0.0330
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_every_model_point_projects(rente_viagere):

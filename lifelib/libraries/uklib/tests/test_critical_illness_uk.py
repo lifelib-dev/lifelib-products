@@ -696,33 +696,30 @@ def test_inputs_live_beside_the_model():
                         if p.suffix == ".csv"}
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
-    This is what a production user does with a licensed AC04 or "16" Series basis: it
-    drops in as a same-schema 24-row CSV with no formula change.
+    This is the property the external-file layout buys, and it is what a user with a licensed
+    basis does: it drops in as a same-schema CSV, no formula change.
     """
     import pandas as pd
 
-    src = MODEL_DIR.parent / "ci_rate_table.csv"
+    model = product_copy(MODEL_DIR, name="CI_UK_S_swap")
+    src = model.Data.input_dir() / "ci_rate_table.csv"
     doubled = pd.read_csv(src, index_col=["sex", "smoker", "age"])
     doubled["i_ci"] = doubled["i_ci"] * 2
 
-    model = mx.read_model(MODEL_DIR, name="CI_UK_S_swap")
+    alt_name = "ci_rate_table_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "ci_rate_table_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].ci_rate(0)
-            model.Data.ci_rate_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            assert model.Projection[1].ci_rate(0) == pytest.approx(
-                2 * base, rel=1e-12)
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].ci_rate(0)
+        model.Data.ci_rate_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        assert model.Projection[1].ci_rate(0) == pytest.approx(
+            2 * base, rel=1e-12)
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

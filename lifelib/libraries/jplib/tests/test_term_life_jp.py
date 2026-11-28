@@ -1411,7 +1411,7 @@ def test_the_input_csvs_are_utf8_without_a_bom():
         csv.read_text(encoding="utf-8")
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys, and it is what a user with a
@@ -1419,28 +1419,25 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     """
     import pandas as pd
 
-    src = MODEL_DIR.parent / "mort_table.csv"
+    model = product_copy(MODEL_DIR, name="Term_JP_S_swap")
+    src = model.Data.input_dir() / "mort_table.csv"
     doubled = pd.read_csv(src, index_col=["sex", "age"])
     doubled["mort_rate"] = doubled["mort_rate"] * 2
 
-    model = _reread("swap")
+    alt_name = "mort_table_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "mort_table_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base_q = model.Projection[1].mort_rate(0)
-            model.Data.mort_table_file = alt_name           # repoint the Reference
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # The *annual* rate doubles; the monthly decrement is the effective
-            # conversion of it and so does not, which is the conversion working rather
-            # than a swap that failed.
-            assert model.Projection[1].mort_rate(0) == pytest.approx(
-                2 * base_q, rel=1e-12)
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base_q = model.Projection[1].mort_rate(0)
+        model.Data.mort_table_file = alt_name           # repoint the Reference
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # The *annual* rate doubles; the monthly decrement is the effective
+        # conversion of it and so does not, which is the conversion working rather
+        # than a swap that failed.
+        assert model.Projection[1].mort_rate(0) == pytest.approx(
+            2 * base_q, rel=1e-12)
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_the_model_point_table_exercises_the_product(term_life):

@@ -360,7 +360,7 @@ def _reread(suffix):
 
 
 @contextlib.contextmanager
-def alt_model_points(suffix, overrides):
+def alt_model_points(product_copy, suffix, overrides):
     """A private model projecting model points the shipped table does not carry.
 
     ``overrides`` maps a new ``point_id`` to a dict of columns to change on the anchor
@@ -368,7 +368,8 @@ def alt_model_points(suffix, overrides):
     same swappable-input property the library advertises, and the temporary CSV is removed
     again so that the directory keeps the exact file set the conventions suite asserts.
     """
-    src = pd.read_csv(CSV_DIR / "model_point_table.csv", index_col="point_id")
+    model = product_copy(MODEL_DIR, name="Pension_KR_S_" + suffix)
+    src = pd.read_csv(model.Data.input_dir() / "model_point_table.csv", index_col="point_id")
     rows, index = [], []
     for point_id, changes in sorted(overrides.items()):
         row = src.loc[1].copy()
@@ -380,7 +381,6 @@ def alt_model_points(suffix, overrides):
     frame = pd.DataFrame(rows)
     frame.index = pd.Index(index, name="point_id")
 
-    model = _reread(suffix)
     alt_name = "model_point_table_%s.csv" % suffix
     alt_path = model.Data.input_dir() / alt_name
     try:
@@ -391,7 +391,6 @@ def alt_model_points(suffix, overrides):
         yield model
     finally:
         alt_path.unlink(missing_ok=True)
-        model.close()
 
 
 # ---------------------------------------------------------------------------
@@ -1014,7 +1013,7 @@ def test_worked_example_the_assumption_values_the_notes_list(kr_pension_anchor):
 # The annuity factor and the published illustration
 
 
-def test_the_factor_reconstructs_eight_published_implied_factors():
+def test_the_factor_reconstructs_eight_published_implied_factors(product_copy):
     """Eight published figures, one formula, two interest bases and both annuity forms.
 
     Dividing the published fund at annuitisation by each published annuity gives the
@@ -1033,7 +1032,7 @@ def test_the_factor_reconstructs_eight_published_implied_factors():
             "guar_term_y": term,
             "rate_scenario": scenario,
         }
-    with alt_model_points("factors", overrides) as model:
+    with alt_model_points(product_copy, "factors", overrides) as model:
         for i, key in enumerate(keys):
             form, term, scenario = key
             p = model.Projection[200 + i]
@@ -1048,7 +1047,7 @@ def test_the_factor_reconstructs_eight_published_implied_factors():
                 PUBLISHED_IMPLIED_FACTORS[key], abs=0.006), key
 
 
-def test_the_certain_factor_carries_no_mortality_and_the_life_factor_does():
+def test_the_certain_factor_carries_no_mortality_and_the_life_factor_does(product_copy):
     """The two forms are priced differently and the difference is a factor of two and a half.
 
     확정기간연금형 is 「공시이율을 적용하여 … 나누어 계산」 — the declared rate alone — and
@@ -1063,7 +1062,7 @@ def test_the_certain_factor_carries_no_mortality_and_the_life_factor_does():
         212: {"payout_form": "life_guar", "sex": "M"},
         213: {"payout_form": "life_guar", "sex": "F"},
     }
-    with alt_model_points("forms", overrides) as model:
+    with alt_model_points(product_copy, "forms", overrides) as model:
         male_certain = model.Projection[210].annuity_due_factor()
         female_certain = model.Projection[211].annuity_due_factor()
         male_life = model.Projection[212].annuity_due_factor()
@@ -1809,7 +1808,7 @@ def test_pitfall_the_acquisition_charge_stops_after_seven_years(kr_pension_ancho
 # Pitfall 12: the floor guarantees the rate, not the return
 
 
-def test_pitfall_the_guaranteed_floor_does_not_waive_the_charges():
+def test_pitfall_the_guaranteed_floor_does_not_waive_the_charges(product_copy):
     """Pitfall 12 — treating the 최저보증이율 as a guarantee on the **return**.
 
     It guarantees the **credited rate**; the charges are still deducted beneath it.  So
@@ -1819,7 +1818,7 @@ def test_pitfall_the_guaranteed_floor_does_not_waive_the_charges():
     premiums at the same guaranteed rates by the whole loading, compounded.  The floor is a
     floor on ``credit_rate``, which is ``max`` of the two rates and nothing more.
     """
-    with alt_model_points("floorscen", {220: {"rate_scenario": "floor"}}) as model:
+    with alt_model_points(product_copy, "floorscen", {220: {"rate_scenario": "floor"}}) as model:
         p = model.Projection[220]
         assert p.decl_rate(0) == 0.0
         assert p.credit_rate(0) == pytest.approx(p.min_guar_rate(0), abs=RATE)
@@ -2166,7 +2165,7 @@ def test_the_sourced_scalar_parameters_are_not_standardizations(pension_savings)
         assert "[S" in provenance or "[REG-R" in provenance, item
 
 
-def test_the_tax_basis_the_notes_state(pension_savings):
+def test_the_tax_basis_the_notes_state(pension_savings, product_copy):
     """The 세액공제, 기타소득세 and 연금소득세 parameters, and the two statutory tests.
 
     The model takes the 16.5% band because a contract does not know its owner's income;
@@ -2195,6 +2194,7 @@ def test_the_tax_basis_the_notes_state(pension_savings):
     # point supplied through the model_point_file Reference; leaving it unreached would
     # be a band nobody has run.
     with alt_model_points(
+            product_copy,
             "taxband",
             {230: {"payout_form": "certain", "payout_term_y": 20}}) as model:
         q = model.Projection[230]
@@ -2348,18 +2348,18 @@ def test_the_input_csvs_are_utf8_without_a_bom():
         csv.read_text(encoding="utf-8")
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys, and it is what a user with a filed
     or company basis does: a same-schema CSV drops in with no formula change.  Doubling the
     declared rate has to move the fund at annuitisation and nothing about the structure.
     """
-    src = pd.read_csv(CSV_DIR / "decl_rate_table.csv", index_col=["scenario", "from_year"])
+    model = product_copy(MODEL_DIR, name="Pension_KR_S_swap")
+    src = pd.read_csv(model.Data.input_dir() / "decl_rate_table.csv", index_col=["scenario", "from_year"])
     lifted = src.copy()
     lifted["decl_rate"] = lifted["decl_rate"] + 0.01
 
-    model = _reread("swap")
     alt_name = "decl_rate_table_lifted.csv"
     alt_path = model.Data.input_dir() / alt_name
     try:
@@ -2376,7 +2376,6 @@ def test_an_input_can_be_swapped_without_touching_formulas():
         assert p.check_min_fund() is True
     finally:
         alt_path.unlink(missing_ok=True)
-        model.close()
 
 
 def test_the_docstrings_carry_this_product_s_own_reference_material(pension_savings):

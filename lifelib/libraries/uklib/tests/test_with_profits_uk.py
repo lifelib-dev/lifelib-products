@@ -496,25 +496,7 @@ def test_the_cap_is_skipped_when_there_is_no_previous_payout(with_profits):
     assert p.smoothed_payout(0) == pytest.approx(p.asset_share(0))
 
 
-def _copied_into(tmp_path):
-    """The model and its input tables copied into ``tmp_path``: the copy's folder.
-
-    A test that needs a table of its own writes it there, beside the copy, and reads the
-    copy.  Written into the product folder, even for the length of one test, it is a CSV
-    beside ``WP_UK_SEC`` too, which reads the folder's tables: a run of that model's tests
-    on the same checkout meanwhile would see it, and a run killed inside the test would
-    leave it behind, failing the CSV-set tests for both models.
-    """
-    import shutil
-
-    shutil.copytree(MODEL_DIR, tmp_path / MODEL_DIR.name,
-                    ignore=shutil.ignore_patterns("__pycache__"))
-    for csv in MODEL_DIR.parent.glob("*.csv"):
-        shutil.copy(csv, tmp_path / csv.name)
-    return tmp_path / MODEL_DIR.name
-
-
-def test_the_cap_is_applied_before_the_corridor(tmp_path):
+def test_the_cap_is_applied_before_the_corridor(product_copy):
     """Order matters: corridor-then-cap collapses to the cap alone.
 
     In the notes' scenarios the corridor never binds after the cap, so both orders
@@ -522,20 +504,16 @@ def test_the_cap_is_applied_before_the_corridor(tmp_path):
     holds the payout well above the asset share and the corridor then pulls it down to
     1.20 of it.  Applying the corridor first would leave the capped figure standing,
     because an asset share is always inside its own corridor.
-
-    The crashed table is written beside a copy of the model in ``tmp_path``, never into
-    the product folder (:func:`_copied_into`).
     """
     import pandas as pd
 
-    copy = _copied_into(tmp_path)
-    table = pd.read_csv(tmp_path / "model_point_table.csv", index_col="point_id")
+    model = product_copy(MODEL_DIR, name="WP_UK_S_order")
+    table = pd.read_csv(model.Data.input_dir() / "model_point_table.csv",
+                        index_col="point_id")
     table.loc[2, "fund_return"] = -0.40
     alt = "model_point_table_crash.csv"
-    table.to_csv(tmp_path / alt)
-    model = mx.read_model(copy, name="WP_UK_S_order")
+    table.to_csv(model.Data.input_dir() / alt)
     try:
-        assert model.Data.input_dir().resolve() == tmp_path.resolve()
         model.Data.model_point_file = alt
         model.Data.clear_all()
         model.Projection.clear_all()
@@ -549,7 +527,7 @@ def test_the_cap_is_applied_before_the_corridor(tmp_path):
         assert p.smoothed_payout(T) < p.smoothed_payout_capped(T)
         assert p.check_payout_corridor() is True
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_the_payout_stays_inside_the_corridor_on_every_model_point(with_profits):
@@ -837,32 +815,30 @@ def test_expenses_inflate(uk_wp_up):
 # Chassis and scope
 
 
-def test_the_smoothed_fund_chassis_is_out_of_scope(tmp_path):
+def test_the_smoothed_fund_chassis_is_out_of_scope(product_copy):
     """Its limits are daily and quarterly; a monthly grid still smooths them away.
 
     Moving from an annual grid to a monthly one narrows the gap without closing it - a
     5% daily limit needs a daily step - so the exclusion stands rather than being quietly
     relaxed.  The model rejects the chassis by name rather than running it on the wrong
-    grid.  The table naming it is written beside a copy of the model in ``tmp_path``
-    (:func:`_copied_into`).
+    grid.
     """
     import pandas as pd
 
-    copy = _copied_into(tmp_path)
-    table = pd.read_csv(tmp_path / "model_point_table.csv", index_col="point_id")
+    model = product_copy(MODEL_DIR, name="WP_UK_S_sf")
+    table = pd.read_csv(model.Data.input_dir() / "model_point_table.csv",
+                        index_col="point_id")
     table.loc[1, "chassis"] = "SF_smoothed"
     alt = "model_point_table_sf.csv"
-    table.to_csv(tmp_path / alt)
-    model = mx.read_model(copy, name="WP_UK_S_sf")
+    table.to_csv(model.Data.input_dir() / alt)
     try:
-        assert model.Data.input_dir().resolve() == tmp_path.resolve()
         model.Data.model_point_file = alt
         model.Data.clear_all()
         model.Projection.clear_all()
         with pytest.raises(FormulaError):
             model.Projection[1].chassis()
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_the_tax_basis_validates(uk_wp_up, with_profits):
@@ -985,22 +961,18 @@ def test_inputs_live_beside_the_model():
                         if p.suffix == ".csv"}
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
-    """Point a filename Reference at a different file and the projection follows.
-
-    The stickier table is written beside a copy of the model in ``tmp_path``, never into
-    the product folder (:func:`_copied_into`).
-    """
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
+    """Point a filename Reference at a different file and the projection follows."""
     import pandas as pd
 
-    copy = _copied_into(tmp_path)
-    sticky = pd.read_csv(tmp_path / "lapse_table.csv", index_col=["chassis", "policy_year"])
+    model = product_copy(MODEL_DIR, name="WP_UK_S_swap")
+    src = model.Data.input_dir() / "lapse_table.csv"
+    sticky = pd.read_csv(src, index_col=["chassis", "policy_year"])
     sticky["lapse_rate"] = sticky["lapse_rate"] * 0.5
+
     alt = "lapse_table_sticky.csv"
-    sticky.to_csv(tmp_path / alt)
-    model = mx.read_model(copy, name="WP_UK_S_swap")
+    sticky.to_csv(model.Data.input_dir() / alt)
     try:
-        assert model.Data.input_dir().resolve() == tmp_path.resolve()
         base = model.Projection[1].result_cf()["shareholder_transfers"].sum()
         model.Data.lapse_table_file = alt
         model.Data.clear_all()
@@ -1010,7 +982,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
         assert model.Projection[1].result_cf()[
             "shareholder_transfers"].sum() > base
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

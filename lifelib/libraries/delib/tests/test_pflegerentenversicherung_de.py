@@ -676,7 +676,7 @@ def test_pitfall_03_the_paying_state_has_three_exits(de_pflege_anchor):
             p.pols_pg(t, 1) * p.p_pg_better(t, 1), rel=1e-12)
 
 
-def test_pitfall_03b_suppressing_recovery_raises_the_liability():
+def test_pitfall_03b_suppressing_recovery_raises_the_liability(product_copy):
     """Zero the recovery rates and the annuity total rises; the flow really is priced.
 
     The swap is done on the CSV rather than on a formula, which is also the way a user
@@ -686,7 +686,7 @@ def test_pitfall_03b_suppressing_recovery_raises_the_liability():
     care = pd.read_csv(MODEL_DIR.parent / "care_table.csv", index_col="pflegegrad")
     care["rec_rate"] = 0.0
     alt_name = "care_table_no_recovery.csv"
-    model = mx.read_model(MODEL_DIR, name="Pflege_DE_S_norec")
+    model = product_copy(MODEL_DIR, name="Pflege_DE_S_norec")
     try:
         care.to_csv(model.Data.input_dir() / alt_name)
         try:
@@ -1088,7 +1088,7 @@ def test_pitfall_14b_the_blend_and_the_margin_are_two_operations(
         assert p.tar_inc_rate(t) / p.inc_rate(t) != pytest.approx(1.25, abs=0.05)
 
 
-def test_pitfall_14c_the_premium_is_invariant_to_every_lapse_rate():
+def test_pitfall_14c_the_premium_is_invariant_to_every_lapse_rate(product_copy):
     """Halve the whole lapse table: the premium does not move by one bit.
 
     German first-order practice carries no lapse, and that is also what keeps the model
@@ -1100,7 +1100,7 @@ def test_pitfall_14c_the_premium_is_invariant_to_every_lapse_rate():
     lapse = pd.read_csv(MODEL_DIR.parent / "lapse_table.csv", index_col="policy_year")
     lapse["lapse_rate"] = lapse["lapse_rate"] * 0.5
     alt_name = "lapse_table_half.csv"
-    model = mx.read_model(MODEL_DIR, name="Pflege_DE_S_halflapse")
+    model = product_copy(MODEL_DIR, name="Pflege_DE_S_halflapse")
     try:
         lapse.to_csv(model.Data.input_dir() / alt_name)
         try:
@@ -1481,7 +1481,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert points.at[1, "policy_id"] == "PFL-000001"
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a licensed or company biometric basis.
 
     Point ``Data.mort_table_file`` at another same-schema file and the projection follows;
@@ -1493,7 +1493,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
     lighter.loc[("M", 109), "mort_rate"] = 1.0
     lighter.loc[("F", 109), "mort_rate"] = 1.0
-    model = mx.read_model(MODEL_DIR, name="Pflege_DE_S_swap")
+    model = product_copy(MODEL_DIR, name="Pflege_DE_S_swap")
     try:
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)

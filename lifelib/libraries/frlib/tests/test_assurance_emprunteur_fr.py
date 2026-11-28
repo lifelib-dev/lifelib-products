@@ -875,32 +875,29 @@ def test_inputs_live_beside_the_model():
         "__init__.py", "_system.json"}
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows."""
     import pandas as pd
 
-    src = MODEL_DIR.parent / "lapse_table.csv"
+    model = product_copy(MODEL_DIR, name="ADE_FR_S_swap")
+    src = model.Data.input_dir() / "lapse_table.csv"
     heavier = pd.read_csv(src, index_col="policy_year")
     heavier["lapse_rate"] = heavier["lapse_rate"] * 2.0
 
-    model = mx.read_model(MODEL_DIR, name="ADE_FR_S_swap")
+    alt_name = "lapse_table_heavy.csv"
+    heavier.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "lapse_table_heavy.csv"
-        heavier.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].pv_premiums()
-            model.Data.lapse_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            proj = model.Projection[1]
-            assert proj.lapse_rate(0) == pytest.approx(0.08, rel=1e-12)
-            # Twice the substitution rate empties the book faster, so less premium.
-            assert proj.pv_premiums() < base
-            assert proj.check_states() is True
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].pv_premiums()
+        model.Data.lapse_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        proj = model.Projection[1]
+        assert proj.lapse_rate(0) == pytest.approx(0.08, rel=1e-12)
+        # Twice the substitution rate empties the book faster, so less premium.
+        assert proj.pv_premiums() < base
+        assert proj.check_states() is True
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_the_dynamic_substitution_response_is_off_in_the_base_run():

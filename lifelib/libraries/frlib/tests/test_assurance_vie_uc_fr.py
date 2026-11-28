@@ -541,26 +541,23 @@ def test_the_cover_stops_at_the_cessation_age(assurance_vie_uc):
     assert all(p.nar(t) == 0.0 for t in range(24, p.proj_len()))
 
 
-def test_the_tariff_is_not_extrapolated_past_the_table(assurance_vie_uc):
+def test_the_tariff_is_not_extrapolated_past_the_table(product_copy):
     """Push the cessation age past 74 and the model raises rather than inventing a rate."""
-    model = mx.read_model(MODEL_DIR, name="UC_FR_S_tariff")
+    model = product_copy(MODEL_DIR, name="UC_FR_S_tariff")
+    table = model.Data.model_point_table()
+    table.loc[9, "plancher_end_age"] = 85
+    alt = "model_point_table_late.csv"
+    table.to_csv(model.Data.input_dir() / alt)
     try:
-        table = model.Data.model_point_table()
-        table.loc[9, "plancher_end_age"] = 85
-        alt = "model_point_table_late.csv"
-        table.to_csv(model.Data.input_dir() / alt)
-        try:
-            model.Data.model_point_file = alt
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            p = model.Projection[9]
-            assert p.plancher_rate(23) > 0.0        # age 74, the last published age
-            with pytest.raises(FormulaError):
-                p.plancher_rate(24)                 # age 75, off the end of the table
-        finally:
-            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+        model.Data.model_point_file = alt
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        p = model.Projection[9]
+        assert p.plancher_rate(23) > 0.0        # age 74, the last published age
+        with pytest.raises(FormulaError):
+            p.plancher_rate(24)                 # age 75, off the end of the table
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_the_gross_premium_floor_starts_in_the_money(assurance_vie_uc):
@@ -903,28 +900,25 @@ def test_inputs_are_external_and_carry_their_provenance(assurance_vie_uc):
     assert float(tariff.loc[74, "premium_per_10000"]) == 408.0
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows."""
     import pandas as pd
 
-    sticky = pd.read_csv(MODEL_DIR.parent / "lapse_table.csv", index_col="policy_year")
+    model = product_copy(MODEL_DIR, name="UC_FR_S_swap")
+    sticky = pd.read_csv(model.Data.input_dir() / "lapse_table.csv", index_col="policy_year")
     sticky["lapse_rate"] = sticky["lapse_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="UC_FR_S_swap")
+    alt_name = "lapse_table_sticky.csv"
+    sticky.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "lapse_table_sticky.csv"
-        sticky.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[2].result_cf()["mgmt_fee_uc"].sum()
-            model.Data.lapse_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # Halving surrender keeps policies in force, so more charge is collected.
-            assert model.Projection[2].result_cf()["mgmt_fee_uc"].sum() > base
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[2].result_cf()["mgmt_fee_uc"].sum()
+        model.Data.lapse_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # Halving surrender keeps policies in force, so more charge is collected.
+        assert model.Projection[2].result_cf()["mgmt_fee_uc"].sum() > base
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

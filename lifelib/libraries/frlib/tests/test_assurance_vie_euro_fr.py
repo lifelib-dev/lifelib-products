@@ -1193,27 +1193,24 @@ def test_the_inputs_live_beside_the_model_and_mark_their_own_provenance():
         assert list(fin[fin["scenario_id"] == scenario]["y"]) == list(range(40))
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a permitted TGH05/TGF05 basis."""
     import pandas as pd
 
-    lighter = pd.read_csv(MODEL_DIR.parent / "mort_table.csv", index_col=["sex", "age"])
+    model = product_copy(MODEL_DIR, name="Euro_FR_S_swap")
+    lighter = pd.read_csv(model.Data.input_dir() / "mort_table.csv", index_col=["sex", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
-    model = mx.read_model(MODEL_DIR, name="Euro_FR_S_swap")
+    alt_name = "mort_table_light.csv"
+    lighter.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "mort_table_light.csv"
-        lighter.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].result_cf()["claims_death"].sum()
-            model.Data.mort_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # Lighter mortality means fewer deaths and later releases of the account.
-            assert model.Projection[1].result_cf()["claims_death"].sum() < base
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].result_cf()["claims_death"].sum()
+        model.Data.mort_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # Lighter mortality means fewer deaths and later releases of the account.
+        assert model.Projection[1].result_cf()["claims_death"].sum() < base
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

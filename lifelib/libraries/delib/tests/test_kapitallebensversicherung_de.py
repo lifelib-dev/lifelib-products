@@ -1655,7 +1655,7 @@ def test_the_bewertungsreserven_switch_is_reachable():
         model.close()
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(tmp_path, product_copy):
     """This is what a production user does with a company or licensed mortality basis.
 
     Inputs are external, so the swap is a filename Reference and not a formula change.
@@ -1666,7 +1666,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     lighter["mort_rate_1st"] = lighter["mort_rate_1st"] * 0.5
     alt = tmp_path / "mort_table_light.csv"
     lighter.to_csv(alt, index=False)
-    model = mx.read_model(MODEL_DIR, name="KLV_DE_S_swap")
+    model = product_copy(MODEL_DIR, name="KLV_DE_S_swap")
     try:
         target = model.Data.input_dir() / alt.name
         shutil.copy(alt, target)

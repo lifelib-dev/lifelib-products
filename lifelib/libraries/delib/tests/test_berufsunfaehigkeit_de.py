@@ -1044,14 +1044,14 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert (points.loc[points["premium_form"] == "level", "beitragsdyn_rate"] == 0).all()
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a company or licensed DAV basis."""
     import pandas as pd
 
     lighter = pd.read_csv(MODEL_DIR.parent / "inception_table.csv", index_col="age")
     lighter["inc_rate"] = lighter["inc_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="BU_DE_S_swap")
+    model = product_copy(MODEL_DIR, name="BU_DE_S_swap")
     try:
         alt_name = "inception_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)

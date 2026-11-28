@@ -1265,29 +1265,26 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert "12 instalments" in freq.loc["monthly", "provenance"]
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a company or licensed mortality basis."""
     import pandas as pd
 
-    lighter = pd.read_csv(MODEL_DIR.parent / "mort_table.csv", index_col="age")
+    model = product_copy(MODEL_DIR, name="TD_FR_S_swap")
+    lighter = pd.read_csv(model.Data.input_dir() / "mort_table.csv", index_col="age")
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="TD_FR_S_swap")
+    alt_name = "mort_table_light.csv"
+    lighter.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "mort_table_light.csv"
-        lighter.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].result_cf()["claims_death"].sum()
-            model.Data.mort_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # Lighter mortality means fewer death claims and more premium collected.
-            assert model.Projection[1].result_cf()["claims_death"].sum() < base
-            assert model.Projection[1].result_cf()["premiums"].sum() > 31999.13
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].result_cf()["claims_death"].sum()
+        model.Data.mort_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # Lighter mortality means fewer death claims and more premium collected.
+        assert model.Projection[1].result_cf()["claims_death"].sum() < base
+        assert model.Projection[1].result_cf()["premiums"].sum() > 31999.13
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

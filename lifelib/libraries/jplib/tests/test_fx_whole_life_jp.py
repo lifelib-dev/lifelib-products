@@ -1472,7 +1472,7 @@ def test_the_terminal_policy_year_empties_in_its_first_month(fx_whole_life):
 # The external-input bargain, both halves of it
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is what the external-file layout buys, and it is what a user with a real
@@ -1480,28 +1480,25 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     in as a same-schema CSV, with no formula change.  Doubling the 維持費率 here must move
     the 積立金 and nothing about the model's structure.
     """
-    src = MODEL_DIR.parent / "charge_table.csv"
+    model = product_copy(MODEL_DIR, name="FXWholeLife_JP_S_swap")
+    src = model.Data.input_dir() / "charge_table.csv"
     doubled = pd.read_csv(src, index_col=["shape", "item"])
     doubled.loc[("LEVEL", "maint_rate"), "value"] *= 2.0
 
-    model = mx.read_model(MODEL_DIR, name="FXWholeLife_JP_S_swap")
+    alt = "charge_table_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt)
     try:
-        alt = "charge_table_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt)
-        try:
-            base_maint = model.Projection[1].maint_rate()
-            base_av = model.Projection[1].av_pp(120)
-            model.Data.charge_table_file = alt
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            assert model.Projection[1].maint_rate() == pytest.approx(
-                2 * base_maint, rel=1e-12)
-            assert model.Projection[1].av_pp(120) < base_av
-            assert model.Projection[1].check_av_roll_fwd() is True
-        finally:
-            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+        base_maint = model.Projection[1].maint_rate()
+        base_av = model.Projection[1].av_pp(120)
+        model.Data.charge_table_file = alt
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        assert model.Projection[1].maint_rate() == pytest.approx(
+            2 * base_maint, rel=1e-12)
+        assert model.Projection[1].av_pp(120) < base_av
+        assert model.Projection[1].check_av_roll_fwd() is True
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_round_trip_reproduces_the_worked_example(tmp_path):

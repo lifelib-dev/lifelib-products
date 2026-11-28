@@ -689,29 +689,26 @@ def test_inputs_live_beside_the_model():
                         if p.suffix == ".csv"}
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows."""
     import pandas as pd
 
-    src = MODEL_DIR.parent / "surr_table.csv"
+    model = product_copy(MODEL_DIR, name="ULB_UK_S_swap")
+    src = model.Data.input_dir() / "surr_table.csv"
     sticky = pd.read_csv(src, index_col="policy_year")
     sticky["surr_rate"] = sticky["surr_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="ULB_UK_S_swap")
+    alt_name = "surr_table_sticky.csv"
+    sticky.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "surr_table_sticky.csv"
-        sticky.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].result_cf()["amc_charges"].sum()
-            model.Data.surr_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # Halving surrender keeps policies in force, so more AMC is collected.
-            assert model.Projection[1].result_cf()["amc_charges"].sum() > base
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].result_cf()["amc_charges"].sum()
+        model.Data.surr_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # Halving surrender keeps policies in force, so more AMC is collected.
+        assert model.Projection[1].result_cf()["amc_charges"].sum() > base
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

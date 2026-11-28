@@ -433,7 +433,7 @@ def test_data_holds_the_inputs_and_projection_does_not(term_life):
     assert not (files & set(term_life.Projection.refs))
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(term_life, product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys: a licensed mortality basis
@@ -451,7 +451,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(term_life, tmp_path):
     doubled = pd.read_csv(src, index_col="age")
     doubled["mort_rate"] = doubled["mort_rate"] * 2
 
-    model = mx.read_model(LIB / MODELS["Term_US_S"][0], name="Term_US_S_swap")
+    model = product_copy(LIB / MODELS["Term_US_S"][0], name="Term_US_S_swap")
     try:
         # Write the alternative table where this model instance will look for it.
         alt_name = "mort_table_doubled.csv"

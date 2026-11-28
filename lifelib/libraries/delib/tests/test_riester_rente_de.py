@@ -965,7 +965,7 @@ def test_the_declared_rate_includes_and_is_not_added_to_the_guaranteed_rate(
     assert p.int_credited(0) == approx(p.int_credited_pp(0) * p.pols_if(0), rel=1e-12)
 
 
-def test_setting_the_declared_rate_to_the_guaranteed_rate_empties_the_surplus_leg():
+def test_setting_the_declared_rate_to_the_guaranteed_rate_empties_the_surplus_leg(product_copy):
     """With j = i the *Deckungskapital* leg of int_surplus_pp is exactly zero.
 
     Swapped in through the input file rather than through a formula change, which is the point
@@ -974,7 +974,7 @@ def test_setting_the_declared_rate_to_the_guaranteed_rate_empties_the_surplus_le
     """
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_flat_j")
+    model = product_copy(MODEL_DIR, name="Riester_DE_S_flat_j")
     alt = None
     try:
         scenario = pd.read_csv(model.Data.input_dir() / "surplus_scenario.csv")
@@ -995,7 +995,6 @@ def test_setting_the_declared_rate_to_the_guaranteed_rate_empties_the_surplus_le
     finally:
         if alt is not None:
             alt.unlink(missing_ok=True)
-        model.close()
 
 
 # --------------------------------------------------------------------------- pitfall 11
@@ -1029,7 +1028,7 @@ def test_the_frequency_loading_is_charged_and_never_credited(riester_rente):
     assert anchor.eigenbeitrag_paid_pp(0) == approx(anchor.eigenbeitrag_pp(0), rel=1e-12)
 
 
-def test_removing_the_loading_moves_premiums_and_nothing_else():
+def test_removing_the_loading_moves_premiums_and_nothing_else(product_copy):
     """Swap the loading table for a flat one: only ``premiums`` moves.
 
     ``prem_to_av_pp``, ``guar_pp`` and every benefit are identical to the last bit, which is
@@ -1037,7 +1036,7 @@ def test_removing_the_loading_moves_premiums_and_nothing_else():
     """
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_flat_phi")
+    model = product_copy(MODEL_DIR, name="Riester_DE_S_flat_phi")
     alt = None
     try:
         p, ks = model.Projection[3], (0, 1, 2)
@@ -1069,7 +1068,6 @@ def test_removing_the_loading_moves_premiums_and_nothing_else():
     finally:
         if alt is not None:
             alt.unlink(missing_ok=True)
-        model.close()
 
 
 # --------------------------------------------------------------------------- pitfall 12
@@ -1585,7 +1583,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert (points["rentenbeginn_age"] >= 62).all()
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """What a production user does with a company or licensed mortality basis.
 
     Point ``Data.annuity_mort_file`` at a same-schema file with a heavier annuitant table and
@@ -1594,13 +1592,13 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     """
     import pandas as pd
 
-    model = mx.read_model(MODEL_DIR, name="Riester_DE_S_swap")
+    model = product_copy(MODEL_DIR, name="Riester_DE_S_swap")
     alt = None
     try:
         base_factor = model.Projection[1].ann_factor()
         assert model.Projection[1].rentenfaktor_applied() == 29.0
 
-        heavier = pd.read_csv(INPUT_DIR / "annuity_mort_table.csv", index_col="age")
+        heavier = pd.read_csv(model.Data.input_dir() / "annuity_mort_table.csv", index_col="age")
         heavier["qx_base"] = (heavier["qx_base"] * 2.0).clip(upper=1.0)
         alt = model.Data.input_dir() / "annuity_mort_table_heavy.csv"
         heavier.to_csv(alt)
@@ -1617,7 +1615,6 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     finally:
         if alt is not None:
             alt.unlink(missing_ok=True)
-        model.close()
 
 
 def test_round_trip_is_stable(tmp_path):

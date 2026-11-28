@@ -910,7 +910,7 @@ def test_the_projection_stops_at_the_declared_horizon(per_assurance):
         assert p.check_horizon() is True, point_id
 
 
-def test_the_deduction_election_is_carried_and_inert(per_assurance):
+def test_the_deduction_election_is_carried_and_inert(per_assurance, product_copy):
     """It changes what the holder keeps, never what the insurer pays.
 
     The anchor cell with the election flipped produces the identical cash flow table, to
@@ -924,19 +924,16 @@ def test_the_deduction_election_is_carried_and_inert(per_assurance):
     assert set(per_assurance.Data.model_point_table()["deduction_elected"]) == {
         True, False}
 
-    model = mx.read_model(MODEL_DIR, name="PER_FR_S_ded")
+    model = product_copy(MODEL_DIR, name="PER_FR_S_ded")
+    path = alt_model_point_file(
+        model, [anchor_row(deduction_elected=False)],
+        "model_point_table_ded.csv")
     try:
-        path = alt_model_point_file(
-            model, [anchor_row(deduction_elected=False)],
-            "model_point_table_ded.csv")
-        try:
-            p = model.Projection[1]
-            assert p.deduction_elected() is False
-            flipped = p.result_cf()
-        finally:
-            path.unlink(missing_ok=True)
+        p = model.Projection[1]
+        assert p.deduction_elected() is False
+        flipped = p.result_cf()
     finally:
-        model.close()
+        path.unlink(missing_ok=True)
 
     assert (flipped - base).abs().max().max() == pytest.approx(0.0, abs=1e-12)
 
@@ -945,36 +942,30 @@ def test_the_deduction_election_is_carried_and_inert(per_assurance):
 # Model points the shipped tables must refuse
 
 
-def test_a_c3_cell_electing_capital_raises():
+def test_a_c3_cell_electing_capital_raises(product_copy):
     """The compartment rule is enforced, not assumed - and the table cannot hold the row."""
-    model = mx.read_model(MODEL_DIR, name="PER_FR_S_c3")
+    model = product_copy(MODEL_DIR, name="PER_FR_S_c3")
+    path = alt_model_point_file(
+        model, [anchor_row(compartment="c3", exit_form="mixed")],
+        "model_point_table_c3.csv")
     try:
-        path = alt_model_point_file(
-            model, [anchor_row(compartment="c3", exit_form="mixed")],
-            "model_point_table_c3.csv")
-        try:
-            with pytest.raises(FormulaError):
-                model.Projection[1].exit_form()
-        finally:
-            path.unlink(missing_ok=True)
+        with pytest.raises(FormulaError):
+            model.Projection[1].exit_form()
     finally:
-        model.close()
+        path.unlink(missing_ok=True)
 
 
-def test_an_annuity_share_contradicting_the_exit_form_raises():
+def test_an_annuity_share_contradicting_the_exit_form_raises(product_copy):
     """capital_single with a 30% annuity share is two statements, not one."""
-    model = mx.read_model(MODEL_DIR, name="PER_FR_S_share")
+    model = product_copy(MODEL_DIR, name="PER_FR_S_share")
+    path = alt_model_point_file(
+        model, [anchor_row(exit_form="capital_single", annuity_share=0.30)],
+        "model_point_table_share.csv")
     try:
-        path = alt_model_point_file(
-            model, [anchor_row(exit_form="capital_single", annuity_share=0.30)],
-            "model_point_table_share.csv")
-        try:
-            with pytest.raises(FormulaError):
-                model.Projection[1].annuity_share()
-        finally:
-            path.unlink(missing_ok=True)
+        with pytest.raises(FormulaError):
+            model.Projection[1].annuity_share()
     finally:
-        model.close()
+        path.unlink(missing_ok=True)
 
 
 def test_invalid_enum_values_raise(fr_per_anchor):
@@ -1292,31 +1283,28 @@ def test_inputs_live_beside_the_model():
     assert model_files(MODEL_DIR) == {"__init__.py", "_system.json"}
 
 
-def test_the_glide_path_can_be_swapped_without_touching_formulas():
+def test_the_glide_path_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a user does with an insurer's own twenty-band ladder."""
-    src = PRODUCT_DIR / "allocation_grid.csv"
+    model = product_copy(MODEL_DIR, name="PER_FR_S_grid")
+    src = model.Data.input_dir() / "allocation_grid.csv"
     grid = pd.read_csv(src, index_col=["allocation_profile", "years_to_horizon"])
     # A ladder that de-risks harder: 10 points more euro everywhere, capped at 1.
     harder = grid.copy()
     harder["euro_share"] = (harder["euro_share"] + 0.10).clip(upper=1.0)
     harder["uc_share"] = 1.0 - harder["euro_share"]
 
-    model = mx.read_model(MODEL_DIR, name="PER_FR_S_grid")
+    alt = "allocation_grid_hard.csv"
+    harder.to_csv(model.Data.input_dir() / alt)
     try:
-        alt = "allocation_grid_hard.csv"
-        harder.to_csv(model.Data.input_dir() / alt)
-        try:
-            base = model.Projection[1].av_pp(143)
-            model.Data.allocation_grid_file = alt
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # More euro support means less of the 5.00% UC return, so a smaller balance.
-            assert model.Projection[1].av_pp(143) < base
-            assert model.Projection[1].check_euro_share_min() is True
-        finally:
-            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+        base = model.Projection[1].av_pp(143)
+        model.Data.allocation_grid_file = alt
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # More euro support means less of the 5.00% UC return, so a smaller balance.
+        assert model.Projection[1].av_pp(143) < base
+        assert model.Projection[1].check_euro_share_min() is True
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_model_docstring_describes_the_current_structure(per_assurance):

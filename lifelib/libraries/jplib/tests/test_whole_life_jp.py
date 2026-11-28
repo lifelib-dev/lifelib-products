@@ -1438,37 +1438,34 @@ def test_the_lapse_table_holds_no_spike():
         MODEL_DIR.parent / "model_point_table.csv").columns
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a same-schema file and the projection follows.
 
     This is the property the external-file layout buys, and it is exactly what a user who
     has downloaded the IAJ PDF does with the real table: drop it in as a CSV, change no
     formula.
     """
-    src = MODEL_DIR.parent / "mort_table.csv"
+    model = product_copy(MODEL_DIR, name="WholeLife_JP_S_swap")
+    src = model.Data.input_dir() / "mort_table.csv"
     doubled = pd.read_csv(src, index_col=["sex", "age"])
     doubled["mort_rate"] = (doubled["mort_rate"] * 2).clip(upper=1.0)
 
-    model = mx.read_model(MODEL_DIR, name="WholeLife_JP_S_swap")
+    alt_name = "mort_table_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "mort_table_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base_q = model.Projection[1].mort_rate(0)
-            model.Data.mort_table_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            # The *annual* rate doubles; the monthly decrement is its effective
-            # conversion and so does not, which is the conversion working rather than a
-            # swap that failed.
-            assert model.Projection[1].mort_rate(0) == pytest.approx(
-                2 * base_q, rel=1e-12)
-            assert model.Projection[1].mort_rate_mth(0) == pytest.approx(
-                1.0 - (1.0 - 2 * base_q) ** (1.0 / 12.0), rel=1e-12)
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base_q = model.Projection[1].mort_rate(0)
+        model.Data.mort_table_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        # The *annual* rate doubles; the monthly decrement is its effective
+        # conversion and so does not, which is the conversion working rather than a
+        # swap that failed.
+        assert model.Projection[1].mort_rate(0) == pytest.approx(
+            2 * base_q, rel=1e-12)
+        assert model.Projection[1].mort_rate_mth(0) == pytest.approx(
+            1.0 - (1.0 - 2 * base_q) ** (1.0 / 12.0), rel=1e-12)
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_the_model_point_premiums_follow_the_documented_rule(whole_life):

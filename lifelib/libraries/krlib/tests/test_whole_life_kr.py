@@ -117,21 +117,6 @@ def flat(doc):
     return re.sub(r"\s+", " ", doc)
 
 
-def product_copy(tmp_path, name):
-    """A throwaway copy of the whole product directory, model and input CSVs together.
-
-    The inputs are **external files** in the model folder's parent, so a test that wants
-    to move an assumption has to move a file, and moving one inside the repository would
-    leave an orphan CSV that ``test_model_conventions_kr.py`` fails on.  Copying the
-    directory instead keeps every such test off the shipped tree entirely;
-    ``input_dir()`` resolves to ``_model.path.parent`` at run time, so the copy reads its
-    own CSVs with no formula changed.
-    """
-    dest = tmp_path / "whole_life"
-    shutil.copytree(MODEL_DIR.parent, dest,
-                    ignore=shutil.ignore_patterns("__pycache__"))
-    return mx.read_model(dest / MODEL_DIR.name, name=name)
-
 
 # ---------------------------------------------------------------------------
 # The notes' worked example, hard-coded
@@ -906,7 +891,7 @@ def test_the_calibration_against_the_published_grid(kr_whole_life_anchor, y):
     assert published < 1e8 or y == 60          # the tell: a level account cannot do that
 
 
-def test_the_flat_basis_run_is_the_disclosure_the_guidance_obliges(tmp_path):
+def test_the_flat_basis_run_is_the_disclosure_the_guidance_obliges(product_copy):
     """The notes' ``flat`` comparison table, on the identical anchor cell.
 
     The November 2024 계리가정 decision makes the 원칙모형 the base and obliges an insurer
@@ -917,7 +902,7 @@ def test_the_flat_basis_run_is_the_disclosure_the_guidance_obliges(tmp_path):
     **negative**, where on the 원칙모형 it is the best month of the projection.  Without this
     test the two bases would be shipped side by side and only one ever run.
     """
-    model = product_copy(tmp_path, "WholeLife_KR_S_flat")
+    model = product_copy(MODEL_DIR, "WholeLife_KR_S_flat")
     try:
         table = pd.read_csv(
             model.Data.input_dir() / "model_point_table.csv", index_col="point_id")
@@ -2161,7 +2146,7 @@ def test_the_csvs_are_utf8_without_a_bom():
         assert "\r\n" not in text
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a same-schema file and the projection follows.
 
     This is the property the external-file layout buys, and it is exactly what a user with
@@ -2174,7 +2159,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     force behind it and the monthly step sees the force.  Asserting linearity here would be
     asserting that the model converts by dividing.
     """
-    model = product_copy(tmp_path, "WholeLife_KR_S_swap")
+    model = product_copy(MODEL_DIR, "WholeLife_KR_S_swap")
     try:
         src = model.Data.input_dir() / "mort_table.csv"
         doubled = pd.read_csv(src, index_col=["sex", "age"])

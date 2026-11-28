@@ -686,32 +686,29 @@ def test_pitfall_1_no_surrender_value_and_none_of_the_names_that_carry_one(
     assert small.check_no_capital() is True
 
 
-def test_pitfall_1_the_account_is_never_floored_at_a_surrender_value():
+def test_pitfall_1_the_account_is_never_floored_at_a_surrender_value(product_copy):
     """Push the *Stückkosten* past the premium and the account goes negative, as it must.
 
     The mirror of the missing surrender column is a *Rückkaufswert* computed internally "for
     reference" and used as a floor under the *Deckungskapital*.  There is nothing for such a
     floor to protect here, and this proves there is none.
     """
-    charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
+    model = product_copy(MODEL_DIR, name="Basis_DE_S_floor")
+    charges = pd.read_csv(model.Data.input_dir() / "charge_table.csv", index_col="tariff_id")
     charges.loc["de_basis_std", "unit_cost_pp"] = 400.00
-    alt = INPUT_DIR / "charge_table_costly.csv"
-    model = alt_model("Basis_DE_S_floor")
+    alt = model.Data.input_dir() / "charge_table_costly.csv"
+    assert model.Projection[10].prem_to_av_pp(0) > 0.0
+    charges.to_csv(alt)
     try:
-        assert model.Projection[10].prem_to_av_pp(0) > 0.0
-        charges.to_csv(alt)
-        try:
-            model.Data.charge_file = alt.name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            p = model.Projection[10]
-            assert p.unit_cost_pp(0) == 400.00
-            assert p.prem_to_av_pp(0) < 0.0 and p.av_pp(1) < 0.0 and p.av(1) < 0.0
-            assert p.check_av_roll_fwd() is True
-        finally:
-            alt.unlink(missing_ok=True)
+        model.Data.charge_file = alt.name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        p = model.Projection[10]
+        assert p.unit_cost_pp(0) == 400.00
+        assert p.prem_to_av_pp(0) < 0.0 and p.av_pp(1) < 0.0 and p.av(1) < 0.0
+        assert p.check_av_roll_fwd() is True
     finally:
-        model.close()
+        alt.unlink(missing_ok=True)
 
 
 # Pitfall 2 -- a Beitragsfreistellung is not a lapse
@@ -747,39 +744,36 @@ def test_pitfall_2_a_beitragsfreistellung_removes_the_premium_not_the_policy(de_
     assert p.pols_if(264) - p.pols_paying(264) == pytest.approx(0.420265, abs=SIX_DP)
 
 
-def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged():
+def test_pitfall_2_with_bf_rate_at_zero_the_policy_count_is_unchanged(product_copy):
     """Set ``bf_rate = 0`` and ``pols_if`` does not move, while ``premiums`` grows.
 
     That is the arithmetic statement of "not a lapse": a lapse rate that vanished would move the
     in-force count, and this one moves 45 635 EUR of premium income instead.
     """
-    beh = pd.read_csv(INPUT_DIR / "behaviour_table.csv", index_col=["beh_table_id", "dur"])
+    model = product_copy(MODEL_DIR, name="Basis_DE_S_nobf")
+    beh = pd.read_csv(model.Data.input_dir() / "behaviour_table.csv", index_col=["beh_table_id", "dur"])
     beh["bf_rate"] = 0.0
-    alt = INPUT_DIR / "behaviour_table_nobf.csv"
-    model = alt_model("Basis_DE_S_nobf")
+    alt = model.Data.input_dir() / "behaviour_table_nobf.csv"
+    base = model.Projection[1].result_cf()
+    beh.to_csv(alt)
     try:
-        base = model.Projection[1].result_cf()
-        beh.to_csv(alt)
-        try:
-            model.Data.behaviour_file = alt.name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            p = model.Projection[1]
-            nobf = p.result_cf()
-            assert (base["pols_if"] - nobf["pols_if"]).abs().max() < 1e-12
-            assert all(p.bf_rate(t) == 0.0 for t in (0, 48, 132, 263))
-            assert p.pols_paidup(264) == 0.0
-            assert all(p.pols_freeze(t) == 0.0 for t in range(p.proj_len()))
-            assert p.pols_paying(264) == pytest.approx(p.pols_if(264), rel=1e-12)
-            assert p.check_pols_roll_fwd() is True and p.check_av_roll_fwd() is True
-            prem_months = [12 * k for k in range(1, 22)]
-            assert (nobf["premiums"] > base["premiums"]).loc[prem_months].all()
-            assert nobf["premiums"].sum() == pytest.approx(159397.29, abs=CENT)
-            assert p.ann_pp(22) == pytest.approx(10448.66, abs=CENT)
-        finally:
-            alt.unlink(missing_ok=True)
+        model.Data.behaviour_file = alt.name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        p = model.Projection[1]
+        nobf = p.result_cf()
+        assert (base["pols_if"] - nobf["pols_if"]).abs().max() < 1e-12
+        assert all(p.bf_rate(t) == 0.0 for t in (0, 48, 132, 263))
+        assert p.pols_paidup(264) == 0.0
+        assert all(p.pols_freeze(t) == 0.0 for t in range(p.proj_len()))
+        assert p.pols_paying(264) == pytest.approx(p.pols_if(264), rel=1e-12)
+        assert p.check_pols_roll_fwd() is True and p.check_av_roll_fwd() is True
+        prem_months = [12 * k for k in range(1, 22)]
+        assert (nobf["premiums"] > base["premiums"]).loc[prem_months].all()
+        assert nobf["premiums"].sum() == pytest.approx(159397.29, abs=CENT)
+        assert p.ann_pp(22) == pytest.approx(10448.66, abs=CENT)
     finally:
-        model.close()
+        alt.unlink(missing_ok=True)
 
 
 # Pitfall 3 -- the two account blocks are not one average
@@ -817,38 +811,35 @@ def test_pitfall_3_the_paying_and_premium_free_blocks_are_not_averaged(de_basis_
 # Pitfall 4 -- a charge is not an expense
 
 
-def test_pitfall_4_the_account_charges_are_income_and_never_an_expense():
+def test_pitfall_4_the_account_charges_are_income_and_never_an_expense(product_copy):
     """``expenses`` is invariant to beta, gamma and the *Zillmersatz*; the annuity is not.
 
     Raise all three -- beta 7,5 % to 10 %, gamma 0,35 % to 0,60 %, the *Zillmersatz* 25 permille
     to 40 -- and not one euro of ``expenses`` or ``commissions`` moves.  What moves is the
     *Deckungskapital*, and through it the annuity: 245 916,54 EUR against 265 725,57 EUR.
     """
-    charges = pd.read_csv(INPUT_DIR / "charge_table.csv", index_col="tariff_id")
+    model = product_copy(MODEL_DIR, name="Basis_DE_S_charges")
+    charges = pd.read_csv(model.Data.input_dir() / "charge_table.csv", index_col="tariff_id")
     charges.loc["de_basis_std", "beta_prem"] = 0.10
     charges.loc["de_basis_std", "gamma_av"] = 0.006
     charges.loc["de_basis_std", "zill_rate"] = 0.040
-    alt = INPUT_DIR / "charge_table_alt.csv"
-    model = alt_model("Basis_DE_S_charges")
+    alt = model.Data.input_dir() / "charge_table_alt.csv"
+    base = model.Projection[1].result_cf()
+    charges.to_csv(alt)
     try:
-        base = model.Projection[1].result_cf()
-        charges.to_csv(alt)
-        try:
-            model.Data.charge_file = alt.name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            loaded = model.Projection[1].result_cf()
-            for column in ("expenses", "commissions", "premiums", "zuzahlungen", "pols_if"):
-                assert (base[column] - loaded[column]).abs().max() == 0.0, column
-            base_av = model.Projection[1].result_pols()["av"]
-            assert (base_av - model.Projection[1].result_pols()["av"]).abs().max() == 0.0
-            assert loaded["claims_annuity"].sum() == pytest.approx(245916.54, abs=CENT)
-            assert loaded["claims_annuity"].sum() < base["claims_annuity"].sum()
-            assert model.Projection[1].check_net_cf() is True
-        finally:
-            alt.unlink(missing_ok=True)
+        model.Data.charge_file = alt.name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        loaded = model.Projection[1].result_cf()
+        for column in ("expenses", "commissions", "premiums", "zuzahlungen", "pols_if"):
+            assert (base[column] - loaded[column]).abs().max() == 0.0, column
+        base_av = model.Projection[1].result_pols()["av"]
+        assert (base_av - model.Projection[1].result_pols()["av"]).abs().max() == 0.0
+        assert loaded["claims_annuity"].sum() == pytest.approx(245916.54, abs=CENT)
+        assert loaded["claims_annuity"].sum() < base["claims_annuity"].sum()
+        assert model.Projection[1].check_net_cf() is True
     finally:
-        model.close()
+        alt.unlink(missing_ok=True)
 
 
 # Pitfall 5 -- the Zillmerung is spread, and capped

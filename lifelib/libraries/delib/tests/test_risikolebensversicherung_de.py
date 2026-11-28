@@ -1067,12 +1067,12 @@ def test_pitfall_16_the_lapse_table_is_the_term_life_one(
 
 
 # Pitfall 17 -- letting rating_factor scale the benefit
-def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit():
+def test_pitfall_17_a_risikozuschlag_loads_the_mortality_and_never_the_benefit(product_copy):
     """Model point 11 at rating_factor 1.75 against the same cell at 1.00: both orders are
     loaded, so an impaired life pays more *and* claims more, the *Zahl/Brutto* ratio moves
     by 0,4835 of a percentage point, and the benefit is untouched.
     """
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_rating")
+    model = product_copy(MODEL_DIR, name="RLV_DE_S_rating")
     try:
         rated = model.Projection[11]
         assert rated.rating_factor() == 1.75 and rated.smoker() == "R"
@@ -1295,7 +1295,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
     assert len(points) == 14 and points.loc[1, "policy_id"] == "RLV-000001"
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """What a production user does with a company or licensed basis.  On a German term
     product the swap moves **both** premiums as well as the claims, because the tariff is
     struck off the same table the projection uses, one order up.
@@ -1305,7 +1305,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
     lighter = pd.read_csv(PRODUCT_DIR / "mort_table.csv",
                           index_col=["table_id", "sex", "smoker", "age"])
     lighter["mort_rate"] = lighter["mort_rate"] * 0.5
-    model = mx.read_model(MODEL_DIR, name="RLV_DE_S_swap")
+    model = product_copy(MODEL_DIR, name="RLV_DE_S_swap")
     try:
         alt_name = "mort_table_light.csv"
         lighter.to_csv(model.Data.input_dir() / alt_name)

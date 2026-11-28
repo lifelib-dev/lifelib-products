@@ -1213,32 +1213,29 @@ def test_inputs_live_beside_the_model_and_mark_their_own_provenance(eurocroissan
     assert w.wd_rate_base(12) == 0.06 and w.wd_rate_base(24) == 0.03
 
 
-def test_a_tec_curve_can_be_swapped_without_touching_formulas():
+def test_a_tec_curve_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a real published TEC term structure.
 
     A lower curve raises the provision mathematique, which is the product's dominant risk
     and the reason the curve is a table with a maturity dimension rather than a Reference.
     """
-    lower = pd.read_csv(MODEL_DIR.parent / "tec_curve.csv",
+    model = product_copy(MODEL_DIR, name="EC_FR_S_swap")
+    lower = pd.read_csv(model.Data.input_dir() / "tec_curve.csv",
                         index_col=["scenario", "year", "maturity"])
     lower["tec_rate"] = lower["tec_rate"] * 0.5
 
-    model = mx.read_model(MODEL_DIR, name="EC_FR_S_swap")
+    alt_name = "tec_curve_low.csv"
+    lower.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "tec_curve_low.csv"
-        lower.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].pm(0)
-            model.Data.tec_curve_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            assert model.Projection[1].pm(0) > base
-            # And the guarantee still lands exactly on the PM at the echeance.
-            assert model.Projection[1].check_guarantee_funding() is True
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].pm(0)
+        model.Data.tec_curve_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        assert model.Projection[1].pm(0) > base
+        # And the guarantee still lands exactly on the PM at the echeance.
+        assert model.Projection[1].check_guarantee_funding() is True
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_every_model_point_projects_and_every_check_holds(eurocroissance):

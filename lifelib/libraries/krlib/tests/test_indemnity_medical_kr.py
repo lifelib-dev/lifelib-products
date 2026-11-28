@@ -352,14 +352,15 @@ class _swapped:
     external-file layout buys and the one a user with a company basis would use.
     """
 
-    def __init__(self, suffix, ref, frame, name, **to_csv):
+    def __init__(self, product_copy, suffix, ref, frame, name, **to_csv):
+        self.product_copy = product_copy
         self.suffix, self.ref, self.frame, self.name, self.kw = \
             suffix, ref, frame, name, to_csv
         self.model = None
         self.path = None
 
     def __enter__(self):
-        self.model = _reread(self.suffix)
+        self.model = self.product_copy(MODEL_DIR, name="Medical_KR_S_" + self.suffix)
         self.path = pathlib.Path(self.model.Data.input_dir()) / self.name
         self.frame.to_csv(self.path, **self.kw)
         setattr(self.model.Data, self.ref, self.name)
@@ -367,8 +368,6 @@ class _swapped:
         return self.model
 
     def __exit__(self, *exc):
-        if self.model is not None:
-            self.model.close()
         if self.path is not None:
             self.path.unlink(missing_ok=True)
         return False
@@ -1238,7 +1237,7 @@ def test_the_three_published_frames_and_the_sign_they_carry(kr_medical_anchor):
 # Known modeling pitfalls, one test each
 
 
-def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medical):
+def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medical, product_copy):
     """Pitfall: multiplying a rate by the 보험가입금액. There is no sum assured here.
 
     The ₩50,000,000 is an annual **cap** and may appear only inside a ``min``.  Any
@@ -1258,7 +1257,7 @@ def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medi
     table = indemnity_medical.Data.model_point_table()
     tenfold = table.copy()
     tenfold.loc[1, "annual_limit"] = 500000000.0
-    with _swapped("lim10", "model_point_file", tenfold,
+    with _swapped(product_copy, "lim10", "model_point_file", tenfold,
                   "model_point_table_lim10.csv") as model:
         p = model.Projection[1]
         assert p.annual_limit() == 500000000.0
@@ -1266,7 +1265,7 @@ def test_pitfall_do_not_multiply_a_rate_by_the_boheom_gaipgeumaek(indemnity_medi
             "a slack limit moved the claim, so it is not inside a min"
     tiny = table.copy()
     tiny.loc[1, "annual_limit"] = 20000.0
-    with _swapped("limtiny", "model_point_file", tiny,
+    with _swapped(product_copy, "limtiny", "model_point_file", tiny,
                   "model_point_table_limtiny.csv") as model:
         p = model.Projection[1]
         assert p.ge_limit_factor(1) == pytest.approx(0.5066574378, abs=5e-10)
@@ -1349,7 +1348,7 @@ def test_pitfall_the_public_ceiling_is_an_exclusion_from_covered_loss_not_a_bene
 
 
 def test_pitfall_the_two_million_won_cap_sits_on_the_retention_that_survives_the_ceiling(
-        indemnity_medical):
+        indemnity_medical, product_copy):
     """Pitfall: taking the ₩2,000,000 inpatient cap before the 본인부담상한제, or beside it.
 
     Both reduce the insured's retention on heavy 급여 use, so the order is fixed: the
@@ -1376,7 +1375,7 @@ def test_pitfall_the_two_million_won_cap_sits_on_the_retention_that_survives_the
     table = indemnity_medical.Data.model_point_table()
     heavy = table.copy()
     heavy.loc[8, "util_mult"] = 1000.0
-    with _swapped("cap", "model_point_file", heavy,
+    with _swapped(product_copy, "cap", "model_point_file", heavy,
                   "model_point_table_cap.csv") as model:
         p = model.Projection[8]
         cost_untruncated = p.adm_rate(1) * p.sev_mean("ge_in") * p.trend_ge(1)
@@ -1555,7 +1554,7 @@ def test_pitfall_the_injection_carve_out_is_counted_once(kr_medical_anchor):
         a.act_rate_inject(1), rel=1e-14)
 
 
-def test_pitfall_read_the_utilisation_table_at_the_attained_age(indemnity_medical):
+def test_pitfall_read_the_utilisation_table_at_the_attained_age(indemnity_medical, product_copy):
     """Pitfall: freezing the utilisation band at the issue age.
 
     ``util_band(6) = 45`` and ``adm_rate(6) / adm_rate(5) = 1.2499293``.  Freezing the band
@@ -1574,7 +1573,7 @@ def test_pitfall_read_the_utilisation_table_at_the_attained_age(indemnity_medica
     for column in ("adm_rate", "los_days", "visit_rate_ge", "visit_rate_np",
                    "act_rate_physio", "act_rate_inject", "act_rate_mri"):
         frozen.loc[mask, column] = row40[column]
-    with _swapped("frozen", "utilisation_table_file", frozen,
+    with _swapped(product_copy, "frozen", "utilisation_table_file", frozen,
                   "utilisation_table_frozen.csv", index=False) as model:
         p = model.Projection[1]
         assert p.claims_ann_pp(6) == pytest.approx(150937.0485, abs=WON)
@@ -1975,7 +1974,7 @@ def test_the_std_input_tables_mark_their_own_provenance():
 
 
 def test_the_shipped_mortality_runs_the_wrong_way_and_the_table_says_so(
-        indemnity_medical, kr_medical_anchor):
+        indemnity_medical, kr_medical_anchor, product_copy):
     """Death **releases** this liability, so overstating mortality is anti-conservative.
 
     The reverse of every protection product in this library, and it is worth an assertion
@@ -1990,7 +1989,7 @@ def test_the_shipped_mortality_runs_the_wrong_way_and_the_table_says_so(
     assert "cv_pp" not in names and "av_pp" not in names
     doubled = indemnity_medical.Data.mort_table().copy()
     doubled["mort_rate"] = doubled["mort_rate"] * 5.0
-    with _swapped("mort", "mort_table_file", doubled,
+    with _swapped(product_copy, "mort", "mort_table_file", doubled,
                   "mort_table_x5.csv") as model:
         p = model.Projection[1]
         assert p.mort_rate(0) == pytest.approx(5.0 * MORT_Q[40], rel=1e-12)
@@ -2082,7 +2081,7 @@ def test_the_elections_do_what_the_notes_say_they_do(indemnity_medical):
         0.5913, abs=5e-4)
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(indemnity_medical):
+def test_an_input_can_be_swapped_without_touching_formulas(indemnity_medical, product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys, and it is what a user with company
@@ -2094,7 +2093,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(indemnity_medical):
     severity = indemnity_medical.Data.severity_table().reset_index()
     doubled = severity["stream"] == "ge_out"
     severity.loc[doubled, "cost"] = severity.loc[doubled, "cost"] * 2.0
-    with _swapped("sev", "severity_table_file", severity,
+    with _swapped(product_copy, "sev", "severity_table_file", severity,
                   "severity_table_alt.csv", index=False) as model:
         p = model.Projection[1]
         assert p.sev_mean("ge_out") == pytest.approx(2 * 36100.0, rel=1e-12)

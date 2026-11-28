@@ -1254,7 +1254,7 @@ def test_the_shipped_tables_mark_their_own_provenance():
             ("annual", "half_yearly", "quarterly", "monthly")] == [1.0, 1.02, 1.03, 1.05]
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """This is what a production user does with a company index path: swapping the return
     table for one whose *Indexjahre* all sum below zero leaves a projection that credits
     nothing -- the mechanic following the data, with no formula change anywhere."""
@@ -1265,7 +1265,7 @@ def test_an_input_can_be_swapped_without_touching_formulas():
                         index_col=["index_id", "t"])
     bleak[months] = -0.01
 
-    model = mx.read_model(MODEL_DIR, name="Index_DE_S_swap")
+    model = product_copy(MODEL_DIR, name="Index_DE_S_swap")
     try:
         alt_name = "index_return_table_bleak.csv"
         bleak.to_csv(model.Data.input_dir() / alt_name)

@@ -11,6 +11,9 @@ an **anchor** — the ItemSpace holding the model point that reproduces that pro
 worked example. The anchor is ``Projection[1]`` everywhere, and the docstring says which
 model point it is so a reader can find the row in ``model_point_table.csv``.
 """
+import pathlib
+import shutil
+
 import modelx as mx
 import pytest
 
@@ -171,3 +174,40 @@ def pflegerentenversicherung():
 def de_pflege_anchor(pflegerentenversicherung):
     """Model point 1 — the Pflegerentenversicherung worked-example anchor cell."""
     return pflegerentenversicherung.Projection[1]
+
+
+# ---------------------------------------------------------------------------
+# Throwaway product copy for input-swap and mutation tests
+
+
+@pytest.fixture
+def product_copy(tmp_path):
+    """A throwaway copy of the product directory, model and input CSVs together.
+
+    The inputs are **external files** in the model folder's parent, so a test that wants
+    to move an assumption has to move a file, and moving one inside the repository would
+    leave an orphan CSV that convention tests fail on. Copying the directory instead
+    keeps every such test off the shipped tree entirely; ``input_dir()`` resolves to
+    ``_model.path.parent`` at run time, so the copy reads its own CSVs with no formula changed.
+    """
+    models = []
+
+    def _copy(model_dir, name):
+        model_dir = pathlib.Path(model_dir)
+        dest = tmp_path / name
+        if dest.exists():
+            shutil.rmtree(dest)
+        shutil.copytree(model_dir.parent, dest,
+                        ignore=shutil.ignore_patterns("__pycache__"))
+        model = mx.read_model(dest / model_dir.name, name=name)
+        models.append(model)
+        return model
+
+    yield _copy
+
+    for model in models:
+        try:
+            if model.name in mx.get_models():
+                model.close()
+        except Exception:
+            pass

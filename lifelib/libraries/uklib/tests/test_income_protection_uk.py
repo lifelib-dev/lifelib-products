@@ -803,35 +803,22 @@ def test_inputs_live_beside_the_model():
                         if p.suffix == ".csv"}
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is what a production user does with a licensed IP11 basis: it drops in as a
     same-schema CSV with no formula change.
-
-    The model and its input tables are copied into ``tmp_path``, and the slower table is
-    written there, beside the copy.  Written into the product folder, even for the length
-    of one test, it is a CSV beside ``IP_UK_SEC`` too, which reads the folder's tables: a
-    run of that model's tests on the same checkout meanwhile would see it, and a run
-    killed inside this test would leave it behind, failing the CSV-set tests for both
-    models.
     """
-    import shutil
-
     import pandas as pd
 
-    shutil.copytree(MODEL_DIR, tmp_path / MODEL_DIR.name,
-                    ignore=shutil.ignore_patterns("__pycache__"))
-    for csv in MODEL_DIR.parent.glob("*.csv"):
-        shutil.copy(csv, tmp_path / csv.name)
-    slower = pd.read_csv(tmp_path / "termination_table.csv", index_col="claim_duration_year")
+    model = product_copy(MODEL_DIR, name="IP_UK_S_swap")
+    src = model.Data.input_dir() / "termination_table.csv"
+    slower = pd.read_csv(src, index_col="claim_duration_year")
     slower["recovery_rate"] = slower["recovery_rate"] * 0.5
-    alt_name = "termination_table_slow.csv"
-    slower.to_csv(tmp_path / alt_name)
 
-    model = mx.read_model(tmp_path / MODEL_DIR.name, name="IP_UK_S_swap")
+    alt_name = "termination_table_slow.csv"
+    slower.to_csv(model.Data.input_dir() / alt_name)
     try:
-        assert model.Data.input_dir().resolve() == tmp_path.resolve()
         base = model.Projection[2].pv_benefits()
         model.Data.termination_file = alt_name
         model.Data.clear_all()
@@ -840,7 +827,7 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
         assert model.Projection[2].pv_benefits() > base
         assert model.Projection[2].rec_rate(1) == pytest.approx(0.20, rel=1e-12)
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

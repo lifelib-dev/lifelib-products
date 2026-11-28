@@ -62,11 +62,11 @@ def _model_point_column(model, column, value):
     """
     import pandas as pd
 
-    src = MODEL_DIR.parent / "model_point_table.csv"
+    src = model.Data.input_dir() / "model_point_table.csv"
     table = pd.read_csv(src, index_col="point_id")
     table.loc[1, column] = value
     alt_name = f"model_point_table_{column}_{value}.csv"
-    alt_path = MODEL_DIR.parent / alt_name
+    alt_path = model.Data.input_dir() / alt_name
     table.to_csv(alt_path)
     try:
         model.Data.model_point_file = alt_name
@@ -549,7 +549,7 @@ def test_fib_premiums_stop_at_death_though_instalments_do_not(term_assurance):
 # Premium mode, which the monthly grid can see
 
 
-def test_premium_mode_is_live_on_the_monthly_grid(term_assurance):
+def test_premium_mode_is_live_on_the_monthly_grid(product_copy):
     """Monthly collects P_m every month; annual collects 12 P_m in the first of each.
 
     On the annual grid the two modes annualized to the same number and ``premium_mode``
@@ -558,36 +558,30 @@ def test_premium_mode_is_live_on_the_monthly_grid(term_assurance):
     full from a life that may leave during the year.  The amount due over a policy year
     is the same, so the *per-policy* premium sums to ``12 P_m`` either way.
     """
-    model = mx.read_model(MODEL_DIR, name="Term_UK_S_mode")
-    try:
-        assert set(model.Data.model_point_table()["premium_mode"]) == {"monthly"}
-        monthly = model.Projection[1]
-        assert all(monthly.premium_pp(t) == 12.00 for t in (0, 1, 11, 12, 299))
-        monthly_year_one = sum(monthly.premiums(t) for t in range(12))
+    model = product_copy(MODEL_DIR, name="Term_UK_S_mode")
+    assert set(model.Data.model_point_table()["premium_mode"]) == {"monthly"}
+    monthly = model.Projection[1]
+    assert all(monthly.premium_pp(t) == 12.00 for t in (0, 1, 11, 12, 299))
+    monthly_year_one = sum(monthly.premiums(t) for t in range(12))
 
-        with _model_point_column(model, "premium_mode", "annual"):
-            annual = model.Projection[1]
-            assert annual.premium_pp(0) == pytest.approx(144.00, rel=1e-12)
-            assert all(annual.premium_pp(t) == 0.0 for t in range(1, 12))
-            assert annual.premium_pp(12) == pytest.approx(144.00, rel=1e-12)
-            # The amount due over a policy year is the same in either mode.
-            assert sum(annual.premium_pp(t) for t in range(12)) == pytest.approx(
-                12 * 12.00, rel=1e-12)
-            # Collected earlier and from a larger in-force, so income is higher.
-            assert sum(annual.premiums(t) for t in range(12)) > monthly_year_one
-    finally:
-        model.close()
+    with _model_point_column(model, "premium_mode", "annual"):
+        annual = model.Projection[1]
+        assert annual.premium_pp(0) == pytest.approx(144.00, rel=1e-12)
+        assert all(annual.premium_pp(t) == 0.0 for t in range(1, 12))
+        assert annual.premium_pp(12) == pytest.approx(144.00, rel=1e-12)
+        # The amount due over a policy year is the same in either mode.
+        assert sum(annual.premium_pp(t) for t in range(12)) == pytest.approx(
+            12 * 12.00, rel=1e-12)
+        # Collected earlier and from a larger in-force, so income is higher.
+        assert sum(annual.premiums(t) for t in range(12)) > monthly_year_one
 
 
-def test_invalid_premium_mode_raises(term_assurance):
+def test_invalid_premium_mode_raises(product_copy):
     """The enum validates rather than silently falling through to the monthly branch."""
-    model = mx.read_model(MODEL_DIR, name="Term_UK_S_badmode")
-    try:
-        with _model_point_column(model, "premium_mode", "weekly"):
-            with pytest.raises(FormulaError):
-                model.Projection[1].premium_pp(0)
-    finally:
-        model.close()
+    model = product_copy(MODEL_DIR, name="Term_UK_S_badmode")
+    with _model_point_column(model, "premium_mode", "weekly"):
+        with pytest.raises(FormulaError):
+            model.Projection[1].premium_pp(0)
 
 
 # ---------------------------------------------------------------------------
@@ -1150,7 +1144,7 @@ def test_projection_shares_one_data_space(term_assurance):
     assert term_assurance.Projection[1].data is term_assurance.Projection[3].data
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys, and it is what a production
@@ -1166,29 +1160,26 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     """
     import pandas as pd
 
-    src = MODEL_DIR.parent / "mort_table.csv"
+    model = product_copy(MODEL_DIR, name="Term_UK_S_swap")
+    src = model.Data.input_dir() / "mort_table.csv"
     doubled = pd.read_csv(src, index_col=["sex", "smoker", "age"])
     doubled["mort_rate"] = doubled["mort_rate"] * 2
 
-    model = mx.read_model(MODEL_DIR, name="Term_UK_S_swap")
+    alt_name = "mort_table_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "mort_table_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base_rate = model.Projection[1].mort_rate(0)
-            base_claim = model.Projection[1].claims(0, "DEATH")
-            model.Data.mort_table_file = alt_name      # repoint the Reference
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            proj = model.Projection[1]
-            assert proj.mort_rate(0) == pytest.approx(2 * base_rate, rel=1e-12)
-            assert proj.claims(0, "DEATH") == pytest.approx(
-                2 * base_claim, rel=1e-3)
-            assert proj.claims(0, "DEATH") > 2 * base_claim
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base_rate = model.Projection[1].mort_rate(0)
+        base_claim = model.Projection[1].claims(0, "DEATH")
+        model.Data.mort_table_file = alt_name      # repoint the Reference
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        proj = model.Projection[1]
+        assert proj.mort_rate(0) == pytest.approx(2 * base_rate, rel=1e-12)
+        assert proj.claims(0, "DEATH") == pytest.approx(
+            2 * base_claim, rel=1e-3)
+        assert proj.claims(0, "DEATH") > 2 * base_claim
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 def test_round_trip_is_stable(tmp_path):

@@ -2417,30 +2417,27 @@ def test_inputs_live_beside_the_model_and_carry_their_provenance(cancer):
     assert (sourced["provenance"].str.contains("[REG-R61]", regex=False)).all()
 
 
-def test_an_input_can_be_swapped_without_touching_formulas():
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a different file and the projection follows.
 
     This is the property the external-file layout buys, and it is what a user with a company
     incidence basis does: it drops in as a same-schema CSV, no formula change.
     """
-    doubled = pd.read_csv(CSV_DIR / "incidence_table.csv", index_col=["sex", "age"])
+    model = product_copy(MODEL_DIR, name="Cancer_KR_S_swap")
+    doubled = pd.read_csv(model.Data.input_dir() / "incidence_table.csv", index_col=["sex", "age"])
     doubled["inc_rate"] = doubled["inc_rate"] * 2.0
 
-    model = _reread("swap")
+    alt = "incidence_table_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt)
     try:
-        alt = "incidence_table_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt)
-        try:
-            base = float(model.Projection[1].claims(3, "DIAG_MINOR"))
-            model.Data.incidence_table_file = alt
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            assert model.Projection[1].claims(3, "DIAG_MINOR") == pytest.approx(
-                2.0 * base, rel=1e-12)
-        finally:
-            (model.Data.input_dir() / alt).unlink(missing_ok=True)
+        base = float(model.Projection[1].claims(3, "DIAG_MINOR"))
+        model.Data.incidence_table_file = alt
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        assert model.Projection[1].claims(3, "DIAG_MINOR") == pytest.approx(
+            2.0 * base, rel=1e-12)
     finally:
-        model.close()
+        (model.Data.input_dir() / alt).unlink(missing_ok=True)
 
 
 def test_the_model_point_table_exercises_the_product(cancer):

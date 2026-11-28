@@ -2585,7 +2585,7 @@ def test_the_model_point_premiums_follow_the_documented_rule(ci_insurance):
         assert p.premium_pp() == pytest.approx(expected, rel=3e-4), point_id
 
 
-def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
+def test_an_input_can_be_swapped_without_touching_formulas(product_copy):
     """Point a filename Reference at a same-schema file and the projection follows.
 
     This is the property the external-file layout buys, and it is exactly what a user
@@ -2594,25 +2594,22 @@ def test_an_input_can_be_swapped_without_touching_formulas(tmp_path):
     quantity the file holds; the monthly decrement it converts to is more than doubled,
     because doubling a probability more than doubles the force behind it.
     """
-    src = CSV_DIR / "ci_incidence_table.csv"
+    model = product_copy(MODEL_DIR, name="CI_KR_S_swap")
+    src = model.Data.input_dir() / "ci_incidence_table.csv"
     doubled = pd.read_csv(src, index_col=["sex", "age", "cause"])
     doubled["ci_rate"] = (doubled["ci_rate"] * 2).clip(upper=1.0)
 
-    model = mx.read_model(MODEL_DIR, name="CI_KR_S_swap")
+    alt_name = "ci_incidence_doubled.csv"
+    doubled.to_csv(model.Data.input_dir() / alt_name)
     try:
-        alt_name = "ci_incidence_doubled.csv"
-        doubled.to_csv(model.Data.input_dir() / alt_name)
-        try:
-            base = model.Projection[1].ci_rate(0)
-            model.Data.ci_incidence_file = alt_name
-            model.Data.clear_all()
-            model.Projection.clear_all()
-            assert model.Projection[1].ci_rate(0) == pytest.approx(
-                2 * base, rel=1e-12)
-        finally:
-            (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
+        base = model.Projection[1].ci_rate(0)
+        model.Data.ci_incidence_file = alt_name
+        model.Data.clear_all()
+        model.Projection.clear_all()
+        assert model.Projection[1].ci_rate(0) == pytest.approx(
+            2 * base, rel=1e-12)
     finally:
-        model.close()
+        (model.Data.input_dir() / alt_name).unlink(missing_ok=True)
 
 
 # ---------------------------------------------------------------------------
